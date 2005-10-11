@@ -25,11 +25,11 @@ elseif length( varargin ) > 1 | isa( varargin{1}, 'cell' ) | isa( varargin{1}, '
 end
 
 if ~cvx_isconvex( varargin{1} ),
-    error( sprintf( 'Dispciplined convex programming error:\n   Objective function in a minimization must be convex.' ) );
+    error( sprintf( 'Disciplined convex programming error:\n   Objective function in a minimization must be convex.' ) );
 end
 
 newobj( cvx_problem, 'minimize', varargin{1} );
 
-% Copyright 2005 Michael C. Grant and Stephen P. Boyd. 
+% Copyright 2005 Michael C. Grant and Stephen P. Boyd.
 % See the file COPYING.txt for full copyright information.
 % The command 'cvx_where' will show where this file is located.
