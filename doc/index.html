@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta name="generator" content=
+"HTML Tidy for Windows (vers 12 April 2005), see www.w3.org" />
+<title>CVX -- software for disciplined convex programming</title>
+</head>
+<body>
+<h1>CVX: Matlab Software for Disciplined Convex Programming</h1>
+<h2>Version 0.86 alpha (September 2005)</h2>
+<h3><a href="http://www.stanford.edu/~mcgrant">Michael Grant</a>,
+<a href="http://www.stanford.edu/~boyd">Stephen Boyd</a>, and
+<a href="http://www.stanford.edu/~yyye">Yinyu Ye</a></h3>
+<h3>Table of Contents</h3>
+<ul>
+<li><a href="#intro">Introduction</a></li>
+<li><a href="#system">System requirements</a></li>
+<li><a href="#mail">The CVX mailing list</a></li>
+<li><a href="#feed">Request for feedback</a></li>
+<li><a href="#hist">Version history</a></li>
+<li><a href="#copy">Copyright information</a></li>
+<li><a href="#down">Download</a></li>
+</ul>
+<h3><a id="intro" name="intro">Introduction</a></h3>
+<p>CVX is a Matlab-based modeling system that supports <a href=
+"../disc_cvx_prog.html">disciplined convex programming</a>. CVX
+turns Matlab into a modeling language, allowing constraints and
+objectives to be specified using standard Matlab expression
+syntax.</p>
+<p>In disciplined convex programming, convex functions and sets are
+built up from a small set of rules from convex analysis, starting
+from a base library of convex functions and sets. Constraints and
+objectives that are expressed using these rules are automatically
+transformed to a canonical form and solved. For the basics of
+convex analysis and convex optimization, see the book
+<cite><a href="../cvxbook.html">Convex Optimization</a>.</cite></p>
+<p>This version of CVX relies on <a href=
+"http://sedumi.mcmaster.ca/">SeDuMi</a> as the core solver, and so
+is restricted in the functions, sets, and problems it can handle.
+Still, it can handle a wide variety of problems involving various
+norms, matrix inequalities, and other constraints. More information
+can be found in the <cite><a href="cvx_usrguide.pdf">CVX Users'
+Guide</a>.</cite></p>
+<h3><a id="system" name="system">System requirements</a></h3>
+<p>The CVX modeling system is built using <a href=
+"http://www.mathworks.com/products/matlab/">Matlab</a>, and
+requires version 6.1 or later of Matlab to run. It is built using
+both native Matlab code and C MEX files (as is SeDuMi). Precompiled
+binaries for Windows, Linux, and Solaris are supplied with the
+distribution, but it should work fine on other platforms as well,
+as long as they support both Matlab and SeDuMi. See Appendix A of
+the <a href="cvx_usrguide.pdf">user guide</a> for more detials, and
+for installation instructions.</p>
+<h3><a id="mail" name="mail">The CVX mailing list</a></h3>
+<p>During this alpha period, we will be releasing updates
+incorporating bug fixes, improvements, and new features. The date
+at the bottom of this web page indicates when this distribution was
+last updated. If you would like to be notified automatically when
+an update occurs, we invite you to subscribe to the
+<tt>cvx-announce</tt> mailing list. To do so, simply send a
+plain-text email to</p>
+<blockquote>
+<p><a href=
+"mailto:majordomo@lists.stanford.edu?subject=Subscribe%20to%20the%20cvx-announce%20mailing%20list&amp;body=subscribe%20cvx-announce">
+majordomo@lists.stanford.edu</a></p>
+</blockquote>
+<p>with the command</p>
+<blockquote>
+<p><b><tt>subscribe cvx-announce</tt></b></p>
+</blockquote>
+<p>in the <i>body</i> of the email. If you click on the email
+address above, it will create the email for you. (Outlook users:
+make sure to select "Plain-text" in the "Format" menu, if it is not
+already your default, before sending this message.)</p>
+<h3><a id="feed" name="feed">Feedback</a></h3>
+<p>We welcome your feedback on CVX, particularly in this early
+stage of development. Please contact <a href=
+"mailto:mcgrant@stanford.edu">Michael Grant</a> or <a href=
+"mailto:boyd@stanford.edu">Stephen Boyd</a> with your bug reports
+and feature suggestions.</p>
+<p>If you do send a bug report, please include the following
+information if possible:</p>
+<ul>
+<li>The versions of CVX, Matlab, and operating system you are
+using</li>
+<li>A copy of the error messages, if any, produced by Matlab</li>
+<li>A Matlab program ( <tt>.m</tt>) or data ( <tt>.mat</tt>) file
+that we can use to reproduce the problem</li>
+</ul>
+<p>Your help will be greatly appreciated.</p>
+<h3><a id="hist" name="hist">Version history</a></h3>
+<dl>
+<dt>Version 0.80, July 2005:</dt>
+<dd>initial release.</dd>
+<dt>Version 0.85, August 2005:</dt>
+<dd>Support for Matlab 6.1 and 6.5; previous versions required
+Matlab 7.0 or later.<br />
+Added precompiled binaries for Solaris.<br />
+Support for scalar quadratic forms (see Section 4.7 of the <a href=
+"cvx_usrguide.pdf">user guide</a>).<br />
+Added the <tt>norms</tt> function to facilitate sum-of-norms and
+max-of-norms problems.<br />
+Various bug fixes incorporated.</dd>
+<dt>Version 0.86, September 2005:</dt>
+<dd>Fixes for Matlab 6.1 compatability.
+<dd>Improved support for quadratic forms.
+<dd>A bug that prevented some Euclidean norm constraints
+    from being declared was fixed.
+<dt>Features coming soon:</dt>
+<dd>Native support for geometric programming and smooth
+nonlinearities.</dd>
+</dl>
+<h3><a id="copy" name="copy">Copyright information</a></h3>
+<p>This version of CVX is distributed under the <a href=
+"http://www.gnu.org/copyleft/gpl.html">GNU General Public
+License</a>. Our intention is for this software to always be usable
+in academic and commercial applications. To that end, the license
+may change in future versions, and we welcome feedback on this
+topic.</p>
+<h3><a id="down" name="down">Download</a></h3>
+<dl>
+<dt>To obtain the CVX distribution, which includes the program
+files, the users' guide, and some examples, use one of the
+following links:</dt>
+<dd>Windows <tt>.zip</tt> file: <a href="cvx.zip">cvx.zip
+(___ZIP___)</a><br />
+Unix <tt>.tar.gz</tt> file: <a href="cvx.tar.gz">cvx.tar.gz
+(___TAR___)</a></dd>
+<dt>See Appendix A of the users' guide, which can be found in the
+<tt>doc/</tt> subdirectory of either distribution above, for
+installation instructions.</dt>
+</dl>
+<hr />
+<p><a href="../research.html">Back to Boyd's research group
+page.</a></p>
+<p><a href="http://validator.w3.org/check?uri=referer"><img src=
+"http://www.w3.org/Icons/valid-xhtml10" alt=
+"Valid XHTML 1.0 Transitional" border="0" height="31" width=
+"88" /></a> <a href="http://tidy.sourceforge.net"><img src=
+"http://tidy.sourceforge.net/checked_by_tidy.gif" alt=
+"Checked by Tidy!" border="0" height="32" width="32" /></a></p>
+<p>Last updated: ___DATE___</p>
+</body>
+</html>

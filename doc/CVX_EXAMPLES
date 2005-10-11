@@ -1,0 +1,57 @@
+norm and penalty approximation (or least-norm) problems.
+for fixed A,b, finds l_1, l_2, l_infty, huber, deadzone
+solutions.  plots the residual distribution for each one.
+
+min fuel optimal control.
+minimize sum_t f(u(t))
+s.t. x(t+1)=Ax(t)+Bu(t), given x(0), x(T)
+f can be given as a simple PWL function (say)
+
+min time optimal control.
+linear dynamics, constraint set u(t) in U
+(could be polyhedral)
+x(0) given; final state is x(T)=0; want to minimize T.
+use bisection to find min T.
+
+placement problem. need to define cell
+incidence matrix, locations of fixed cells.
+could have simple quadratic version, also deadzone,
+bounding box perimeter (maybe that is separate script)
+
+separating hyperplane problems; SVM
+
+minimal surface problems. variables are grid (matrix)
+of z values on uniform x,y grid.
+min, max, and interpolation values are given at various
+points. plot surface in 3D.
+
+FIR and IIR filter problems via spec fact.
+
+control/Lyapunov problems
+
+simple robust LP problem.  define robust LP; solve via SOCP.
+do simple monte carlo analysis of robust and nonrobust
+solutions.
+
+simple portfolio optimization problem.
+plot risk/return frontier.
+
+simple robust LS problem.
+
+simple l1/l2 problems (lasso).
+
+simple portfolio worst-case variance problem, with
+uncertain covariance matrix.  allow (some) short positions.
+
+sparse approximation heuristic via l1.
+
+nuclear norm function (not script)
+(sum of singular values)
+define using LMI
+
+simple partitioning problem.
+min x'Wx over x_i={-1,1}.
+form eigenvector relaxation
+also, form SDP relaxation.
+could add simple local greedy function to improve
+approximate solutions, and/or use a randomized method

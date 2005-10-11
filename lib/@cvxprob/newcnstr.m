@@ -1,0 +1,177 @@
+function newcnstr( prob, x, y, op, cheat )
+error( nargchk( 4, 5, nargin ) );
+if nargin < 5, cheat = false; end
+
+%
+% Check problem
+%
+
+if ~isa( prob, 'cvxprob' ),
+    error( 'First argument must be a cvxprob object.' );
+end
+
+%
+% Descend the expression tree and process the constraints
+%
+
+ans = newcnstr2( prob, x, y, op, cheat );
+if ~ans,
+    error( 'Left- and right-hand sides have incompatible sizes.' );
+end
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% NEWCNSTR2 --- descends the tree %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+function ans = newcnstr2( prob, x, y, op, cheat )
+
+ans = false;
+x = cvx_collapse( x, false, true );
+y = cvx_collapse( y, false, true );
+sx = size( x );
+sy = size( y );
+
+if iscell( x ),
+    if ~iscell( x ) | op(1) ~= '=' | ~isequal( sx, sy ),
+        return;
+    end
+    for k = 1 : prod( sx ),
+        if ~newcnstr2( prob, x{k}, y{k}, op, cheat ), 
+            return; 
+        end
+    end
+else,
+    if iscell( x ),
+        return;
+    elseif any( sx ~= 1 ) & any( sy ~= 1 ) & ~isequal( sx, sy ),
+        return;
+    end
+    newcnstr3( prob, x, y, op, cheat );
+end
+
+ans = true;
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% NEWCNSTR3 --- adds individual constraints %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+function newcnstr3( prob, x, y, op, cheat )
+[ prob, x, y ] = cvx_operate( prob, x, y );
+
+global cvx___
+p = index( prob );
+
+%
+% Check for a dual reference
+%
+
+dx = getdual( x );
+if ~isempty( dx ),
+    dy = getdual( y );
+    if ~isempty( dy ),
+        error( [ 'Two dual variables found: "', dx, '","', dy, '"' ] );
+    end
+else,
+    dx = getdual( y );
+end
+if ~isempty( dx ),
+    try,
+        dual = subsref( cvx___.problems( p ).duals, struct( 'type', '.', 'subs', dx ) );
+    catch,
+        error( [ 'Dual variable "', dx, '" has not been declared.' ] );
+    end
+    if ~isempty( dual.cvx ),
+        error( [ 'Dual variable "', dx, '" already in use.' ] );
+    end
+end
+
+%
+% Detect redundancies and conflicts and act accordingly
+%
+
+z = pluslikeoper( x, y, 'minus', cheat );
+zS = size( z );
+zB = cvx_basis( z );
+dim = length( cvx___.problems( p ).reserved );
+[ zL, zR, zI ] = cvx_bcompress( zB );
+if op( 1 ) == '=',
+    temp = zR ~= 0;
+    temp = temp( :, 1 ) & ( temp( :, 1 ) == sum( temp, 2 ) );
+    if any( temp ),
+        error( sprintf( 'Trivially infeasible equality constraints detected (e.g., 1 = 0).\n   Trivially infeasible constraints are not permitted.\n    See the user guide for more details.' ) );
+    end
+else,
+    if any( zL( : ) < 0 ),
+        if length( op ) < 2,
+            error( sprintf( 'Conflicting strict inequalities detected (e.g., a < b & b < a )\n   Trivially infeasible constraints are not permitted.\n   See the user guide for more details.' ) );
+        else,
+            error( sprintf( 'Conflicting non-strict inequalities detected (e.g, a <= b & b <= a )\n   These must be converted to equalities in order to proceed.\n   See the user guide for more details.' ) );
+        end
+        temp = zR ~= 0;
+        temp = temp( :, 1 ) == sum( temp, 2 );
+        if any( temp ),
+            if op( 1 ) == '<',
+                temp = temp & ( zR( :, 1 ) > 0 );
+            else,
+                temp = temp & ( zR( :, 1 ) < 0 );
+            end
+            if any( temp ),
+                error( sprintf( 'Trivally infeasible inequality constraints detected (e.g., 1 < 0).\n   Trivially infeasible constraints are not permitted.\n   See the user guide for more details.' ) );
+            end
+        end
+    end
+end
+zR = cvx( prob, size( zR, 1 ), zR );
+
+%
+% Add slacks
+%
+
+if op( 1 ) ~= '=',
+    ndxs = cvx_vexity( zR ) == 0;
+    if any( ndxs ),
+        ndxs = find( ndxs );
+        temp = zR( ndxs );
+        v = newslack( prob, temp );
+        if op( 1 ) == '>',
+            temp = temp - v;
+        else,
+            temp = temp + v;
+        end
+        zR( ndxs ) = temp;
+    end
+end
+
+%
+% Add the equalities
+%
+
+oeqs = length( cvx___.problems( p ).equalities ) + 1;
+neqs = oeqs + length( zR ) - 1;
+if oeqs == 1,
+    cvx___.problems( p ).equalities = zR;
+else,
+    t1 = cvx_basis( cvx___.problems( p ).equalities ); 
+    t2 = cvx_basis( zR ); 
+    c1 = size( t1, 2 );
+    c2 = size( t2, 2 );
+    if c1 < c2, t1( end, c2 ) = 0; end
+    if c2 < c1, t2( end, c1 ) = 0; end
+    cvx___.problems( p ).equalities = cvx( prob, neqs, [ t1 ; t2 ] );
+    clear t1 t2
+end
+cvx___.problems( p ).x = [];
+cvx___.problems( p ).y = [];
+
+%
+% Create the dual
+%
+
+if ~isempty( dx ),
+    zI = zI * sparse( 1 : size( zI, 2 ), oeqs + 1 : neqs + 1, 1 );
+    cvx___.problems( p ).duals = builtin( 'subsasgn', cvx___.problems( p ).duals, struct( 'type', '.', 'subs', dx ), cvx( prob, zS, zI ) );
+end
+
+% Copyright 2005 Michael C. Grant and Stephen P. Boyd. 
+% See the file COPYING.txt for full copyright information.
+% The command 'cvx_where' will show where this file is located.

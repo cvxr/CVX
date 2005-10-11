@@ -1,0 +1,64 @@
+function z = newtemp( prob, model, base )
+error( nargchk( 1, 3, nargin ) );
+
+%
+% Check problem
+%
+
+if ~isa( prob, 'cvxprob' ),
+    error( 'First argument must be a cvxprob object.' );
+end
+global cvx___
+p = index( prob );
+
+%
+% Check model
+%
+
+if nargin < 2 | isempty( model ),
+    ismod = 0;
+    siz = [ 1, 1 ];
+    str = sparse( 1, 2, 1 );
+elseif isa( model, 'cvx' ) | isa( model, 'cvxvar' ),
+    ismod = 1;
+    siz = size( model );
+    str = cvx_bcompress( cvx_basis( model ) );
+elseif cvx_check_dimlist( model ),
+    ismod = 0;
+    siz = model( : ).';
+    nsz = prod( siz );
+    str = sparse( 1 : nsz, 2 : nsz + 1, 1 );
+else,
+    error( 'Second argument must be a cvx object or a non-empty size vector.' );
+end
+
+%
+% Check base
+%
+
+if nargin < 3 | isempty( base ),
+    base( 1 ).type = '.';
+    base( 1 ).subs = 'temp_';
+    base( 2 ).type = '{}';
+    base( 2 ).subs = { eval( 'length(cvx___.problems( p ).variables.temp_)+1','1' ) };
+end
+
+%
+% Create temporary variable
+%
+
+len = length( cvx___.problems( p ).vexity );
+z = newvar( prob, base, siz, str );
+
+%
+% Set vexity
+%
+
+if ismod,
+    model = cvx_vexity( model );
+    cvx___.problems( p ).vexity( len + 1 : end ) = sign( str' * model( : ) );
+end
+
+% Copyright 2005 Michael C. Grant and Stephen P. Boyd. 
+% See the file COPYING.txt for full copyright information.
+% The command 'cvx_where' will show where this file is located.

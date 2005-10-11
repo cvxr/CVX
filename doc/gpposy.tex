@@ -1,0 +1,276 @@
+\documentclass[12pt]{article}
+\usepackage{fullpage,url,xspace,fancyvrb}
+
+\DefineVerbatimEnvironment{code}{Verbatim}{tabsize=0,xleftmargin=0.5in}
+
+\bibliographystyle{alpha}
+
+\newcommand{\gpposy}{\texttt{gpposy}\xspace}
+\newcommand{\eg}{{\it e.g.}}
+\newcommand{\ie}{{\it i.e.}}
+\newcommand{\etc}{{\it etc.}}
+\newcommand{\reals}{{\mathbf R}}
+\newcommand{\ones}{\mathbf 1}
+
+\begin{document}
+
+\title{\gpposy \\ A Matlab Solver for Geometric Programs \\ in Posynomial Form}
+
+\author{ Kwangmoo Koh\\\texttt{deneb1@stanford.edu}
+\and Seungjean Kim\\\texttt{sjkim@stanford.edu}
+\and Almir Mutapcic\\\texttt{almirm@stanford.edu}
+\and Stephen Boyd\\\texttt{boyd@stanford.edu}}
+
+%\date{}
+\maketitle
+
+\section{Introduction}
+
+\gpposy solves an optimization problem of the form
+\begin{equation} \label{e-gp-posy}
+\begin{array}{ll}
+\mbox{minimize} & \sum_{k=1}^{K_0} b_k^{(0)} x_1^{a_{k1}^{(0)}} 
+              x_2^{a_{k2}^{(0)}} \cdots x_n^{a_{kn}^{(0)}}\\
+\mbox{subject to} & \sum_{k=1}^{K_i} b_k^{(i)} x_1^{a_{k1}^{(i)}} 
+                x_2^{a_{k2}^{(i)}} \cdots x_n^{a_{kn}^{(i)}}
+                \le 1, \quad i = 1, \ldots, m, \\
+              & h_{i} x_1^{g_{i1}} x_2^{g_{i2}} \cdots x_n^{g_{in}}
+                = 1, \quad i = 1, \ldots, p, \\
+              & l \preceq x \preceq u,
+\end{array}
+\end{equation}
+where the optimization variable is the vector 
+$x = (x_1, \ldots, x_n) \in \reals_+^n$. The problem data are 
+$a_{kj}^{(i)}, g_{ij} \in \reals$, $b_k^{(i)}, h_{i} \in \reals_+$, 
+and $l, u \in \reals_+^{n}$. This problem is called a 
+\emph{geometric program in posynomial form}.
+For more information about geometric programming, see \cite{BV:04, BKVH:05}.
+
+\section{Calling sequences}
+
+The complete calling sequence of \gpposy is
+\begin{code}
+>> [x,status,lambda,nu] = gpposy(A,b,szs,G,h,l,u,quiet);
+\end{code}
+Input arguments give the problem data.
+Output arguments are the optimal point (if feasible), sensitivity 
+information (if feasible) and the solution status.
+If the problem is infeasible, the optimal point and sensitivity
+are those obtained from the phase~I problem.
+
+\subsection{Input arguments}
+
+\begin{itemize}
+\item{\tt A}: matrix with $n$ columns and $\sum_{i=1}^{m} K_i$ rows 
+that specifies the exponents of the objective and equality constraints, \ie,
+\[
+A = \left[\begin{array}{c} A^{(0)} \\ \vdots \\ A^{(m)} \end{array}\right],
+\quad
+A^{(i)}=
+\left[\begin{array}{ccc}
+    a_{1 1}^{(i)}   & \cdots & a_{1 n}^{(i)}  \\
+    \vdots          & \ddots & \vdots         \\
+    a_{K_i 1}^{(i)} & \cdots & a_{K_i n}^{(i)}
+\end{array}\right]
+\in \reals^{K_i \times n}, \quad i = 0,\ldots,m.
+\]
+{\tt A} can be in sparse format.
+
+\item{\tt b}: vector of length $\sum_{i=1}^{m} K_i$ that specifies
+the coefficients of the objective and inequality constraints, \ie,
+\[
+b = 
+\left[\begin{array}{c} {b^{(0)}} \\ \vdots \\ {b^{(m)}} \end{array} \right],
+\quad
+b^{(i)}=
+\left[\begin{array}{c}
+    b_{1}^{(i)} \\ \vdots \\ b_{K_i}^{(i)}
+\end{array}\right]
+\in \reals_+^{K_i}, \quad i = 0,\ldots,m.
+\]
+All elements $b_k^{(i)}$ must be positive.
+
+\item{\tt szs}: vector of length $m+1$ that specifies the number of terms
+in each objective and inequality constraints, \ie, $(K_0, \ldots, K_m)$.
+
+\item{\tt G}: matrix with $n$ columns and $p$ rows, that specifies
+the exponents of the equality constraints, \ie,
+\[
+G = 
+\left[\begin{array}{ccc}
+    g_{1 1} & \cdots & g_{1 n} \\
+    \vdots  & \ddots & \vdots  \\
+    g_{p 1} & \cdots & g_{p n}
+\end{array}\right]
+\in \reals^{p \times n}.
+\]
+{\tt G} can be in sparse format.
+\item{\tt h}: $p$-vector that contains the coefficients of equality 
+constraints, \ie,
+\[
+h = 
+\left[\begin{array}{c} h_{1} \\ \vdots \\ h_{p} \end{array}\right]
+\in \reals_+^{p}.
+\]
+All elements $h_k$ must be positive.
+
+\item{\tt l}: $n$-vector that specifies lower bounds on $x$.
+If not given, it will be set to the default bounds
+$(10^{-100}, \ldots, 10^{-100})$. All elements $l_i$ must be positive.
+
+\item{\tt u}: $n$-vector that specifies upper bounds on $x$.
+If not given, it will be set to the default bounds
+$(10^{100}, \ldots, 10^{100})$. All elements  $u_i$ must be positive.
+
+\item{\tt quiet}: boolean. Suppresses print messages during an execution
+if \verb+true+. The default value is \verb+false+.
+
+\end{itemize}
+
+
+\subsection{Output arguments}
+
+\begin{itemize}
+\item{\tt x}: $n$-vector. \verb+x+ is the optimal point of the problem
+if the problem is feasible, or the last primal iterate
+of phase~I if the problem is infeasible.
+
+\item{\tt status}: string; possible values are
+\verb+'Solved'+, \verb+'Infeasible'+ and \verb+'Failed'+.
+
+\item{\tt lambda}: vector of length $m+2n$; the 
+\emph{optimal sensitivity} or \emph{dual variable}
+(see \cite[\S3.3]{BKVH:05}) associated with inequality 
+constraints if the problem is 
+feasible. The first $m$ elements, {\tt lambda(1:m)}, are optimal 
+sensitivities of the $m$ inequality constraints, the next $n$ 
+elements, {\tt lambda(m+1:m+n)}, are those of the lower bound 
+constraints ($l \preceq x$), and the last $n$ elements, 
+{\tt lambda(m+n:m+2*n)}, are those of the upper bound constraints 
+($x \preceq u$). If the problem is infeasible, \verb+lambda+ is a 
+certificate of infeasibility (see \cite[\S5.8.1,\S11.4.3]{BKVH:05}).
+
+\item{\tt nu}: $p$-vector; the optimal sensitivity vector 
+(see \cite[\S3.3]{BKVH:05}) associated with equality constraints 
+($Gx + h = 0$) if the problem is feasible. If infeasible, \verb+nu+ 
+is a certificate of infeasibility (see \cite[\S5.8.1,\S11.4.3]{BKVH:05}).
+\end{itemize}
+
+\subsection{Other calling sequences}
+
+Other calling sequences supported by \gpposy are:
+\begin{code}
+>> [x,status,lambda,nu] = gpposy(A,b,szs);
+>> [x,status,lambda,nu] = gpposy(A,b,szs,G,h);
+>> [x,status,lambda,nu] = gpposy(A,b,szs,G,h,l,u);
+>> [x,status,lambda,nu] = gpposy(A,b,szs,G,h,l,u,quiet);
+>> [x,status,lambda,nu] = gpposy(A,b,szs,[],[],l,u);
+>> [x,status,lambda,nu] = gpposy(A,b,szs,[],[],l,u,quiet);
+>> [x,status,lambda,nu] = gpposy(A,b,szs,[],[],[],[],quiet);
+\end{code}
+
+\subsection{Caveats}
+
+\begin{itemize}
+\item The equality constraints matrix, \verb+G+, must be full rank.
+
+\item To solve a large sparse problem, be sure that 
+\verb+A+ and \verb+G+ are given in sparse format.
+
+\item The equality constraitns must be explicitly specified as 
+$Gx + h = 0$.  You cannot represent equality constraints as pairs of
+oppsoing inequality constraints.
+
+\end{itemize}
+
+\section{Example}
+
+Consider the problem
+\[ \label{e-gp-posy-example}
+\begin{array}{ll}
+\mbox{minimize} & x_1^{-1} x_2^{-1/2} x_3^{-1} + 2.3 x_1 x_3 + 4 x_1 x_2 x_3 \\
+\mbox{subject to}
+& (1/3)x_1^{-2}x_2^{-2} + (4/3) x_2^{1/2} x_3^{-1} \leq 1,\\
+& 0.1x_1+0.2x_2+0.3x_3 \leq 1,\\
+& (1/2)x_1 x_2 = 1,
+\end{array}
+\]
+with variables $x_1$, $x_2$ and $x_3$.
+This problem has the form (\ref{e-gp-posy}) with
+\[
+A^{(0)} = \left[\begin{array}{ccc}
+-1 &  -0.5 &  -1 \\
+1 &     0 &   1 \\
+1 &     1 &   1
+\end{array}\right],
+\quad
+A^{(1)} = \left[\begin{array}{ccc}
+-2 &    -2 &   0 \\
+0 &   0.5 &  -1
+\end{array}\right],
+\quad
+A^{(2)} = \left[\begin{array}{ccc}
+1 &     0 &   0 \\
+0 &     1 &   0 \\
+0 &     0 &   1
+\end{array}\right],
+\]
+\[
+b^{(0)} = \left[\begin{array}{c}
+1 \\ 2.3 \\ 4
+\end{array}\right],
+\quad
+b^{(1)} = \left[\begin{array}{c}
+1/3 \\ 4/3
+\end{array}\right],
+\quad
+b^{(2)} = \left[\begin{array}{c}
+0.1 \\ 0.2 \\ 0.3
+\end{array}\right],
+\]
+\[
+G = \left[\begin{array}{ccc}
+1 &  1 &  0
+\end{array}\right],
+\quad
+h = 0.5 .
+\]
+The Matlab code for solving this problem is as follows:
+\begin{code}
+% Matlab script that solves the above problem
+
+>> A0  = [  -1 -0.5   -1 ;...
+         1    0    1 ;...
+         1    1    1 ];
+>> A1  = [  -2   -2    0 ;...
+         0  0.5   -1 ];
+>> A2  = [   1    0    0 ;...
+         0    1    0 ;...
+         0    0    1 ];
+>> A   = [  A0;  A1;  A2 ];
+
+>> b0  = [   1; 2.3;   4 ];
+>> b1  = [ 1/3; 4/3 ];
+>> b2  = [ 0.1; 0.2; 0.3 ];
+>> b   = [  b0;  b1;  b2 ];
+
+>> G   = [   1    1    0 ];
+>> h   = [ 0.5 ];
+>> szs = [ size(A0,1); size(A1,1); size(A2,1) ]; %i.e., [ 3; 2; 3 ]
+
+>> [x,nu,mu,lambda,status] = gpposy(A,b,szs,G,h);
+\end{code}
+After executing the code, you can see the result by typing \verb+x+ in Matlab.
+\begin{code}
+>> x
+
+ans =
+
+3.4783
+0.5750
+1.1030
+\end{code}
+
+\bibliography{gpposy}
+
+\end{document}

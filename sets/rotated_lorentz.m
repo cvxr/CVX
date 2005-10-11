@@ -1,0 +1,68 @@
+function cvx_optpnt = rotated_lorentz( sx, dim, iscplx )
+error( nargchk( 1, 3, nargin ) );
+
+%
+% Check size vector
+%
+
+[ temp, sx ] = cvx_check_dimlist( sx, false );
+if ~temp,
+    error( 'First argument must be a non-empty dimension vector.' );
+end
+nd = length( sx );
+
+%
+% Check dimension
+%
+
+if nargin < 2 | isempty( dim ),
+    dim = cvx_default_dimension( sx );
+elseif ~cvx_check_dimension( dim, true ),
+    error( 'Second argument must be a dimension (or zero).' );
+elseif dim > nd,
+    sx( end + 1 : dim ) = 1;
+    nd = dim;
+elseif dim == 0,
+    dim = min( find( sx == 1 ) );
+    if isempty( dim ), dim = nd + 1; end
+    sx( dim ) = 1;
+end
+
+%
+% Check complex flag
+%
+
+if nargin < 3 | isempty( iscplx ),
+    iscplx = false;
+elseif length( iscplx ) ~= 1,
+    error( 'Third argument must be a scalar.' );
+else,
+    iscplx = logical( iscplx );
+end
+
+%
+% Build the cvx module
+%
+
+if iscplx,
+    sx( dim ) = 2 * sx( dim );
+end
+
+sx( dim ) = sx( dim ) + 1;
+cone = lorentz( sx, dim );
+ndxs = cell( 1, nd );
+[ ndxs{:} ] = deal( ':' );
+ndxs{ dim } = 1 : sx( dim ) - 1;
+cvx_optpnt.x = cone.x( ndxs{:} );
+ndxs{ dim } = sx( dim );
+temp = cone.x( ndxs{:} );
+cvx_optpnt.y = cone.y + temp;
+cvx_optpnt.z = cone.y - temp;
+
+if iscplx,
+    cvx_optpnt.x = cvx_r2c( cvx_optpnt.x, dim );
+end
+
+% Copyright 2005 Michael C. Grant and Stephen P. Boyd. 
+% See the file COPYING.txt for full copyright information.
+% The command 'cvx_where' will show where this file is located.

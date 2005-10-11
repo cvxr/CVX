@@ -1,0 +1,85 @@
+\begin{thebibliography}{{MOS}05}
+
+\bibitem[BKMR98]{GAMS}
+A.~Brooke, D.~Kendrick, A.~Meeraus, and R.~Raman.
+\newblock {\em {GAMS}: A User's Guide}.
+\newblock The Scientific Press, South San Francisco, 1998.
+\newblock \url{http://www.gams.com/docs/gams/GAMSUsersGuide.pdf}.
+
+\bibitem[BV04]{BV:04}
+S.~Boyd and L.~Vandenberghe.
+\newblock {\em Convex Optimization}.
+\newblock Cambridge University Press, 2004.
+\newblock Available at \url{http://www.stanford.edu/~boyd/cvxbook.html}.
+
+\bibitem[Cru02]{Cru:02}
+C.~Crusius.
+\newblock {\em A Parser/Solver for Convex Optimization Problems}.
+\newblock PhD thesis, Stanford University, 2002.
+
+\bibitem[DV05]{CVXOPT}
+J.~Dahl and L.~Vandenberghe.
+\newblock {\em CVXOPT: A Python Package for Convex Optimization}.
+\newblock Available from \url{http://www.ee.ucla.edu/~vandenbe/cvxopt}, 2005.
+
+\bibitem[FGK99]{AMPL}
+R.~Fourer, D.~Gay, and B.~Kernighan.
+\newblock {\em {AMPL}: A Modeling Language for Mathematical Programming}.
+\newblock Duxbury Press, December 1999.
+
+\bibitem[GBY05]{GBY}
+M.~Grant, S.~Boyd, and Y.~Ye.
+\newblock Disciplined convex programming.
+\newblock In L.~Liberti and N.~Maculan, editors, {\em Globval Optimization:
+  from Theory to Implementation}, Nonconvex Optimization and Its Applications,
+  pages 155--210. Kluwer, 2005.
+\newblock See \url{http://www.stanford.edu/~boyd/disc_cvx_prog.html}.
+
+\bibitem[Gra04]{Gra:04}
+M.~Grant.
+\newblock {\em Disciplined Convex Programming}.
+\newblock PhD thesis, Department of Electrical Engineering, Stanford
+  University, December 2004.
+\newblock See \url{http://www.stanford.edu/~boyd/disc_cvx_prog.html}.
+
+\bibitem[L{\"o}f05]{YALMIP}
+J.~L{\"o}fberg.
+\newblock {YALMIP} version 3 (software package).
+\newblock \url{http://control.ee.ethz.ch/~joloef/yalmip.php}, September 2005.
+
+\bibitem[{Mat}04]{MATLAB}
+The {MathWorks, Inc.}
+\newblock {MATLAB} (software package).
+\newblock \url{http://www.mathworks.com}, 2004.
+
+\bibitem[{Mat}05]{MATOPT}
+The {MathWorks, Inc.}
+\newblock {MATLAB} optimization toolbox (software package).
+\newblock \url{http://www.mathworks.com/products/optimization/}, 2005.
+
+\bibitem[{MOS}05]{MOSEK}
+{MOSEK ApS}.
+\newblock Mosek (software package).
+\newblock \url{http://www.mosek.com}, February 2005.
+
+\bibitem[RP05]{SeDuMi}
+O.~Romanko and I.~P\'{o}lik.
+\newblock {SeDuMI} {1.1R2} (software package).
+\newblock \url{http://sedumi.mcmaster.ca}, July 2005.
+
+\bibitem[Stu99]{Stu:99}
+J.~Sturm.
+\newblock Using {SeDuMi} 1.02, a {MATLAB} toolbox for optimization over
+  symmetric cones.
+\newblock {\em Optimization Methods and Software}, 11:625--653, 1999.
+\newblock Software available at \url{http://sedumi.mcmaster.ca/}.
+
+\bibitem[WB00]{SDPSOL}
+S.-P. Wu and S.~Boyd.
+\newblock {SDPSOL}: A parser/solver for semidefinite programs with matrix
+  structure.
+\newblock In L.~{El Ghaoui} and S.-I. Niculescu, editors, {\em Recent Advances
+  in LMI Methods for Control}, chapter~4, pages 79--91. {SIAM}, 2000.
+\newblock See \url{http://www.stanford.edu/~boyd/sdpsol.html}.
+
+\end{thebibliography}

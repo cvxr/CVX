@@ -1,0 +1,44 @@
+function cvx_optval = quad_pos_over_lin( x, y, dim )
+error( nargchk( 2, 3, nargin ) );
+
+%QUAD_POS_OVER_LIN   quadratic positive part over linear.
+%
+%   For vectors X, QUAD_OVER_LIN(X,Y) is the sum of the squares of the
+%   positive parts of X, divided by Y; i.e., SUM( MAX(X,0) .^ 2 ) / Y.
+%
+%   For matrices, QUAD_POS_OVER_LIN(X,Y) is a row vector containing the 
+%   application of QUAD_POS_OVER_LIN to each column. For N-D arrays, the
+%   operation is applied to the first non-singleton dimension of X.
+%
+%   QUAD_POS_OVER_LIN(X,Y,DIM) takes the sum along the dimension DIM of X. 
+%   A special value of DIM == 0, is accepted here, which is automatically
+%   replaced with DIM == NDIMS(X) + 1. This has the effect of eliminating
+%   the sum; thus QUAD_POS_OVER_LIN( X, Y, NDIMS(X) + 1 ) = MAX(X,0).^2./Y.
+%
+%   In all cases, both X and Y must be real, and Y must either be a scalar 
+%   or a matrix of the same size as SUM(X,DIM).
+%
+%   Disciplined quadratic programming information:
+%       QUAD_POS_OVER_LIN is convex, nondecreasing in X, and nonincreasing 
+%       in Y. Thus when used with CVX expressions, X must be convex (or 
+%       affine) and Y must be concave (or affine).
+
+if ~isreal( x ), 
+    error( 'First input must be real.' ); 
+end
+
+sx = size( x );
+if nargin < 3,
+    dim = cvx_default_dimension( sx );
+end
+
+cvx_begin
+    variable x2( sx )
+    minimize quad_over_lin( x2, y, dim );
+    x2 >= x;
+cvx_end
+
+% Copyright 2005 Michael C. Grant and Stephen P. Boyd. 
+% See the file COPYING.txt for full copyright information.
+% The command 'cvx_where' will show where this file is located.
+
