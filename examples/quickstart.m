@@ -21,8 +21,8 @@ x_ls = A \ b;
 
 % cvx version
 cvx_begin
-    variable x(n)
-    minimize( norm(A*x-b) )
+    variable x(n);
+    minimize( norm(A*x-b) );
 cvx_end
 
 echo off
@@ -57,8 +57,8 @@ end
 
 % cvx version
 cvx_begin
-    variable x(n)
-    minimize( norm(A*x-b) )
+    variable x(n);
+    minimize( norm(A*x-b) );
     subject to
         x >= l;
         x <= u;
@@ -106,8 +106,8 @@ end
 
 % cvx version
 cvx_begin
-    variable x(n)
-    minimize( norm(A*x-b,Inf) )
+    variable x(n);
+    minimize( norm(A*x-b,Inf) );
 cvx_end
 
 echo off
@@ -138,7 +138,7 @@ if has_linprog,
     % Matlab version
     f    = [ zeros(n,1); ones(m,1);  ones(m,1)  ];
     Aeq  = [ A,          -eye(m),    +eye(m)    ];
-    lb   = [ -Inf(n,1);  zeros(m,1); zeros(m,1) ]; 
+    lb   = [ -Inf*ones(n,1);  zeros(m,1); zeros(m,1) ]; 
     xzz  = linprog(f,[],[], Aeq,b,lb,[]);
     x_lp = xzz(1:n,:);
 else,
@@ -147,8 +147,8 @@ end
 
 % cvx version
 cvx_begin
-    variable x(n)
-    minimize( norm(A*x-b,1) )
+    variable x(n);
+    minimize( norm(A*x-b,1) );
 cvx_end
 
 echo off
@@ -178,15 +178,15 @@ clc; echo on
 % cvx specification
 k = 5;
 cvx_begin
-    variable x(n)
-    minimize( norm(A*x-b,'largest',k) )
+    variable x(n);
+    minimize( norm_largest(A*x-b,k) );
 cvx_end
 
 echo off
 
 % Compare
 temp = sort(abs(A*x-b));
-disp( sprintf( '\nResults:\n--------\nnorm(A*x-b,''largest'',k): %6.4f\ncvx_optval: %6.4f\ncvx_status: %s\n', norm(A*x-b,'largest',k), cvx_optval, cvx_status ) );
+disp( sprintf( '\nResults:\n--------\nnorm_largest(A*x-b,k): %6.4f\ncvx_optval: %6.4f\ncvx_status: %s\n', norm_largest(A*x-b,k), cvx_optval, cvx_status ) );
 disp( 'Optimal vector:' );
 disp( [ '   x     = [ ', sprintf( '%7.4f ', x ), ']' ] );
 disp( sprintf( 'Residual vector; verify a tie for %d-th place (%7.4f):', k, temp(end-k+1) ) );
@@ -202,8 +202,8 @@ clc; echo on
 
 % cvx specification
 cvx_begin
-    variable x(n)
-    minimize( sum(huber(A*x-b)) )
+    variable x(n);
+    minimize( sum(huber(A*x-b)) );
 cvx_end
 
 echo off
@@ -230,8 +230,8 @@ d = randn(p,1);
 
 % cvx specification
 cvx_begin
-    variable x(n)
-    minimize( norm(A*x-b) )
+    variable x(n);
+    minimize( norm(A*x-b) );
     subject to
         C*x == d;
         norm(x,Inf) <= 1;
@@ -258,8 +258,8 @@ clc; echo on
 
 % The basic problem:
 % cvx_begin
-%     variable x(n)
-%     minimize( norm(A*x-b)+gamma(k)*norm(x,1) )
+%     variable x(n);
+%     minimize( norm(A*x-b)+gamma(k)*norm(x,1) );
 % cvx_end
 
 echo off
@@ -273,8 +273,8 @@ fprintf( 1, '---------------------------------------\n' );
 for k = 1:length(gamma),
     fprintf( 1, '%8.4e', gamma(k) );
     cvx_begin
-	    variable x(n)
-	    minimize( norm(A*x-b)+gamma(k)*norm(x,1) )
+	    variable x(n);
+	    minimize( norm(A*x-b)+gamma(k)*norm(x,1) );
     cvx_end
     l1norm(k) = norm(x,1);
     l2norm(k) = norm(A*x-b);
