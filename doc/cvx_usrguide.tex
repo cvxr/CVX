@@ -5,6 +5,7 @@
 
 \def\Rank{\operatorname*{\textbf{Rank}}}
 \newcommand{\symm}{{\mbox{\bf S}}}  % symmetric matrices
+\newcommand{\herm}{{\mbox{\bf H}}}  % Hermitian matrices
 \newcommand{\lorentz}{{\mbox{\bf Q}}}  % lorentz cone
 \newcommand{\ones}{\mathbf 1}
 
@@ -105,12 +106,11 @@ as part of the CVXOPT system \cite{CVXOPT}, in the near future.
 \subsection{What is disciplined convex programming?}
 
 \cvx is designed to support \emph{disciplined convex programming},
-a new methodology for constructing convex optimization problems
+a methodology for constructing convex optimization problems
 proposed by Michael Grant, Stephen Boyd, and Yinyu Ye \cite{GBY}.
-This name was chosen to communicate a practice
-in which the convexity of 
-the problems being formulated is considered an advance requirement.
-In other words, \cvx is designed to support the formulation and
+This name was chosen to indicate that the treatment of convex
+programming as a distinct discipline, one in which convexity is an
+advance requirement. In other words, \cvx is designed to support the formulation and
 construction of optimization problems that the user 
 intends \emph{from the outset} to be convex.
 To that end, \cvx imposes a limited
@@ -317,7 +317,8 @@ variables are created:
 function; \ie, $\|Ax-b\|_2$;
 \item \verb@cvx_status@, which contains a string describing the
 status of the calculation. In this case, \verb@cvx_status@
-would contain the string \verb@Solved@.
+would contain the string \verb@Solved@. See Appendix \ref{sec:status}
+for a list of the possible values of \verb@cvx_status@ and their meaning.
 \end{itemize}
 All three of these quantities, \verb@x@, \verb@cvx_optval@, and
 \verb@cvx_status@, may now be freely used in other Matlab
@@ -1991,43 +1992,57 @@ If you already have SeDuMi installed on your system, you are free to remove
 copy and use it instead. If you do this, it is important that
 your version of SeDuMi coincides with the version used by \cvx (1.1R2).
 
-\section{\cvx operators, functions, and sets}
+\section{Operators, functions, and sets}
 \label{s-functions}
 
 \subsection{Basic operators and linear functions}
 
-The standard addition, subtraction, multiplication
-and division operators are overloaded to work with \cvx,
-when appropriate.  For example, two expressions known to be
-concave can be added together, and an expression known to be
-convex can be divided by a negative scalar (and the result is
-concave).
-As another example, a vector affine expression can be multiplied
-by a constant matrix (of appropriate dimensions), or added to
-another affine expression.
-General arrays of expressions can be added or subtracted, provided
-the rules of disciplined convex programming are respected.
-For example, you can subtract one array of expressions from another
-provided the corresponding entries have opposite curvature, so
-each element of the result is either the difference of a convex
-and concave function, or the difference of a concave and a convex
-function.
+Matlab's standard arithmetic operations for
+addition \verb@+@, subtraction \verb@-@, multiplication
+\verb@*@ \verb@.*@, division \verb@/@ \verb@\@ \verb@./@
+\verb@./@ \verb@.\@, and exponentiation \verb@^@ \verb@.^@
+have been overloaded to work in \cvx whenever appropriate---that
+is, whenever their use is consistent with both standard mathematical
+and MATLAB conventions \emph{and} the DCP ruleset.
+For example:
+\begin{itemize}
+\item Two \cvx expressions can be added together if they are of the same
+      dimension (or one is scalar) and have the same curvature (\ie, 
+      both are convex, concave, or affine).
+\item A \cvx expression can be multiplied or divided by a scalar constant. If the
+      constant is positive, the curvature is preserved; if it is negative,
+      curvature is reversed.      
+\item An affine, column vector \cvx expression can be multiplied by a constant matrix
+      of appropriate dimensions; or it can be left-divided by a non-singular 
+      constant matrix of appropriate dimension.
+\end{itemize}
+Numerious other combinations are possible, of course.
+The use of the exponentiation operators \verb@^@ \verb@.^@ are limited
+to instances that produce quadratic forms; so, for example, the exponent
+must be 2.
 
-The usual constructors for arrays work, as 
-in \verb@[A B; C D]@, or \verb@X([3,4],:)@.
-Matlab functions and operators that are linear have been overloaded
-to handle \cvx variables and expressions:
-\verb@cumsum@, \verb@diag@,
-\verb@dot@ (if one argument is constant), 
-\verb@fliplr@, \verb@flipud@, \verb@flipdim@, \verb@horzcat@,
-\verb@ipermute@, \verb@kron@, \verb@permute@, \verb@repmat@,
-\verb@reshape@,
-\verb@rot90@, \verb@sum@, \verb@tril@, \verb@triu@, \verb@vertcat@,
-\verb@hankel@, \verb@toeplitz@, \verb@trace@.
-When these functions involve summation, the rules of disciplined
-convex programming must be followed.  For example, \verb@trace(Z)@
-will only work if all entries of the diagonal of the (matrix) 
-expression \verb@Z@ are known to be convex, or known to be concave.
+Matlab's basic matrix manipulation and arithmetic
+operations have been extended to work with
+\cvx expressions as well, including:
+\begin{itemize}
+\item Concatenation: \verb@[ A, B ; C, D ]@
+\item Indexing: \verb@x(n+1:end)@, \verb@X([3,4],:)@, \etc
+\item Indexed assignment, including deletion: \verb@y(2:4) = 1@, \verb@Z(1:4,:) = []@, \etc
+\item Transpose and conjugate transpose: \verb@Z.'@, \verb@y'@
+\end{itemize}
+A number of Matlab's basic functions have been extended to work with \verb@cvx@
+expressions as well:
+\begin{center}
+\verb@conj@\ \ \ \verb@cumsum@\ \ \ \verb@diag@\ \ \ \verb@dot@\ \ \ \verb@fliplr@\ \ \ \verb@flipud@\ \ \ \verb@flipdim@\ \ \ \verb@horzcat@\ \ \ \
+\verb@hankel@\ \ \ \verb@ipermute@\ \ \ \verb@kron@\ \ \ \verb@permute@\ \ \ \verb@repmat@\ \ \ \verb@reshape@\ \ \ \
+\verb@rot90@\ \ \ \verb@sum@\ \ \ \verb@trace@\ \ \ \verb@tril@\ \ \ \verb@triu@\ \ \ \verb@toeplitz@\ \ \ \verb@vertcat@
+\end{center}
+Most should behave identically with \cvx expressions as they do with numeric expressions.
+Those that perform some sort of summation, such as \verb@cumsum@, \verb@sum@, or
+multiplication, such as \verb@dot@ or \verb@kron@, can
+only be used in accordance with the disciplined convex programming rules. For example,
+\verb@kron(X,Y)@ is valid only if either \verb@X@ or \verb@Y@ is constant; and 
+\verb@trace(Z)@ is valid only if the elements along the diagonal have the same curvature.
 
 \subsection{Standard Matlab nonlinear functions}
 The following standard Matlab nonlinear functions 
@@ -2165,17 +2180,37 @@ Functions to be added when smooth function support is added:
 
 \subsection{Sets}
 
+\cvx currently supports the following sets; in each case, \verb@n@ is a positive
+integer constant:
 \begin{itemize}
-\item \verb@lorentz(n)@: $\lorentz^n = 
-\Condset{(x,y)\in\R^n\times\R}{\|x\|_2\leq y}$
-\item \verb@rotated_lorentz(n)@: $\Condset{(x,y,z)\in\R^n\times\R\times\R}{\|x\|_2\leq yz,~y,z\geq 0}$
-\item \verb@complex_lorentz(n):@ $\Condset{(x,y)\in\complex^n\times\R}{\|x\|_2\leq y}$
-\item \verb@complex_rotated_lorentz(n)@: $\Condset{(x,y,z)\in\complex^n\times\R\times\R}{\|x\|_2\leq yz,~y,z\geq 0}$
-\item \verb@semidefinite(n):@ $\symm^n_+ =
-\Condset{X\in\R^{n\times n}}{X=X^T,~X\succeq 0}$
-\item \verb@hermitian_semidefinite(n):@ $\Condset{X\in\complex^{n\times n}}{X=X^H,~X\succeq 0}$
-%\item XXX \verb@norm_ball(n,p)@: $\Condset{x\in\R^n}{\|x\|_p\leq 1}$. Currently, $p=1,2,\infty$ are supported.
-%\item XXX \verb@norm_ball(n,'largest',k)@: $\Condset{x\in\R^n}{\|x\|_{lgst,k}\leq 1}$. See \verb@norm(x,'largest',k)@.
+\item \verb@nonnegative(n)@:
+\begin{equation*}
+	\reals^n_+ \eqbydef \Condset{x\in\Rn}{x_i\geq 0,~i=1,2,\dots,n}
+\end{equation*}	
+\item \verb@lorentz(n)@:
+\begin{equation*}
+\lorentz^n \eqbydef \Condset{(x,y)\in\R^n\times\R}{\|x\|_2\leq y}
+\end{equation*}
+\item \verb@rotated_lorentz(n)@: 
+\begin{equation*}
+\lorentz^n_r \eqbydef \Condset{(x,y,z)\in\R^n\times\R\times\R}{\|x\|_2\leq yz,~y,z\geq 0}
+\end{equation*}
+\item \verb@complex_lorentz(n):@ 
+\begin{equation*}
+\lorentz^n_c \eqbydef \Condset{(x,y)\in\complex^n\times\R}{\|x\|_2\leq y}
+\end{equation*}
+\item \verb@rotated_complex_lorentz(n)@: 
+\begin{equation*}
+\lorentz^n_{rc} \eqbydef \Condset{(x,y,z)\in\complex^n\times\R\times\R}{\|x\|_2\leq yz,~y,z\geq 0}
+\end{equation*}
+\item \verb@semidefinite(n):@ 
+\begin{equation*}
+\symm^n_+ \eqbydef \Condset{X\in\R^{n\times n}}{X=X^T,~X\succeq 0}
+\end{equation*}
+\item \verb@hermitian_semidefinite(n):@ 
+\begin{equation*}
+\herm^n_+ \eqbydef \Condset{Z\in\complex^{n\times n}}{Z=Z^H,~X\succeq 0}
+\end{equation*}
 \end{itemize}
 
 \section{\cvx commands}
@@ -2202,6 +2237,42 @@ of the pause flag, so you can restore that state later if you wish.
 has been installed---assuming that the Matlab path has been set to include
 that distribution. Useful if you want to find certain helpful subdirectories,
 such as \verb@doc@, \verb@examples@, \emph{etc.}
+\end{itemize}
+
+\section{\cvx status messages}
+\label{sec:status}
+
+After a complete \cvx specification has been entered and the \verb@cvx_end@ command 
+issued, the solver is called to generate a numerical result. The solver can produce
+one of five exit conditions, which are indicated by the value of the string variable
+\verb@cvx_status@. The possible values of \verb@cvx_status@, and the resulting 
+values of the other variables, are as follows:
+\begin{itemize}
+	\item \verb@Solved@: A solution has been found which is feasible and
+	      optimal to within SeDuMi's tightest internal numerical tolerances.
+	      The optimal value (which is by convention 0 for feasibility problems)
+	      is placed in \verb@cvx_optval@
+	\item \verb@Inaccurate@: The problem has been solved, but to a relaxed set
+	      of numerical tolerances. The values of \verb@cvx_optval@ and the primal
+	      and dual variables are likely to still be usable,
+	      but should be verified first.
+	\item \verb@Failed@: The solver failed to make sufficient progress towards
+	      a solution. The values of \verb@cvx_optval@ and primal and dual
+	      variables are not reliable.
+	\item \verb@Infeasible@: The problem has been proven to be infeasible
+	      through the discovery of an unbounded dual direction. This
+	      direction is stored in the dual variables. The value of
+	      \verb@cvx_optval@
+	      is set to \verb@+Inf@ for minimizations and feasibility problems,
+	      and \verb@-Inf@ for maximizations.
+	\item \verb@Unbounded@: The problem has been proven to be unbounded below
+	      through the discovery of an unbounded primal direction. This direction
+	      is stored in the primal variables: note that it is not guaranteed
+	      to be a feasible point---though by scaling it by a sufficiently large
+	      positive constant, it will become so. The value of \verb@cvx_optval@
+	      is set to \verb@-Inf@ for minimizations, and
+	      \verb@-Inf@ for maximizations. Feasibility problems by construction
+	      cannot be unbounded below.
 \end{itemize}
 
 \section{Caveats}
@@ -2237,6 +2308,11 @@ these nonconstant expressions persist, but have no meaning.
 You really have no right referring to them after the \verb@cvx_end@
 command, but if you do, you'll get an error telling you it no longer
 has any meaning.
+
+At this time, we have not provided the facility to adjust SeDuMi's internal 
+stopping criteria or other control parameters from within \cvx. This will be provided
+in a future release.
+
 
 \newpage
 \bibliography{cvxrefs}
