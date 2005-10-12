@@ -16,8 +16,11 @@
 
 \begin{document}
 \maketitle
+\tableofcontents
 
 \section{Introduction}
+
+\subsection{What is \cvx?}
 
 \cvx is a modeling system that supports \emph{disciplined convex 
 programming}. Disciplined convex programs (DCPs) are convex optimization
@@ -99,12 +102,14 @@ draws heavily from YALMIP \cite{YALMIP}.
 We hope to implement a version of \cvx in Python,
 as part of the CVXOPT system \cite{CVXOPT}, in the near future.
 
-\subsection{Disciplined convex programming}
+\subsection{What is disciplined convex programming?}
 
-\cvx is designed to support \emph{disciplined convex programming}. 
-This name was chosen to communicate the treatment of convex 
-programming as a discipline in which the convexity of 
-the problem being formulated is considered an advance requirement.
+\cvx is designed to support \emph{disciplined convex programming},
+a new methodology for constructing convex optimization problems
+proposed by Michael Grant, Stephen Boyd, and Yinyu Ye \cite{GBY}.
+This name was chosen to communicate a practice
+in which the convexity of 
+the problems being formulated is considered an advance requirement.
 In other words, \cvx is designed to support the formulation and
 construction of optimization problems that the user 
 intends \emph{from the outset} to be convex.
@@ -130,7 +135,7 @@ functions. In practice, we have found that
 disciplined convex programs still closely resemble
 their natural mathematical forms.
 
-\subsection{This version}
+\subsection{About this version}
 \label{sec:version}
 
 In this first version of \cvx,
@@ -257,8 +262,8 @@ computed using the backslash operator:
 Using \cvx, the same problem can be solved as follows:
 \begin{code2}[firstnumber=23]
 	cvx_begin			!label{code:beg}
-	    variable x(n)		!label{code:var}
-	    minimize( norm(A*x-b) )	!label{code:obj}
+	    variable x(n);		!label{code:var}
+	    minimize( norm(A*x-b) );	!label{code:obj}
 	cvx_end				!label{code:end}
 \end{code2}
 (The indentation is used for purely stylistic reasons and is optional.) 
@@ -325,14 +330,14 @@ There is not much room for error in specifying a simple least-squares
 problem, but if you make one, you will get an error or warning message.
 For example, if you replace line~\ref{code:obj} with
 \begin{code}
-	maximize( norm(A*x-b) )
+	maximize( norm(A*x-b) );
 \end{code}
 which asks for the norm to be maximized, you will get an error message
 stating that a convex function cannot be maximized (at least in
 disciplined convex programming):
 \begin{code}
 ??? Error using ==> maximize
-Dispciplined convex programming error:
+Disciplined convex programming error:
 Objective function in a maximization must be concave.
 \end{code}
 
@@ -373,8 +378,8 @@ This actually minimizes the square of the norm, which is the same as
 minimizing the norm itself. In contrast, the \cvx specification is given by
 \begin{code2}[firstnumber=59]
 	cvx_begin
-	    variable x(n)
-	    minimize( norm(A*x-b) )
+	    variable x(n);
+	    minimize( norm(A*x-b) );
 	    subject to			!label{code:subjto}
 	        x >= l;			!label{code:lower}
 	        x <= u;			!label{code:upper}
@@ -431,8 +436,8 @@ command from the Matlab Optimization Toolbox:
 With \cvx, the same problem is specified as follows:
 \begin{code2}[firstnumber=108]
 	cvx_begin
-	    variable x(n)
-	    minimize( norm(A*x-b,Inf) )
+	    variable x(n);
+	    minimize( norm(A*x-b,Inf) );
 	cvx_end
 \end{code2}
 The code based on
@@ -456,8 +461,8 @@ use \verb@linprog@ as follows:
 The \cvx version is, not surprisingly,
 \begin{code2}[firstnumber=149]
 	cvx_begin
-	    variable x(n)
-	    minimize( norm(A*x-b,1) )
+	    variable x(n);
+	    minimize( norm(A*x-b,1) );
 	cvx_end
 \end{code2}
 \cvx automatically transforms both of these problems into LPs, not unlike
@@ -479,13 +484,14 @@ when $k=m$, the dimension of $Ax-b$, it reduces to the $\ell_1$ norm.)
 The problem of minimizing $\| Ax-b\|_{\mathrm{lgst},k}$, over $x$,
 can be cast as an LP, but the transformation is by no means obvious
 so will will omit it here.
-But this norm is in the base \cvx library, so to specify and solve
+But this norm is provided in the base \cvx library, and has been
+called \verb@norm_largest@, so to specify and solve
 the problem using \cvx is easy; \eg,
 \begin{code2}[firstnumber=179]
 	k = 5;
 	cvx_begin
-	    variable x(n)
-	    minimize( norm(A*x-b,'largest',k) )
+	    variable x(n);
+	    minimize( norm_largest(A*x-b,k) );
 	cvx_end
 \end{code2}
 Unlike the $\ell_1$, $\ell_2$, or $\ell_\infty$ norms,
@@ -496,7 +502,7 @@ For example, once the code above is processed, \verb@x@ is
 a numerical vector, so we can type
 \begin{code}
 	cvx_optval
-	norm(A*x-b,'largest',k)
+	norm_largest(A*x-b,k)
 \end{code}
 The first line displays the optimal value as determined by \cvx;
 the second recomputes the same value from the optimal
@@ -515,8 +521,8 @@ The Huber penalty function is convex, and has been provided in the \cvx
 function library. So solving the above problem in \cvx is simple:
 \begin{code2}[firstnumber=204]
 	cvx_begin
-	    variable x(n)
-	    minimize( sum(huber(A*x-b)) )
+	    variable x(n);
+	    minimize( sum(huber(A*x-b)) );
 	cvx_end
 \end{code2}
 \cvx transforms this problem automatically into a second-order cone problem
@@ -547,8 +553,8 @@ Now let us add an equality constraint and a nonlinear inequality
 constraint to the original least-squares problem:
 \begin{code2}[firstnumber=232]
 	cvx_begin
-	    variable x(n)
-	    minimize( norm(A*x-b) )
+	    variable x(n);
+	    minimize( norm(A*x-b) );
 	    subject to
 	        C*x == d;		!label{line:cnstr1}
 	        norm(x,Inf) <= 1;	!label{line:cnstr2}
@@ -630,8 +636,8 @@ curve is given in Figure~\ref{fig:tradeoff}.
 	for k = 1:length(gamma),
 	    fprintf( 1, '%8.4e', gamma(k) );
 	    cvx_begin
-	        variable x(n)
-	        minimize( norm(A*x-b)+gamma(k)*norm(x,1) )	!label{code:tradeoff}
+	        variable x(n);
+	        minimize( norm(A*x-b)+gamma(k)*norm(x,1) );	!label{code:tradeoff}
 	    cvx_end
 	    l1norm(k) = norm(x,1);
 	    l2norm(k) = norm(A*x-b);
@@ -690,10 +696,10 @@ is given by supplying a list of descriptive keywords after the name
 and size of the variable.
 For example, the code segment
 \begin{code}
-	variable w(50) complex
-	variable X(20,10)
-	variable Y(50,50) symmetric
-	variable Z(100,100) hermitian toeplitz
+	variable w(50) complex;
+	variable X(20,10);
+	variable Y(50,50) symmetric;
+	variable Z(100,100) hermitian toeplitz;
 \end{code}
 (inside a \cvx specification) declares that \verb@w@ is a complex
 $50$-element vector, \verb@X@ is
@@ -730,7 +736,7 @@ variable, which can be a bit inconvenient if you have a lot of variables
 to declare. For this reason, the statement \verb@variables@ statement
 is provided which allows you to declare multiple variables; \ie,
 \begin{code}
-	variables x1 x2 x3 y1(10) y2(10,10,10)
+	variables x1 x2 x3 y1(10) y2(10,10,10);
 \end{code}
 The one limitation of the \verb@variables@ command is that it cannot
 declare complex or structured arrays (\eg, \verb@symmetric@,
@@ -822,7 +828,7 @@ more complicated expression.
 We can, for example, minimize the quadratic-over-linear
 function of $(Ax-b,c^Tx+d)$ using
 \begin{code}
-	minimize( quad_over_lin( A*x-b, c'*x+d ) )
+	minimize( quad_over_lin( A*x-b, c'*x+d ) );
 \end{code}
 inside a \cvx specification,
 assuming \verb@x@ is a vector optimization variable,
@@ -871,7 +877,7 @@ matrix, \ie, it is symmetric, has unit diagonal elements, and
 is positive semidefinite.  In \cvx we can declare such a variable
 and constraints using
 \begin{code}
-	variable X(n,n) symmetric
+	variable X(n,n) symmetric;
 	X == semidefinite(n);
 	diag(X) == ones(n,1);
 \end{code}
@@ -921,8 +927,8 @@ as follows:
 \cvx uses Matlab's cell array facility to mimic this notation:
 \begin{code}
 	cvx_begin
-	    variables x(n) y
-	    minimize y
+	    variables x(n) y;
+	    minimize( y );
 	    subject to
 	        { A*x-b, y } == lorentz(m);
 	cvx_end
@@ -981,11 +987,11 @@ we use the following syntax:
 \begin{code}
 	n = size(A,2);
 	cvx_begin
-	    variable x(n)
-	    dual variable y
-	    minimize( c' * x )
+	    variable x(n);
+	    dual variable y;
+	    minimize( c' * x );
 	    subject to
-	        y : A * x <= b;s
+	        y : A * x <= b;
 	cvx_end
 \end{code}	
 The line 
@@ -1669,8 +1675,8 @@ We can implement the Huber penalty function in \cvx as follows:
 \begin{code}
 	function cvx_optval = huber( x )
 	cvx_begin
-	    variables w v 
-	    minimize( w^2 + 2 * v )
+	    variables w v;
+	    minimize( w^2 + 2 * v );
 	    subject to
 	        abs( x ) <= w + v;
 	        w <= 1;
@@ -1725,8 +1731,8 @@ So we can implement this function in \cvx as follows:
 	function cvx_optval = lambda_min_symm( X )
 	n = size( X, 1 );
 	cvx_begin
-	    variable y
-	    maximize y
+	    variable y;
+	    maximize( y );
 	    subject to
 	        X + X' - y * eye( n ) == semidefinite( n );
 	cvx_end
@@ -1749,8 +1755,8 @@ version of the problem:
 	function cvx_optval = huber( x )
 	sx = size( x );
 	cvx_begin
-	    variables w( sx ) v( sx ) 
-	    minimize( w .^ 2 + 2 * v )
+	    variables w( sx ) v( sx );
+	    minimize( w .^ 2 + 2 * v );
 	    subject to
 	        abs( x ) <= w + v;
 	        w <= 1;
@@ -1768,15 +1774,15 @@ both versions in one file, with an appropriate test to select
 the proper version to use:
 \begin{code}
 	function cvx_optval = huber( x )
-	if isa( x, 'double' ),
+	if isnumeric( x ),
 	    xa   = abs( x );
 	    flag = xa < 1;
 	    cvx_optval = flag .* xa.^2 + (~flag) * (2*xa-1);
 	else,
 	    sx = size( x );
 	    cvx_begin
-	        variables w( sx ) v( sx ) 
-	        minimize( w .^ 2 + 2 * v )
+	        variables w( sx ) v( sx );
+	        minimize( w .^ 2 + 2 * v );
 	        subject to
 	            abs( x ) <= w + v;
 	            w <= 1;
@@ -2092,7 +2098,7 @@ symmetric (or Hermitian) and positive definite; outside \cvx,
 returns $+\infty$ unless $Y=Y^T\succ 0$.
 Convex.  
 %Note that \cvx will \emph{not} recognize \verb@x'*(Y\x)@ as convex.
-\item \verb@norm( x, 'largest', k )@, for real and complex vectors.
+\item \verb@norm_largest( x, k )@, for real and complex vectors.
 Convex.
 \item \verb@norms( x, p, dim )@ and \verb@norms( x, 'largest', k, dim )@.
 Computes \emph{vector} norms along a specified dimension of a matrix
