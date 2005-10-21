@@ -89,22 +89,7 @@ else,
 end
 
 if length( sz ) > 2,
-    szs  = size( str );
-    nmat = prod( sz( 3 : end ) );
-    omat = ones( 1, nmat );
-    [ r, c, v ] = find( str );
-    nelm = length( r );
-    oelm = ones( 1, nelm );
-    r = r( : );
-    nvec = ( 0 : nmat - 1 ) * szs( 1 );    
-    r = r( :, omat ) + nvec( oelm, : );
-    c = c( : );
-    c = c( :, omat );
-    nvec = ( 0 : nmat - 1 ) * szs( 2 );
-    c = c( :, omat ) + nvec( oelm, : );
-    v = v( : );
-    v = v( :, omat );
-    str = sparse( r, c, v, nmat * szs( 1 ), nmat * szs( 2 ) );
+    str = cvx_replicate_structure( str, sz( 3 : end ) );
 end
 
 % Copyright 2005 Michael C. Grant and Stephen P. Boyd. 
