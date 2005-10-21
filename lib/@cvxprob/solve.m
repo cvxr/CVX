@@ -48,8 +48,10 @@ if m > n & n > 0,
     x( : ) = NaN;
     y( : ) = NaN;
     value  = NaN;
-    status = 'Overdetermined equality constraints; problem is likely infeasible';
+    status = 'Overdetermined';
     warning( 'Overdetermined equality constraints; problem is likely infeasible.' );
+    pval = NaN;
+    dval = NaN;
 
 elseif n == 0,
     
@@ -62,22 +64,40 @@ elseif n == 0,
         status = 'Infeasible';
         y = - P * sign( b );
         value = Inf;
+        pval = 1;
+        dval = 0;
 
     else,
 
         status = 'Solved';
         value = d;
+        pval = 1;
+        dval = 1;
 
     end
 
 else,
     
     [ value, x, y, status ] = cvx_solve_sedumi( A, b, c, d, p.cones, quiet );
+    switch status,
+    case { 'Solved', 'Inaccurate, likely close to a solution', 'Failed, likely close to a solution' },
+        pval = 1;
+        dval = 1;
+    case { 'Infeasible', 'Inaccurate, likely infeasible', 'Failed, likely infeasible' },
+        pval = 1;
+        dval = 0;
+    case { 'Unbounded', 'Inaccurate, likely unbounded', 'Failed, likely unbounded' },
+        pval = 0;
+        dval = 1;
+    case { 'Inaccurate', 'Failed' },
+        pval = NaN;
+        dval = NaN;
+    end        
 
 end
 
-p.x = full( [ 1 ; x ] );
-p.y = full( [ 1 ; y ] );
+p.x = full( [ pval ; x ] );
+p.y = full( [ dval ; y ] );
 p.result = full( sign * value );
 p.status = status;
 cvx___.problems( prob ) = p;

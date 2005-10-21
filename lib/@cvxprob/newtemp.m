@@ -19,7 +19,7 @@ if nargin < 2 | isempty( model ),
     ismod = 0;
     siz = [ 1, 1 ];
     str = sparse( 1, 2, 1 );
-elseif isa( model, 'cvx' ) | isa( model, 'cvxvar' ),
+elseif isa( model, 'cvx' ),
     ismod = 1;
     siz = size( model );
     str = cvx_bcompress( cvx_basis( model ) );
@@ -59,6 +59,6 @@ if ismod,
     cvx___.problems( p ).vexity( len + 1 : end ) = sign( str' * model( : ) );
 end
 
-% Copyright 2005 Michael C. Grant and Stephen P. Boyd. 
+% Copyright 2005 Michael C. Grant and Stephen P. Boyd.
 % See the file COPYING.txt for full copyright information.
 % The command 'cvx_where' will show where this file is located.

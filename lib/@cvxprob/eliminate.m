@@ -5,7 +5,7 @@ prob = index( prob );
 p = cvx___.problems( prob );
 if p.locked, return; end
 
-rsv = p.reserved( : )';
+rsv = int32( p.reserved( : )' );
 nn  = length( p.reserved );
 A   = cvx_basis( p.equalities );
 if size( A, 2 ) < nn, A( :, nn ) = 0; end
@@ -22,7 +22,7 @@ if nobj > 0,
         % that convexity verification functions properly. Once the
         % problem has been fully integrated into the parent, these
         % variables can be elimintaed (or not) as needed.
-        rsv( any( c, 1 ) ) = true;
+        rsv( any( c, 1 ) ) = 1;
     end
 else,
     c = sparse( [], [], [], 1, nn );
@@ -37,8 +37,6 @@ Q  = speye( nn );
 ndxs = [ 1 : nn ]';
 
 iter     = 0;
-b_sparse = true;
-c_sparse = true;
 reduced  = 1;
 success  = false;
 
@@ -46,7 +44,7 @@ success  = false;
 % Eliminate variables that are completely unused
 %
 
-cols = ~( any( A, 1 ) | any( c, 1 ) | rsv );
+cols = ~( any( A, 1 ) | any( c, 1 ) | rsv ~= 0 );
 if any( cols ),
     warning( 'Unused variables found and eliminated.' );
     ce = find( ~cols );
@@ -76,70 +74,40 @@ while 1,
         reduced = iter;
         success = true;
     else,
-        while 1,
+        while ~isempty( A ),
             %
             % Select columns to eliminate. More about this later. In short,
             % we're looking for an invertible diagonal block of A whose
             % rows and columns are sparse, so that no fill-in occurs.
             %
-            [ mm, nn ] = size( A );
-            if mm == 0, break; end
-            [ rowA, colA ] = find( A );
-            [ rowC, colC ] = find( c );
-            Ac = full( sparse( colA, 1, 1, nn, 1 ) );
-            if c_sparse, Ac = Ac + full( sparse( colC, 1, 1, nn, 1 ) ); end
-            Ac( rsv ) = Inf;
-            Ar = full( sparse( rowA, 1, 1, mm, 1 ) );
-            if ~b_sparse, Ar = Ar - full( A( :, 1 ) ~= 0 ); end
-            rmax = max( Ar ) + 1;
-            rcnt = sparse( rowA, colA, Ar(rowA,:)-rmax*~rsv(:,colA)', mm, nn );
-            [ rcnt, rows ] = min( rcnt, [], 1 );
-            rcnt = rcnt' + rmax;
-            cols = find( Ac <= 2 | rcnt <= 2 | ( rcnt + Ac <= 7 ) );
-            rows = rows( cols );
+            
+            [ rows, cols, rsv ] = cvx_eliminate_mex( A, c, rsv );
+            if ~any( rows ), break; end
+            rows = rows ~= 0;
+            cols = cols ~= 0;
+            rowX = ~rows;
+            colX = ~cols;
+            
             %
-            % Insure that the submatrix we have selected is diagonal. If it 
-            % is not, then it means that a variable that is being
-            % eliminated is serving as another's replacement. That cycle
-            % must be eliminated before we can proceed.
+            % [ c1  c2  ] = [ I 0   0 ] [ c1-c2*A22i*A21   0    ] [ I   0   ]
+            % [ A11 A12 ]   [ 0 I A12 ] [ A11-A12*A22i*A21 0    ] [ A21 A22 ]
+            % [ A21 A22 ] = [ 0 0 A22 ] [ 0                A22i ]
             %
-            A22 = A( rows, cols );
-            if nnz( A22 ) > size( A22, 1 ),
-                [ rd, cd ] = find( A22 );
-                temp = rd == cd;
-                rd( temp ) = []; cd( temp ) = [];
-                temp = max( [ rd( : ), cd( : ) ], [], 2 );
-                rows( temp ) = []; 
-                cols( temp ) = [];
-                A22 = A( rows, cols );
-                if nnz( A22 ) > size( A22, 1 ),
-                    temp = sum( A22 ~= 0, 1 ) == 1;
-                    rows = rows( temp ); 
-                    cols = cols( temp );
-                    A22 = A( rows, cols );
-                end
-            end
-            if isempty( cols ),
-                break;
-            end
-            %
-            % [ c1  c2  ] = [ I 0   0 ] [ c1-c2*A22i*A21   0 ]
-            % [ A11 A12 ]   [ 0 I A12 ] [ A11-A12*A22i*A21 0 ]
-            % [ A21 A22 ] = [ 0 0 A22 ] [ A22i*A21         I ]
-            %
-            nr   = length( cols );
-            rowX = 1 : mm; rowX( rows ) = [];
-            colX = 1 : nn; colX( cols ) = [];
+            
             c1   = c( :,    colX );
             c2   = c( :,    cols );
             A11  = A( rowX, colX );
             A12  = A( rowX, cols );
             A21  = A( rows, colX );
-            A22i = 1 : nr;
-            A22i = sparse( A22i, A22i, 1.0 ./ diag( A22 ), nr, nr );
+            [ ii, jj, vv ] = find( A22 );
+            if any( length( vv ) ~= size( A22 ) ),
+                error( 'Problem with cvx_eliminate_mex' );
+            end
+            A22i = sparse( jj, ii, 1.0 ./ vv );
             if preserve_dual,
-                temp = - A22i * [ c2 ; A12 ]';
-                P    = P( :, [ 1 : nobj, rowX + nobj ] ) + P( :, rows + nobj ) * temp;
+                temp = - A22i' * [ c2 ; A12 ]';
+                tndx = find(rowX) + nobj;
+                P    = P( :, [ 1 : nobj, tndx(:)' ] ) + P( :, find(rows) + nobj ) * temp;
             end
             temp = - A22i * A21;
             Q    = Q( :, colX ) + Q( :, cols ) * temp;

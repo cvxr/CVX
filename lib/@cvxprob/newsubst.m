@@ -16,10 +16,10 @@ p = index( prob );
 %
 
 switch class( src ),
-    case 'double',
-        z = cvx( prob, double( src ) );
+    case { 'double', 'sparse' },
+        z = cvx( prob, src );
         return
-    case { 'cvxvar', 'cvx', 'cvx' },
+    case 'cvx',
         oprob = problem( src );
         if oprob == prob,
             z = src;

@@ -66,9 +66,14 @@ else,
             disp( sprintf( '%s%d equality constraint%s', prefix, neqns, plural ) );
         end
         for k = 1 : length( p.cones ),
-            ncones = size( p.cones( k ).indices, 2 );
+            if isequal( p.cones( k ).type, 'nonnegative' ),
+                ncones = 1;
+                csize = prod( size( p.cones( k ).indices ) );
+            else,
+                [ csize, ncones ] = size( p.cones( k ).indices );
+            end
             if ncones == 1, plural = ''; else, plural = 's'; end
-            disp( sprintf( '%s%d order-%d %s cone%s', prefix, ncones, size( p.cones( k ).indices, 1 ), p.cones( k ).type, plural ) );
+            disp( sprintf( '%s%d order-%d %s cone%s', prefix, ncones, csize, p.cones( k ).type, plural ) );
         end
     end
 end

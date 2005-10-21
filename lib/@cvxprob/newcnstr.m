@@ -80,7 +80,7 @@ if ~isempty( dx ),
     catch,
         error( [ 'Dual variable "', dx, '" has not been declared.' ] );
     end
-    if ~isempty( dual.cvx ),
+    if ~isempty( dual ),
         error( [ 'Dual variable "', dx, '" already in use.' ] );
     end
 end
@@ -121,24 +121,25 @@ else,
         end
     end
 end
-zR = cvx( prob, size( zR, 1 ), zR );
 
 %
 % Add slacks
 %
 
+nZ = size( zR, 1 );
 if op( 1 ) ~= '=',
-    ndxs = cvx_vexity( zR ) == 0;
+    ndxs = cvx_vexity( cvx( prob, nZ, zR ) ) == 0;
     if any( ndxs ),
-        ndxs = find( ndxs );
-        temp = zR( ndxs );
-        v = newslack( prob, temp );
-        if op( 1 ) == '>',
-            temp = temp - v;
+        if all( ndxs ),
+            v = [];
         else,
-            temp = temp + v;
+            ndxs = find( ndxs );
+            temp = length( ndxs );
+            v = sparse( ndxs, 1 : temp, 1, nZ, temp );
         end
-        zR( ndxs ) = temp;
+        v = cvx_basis( newslack( prob, nZ, v ) );
+        if op( 1 ) == '>', v = -v; end
+        zR = [ zR, v( :, size( zR, 2 ) + 1 : end ) ];
     end
 end
 
@@ -147,17 +148,16 @@ end
 %
 
 oeqs = length( cvx___.problems( p ).equalities ) + 1;
-neqs = oeqs + length( zR ) - 1;
+neqs = oeqs + nZ - 1;
 if oeqs == 1,
-    cvx___.problems( p ).equalities = zR;
+    cvx___.problems( p ).equalities = cvx( prob, nZ, zR );
 else,
     t1 = cvx_basis( cvx___.problems( p ).equalities ); 
-    t2 = cvx_basis( zR ); 
     c1 = size( t1, 2 );
-    c2 = size( t2, 2 );
+    c2 = size( zR, 2 );
     if c1 < c2, t1( end, c2 ) = 0; end
-    if c2 < c1, t2( end, c1 ) = 0; end
-    cvx___.problems( p ).equalities = cvx( prob, neqs, [ t1 ; t2 ] );
+    if c2 < c1, zR( end, c1 ) = 0; end
+    cvx___.problems( p ).equalities = cvx( prob, neqs, [ t1 ; zR ] );
     clear t1 t2
 end
 cvx___.problems( p ).x = [];

@@ -71,7 +71,7 @@ vars = cvx___.problems( p ).variables;
 if ~isempty( nstr ),
     if isfield( cvx___.problems( p ).duals, nstr(1).subs ),
         error( sprintf( 'Primal/dual variable name conflict: %s', nstr(1).subs ) );
-    elseif isfield( vars, nstr(1).subs ) & isa( subsref( vars, nstr(1) ), 'cvxvar' ),
+    elseif isfield( vars, nstr(1).subs ) & isa( subsref( vars, nstr(1) ), 'cvx' ),
         error( [ 'Variable name conflict: ', nstr(1).subs ] );
     end
 end
@@ -105,7 +105,7 @@ else,
     temp = any( str, 1 );
     dof = full( sum( temp ) );
     if dof ~= length( temp ),
-        str = str( :, temp ); 
+        str = str( :, temp );
     end
 end
 
@@ -117,7 +117,7 @@ dims = length( cvx___.problems( p ).reserved );
 dims = dims + 1 : dims + dof;
 str2 = sparse( 1 : dof, dims, 1, dof, dims(end) );
 if ~isempty( str ), str2 = str * str2; end
-y = cvx( prob, siz, str2 );
+y = cvx( prob, siz, str2, dof );
 if ~isempty( nstr ),
     cvx___.problems( p ).variables = builtin( 'subsasgn', vars, nstr, y );
 end
@@ -126,6 +126,6 @@ cvx___.problems( p ).vexity(   dims, 1 ) = 0;
 cvx___.problems( p ).x = [];
 cvx___.problems( p ).y = [];
 
-% Copyright 2005 Michael C. Grant and Stephen P. Boyd. 
+% Copyright 2005 Michael C. Grant and Stephen P. Boyd.
 % See the file COPYING.txt for full copyright information.
 % The command 'cvx_where' will show where this file is located.
