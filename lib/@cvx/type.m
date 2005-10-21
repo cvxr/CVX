@@ -1,10 +1,10 @@
 function st = type( x, mod )
 error( cvx_verify( x ) );
 
-df  = dof( x );
-s   = size( x );
+df  = x.dof_;
+s   = x.size_;
 len = prod( s );
-isr = isreal( x );
+isr = isreal( x.basis_ );
 
 if len == 1,
     isstruct = 0;
@@ -14,7 +14,11 @@ if len == 1,
         st = 'scalar';
     end
 else,
-    isstruct = df < ( 2 - isr ) * len;
+    if isempty( df ),
+        isstruct = false;
+    else,
+        isstruct = df < ( 2 - isr ) * len;
+    end
     nd = length( s );
     st = sprintf( '%dx', s );
     st = st( 1 : end - 1 );
@@ -22,11 +26,11 @@ else,
         st = [ st, ' complex' ];
     end
     if nd > 2,
-    	st = [ st, ' array' ];
+        st = [ st, ' array' ];
     elseif any( s == 1 ),
-    	st = [ st, ' vector' ];
+        st = [ st, ' vector' ];
     else,
-    	st = [ st, ' matrix' ];
+        st = [ st, ' matrix' ];
     end
 end
 
@@ -38,6 +42,6 @@ if isstruct,
     st = sprintf( '%s: %d d.o.f.', st, df );
 end
 
-% Copyright 2005 Michael C. Grant and Stephen P. Boyd. 
+% Copyright 2005 Michael C. Grant and Stephen P. Boyd.
 % See the file COPYING.txt for full copyright information.
 % The command 'cvx_where' will show where this file is located.

@@ -1,4 +1,4 @@
-function v = cvx( p, s, b )
+function v = cvx( p, s, b, d )
 switch nargin,
     case 0,
         v = cvx( cvxprob( 'current' ), [] );
@@ -22,8 +22,8 @@ switch nargin,
         elseif any( isinf( s( : ) ) ) | any( isnan( s( : ) ) ),
             error( 'Infs and NaNs are not permitted.' );
         end
-        v = class( struct( 'size_', size( s ), 'basis_', sparse( s( : ) ), 'dual_', '' ), 'cvx', cvxobj( p ) );
-    case 3,
+        v = class( struct( 'size_', size( s ), 'basis_', sparse( s( : ) ), 'dual_', '', 'dof_', [] ), 'cvx', cvxobj( p ) );
+    case { 3, 4 },
         if ~isa( p, 'cvxprob' ),
             error( 'First argument must be a scalar cvx problem object.' );
         end
@@ -32,13 +32,17 @@ switch nargin,
             error( 'Second argument must be a dimension list.' );
         elseif ~isa( b, 'double' ) | ndims( b ) > 2 | size( b, 1 ) ~= prod( s ),
             error( 'Third argument must be a basis matrix.' );
+        elseif nargin < 4 | isempty( d ),
+            d = [];
+        elseif ~isa( d, 'double' ) | length( d ) ~= 1 | ~isreal( d ) | d < 0,
+            error( 'Fourth argument must be an integer.' );
         end
-        if isempty( b ), 
-            b = sparse( [], [], [], prod( s ), 1 ); 
+        if isempty( b ),
+            b = sparse( [], [], [], prod( s ), 1 );
         end
-        v = class( struct( 'size_', s, 'basis_', sparse( b ), 'dual_', '' ), 'cvx', cvxobj( p ) );
+        v = class( struct( 'size_', s, 'basis_', sparse( b ), 'dual_', '', 'dof_', d ), 'cvx', cvxobj( p ) );
 end
 
-% Copyright 2005 Michael C. Grant and Stephen P. Boyd. 
+% Copyright 2005 Michael C. Grant and Stephen P. Boyd.
 % See the file COPYING.txt for full copyright information.
 % The command 'cvx_where' will show where this file is located.
