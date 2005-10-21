@@ -1951,34 +1951,29 @@ by \verb@cvx_setup@ to accomplish that.
 \label{sec:othersys}
 
 According to the SeDuMi web site, SeDuMi 1.1R2 will also run on MacOS X, AIX, and 
-Solaris. If you wish to \cvx on these platforms, you will have
-to compile SeDuMi's MEX files yourself. The installation thus proceeds as follows:
-\begin{enumerate}
-\item Install \cvx according to Steps 1-3 in \S\ref{sec:winlin}.
-\item At the Matlab command prompt, \verb@cd@ to the directory \verb@sedumi@
-within the \cvx installation, and execute the command 
+Solaris. \cvx's MEX files should compile properly on those platforms as well. However,
+neither package has been precompiled for these platforms, so you will have to compile
+them yourself. If you wish to do so, you must first
+confirm that your MEX system has been set up properly. If you have compiled
+MEX files before, this is likely the case. Otherwise, you may have to run 
+the command
 \begin{code}
-	install_sedumi
+	mex -setup
 \end{code}
-which will compile the MEX files.
-\item Now complete steps 4-6 in \S\ref{sec:winlin} above.
-\item It is likely that \verb@cvx_setup@ will warn you that it was unable to
-      find the MEX file \verb@cvx_bcompress_mex@. To create it, \verb@cd@
-      to the directory \verb@lib@ within the \cvx installation, and type
-      the command
-      \begin{code}
-      		mex cvx_bcompress_mex.c
-      \end{code}
-      This assumes that you are properly set up to compile MEX files already;
-      see your MATLAB documentation for more details.
-\end{enumerate}
-If you succced in compiling the MEX files for a new platform, please consider
-sending them to us so that we may consider adding them to the master \cvx
-distribution.
+and answer the prompted questions. If necessary, consult the MATLAB documentation for details.
+
+With the MEX system properly configured, typing \verb@cvx_setup@ should automatically
+compile the MEX files for both SeDuMi and \cvx. Unfortuntaely, the authors do not have ready access to these platforms, so if you
+are unable to compile the MEX files for your platform, we may not be able to help.
+Nevertheless, we have tried to make the installation process simple, and 
+want to hear from you if you run into problems, so please send us a note. If
+you \emph{are} successful, please consider sending us the MEX files produced,
+so that we make consider including them in a future \cvx distribution.
 
 \emph{Important note:} If you are using Linux,
-do \emph{not} run \verb@install_sedumi@. Doing so can result in 
-errors that prevent SeDuMi and \cvx from running.
+do \emph{not} delete the MEX files and recompile them again.
+Doing so can result in  errors that prevent SeDuMi and \cvx from running.
+If you remove them inadvertently, just reinstall them from the distribution.
 
 \subsection{About SeDuMi}
 
@@ -2273,7 +2268,56 @@ values of the other variables, are as follows:
 	      is set to \verb@-Inf@ for minimizations, and
 	      \verb@-Inf@ for maximizations. Feasibility problems by construction
 	      cannot be unbounded below.
+	\item \verb@Overdetermined@: The presolver has determined that the problem
+	      has more equality constraints than variables, which means that the coefficient
+	      matrix of the equality constraints is singular. Such problems are often,
+	      but not necessarily, infeasible. Unfortunately, the underlying numerical
+	      solvers generally cannot handle such problems, so a precise conclusion
+	      cannot be reached.
 \end{itemize}
+This last status message \verb@Overdetermined@ commonly occurs when structure
+in a variable or set is not properly recognized. For example, consider the problem
+of finding the smallest diagonal addition to a matrix $W\in\Rnn$ to make it positive semidefinite:
+\begin{equation}
+	\begin{array}{rl}
+		\text{minimize} & \mathop{\text{Trace}} D \\
+		\text{subject to} & W + D \succeq 0 \\
+		                  & D \text{~diagonal}
+	\end{array}
+\end{equation}
+In \cvx, this problem might be expressed as follows:
+\begin{code}
+	n = size(W,1);
+	cvx_begin
+	    variable D(n,n) diagonal;
+	    minimize( trace( D ) );
+	    subject to
+	        W + D == semidefinite(n);
+	cvx_end
+\end{code}
+If we apply this specification to the matrix \verb@W=randn(5,5)@, a warning is issued,
+\begin{code}
+	Warning: Overdetermined equality constraints;
+	    problem is likely infeasible.
+\end{code}
+and the variable \verb@cvx_status@ is set to \verb@Overdetermined@. 
+
+What has happened here
+is that the unnamed variable returned by \verb@semidefinite(n)@ is \emph{symmetric}, but
+$W$ is fixed and \emph{unsymmetric}. Thus the problem, as stated, is infeasible. But
+there are also $n^2$ equality constraints here, and only $n+n*(n+1)/2$ unique degrees
+of freedom---thus the problem is overdetermined. The following modified 
+version of the specification corrects this problem by extracting the symmetric part of $W$:
+\begin{code}
+	n = size(W,1);
+	cvx_begin
+	    variable D(n,n) diagonal;
+	    minimize( trace( D ) );
+	    subject to
+	        0.5 * ( W + W' ) + D == semidefinite(n);
+	cvx_end
+\end{code}
+
 
 \section{Caveats}
 
@@ -2312,6 +2356,14 @@ has any meaning.
 At this time, we have not provided the facility to adjust SeDuMi's internal 
 stopping criteria or other control parameters from within \cvx. This will be provided
 in a future release.
+
+\section{Acknowledgements}
+
+We wish to thank the following people for their contributions to
+\cvx, including helpful feedback that has helped to shape the 
+software and its documentation:  Laurent El Ghaoui, Arpita Ghosh, 
+Siddharth Joshi, Johan L\"{o}fberg, Almir Mutapcic, Michael Overton
+and his students, Rahul Panicker, Jo\"{e}lle Skaf, Argyris Zymnis.
 
 
 \newpage

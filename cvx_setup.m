@@ -43,43 +43,113 @@ end
 lastwarn(s);
 needupd = strcmp(oldpath,path) == 0;
 
-disp( 'Testing the cvx distribution. Please consult the documentation if an' );
-disp( 'error occurs at this point.' );
-disp( '----------------------------------------------------------------------' );
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Compile the SeDuMi MEX files %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+dd = cd;
+newext = mexext;
+sedpath = [ mpath, fs, 'sedumi' ];
+mexfiles = dir( [ sedpath, fs, '*.', newext ] );
+if isempty( mexfiles ),
+    try,
+        cd( sedpath );
+    catch,
+        disp( 'The cvx distribution seems to be incomplete: the lib/ directory is' );
+        disp( 'missing. Please re-unpack the distribution and try again.' );
+        disp( ' ' );
+        cd( dd );
+        return
+    end
+    try,
+        disp( 'Running the SeDuMi MEX compilation script in 5 seconds.' );
+        pause(5);
+        install_sedumi;
+    catch,
+        disp( '-------------------------------------------------------------' );
+        disp( 'SeDuMi was NOT built successfully. Please try CVX on a supported' );
+        disp( 'platform, or manually run the ''install_sedumi'' command in the' );
+        disp( 'sedumi/ subdirectory to try and find and correct the error.' );
+    end
+    disp( '-------------------------------------------------------------' );
+    cd( dd );
+end
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Compile the CVX MEX files %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+libpath = [ mpath, fs, 'lib' ];
+try,
+    cd( libpath );
+    mexfiles = dir( '*.c' );
+    mexfiles = { mexfiles.name };
+    has_mex = 1;
+    for k = 1 : length( mexfiles ),
+        str = mexfiles{k};
+        if ~exist( [ str(1:end-1), newext ] ),
+            has_mex = 0;
+            break;
+        end
+    end
+catch,
+    disp( 'The cvx distribution seems to be incomplete: the lib/ directory is' );
+    disp( 'missing. Please re-unpack the distribution and try again.' );
+    disp( ' ' );
+    cd( pwd );
+    return
+end
+if ~has_mex,
+    disp( 'Attempting to generate the CVX MEX files...' );
+    disp( '-------------------------------------------------------------' );
+    has_mex = 1;
+    for k = 1 : length( mexfiles ),
+        str = mexfiles{k};
+        try,
+            disp( [ 'mex -O ', str(1:end-1), mexext ] );
+            mex( '-O', str );
+        catch,
+            has_mex = 0;
+        end
+    end
+    if ~has_mex,
+        disp( 'ERROR: One or more of cvx''s required MEX files could not be generated.' );
+        disp( 'This is likely because your MEX system has not been properly configured.' );
+        disp( 'Please consult the MATLAB documentation for details on how to do this.' );
+        disp( ' ' );
+        cd( pwd );
+        return
+    else,
+        disp( '-------------------------------------------------------------' );
+    end    
+end
+cd( pwd );
+
+disp( 'Testing the cvx distribution. If this script aborts with' );
+disp( 'an error, please report the error to the authors.' );
+disp( '-------------------------------------------------------------' );
 
 m = 16; n = 8;
 A = randn(m,n);
 b = randn(m,1);
-
 xls = A \ b;
-
 s = cvx_quiet( true );
 cvx_begin
     variable('x(n)');
     minimize( norm(A*x-b) );
 cvx_end
 cvx_quiet( s );
-try,
-    cvx_clearpath;
-end
+cvx_clearpath;
 
 if norm( x - xls ) > 0.01 * norm( x ),
+    disp( '-------------------------------------------------------------' );
     disp( sprintf( 'cvx differs from native Matlab by %g%%', 100 * err ) );
     disp( 'Unexpected numerical errors were found when solving the test problem.' );
     disp( 'Please report this to the authors.' );
     disp( ' ' );
     return
-end
-
-disp( 'No errors! cvx has been successfully installed.' );
-disp( ' ' );
-
-global cvx___
-if ~cvx___.has_mex,
-    disp( 'WARNING: The MEX file ''lib/cvx_bcompress_mex'' was not found. It' );
-    disp( 'is not strictly necessary, but its presence greatly improves the' );
-    disp( 'performance of cvx. Consult the cvx documentation for detials on' );
-    disp( 'how to create this MEX file for your platform.' );
+else,
+    disp( 'No errors! cvx has been successfully installed.' );
     disp( ' ' );
 end
 

@@ -44,7 +44,7 @@ success  = false;
 % Eliminate variables that are completely unused
 %
 
-cols = ~( any( A, 1 ) | any( c, 1 ) | rsv ~= 0 );
+cols = ~( any( A, 1 ) | any( c, 1 ) | double( rsv ) );
 if any( cols ),
     warning( 'Unused variables found and eliminated.' );
     ce = find( ~cols );
