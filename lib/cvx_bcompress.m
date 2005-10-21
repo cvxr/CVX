@@ -27,76 +27,7 @@ if iscplx,
     m = m * 2;
 end
 
-global cvx___
-if m == 1,
-
-    xL = 1;
-    xR = x;
-    xI = 1;
-    return
-    
-elseif cvx___.has_mex,
-    
-    [ ndxs, scls ] = cvx_bcompress_mex( sparse( x' ), magonly, nsrt );
-    
-else,
-
-    %
-    % Normalize rows by the sign of the first non-zero column
-    %
-
-    xsgni = sum( abs( x ), 2 );
-    approx = 1;
-    if ~magonly,
-        [ c, r, v ] = find( x' );
-        temp = r( v( : ) < 0 & [ 1 ; diff( r( : ) ) ] ~= 0 );
-        xsgni( temp ) = - xsgni( temp );
-    end
-    xsgn = 1.0 ./ ( xsgni + ( xsgni == 0 ) );
-    xR = spdiags( xsgn, 0, m, m ) * x;
-
-    %
-    % Sort the rows and determine the unique ones
-    %
-
-    nzrows = find( xsgni ~= 0 );
-    switch length( nzrows ),
-        case 0,
-            d = [];
-            dc = [];
-        case 1,
-            d = true;
-            dc = 1;
-        otherwise,
-            nzcols = find( any( xR, 1 ) );
-            for k = nzcols( end : -1 : 1 ),
-               [ v, ind ] = sort( xR( nzrows, k ) );
-               nzrows = nzrows( ind );
-            end
-            xRL = xR( nzrows, : );
-            xRR = xRL( 2 : end, : );
-            xRL( end, : ) = [];
-            d = abs( xsgni( nzrows ) );
-            d = sum( abs( xRL - xRR ), 2 ) > eps * ( d( 1 : end - 1 ) + d( 2 : end ) );
-            d = full( [ true; d ] );
-            dc = cumsum( d );
-            if 1,
-                % This produces the exact same ordering as the mex file,
-                % but it is mathematically unnecessary
-                [ nzrows, ind ] = sort( nzrows );
-                [ v, ind ] = sort( dc( ind ) );
-                nzrows = nzrows( ind );
-            end
-    end
-    
-    ndxs_src       = 1 : m;
-    ndxs           = ndxs_src;
-    temp           = nzrows( d );
-    ndxs( nzrows ) = ndxs( temp( dc ) );
-    scls = xsgni( ndxs_src ) .* xsgn( ndxs );
-    
-end
-
+[ ndxs, scls ] = cvx_bcompress_mex( sparse( x' ), magonly, nsrt );
 xL = sparse( 1 : m, ndxs, scls, m, m );
 t2 = any( xL, 1 );
 xL = xL( :, t2 );
