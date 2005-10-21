@@ -5,8 +5,9 @@ if nargin < 6, quiet = false; end
 x = zeros( n, 1 );
 y = zeros( m, 1 );
 
-K.f = 0; K.l = 0; K.q = []; K.s = [];
+K.f = 0; K.l = 0; K.a = 0; K.q = []; K.s = [];
 reord.f = []; reord.l = []; reord.q = [];
+reord.ar = []; reord.ac = []; reord.av = [];
 reord.sr = []; reord.sc = []; reord.sv = [];
 K.s = []; K.scomplex = []; K.ycomplex = [];
 for k = 1 : length( nonls ),
@@ -17,11 +18,24 @@ for k = 1 : length( nonls ),
     switch tt,
         case 'nonnegative',
             K.l = K.l + nn * nv;
-            reord.l = [ reord.l , temp( : )' ];
+            reord.l = [ reord.l ; temp( : ) ];
         case 'lorentz',
-            K.q = [ K.q, nn * ones( 1, nv ) ];
-            temp = temp( [ end, 1 : end - 1 ], : );
-            reord.q = [ reord.q , temp( : )' ];
+            if nn > 2,
+                K.q = [ K.q, nn * ones( 1, nv ) ];
+                temp = temp( [ end, 1 : end - 1 ], : );
+                reord.q = [ reord.q ; temp( : ) ];
+            else,
+                K.a  = K.a + nn * nv;
+                stri = cvx_replicate_structure( [ 1, -1 ; 1, 1 ], nv );
+                [ rr, cc, vv ] = find( stri );
+                if ~isempty( reord.ac ),
+                    cc = cc + reord.ac( end );
+                end
+                rr = temp( rr );
+                reord.ar = [ reord.ar; rr( : ) ];
+                reord.ac = [ reord.ac; cc( : ) ];
+                reord.av = [ reord.av; vv( : ) ];
+            end
         case { 'semidefinite', 'hermitian-semidefinite' },
             if tt( 1 ) == 'h',
                 K.scomplex = [ K.scomplex, length( K.s ) + ( 1 : nv ) ];
@@ -38,26 +52,28 @@ for k = 1 : length( nonls ),
                 cc = cc + reord.sc( end );
             end
             rr = temp( rr );
-            reord.sr = [ reord.sr, rr( : )' ];
-            reord.sc = [ reord.sc, cc( : )' ];
-            reord.sv = [ reord.sv, vv( : )' ];
+            reord.sr = [ reord.sr; rr( : ) ];
+            reord.sc = [ reord.sc; cc( : ) ];
+            reord.sv = [ reord.sv; vv( : ) ];
         otherwise,
             error( sprintf( 'Nonlinearity "%s" not supported for SeDuMi', tt ) );
     end
 end
 
 reord.f = 1 : n;
-reord.f( [ reord.l, reord.q, reord.sr ] ) = [];
+reord.f( [ reord.l ; reord.ar ; reord.q ; reord.sr ] ) = [];
 K.f = length( reord.f );
-nvec = K.f + K.l + sum( K.q );
-reord.sc = reord.sc + nvec;
-reord.sr = [ reord.f( : ) ; reord.l( : ); reord.q( : ) ; reord.sr( : ) ];
-reord.sc = [ [ 1 : nvec ]' ; reord.sc( : ) ];
-reord.sv = [ ones( nvec, 1 ) ; reord.sv( : ) ];
+g1 = K.f + K.l;
+g3 = sum( K.q );
+g2 = K.f + K.l + K.a + g3;
+reord.sr = [ reord.f(:); reord.l; reord.ar;    reord.q;       reord.sr    ];
+reord.sc = [ [1:g1]';             reord.ac+g1; [g2-g3+1:g2]'; reord.sc+g2 ];
+reord.sv = [ ones(g1,1);          reord.av;    ones(g3,1);    reord.sv    ]; 
 reord = sparse( reord.sr, reord.sc, reord.sv );
 
 A = A * reord;
 c = reord' * c;
+K.l = K.l + K.a;
 pars.eps = 1e-8;
 pars.bigeps = 1e-3;
 pars.cg.refine = 3;
