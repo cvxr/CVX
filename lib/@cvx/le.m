@@ -24,7 +24,7 @@ end
 % Perform computations
 %
 
-newcnstr( cvx_problem, x, y, '<' );
+newcnstr( cvx_problem, x, y, '<=' );
 if nargout > 0, ans = ''; end
 
 % Copyright 2005 Michael C. Grant and Stephen P. Boyd. 

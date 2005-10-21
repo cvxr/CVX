@@ -157,17 +157,17 @@ switch oper,
     otherwise,
         dx = size( bx );
         dy = size( by );
+        if isequal( oper, 'minus' ), by = -by; end
         if dx( 2 ) < dy( 2 ),
             bx( end, dy( 2 ) ) = 0;
         elseif dx( 2 ) > dy( 2 ),
             by( end, dx( 2 ) ) = 0;
         end
         if xs & ~ys,
-            bx = bx( ones( 1, dy( 1 ) ), : );
+            bx = sparse( 1 : dy(1), 1, 1 ) * bx;
         elseif ys & ~xs,
-            by = by( ones( 1, dx( 1 ) ), : );
+            by = sparse( 1 : dx(1), 1, 1 ) * by;
         end
-        if isequal( oper, 'minus' ), by = -by; end
         bz = bx + by;
 end
 
