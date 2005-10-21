@@ -59,8 +59,8 @@ end
 
 while 1,
     iter = iter + 1;
-    if reduced == iter - 2, 
-        break; 
+    if reduced == iter - 2,
+        break;
     end
     if rem( iter, 2 ) == 1,
         [ xL, A, xI ] = cvx_bcompress( A );
@@ -80,29 +80,27 @@ while 1,
             % we're looking for an invertible diagonal block of A whose
             % rows and columns are sparse, so that no fill-in occurs.
             %
-            
+
             [ rows, cols, rsv ] = cvx_eliminate_mex( A, c, rsv );
             if ~any( rows ), break; end
             rows = rows ~= 0;
             cols = cols ~= 0;
             rowX = ~rows;
             colX = ~cols;
-            
+
             %
             % [ c1  c2  ] = [ I 0   0 ] [ c1-c2*A22i*A21   0    ] [ I   0   ]
             % [ A11 A12 ]   [ 0 I A12 ] [ A11-A12*A22i*A21 0    ] [ A21 A22 ]
             % [ A21 A22 ] = [ 0 0 A22 ] [ 0                A22i ]
             %
-            
+
             c1   = c( :,    colX );
             c2   = c( :,    cols );
             A11  = A( rowX, colX );
             A12  = A( rowX, cols );
             A21  = A( rows, colX );
+            A22  = A( rows, cols );
             [ ii, jj, vv ] = find( A22 );
-            if any( length( vv ) ~= size( A22 ) ),
-                error( 'Problem with cvx_eliminate_mex' );
-            end
             A22i = sparse( jj, ii, 1.0 ./ vv );
             if preserve_dual,
                 temp = - A22i' * [ c2 ; A12 ]';
@@ -116,7 +114,7 @@ while 1,
             rsv  =  rsv( colX );
             ndxs = ndxs( colX );
             reduced = iter;
-            success = true; 
+            success = true;
         end
     end
 end
@@ -165,6 +163,6 @@ switch class( obj ),
         obj  = cvx( problem( obj ), s, bobj * map( 1 : size( bobj, 2 ), : ) );
 end
 
-% Copyright 2005 Michael C. Grant and Stephen P. Boyd. 
+% Copyright 2005 Michael C. Grant and Stephen P. Boyd.
 % See the file COPYING.txt for full copyright information.
 % The command 'cvx_where' will show where this file is located.
