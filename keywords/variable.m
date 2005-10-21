@@ -2,14 +2,14 @@ function varargout = matrix( nm, varargin )
 
 %VARIABLE Declares a cvx variable.
 %
-%   VARIABLE x 
+%   VARIABLE x
 %   where x is a valid MATLAB variable nm, declares a scalar
 %   variable for the current cvx problem. A variable with that
-%   nm is added to the problem, and a cvxvar object with that
-%   nm is created in the current workspace. An error is 
+%   name is added to the problem, and a cvx object with that
+%   name is created in the current workspace. An error is
 %   generated if a cvx problem isn't in the current workspace.
 %
-%   VARIABLE x(n1,n2,...,nk) 
+%   VARIABLE x(n1,n2,...,nk)
 %   declares a vector, matrix, or array variable with dimensions
 %   n1, n2, ..., nk, each of which must be positive integers.
 %
@@ -18,7 +18,7 @@ function varargout = matrix( nm, varargin )
 %   modifiers mod1, mod2, ... can each be one of the following:
 %       complex   symmetric   skew-symmetric   hermitian
 %       skew-hermitian   toeplitz   hankel   upper-hankel
-%       lower-triangular   upper-triangular   tridiagonal    
+%       lower-triangular   upper-triangular   tridiagonal
 %       diagonal   lower-bidiagonal   upper-bidiagonal
 %   Appropriate combinations of these modifiers can be chosen
 %   as well. All except "complex" require that the matrix be
@@ -49,7 +49,7 @@ if isempty( xt ),
     x.size = [1,1];
 elseif nm( end ) ~= ')',
     error( sprintf( 'Invalid variable specification: %s', nm ) );
-else,    
+else,
     x.name = nm( 1 : xt( 1 ) - 1 );
     x.size = nm( xt( 1 ) + 1 : end - 1 );
 end
@@ -115,6 +115,6 @@ v = newvar( prob, x.name, x.size, str );
 assignin( 'caller', x.name, v );
 if nargout > 0, varargout{1} = v; end
 
-% Copyright 2005 Michael C. Grant and Stephen P. Boyd. 
+% Copyright 2005 Michael C. Grant and Stephen P. Boyd.
 % See the file COPYING.txt for full copyright information.
 % The command 'cvx_where' will show where this file is located.
