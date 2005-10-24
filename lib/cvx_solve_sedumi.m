@@ -2,9 +2,6 @@ function [ value, x, y, status ] = cvx_solve_sedumi( A, b, c, d, nonls, quiet )
 if nargin < 6, quiet = false; end
 
 [ m, n ] = size( A );
-x = zeros( n, 1 );
-y = zeros( m, 1 );
-
 K.f = 0; K.l = 0; K.a = 0; K.q = []; K.s = [];
 reord.f = []; reord.l = []; reord.q = [];
 reord.ar = []; reord.ac = []; reord.av = [];
@@ -73,6 +70,7 @@ reord = sparse( reord.sr, reord.sc, reord.sv );
 
 A = A * reord;
 c = reord' * c;
+nn = size( A, 2 );
 K.l = K.l + K.a;
 pars.eps = 1e-8;
 pars.bigeps = 1e-3;
@@ -80,15 +78,62 @@ pars.cg.refine = 3;
 if quiet,
     pars.fid = 0;
 end
-pars.free = K.f + K.l < n;
+pars.free = ~isempty( K.q ) | ~isempty( K.s );
 
-if isempty( A ),
-    x = zeros( size( A, 2 ), 1 );
-    y = zeros( 0, 1 );
+if ~quiet,
+    disp( ' ' );
+    disp( sprintf( 'Calling SeDuMi: %d variables (%d free), %d equality constraints', n, K.f, m ) );
+    disp( '------------------------------------------------------------------------' );
+end
+
+if all( b == 0 ) & all( c == 0 ),
+    if ~quiet,
+        disp( 'Degenerate problem encountered; solution determined analytically.' );
+    end
     status = 'Solved';
-    value = c' * x + d;
+    x = zeros( nn, 1 );
+    y = zeros( m, 1 );
+    value = d;
+elseif isempty( b ),
+    if ~quiet,
+        disp( 'Degenerate problem encountered; an unbounded direction search will be' );
+        disp( 'performed. The SeDuMi status messages will not coincide with cvx_status.' );
+  	    disp( '------------------------------------------------------------------------' );
+    end
+    [ x, y, info ] = sedumi( c, -1, [], K, pars );
+    x = full( x );
+    y = zeros( 0, 1 );
+    if info.pinf ~= 0,
+        status = 'Solved';
+        x = zeros( nn, 1 );
+        value = d;
+    elseif info.numerr == 0,
+        status = 'Unbounded';
+        x = ( 1.0 / sum( x ) ) * x;
+        value = -Inf;
+    else,
+        if info.numerr == 1,
+            status = 'Inaccurate';
+        else,
+            status = 'Failed';
+        end
+        if info.feasratio > 0.99,
+            status = [ status, ', likely unbounded' ];
+            x = ( 1.0 / sum( x ) ) * x;
+            value = -Inf;
+        elseif info.feasratio < -0.99,
+            status = [ status, ', likely close to a solution' ];
+            x = zeros( nn, 1 );
+            value = d;
+        else,
+            x = NaN * ones( nn, 1 );
+            value = NaN;
+        end
+    end
 else,
     [ x, y, info ] = sedumi( A, b, c, K, pars );
+    x = full( x );
+    y = full( y );
     if info.pinf ~= 0,
         status = 'Infeasible';
         value = +Inf;
@@ -110,9 +155,19 @@ else,
             elseif info.feasratio < -0.99,
                 status = [ status, ', likely infasible' ];
                 value = +Inf;
+            else,
+                x = NaN * ones( nn, 1 );
+                y = NaN * ones( m, 1 );
+                value = NaN;
             end
         end
     end
+end
+
+if ~quiet,
+    disp( '------------------------------------------------------------------------' );
+    disp( sprintf( 'Optimal value (cvx_optval): %g\nStatus (cvx_status): %s', full( value ), status ) );
+    disp( ' ' );
 end
 
 x = real( reord * x );

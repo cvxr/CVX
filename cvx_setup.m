@@ -7,6 +7,7 @@ function cvx_setup
 % The command 'cvx_where' will show where this file is located.
 
 disp( ' ' );
+dd = cd;
 
 ver = str2num( version( '-release' ) );
 if ver < 14,
@@ -47,7 +48,6 @@ needupd = strcmp(oldpath,path) == 0;
 % Compile the SeDuMi MEX files %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-dd = cd;
 newext = mexext;
 sedpath = [ mpath, fs, 'sedumi' ];
 mexfiles = dir( [ sedpath, fs, '*.', newext ] );
@@ -96,7 +96,7 @@ catch,
     disp( 'The cvx distribution seems to be incomplete: the lib/ directory is' );
     disp( 'missing. Please re-unpack the distribution and try again.' );
     disp( ' ' );
-    cd( pwd );
+    cd( dd );
     return
 end
 if ~has_mex,
@@ -117,13 +117,13 @@ if ~has_mex,
         disp( 'This is likely because your MEX system has not been properly configured.' );
         disp( 'Please consult the MATLAB documentation for details on how to do this.' );
         disp( ' ' );
-        cd( pwd );
+        cd( dd );
         return
     else,
         disp( '-------------------------------------------------------------' );
     end    
 end
-cd( pwd );
+cd( dd );
 
 disp( 'Testing the cvx distribution. If this script aborts with' );
 disp( 'an error, please report the error to the authors.' );
@@ -139,7 +139,9 @@ cvx_begin
     minimize( norm(A*x-b) );
 cvx_end
 cvx_quiet( s );
-cvx_clearpath;
+try,
+    cvx_clearpath;
+end
 
 if norm( x - xls ) > 0.01 * norm( x ),
     disp( '-------------------------------------------------------------' );

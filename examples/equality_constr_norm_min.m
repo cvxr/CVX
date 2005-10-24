@@ -17,7 +17,7 @@ cvx_begin
 cvx_end
 
 % You can change p to 2 or Inf as well, and it will still work.
-% Also try norm( A * x - b, 'largest', k ) for 1 <= k <= 2 * n
+% Also try norm_lagest( A * x - b, k ) for 1 <= k <= 2 * n
 
 echo off
 
