@@ -1,22 +1,54 @@
-cd /home/boyd/src/cvx/doc
+#!/bin/sh
+
+# Key directories
+SRCBASE=/home/boyd/src
+CPYDIR=$SRCBASE/cvx.dist
+ARCHIVE=file://$SRCBASE/svn/cvx
+DSTDIR=/home/boyd/WWW/cvx
+
+# Grab a clean copy of the current version
+chmod -fR u+w $CPYDIR
+rm -rf $CPYDIR
+mkdir $CPYDIR
+svn export $ARCHIVE $CPYDIR/cvx
+
+# Compile the documentation
+cd $CPYDIR/cvx/doc
 latex  cvx_usrguide
 bibtex cvx_usrguide
 latex  cvx_usrguide
 latex  cvx_usrguide
 dvips  cvx_usrguide
 ps2pdf cvx_usrguide.ps
-cd /home/boyd/src
-chgrp -fR research cvx
-chmod -fR a+r,ug+w cvx
-rm /home/boyd/WWW/cvx/cvx.{tar.gz,zip}
-tar cvfz /home/boyd/WWW/cvx/cvx.tar.gz cvx/*.{m,txt} cvx/doc/*.pdf cvx/{@double,examples,functions,keywords,lib,matlab6,sedumi,sets,structures}
-zip -r -9 /home/boyd/WWW/cvx/cvx.zip cvx/*.{m,txt} cvx/doc/*.pdf cvx/{@double,examples,functions,keywords,lib,matlab6,sedumi,sets,structures}
-cd /home/boyd/WWW/cvx
-cp /home/boyd/src/cvx/doc/*.pdf .
-chgrp -fR research *
-chmod -fR a+r,ug+w *
+
+# Set the permissions
+chgrp -fR research $CPYDIR
+chmod -fR a+r,gu+w $CPYDIR
+find $CPYDIR -type d -exec chmod g+s {} \;
+
+# Create the archives
+cd $CPYDIR
+rm $DSTDIR/cvx.{tar.gz,zip}
+tar cvfz $DSTDIR/cvx.tar.gz cvx/*.{m,txt} cvx/doc/*.pdf cvx/{@double,examples,functions,keywords,lib,matlab6,sedumi,sets,structures}
+zip -r -9 $DSTDIR/cvx.zip cvx/*.{m,txt} cvx/doc/*.pdf cvx/{@double,examples,functions,keywords,lib,matlab6,sedumi,sets,structures}
+
+# Copy the documentation over
+cp $CPYDIR/cvx/doc/*.pdf $DSTDIR
+
+# Update the index file
 MYDATE=`date`
-MYZIP=`du --si /home/boyd/WWW/cvx/cvx.zip | sed 's@\s.*@@'`
-MYTAR=`du --si /home/boyd/WWW/cvx/cvx.tar.gz | sed 's@\s.*@@'`
-sed "s@___DATE___@$MYDATE@;s@___ZIP___@$MYZIP@;s@___TAR___@$MYTAR@" /home/boyd/src/cvx/doc/index.html > /home/boyd/WWW/cvx/index.html
+MYZIP=`du --si $DSTDIR/cvx.zip | sed 's@\s.*@@'`
+MYTAR=`du --si $DSTDIR/cvx.tar.gz | sed 's@\s.*@@'`
+sed "s@___DATE___@$MYDATE@;s@___ZIP___@$MYZIP@;s@___TAR___@$MYTAR@" $CPYDIR/cvx/doc/index.html > $DSTDIR/index.html
+
+# Set the permissons at the destination
+chgrp -fR research $DSTDIR
+chmod -fR a+r,ug+w $DSTDIR
+
+# Create a clean, read-only copy of the version just retrieved
+cd $SRCBASE
+rm -rf $CPYDIR
+svn export $ARCHIVE $CPYDIR
+chgrp -fR research $CPYDIR
+chmod -fR +r,-w $CPYDIR
 
