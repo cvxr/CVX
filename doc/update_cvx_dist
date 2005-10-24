@@ -7,7 +7,6 @@ ARCHIVE=file://$SRCBASE/svn/cvx
 DSTDIR=/home/boyd/WWW/cvx
 
 # Grab a clean copy of the current version
-chmod -fR u+w $CPYDIR
 rm -rf $CPYDIR
 mkdir $CPYDIR
 svn export $ARCHIVE $CPYDIR/cvx
@@ -22,7 +21,7 @@ dvips  cvx_usrguide
 ps2pdf cvx_usrguide.ps
 
 # Set the permissions
-chgrp -fR research $CPYDIR
+chgrp -fR research $CPYDIR 
 chmod -fR a+r,gu+w $CPYDIR
 find $CPYDIR -type d -exec chmod g+s {} \;
 
@@ -45,10 +44,7 @@ sed "s@___DATE___@$MYDATE@;s@___ZIP___@$MYZIP@;s@___TAR___@$MYTAR@" $CPYDIR/cvx/
 chgrp -fR research $DSTDIR
 chmod -fR a+r,ug+w $DSTDIR
 
-# Create a clean, read-only copy of the version just retrieved
+# Remove the working directory
 cd $SRCBASE
 rm -rf $CPYDIR
-svn export $ARCHIVE $CPYDIR
-chgrp -fR research $CPYDIR
-chmod -fR +r,-w $CPYDIR
 

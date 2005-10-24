@@ -1,9 +1,24 @@
-cd /home/boyd/src
-rsync -rtDv --delete -e ssh /home/boyd/WWW/cvx/ mcgrant@cardinal:~boyd/WWW/cvx
-rm -rf /home/boyd/src/cvx.dist/{*,COPYING.txt}
-cd /home/boyd/src/cvx.dist
-tar xvfz /home/boyd/WWW/cvx/cvx.tar.gz
-mv cvx cvx.dist
-mv cvx.dist/* .
-rmdir cvx.dist
+#! /bin/sh
+
+# Key directories
+SRCBASE=/home/boyd/src
+CPYDIR=$SRCBASE/cvx.dist
+ARCHIVE=file://$SRCBASE/svn/cvx
+DSTDIR=/home/boyd/WWW/cvx
+
+# Synchronize the remote web site
+cd $SRCBASE
+rsync -rtDv --delete -e ssh $DSTDIR mcgrant@cardinal:~boyd/WWW/cvx
+
+# Update the local distribution copy
+rm -rf $SRCBASE/cvx.dist
+mkdir $SRCBASE/cvx.dist
+cd $SRCBASE/cvx.dist
+tar xvfz $DSTDIR/cvx.tar.gz
+mv cvx cvx.foo
+mv cvx.foo/* .
+rmdir cvx.foo
+chmod -fR g+w .
+chgrp -fR research .
+find $SRCBASE/cvx.dist -type d -exec chmod g+s {} \;
 
