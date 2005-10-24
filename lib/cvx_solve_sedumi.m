@@ -136,37 +136,33 @@ else,
     y = full( y );
     if info.pinf ~= 0,
         status = 'Infeasible';
+        x = NaN * ones( nn, 1 );
         value = +Inf;
     elseif info.dinf ~= 0,
         status = 'Unbounded';
+        y = NaN * ones( nn, 1 );
         value = -Inf;
-    else,
+    elseif info.feasratio > 0.99,
+        status = 'Solved';
         value = c' * x + d;
-        if info.numerr == 0,
-            status = 'Solved';
+    else,
+        status = 'Failed';
+        x = NaN * ones( nn, 1 );
+        y = NaN * ones( m, 1 );
+        value = NaN;
+    end
+    if ~isnan( value ) & info.numerr ~= 0,
+        if info.numerr == 1,
+            status = [ 'Inaccurate/', status ];
         else,
-            if info.numerr == 1,
-                status = 'Inaccurate';
-            else
-                status = 'Failed';
-            end
-            if info.feasratio > 0.99,
-                status = [ status, ', likely close to a solution' ];
-            elseif info.feasratio < -0.99,
-                status = [ status, ', likely infasible' ];
-                value = +Inf;
-            else,
-                x = NaN * ones( nn, 1 );
-                y = NaN * ones( m, 1 );
-                value = NaN;
-            end
+            status = [ 'Failed/', status ];
         end
     end
 end
 
 if ~quiet,
     disp( '------------------------------------------------------------------------' );
-    disp( sprintf( 'Optimal value (cvx_optval): %g\nStatus (cvx_status): %s', full( value ), status ) );
+    disp( sprintf( 'Optimal value (cvx_optval): %+g\nStatus (cvx_status): %s', full( value ), status ) );
     disp( ' ' );
 end
 

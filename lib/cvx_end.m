@@ -6,31 +6,64 @@ if isempty( prob ) | ~isa( prob, 'cvxprob' ),
     error( 'No cvx problem exists in this scope.' );
 elseif cvx___.stack{ end } ~= prob,
     error( 'Internal cvx data corruption.' );
-end   
+end
 p = index( prob );
 
 if prob.complete,
-    
+
+    %
+    % Check the integrity of the variables
+    %
+
+    bad_vars = {};
+    vars = prob.variables;
+    if ~isempty( vars ),
+        fn = cvx_fieldnames( vars );
+        temp = struct( 'type', '.' );
+        for k = 1 : length( fn ),
+            temp.subs = fn{k};
+            nvar = evalin( 'caller', fn{k}, 'NaN' );
+            if ~isa( nvar, 'cvx' ) | id( nvar ) ~= id( subsref( vars, temp ) ),
+                bad_vars{end+1} = fn{k};
+            end
+        end
+    end
+    vars = prob.duals;
+    if ~isempty( vars ),
+        fn = fieldnames( vars );
+        for k = 1 : length( fn ),
+            nvar = evalin( 'caller', fn{k}, 'NaN' );
+            if ~isa( nvar, 'cvxdual' ) | ~isequal( name( nvar ), fn{k} ) | problem( nvar ) ~= prob,
+                bad_vars{end+1} = fn{k};
+            end
+        end
+    end
+    if ~isempty( bad_vars ),
+        temp = sprintf( ' %s', bad_vars{:} );
+        temp = sprintf( 'The following cvx variable(s) have been overwritten:\n  %s\nThis is often an indication that an equality constraint was written\nwith one equals ''='' instead of two ''==''. The model must be rewritten\nbefore cvx can proceed.', temp );
+        eval( 'caller', 'cvx_clear' );
+        error( temp );
+    end
+
     if cvx___.pause,
         disp( ' ' );
         input( 'Press Enter/Return to call the solver:' );
         disp( ' ' );
     end
-    
+
     %
-    % Call the solver
+    % Compress and solve
     %
-    
+
     eliminate( prob );
-    cvx___.problems( p ).locked = false;
     solve( prob, cvx___.quiet );
-        
+
     if cvx___.pause & ~cvx___.quiet,
         disp( ' ' );
         input( 'Press Enter/Return to continue:' );
         disp( ' ' );
     end
-    
+
     %
     % Fill the named primal and dual variables with their numeric values
     %
@@ -58,15 +91,15 @@ if prob.complete,
     assignin( 'caller', 'cvx_optdpt', vars );
     assignin( 'caller', 'cvx_status', prob.status );
     assignin( 'caller', 'cvx_optval', prob.result );
-    
+
 else,
-    
+
     %
     % Determine the parent problem; and while we're at it,
     % zero out the 'vexity' of the substitution variables
     % now that the problem is finished.
     %
-    
+
     p = index( prob );
     if length( cvx___.stack ) < 2,
         error( 'Internal cvx data corruption.' );
@@ -74,18 +107,17 @@ else,
         nprob = cvx___.stack{ end - 1 };
     end
     np = index( nprob );
-    
+
     %
     % Compress the subproblem
     %
-    
+
     eliminate( prob );
-    cvx___.problems( p ).locked = false;
-    
+
     %
     % Allocate the variable and cone sdata
     %
-    
+
     srcm = 1 : length( prob.reserved );
     dstm = length( nprob.reserved );
     dstm = [ 1, dstm + 1 : dstm + length( srcm ) - 1 ];
@@ -94,7 +126,7 @@ else,
     cvx___.problems( np ).vexity( dstm, : )   = cvx___.problems( p ).vexity;
     cvx___.problems( np ).x( end + 1 : dstm( end ), : ) = NaN;
     ocones = cvx___.problems( np ).cones;
-    cones = cvx___.problems( p ).cones;
+    cones = prob.cones;
     for k = 1 : length( cones ),
         cone = cones( k );
         cone.indices = reshape( dstm( cone.indices ), size( cone.indices ) );
@@ -113,11 +145,11 @@ else,
         end
     end
     cvx___.problems( np ).cones = ocones;
-    
+
     %
     % Map the named variables
     %
-   
+
     nvars = cvx___.problems( np ).variables;
     base(1).type = '.';
     base(1).subs = [ prob.name, '_' ];
@@ -131,40 +163,40 @@ else,
     vars = apply_map( prob.variables, map, nprob );
     vars = cvx_collapse( vars, true, false );
     nvars = builtin( 'subsasgn', nvars, base, vars );
-    cvx___.problems( np ).variables = nvars;  
-    
+    cvx___.problems( np ).variables = nvars;
+
     %
     % Process the substitutions
     %
-    
+
     subs = cvx___.problems( p ).substitutions;
     if ~isempty( subs ),
         newcnstr( nprob, subs, vars.map_, '=', true );
     end
-    
+
     %
     % Process the equality constraints
     %
-    
+
     if ~isempty( prob.equalities ),
         newcnstr( nprob, apply_map( prob.equalities, map, nprob ), 0, '=' );
     end
-    
+
     %
     % Process the objective
     %
-    
+
     assignin( 'caller', 'cvx_optpnt', cvx_collapse( vars, false, false ) );
     if ~isempty( prob.objective ),
         assignin( 'caller', 'cvx_optval', apply_map( prob.objective, map, nprob ) );
     else,
         assignin( 'caller', 'cvx_optval', 0 );
     end
-    
+
     %
     % Clear primal and dual variables from parent workspace.
     %
-    
+
     if isempty( prob.variables ),
         prif = {};
     else
@@ -182,12 +214,10 @@ else,
 
 end
 
-%
-% Remove the problem from the stack and from internal storage
-%
+% Pop the problem off the stack and clear it from internal storage
 
 cvx___.stack( prob.stackpos : end ) = [];
-cvx___.problems( index( prob.self ) : end ) = [];
+cvx___.problems( p : end ) = [];
 evalin( 'caller', 'clear cvx_problem' );
 cvx_clearpath( 1 );
 
@@ -228,6 +258,6 @@ switch class( obj ),
         obj = cvx( nprob, s, obj );
 end
 
-% Copyright 2005 Michael C. Grant and Stephen P. Boyd. 
+% Copyright 2005 Michael C. Grant and Stephen P. Boyd.
 % See the file COPYING.txt for full copyright information.
 % The command 'cvx_where' will show where this file is located.
