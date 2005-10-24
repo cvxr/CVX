@@ -34,17 +34,12 @@ if any( s == 1 ),
     s = s( [ 1, 1 ] ) + absk;
     y = cvx( problem( v ), s, sparse( r, c, d, prod( s ), max( c ) ) );
 elseif -k >= s( 1 ) | k >= s( 2 ),
-    y = cvx( problem( v ), [ 0, 0 ], sparse( 0, 0 ) );
+    y = cvx( problem( v ), [ 0, 1 ], sparse( 0, 0 ) );
 else,
-    [ r, c, d ] = find( cvx_basis( v ) );
-    r = r - 1;
-    rows = rem( r, s( 1 ) );
-    cols = floor( r / s( 1 ) );
-    temp = rows - roff == cols - coff;
-    r = rows( temp ) - roff + 1;
-    c = c( temp );
-    d = d( temp );
-    y = cvx( problem( v ), [ length( r ), 1 ], sparse( r, c, d, length( r ), max( c ) ) );
+    b = cvx_basis( v );
+    sz = min( s - [ roff, coff ] );
+    r = ( roff + s( 1 ) * coff + 1 ) + ( 0 : sz - 1 ) * ( s( 1 ) + 1 );
+    y = cvx( problem( v ), length( r ),  b( r, : ) );
 end
 
 % Copyright 2005 Michael C. Grant and Stephen P. Boyd. 
