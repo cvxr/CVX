@@ -145,19 +145,31 @@ switch oper,
         nn = prod( sz );
         if xc,
             bx = bx( :, 1 );
-            if ~isequal( oper, 'times' ), bx = 1.0 ./ bx; end
-            if ~xs, bx = sparse( 1 : nn, 1 : nn, bx, nn, nn ); end
+            if ~isequal( oper, 'times' ), 
+                bx = 1.0 ./ bx; 
+            end
+            if ~xs & ~ys, 
+                n1 = 1 : nn; 
+                bx = sparse( n1, n1, bx, nn, nn ); 
+            end
             bz = bx * by;
         else, % yc
             by = by( :, 1 );
-            if ~isequal( oper, 'times' ), by = 1.0 ./ by; end
-            if ~xs, by = sparse( 1 : nn, 1 : nn, by, nn, nn ); end
+            if ~isequal( oper, 'times' ), 
+                by = 1.0 ./ by; 
+            end
+            if ~xs & ~ys, 
+                n1 = 1 : nn; 
+                by = sparse( n1, n1, bx, nn, nn ); 
+            end
             bz = by * bx;
         end
     otherwise,
         dx = size( bx );
         dy = size( by );
-        if isequal( oper, 'minus' ), by = -by; end
+        if isequal( oper, 'minus' ), 
+            by = -by; 
+        end
         if dx( 2 ) < dy( 2 ),
             bx( end, dy( 2 ) ) = 0;
         elseif dx( 2 ) > dy( 2 ),
