@@ -792,7 +792,7 @@ must be nonnegative.
 
 Note also the important distinction between \verb@=@, which is an 
 assignment, and \verb@==@, which imposes an equality constraint
-(inside a \cvx specification).
+(inside a \cvx specification); more about this in \S\ref{sec:eqass}.
 Also note that the non-equality operator \verb@~=@ may \emph{not}
 be used in a constraint, because it is rarely convex.
 Inequalities cannot be used if either side is complex.
@@ -2240,42 +2240,152 @@ such as \verb@doc@, \verb@examples@, \emph{etc.}
 After a complete \cvx specification has been entered and the \verb@cvx_end@ command 
 issued, the solver is called to generate a numerical result. The solver can produce
 one of five exit conditions, which are indicated by the value of the string variable
-\verb@cvx_status@. The possible values of \verb@cvx_status@, and the resulting 
+\verb@cvx_status@. The nominal values of \verb@cvx_status@, and the resulting 
 values of the other variables, are as follows:
 \begin{itemize}
-	\item \verb@Solved@: A solution has been found which is feasible and
-	      optimal to within SeDuMi's tightest internal numerical tolerances.
-	      The optimal value (which is by convention 0 for feasibility problems)
-	      is placed in \verb@cvx_optval@
-	\item \verb@Inaccurate@: The problem has been solved, but to a relaxed set
-	      of numerical tolerances. The values of \verb@cvx_optval@ and the primal
-	      and dual variables are likely to still be usable,
-	      but should be verified first.
-	\item \verb@Failed@: The solver failed to make sufficient progress towards
-	      a solution. The values of \verb@cvx_optval@ and primal and dual
-	      variables are not reliable.
-	\item \verb@Infeasible@: The problem has been proven to be infeasible
-	      through the discovery of an unbounded dual direction. This
-	      direction is stored in the dual variables. The value of
-	      \verb@cvx_optval@
-	      is set to \verb@+Inf@ for minimizations and feasibility problems,
-	      and \verb@-Inf@ for maximizations.
+	\item \verb@Solved@: A complementary solution has been found.
+	      The primal and dual variables are replaced with their computed values, and the
+	      the optimal value of the problem is placed in \verb@cvx_optval@ (which, by
+	      convention, is $0$ for feasibility problems).
 	\item \verb@Unbounded@: The problem has been proven to be unbounded below
 	      through the discovery of an unbounded primal direction. This direction
-	      is stored in the primal variables: note that it is not guaranteed
-	      to be a feasible point---though by scaling it by a sufficiently large
-	      positive constant, it will become so. The value of \verb@cvx_optval@
+	      is stored in the primal variables. The value of \verb@cvx_optval@
 	      is set to \verb@-Inf@ for minimizations, and
 	      \verb@-Inf@ for maximizations. Feasibility problems by construction
 	      cannot be unbounded below.
+	      
+	      It is important to understand that the unbounded primal direction is very
+	      likely \emph{not} a feasible point. If a feasible point is required, the 
+	      problem should be re-solved as a feasibility problem by omitting the objective.
+	\item \verb@Infeasible@: The problem has been proven to be infeasible
+	      through the discovery of an unbounded dual direction. Appropriate
+	      components of this direction are stored in the dual variables. The values of the
+	      primal variables are filled with \verb@NaN@s. The value of \verb@cvx_optval@
+	      is set to \verb@+Inf@ for minimizations and feasibility problems,
+	      and \verb@-Inf@ for maximizations.
+\end{itemize}
+In some cases, SeDuMi is unable to achieve the numerical certainty it requires to
+make one of the above determinations---but is able to draw a weaker conclusion
+by relaxing those tolerances somewhat. In such cases, one of the following
+results is returned:
+\begin{itemize}
+	\item \verb@Solved/Inaccurate@: The problem is likely to have a complementary solution.
+	\item \verb@Unbounded/Inaccurate@: The problem is likely to be unbounded.
+	\item \verb@Infeasible/Inaccurate@: The problem is likely to be infeasible.
+\end{itemize}
+The values of the primal and dual variables, and of \verb@cvx_optval@, are updated
+identically to the ``accurate'' cases. Two final results are also possible:
+\begin{itemize}
+	\item \verb@Failed@: The solver failed to make sufficient progress towards
+	      a solution. The values of \verb@cvx_optval@ and primal and dual
+	      variables are filled with \verb@NaN@s. This result can occur because
+	      of significant numerical problems within SeDuMi, or because the problem
+	      is particularly ``nasty'' in some way (\eg, a non-zero duality gap).
 	\item \verb@Overdetermined@: The presolver has determined that the problem
 	      has more equality constraints than variables, which means that the coefficient
-	      matrix of the equality constraints is singular. Such problems are often,
-	      but not necessarily, infeasible. Unfortunately, the underlying numerical
-	      solvers generally cannot handle such problems, so a precise conclusion
+	      matrix of the equality constraints is singular. In practice, such problems are
+	      often, but not necessarily, infeasible. Unfortunately, SeDuMi 
+	      cannot handle such problems, so a precise conclusion
 	      cannot be reached.
 \end{itemize}
-This last status message \verb@Overdetermined@ commonly occurs when structure
+The situations that most commonly produce an \verb@Overdetermined@ result are discussed
+in \S\ref{sec:overdetermined} below.
+
+\section{Caveats}
+
+\subsection{Assignments versus equality constraints}
+\label{sec:eqass}
+
+Anyone who has used the C or Matlab languages for a sufficiently long time
+understands the differences between \emph{assignments}, which employ a single
+equals sign \verb@=@ operator, and an \emph{equality}, which employs the
+double equal \verb@==@ operator. In \cvx, this distinction is particularly
+important, so let us address it for a moment.
+
+The consequences of using assignments within a \cvx specification, whether
+accidentally or inadvertently, can often cause subtle problems, so in certain
+instances, \cvx takes steps to prevent you from doing anything dangerous.
+For example, suppose $A,C\in\Rnn$ and $b\in\R$ are given, and
+consider the simple SDP
+\begin{equation}
+	\begin{array}{rl}
+		\text{minimize} & \Tr{CX} \\
+		\text{subject to} & \Tr{AX} = b \\
+		& X \succeq 0
+	\end{array}
+\end{equation}	
+Suppose that we tried to express this problem in \cvx as follows:
+\begin{code2}[firstnumber=1]
+	n = 5;
+	A = randn(n,n); C = randn(n,n); b = randn;
+	cvx_begin
+	    variable X(n,n) symmetric;
+	    minimize( trace( C * X ) );
+	    subject to
+	        trace( A * X ) == b;
+	        X = semidefinite(n);		!label{code:badass}
+	cvx_end
+\end{code2}
+At first glance, line~\ref{code:badass} looks like it constraints \verb@X@ to be positive
+semidefinite; but in fact, it is an assignment, not an equality constraint. So
+it actually \emph{overwrites} the
+variable \verb@X@ with an anonymous, positive semidefinite variable; and \verb@X@
+is \emph{not} constrained to be positive semidefinite. The numerical
+consequences are, of course, considerable---but MATLAB (and previous versions of \cvx)
+would happily accept and process this problem without complaint, leaving you (perhaps)
+mystified why the results are not what you expect.
+
+No longer. From now on, when \verb@cvx_end@ is reached, \cvx will examine each 
+declared variable, primal and dual, and verify that it still points to the object it was originally
+assigned upon declaration. If it does not, 
+it will issue an error like this:
+\begin{code}
+	??? Error using ==> cvx_end
+	The following cvx variable(s) have been overwritten:
+	   X
+	This is often an indication that an equality constraint was
+	written with one equals '=' instead of two '=='. The model
+	must be rewritten before cvx can proceed.
+\end{code}	
+We hope that this check will prevent at least some typographical errors from 
+having frustrating consequences in your models.
+
+Of course, this single check does not prevent you from using \emph{all} assignments 
+inside your \cvx specifications. For example, consider the following \cvx excerpt:
+\begin{code}
+	variables x y
+	z = 2 * x - y;
+	square( z ) <= 3;
+	quad_over_lin( x, z ) <= 1;
+\end{code}
+This excerpt uses a MATLAB variable \verb@z@ to hold an
+intermediate calculation \verb@2 * x - y@ so that it can be used in two different constraints.
+It is technically correct, and \cvx cannot prevent you from using it. But it is numerically
+equivalent to the following code, which adds \verb@z@ to the formal variable list:
+\begin{code}
+	variables x y z
+	z == 2 * x - y;
+	square( z ) <= 3;
+	quad_over_lin( x, z ) <= 1;
+\end{code}
+This is the approach we would recommend that you adopt instead. You need not worry that
+these ``extra'' variables will make your models slower. In fact, in many cases, this
+practice may \emph{improve} performance by exposing more of your problem's structure.
+Even when this is not the case, \cvx's presolve routine insures that it will perform
+no \emph{worse} than the first form.
+
+So while we cannot prevent you from using assignments in your \cvx specifications,
+we strongly discourage you from doing so, both as an issue of style and
+as a means to reduce the likelihood of unintended consequences.
+What about assignments involving purely constant expressions, such as \verb@a=2@?
+We would simply recommend that for style reasons they be placed \emph{before}
+the \verb@cvx_begin@ command, as we do in the examples presented in this document.
+
+
+\subsection{Overdetermined problems}
+\label{sec:overdetermined}
+
+This status message \verb@Overdetermined@ commonly occurs when structure
 in a variable or set is not properly recognized. For example, consider the problem
 of finding the smallest diagonal addition to a matrix $W\in\Rnn$ to make it positive semidefinite:
 \begin{equation}
@@ -2303,7 +2413,7 @@ If we apply this specification to the matrix \verb@W=randn(5,5)@, a warning is i
 and the variable \verb@cvx_status@ is set to \verb@Overdetermined@. 
 
 What has happened here
-is that the unnamed variable returned by \verb@semidefinite(n)@ is \emph{symmetric}, but
+is that the unnamed variable returned by statement \verb@semidefinite(n)@ is \emph{symmetric}, but
 $W$ is fixed and \emph{unsymmetric}. Thus the problem, as stated, is infeasible. But
 there are also $n^2$ equality constraints here, and only $n+n*(n+1)/2$ unique degrees
 of freedom---thus the problem is overdetermined. The following modified 
@@ -2318,40 +2428,7 @@ version of the specification corrects this problem by extracting the symmetric p
 	cvx_end
 \end{code}
 
-
-\section{Caveats}
-
-When \verb@cvx_end@ is processed, the problem is solved,
-and primal and dual variables, which were \cvx objects inside
-the \cvx specification, become ordinary numerical arrays,
-containing optimal values.
-Numerical (\ie, constant) data defined inside the \cvx specification
-persists unchanged after \verb@cvx_end@ is processed.
-For example, if we have the assignment 
-\verb@a=2@ inside a \cvx specification,
-then \verb@a@ will persist after the \verb@cvx_end@ command, and will
-still contain the value \verb@2@.
-
-Our caveat has to do with assignments inside a \cvx specification
-in which the righthand side is
-not a constant, \ie, it is a function of the variables.
-For example, we might have the assignment \verb@y=2*x-1@ inside
-a \cvx specification, where \verb@x@ is a variable.
-There's nothing wrong with this assignment; it just says that \verb@y@
-will refer to the function or expression \verb@2*x-1@.
-Note that this is very different from the equality constraint
-operator.  If we type \verb@y==2*x-1@ we get an error, unless
-\verb@y@ has been previously defined as a variable or expression.
-
-When \verb@cvx_end@ is processed, we'd like to have all these 
-nonconstant expressions just go away, or perhaps convert to the
-numerical values you'd obtain if you evaluated them at the
-optimal values of the variables.
-Unfortunately in this implementation, however, 
-these nonconstant expressions persist, but have no meaning.
-You really have no right referring to them after the \verb@cvx_end@
-command, but if you do, you'll get an error telling you it no longer
-has any meaning.
+\subsection{Solver control}
 
 At this time, we have not provided the facility to adjust SeDuMi's internal 
 stopping criteria or other control parameters from within \cvx. This will be provided

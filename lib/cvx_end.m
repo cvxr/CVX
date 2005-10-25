@@ -40,7 +40,7 @@ if prob.complete,
     end
     if ~isempty( bad_vars ),
         temp = sprintf( ' %s', bad_vars{:} );
-        temp = sprintf( 'The following cvx variable(s) have been overwritten:\n  %s\nThis is often an indication that an equality constraint was written\nwith one equals ''='' instead of two ''==''. The model must be rewritten\nbefore cvx can proceed.', temp );
+        temp = sprintf( 'The following cvx variable(s) have been overwritten:\n  %s\nThis is often an indication that an equality constraint was\nwritten with one equals ''='' instead of two ''==''. The model\nmust be rewritten before cvx can proceed.', temp );
         eval( 'caller', 'cvx_clear' );
         error( temp );
     end

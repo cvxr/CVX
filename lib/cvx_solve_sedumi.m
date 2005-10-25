@@ -65,7 +65,7 @@ g3 = sum( K.q );
 g2 = K.f + K.l + K.a + g3;
 reord.sr = [ reord.f(:); reord.l; reord.ar;    reord.q;       reord.sr    ];
 reord.sc = [ [1:g1]';             reord.ac+g1; [g2-g3+1:g2]'; reord.sc+g2 ];
-reord.sv = [ ones(g1,1);          reord.av;    ones(g3,1);    reord.sv    ]; 
+reord.sv = [ ones(g1,1);          reord.av;    ones(g3,1);    reord.sv    ];
 reord = sparse( reord.sr, reord.sc, reord.sv );
 
 A = A * reord;
@@ -98,43 +98,37 @@ elseif isempty( b ),
     if ~quiet,
         disp( 'Degenerate problem encountered; an unbounded direction search will be' );
         disp( 'performed. The SeDuMi status messages will not coincide with cvx_status.' );
-  	    disp( '------------------------------------------------------------------------' );
+        disp( '------------------------------------------------------------------------' );
     end
     [ x, y, info ] = sedumi( c, -1, [], K, pars );
     x = full( x );
     y = zeros( 0, 1 );
-    if info.pinf ~= 0,
+    if info.numerr == 2 | info.dinf ~= 0,
+        status = 'Failed';
+        x = NaN * ones( nn, 1 );
+        y = NaN * ones( m, 1 );
+        value = NaN;
+    elseif info.pinf ~= 0,
         status = 'Solved';
         x = zeros( nn, 1 );
         value = d;
-    elseif info.numerr == 0,
-        status = 'Unbounded';
-        x = ( 1.0 / sum( x ) ) * x;
-        value = -Inf;
     else,
-        if info.numerr == 1,
-            status = 'Inaccurate';
-        else,
-            status = 'Failed';
-        end
-        if info.feasratio > 0.99,
-            status = [ status, ', likely unbounded' ];
-            x = ( 1.0 / sum( x ) ) * x;
-            value = -Inf;
-        elseif info.feasratio < -0.99,
-            status = [ status, ', likely close to a solution' ];
-            x = zeros( nn, 1 );
-            value = d;
-        else,
-            x = NaN * ones( nn, 1 );
-            value = NaN;
-        end
+        status = 'Unbounded';
+        value = -Inf;
+    end
+    if info.numerr == 1,
+        status = [ 'Inaccurate/', status ];
     end
 else,
     [ x, y, info ] = sedumi( A, b, c, K, pars );
     x = full( x );
     y = full( y );
-    if info.pinf ~= 0,
+    if info.numerr == 2,
+        status = 'Failed';
+        x = NaN * ones( nn, 1 );
+        y = NaN * ones( m, 1 );
+        value = NaN;
+    elseif info.pinf ~= 0,
         status = 'Infeasible';
         x = NaN * ones( nn, 1 );
         value = +Inf;
@@ -142,21 +136,12 @@ else,
         status = 'Unbounded';
         y = NaN * ones( nn, 1 );
         value = -Inf;
-    elseif info.feasratio > 0.99,
+    else,
         status = 'Solved';
         value = c' * x + d;
-    else,
-        status = 'Failed';
-        x = NaN * ones( nn, 1 );
-        y = NaN * ones( m, 1 );
-        value = NaN;
     end
-    if ~isnan( value ) & info.numerr ~= 0,
-        if info.numerr == 1,
-            status = [ 'Inaccurate/', status ];
-        else,
-            status = [ 'Failed/', status ];
-        end
+    if info.numerr == 1,
+        status = [ 'Inaccurate/', status ];
     end
 end
 
@@ -168,6 +153,6 @@ end
 
 x = real( reord * x );
 
-% Copyright 2005 Michael C. Grant and Stephen P. Boyd. 
+% Copyright 2005 Michael C. Grant and Stephen P. Boyd.
 % See the file COPYING.txt for full copyright information.
 % The command 'cvx_where' will show where this file is located.
