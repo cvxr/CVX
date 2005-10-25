@@ -15,34 +15,36 @@ if prob.complete,
     % Check the integrity of the variables
     %
 
-    bad_vars = {};
-    vars = prob.variables;
-    if ~isempty( vars ),
-        fn = cvx_fieldnames( vars );
-        temp = struct( 'type', '.' );
-        for k = 1 : length( fn ),
-            temp.subs = fn{k};
-            nvar = evalin( 'caller', fn{k}, 'NaN' );
-            if ~isa( nvar, 'cvx' ) | id( nvar ) ~= id( subsref( vars, temp ) ),
-                bad_vars{end+1} = fn{k};
+    if 0,
+        bad_vars = {};
+        vars = prob.variables;
+        if ~isempty( vars ),
+            fn = cvx_fieldnames( vars );
+            temp = struct( 'type', '.' );
+            for k = 1 : length( fn ),
+                temp.subs = fn{k};
+                nvar = evalin( 'caller', fn{k}, 'NaN' );
+                if ~isa( nvar, 'cvx' ) | id( nvar ) ~= id( subsref( vars, temp ) ),
+                    bad_vars{end+1} = fn{k};
+                end
             end
         end
-    end
-    vars = prob.duals;
-    if ~isempty( vars ),
-        fn = fieldnames( vars );
-        for k = 1 : length( fn ),
-            nvar = evalin( 'caller', fn{k}, 'NaN' );
-            if ~isa( nvar, 'cvxdual' ) | ~isequal( name( nvar ), fn{k} ) | problem( nvar ) ~= prob,
-                bad_vars{end+1} = fn{k};
+        vars = prob.duals;
+        if ~isempty( vars ),
+            fn = fieldnames( vars );
+            for k = 1 : length( fn ),
+                nvar = evalin( 'caller', fn{k}, 'NaN' );
+                if ~isa( nvar, 'cvxdual' ) | ~isequal( name( nvar ), fn{k} ) | problem( nvar ) ~= prob,
+                    bad_vars{end+1} = fn{k};
+                end
             end
         end
-    end
-    if ~isempty( bad_vars ),
-        temp = sprintf( ' %s', bad_vars{:} );
-        temp = sprintf( 'The following cvx variable(s) have been overwritten:\n  %s\nThis is often an indication that an equality constraint was\nwritten with one equals ''='' instead of two ''==''. The model\nmust be rewritten before cvx can proceed.', temp );
-        eval( 'caller', 'cvx_clear' );
-        error( temp );
+        if ~isempty( bad_vars ),
+            temp = sprintf( ' %s', bad_vars{:} );
+            temp = sprintf( 'The following cvx variable(s) have been overwritten:\n  %s\nThis is often an indication that an equality constraint was\nwritten with one equals ''='' instead of two ''==''. The model\nmust be rewritten before cvx can proceed.', temp );
+            eval( 'caller', 'cvx_clear' );
+            error( temp );
+        end
     end
 
     if cvx___.pause,

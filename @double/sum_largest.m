@@ -39,7 +39,7 @@ elseif ~isnumeric( k ) | ~isreal( k ) | length( k ) ~= 1,
     error( 'Second argument must be a real scalar.' );
 elseif nargin < 3 | isempty( dim ),
     dim = cvx_default_dimension( size( x ) );
-elseif ~cvx_check_dimension( dim ),
+elseif ~cvx_check_dimension( dim, false ),
     error( 'Third argument, if supplied, must be a positive integer.' );
 end
 

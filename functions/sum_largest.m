@@ -35,7 +35,7 @@ if nargin < 3 | isempty( dim ),
     dim = dim( 1 );
 elseif ~isnumeric( dim ) | ~isreal( dim ) | dim <= 0 | dim ~= floor( dim ),
     error( 'Second argument must be a dimension.' );
-elseif ~isnunmeric( k ) | ~isreal( k ),
+elseif ~isnumeric( k ) | ~isreal( k ),
     error( 'Third argument must be a real scalar.' );
 elseif ~isreal( x ),
     error( 'First argument must be real.' );

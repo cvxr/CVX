@@ -100,6 +100,9 @@ while 1,
             A12  = A( rowX, cols );
             A21  = A( rows, colX );
             A22  = A( rows, cols );
+            if ( size( A22, 1 ) ~= size( A22, 2 ) | nnz( A22 ) ~= size( A22, 1 ) ),
+                error( sprintf( 'There seems to be an error in the CVX presolver routine.\nPlease report this to the authors; and if possible, include the\ncvx model and data that gave you this error.' ) );
+            end
             [ ii, jj, vv ] = find( A22 );
             A22i = sparse( jj, ii, 1.0 ./ vv );
             if preserve_dual,

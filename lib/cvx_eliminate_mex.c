@@ -144,12 +144,18 @@ void mexFunction(
             int j    = candidates[i],
                 r    = col_flags[j] - 1,
                 kBeg = col_count_A[j],
-                kEnd = col_count_A[j+1], k;
-            nnzQ -= row_flags[r] - 1;
-            row_flags[r] = col_flags[j] = 0;
-            for ( k = kBeg ; k != kEnd ; ++k )
-                if ( row_flags[row_index_A[k]] != 0 )
-                    --nnzQ;
+                kEnd = col_count_A[j+1], k, found = 0;
+            for ( k = kBeg ; k != kEnd ; ++k ) {
+                int tr = row_index_A[k];
+                if ( r != tr && row_flags[tr] != 0 ) {
+                    --row_flags[tr];
+                    ++found;
+                }
+            }
+            if ( found ) {
+                nnzQ -= found + row_flags[r] - 1;
+                row_flags[r] = col_flags[j] = 0;
+            }
         }
     }
     for ( j = 0 ; j != nQ ; ++j ) {
