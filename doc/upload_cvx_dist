@@ -8,7 +8,7 @@ DSTDIR=/home/boyd/WWW/cvx
 
 # Synchronize the remote web site
 cd $SRCBASE
-rsync -rtDv --delete -e ssh $DSTDIR mcgrant@cardinal:~boyd/WWW/cvx
+rsync -rtDv --delete -e ssh $DSTDIR mcgrant@cardinal:~boyd/WWW
 
 # Update the local distribution copy
 rm -rf $SRCBASE/cvx.dist

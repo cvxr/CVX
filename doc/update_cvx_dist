@@ -14,7 +14,9 @@ svn export $ARCHIVE $CPYDIR/cvx
 # Compile the documentation
 cd $CPYDIR/cvx/doc
 latex  cvx_usrguide
+latex  cvx_usrguide
 bibtex cvx_usrguide
+latex  cvx_usrguide
 latex  cvx_usrguide
 latex  cvx_usrguide
 dvips  cvx_usrguide
