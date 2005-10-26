@@ -36,7 +36,7 @@ else,
     ndx_x = ndx_x( : );
     nlz = length( ndx_x );
     by = y.basis_;
-    if size( by, 2 ) < nlz,
+    if size( by, 1 ) < nlz,
         by = by( ones( 1, nlz ), : );
     end
     bx( ndx_x, 1 : size( by, 2 ) ) = by;
