@@ -28,7 +28,7 @@ if any( szx_n < szx ),
 else,
     if any( szx_n > szx ),
         bx( end + 1, : ) = 0;
-        ndx_x( ndx_x == 0 | isinf( ndx_x ) ) = size( bx, 2 ) + 1;
+        ndx_x( ndx_x == 0 ) = size( bx, 1 ) + 1;
         bx = bx( ndx_x, : );
         temp = reshape( 1 : prod( szx_n ), szx_n );
     end
