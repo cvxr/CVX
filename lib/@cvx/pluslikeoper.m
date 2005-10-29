@@ -160,7 +160,7 @@ switch oper,
             end
             if ~xs & ~ys, 
                 n1 = 1 : nn; 
-                by = sparse( n1, n1, bx, nn, nn ); 
+                by = sparse( n1, n1, by, nn, nn ); 
             end
             bz = by * bx;
         end
