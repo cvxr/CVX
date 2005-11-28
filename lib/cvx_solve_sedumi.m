@@ -78,7 +78,7 @@ pars.cg.refine = 3;
 if quiet,
     pars.fid = 0;
 end
-pars.free = ~isempty( K.q ) | ~isempty( K.s );
+pars.free = 0; % ~isempty( K.q ) | ~isempty( K.s );
 
 if ~quiet,
     disp( ' ' );
