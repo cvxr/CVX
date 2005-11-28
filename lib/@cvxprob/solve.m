@@ -80,16 +80,16 @@ else,
     
     [ value, x, y, status ] = cvx_solve_sedumi( A, b, c, d, p.cones, quiet );
     switch status,
-    case { 'Solved', 'Inaccurate, likely close to a solution', 'Failed, likely close to a solution' },
+    case { 'Solved', 'Inaccurate/Solved' },
         pval = 1;
         dval = 1;
-    case { 'Infeasible', 'Inaccurate, likely infeasible', 'Failed, likely infeasible' },
+    case { 'Infeasible', 'Inaccurate/Infeasible' },
         pval = 1;
         dval = 0;
-    case { 'Unbounded', 'Inaccurate, likely unbounded', 'Failed, likely unbounded' },
+    case { 'Unbounded', 'Inaccurate/Unbounded' },
         pval = 0;
         dval = 1;
-    case { 'Inaccurate', 'Failed' },
+    otherwise,
         pval = NaN;
         dval = NaN;
     end        
