@@ -9,7 +9,12 @@ function cvx_setup
 disp( ' ' );
 dd = cd;
 
-ver = str2num( version( '-release' ) );
+ver = version( '-release' );
+temp = find( ver == '.' );
+if ~isempty( temp ), 
+    ver( min( temp ) : end ) = []; 
+end
+ver = str2num( ver );
 if ver < 14,
     mpath = dbstack;
     mpath = mpath(1);
