@@ -1,3 +1,5 @@
+% Quick start: examples from the documentation
+
 has_quadprog = exist( 'quadprog' );
 has_quadprog = has_quadprog == 2 | has_quadprog == 3;
 has_linprog  = exist( 'linprog' );
