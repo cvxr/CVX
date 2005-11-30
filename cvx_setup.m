@@ -54,8 +54,12 @@ needupd = strcmp(oldpath,path) == 0;
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 newext = mexext;
+isw32 = strcmp( newext, 'mexw32' );
 sedpath = [ mpath, fs, 'sedumi' ];
 mexfiles = dir( [ sedpath, fs, '*.', newext ] );
+if isempty( mexfiles ) & ispc & isw32,
+    mexfiles = dir( [ sedpath, fs, '*.dll' ] );
+end
 if isempty( mexfiles ),
     try,
         cd( sedpath );
@@ -93,8 +97,10 @@ try,
     for k = 1 : length( mexfiles ),
         str = mexfiles{k};
         if ~exist( [ str(1:end-1), newext ] ),
-            has_mex = 0;
-            break;
+            if ~isw32 | ~exist( [ str(1:end-1), 'dll' ] ),
+                has_mex = 0;
+                break;
+            end
         end
     end
 catch,
@@ -111,7 +117,7 @@ if ~has_mex,
     for k = 1 : length( mexfiles ),
         str = mexfiles{k};
         try,
-            disp( [ 'mex -O ', str(1:end-1), mexext ] );
+            disp( [ 'mex -O ', str(1:end-1), newext ] );
             mex( '-O', str );
         catch,
             has_mex = 0;
