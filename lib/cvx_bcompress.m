@@ -28,6 +28,8 @@ if iscplx,
 end
 
 [ ndxs, scls ] = cvx_bcompress_mex( sparse( x' ), magonly, nsrt );
+temp = scls ~= 0; 
+scls( temp ) = 1.0 ./ scls( temp );
 xL = sparse( 1 : m, ndxs, scls, m, m );
 t2 = any( xL, 1 );
 xL = xL( :, t2 );

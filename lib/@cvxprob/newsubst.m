@@ -55,6 +55,12 @@ end
 sz = size( src );
 bO = cvx_basis( cvx___.problems( p ).substitutions );
 bN = cvx_basis( src );
+tc = sum( bN ~= 0, 2 ) == ( bN( :, 1 ) ~= 0 );
+need_const = any( tc );
+if need_const,
+    bC = bN( tc, 1 );
+    bN( tc, : ) = 0;
+end
 [ mO, nO ] = size( bO );
 [ mN, nN ] = size( bN );
 if mO ~= 0,
@@ -89,7 +95,9 @@ end
 % Create the substitution variable
 %
 
-z = cvx( prob, sz, bNL * cvx_basis( vars.map_ ) );
+z = bNL * cvx_basis( vars.map_ );
+if need_const, z( tc, 1 ) = bC; end
+z = cvx( prob, sz, z );
 
 %
 % Clear the 'complete' flag

@@ -23,7 +23,7 @@ switch mode,
     case { '', '3-d', '3-D', '3d', '3D' },
     	p = dimension( problem( x ) ) + 1;
         if size( b, 2 ) < p,
-            b( end, n ) = 0;
+            b( end, p ) = 0;
         end
     otherwise,
         error( [ 'Unknown spy mode: ', mode ] );
