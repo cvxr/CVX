@@ -9,13 +9,18 @@ function cvx_setup
 disp( ' ' );
 dd = cd;
 
+global cvx___
+cvx___ = [];
+
 ver = version( '-release' );
 temp = find( ver == '.' );
 if ~isempty( temp ), 
     ver( min( temp ) : end ) = []; 
 end
-ver = str2num( ver );
-if ver < 14,
+ver = eval( ver, 'NaN' );
+if isnan( ver ),
+    error( sprintf( 'cvx has not yet been configured to handle your MATLAB version (%s).\nPlease contact the authors to inquire about future support plans.', version( '-release' ) ) ) 
+elseif ver < 14,
     mpath = dbstack;
     mpath = mpath(1);
     mpath = mpath.name;
@@ -24,30 +29,66 @@ else,
     mpath = mpath(1);
     mpath = mpath.file;
 end
-if ispc, fs = '\'; else, fs = '/'; end
+if ispc, 
+    fs = '\'; 
+    ps = ';';
+else, 
+    fs = '/'; 
+    ps = ':';
+end
 temp = strfind( mpath, fs );
 mpath( temp(end) : end ) = [];
 
+rmpaths = { 'lib', 'functions', 'sets', 'structures', 'sedumi', 'doc' };
 addpaths = { mpath };
 needpaths = {};
 if ver < 14,
     addpaths{end+1} = [ mpath, fs, 'keywords' ];
+else,
+    rmpaths{end+1} = 'keywords';
 end
 if ver < 13,
     addpaths{end+1} = [ mpath, fs, 'matlab6' ];
+else,
+    rmpaths{end+1} = 'matlab6';
 end
-s = lastwarn;
-lastwarn('');
-oldpath = path;
-addpath( addpaths{:}, '-begin' );
-if ~isempty( lastwarn ),
+needupd = 0;
+missing = 0;
+newpath = [ ps, matlabpath, ps ]; 
+newpath2 = lower(newpath);
+mpath2 = lower(mpath);
+for k = 1 : length(rmpaths),
+    temp = [ ps, mpath2, fs, rmpaths{k}, ps ];
+    ndxs = strfind( newpath2, temp );
+    if ~isempty( ndxs ),
+        needupd = 1;
+        len = length( temp ) - 1;
+        for j = 1 : length( ndxs ),
+            newpath( ndxs(j) + 1 : ndxs(j) + len ) = [];
+            newpath2( ndxs(j) + 1 : ndxs(j) + len ) = [];
+            ndxs = ndxs - len;
+        end
+    end
+end
+for k = 1 : length(addpaths),
+    temp = [ ps, lower( addpaths{k} ), ps ];
+    ndxs = strfind( newpath2, temp );
+    if isempty( ndxs ),
+        needupd = 1;
+        newpath2 = [ temp(1:end-1), newpath2 ];
+        newpath = [ ps, addpaths{k}, newpath ];
+        if ~exist( temp(2:end-1), 'dir' ),
+            missing = 1;
+        end
+    end
+end
+if missing,
     disp( 'The cvx distribution seems to be incomplete; one or more of the required' );
     disp( 'directories is missing. Please re-unpack the distribution and try again.' );
     disp( ' ' )
     return
 end
-lastwarn(s);
-needupd = strcmp(oldpath,path) == 0;
+matlabpath(newpath);
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Compile the SeDuMi MEX files %
@@ -144,7 +185,7 @@ m = 16; n = 8;
 A = randn(m,n);
 b = randn(m,1);
 xls = A \ b;
-s = cvx_quiet( true );
+s = cvx_quiet( 1 );
 cvx_begin
     variable('x(n)');
     minimize( norm(A*x-b) );
@@ -166,7 +207,7 @@ else,
     disp( ' ' );
 end
 
-if strcmp( oldpath, path ) == 0,
+if needupd,
     disp( 'NOTE: The MATLAB path has been updated to point to the cvx distribution.' );
     disp( 'In order to use cvx regularly, you must save this new path definition.' );
     if ispc,
