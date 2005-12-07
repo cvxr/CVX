@@ -1,12 +1,32 @@
 function y = permute( x, order )
 error( cvx_verify( x ) );
-sx = size( x );
+
+%
+% Determine the permutation
+%
+
+s = x.size_;
+ndxs = 1 : prod( s );
 try,
-    ndxs = builtin( 'permute', reshape( 1 : prod( sx ), sx ), order );
+    ndx2 = permute( reshape( ndxs, s ), order );
 catch,
-    error( lasterr );
+    error( lasterror );
 end
-y = reshape( cvx_subref( x, ndxs( : ) ), size( ndxs ) );
+
+%
+% Permute the data
+%
+
+b = x.basis_;
+try,
+    b = x.basis_( ndx2, : );
+catch,
+    ndxs( ndxs2( : ).' ) = ndxs;
+    [ r, c, v ] = find( b );
+    b = sparse( ndxs( r ), c, v );
+    clear r c v
+end
+y = cvx( problem( x ), size( ndx2 ), b );
 
 % Copyright 2005 Michael C. Grant and Stephen P. Boyd. 
 % See the file COPYING.txt for full copyright information.

@@ -117,22 +117,97 @@ if ~xc & ~yc,
     
 else,
     
+    %
+    % Eliminate any zero rows from the left-hand matrix
+    %
+    
     if xc,
         bx = cvx_constant( x );
         by = cvx_basis( y );
     else,
         bx = cvx_constant( y ).';
-        by = cvx_basis( x.' );
-        sy = [ sx( 2 ), sx( 1 ) ];
+        by = cvx_basis( x );
+        sy = sx;
+    end
+    tx = any( bx, 2 );
+    if nnz( tx ) ~= numel( tx ),
+        bx = bx( tx, : );
+        tx = full( find( tx ) );
+    else,
+        tx = [];
+    end
+    
+    %
+    % Determine the 3-D indices for the right-hand basis,
+    % and reshape to sy( 1 ) x ( sy( 2 ) * nv )
+    %
+
+    nv = size( by, 2 );
+    [ yi, yb, by ] = find( by );
+    yj = floor( ( yi - 1 ) / sy( 1 ) );
+    yi = yi - sy( 1 ) * yj;
+    yj = yj + 1;
+    if xc,
+        yj = yj + ( yb - 1 ) * sy( 2 );
+    else,
+        yb = yi + ( yb - 1 ) * sy( 1 );
+        yi = yj; yj = yb;
+        sy = [ sy( 2 ), sy( 1 ) ];
+    end
+    clear yij yb
+    
+    %
+    % Eliminate any zero columns from this reshaped right-hand matrix
+    %
+    
+    ty  = sparse( yj, 1, 1, nv * sy( 2 ), 1 );
+    nv2 = nnz( ty );
+    if nv2 ~= numel( ty ),
+        ty  = find( ty );
+        sv  = sparse( ty, 1, 1 : nv2 );
+        yj  = full( sv( yj ) );
+        clear sv
+    else,
+        ty = [];
+    end
+    
+    %
+    % Perform the multiplication and re-expand
+    %
+    
+    by = sparse( yi, yj, by, sy( 1 ), nv2 );
+    clear yi yj
+    z = bx * by;
+    clear bx by
+    [ zi, zj, z ] = find( z );
+    if ~isempty( tx ), zi = tx( zi ); end; clear tx
+    if ~isempty( ty ), zj = ty( zj ); end; clear ty
+    
+    %
+    % Reshape back to ( sz( 1 ) * sz( 2 ) ) x nv
+    %
+    
+    zb = floor( ( zj - 1 ) / sy( 2 ) );
+    zj = zj - zb * sy( 2 );
+    zb = zb + 1;
+    if xc,
+        zi = zi( : ) + sz( 1 ) * ( zj( : ) - 1 );
+    else,
+        zi = zj( : ) + sz( 2 ) * ( zi( : ) - 1 );
         sz = [ sz( 2 ), sz( 1 ) ];
     end
-    nv = size( by, 2 );
-    by = reshape( by, [ sy( 1 ), sy( 2 ) * nv ] );
-    z  = reshape( bx * by, [ prod( sz ), nv ] );
-    z  = cvx( prob, sz, z );
-    if ~xc,
-        z = z.';
-    end
+    
+    %
+    % Construct the result
+    %
+    
+    z = sparse( zi, zb, z, prod( sz ), nv );
+    z = cvx( prob, sz, z );
+    
+    %
+    % Check that the sums are legal
+    %
+    
     v = cvx_vexity( z );
     if any( isnan( v( : ) ) ),
         error( sprintf( 'Disciplined convex programming error:\n   Illegal affine combination of convex and/or concave terms detected.' ) );
