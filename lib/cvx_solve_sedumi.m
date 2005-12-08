@@ -1,4 +1,4 @@
-function [ value, x, y, status ] = cvx_solve_sedumi( A, b, c, d, nonls, quiet )
+function [ value, x, y, status ] = cvx_solve_sedumi( A, b, c, d, sign, nonls, quiet )
 if nargin < 6, quiet = false; end
 
 [ m, n ] = size( A );
@@ -100,7 +100,7 @@ elseif isempty( b ),
         disp( 'performed. The SeDuMi status messages will not coincide with cvx_status.' );
         disp( '------------------------------------------------------------------------' );
     end
-    [ x, y, info ] = sedumi( c, -1, [], K, pars );
+    [ x, y, info ] = sedumi( sign * c, -1, [], K, pars );
     x = full( x );
     y = zeros( 0, 1 );
     if info.numerr == 2 | info.dinf ~= 0,
@@ -114,13 +114,13 @@ elseif isempty( b ),
         value = d;
     else,
         status = 'Unbounded';
-        value = -Inf;
+        value = -Inf * sign;
     end
     if info.numerr == 1,
         status = [ 'Inaccurate/', status ];
     end
 else,
-    [ x, y, info ] = sedumi( A, b, c, K, pars );
+    [ x, y, info ] = sedumi( A, b, sign * c, K, pars );
     x = full( x );
     y = full( y );
     if info.numerr == 2,
@@ -131,11 +131,11 @@ else,
     elseif info.pinf ~= 0,
         status = 'Infeasible';
         x = NaN * ones( nn, 1 );
-        value = +Inf;
+        value = +Inf * sign;
     elseif info.dinf ~= 0,
         status = 'Unbounded';
         y = NaN * ones( nn, 1 );
-        value = -Inf;
+        value = -Inf * sign;
     else,
         status = 'Solved';
         value = c' * x + d;

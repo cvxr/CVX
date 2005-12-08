@@ -31,8 +31,8 @@ else,
         case 'minimize', sign = +1;
         case 'maximize', sign = -1;
     end
-    d = sign * c( :, 1 ); 
-    c = sign * c( :, 2 : end )';
+    d = c( :, 1 ); 
+    c = c( :, 2 : end )';
 end
 
 [ m, n ] = size( A );
@@ -63,7 +63,7 @@ elseif n == 0,
 
         status = 'Infeasible';
         y = - P * sign( b );
-        value = Inf;
+        value = sign * Inf;
         pval = 1;
         dval = 0;
 
@@ -78,7 +78,7 @@ elseif n == 0,
 
 else,
     
-    [ value, x, y, status ] = cvx_solve_sedumi( A, b, c, d, p.cones, quiet );
+    [ value, x, y, status ] = cvx_solve_sedumi( A, b, c, d, sign, p.cones, quiet );
     switch status,
     case { 'Solved', 'Inaccurate/Solved' },
         pval = 1;
@@ -98,7 +98,7 @@ end
 
 p.x = full( [ pval ; x ] );
 p.y = full( [ dval ; y ] );
-p.result = full( sign * value );
+p.result = full( value );
 p.status = status;
 cvx___.problems( prob ) = p;
 
