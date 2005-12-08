@@ -20,6 +20,7 @@
 <li><a href="#mail">The CVX mailing list</a></li>
 <li><a href="#feed">Request for feedback</a></li>
 <li><a href="#hist">Version history</a></li>
+<li><a href="#plans">Future plans</a></li>
 <li><a href="#copy">Copyright information</a></li>
 <li><a href="#down"><b>Download!</b></a></li>
 </ul>
@@ -146,14 +147,18 @@ if it were exercised, it would likely produce <i>obviously</i>
 invalid results.</dd>
 <dd>Improvements have been made to prevent <tt>OUT OF MEMORY</tt>
 errors for certain large problems.</dd>
-<dt>Major revision anticipated early January 2006:</dt>
-<dd>Native support for geometric programming, <tt>log()</tt>,
-<tt>exp()</tt>, and <tt>log(sum(exp()))</tt>.</dd>
-<dt>Revision anticipated Feburary 2006:</dt>
-<dd>Support for more smooth nonlinearities, including
-<tt>logdet()</tt>, <tt>entropy()</tt>, <tt>pow(x,p)</tt> (convex
-and concave cases). Others to be added upon request.</dd>
 </dl>
+<h3><a id="plans" name="plans">Future plans</a></h3>
+<p>A major revision to <tt>cvx</tt> is in progress; we hope to have
+it ready in January, 2006. This revision adds native support for
+generalized geometric programming and mixed convex/geometric
+programming. This update will also add support for a limited number of smooth
+nonlinear functions: specifically, <tt>log()</tt>, <tt>exp()</tt>,
+<tt>log(sum(exp()))</tt>.</p>
+<p>The next revision, anticipated for February 2006, will expand
+the list of supported smooth nonlinearities. The current plan is
+to include <tt>logdet()</tt>, <tt>entropy()</tt>, and convex and concave
+branches of <tt>pow(x,p)</tt>. Others may be added upon request.</p>
 <h3><a id="copy" name="copy">Copyright information</a></h3>
 <p>This version of CVX is distributed under the <a href=
 "http://www.gnu.org/copyleft/gpl.html">GNU General Public
