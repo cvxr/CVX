@@ -9,7 +9,7 @@
 </head>
 <body>
 <h1>CVX: Matlab Software for Disciplined Convex Programming</h1>
-<h2>Version 0.87.1 alpha (October 2005)</h2>
+<h2>Version 0.88 alpha (December 2005)</h2>
 <h3><a href="http://www.stanford.edu/~mcgrant">Michael Grant</a>,
 <a href="http://www.stanford.edu/~boyd">Stephen Boyd</a>, and
 <a href="http://www.stanford.edu/~yyye">Yinyu Ye</a></h3>
@@ -21,14 +21,32 @@
 <li><a href="#feed">Request for feedback</a></li>
 <li><a href="#hist">Version history</a></li>
 <li><a href="#copy">Copyright information</a></li>
-<li><a href="#down">Download</a></li>
+<li><a href="#down"><b>Download!</b></a></li>
 </ul>
 <h3><a id="intro" name="intro">Introduction</a></h3>
 <p>CVX is a Matlab-based modeling system that supports <a href=
 "../disc_cvx_prog.html">disciplined convex programming</a>. CVX
 turns Matlab into a modeling language, allowing constraints and
-objectives to be specified using standard Matlab expression
-syntax.</p>
+objectives to be specified using standard Matlab expression syntax.
+For example, the following code segment randomly generates a
+constrained norm minimization problem, and solves it:</p>
+<table cellspacing="0" cellpadding="0" summary="CVX code example">
+<tr>
+<td width="15%"></td>
+<td><code>m = 20; n = 10; p = 4;<br />
+A = randn(m,n); b = randn(m,1);<br />
+b = randn(m,1); d = randn(p,1);<br />
+cvx_begin<br />
+&nbsp;&nbsp;&nbsp;&nbsp;variable x(n)<br />
+&nbsp;&nbsp;&nbsp;&nbsp;minimize( norm( A * x - b, 2 ) )<br />
+&nbsp;&nbsp;&nbsp;&nbsp;subject to<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;C * x == d;<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;norm( x, Inf )
+&lt;= 0.4;<br />
+cvx_end</code></td>
+<td width="15%"></td>
+</tr>
+</table>
 <p>In disciplined convex programming, convex functions and sets are
 built up from a small set of rules from convex analysis, starting
 from a base library of convex functions and sets. Constraints and
@@ -104,20 +122,37 @@ Added the <tt>norms</tt> function to facilitate sum-of-norms and
 max-of-norms problems.<br />
 Various bug fixes incorporated.</dd>
 <dt>Version 0.86, September 2005:</dt>
-<dd>Fixes for Matlab 6.1 compatability.
-<dd>Improved support for quadratic forms.
-<dd>A bug that prevented some Euclidean norm constraints
-    from being declared was fixed.
+<dd>Fixes for Matlab 6.1 compatability.</dd>
+<dd>Improved support for quadratic forms.</dd>
+<dd>A bug that prevented some Euclidean norm constraints from being
+declared was fixed.</dd>
 <dt>Version 0.87/0.87.1, October 2005:</dt>
-<dd>Improved the setup routine (<tt>cvx_setup</tt>).
-<dd>Updated the documentation with a table of contents and
-    a new section explaining the status messages returned by CVX.
-<dd>Implemented workarounds for bugs in SeDuMi's handling of certain degenerate problems.
-<dd>Created a MEX file to improve presolve performance.
-<dd>Miscellaneous bug fixes, performance improvements, and documentation updates.
-<dt>Features coming soon:</dt>
-<dd>Native support for geometric programming and smooth
-nonlinearities.</dd>
+<dd>Improved the setup routine (<tt>cvx_setup</tt>).</dd>
+<dd>Updated the documentation with a table of contents and a new
+section explaining the status messages returned by CVX.</dd>
+<dd>Implemented workarounds for bugs in SeDuMi's handling of
+certain degenerate problems.</dd>
+<dd>Created a MEX file to improve presolve performance.</dd>
+<dd>Miscellaneous bug fixes, performance improvements, and
+documentation updates.</dd>
+<dt>Version 0.88, December 2005:</dt>
+<dd>Further improvements to the setup routine
+(<tt>cvx_setup</tt>).</dd>
+<dd>A bug with the potential to cause invalid numerical results has
+been fixed. It is unlikely that this bug has caused anyone
+problems, except for the person who reported it, because: 1) it
+required a unique set of circumstances to exercise it; and 2) even
+if it were exercised, it would likely produce <i>obviously</i>
+invalid results.</dd>
+<dd>Improvements have been made to prevent <tt>OUT OF MEMORY</tt>
+errors for certain large problems.</dd>
+<dt>Major revision anticipated early January 2006:</dt>
+<dd>Native support for geometric programming, <tt>log()</tt>,
+<tt>exp()</tt>, and <tt>log(sum(exp()))</tt>.</dd>
+<dt>Revision anticipated Feburary 2006:</dt>
+<dd>Support for more smooth nonlinearities, including
+<tt>logdet()</tt>, <tt>entropy()</tt>, <tt>pow(x,p)</tt> (convex
+and concave cases). Others to be added upon request.</dd>
 </dl>
 <h3><a id="copy" name="copy">Copyright information</a></h3>
 <p>This version of CVX is distributed under the <a href=
