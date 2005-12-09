@@ -193,8 +193,7 @@ else,
     if xc,
         zi = zi( : ) + sz( 1 ) * ( zj( : ) - 1 );
     else,
-        zi = zj( : ) + sz( 2 ) * ( zi( : ) - 1 );
-        sz = [ sz( 2 ), sz( 1 ) ];
+        zi = zj( : ) + sz( 1 ) * ( zi( : ) - 1 );
     end
     
     %
