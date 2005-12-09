@@ -1,11 +1,14 @@
-% FASTEST_MIXING_MC.M    finds the fastest mixing Markov chain on a graph
+% FASTEST_MIXING_MC  finds the fastest mixing Markov chain on a graph
 % Sec. 4.6.3, Boyd & Vandenberghe "Convex Optimization"
 % Joëlle Skaf - 09/26/05
-% 
+%
 % The 'fastest mixing Markov chain problem' is to find a transition
 % probability matrix P on a graph E that minimizes the mixing rate r, where
 % r = max{ lambda_2, -lambda_n } with lambda_1>=...>=lambda_n being the
 % eigenvalues of P.
+
+cvx_clear
+cvxq = cvx_quiet( false );
 
 % Input Data
 n = 5;
@@ -36,3 +39,5 @@ disp('The transition probability matrix of the optimal Markov chain is: ');
 disp(P);
 disp('The optimal mixing rate is: ');
 disp(r);
+
+cvx_quiet( cvxq );

@@ -1,9 +1,9 @@
-% EX_4_5.M      shows equivalence of 3 convex problem formulations
+% EX_4_5  shows equivalence of 3 convex problem formulations
 % Exercise 4.5, Boyd & Vandenberghe "Convex Optimization"
 % Joëlle Skaf - 08/17/05
 %
-% Shows the equivalence of the following 3 problems: 
-% 1) Robust least-squares problem 
+% Shows the equivalence of the following 3 problems:
+% 1) Robust least-squares problem
 %           minimize    sum_{i=1}^{m} phi(a_i'*x - bi)
 %    where phi(u) = u^2             for |u| <= M
 %                   M(2|u| - M)     for |u| >  M
@@ -16,10 +16,12 @@
 %                       0 <= u <= M*1
 %                       v >= 0
 
-cvx_quiet(true); 
+cvx_clear
+cvxq = cvx_quiet(true);
+rnds = randn('state');
+randn('state',0);
 
 % Input data
-randn('state',0);
 m = 16; n = 8;
 A = randn(m,n);
 b = randn(m,1);
@@ -70,5 +72,7 @@ disp('The optimal solutions for problem formulations 1, 2 and 3 are given');
 disp('respectively as follows (per column): ');
 [x1 x2 x3]
 
+cvx_quiet(cvxq);
+randn('state',rnds);
 
 
