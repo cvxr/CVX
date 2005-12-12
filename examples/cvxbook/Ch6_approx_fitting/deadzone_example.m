@@ -4,8 +4,8 @@
 %
 % The penalty function approximation problem has the form:
 %               minimize    sum(deadzone(Ax - b))
-% where 'deadzone' is the deadzone penalty function (see deadzone.m)
-
+% where 'deadzone' is the deadzone penalty function
+%               deadzone(y) = max(abs(y)-1,0)
 
 % Input data
 randn('state',0);
@@ -19,7 +19,7 @@ fprintf(1,'Computing the optimal solution of the deadzone approximation problem:
 
 cvx_begin
     variable x(n)
-    minimize( sum(deadzone(A*x-b)) )
+    minimize( sum(max(abs(A*x-b)-1,0)) )
 cvx_end
 
 fprintf(1,'Done! \n');
@@ -31,4 +31,3 @@ disp( [ '   x     = [ ', sprintf( '%7.4f ', x ), ']' ] );
 disp( 'Residual vector:' );
 disp( [ '   A*x-b = [ ', sprintf( '%7.4f ', A*x-b ), ']' ] );
 disp( ' ' );
-
