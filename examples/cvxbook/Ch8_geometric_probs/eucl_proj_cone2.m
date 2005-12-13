@@ -1,9 +1,8 @@
-% EUCL_PROJ_CONE2   Euclidian projection on the semidefinite cone
-%                   (verifying equality to analytic solution)
+% Euclidean projection on the semidefinite cone
 % Sec. 8.1.1, Boyd & Vandenberghe "Convex Optimization"
 % Joelle Skaf - 10/07/05
 %
-% The projection of X0 on the proper cone K = S+^n is given by 
+% The projection of X0 on the proper cone K = S+^n is given by
 %           minimize    ||X - X0||_F
 %               s.t.    X >=0
 % where X is a nxn matrix and ||.||_F is the Frobenius norm
@@ -15,7 +14,7 @@ cvx_quiet(true);
 randn('seed',0);
 n  = 10;
 X0 = randn(n);
-X0 = 0.5 * (X0 + X0'); 
+X0 = 0.5 * (X0 + X0');
 [V,lam] = eig(X0);
 
 fprintf(1,'Computing the analytical solution...');
@@ -27,8 +26,8 @@ fprintf(1,'Done! \n');
 fprintf(1,'Computing the optimal solution by solving an SDP...');
 
 cvx_begin
-    variable X(n,n) symmetric 
-    minimize ( norm(X-X0,'fro') ) 
+    variable X(n,n) symmetric
+    minimize ( norm(X-X0,'fro') )
     X == semidefinite(n);
 cvx_end
 

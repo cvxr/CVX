@@ -1,16 +1,16 @@
-% EUCL_DIST_POLY_2D     Euclidian distance between polyhedra in 2D 
-%                       (a figure is generated)
-% Sec. 8.2.1, Boyd & Vandenberghe "Convex Optimization"
+% Euclidean distance between polyhedra in 2D
+% Section 8.2.1, Boyd & Vandenberghe "Convex Optimization"
 % Joelle Skaf - 10/09/05
+% (a figure is generated)
 %
-% Given two polyhedra C = {x | A1*x <= b1} and D = {x | A2*x <= b2}, the 
+% Given two polyhedra C = {x | A1*x <= b1} and D = {x | A2*x <= b2}, the
 % distance between them is the optimal value of the problem:
 %           minimize    || x - y ||_2
 %               s.t.    A1*x <= b1
 %                       A2*y <= b2
 % Note: here x is in R^2
 
-% Input data 
+% Input data
 randn('seed',0);
 n = 2;
 m = 2*n;
@@ -38,11 +38,11 @@ disp('The optimal points are: ')
 disp('x = '); disp(x);
 disp('y = '); disp(y);
 
-%Plotting 
+%Plotting
 figure;
 fill([-2; 0; 2; 0],[0;2;0;-2],'b', [3;5;5;3],[2;2;4;4],'r')
 axis([-3 6 -3 6])
-axis square 
+axis square
 hold on;
 plot(x(1),x(2),'k.')
 plot(y(1),y(2),'k.')

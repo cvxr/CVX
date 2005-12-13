@@ -1,8 +1,8 @@
-% FIG6_9    Optimal trade-off curve
-%           (a figure is generated)
+% An optimal tradeoff curve
 % Sec. 6.3.3, fig 6.9, Boyd & Vandenberghe "Convex Optimization"
 % Original by Lieven Vandenberghe 
 % Adapted for CVX Joelle Skaf - 09/29/05
+% (a figure is generated)
 %
 % Plots the optimal trade-off curve between ||Dx||_2 and ||x-x_cor||_2 by
 % solving the following problem for different values of delta:

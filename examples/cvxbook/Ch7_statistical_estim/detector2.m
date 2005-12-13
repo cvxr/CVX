@@ -20,7 +20,7 @@ inds = ones(n,1);
 next =2;
 for i=1:nopts
    PW = P*diag([1;weights(i)]);
-   [maxvals,maxinds] = max(PW');  % max elt in each row 
+   [maxvals,maxinds] = max(PW');  % max elt in each row
    if (~isequal(maxinds', inds(:,next-1)))
        inds(:,next) = maxinds';
        T = zeros(m,n);
@@ -40,11 +40,11 @@ xlabel('x');
 ylabel('y');
 
 
-% min probability of error 
+% min probability of error
 %   max.  w
 %   s.t. 1-t'*p1 >= w
 %        t'*p2 >= w
-%        0 <= t <= 1 
+%        0 <= t <= 1
 
 A = [P(:,1)' 1; -P(:,2)' 1; -eye(n) zeros(n,1); eye(n) zeros(n,1)];
 b = [1; 0; zeros(n,1); ones(n,1)];
@@ -56,4 +56,4 @@ objmp = 1-diag(Tmp*P);
 %plot(objmp(1), objmp(2),'o');
 text(objmp(1), objmp(2),'b');
 xlabel('x'); ylabel('y');
-print -deps roc.eps
+%print -deps roc.eps

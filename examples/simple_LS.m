@@ -1,6 +1,6 @@
-echo on
+% SIMPLE_LS  Builds and solves a simple least-squares problem using cvx
 
-% A simple least-squares problem
+echo on
 
 n = 100;
 A = randn(2*n,n);

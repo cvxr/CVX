@@ -1,8 +1,8 @@
-% FIG_6_19  Polynomial fitting
-%           (a figure is generated)
+% Polynomial fitting
 % Sec. 6.5.3,fig 6.19, Boyd & Vandenberghe "Convex Optimization"
 % Original by Lieven Vandenberghe 
 % Adapted for CVX by Joelle Skaf - 10/03/05
+% (a figure is generated)
 %
 % Given data u_1,...,u_m and v_1,...,v_m in R, the goal is to fit to the  
 % data a polynomial of the form 

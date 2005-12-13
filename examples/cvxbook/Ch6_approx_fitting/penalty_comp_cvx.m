@@ -1,8 +1,8 @@
-% PENALTY_COMP_CVX         Penalty function approximation
-%                          (a figure is generated)
+% Penalty function approximation
 % Sec. 6.1.2, fig 6.2, Boyd & Vandenberghe "Convex Optimization"
 % Original by Lieven Vandenberghe 
 % Adapted for CVX Argyris Zymnis - 10/2005
+% (a figure is generated)
 %
 % Comparison of the ell1, ell2, deadzone-linear and log-barrier
 % penalty functions for the approximation problem:
@@ -11,44 +11,33 @@
 % where phi(x) is the penalty function
 % Log-barrier will be implemented in the future version of CVX
 
-dz=0.5;  % scaling for deadzone penalty
-
-% pick random mxn A and m-vector b and scale so that |b_i| < 1, so 
-% that x=0 is feasible for log-barrier
-randn('seed',0);
-m=100;  n=30;  
-A=randn(m,n);
-b=randn(m,1); 
+% Generate input data
+randn('state',0);
+m=100; n=30;  
+A = randn(m,n);
+b = randn(m,1);
 
 % ell_1 approximation
-% 
 % minimize   ||Ax+b||_1
-
 disp('ell-one approximation');
 cvx_begin
     variable x1(n)
     minimize(norm(A*x1+b,1))
 cvx_end
 
-
 % ell_2 approximation
-%
 % minimize ||Ax+b||_2
-
 disp('ell-2');
 x2=-A\b;
 
-
 % deadzone penalty approximation 
-%
-% minimize   1'*y
-% subject to -y <= Ax+b <= y
-%             y >= dz
-
+% minimize sum(deadzone(Ax+b,0.5))
+% deadzone(y,z) = max(abs(y)-z,0)
+dz = 0.5;
 disp('deadzone penalty');
 cvx_begin
     variable xdz(n)
-    minimize(sum(deadzone(A*xdz+b,dz)))
+    minimize(sum(max(abs(A*xdz+b)-dz,0)))
 cvx_end
 
 
@@ -56,27 +45,17 @@ cvx_end
 %
 % minimize -sum log(1-(ai'*x+bi)^2)
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-% cvx_begin
-%     variable xlb(n)
-%     minimize(-sum(log(1-square(A*xlb+b))))
-% cvx_end
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
 disp('log-barrier')
 
 % parameters for Newton Method & line search
 alpha=.01; beta=.5;  
 
 % minimize linfty norm to get starting point 
-cc = [zeros(n,1); 1];  
-AA = [A -ones(m,1); -A -ones(m,1)]; 
-bb = [-b; b];
-x = linprog(cc,AA,bb);
-linf = x(n+1);
-xlb = x(1:n);
+cvx_begin
+    variable xlb(n)
+    minimize norm(A*xlb+b,Inf)
+cvx_end
+linf = cvx_optval;
 A = A/(1.1*linf);
 b = b/(1.1*linf);
 
@@ -139,7 +118,7 @@ hold off
 subplot(4,1,3), 
 bar(hist3,N3); 
 hold on
-plot(rr,30/3*max([zeros(1,length(rr));abs(rr)-dz]))
+plot(rr,30/3*max(0,abs(rr)-dz))
 ylabel('Deadzone')
 axis([-range_max range_max 0 25]);
 hold off

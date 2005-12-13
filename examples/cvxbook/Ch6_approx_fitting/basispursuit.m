@@ -1,9 +1,9 @@
-% BASISPURSUIT   Basis pursuit using Gabor functions
-%                (figures are generated)
+% Basis pursuit using Gabor functions
 % Sec. 6.5.4, fig 6.21, 6.22 and 6.23 
 % Boyd & Vandenberghe "Convex Optimization"
 % Original by Lieven Vandenberghe 
 % Adapted for CVX by Argyris Zymnis - 11/27/2005
+% (figures are generated)
 % 
 % Here we find a sparse basis for a signal y out of 
 % a set of Gabor functions. We do this by solving

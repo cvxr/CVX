@@ -1,0 +1,243 @@
+<html xmlns:mwsh="http://www.mathworks.com/namespace/mcode/v1/syntaxhighlight.dtd">
+   <head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   
+      <!--
+This HTML is auto-generated from an M-file.
+To make changes, update the M-file and republish this document.
+      -->
+      <title>logistics regresssion example</title>
+      <meta name="generator" content="MATLAB 7.1">
+      <meta name="date" content="2005-12-12">
+      <meta name="m-file" content="logistics"><style>
+
+body {
+  background-color: white;
+  margin:10px;
+}
+
+h1 {
+  color: #990000; 
+  font-size: x-large;
+}
+
+h2 {
+  color: #990000;
+  font-size: medium;
+}
+
+/* Make the text shrink to fit narrow windows, but not stretch too far in 
+wide windows.  On Gecko-based browsers, the shrink-to-fit doesn't work. */ 
+p,h1,h2,div.content div {
+  /* for MATLAB's browser */
+  width: 600px;
+  /* for Mozilla, but the "width" tag overrides it anyway */
+  max-width: 600px;
+  /* for IE */
+  width:expression(document.body.clientWidth > 620 ? "600px": "auto" );
+}
+
+pre.codeinput {
+  background: #EEEEEE;
+  padding: 10px;
+}
+
+span.keyword {color: #0000FF}
+span.comment {color: #228B22}
+span.string {color: #A020F0}
+span.untermstring {color: #B20000}
+span.syscmd {color: #B28C00}
+
+pre.codeoutput {
+  color: #666666;
+  padding: 10px;
+}
+
+pre.error {
+  color: red;
+}
+
+p.footer {
+  text-align: right;
+  font-size: xx-small;
+  font-weight: lighter;
+  font-style: italic;
+  color: gray;
+}
+
+  </style></head>
+   <body>
+      <div class="content">
+         <h1>logistics regresssion example</h1><pre class="codeinput">randn(<span class="string">'state'</span>,0);
+rand(<span class="string">'state'</span>,0);
+
+a =  1;
+b = -5 ;
+m= 100;
+
+u = 10*rand(m,1);
+y = (rand(m,1) &lt; exp(a*u+b)./(1+exp(a*u+b)));
+plot(u,y,<span class="string">'o'</span>)
+axis([-1,11,-0.1, 1.1]);
+
+<span class="comment">% max likelihood estimate</span>
+<span class="comment">%</span>
+<span class="comment">% minimize  -(sum_(y_i=1) ui)*a - b + sum log (1+exp(a*ui+b)</span>
+<span class="comment">%</span>
+
+ind1 = find(y==1);
+ind2 = find(y==0);
+c = [-sum(u(ind1)); -length(ind1)];
+A = [u ones(m,1)];
+
+x = [1;-5];
+
+ALPHA = 0.1;
+BETA = 0.5;
+<span class="keyword">for</span> k=1:50
+
+   val = c'*x + sum(log(1+exp(A*x)));
+   w = exp(A*x)./(1+exp(A*x));
+   g = c + A'*w;
+   H = A'*diag(w./(1+exp(A*x)))*A;
+   v = -H\g;
+
+   fprime = g'*v
+   ntdecr = sqrt(-fprime)
+
+   <span class="keyword">if</span> (ntdecr &lt; 1e-8) <span class="keyword">break</span>; <span class="keyword">end</span>;
+   s = 1;
+   newx = x + s*v;
+   newval = c'*newx + sum(log(1+exp(A*newx)));
+   <span class="keyword">while</span> (newval &gt; val + ALPHA*fprime*s)
+      s = BETA*s;
+      newx = x + s*v;
+      newval = c'*newx + sum(log(1+exp(A*newx)));
+   <span class="keyword">end</span>;
+   x = x+s*v;
+<span class="keyword">end</span>;
+
+aml = x(1);  bml = x(2);
+us = linspace(-1,11,1000)';
+ps = exp(aml*us + bml)./(1+exp(aml*us+bml));
+
+dots = plot(us,ps,<span class="string">'-'</span>, u(ind1),y(ind1),<span class="string">'o'</span>,<span class="keyword">...</span>
+     u(ind2),y(ind2),<span class="string">'o'</span>);
+
+axis([-1, 11,-0.1,1.1]);
+xlabel(<span class="string">'x'</span>);
+ylabel(<span class="string">'y'</span>);
+<span class="comment">% print -deps logistics.eps</span>
+</pre><pre class="codeoutput">
+fprime =
+
+   -0.0431
+
+
+ntdecr =
+
+    0.2077
+
+
+fprime =
+
+ -3.3817e-005
+
+
+ntdecr =
+
+    0.0058
+
+
+fprime =
+
+ -4.8878e-011
+
+
+ntdecr =
+
+  6.9913e-006
+
+
+fprime =
+
+ -1.0901e-022
+
+
+ntdecr =
+
+  1.0441e-011
+
+</pre><img vspace="5" hspace="5" src="logistics_01.png"> <p class="footer"><br>
+            Published with MATLAB&reg; 7.1<br></p>
+      </div>
+      <!--
+##### SOURCE BEGIN #####
+%% logistics regresssion example
+
+
+randn('state',0);
+rand('state',0);
+
+a =  1;
+b = -5 ;
+m= 100;
+
+u = 10*rand(m,1);
+y = (rand(m,1) < exp(a*u+b)./(1+exp(a*u+b)));
+plot(u,y,'o')
+axis([-1,11,-0.1, 1.1]);
+
+% max likelihood estimate
+%
+% minimize  -(sum_(y_i=1) ui)*a - b + sum log (1+exp(a*ui+b)
+%
+
+ind1 = find(y==1);
+ind2 = find(y==0);
+c = [-sum(u(ind1)); -length(ind1)];
+A = [u ones(m,1)];
+
+x = [1;-5];
+
+ALPHA = 0.1;
+BETA = 0.5;
+for k=1:50
+
+   val = c'*x + sum(log(1+exp(A*x)));
+   w = exp(A*x)./(1+exp(A*x));
+   g = c + A'*w;
+   H = A'*diag(w./(1+exp(A*x)))*A;
+   v = -H\g;
+
+   fprime = g'*v
+   ntdecr = sqrt(-fprime)
+
+   if (ntdecr < 1e-8) break; end;
+   s = 1;
+   newx = x + s*v;
+   newval = c'*newx + sum(log(1+exp(A*newx)));
+   while (newval > val + ALPHA*fprime*s)
+      s = BETA*s;
+      newx = x + s*v;
+      newval = c'*newx + sum(log(1+exp(A*newx)));
+   end;
+   x = x+s*v;
+end;
+
+aml = x(1);  bml = x(2);
+us = linspace(-1,11,1000)';
+ps = exp(aml*us + bml)./(1+exp(aml*us+bml));
+
+dots = plot(us,ps,'-', u(ind1),y(ind1),'o',...
+     u(ind2),y(ind2),'o');
+
+axis([-1, 11,-0.1,1.1]);
+xlabel('x');
+ylabel('y');
+% print -deps logistics.eps
+
+##### SOURCE END #####
+-->
+   </body>
+</html>

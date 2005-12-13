@@ -1,0 +1,270 @@
+<html xmlns:mwsh="http://www.mathworks.com/namespace/mcode/v1/syntaxhighlight.dtd">
+   <head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   
+      <!--
+This HTML is auto-generated from an M-file.
+To make changes, update the M-file and republish this document.
+      -->
+      <title>Figure 8.15: Linear placement problem</title>
+      <meta name="generator" content="MATLAB 7.1">
+      <meta name="date" content="2005-12-12">
+      <meta name="m-file" content="placement_lin"><style>
+
+body {
+  background-color: white;
+  margin:10px;
+}
+
+h1 {
+  color: #990000; 
+  font-size: x-large;
+}
+
+h2 {
+  color: #990000;
+  font-size: medium;
+}
+
+/* Make the text shrink to fit narrow windows, but not stretch too far in 
+wide windows.  On Gecko-based browsers, the shrink-to-fit doesn't work. */ 
+p,h1,h2,div.content div {
+  /* for MATLAB's browser */
+  width: 600px;
+  /* for Mozilla, but the "width" tag overrides it anyway */
+  max-width: 600px;
+  /* for IE */
+  width:expression(document.body.clientWidth > 620 ? "600px": "auto" );
+}
+
+pre.codeinput {
+  background: #EEEEEE;
+  padding: 10px;
+}
+
+span.keyword {color: #0000FF}
+span.comment {color: #228B22}
+span.string {color: #A020F0}
+span.untermstring {color: #B20000}
+span.syscmd {color: #B28C00}
+
+pre.codeoutput {
+  color: #666666;
+  padding: 10px;
+}
+
+pre.error {
+  color: red;
+}
+
+p.footer {
+  text-align: right;
+  font-size: xx-small;
+  font-weight: lighter;
+  font-style: italic;
+  color: gray;
+}
+
+  </style></head>
+   <body>
+      <div class="content">
+         <h1>Figure 8.15: Linear placement problem</h1><pre class="codeinput"><span class="comment">% Section 8.7.3, Boyd &amp; Vandenberghe "Convex Optimization"</span>
+<span class="comment">% Original by Lieven Vandenberghe</span>
+<span class="comment">% Adapted for CVX by Joelle Skaf - 10/24/05</span>
+<span class="comment">% (a figure is generated)</span>
+<span class="comment">%</span>
+<span class="comment">% Placement problem with 6 free points, 8 fixed points and 27 links.</span>
+<span class="comment">% The coordinates of the free points minimize the sum of the Euclidian</span>
+<span class="comment">% lengths of the links, i.e.</span>
+<span class="comment">%           minimize    sum_{i&lt;j) h(||x_i - x_j||)</span>
+<span class="comment">% where h(z) = z.</span>
+
+linewidth = 1;      <span class="comment">% in points;  width of dotted lines</span>
+markersize = 5;    <span class="comment">% in points;  marker size</span>
+
+<span class="comment">% Input Data</span>
+fixed = [ 1   1  -1 -1    1   -1  -0.2  0.1; <span class="comment">% coordinates of fixed points</span>
+          1  -1  -1  1 -0.5 -0.2    -1    1]';
+M = size(fixed,1);  <span class="comment">% number of fixed points</span>
+N = 6;              <span class="comment">% number of free points</span>
+
+<span class="comment">% first N columns of A correspond to free points,</span>
+<span class="comment">% last M columns correspond to fixed points</span>
+
+A = [ 1  0  0 -1  0  0    0  0  0  0  0  0  0  0
+      1  0 -1  0  0  0    0  0  0  0  0  0  0  0
+      1  0  0  0 -1  0    0  0  0  0  0  0  0  0
+      1  0  0  0  0  0   -1  0  0  0  0  0  0  0
+      1  0  0  0  0  0    0 -1  0  0  0  0  0  0
+      1  0  0  0  0  0    0  0  0  0 -1  0  0  0
+      1  0  0  0  0  0    0  0  0  0  0  0  0 -1
+      0  1 -1  0  0  0    0  0  0  0  0  0  0  0
+      0  1  0 -1  0  0    0  0  0  0  0  0  0  0
+      0  1  0  0  0 -1    0  0  0  0  0  0  0  0
+      0  1  0  0  0  0    0 -1  0  0  0  0  0  0
+      0  1  0  0  0  0    0  0 -1  0  0  0  0  0
+      0  1  0  0  0  0    0  0  0  0  0  0 -1  0
+      0  0  1 -1  0  0    0  0  0  0  0  0  0  0
+      0  0  1  0  0  0    0 -1  0  0  0  0  0  0
+      0  0  1  0  0  0    0  0  0  0 -1  0  0  0
+      0  0  0  1 -1  0    0  0  0  0  0  0  0  0
+      0  0  0  1  0  0    0  0 -1  0  0  0  0  0
+      0  0  0  1  0  0    0  0  0 -1  0  0  0  0
+      0  0  0  1  0  0    0  0  0  0  0 -1  0  0
+      0  0  0  1  0 -1    0  0  0  0  0 -1  0  0        <span class="comment">% error in data!!!</span>
+      0  0  0  0  1 -1    0  0  0  0  0  0  0  0
+      0  0  0  0  1  0   -1  0  0  0  0  0  0  0
+      0  0  0  0  1  0    0  0  0 -1  0  0  0  0
+      0  0  0  0  1  0    0  0  0  0  0  0  0 -1
+      0  0  0  0  0  1    0  0 -1  0  0  0  0  0
+      0  0  0  0  0  1    0  0  0  0 -1  0  0  0 ];
+nolinks = size(A,1);    <span class="comment">% number of links</span>
+
+fprintf(1,<span class="string">'Computing the optimal locations of the 6 free points...'</span>);
+
+cvx_begin
+    variable <span class="string">x(N+M,2)</span>
+    minimize ( sum(norms( A*x,2,2 )))
+    x(N+[1:M],:) == fixed
+cvx_end
+
+fprintf(1,<span class="string">'Done! \n'</span>);
+
+<span class="comment">% Plots</span>
+free_sum = x(1:N,:);
+figure(1);
+dots = plot(free_sum(:,1), free_sum(:,2), <span class="string">'or'</span>, fixed(:,1), fixed(:,2), <span class="string">'bs'</span>);
+set(dots(1),<span class="string">'MarkerFaceColor'</span>,<span class="string">'red'</span>);
+hold <span class="string">on</span>
+legend(<span class="string">'Free points'</span>,<span class="string">'Fixed points'</span>,<span class="string">'Location'</span>,<span class="string">'Best'</span>);
+<span class="keyword">for</span> i=1:nolinks
+  ind = find(A(i,:));
+  line = plot(x(ind,1), x(ind,2), <span class="string">':k'</span>);
+  hold <span class="string">on</span>
+  set(line,<span class="string">'LineWidth'</span>,linewidth);
+<span class="keyword">end</span>
+axis([-1.1 1.1 -1.1 1.1]) ;
+axis <span class="string">equal</span>;
+title(<span class="string">'Linear placement problem'</span>);
+<span class="comment">% print -deps placement-lin.eps</span>
+
+figure(2)
+all = [free_sum; fixed];
+bins = 0.05:0.1:1.95;
+lengths = sqrt(sum((A*all).^2')');
+[N2,hist2] = hist(lengths,bins);
+bar(hist2,N2);
+hold <span class="string">on</span>;
+xx = linspace(0,2,1000);  yy = 2*xx;
+plot(xx,yy,<span class="string">'--'</span>);
+axis([0 2 0 4.5]);
+hold <span class="string">on</span>
+plot([0 2], [0 0 ], <span class="string">'k-'</span>);
+title(<span class="string">'Distribution of the 27 link lengths'</span>);
+<span class="comment">% print -deps placement-lin-hist.eps</span>
+</pre><pre class="codeoutput">Computing the optimal locations of the 6 free points...Done! 
+</pre><img vspace="5" hspace="5" src="placement_lin_01.png"> <img vspace="5" hspace="5" src="placement_lin_02.png"> <p class="footer"><br>
+            Published with MATLAB&reg; 7.1<br></p>
+      </div>
+      <!--
+##### SOURCE BEGIN #####
+%% Figure 8.15: Linear placement problem
+
+% Section 8.7.3, Boyd & Vandenberghe "Convex Optimization"
+% Original by Lieven Vandenberghe
+% Adapted for CVX by Joelle Skaf - 10/24/05
+% (a figure is generated)
+%
+% Placement problem with 6 free points, 8 fixed points and 27 links.
+% The coordinates of the free points minimize the sum of the Euclidian
+% lengths of the links, i.e.
+%           minimize    sum_{i<j) h(||x_i - x_j||)
+% where h(z) = z.
+
+linewidth = 1;      % in points;  width of dotted lines
+markersize = 5;    % in points;  marker size
+
+% Input Data
+fixed = [ 1   1  -1 -1    1   -1  -0.2  0.1; % coordinates of fixed points
+          1  -1  -1  1 -0.5 -0.2    -1    1]';
+M = size(fixed,1);  % number of fixed points
+N = 6;              % number of free points
+
+% first N columns of A correspond to free points,
+% last M columns correspond to fixed points
+
+A = [ 1  0  0 -1  0  0    0  0  0  0  0  0  0  0
+      1  0 -1  0  0  0    0  0  0  0  0  0  0  0
+      1  0  0  0 -1  0    0  0  0  0  0  0  0  0
+      1  0  0  0  0  0   -1  0  0  0  0  0  0  0
+      1  0  0  0  0  0    0 -1  0  0  0  0  0  0
+      1  0  0  0  0  0    0  0  0  0 -1  0  0  0
+      1  0  0  0  0  0    0  0  0  0  0  0  0 -1
+      0  1 -1  0  0  0    0  0  0  0  0  0  0  0
+      0  1  0 -1  0  0    0  0  0  0  0  0  0  0
+      0  1  0  0  0 -1    0  0  0  0  0  0  0  0
+      0  1  0  0  0  0    0 -1  0  0  0  0  0  0
+      0  1  0  0  0  0    0  0 -1  0  0  0  0  0
+      0  1  0  0  0  0    0  0  0  0  0  0 -1  0
+      0  0  1 -1  0  0    0  0  0  0  0  0  0  0
+      0  0  1  0  0  0    0 -1  0  0  0  0  0  0
+      0  0  1  0  0  0    0  0  0  0 -1  0  0  0
+      0  0  0  1 -1  0    0  0  0  0  0  0  0  0
+      0  0  0  1  0  0    0  0 -1  0  0  0  0  0
+      0  0  0  1  0  0    0  0  0 -1  0  0  0  0
+      0  0  0  1  0  0    0  0  0  0  0 -1  0  0
+      0  0  0  1  0 -1    0  0  0  0  0 -1  0  0        % error in data!!!
+      0  0  0  0  1 -1    0  0  0  0  0  0  0  0
+      0  0  0  0  1  0   -1  0  0  0  0  0  0  0
+      0  0  0  0  1  0    0  0  0 -1  0  0  0  0
+      0  0  0  0  1  0    0  0  0  0  0  0  0 -1
+      0  0  0  0  0  1    0  0 -1  0  0  0  0  0
+      0  0  0  0  0  1    0  0  0  0 -1  0  0  0 ];
+nolinks = size(A,1);    % number of links
+
+fprintf(1,'Computing the optimal locations of the 6 free points...');
+
+cvx_begin
+    variable x(N+M,2)
+    minimize ( sum(norms( A*x,2,2 )))
+    x(N+[1:M],:) == fixed
+cvx_end
+
+fprintf(1,'Done! \n');
+
+% Plots
+free_sum = x(1:N,:);
+figure(1);
+dots = plot(free_sum(:,1), free_sum(:,2), 'or', fixed(:,1), fixed(:,2), 'bs');
+set(dots(1),'MarkerFaceColor','red');
+hold on
+legend('Free points','Fixed points','Location','Best');
+for i=1:nolinks
+  ind = find(A(i,:));
+  line = plot(x(ind,1), x(ind,2), ':k');
+  hold on
+  set(line,'LineWidth',linewidth);
+end
+axis([-1.1 1.1 -1.1 1.1]) ;
+axis equal;
+title('Linear placement problem');
+% print -deps placement-lin.eps
+
+figure(2)
+all = [free_sum; fixed];
+bins = 0.05:0.1:1.95;
+lengths = sqrt(sum((A*all).^2')');
+[N2,hist2] = hist(lengths,bins);
+bar(hist2,N2);
+hold on;
+xx = linspace(0,2,1000);  yy = 2*xx;
+plot(xx,yy,'REPLACE_WITH_DASH_DASH');
+axis([0 2 0 4.5]);
+hold on
+plot([0 2], [0 0 ], 'k-');
+title('Distribution of the 27 link lengths');
+% print -deps placement-lin-hist.eps
+##### SOURCE END #####
+-->
+   </body>
+</html>

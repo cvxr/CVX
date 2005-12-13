@@ -1,4 +1,4 @@
-% NORM_APPROX       Lp-Norm approximation problem 
+% An L-p norm approximation problem
 % Examples 5.6 & 5.8, Boyd & Vandenberghe "Convex Optimization"
 % Joëlle Skaf - 08/23/05
 %
@@ -24,7 +24,6 @@ A = randn(m,n);
 b = randn(m,1);
 p = 2;
 q = p/(p-1);
-
 
 % Original problem 
 fprintf(1,'Computing the optimal solution of problem 1... ');

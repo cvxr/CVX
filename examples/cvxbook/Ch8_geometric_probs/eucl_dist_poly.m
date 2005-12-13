@@ -1,8 +1,8 @@
-% EUCL_DIST_POLY    Euclidian distance between polyhedra
-% Sec. 8.2.1, Boyd & Vandenberghe "Convex Optimization"
+% Euclidean distance between polyhedra
+% Section 8.2.1, Boyd & Vandenberghe "Convex Optimization"
 % Joelle Skaf - 10/09/05
 %
-% Given two polyhedra C = {x | A1*x <= b1} and D = {x | A2*x <= b2}, the 
+% Given two polyhedra C = {x | A1*x <= b1} and D = {x | A2*x <= b2}, the
 % distance between them is the optimal value of the problem:
 %           minimize    || x - y ||_2
 %               s.t.    A1*x <= b1

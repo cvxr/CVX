@@ -1,7 +1,7 @@
-% EX_5_1    Sensitivity analysis for a simple QCQP
-%           (a figure is generated)
+% Sensitivity analysis for a simple QCQP
 % Exercise 5.1 d), Boyd & Vandenberghe "Convex Optimization"
 % Joëlle Skaf - 08/29/05
+% (a figure is generated)
 % 
 % Let p_star(u) denote the optimal value of:
 %           minimize    x^2 + 1

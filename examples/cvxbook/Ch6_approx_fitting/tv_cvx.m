@@ -1,9 +1,9 @@
-% TV_CVX         Total Variation Reconstruction
-%                (figures are generated)
+% Total variation reconstruction
 % Sec. 6.3.3, fig 6.11, 6.12, 6.13 and 6.14 
 % Boyd & Vandenberghe "Convex Optimization"
 % Original by Lieven Vandenberghe 
 % Adapted for CVX Argyris Zymnis - 10/2005
+% (figures are generated)
 % 
 % Suppose we have a signal x, which is mostly smooth, but has several
 % rapid variations (or jumps). If we apply quadratic smoothing on

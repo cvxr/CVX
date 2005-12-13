@@ -1,4 +1,4 @@
-% MATRIX_GAMES_LP   Mixed strategies for matrix games (LP formulation)
+% Mixed strategies for matrix games (LP formulation)
 % Sec. 5.2.5, Boyd & Vandenberghe "Convex Optimization"
 % Joëlle Skaf - 08/24/05
 %

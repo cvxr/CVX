@@ -1,0 +1,194 @@
+<html xmlns:mwsh="http://www.mathworks.com/namespace/mcode/v1/syntaxhighlight.dtd">
+   <head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   
+      <!--
+This HTML is auto-generated from an M-file.
+To make changes, update the M-file and republish this document.
+      -->
+      <title>Robust regression using the Huber penalty</title>
+      <meta name="generator" content="MATLAB 7.1">
+      <meta name="date" content="2005-12-12">
+      <meta name="m-file" content="fig6_5"><style>
+
+body {
+  background-color: white;
+  margin:10px;
+}
+
+h1 {
+  color: #990000; 
+  font-size: x-large;
+}
+
+h2 {
+  color: #990000;
+  font-size: medium;
+}
+
+/* Make the text shrink to fit narrow windows, but not stretch too far in 
+wide windows.  On Gecko-based browsers, the shrink-to-fit doesn't work. */ 
+p,h1,h2,div.content div {
+  /* for MATLAB's browser */
+  width: 600px;
+  /* for Mozilla, but the "width" tag overrides it anyway */
+  max-width: 600px;
+  /* for IE */
+  width:expression(document.body.clientWidth > 620 ? "600px": "auto" );
+}
+
+pre.codeinput {
+  background: #EEEEEE;
+  padding: 10px;
+}
+
+span.keyword {color: #0000FF}
+span.comment {color: #228B22}
+span.string {color: #A020F0}
+span.untermstring {color: #B20000}
+span.syscmd {color: #B28C00}
+
+pre.codeoutput {
+  color: #666666;
+  padding: 10px;
+}
+
+pre.error {
+  color: red;
+}
+
+p.footer {
+  text-align: right;
+  font-size: xx-small;
+  font-weight: lighter;
+  font-style: italic;
+  color: gray;
+}
+
+  </style></head>
+   <body>
+      <div class="content">
+         <h1>Robust regression using the Huber penalty</h1><pre class="codeinput"><span class="comment">% Sec. 6.1.2, Ex. 6.2/fig 6.5, Boyd &amp; Vandenberghe "Convex Optimization"</span>
+<span class="comment">% Original by Lieven Vandenberghe</span>
+<span class="comment">% Adapted for CVX by Joelle Skaf - 09/07/05</span>
+<span class="comment">% (a figure is generated)</span>
+<span class="comment">%</span>
+<span class="comment">% Compares the solution of regular Least-squares:</span>
+<span class="comment">%           minimize    sum(y_i - alpha - beta*t_i)^2</span>
+<span class="comment">% to the solution of the following:</span>
+<span class="comment">%           minimize    sum( phi_h (y_i - alpha - beta*t_i)^2 )</span>
+<span class="comment">% where phi_h is the Huber penalty function, (t_i,y_i) are data points in a</span>
+<span class="comment">% plane.</span>
+
+cvx_quiet(true);
+<span class="comment">% Input data</span>
+randn(<span class="string">'seed'</span>,1);
+rand(<span class="string">'seed'</span>,1);
+
+m=40;  n=2;    A = randn(m,n);
+xex = [5;1];
+pts = -10+20*rand(m,1);
+A = [ones(m,1) pts];
+b = A*xex + .5*randn(m,1);
+outliers = [-9.5; 9];  outvals = [20; -15];
+A = [A; ones(length(outliers),1), outliers];
+b = [b; outvals];
+m = size(A,1);
+pts = [pts;outliers];
+
+<span class="comment">% Least Squares</span>
+fprintf(1,<span class="string">'Computing the solution of the least-squares problem...'</span>);
+
+xls =  A\b;
+
+fprintf(1,<span class="string">'Done! \n'</span>);
+
+<span class="comment">% Huber</span>
+fprintf(1,<span class="string">'Computing the solution of the huber-penalized problem...'</span>);
+
+cvx_begin
+    variable <span class="string">xhub(n)</span>
+    minimize(sum(huber(A*xhub-b)))
+cvx_end
+
+fprintf(1,<span class="string">'Done! \n'</span>);
+
+<span class="comment">% Plots</span>
+figure(1);  hold <span class="string">off</span>
+plot(pts,b,<span class="string">'o'</span>, [-11; 11], [1 -11; 1 11]*xhub, <span class="string">'-'</span>, <span class="keyword">...</span>
+     [-11; 11], [1 -11; 1 11]*xls, <span class="string">'--'</span>);
+axis([-11 11 -20 25])
+title(<span class="string">'Least-square fit vs robust least-squares fit (Huber-penalized)'</span>);
+xlabel(<span class="string">'x'</span>);
+ylabel(<span class="string">'y'</span>);
+legend(<span class="string">'Data points'</span>,<span class="string">'Huber penalty'</span>,<span class="string">'Regular LS'</span>,<span class="string">'Location'</span>,<span class="string">'Best'</span>);
+<span class="comment">%print -deps robustls.eps</span>
+</pre><pre class="codeoutput">Computing the solution of the least-squares problem...Done! 
+Computing the solution of the huber-penalized problem...Done! 
+</pre><img vspace="5" hspace="5" src="fig6_5_01.png"> <p class="footer"><br>
+            Published with MATLAB&reg; 7.1<br></p>
+      </div>
+      <!--
+##### SOURCE BEGIN #####
+%% Robust regression using the Huber penalty
+
+% Sec. 6.1.2, Ex. 6.2/fig 6.5, Boyd & Vandenberghe "Convex Optimization"
+% Original by Lieven Vandenberghe 
+% Adapted for CVX by Joelle Skaf - 09/07/05
+% (a figure is generated)
+%
+% Compares the solution of regular Least-squares: 
+%           minimize    sum(y_i - alpha - beta*t_i)^2 
+% to the solution of the following:
+%           minimize    sum( phi_h (y_i - alpha - beta*t_i)^2 )
+% where phi_h is the Huber penalty function, (t_i,y_i) are data points in a
+% plane. 
+
+cvx_quiet(true);
+% Input data
+randn('seed',1);
+rand('seed',1);
+
+m=40;  n=2;    A = randn(m,n);
+xex = [5;1];
+pts = -10+20*rand(m,1);
+A = [ones(m,1) pts];
+b = A*xex + .5*randn(m,1);
+outliers = [-9.5; 9];  outvals = [20; -15]; 
+A = [A; ones(length(outliers),1), outliers];  
+b = [b; outvals];
+m = size(A,1);
+pts = [pts;outliers];
+
+% Least Squares
+fprintf(1,'Computing the solution of the least-squares problem...');
+
+xls =  A\b;
+
+fprintf(1,'Done! \n');
+
+% Huber
+fprintf(1,'Computing the solution of the huber-penalized problem...');
+
+cvx_begin
+    variable xhub(n)
+    minimize(sum(huber(A*xhub-b)))
+cvx_end
+
+fprintf(1,'Done! \n');
+
+% Plots
+figure(1);  hold off
+plot(pts,b,'o', [-11; 11], [1 -11; 1 11]*xhub, '-', ...
+     [-11; 11], [1 -11; 1 11]*xls, 'REPLACE_WITH_DASH_DASH'); 
+axis([-11 11 -20 25])
+title('Least-square fit vs robust least-squares fit (Huber-penalized)');
+xlabel('x');
+ylabel('y');
+legend('Data points','Huber penalty','Regular LS','Location','Best');
+%print -deps robustls.eps
+
+##### SOURCE END #####
+-->
+   </body>
+</html>

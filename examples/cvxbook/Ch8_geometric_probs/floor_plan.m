@@ -1,8 +1,8 @@
-% FLOOR_PLAN.m:     Floor planning
-%                   (a figure is generated)
-% Sec. 8.8.1/2, Ex.8.7 Boyd & Vandenberghe "Convex Optimization"
-% Original by Lieven Vandenberghe 
+% Floor planning
+% Section 8.8.1/2, Example 8.7, Boyd & Vandenberghe "Convex Optimization"
+% Original by Lieven Vandenberghe
 % Adapted for CVX by Joelle Skaf - 11/13/05
+% (a figure is generated)
 %
 % Rectangles aligned with the axies need to be place in the smallest
 % possible bounding box. No overlap is allowed. Each rectangle to be placed
@@ -19,7 +19,7 @@ Amin = [100 100 100 100 100; ...
          20 150  20 200 110];
 r = 1;          % minimum spacing constraints
 
-for iter = 1:4 
+for iter = 1:4
     A = Amin(iter,:);
     cvx_begin
         variables x(n) y(n) w(n) h(n) W H

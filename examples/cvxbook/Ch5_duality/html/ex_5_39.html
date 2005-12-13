@@ -1,0 +1,188 @@
+<html xmlns:mwsh="http://www.mathworks.com/namespace/mcode/v1/syntaxhighlight.dtd">
+   <head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   
+      <!--
+This HTML is auto-generated from an M-file.
+To make changes, update the M-file and republish this document.
+      -->
+      <title>SDP relaxations of the two-way partitioning problem</title>
+      <meta name="generator" content="MATLAB 7.1">
+      <meta name="date" content="2005-12-12">
+      <meta name="m-file" content="ex_5_39"><style>
+
+body {
+  background-color: white;
+  margin:10px;
+}
+
+h1 {
+  color: #990000; 
+  font-size: x-large;
+}
+
+h2 {
+  color: #990000;
+  font-size: medium;
+}
+
+/* Make the text shrink to fit narrow windows, but not stretch too far in 
+wide windows.  On Gecko-based browsers, the shrink-to-fit doesn't work. */ 
+p,h1,h2,div.content div {
+  /* for MATLAB's browser */
+  width: 600px;
+  /* for Mozilla, but the "width" tag overrides it anyway */
+  max-width: 600px;
+  /* for IE */
+  width:expression(document.body.clientWidth > 620 ? "600px": "auto" );
+}
+
+pre.codeinput {
+  background: #EEEEEE;
+  padding: 10px;
+}
+
+span.keyword {color: #0000FF}
+span.comment {color: #228B22}
+span.string {color: #A020F0}
+span.untermstring {color: #B20000}
+span.syscmd {color: #B28C00}
+
+pre.codeoutput {
+  color: #666666;
+  padding: 10px;
+}
+
+pre.error {
+  color: red;
+}
+
+p.footer {
+  text-align: right;
+  font-size: xx-small;
+  font-weight: lighter;
+  font-style: italic;
+  color: gray;
+}
+
+  </style></head>
+   <body>
+      <div class="content">
+         <h1>SDP relaxations of the two-way partitioning problem</h1><pre class="codeinput"><span class="comment">% Exercise 5.33, Boyd &amp; Vandenberghe "Convex Optimization"</span>
+<span class="comment">% Jo&euml;lle Skaf - 09/07/05</span>
+<span class="comment">% (a figure is generated)</span>
+<span class="comment">%</span>
+<span class="comment">% Compares the optimal values of:</span>
+<span class="comment">% 1) the Lagrange dual of the two-way partitioning problem</span>
+<span class="comment">%               maximize    -sum(nu)</span>
+<span class="comment">%                   s.t.    W + diag(nu) &gt;= 0</span>
+<span class="comment">% 2) the SDP relaxation of the two-way partitioning problem</span>
+<span class="comment">%               minimize    trace(WX)</span>
+<span class="comment">%                   s.t.    X &gt;= 0</span>
+<span class="comment">%                           X_ii = 1</span>
+
+<span class="comment">% Input data</span>
+randn(<span class="string">'state'</span>,0);
+n = 10;
+W = randn(n); W = 0.5*(W + W');
+
+<span class="comment">% Lagrange dual</span>
+fprintf(1,<span class="string">'Solving the dual of the two-way partitioning problem...'</span>);
+
+cvx_begin
+    variable <span class="string">nu(n)</span>
+    maximize ( -sum(nu) )
+    W + diag(nu) == semidefinite(n)
+cvx_end
+
+fprintf(1,<span class="string">'Done! \n'</span>);
+opt1 = cvx_optval;
+
+<span class="comment">% SDP relaxation</span>
+fprintf(1,<span class="string">'Solving the SDP relaxation of the two-way partitioning problem...'</span>);
+
+cvx_begin
+    variable <span class="string">X(n,n)</span> <span class="string">symmetric</span>
+    minimize ( trace(W*X) )
+    X == semidefinite(n)
+    diag(X) == 1
+cvx_end
+
+fprintf(1,<span class="string">'Done! \n'</span>);
+opt2 = cvx_optval;
+
+<span class="comment">% Displaying results</span>
+disp(<span class="string">'------------------------------------------------------------------------'</span>);
+disp(<span class="string">'The optimal value of the Lagrange dual and the SDP relaxation fo the    '</span>);
+disp(<span class="string">'two-way partitioning problem are, respectively, '</span>);
+disp([opt1 opt2])
+disp(<span class="string">'They are equal as expected!'</span>);
+</pre><pre class="codeoutput">Solving the dual of the two-way partitioning problem...Done! 
+Solving the SDP relaxation of the two-way partitioning problem...Done! 
+------------------------------------------------------------------------
+The optimal value of the Lagrange dual and the SDP relaxation fo the    
+two-way partitioning problem are, respectively, 
+  -26.6924  -26.6924
+
+They are equal as expected!
+</pre><p class="footer"><br>
+            Published with MATLAB&reg; 7.1<br></p>
+      </div>
+      <!--
+##### SOURCE BEGIN #####
+%% SDP relaxations of the two-way partitioning problem
+
+% Exercise 5.33, Boyd & Vandenberghe "Convex Optimization"
+% Joëlle Skaf - 09/07/05
+% (a figure is generated)
+%
+% Compares the optimal values of:
+% 1) the Lagrange dual of the two-way partitioning problem 
+%               maximize    -sum(nu)
+%                   s.t.    W + diag(nu) >= 0 
+% 2) the SDP relaxation of the two-way partitioning problem
+%               minimize    trace(WX)
+%                   s.t.    X >= 0  
+%                           X_ii = 1
+
+% Input data
+randn('state',0);
+n = 10;
+W = randn(n); W = 0.5*(W + W');
+
+% Lagrange dual
+fprintf(1,'Solving the dual of the two-way partitioning problem...');
+
+cvx_begin
+    variable nu(n)
+    maximize ( -sum(nu) )
+    W + diag(nu) == semidefinite(n) 
+cvx_end
+
+fprintf(1,'Done! \n');
+opt1 = cvx_optval;
+
+% SDP relaxation
+fprintf(1,'Solving the SDP relaxation of the two-way partitioning problem...');
+
+cvx_begin
+    variable X(n,n) symmetric
+    minimize ( trace(W*X) )
+    X == semidefinite(n)
+    diag(X) == 1
+cvx_end
+
+fprintf(1,'Done! \n');
+opt2 = cvx_optval;
+
+% Displaying results
+disp('REPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASH');
+disp('The optimal value of the Lagrange dual and the SDP relaxation fo the    ');
+disp('two-way partitioning problem are, respectively, ');
+disp([opt1 opt2])
+disp('They are equal as expected!');
+
+##### SOURCE END #####
+-->
+   </body>
+</html>

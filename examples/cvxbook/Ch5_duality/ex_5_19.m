@@ -1,4 +1,4 @@
-% EX_5_19   Markovitz portfolio optimization w/ diversification constraint
+% Markovitz portfolio optimization w/ diversification constraint
 % Exercise 5.19 c), Boyd & Vandenberghe "Convex Optimization"
 % Joëlle Skaf - 08/29/05
 % 

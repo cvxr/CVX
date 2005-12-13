@@ -7,7 +7,7 @@ a =  1;
 b = -5 ;
 m= 100;
 
-u = 10*rand(m,1);  
+u = 10*rand(m,1);
 y = (rand(m,1) < exp(a*u+b)./(1+exp(a*u+b)));
 plot(u,y,'o')
 axis([-1,11,-0.1, 1.1]);
@@ -39,11 +39,11 @@ for k=1:50
 
    if (ntdecr < 1e-8) break; end;
    s = 1;
-   newx = x + s*v; 
+   newx = x + s*v;
    newval = c'*newx + sum(log(1+exp(A*newx)));
-   while (newval > val + ALPHA*fprime*s) 
+   while (newval > val + ALPHA*fprime*s)
       s = BETA*s;
-      newx = x + s*v; 
+      newx = x + s*v;
       newval = c'*newx + sum(log(1+exp(A*newx)));
    end;
    x = x+s*v;
@@ -59,4 +59,4 @@ dots = plot(us,ps,'-', u(ind1),y(ind1),'o',...
 axis([-1, 11,-0.1,1.1]);
 xlabel('x');
 ylabel('y');
-print -deps logistics.eps
+% print -deps logistics.eps

@@ -1,0 +1,156 @@
+<html xmlns:mwsh="http://www.mathworks.com/namespace/mcode/v1/syntaxhighlight.dtd">
+   <head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   
+      <!--
+This HTML is auto-generated from an M-file.
+To make changes, update the M-file and republish this document.
+      -->
+      <title>One free point localization</title>
+      <meta name="generator" content="MATLAB 7.1">
+      <meta name="date" content="2005-12-12">
+      <meta name="m-file" content="ex_8_5"><style>
+
+body {
+  background-color: white;
+  margin:10px;
+}
+
+h1 {
+  color: #990000; 
+  font-size: x-large;
+}
+
+h2 {
+  color: #990000;
+  font-size: medium;
+}
+
+/* Make the text shrink to fit narrow windows, but not stretch too far in 
+wide windows.  On Gecko-based browsers, the shrink-to-fit doesn't work. */ 
+p,h1,h2,div.content div {
+  /* for MATLAB's browser */
+  width: 600px;
+  /* for Mozilla, but the "width" tag overrides it anyway */
+  max-width: 600px;
+  /* for IE */
+  width:expression(document.body.clientWidth > 620 ? "600px": "auto" );
+}
+
+pre.codeinput {
+  background: #EEEEEE;
+  padding: 10px;
+}
+
+span.keyword {color: #0000FF}
+span.comment {color: #228B22}
+span.string {color: #A020F0}
+span.untermstring {color: #B20000}
+span.syscmd {color: #B28C00}
+
+pre.codeoutput {
+  color: #666666;
+  padding: 10px;
+}
+
+pre.error {
+  color: red;
+}
+
+p.footer {
+  text-align: right;
+  font-size: xx-small;
+  font-weight: lighter;
+  font-style: italic;
+  color: gray;
+}
+
+  </style></head>
+   <body>
+      <div class="content">
+         <h1>One free point localization</h1><pre class="codeinput"><span class="comment">% Section 8.7.3, Boyd &amp; Vandenberghe "Convex Optimization"</span>
+<span class="comment">% Joelle Skaf - 10/24/05</span>
+<span class="comment">%</span>
+<span class="comment">% K fixed points x_1,...,x_K in R^2 are given and the goal is to place</span>
+<span class="comment">% one additional point x such that the sum of the squares of the</span>
+<span class="comment">% Euclidian distances to fixed points is minimized:</span>
+<span class="comment">%           minimize    sum_{i=1}^K  ||x - x_i||^2</span>
+<span class="comment">% The optimal point is the average of the given fixed points</span>
+
+<span class="comment">% Data generation</span>
+n = 2;
+K = 11;
+randn(<span class="string">'state'</span>,0);
+P = randn(n,K);
+
+<span class="comment">% minimizing the sum of Euclidian distance</span>
+fprintf(1,<span class="string">'Minimizing the sum of the squares the distances to fixed points...'</span>);
+
+cvx_begin
+    variable <span class="string">x(2)</span>
+    minimize ( sum( square_pos( norms(x*ones(1,K) - P,2) ) ) )
+cvx_end
+
+fprintf(1,<span class="string">'Done! \n'</span>);
+
+<span class="comment">% Displaying results</span>
+disp(<span class="string">'------------------------------------------------------------------'</span>);
+disp(<span class="string">'The optimal point location is: '</span>);
+disp(x);
+disp(<span class="string">'The average location of the fixed points is'</span>);
+disp(sum(P,2)/K);
+disp(<span class="string">'They are the same as expected!'</span>);
+</pre><pre class="codeoutput">Minimizing the sum of the squares the distances to fixed points...Done! 
+------------------------------------------------------------------
+The optimal point location is: 
+    0.0379
+    0.0785
+
+The average location of the fixed points is
+    0.0379
+    0.0785
+
+They are the same as expected!
+</pre><p class="footer"><br>
+            Published with MATLAB&reg; 7.1<br></p>
+      </div>
+      <!--
+##### SOURCE BEGIN #####
+%% One free point localization
+
+% Section 8.7.3, Boyd & Vandenberghe "Convex Optimization"
+% Joelle Skaf - 10/24/05
+%
+% K fixed points x_1,...,x_K in R^2 are given and the goal is to place
+% one additional point x such that the sum of the squares of the
+% Euclidian distances to fixed points is minimized:
+%           minimize    sum_{i=1}^K  ||x - x_i||^2
+% The optimal point is the average of the given fixed points
+
+% Data generation
+n = 2;
+K = 11;
+randn('state',0);
+P = randn(n,K);
+
+% minimizing the sum of Euclidian distance
+fprintf(1,'Minimizing the sum of the squares the distances to fixed points...');
+
+cvx_begin
+    variable x(2)
+    minimize ( sum( square_pos( norms(x*ones(1,K) - P,2) ) ) )
+cvx_end
+
+fprintf(1,'Done! \n');
+
+% Displaying results
+disp('REPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASH');
+disp('The optimal point location is: ');
+disp(x);
+disp('The average location of the fixed points is');
+disp(sum(P,2)/K);
+disp('They are the same as expected!');
+##### SOURCE END #####
+-->
+   </body>
+</html>

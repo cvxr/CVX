@@ -1,0 +1,235 @@
+<html xmlns:mwsh="http://www.mathworks.com/namespace/mcode/v1/syntaxhighlight.dtd">
+   <head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   
+      <!--
+This HTML is auto-generated from an M-file.
+To make changes, update the M-file and republish this document.
+      -->
+      <title>Polynomial discrimination</title>
+      <meta name="generator" content="MATLAB 7.1">
+      <meta name="date" content="2005-12-12">
+      <meta name="m-file" content="poly3_discr"><style>
+
+body {
+  background-color: white;
+  margin:10px;
+}
+
+h1 {
+  color: #990000; 
+  font-size: x-large;
+}
+
+h2 {
+  color: #990000;
+  font-size: medium;
+}
+
+/* Make the text shrink to fit narrow windows, but not stretch too far in 
+wide windows.  On Gecko-based browsers, the shrink-to-fit doesn't work. */ 
+p,h1,h2,div.content div {
+  /* for MATLAB's browser */
+  width: 600px;
+  /* for Mozilla, but the "width" tag overrides it anyway */
+  max-width: 600px;
+  /* for IE */
+  width:expression(document.body.clientWidth > 620 ? "600px": "auto" );
+}
+
+pre.codeinput {
+  background: #EEEEEE;
+  padding: 10px;
+}
+
+span.keyword {color: #0000FF}
+span.comment {color: #228B22}
+span.string {color: #A020F0}
+span.untermstring {color: #B20000}
+span.syscmd {color: #B28C00}
+
+pre.codeoutput {
+  color: #666666;
+  padding: 10px;
+}
+
+pre.error {
+  color: red;
+}
+
+p.footer {
+  text-align: right;
+  font-size: xx-small;
+  font-weight: lighter;
+  font-style: italic;
+  color: gray;
+}
+
+  </style></head>
+   <body>
+      <div class="content">
+         <h1>Polynomial discrimination</h1><pre class="codeinput"><span class="comment">% Section 8.6.2, Boyd &amp; Vandenberghe "Convex Optimization"</span>
+<span class="comment">% Original by Lieven Vandenberghe</span>
+<span class="comment">% Adapted for CVX by Joelle Skaf - 10/23/05</span>
+<span class="comment">% (a figure is generated)</span>
+<span class="comment">%</span>
+<span class="comment">% The goal is to find the polynomial of degree 3 on IR^n that separates</span>
+<span class="comment">% two sets of points {x_1,...,x_N} and {y_1,...,y_N}. We are trying to find</span>
+<span class="comment">% the coefficients of an order-3-polynomial P(x) that would satisfy:</span>
+<span class="comment">%           minimize    t</span>
+<span class="comment">%               s.t.    P(x_i) &lt;= t  for i = 1,...,N</span>
+<span class="comment">%                       P(y_i) &gt;= t   for i = 1,...,M</span>
+
+<span class="comment">% Data generation</span>
+rand(<span class="string">'state'</span>,0);  randn(<span class="string">'state'</span>,0);
+N=100;
+M=120;
+X1 = -1+2*rand(2,N);  X1 = X1*diag(0.9*rand(1,N)./sqrt(sum(X1.^2)));
+ind = find(sqrt(sum((X1-[1.1*ones(1,N);zeros(1,N)]).^2)) &lt; 0.9);
+Y1 = X1(:,ind);
+ind = find(sqrt(sum((X1-[1.1*ones(1,N);zeros(1,N)]).^2)) &gt; 1);
+X = X1(:,ind);
+Y = -1+2*rand(2,M);  Y = Y*diag((1.1+rand(1,M))./sqrt(sum(Y.^2)));
+Y = [Y Y1];
+
+N = size(X,2);
+M = size(Y,2);
+<span class="comment">% "Vandermonde"-like matrix</span>
+monX = [ones(1,N); X(1,:); X(2,:); X(1,:).^2;  X(1,:).*X(2,:); <span class="keyword">...</span>
+        X(2,:).^2;  X(1,:).^3;  X(2,:).^2.*X(2,:); <span class="keyword">...</span>
+        X(1,:).*X(2,:).^2;  X(2,:).^3];
+monY = [ones(1,M); Y(1,:); Y(2,:); Y(1,:).^2;  Y(1,:).*Y(2,:); <span class="keyword">...</span>
+        Y(2,:).^2;  Y(1,:).^3;  Y(2,:).^2.*Y(2,:); <span class="keyword">...</span>
+        Y(1,:).*Y(2,:).^2;  Y(2,:).^3];
+
+[m1,m2] = size(monX);
+
+<span class="comment">% Solution via CVX</span>
+fprintf(1,<span class="string">'Finding the optimal cubic polynomial that separates the 2 classes...'</span>);
+
+cvx_begin
+    variables <span class="string">a(m1)</span> <span class="string">t(1)</span>
+    minimize ( t )
+    a'*monX &gt;= -t
+    a'*monY &lt;= t
+cvx_end
+
+fprintf(1,<span class="string">'Done! \n'</span>);
+
+<span class="comment">% Displaying results</span>
+nopts = 1000;
+angles = linspace(0,2*pi,nopts);
+cont = zeros(2,nopts);
+<span class="keyword">for</span> i=1:nopts
+   v = [cos(angles(i)); sin(angles(i))];
+   l = 0;  u = 1;
+   <span class="keyword">while</span> (u-l &gt; 1e-3)
+      s = (u+l)/2;
+      x = s*v;
+      <span class="keyword">if</span> (a'*[1; x(1); x(2); x(1)^2; x(1)*x(2); x(2)^2; x(1)^3; <span class="keyword">...</span>
+             x(1)^2*x(2); x(1)*x(2)^2; x(2)^3] &gt; 0), u = s;
+      <span class="keyword">else</span>, l=s;
+      <span class="keyword">end</span>;
+   <span class="keyword">end</span>;
+   cont(:,i) = s*v;
+<span class="keyword">end</span>;
+
+graph=plot(X(1,:),X(2,:),<span class="string">'o'</span>, Y(1,:), Y(2,:),<span class="string">'o'</span>, cont(1,:), cont(2,:), <span class="string">'-'</span>);
+set(graph(2),<span class="string">'MarkerFaceColor'</span>,[0 0.5 0]);
+title(<span class="string">'No cubic polynomial was able to separate the 2 classes'</span>)
+
+<span class="comment">% Results</span>
+disp(<span class="string">'-----------------------------------------------------------------'</span>);
+disp(<span class="string">'As seen on the figure, the 2 sets of points are not separated.   '</span>);
+disp(<span class="string">'Hence there exists no cubic polynomial that separates these 2 sets'</span>);
+</pre><pre class="codeoutput">Finding the optimal cubic polynomial that separates the 2 classes...Done! 
+-----------------------------------------------------------------
+As seen on the figure, the 2 sets of points are not separated.   
+Hence there exists no cubic polynomial that separates these 2 sets
+</pre><img vspace="5" hspace="5" src="poly3_discr_01.png"> <p class="footer"><br>
+            Published with MATLAB&reg; 7.1<br></p>
+      </div>
+      <!--
+##### SOURCE BEGIN #####
+%% Polynomial discrimination
+
+% Section 8.6.2, Boyd & Vandenberghe "Convex Optimization"
+% Original by Lieven Vandenberghe
+% Adapted for CVX by Joelle Skaf - 10/23/05
+% (a figure is generated)
+%
+% The goal is to find the polynomial of degree 3 on IR^n that separates
+% two sets of points {x_1,...,x_N} and {y_1,...,y_N}. We are trying to find
+% the coefficients of an order-3-polynomial P(x) that would satisfy:
+%           minimize    t
+%               s.t.    P(x_i) <= t  for i = 1,...,N
+%                       P(y_i) >= t   for i = 1,...,M
+
+% Data generation
+rand('state',0);  randn('state',0);
+N=100;
+M=120;
+X1 = -1+2*rand(2,N);  X1 = X1*diag(0.9*rand(1,N)./sqrt(sum(X1.^2)));
+ind = find(sqrt(sum((X1-[1.1*ones(1,N);zeros(1,N)]).^2)) < 0.9);
+Y1 = X1(:,ind);
+ind = find(sqrt(sum((X1-[1.1*ones(1,N);zeros(1,N)]).^2)) > 1);
+X = X1(:,ind);
+Y = -1+2*rand(2,M);  Y = Y*diag((1.1+rand(1,M))./sqrt(sum(Y.^2)));
+Y = [Y Y1];
+
+N = size(X,2);
+M = size(Y,2);
+% "Vandermonde"-like matrix
+monX = [ones(1,N); X(1,:); X(2,:); X(1,:).^2;  X(1,:).*X(2,:); ...
+        X(2,:).^2;  X(1,:).^3;  X(2,:).^2.*X(2,:); ...
+        X(1,:).*X(2,:).^2;  X(2,:).^3];
+monY = [ones(1,M); Y(1,:); Y(2,:); Y(1,:).^2;  Y(1,:).*Y(2,:); ...
+        Y(2,:).^2;  Y(1,:).^3;  Y(2,:).^2.*Y(2,:); ...
+        Y(1,:).*Y(2,:).^2;  Y(2,:).^3];
+
+[m1,m2] = size(monX);
+
+% Solution via CVX
+fprintf(1,'Finding the optimal cubic polynomial that separates the 2 classes...');
+
+cvx_begin
+    variables a(m1) t(1)
+    minimize ( t )
+    a'*monX >= -t
+    a'*monY <= t
+cvx_end
+
+fprintf(1,'Done! \n');
+
+% Displaying results
+nopts = 1000;
+angles = linspace(0,2*pi,nopts);
+cont = zeros(2,nopts);
+for i=1:nopts
+   v = [cos(angles(i)); sin(angles(i))];
+   l = 0;  u = 1;
+   while (u-l > 1e-3)
+      s = (u+l)/2;
+      x = s*v;
+      if (a'*[1; x(1); x(2); x(1)^2; x(1)*x(2); x(2)^2; x(1)^3; ...
+             x(1)^2*x(2); x(1)*x(2)^2; x(2)^3] > 0), u = s;
+      else, l=s;
+      end;
+   end;
+   cont(:,i) = s*v;
+end;
+
+graph=plot(X(1,:),X(2,:),'o', Y(1,:), Y(2,:),'o', cont(1,:), cont(2,:), '-');
+set(graph(2),'MarkerFaceColor',[0 0.5 0]);
+title('No cubic polynomial was able to separate the 2 classes')
+
+% Results
+disp('REPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASH-');
+disp('As seen on the figure, the 2 sets of points are not separated.   ');
+disp('Hence there exists no cubic polynomial that separates these 2 sets');
+
+
+##### SOURCE END #####
+-->
+   </body>
+</html>

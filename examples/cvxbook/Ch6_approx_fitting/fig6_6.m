@@ -1,8 +1,8 @@
-% FIG6_6    Optimal input design
-%           (figures are generated)
+% Optimal input design
 % Sec. 6.3.2, Ex. 6.3/fig. 6.6, Boyd & Vandenberghe "Convex Optimization"
 % Original by Lieven Vandenberghe 
 % Adapted for CVX by Joelle Skaf - 09/26/05
+% (figures are generated)
 %
 % Consider a dynamical system with scalar input sequence u(0),u(1),...,u(N)
 % and scalar output sequence y(0),y(1),...,y(N) related by the convolution

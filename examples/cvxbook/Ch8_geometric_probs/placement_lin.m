@@ -1,23 +1,23 @@
-% PLACEMENT_LIN     Linear placement problem
-%                   (a figure is generated)
-% Sec. 8.7.3 / fig 8.15, Boyd & Vandenberghe "Convex Optimization"
-% Original by Lieven Vandenberghe 
+% Figure 8.15: Linear placement problem
+% Section 8.7.3, Boyd & Vandenberghe "Convex Optimization"
+% Original by Lieven Vandenberghe
 % Adapted for CVX by Joelle Skaf - 10/24/05
+% (a figure is generated)
 %
 % Placement problem with 6 free points, 8 fixed points and 27 links.
 % The coordinates of the free points minimize the sum of the Euclidian
 % lengths of the links, i.e.
 %           minimize    sum_{i<j) h(||x_i - x_j||)
-% where h(z) = z. 
+% where h(z) = z.
 
-linewidth = 1;      % in points;  width of dotted lines 
+linewidth = 1;      % in points;  width of dotted lines
 markersize = 5;    % in points;  marker size
 
 % Input Data
 fixed = [ 1   1  -1 -1    1   -1  -0.2  0.1; % coordinates of fixed points
-          1  -1  -1  1 -0.5 -0.2    -1    1]';    
+          1  -1  -1  1 -0.5 -0.2    -1    1]';
 M = size(fixed,1);  % number of fixed points
-N = 6;              % number of free points 
+N = 6;              % number of free points
 
 % first N columns of A correspond to free points,
 % last M columns correspond to fixed points
@@ -47,7 +47,7 @@ A = [ 1  0  0 -1  0  0    0  0  0  0  0  0  0  0
       0  0  0  0  1  0   -1  0  0  0  0  0  0  0
       0  0  0  0  1  0    0  0  0 -1  0  0  0  0
       0  0  0  0  1  0    0  0  0  0  0  0  0 -1
-      0  0  0  0  0  1    0  0 -1  0  0  0  0  0 
+      0  0  0  0  0  1    0  0 -1  0  0  0  0  0
       0  0  0  0  0  1    0  0  0  0 -1  0  0  0 ];
 nolinks = size(A,1);    % number of links
 

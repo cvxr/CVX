@@ -1,8 +1,8 @@
-% SEPARATE_PT_POLY  Separating a point from a polyhedron
-% Sec. 8.1.1, Boyd & Vandenberghe "Convex Optimization" 
+% Section 8.1.1: Separating a point from a polyhedron
+% Boyd & Vandenberghe "Convex Optimization"
 % Joelle Skaf - 10/09/05
 %
-% The goal is to produce a hyperplane separating x0 and the polyhedron 
+% The goal is to produce a hyperplane separating x0 and the polyhedron
 % defined as {x | Ax <= b}
 %           minimize    mu'*x0 - b'*lambda
 %                       A'*lambda = mu

@@ -1,8 +1,8 @@
-% FIG_6_20  Spline fitting
-%           (a figure is generated)
+% Spline fitting
 % Sec. 6.5.3, Ex. 6.8/fig 6.20, Boyd & Vandenberghe "Convex Optimization"
 % Original by Lieven Vandenberghe 
 % Adapted for CVX by Joelle Skaf - 10/03/05
+% (a figure is generated)
 %
 % Given data u_1,...,u_m and v_1,...,v_m in R, the goal is to fit to the  
 % data piecewise polynomials with maximum degree 3 (with continuous first 

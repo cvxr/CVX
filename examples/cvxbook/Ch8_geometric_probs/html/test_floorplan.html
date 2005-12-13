@@ -1,0 +1,135 @@
+<html xmlns:mwsh="http://www.mathworks.com/namespace/mcode/v1/syntaxhighlight.dtd">
+   <head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   
+      <!--
+This HTML is auto-generated from an M-file.
+To make changes, update the M-file and republish this document.
+      -->
+      <title>Example 8.7: Floorplan generation test script</title>
+      <meta name="generator" content="MATLAB 7.1">
+      <meta name="date" content="2005-12-12">
+      <meta name="m-file" content="test_floorplan"><style>
+
+body {
+  background-color: white;
+  margin:10px;
+}
+
+h1 {
+  color: #990000; 
+  font-size: x-large;
+}
+
+h2 {
+  color: #990000;
+  font-size: medium;
+}
+
+/* Make the text shrink to fit narrow windows, but not stretch too far in 
+wide windows.  On Gecko-based browsers, the shrink-to-fit doesn't work. */ 
+p,h1,h2,div.content div {
+  /* for MATLAB's browser */
+  width: 600px;
+  /* for Mozilla, but the "width" tag overrides it anyway */
+  max-width: 600px;
+  /* for IE */
+  width:expression(document.body.clientWidth > 620 ? "600px": "auto" );
+}
+
+pre.codeinput {
+  background: #EEEEEE;
+  padding: 10px;
+}
+
+span.keyword {color: #0000FF}
+span.comment {color: #228B22}
+span.string {color: #A020F0}
+span.untermstring {color: #B20000}
+span.syscmd {color: #B28C00}
+
+pre.codeoutput {
+  color: #666666;
+  padding: 10px;
+}
+
+pre.error {
+  color: red;
+}
+
+p.footer {
+  text-align: right;
+  font-size: xx-small;
+  font-weight: lighter;
+  font-style: italic;
+  color: gray;
+}
+
+  </style></head>
+   <body>
+      <div class="content">
+         <h1>Example 8.7: Floorplan generation test script</h1><pre class="codeinput"><span class="comment">% Section 8.8.1/2, Boyd &amp; Vandenberghe "Convex Optimization"</span>
+<span class="comment">% Joelle Skaf 12/04/05</span>
+<span class="comment">%</span>
+<span class="comment">% Rectangles aligned with the axes need to be place in the smallest</span>
+<span class="comment">% possible bounding box. No overlap is allowed. Each rectangle to be placed</span>
+<span class="comment">% can be reconfigured, within some limits.</span>
+<span class="comment">% In the current problem, 60 rectangles are to be place. We are given 2</span>
+<span class="comment">% acyclic graphs H and V (for horizontal and vertical) that specify the</span>
+<span class="comment">% relative positioning constraints of those rectangles.</span>
+<span class="comment">% We are also given minimal areas for the rectangles and aspect ratio</span>
+<span class="comment">% constraints</span>
+
+<span class="comment">% input data</span>
+load <span class="string">data_floorplan_60</span>;
+rho = 1;
+Amin = 100*ones(1,n);
+
+[W, H, w, h, x, y] = floorplan(adj_H, adj_V, rho, Amin,ones(60,1)*0.5,ones(60,1)*2);
+fill([0; W; W; 0],[0;0;H;H],[1 1 1]);           <span class="comment">% bounding box</span>
+hold <span class="string">on</span>
+<span class="keyword">for</span> i=1:n
+    fill([x(i); x(i)+w(i); x(i)+w(i); x(i)],[y(i);y(i);y(i)+h(i);y(i)+h(i)],0.90*[1 1 1]);
+    hold <span class="string">on</span>;
+    text(x(i)+w(i)/2, y(i)+h(i)/2,[int2str(i)]);
+<span class="keyword">end</span>
+axis([0 W 0 H]);
+axis <span class="string">equal</span>; axis <span class="string">off</span>;
+</pre><img vspace="5" hspace="5" src="test_floorplan_01.png"> <p class="footer"><br>
+            Published with MATLAB&reg; 7.1<br></p>
+      </div>
+      <!--
+##### SOURCE BEGIN #####
+%% Example 8.7: Floorplan generation test script
+
+% Section 8.8.1/2, Boyd & Vandenberghe "Convex Optimization"
+% Joelle Skaf 12/04/05
+%
+% Rectangles aligned with the axes need to be place in the smallest
+% possible bounding box. No overlap is allowed. Each rectangle to be placed
+% can be reconfigured, within some limits.
+% In the current problem, 60 rectangles are to be place. We are given 2
+% acyclic graphs H and V (for horizontal and vertical) that specify the
+% relative positioning constraints of those rectangles.
+% We are also given minimal areas for the rectangles and aspect ratio
+% constraints
+
+% input data
+load data_floorplan_60;
+rho = 1;
+Amin = 100*ones(1,n);
+
+[W, H, w, h, x, y] = floorplan(adj_H, adj_V, rho, Amin,ones(60,1)*0.5,ones(60,1)*2);
+fill([0; W; W; 0],[0;0;H;H],[1 1 1]);           % bounding box
+hold on
+for i=1:n
+    fill([x(i); x(i)+w(i); x(i)+w(i); x(i)],[y(i);y(i);y(i)+h(i);y(i)+h(i)],0.90*[1 1 1]);
+    hold on;
+    text(x(i)+w(i)/2, y(i)+h(i)/2,[int2str(i)]);
+end
+axis([0 W 0 H]);
+axis equal; axis off;
+##### SOURCE END #####
+-->
+   </body>
+</html>

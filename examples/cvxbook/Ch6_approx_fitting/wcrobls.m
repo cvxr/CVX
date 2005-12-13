@@ -1,9 +1,9 @@
-% WCROBLS   Comparison of worst-case robust, Tickhonov and nominal LS 
-%           (a figure is generated) 
+% Comparison of worst-case robust, Tickhonov and nominal least squares 
 % Sec. 6.4.2, EX. 6.6/fig. 6.16, 
 % Boyd & Vandenberghe "Convex Optimization"
 % Original by Lieven Vandenberghe 
 % Adapted for CVX Argyris Zymnis - 11/27/05
+% (a figure is generated)
 %
 % Consider the least-squares problem:
 %       minimize ||(A0 + u1*A1 + u2*A2)x - b||_2 

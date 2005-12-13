@@ -1,10 +1,9 @@
-% EUCL_PROJ_HYP     Euclidian projection on a hyperplane 
-%                   (verifying equality to analytic solution)
-% Sec. 8.1.1, Boyd & Vandenberghe "Convex Optimization"
+% Euclidean projection on a hyperplane
+% Section 8.1.1, Boyd & Vandenberghe "Convex Optimization"
 % Joelle Skaf - 10/04/05
 %
-% The projection of x0 on a hyperplane C = {x | a'*x = b} is given by 
-%           minimize || x - x0 ||^2 
+% The projection of x0 on a hyperplane C = {x | a'*x = b} is given by
+%           minimize || x - x0 ||^2
 %               s.t.    a'*x = b
 % It is also given by P_C(x0) = x0 + (b - a'*x0)*a/||a||^2
 
@@ -25,9 +24,9 @@ fprintf(1,'Done! \n');
 fprintf(1,'Computing the optimal solution by solving a QP ...');
 
 cvx_begin
-	variable x(n) 
-    minimize ( square_pos(norm(x - x0)) ) 
-	a'*x == b 
+    variable x(n)
+    minimize ( square_pos(norm(x - x0)) )
+    a'*x == b
 cvx_end
 
 fprintf(1,'Done! \n');
@@ -41,4 +40,4 @@ disp('Computing the distance between x0 and the hyperplane in each case');
 disp(['||x0 - p_C(x0)|| = ' num2str(norm(x0 - pc_x0))]);
 disp(['||x0 - x_star || = ' num2str(norm(x0 - x))]);
 disp('Verifying that the analytical solution and the solution obtained via QP are equal: ');
-[pc_x0 x]	
+[pc_x0 x]

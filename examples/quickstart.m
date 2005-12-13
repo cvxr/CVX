@@ -1,4 +1,4 @@
-% Quick start: examples from the documentation
+% QUICKSTART  Examples from the CVX User's guide
 
 has_quadprog = exist( 'quadprog' );
 has_quadprog = has_quadprog == 2 | has_quadprog == 3;
@@ -129,7 +129,7 @@ disp( sprintf( 'Residual vector; verify that the peaks match the objective (%6.4
 disp( [ '   A*x-b = [ ', sprintf( '%7.4f ', A*x-b ), ']' ] );
 disp( ' ' );
 
-input( 'Press Enter/Return for the next example...' ); 
+input( 'Press Enter/Return for the next example...' );
 clc; echo on
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -140,7 +140,7 @@ if has_linprog,
     % Matlab version
     f    = [ zeros(n,1); ones(m,1);  ones(m,1)  ];
     Aeq  = [ A,          -eye(m),    +eye(m)    ];
-    lb   = [ -Inf*ones(n,1);  zeros(m,1); zeros(m,1) ]; 
+    lb   = [ -Inf*ones(n,1);  zeros(m,1); zeros(m,1) ];
     xzz  = linprog(f,[],[], Aeq,b,lb,[]);
     x_lp = xzz(1:n,:);
 else,
@@ -170,7 +170,7 @@ disp( 'Residual vector; verify the presence of several zero residuals:' );
 disp( [ '   A*x-b = [ ', sprintf( '%7.4f ', A*x-b ), ']' ] );
 disp( ' ' );
 
-input( 'Press Enter/Return for the next example...' ); 
+input( 'Press Enter/Return for the next example...' );
 clc; echo on
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -195,7 +195,7 @@ disp( sprintf( 'Residual vector; verify a tie for %d-th place (%7.4f):', k, temp
 disp( [ '   A*x-b = [ ', sprintf( '%7.4f ', A*x-b ), ']' ] );
 disp( ' ' );
 
-input( 'Press Enter/Return for the next example...' ); 
+input( 'Press Enter/Return for the next example...' );
 clc; echo on
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -218,7 +218,7 @@ disp( 'Residual vector:' );
 disp( [ '   A*x-b = [ ', sprintf( '%7.4f ', A*x-b ), ']' ] );
 disp( ' ' );
 
-input( 'Press Enter/Return for the next example...' ); 
+input( 'Press Enter/Return for the next example...' );
 clc; echo on
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -251,7 +251,7 @@ disp( 'Equality constraints:' );
 disp( [ '   C*x   = [ ', sprintf( '%7.4f ', C*x ), ']' ] );
 disp( [ '   d     = [ ', sprintf( '%7.4f ', d   ), ']' ] );
 
-input( 'Press Enter/Return for the next example...' ); 
+input( 'Press Enter/Return for the next example...' );
 clc; echo on
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -275,8 +275,8 @@ fprintf( 1, '---------------------------------------\n' );
 for k = 1:length(gamma),
     fprintf( 1, '%8.4e', gamma(k) );
     cvx_begin
-	    variable x(n);
-	    minimize( norm(A*x-b)+gamma(k)*norm(x,1) );
+        variable x(n);
+        minimize( norm(A*x-b)+gamma(k)*norm(x,1) );
     cvx_end
     l1norm(k) = norm(x,1);
     l2norm(k) = norm(A*x-b);

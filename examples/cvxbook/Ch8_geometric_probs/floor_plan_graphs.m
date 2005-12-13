@@ -1,14 +1,15 @@
-% FLOOR_PLAN_GRAPHS:    Solve a floor planning problem given graphs H & V
-% Sec. 8.8.1/2, Ex.8.7 Boyd & Vandenberghe "Convex Optimization"
+% Solve a floor planning problem given graphs H & V
+% Section 8.8.1/2, Example 8.7, Boyd & Vandenberghe "Convex Optimization"
 % Joelle Skaf - 11/13/05
+% (a figure is generated)
 %
 % Rectangles aligned with the axes need to be place in the smallest
 % possible bounding box. No overlap is allowed. Each rectangle to be placed
-% can be reconfigured, within some limits. 
+% can be reconfigured, within some limits.
 % In the current problem, 5 rectangles are to be place. We are given 2
 % acyclic graphs H and V (for horizontal and vertical) that specify the
-% relative positioning constraints of those rectangles. 
-% We are also given minimal areas for the rectangles. 
+% relative positioning constraints of those rectangles.
+% We are also given minimal areas for the rectangles.
 
 cvx_quiet(1);
 % Input data
@@ -24,7 +25,7 @@ V_tree = [0 0 0 1 0;...
           0 0 0 1 0;...
           0 0 0 0 0;...
           0 0 0 0 0];
-      
+
 Amin = [100 100 100 100 100; ...
          20  50  80 150 200; ...
         180  80  80  80  80; ...

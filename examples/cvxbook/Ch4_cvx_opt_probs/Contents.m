@@ -8,3 +8,4 @@
 %  ex_4_38.m             - Exercise 4.38(b): Linear matrix inequalities with one variable
 %  ex_4_5.m              - Exercise 4.5: Show the equivalence of 3 convex problem formations
 %  fastest_mixing_MC.m   - Find the fastest mixing Markov chain on a graph
+help Contents

@@ -1,8 +1,8 @@
-% REGRESSOR_CVX         Regressor selection problem
-%                       (a figure is generated)
+% Regressor selection problem
 % Sec. 6.3.1, Ex. 6.4/fig 6.7, Boyd & Vandenberghe "Convex Optimization"
 % Original by Lieven Vandenberghe 
 % Adapted for CVX Argyris Zymnis - 10/2005
+% (a figure is generated)
 %
 % Solves   
 %        minimize   ||A*x-b||_2 

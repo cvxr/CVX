@@ -1,17 +1,17 @@
-% SEPARATE_POLY_2D  Separating polyhedra in 2D 
-%                   (a figure is generated)
-% Sec. 8.2.2, Boyd & Vandenberghe "Convex Optimization"                    
+% Section 8.2.2: Separating polyhedra in 2D
+% Boyd & Vandenberghe "Convex Optimization"
 % Joelle Skaf - 10/09/05
+% (a figure is generated)
 %
 % If the two polyhedra C = {x | A1*x <= b1} and D = {y | A2*y <= b2} can be
-% separated by a hyperplane, it will be of the  form 
+% separated by a hyperplane, it will be of the  form
 %           z'*x - z'*y >= -lambda'*b1 - mu'*b2 > 0
 % where z, lambda and mu are the optimal variables of the problem:
 %           maximize    -b1'*lambda - b2'*mu
 %               s.t.    A1'*lambda + z = 0
 %                       A2'*mu  - z = 0
 %                       norm*(z) <= 1
-%                       lambda >=0 , mu >= 0 
+%                       lambda >=0 , mu >= 0
 % Note: here x is in R^2
 
 % Input data
@@ -33,7 +33,7 @@ cvx_begin
     A2'*muu - z == 0
     norm(z) <= 1
     -lam <=0
-    -muu <=0 
+    -muu <=0
 cvx_end
 
 fprintf(1,'Done! \n');
@@ -49,7 +49,7 @@ p = -z(1)*t/z(2) + (muu'*b2 - lam'*b1)/(2*z(2));
 figure;
 fill([-2; 0; 2; 0],[0;2;0;-2],'b', [3;5;5;3],[2;2;4;4],'r')
 axis([-3 6 -3 6])
-axis square 
+axis square
 hold on;
 plot(t,p)
 title('Separating 2 polyhedra by a hyperplane');

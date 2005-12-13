@@ -1,27 +1,27 @@
-% SVM_1     Simple Support Vector Classifier
-%           (a figure is generated)
-% Sec. 8.6.1 / fig 8.10, Boyd & Vandenberghe "Convex Optimization"
-% Original by Lieven Vandenberghe 
+% Figure 8.10: Approximate linear discrimination via linear programming
+% Section 8.6.1, Boyd & Vandenberghe "Convex Optimization"
+% Original by Lieven Vandenberghe
 % Adapted for CVX by Joelle Skaf - 10/16/05
-
-% The goal is to find a function f(x) = a'*x - b that classifies the non- 
-% separable points {x_1,...,x_N} and {y_1,...,y_M} by allowing some 
-% misclassification. a and b can be obtained by solving the following 
-% problem: 
+% (a figure is generated)
+%
+% The goal is to find a function f(x) = a'*x - b that classifies the non-
+% separable points {x_1,...,x_N} and {y_1,...,y_M} by allowing some
+% misclassification. a and b can be obtained by solving the following
+% problem:
 %           minimize    1'*u + 1'*v
 %               s.t.    a'*x_i - b >= 1 - u_i        for i = 1,...,N
 %                       a'*y_i - b <= -(1 - v_i)     for i = 1,...,M
 %                       u >= 0 and v >= 0
 
 % data generation
-n = 2; 
-randn('state',2); 
+n = 2;
+randn('state',2);
 N = 50; M = 50;
-Y = [1.5+0.9*randn(1,0.6*N), 1.5+0.7*randn(1,0.4*N); 
+Y = [1.5+0.9*randn(1,0.6*N), 1.5+0.7*randn(1,0.4*N);
      2*(randn(1,0.6*N)+1), 2*(randn(1,0.4*N)-1)];
-X = [-1.5+0.9*randn(1,0.6*M),  -1.5+0.7*randn(1,0.4*M); 
+X = [-1.5+0.9*randn(1,0.6*M),  -1.5+0.7*randn(1,0.4*M);
       2*(randn(1,0.6*M)-1), 2*(randn(1,0.4*M)+1)];
-T = [-1 1; 1 1];  
+T = [-1 1; 1 1];
 Y = T*Y;  X = T*X;
 
 % Solution via CVX
@@ -31,7 +31,7 @@ cvx_begin
     X'*a - b >= 1 - u
     Y'*a - b <= -(1 - v)
     u >= 0
-    v >= 0 
+    v >= 0
 cvx_end
 
 % Displaying results

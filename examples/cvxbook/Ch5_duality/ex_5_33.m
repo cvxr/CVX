@@ -1,7 +1,7 @@
-% EX_5_33   Parametrized L1-norm approximation
-%           (a figure is generated)
+% Parametrized L1-norm approximation
 % Exercise 5.33, Boyd & Vandenberghe "Convex Optimization"
 % Joëlle Skaf - 08/29/05
+% (a figure is generated)
 % 
 % Let p_star(epsilon) be the optimal value of the following problem:
 %               minimize    ||Ax + b + epsilon*d||_1
@@ -19,6 +19,7 @@ A = [-2  7  1; ...
 b = [-4 3 9 0 -11 5]';
 d = [-10 -13 -27 -10 -7 14]';
 epsilon = [-1:0.05:1];
+p_star = zeros(size(epsilon));
 
 fprintf(1,'Computing p*(epsilon) for -1 <= epsilon <= 1 ...');
 

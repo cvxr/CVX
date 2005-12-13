@@ -1,10 +1,9 @@
-% EUCL_PROJ_HLF     Euclidian projection on a halfspace
-%                   (verifying equality to analytic solution)
+% Euclidean projection on a halfspace
 % Sec. 8.1.1, Boyd & Vandenberghe "Convex Optimization"
 % Joelle Skaf - 10/04/05
 %
-% The projection of x0 on a halfspace C = {x | a'*x <= b} is given by 
-%           minimize || x - x0 ||^2 
+% The projection of x0 on a halfspace C = {x | a'*x <= b} is given by
+%           minimize || x - x0 ||^2
 %               s.t.    a'*x <= b
 % It is also given by P_C(x0) = x0 + (b - a'*x0)*a/||a||^2 if a'*x0 > b
 %                           and x0                         if a'*x0 <=b
@@ -29,17 +28,17 @@ fprintf(1,'Done! \n');
 % Solution via QP
 fprintf(1,'Computing the solution of the QP for the case where a^T*x0 <=b...');
 cvx_begin
-	variable xs0(n) 
-    minimize ( square_pos(norm(xs0 - x0)) ) 
-	a'*xs0 <= b 
+    variable xs0(n)
+    minimize ( square_pos(norm(xs0 - x0)) )
+    a'*xs0 <= b
 cvx_end
 fprintf(1,'Done! \n');
 
 fprintf(1,'Computing the solution of the QP for the case where a^T*x0 > b...');
 cvx_begin
-	variable xs1(n) 
-    minimize ( square_pos(norm(xs1 - x1)) ) 
-	a'*xs1 <= b 
+    variable xs1(n)
+    minimize ( square_pos(norm(xs1 - x1)) )
+    a'*xs1 <= b
 cvx_end
 fprintf(1,'Done! \n');
 

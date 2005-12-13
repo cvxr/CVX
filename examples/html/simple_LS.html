@@ -1,0 +1,105 @@
+<html xmlns:mwsh="http://www.mathworks.com/namespace/mcode/v1/syntaxhighlight.dtd">
+   <head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   
+      <!--
+This HTML is auto-generated from an M-file.
+To make changes, update the M-file and republish this document.
+      -->
+      <title>SIMPLE_LS  Builds and solves a simple least-squares problem using cvx</title>
+      <meta name="generator" content="MATLAB 7.1">
+      <meta name="date" content="2005-12-12">
+      <meta name="m-file" content="simple_LS"><style>
+
+body {
+  background-color: white;
+  margin:10px;
+}
+
+h1 {
+  color: #990000; 
+  font-size: x-large;
+}
+
+h2 {
+  color: #990000;
+  font-size: medium;
+}
+
+/* Make the text shrink to fit narrow windows, but not stretch too far in 
+wide windows.  On Gecko-based browsers, the shrink-to-fit doesn't work. */ 
+p,h1,h2,div.content div {
+  /* for MATLAB's browser */
+  width: 600px;
+  /* for Mozilla, but the "width" tag overrides it anyway */
+  max-width: 600px;
+  /* for IE */
+  width:expression(document.body.clientWidth > 620 ? "600px": "auto" );
+}
+
+pre.codeinput {
+  background: #EEEEEE;
+  padding: 10px;
+}
+
+span.keyword {color: #0000FF}
+span.comment {color: #228B22}
+span.string {color: #A020F0}
+span.untermstring {color: #B20000}
+span.syscmd {color: #B28C00}
+
+pre.codeoutput {
+  color: #666666;
+  padding: 10px;
+}
+
+pre.error {
+  color: red;
+}
+
+p.footer {
+  text-align: right;
+  font-size: xx-small;
+  font-weight: lighter;
+  font-style: italic;
+  color: gray;
+}
+
+  </style></head>
+   <body>
+      <div class="content">
+         <h1>SIMPLE_LS  Builds and solves a simple least-squares problem using cvx</h1><pre class="codeinput">echo <span class="string">on</span>
+
+n = 100;
+A = randn(2*n,n);
+b = randn(2*n,1);
+cvx_begin
+   variable <span class="string">x(n)</span>
+   minimize( norm( A*x-b ) )
+cvx_end
+
+echo <span class="string">off</span>
+</pre><p class="footer"><br>
+            Published with MATLAB&reg; 7.1<br></p>
+      </div>
+      <!--
+##### SOURCE BEGIN #####
+%% SIMPLE_LS  Builds and solves a simple least-squares problem using cvx
+
+
+echo on
+
+n = 100;
+A = randn(2*n,n);
+b = randn(2*n,1);
+cvx_begin
+   variable x(n)
+   minimize( norm( A*x-b ) )
+cvx_end
+
+echo off
+
+##### SOURCE END #####
+-->
+   </body>
+</html>

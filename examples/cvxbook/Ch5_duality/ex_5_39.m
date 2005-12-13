@@ -1,7 +1,7 @@
-% EX_5_39   SDP relaxations of the two-way partitioning problem
-%           (a figure is generated)
+% SDP relaxations of the two-way partitioning problem
 % Exercise 5.33, Boyd & Vandenberghe "Convex Optimization"
 % Joëlle Skaf - 09/07/05
+% (a figure is generated)
 %
 % Compares the optimal values of:
 % 1) the Lagrange dual of the two-way partitioning problem 

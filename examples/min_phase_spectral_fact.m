@@ -1,7 +1,7 @@
-echo on
+% MIN_PHASE_SPECTRAL_FACT   Minimal phase spectral factorization
+% An SDP example from the SeDuMi documentation.
 
-% An SDP example from the SeDuMi documentation. 
-% A minimal phase spectral factorization problem:
+echo on
 
 b = [2; 0.2; -0.3];
 n = length( b );

@@ -1,15 +1,15 @@
-% SEPARATE_ELL_2D  Separating ellipsoids in 2D 
-%                   (a figure is generated)
+% Separating ellipsoids in 2D
 % Joelle Skaf - 11/06/05
-% 
+% (a figure is generated)
+%
 % Finds a separating hyperplane between 2 ellipsoids {x| ||Ax+b||^2<=1} and
 % {y | ||Cy + d||^2 <=1} by solving the following problem and using its
 % dual variables:
 %               minimize    ||w||
 %                   s.t.    ||Ax + b||^2 <= 1       : lambda
-%                           ||Cy + d||^2 <= 1       : mu    
+%                           ||Cy + d||^2 <= 1       : mu
 %                           x - y == w              : z
-% the vector z will define a separating hyperplane because z'*(x-y)>0 
+% the vector z will define a separating hyperplane because z'*(x-y)>0
 
 % input data
 n = 2;
@@ -18,7 +18,7 @@ b = zeros(n,1);
 C = [2 1; -.5 1];
 d = [-3; -3];
 
-% solving for the minimum distance between the 2 ellipsoids and finding 
+% solving for the minimum distance between the 2 ellipsoids and finding
 % the dual variables
 cvx_begin
     variables x(n) y(n) w(n)
@@ -37,7 +37,7 @@ p(1) = z(2); p(2) = -z(1);
 c = linspace(-2,2,100);
 q = repmat(t,1,length(c)) +p*c;
 
-% figure 
+% figure
 nopts = 1000;
 angles = linspace(0,2*pi,nopts);
 [u,v] = meshgrid([-2:0.01:4]);

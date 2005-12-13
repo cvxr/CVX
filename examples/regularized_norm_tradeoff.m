@@ -1,6 +1,6 @@
-echo on
+% REGULARIZED_NORM_TRADEOFF  Builds a norm minimization tradeoff curve
 
-% a regularized norm minimization tradeoff curve:
+echo on
 
 n = 10;
 A = randn(2*n,n);

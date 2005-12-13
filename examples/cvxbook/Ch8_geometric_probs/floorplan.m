@@ -1,10 +1,11 @@
-function [W, H, w, h, x, y] = floorplan(adj_H, adj_V, rho, Amin, l, u ) 
+function [W, H, w, h, x, y] = floorplan(adj_H, adj_V, rho, Amin, l, u )
+
 % FLOOR_PLANNING    minimize the perimiter of the bounding box of width W
 %                   and height H containing the cells of widths, heights
 %                   and positions given by w_i, h_i, (x_i, y_i), subject to
-%                   relative positioning constraints (represented by the 
-%                   adjacency matrices adj_H and adj_V), a minimum spacing 
-%                   constraint (w_i*h_i>=Amin) and aspect ratio constraints 
+%                   relative positioning constraints (represented by the
+%                   adjacency matrices adj_H and adj_V), a minimum spacing
+%                   constraint (w_i*h_i>=Amin) and aspect ratio constraints
 %                   (l_i <= h_i/w_i <= u_i)
 %                   If n is the number of cells, then adj_H and adj_V must
 %                   be nxn matrices.
@@ -13,36 +14,36 @@ function [W, H, w, h, x, y] = floorplan(adj_H, adj_V, rho, Amin, l, u )
 % Joelle Skaf - 12/04/05
 
 
-if nargin < 2 
+if nargin < 2
     error('Insufficient number of input arguments');
 end
 
 [n1, n2] = size(adj_H);
 [m1, m2] = size(adj_V);
 
-if n1~=n2 
+if n1~=n2
     error('Input adjacency matrix for horizontal graph must be square');
 end
 
-if m1~=m2 
+if m1~=m2
     error('Input adjacency matrix for horizontal graph must be square');
 end
 
- 
+
 if n1~=m1
     error('Input adjacency matrices must be of the same size');
 end
 
-n = n1;                     % number of cells 
+n = n1;                     % number of cells
 
-if nargin <3 
+if nargin <3
     rho = 0;
 end
 
 if nargin <4
     Amin = zeros(1,n);
 else
-    if min(size(Amin)) ~=1 
+    if min(size(Amin)) ~=1
         error('Amin should be a vector');
     end
     if max(size(Amin)) ~= n
@@ -53,7 +54,7 @@ else
     end
 end
 
-if nargin == 5 
+if nargin == 5
     if min(size(1)) ~= 1
         error('l must be a vector');
     end
@@ -75,7 +76,7 @@ if nargin == 6
     if size(u,1) == 1
         u = u';
     end
-end 
+end
 
 if nargin < 6
     u = [];
@@ -88,15 +89,15 @@ end
 % verifying that there is a directed path between any pair of cells in at
 % least one of the 2 graphs
 
-paths_H = adj_H; 
+paths_H = adj_H;
 paths_V = adj_V;
-temp_H = adj_H^2; 
-temp_V = adj_V^2; 
-while (sum(temp_H(:))>0) 
+temp_H = adj_H^2;
+temp_V = adj_V^2;
+while (sum(temp_H(:))>0)
     paths_H = paths_H + temp_H;
     temp_H = temp_H*adj_H;
 end
-while (sum(temp_V(:))>0) 
+while (sum(temp_V(:))>0)
     paths_V = paths_V + temp_V;
     temp_V = temp_V*adj_V;
 end
@@ -136,7 +137,7 @@ cvx_begin
         y(leafs_V) >= rho
         x(roots_H) + w(roots_H) + rho <= W
         y(roots_V) + h(roots_V) + rho <= H
-        for i=1:length(nodes_H) 
+        for i=1:length(nodes_H)
             node = nodes_H(i);
             c = adj_H(node,:);
             prnt = find(c>0)';
@@ -144,7 +145,7 @@ cvx_begin
             x(node) + w(node) + rho <= x(prnt);
         end
 
-        for i=1:length(nodes_V) 
+        for i=1:length(nodes_V)
             node = nodes_V(i);
             c = adj_V(node,:);
             prnt = find(c>0)';
@@ -152,10 +153,10 @@ cvx_begin
             y(node) + h(node) + rho <= y(prnt)
         end
 
-        if sum(size(u))~= 0  
+        if sum(size(u))~= 0
             h <= u.*w
         end
-        if sum(size(l))~= 0  
+        if sum(size(l))~= 0
             h >= l.*w
         end
         w' >= quad_over_lin([Amin.^.5;zeros(1,n)],h')

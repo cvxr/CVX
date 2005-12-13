@@ -1,4 +1,4 @@
-% MATRIX_GAMES      Mixed strategies for matrix games 
+% Mixed strategies for matrix games 
 % Sec. 5.2.5, Boyd & Vandenberghe "Convex Optimization"
 % Joëlle Skaf - 08/24/05
 %

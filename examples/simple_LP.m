@@ -1,6 +1,6 @@
-echo on
+% SIMPLE_LP  builds and solves a simple linear program
 
-% a simple linear program
+echo on
 
 n = 100;
 A = randn(0.5*n,n);
@@ -11,7 +11,7 @@ cvx_begin
    variable x(n)
    dual variables y z
    minimize( c' * x + d )
-   subject to 
+   subject to
       y : A * x == b;
       z : x >= 0;
 cvx_end

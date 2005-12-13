@@ -1,22 +1,22 @@
-% LINEAR_DISCR      Simplest linear discrimination 
-%                   (a figure is generated)
-% Sec. 8.6.1 / fig 8.8, Boyd & Vandenberghe "Convex Optimization"
+% Figure 8.8: Simplest linear discrimination
+% Boyd & Vandenberghe "Convex Optimization"
 % Joelle Skaf - 10/16/05
+% (a figure is generated)
 %
 % The goal is to find a function f(x) = a'*x - b that classifies the points
 % {x_1,...,x_N} and {y_1,...,y_M}. a and b can be obtained by solving a
-% feasibility problem: 
+% feasibility problem:
 %           minimize    0
 %               s.t.    a'*x_i - b >=  1     for i = 1,...,N
 %                       a'*y_i - b <= -1     for i = 1,...,M
 
 % data generation
-n = 2; 
-randn('state',3); 
+n = 2;
+randn('state',3);
 N = 10; M = 6;
 Y = [1.5+1*randn(1,M); 2*randn(1,M)];
 X = [-1.5+1*randn(1,N); 2*randn(1,N)];
-T = [-1 1; 1 1];  
+T = [-1 1; 1 1];
 Y = T*Y;  X = T*X;
 
 % Solution via CVX

@@ -1,15 +1,14 @@
-% EUCL_PROJ_CONE1   Euclidian projection on the nonnegative orthant
-%                   (verifying equality to analytic solution)
-% Sec. 8.1.1, Boyd & Vandenberghe "Convex Optimization"
+% Euclidean projection on the nonnegative orthant
+% Section 8.1.1, Boyd & Vandenberghe "Convex Optimization"
 % Joelle Skaf - 10/07/05
 %
-% The projection of x0 on the proper cone K = R+^n is given by 
-%           minimize || x - x0 ||^2 
+% The projection of x0 on the proper cone K = R+^n is given by
+%           minimize || x - x0 ||^2
 %               s.t.    x >= 0
 % It is also given by: P_K(x0)_k = max{x0_k,0}
 
 cvx_quiet(true);
-% Input data 
+% Input data
 randn('seed',0);
 n  = 10;
 x0 = randn(n,1);
@@ -35,5 +34,5 @@ fprintf(1,'Done! \n');
 % Verification
 disp('-----------------------------------------------------------------');
 disp('Verifying that the analytical solution and the solution obtained via QP are equal: ');
-[pk_x0 x]	
+[pk_x0 x]
 disp('They are equal as expected!');

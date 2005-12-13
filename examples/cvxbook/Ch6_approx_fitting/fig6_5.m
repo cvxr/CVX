@@ -1,8 +1,8 @@
-% FIG6_5  Robust regression using Huber penalty
-%           (a figure is generated)
+% Robust regression using the Huber penalty
 % Sec. 6.1.2, Ex. 6.2/fig 6.5, Boyd & Vandenberghe "Convex Optimization"
 % Original by Lieven Vandenberghe 
 % Adapted for CVX by Joelle Skaf - 09/07/05
+% (a figure is generated)
 %
 % Compares the solution of regular Least-squares: 
 %           minimize    sum(y_i - alpha - beta*t_i)^2 

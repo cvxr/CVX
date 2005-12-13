@@ -1,24 +1,24 @@
-% ROBUST_LIN_DISCR  Robust linear discrimination 
-%                   (a figure is generated)
-% Sec. 8.6.1,fig 8.9  Boyd & Vandenberghe "Convex Optimization"
-% Original by Lieven Vandenberghe 
+% Figure 8.9: Robust linear discrimination problem
+% Section 8.6.1, Boyd & Vandenberghe "Convex Optimization"
+% Original by Lieven Vandenberghe
 % Adapted for CVX by Joelle Skaf - 10/16/05
+% (a figure is generated)
 %
 % The goal is to find a function f(x) = a'*x - b that classifies the points
-% {x_1,...,x_N} and {y_1,...,y_M} with maximal 'gap'. a and b can be 
-% obtained by solving the following problem: 
+% {x_1,...,x_N} and {y_1,...,y_M} with maximal 'gap'. a and b can be
+% obtained by solving the following problem:
 %           maximize    t
 %               s.t.    a'*x_i - b >=  t     for i = 1,...,N
 %                       a'*y_i - b <= -t     for i = 1,...,M
 %                       ||a||_2 <= 1
 
 % data generation
-n = 2; 
-randn('state',3); 
+n = 2;
+randn('state',3);
 N = 10; M = 6;
 Y = [1.5+1*randn(1,M); 2*randn(1,M)];
 X = [-1.5+1*randn(1,N); 2*randn(1,N)];
-T = [-1 1; 1 1];  
+T = [-1 1; 1 1];
 Y = T*Y;  X = T*X;
 
 % Solution via CVX

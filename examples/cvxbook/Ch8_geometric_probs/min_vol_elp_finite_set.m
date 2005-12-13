@@ -1,9 +1,9 @@
-% MIN_VOL_ELP_FINITE_SET Minimum volume ellipsoid covering a finite set
-%                        (a figure is generated)
-% Sec. 8.4.1, Boyd & Vandenberghe "Convex Optimization"
+% Minimum volume ellipsoid covering a finite set
+% Section 8.4.1, Boyd & Vandenberghe "Convex Optimization"
 % Almir Mutapcic - 10/05
+% (a figure is generated)
 %
-% Given a finite set of points x_i in R^2, we find the minimum volume 
+% Given a finite set of points x_i in R^2, we find the minimum volume
 % ellipsoid (described by matrix A and vector b) that covers all of
 % the points by solving the optimization problem:
 %

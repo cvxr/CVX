@@ -1,8 +1,8 @@
-% FIG_6_15  Comparison of stochastic and worst-case robust approximation
-%           (a figure is generated) 
+% A comparison of stochastic and worst-case robust approximation
 % Sec. 6.4.2, fig. 6.15, Boyd & Vandenberghe "Convex Optimization"
 % Original by Lieven Vandenberghe 
 % Adapted for CVX by Joelle Skaf - 10/03/05
+% (a figure is generated)
 %
 % Consider the least-squares problem:
 %       minimize ||(A + tB)x - b||_2 

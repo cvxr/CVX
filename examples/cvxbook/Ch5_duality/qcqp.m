@@ -1,4 +1,4 @@
-% QCQP      Solves a simple QCQP
+% Solves a simple QCQP
 % Sec. 5.2.4, Boyd & Vandenberghe "Convex Optimization"
 % Joëlle Skaf - 08/23/05
 %
