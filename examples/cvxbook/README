@@ -1,5 +1,0 @@
-Matlab files for some examples and figures in Boyd & Vandenberghe, 
-Convex Optimization, organized by chapter.
-
-To run (most of) the scripts, you'll need CVX, a Matlab package 
-for convex optimization.
