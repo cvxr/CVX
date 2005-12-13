@@ -1,5 +1,5 @@
-% EX_4_38  LMIs and SDPs with one variable
-% Exercise 4.38 b), Boyd & Vandenberghe "Convex Optimization"
+% Exercise 4.38(b): Linear matrix inequalities with one variable
+% From Boyd & Vandenberghe, "Convex Optimization"
 % Joëlle Skaf - 09/26/05
 %
 % Finds the optimal t that would maximize c*t while still having A - t*B
@@ -8,12 +8,8 @@
 %               s.t.    t*B <= A
 % c can either be a positive or negative real number
 
-cvx_clear
-cvxq = cvx_quiet(false);
-rnds = randn('state');
-randn('state',0);
-
 % Generate input data
+randn('state',0);
 n = 4;
 A = randn(n); A = 0.5*(A'+A); %A = A'*A;
 B = randn(n); B = B'*B;
@@ -31,6 +27,3 @@ cvx_end
 disp('------------------------------------------------------------------------');
 disp('The optimal t obtained is');
 disp(t);
-
-cvx_quiet(cvxq);
-randn('state',rnds);

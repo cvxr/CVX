@@ -1,0 +1,237 @@
+<html xmlns:mwsh="http://www.mathworks.com/namespace/mcode/v1/syntaxhighlight.dtd">
+   <head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   
+      <!--
+This HTML is auto-generated from an M-file.
+To make changes, update the M-file and republish this document.
+      -->
+      <title>Exercise 4.27: Matrix fractional minimization using second-order cone programming</title>
+      <meta name="generator" content="MATLAB 7.1">
+      <meta name="date" content="2005-12-12">
+      <meta name="m-file" content="ex_4_27"><style>
+
+body {
+  background-color: white;
+  margin:10px;
+}
+
+h1 {
+  color: #990000; 
+  font-size: x-large;
+}
+
+h2 {
+  color: #990000;
+  font-size: medium;
+}
+
+/* Make the text shrink to fit narrow windows, but not stretch too far in 
+wide windows.  On Gecko-based browsers, the shrink-to-fit doesn't work. */ 
+p,h1,h2,div.content div {
+  /* for MATLAB's browser */
+  width: 600px;
+  /* for Mozilla, but the "width" tag overrides it anyway */
+  max-width: 600px;
+  /* for IE */
+  width:expression(document.body.clientWidth > 620 ? "600px": "auto" );
+}
+
+pre.codeinput {
+  background: #EEEEEE;
+  padding: 10px;
+}
+
+span.keyword {color: #0000FF}
+span.comment {color: #228B22}
+span.string {color: #A020F0}
+span.untermstring {color: #B20000}
+span.syscmd {color: #B28C00}
+
+pre.codeoutput {
+  color: #666666;
+  padding: 10px;
+}
+
+pre.error {
+  color: red;
+}
+
+p.footer {
+  text-align: right;
+  font-size: xx-small;
+  font-weight: lighter;
+  font-style: italic;
+  color: gray;
+}
+
+  </style></head>
+   <body>
+      <div class="content">
+         <h1>Exercise 4.27: Matrix fractional minimization using second-order cone programming</h1><pre class="codeinput"><span class="comment">% From Boyd &amp; Vandenberghe, "Convex Optimization"</span>
+<span class="comment">% Jo&euml;lle Skaf - 09/26/05</span>
+<span class="comment">%</span>
+<span class="comment">% Shows the equivalence of the following formulations:</span>
+<span class="comment">% 1)        minimize    (Ax + b)'*inv(I + B*diag(x)*B')*(Ax + b)</span>
+<span class="comment">%               s.t.    x &gt;= 0</span>
+<span class="comment">% 2)        minimize    (Ax + b)'*inv(I + B*Y*B')*(Ax + b)</span>
+<span class="comment">%               s.t.    x &gt;= 0</span>
+<span class="comment">%                       Y = diag(x)</span>
+<span class="comment">% 3)        minimize    v'*v + w'*inv(diag(x))*w</span>
+<span class="comment">%               s.t.    v + Bw = Ax + b</span>
+<span class="comment">%                       x &gt;= 0</span>
+<span class="comment">% 4)        minimize    v'*v + w'*inv(Y)*w</span>
+<span class="comment">%               s.t.    Y = diag(x)</span>
+<span class="comment">%                       v + Bw = Ax + b</span>
+<span class="comment">%                       x &gt;= 0</span>
+
+<span class="comment">% Generate input data</span>
+randn(<span class="string">'state'</span>,0);
+m = 16; n = 8;
+A = randn(m,n);
+b = randn(m,1);
+B = randn(m,n);
+
+<span class="comment">% Problem 1: original formulation</span>
+disp(<span class="string">'Computing optimal solution for 1st formulation...'</span>);
+cvx_begin
+    variable <span class="string">x1(n)</span>
+    minimize( matrix_frac(A*x1 + b , eye(m) + B*diag(x1)*B') )
+    x1 &gt;= 0
+cvx_end
+opt1 = cvx_optval;
+
+<span class="comment">% Problem 2: original formulation (modified)</span>
+disp(<span class="string">'Computing optimal solution for 2nd formulation...'</span>);
+cvx_begin
+    variable <span class="string">x2(n)</span>
+    variable <span class="string">Y(n,n)</span> <span class="string">diagonal</span>
+    minimize( matrix_frac(A*x2 + b , eye(m) + B*Y*B') )
+    x2 &gt;= 0
+    Y == diag(x2)
+cvx_end
+opt2 = cvx_optval;
+
+<span class="comment">% Problem 3: equivalent formulation (as given in the book)</span>
+disp(<span class="string">'Computing optimal solution for 3rd formulation...'</span>);
+cvx_begin
+    variables <span class="string">x3(n)</span> <span class="string">w(n)</span> <span class="string">v(m)</span>
+    minimize( square_pos(norm(v)) + matrix_frac(w, diag(x3)) )
+    v + B*w == A*x3 + b
+    x3 &gt;= 0
+cvx_end
+opt3 = cvx_optval;
+
+<span class="comment">% Problem 4: equivalent formulation (modified)</span>
+disp(<span class="string">'Computing optimal solution for 4th formulation...'</span>);
+cvx_begin
+    variables <span class="string">x4(n)</span> <span class="string">w(n)</span> <span class="string">v(m)</span>
+    variable <span class="string">Y(n,n)</span> <span class="string">diagonal</span>
+    minimize( square_pos(norm(v)) + matrix_frac(w, Y) )
+    v + B*w == A*x4 + b
+    x4 &gt;= 0
+    Y == diag(x4)
+cvx_end
+opt4 = cvx_optval;
+
+<span class="comment">% Display the results</span>
+disp(<span class="string">'------------------------------------------------------------------------'</span>);
+disp(<span class="string">'The optimal value for each of the 4 formulations is: '</span>);
+[opt1 opt2 opt3 opt4]
+disp(<span class="string">'They should be equal!'</span>)
+</pre><pre class="codeoutput">Computing optimal solution for 1st formulation...
+Computing optimal solution for 2nd formulation...
+Computing optimal solution for 3rd formulation...
+Computing optimal solution for 4th formulation...
+------------------------------------------------------------------------
+The optimal value for each of the 4 formulations is: 
+
+ans =
+
+    5.1825    5.1825    5.1825    5.1825
+
+They should be equal!
+</pre><p class="footer"><br>
+            Published with MATLAB&reg; 7.1<br></p>
+      </div>
+      <!--
+##### SOURCE BEGIN #####
+%% Exercise 4.27: Matrix fractional minimization using second-order cone programming
+
+% From Boyd & Vandenberghe, "Convex Optimization"
+% Joëlle Skaf - 09/26/05
+%
+% Shows the equivalence of the following formulations:
+% 1)        minimize    (Ax + b)'*inv(I + B*diag(x)*B')*(Ax + b)
+%               s.t.    x >= 0
+% 2)        minimize    (Ax + b)'*inv(I + B*Y*B')*(Ax + b)
+%               s.t.    x >= 0
+%                       Y = diag(x)
+% 3)        minimize    v'*v + w'*inv(diag(x))*w
+%               s.t.    v + Bw = Ax + b
+%                       x >= 0
+% 4)        minimize    v'*v + w'*inv(Y)*w
+%               s.t.    Y = diag(x)
+%                       v + Bw = Ax + b
+%                       x >= 0
+
+% Generate input data
+randn('state',0);
+m = 16; n = 8;
+A = randn(m,n);
+b = randn(m,1);
+B = randn(m,n);
+
+% Problem 1: original formulation
+disp('Computing optimal solution for 1st formulation...');
+cvx_begin
+    variable x1(n)
+    minimize( matrix_frac(A*x1 + b , eye(m) + B*diag(x1)*B') )
+    x1 >= 0
+cvx_end
+opt1 = cvx_optval;
+
+% Problem 2: original formulation (modified)
+disp('Computing optimal solution for 2nd formulation...');
+cvx_begin
+    variable x2(n)
+    variable Y(n,n) diagonal
+    minimize( matrix_frac(A*x2 + b , eye(m) + B*Y*B') )
+    x2 >= 0
+    Y == diag(x2)
+cvx_end
+opt2 = cvx_optval;
+
+% Problem 3: equivalent formulation (as given in the book)
+disp('Computing optimal solution for 3rd formulation...');
+cvx_begin
+    variables x3(n) w(n) v(m)
+    minimize( square_pos(norm(v)) + matrix_frac(w, diag(x3)) )
+    v + B*w == A*x3 + b
+    x3 >= 0
+cvx_end
+opt3 = cvx_optval;
+
+% Problem 4: equivalent formulation (modified)
+disp('Computing optimal solution for 4th formulation...');
+cvx_begin
+    variables x4(n) w(n) v(m)
+    variable Y(n,n) diagonal
+    minimize( square_pos(norm(v)) + matrix_frac(w, Y) )
+    v + B*w == A*x4 + b
+    x4 >= 0
+    Y == diag(x4)
+cvx_end
+opt4 = cvx_optval;
+
+% Display the results
+disp('REPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASH');
+disp('The optimal value for each of the 4 formulations is: ');
+[opt1 opt2 opt3 opt4]
+disp('They should be equal!')
+
+
+##### SOURCE END #####
+-->
+   </body>
+</html>

@@ -1,0 +1,157 @@
+<html xmlns:mwsh="http://www.mathworks.com/namespace/mcode/v1/syntaxhighlight.dtd">
+   <head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   
+      <!--
+This HTML is auto-generated from an M-file.
+To make changes, update the M-file and republish this document.
+      -->
+      <title>Exercise 4.3: Solve a simple QP with inequality constraints</title>
+      <meta name="generator" content="MATLAB 7.1">
+      <meta name="date" content="2005-12-12">
+      <meta name="m-file" content="ex_4_3"><style>
+
+body {
+  background-color: white;
+  margin:10px;
+}
+
+h1 {
+  color: #990000; 
+  font-size: x-large;
+}
+
+h2 {
+  color: #990000;
+  font-size: medium;
+}
+
+/* Make the text shrink to fit narrow windows, but not stretch too far in 
+wide windows.  On Gecko-based browsers, the shrink-to-fit doesn't work. */ 
+p,h1,h2,div.content div {
+  /* for MATLAB's browser */
+  width: 600px;
+  /* for Mozilla, but the "width" tag overrides it anyway */
+  max-width: 600px;
+  /* for IE */
+  width:expression(document.body.clientWidth > 620 ? "600px": "auto" );
+}
+
+pre.codeinput {
+  background: #EEEEEE;
+  padding: 10px;
+}
+
+span.keyword {color: #0000FF}
+span.comment {color: #228B22}
+span.string {color: #A020F0}
+span.untermstring {color: #B20000}
+span.syscmd {color: #B28C00}
+
+pre.codeoutput {
+  color: #666666;
+  padding: 10px;
+}
+
+pre.error {
+  color: red;
+}
+
+p.footer {
+  text-align: right;
+  font-size: xx-small;
+  font-weight: lighter;
+  font-style: italic;
+  color: gray;
+}
+
+  </style></head>
+   <body>
+      <div class="content">
+         <h1>Exercise 4.3: Solve a simple QP with inequality constraints</h1><pre class="codeinput"><span class="comment">% From Boyd &amp; Vandenberghe, "Convex Optimization"</span>
+<span class="comment">% Jo&euml;lle Skaf - 09/26/05</span>
+<span class="comment">%</span>
+<span class="comment">% Solves the following QP with inequality constraints:</span>
+<span class="comment">%           minimize    1/2x'*P*x + q'*x + r</span>
+<span class="comment">%               s.t.    -1 &lt;= x_i &lt;= 1      for i = 1,2,3</span>
+<span class="comment">% Also shows that the given x_star is indeed optimal</span>
+
+<span class="comment">% Generate data</span>
+P = [13 12 -2; 12 17 6; -2 6 12];
+q = [-22; -14.5; 13];
+r = 1;
+n = 3;
+x_star = [1;1/2;-1];
+
+<span class="comment">% Construct and solve the model</span>
+fprintf(1,<span class="string">'Computing the optimal solution ...'</span>);
+cvx_begin
+    variable <span class="string">x(n)</span>
+    minimize ( (1/2)*quad_form(x,P) + q'*x + r)
+    x &gt;= -1
+    x &lt;=  1
+cvx_end
+fprintf(1,<span class="string">'Done! \n'</span>);
+
+<span class="comment">% Display results</span>
+disp(<span class="string">'------------------------------------------------------------------------'</span>);
+disp(<span class="string">'The computed optimal solution is: '</span>);
+disp(x);
+disp(<span class="string">'The given optimal solution is: '</span>);
+disp(x_star);
+</pre><pre class="codeoutput">Computing the optimal solution ...Done! 
+------------------------------------------------------------------------
+The computed optimal solution is: 
+    1.0000
+    0.5000
+   -1.0000
+
+The given optimal solution is: 
+    1.0000
+    0.5000
+   -1.0000
+
+</pre><p class="footer"><br>
+            Published with MATLAB&reg; 7.1<br></p>
+      </div>
+      <!--
+##### SOURCE BEGIN #####
+%% Exercise 4.3: Solve a simple QP with inequality constraints
+
+% From Boyd & Vandenberghe, "Convex Optimization"
+% Joëlle Skaf - 09/26/05
+%
+% Solves the following QP with inequality constraints:
+%           minimize    1/2x'*P*x + q'*x + r
+%               s.t.    -1 <= x_i <= 1      for i = 1,2,3
+% Also shows that the given x_star is indeed optimal
+
+% Generate data
+P = [13 12 -2; 12 17 6; -2 6 12];
+q = [-22; -14.5; 13];
+r = 1;
+n = 3;
+x_star = [1;1/2;-1];
+
+% Construct and solve the model
+fprintf(1,'Computing the optimal solution ...');
+cvx_begin
+    variable x(n)
+    minimize ( (1/2)*quad_form(x,P) + q'*x + r)
+    x >= -1
+    x <=  1
+cvx_end
+fprintf(1,'Done! \n');
+
+% Display results
+disp('REPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASH');
+disp('The computed optimal solution is: ');
+disp(x);
+disp('The given optimal solution is: ');
+disp(x_star);
+
+
+##### SOURCE END #####
+-->
+   </body>
+</html>

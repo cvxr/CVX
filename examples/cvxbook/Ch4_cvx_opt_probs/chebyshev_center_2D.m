@@ -1,16 +1,13 @@
-% CHEBYSHEV_CENTER_2D  computes the Chebyshev center of a 2D-polyhedron
-%                          (a figure is generated)
-% Sec. 4.3.1, Boyd & Vandenberghe "Convex Optimization"
+% Compute and display the Chebyshev center of a 2D polyhedron
+% Sec. 4.3.1, Boyd & Vandenberghe, "Convex Optimization"
 % Joëlle Skaf - 08/16/05
+% (a figure is generated)
 %
 % The goal is to find the largest Euclidian ball (i.e. its center and
 % radius) that lies in a polyhedron described by linear inequalites in this
 % fashion: P = {x : a_i'*x <= b_i, i=1,...,m} where x is in R^2
 
-cvx_clear
-cvxq = cvx_quiet(true);
-
-% Input data
+% Generate the input data
 a1 = [ 2;  1];
 a2 = [ 2; -1];
 a3 = [-1;  2];
@@ -18,7 +15,6 @@ a4 = [-1; -2];
 b = ones(4,1);
 
 % Create and solve the model
-fprintf(1,'Computing Chebyshev center...');
 cvx_begin
     variable r(1)
     variable x_c(2)
@@ -28,7 +24,6 @@ cvx_begin
     a3'*x_c + r*norm(a3,2) <= b(3)
     a4'*x_c + r*norm(a4,2) <= b(4)
 cvx_end
-fprintf(1,'done!\n');
 
 % Generate the figure
 x = linspace(-2,2);
@@ -45,6 +40,3 @@ ylabel('x_2')
 title('Largest Euclidian ball lying in a 2D polyhedron');
 axis([-1 1 -1 1])
 axis equal
-
-cvx_quiet(cvxq);
-

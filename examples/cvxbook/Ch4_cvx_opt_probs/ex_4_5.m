@@ -1,5 +1,5 @@
-% EX_4_5  shows equivalence of 3 convex problem formulations
-% Exercise 4.5, Boyd & Vandenberghe "Convex Optimization"
+% Exercise 4.5: Show the equivalence of 3 convex problem formations
+% From Boyd & Vandenberghe, "Convex Optimization"
 % Joëlle Skaf - 08/17/05
 %
 % Shows the equivalence of the following 3 problems:
@@ -16,30 +16,22 @@
 %                       0 <= u <= M*1
 %                       v >= 0
 
-cvx_clear
-cvxq = cvx_quiet(true);
-rnds = randn('state');
+% Generate input data
 randn('state',0);
-
-% Input data
 m = 16; n = 8;
 A = randn(m,n);
 b = randn(m,1);
 M = 2;
 
 % (a) robust least-squares problem
-fprintf(1,'Computing the solution of the robust least-squares problem...');
-
+disp('Computing the solution of the robust least-squares problem...');
 cvx_begin
     variable x1(n)
     minimize( sum(huber(A*x1-b,M)) )
 cvx_end
 
-fprintf(1,'Done! \n');
-
-% (b) least-squares problem with variable weights
-fprintf(1,'Computing the solution of the least-squares problem with variable weights...');
-
+% (b)least-squares problem with variable weights
+disp('Computing the solution of the least-squares problem with variable weights...');
 cvx_begin
     variable x2(n)
     variable w(m)
@@ -47,11 +39,8 @@ cvx_begin
     w >= 0
 cvx_end
 
-fprintf(1,'Done! \n');
-
 % (c) quadratic program
-fprintf(1,'Computing the solution of the quadratice problem...');
-
+disp('Computing the solution of the quadratic program...');
 cvx_begin
     variable x3(n)
     variable u(m)
@@ -64,15 +53,8 @@ cvx_begin
     v >= 0
 cvx_end
 
-fprintf(1,'Done! \n');
-
-% Displaying results
+% Display results
 disp('------------------------------------------------------------------------');
 disp('The optimal solutions for problem formulations 1, 2 and 3 are given');
 disp('respectively as follows (per column): ');
 [x1 x2 x3]
-
-cvx_quiet(cvxq);
-randn('state',rnds);
-
-
