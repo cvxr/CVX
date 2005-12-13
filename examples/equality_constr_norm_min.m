@@ -1,4 +1,4 @@
-% EQUALITY_CONSTR_NORM_MIN  Equality constraint norm minimization.
+% Equality constrained norm minimization.
 %
 % This script constructs a random equality-constrained norm minimization
 % problem and solves it using CVX. You can also change p to +2 or +Inf

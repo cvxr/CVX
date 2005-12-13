@@ -8,7 +8,7 @@ To make changes, update the M-file and republish this document.
       -->
       <title>Quadratic discrimination (separating ellipsoid)</title>
       <meta name="generator" content="MATLAB 7.1">
-      <meta name="date" content="2005-12-12">
+      <meta name="date" content="2005-12-13">
       <meta name="m-file" content="quad_discr"><style>
 
 body {
@@ -116,7 +116,37 @@ set(graph(2),<span class="string">'MarkerFaceColor'</span>,[0 0.5 0]);
 set(gca,<span class="string">'XTick'</span>,[]); set(gca,<span class="string">'YTick'</span>,[]);
 title(<span class="string">'Quadratic discrimination'</span>);
 <span class="comment">% print -deps ellips.eps</span>
-</pre><pre class="codeoutput">Find the optimal ellipsoid that seperates the 2 classes...Done! 
+</pre><pre class="codeoutput">Find the optimal ellipsoid that seperates the 2 classes... 
+Calling SeDuMi: 108 variables (5 free), 102 equality constraints
+------------------------------------------------------------------------
+SeDuMi 1.1 by AdvOL, 2005 and Jos F. Sturm, 1998, 2001-2003.
+Alg = 2: xz-corrector, Adaptive Step-Differentiation, theta = 0.250, beta = 0.500
+Split 5 free variables
+eqs m = 102, order n = 113, dim = 115, blocks = 2
+nnz(A) = 1206 + 0, nnz(ADA) = 10404, nnz(L) = 5253
+ it :     b*y       gap    delta  rate   t/tP*  t/tD*   feas cg cg  prec
+  0 :            2.17E-001 0.000
+  1 :  5.73E+001 1.04E-001 0.000 0.4809 0.9000 0.9000  -4.15  1  1  2.4E+001
+  2 :  5.84E+001 3.22E-002 0.000 0.3084 0.9000 0.9000  -2.53  1  1  6.3E+000
+  3 :  3.83E+001 7.39E-003 0.000 0.2296 0.9000 0.9000  -0.07  1  1  2.3E+000
+  4 :  2.16E+000 1.67E-004 0.000 0.0227 0.9900 0.9900   0.65  1  1  6.2E-002
+  5 :  9.15E-005 5.20E-009 0.000 0.0000 1.0000 1.0000   0.99  1  1  1.9E-006
+  6 :  5.10E-008 5.60E-012 0.000 0.0011 0.9999 0.9994   1.00  1  1  1.7E-009
+
+iter seconds digits       c*x               b*y
+  6      0.1   Inf  0.0000000000e+000  5.0997580956e-008
+|Ax-b| =  9.5e-009, [Ay-c]_+ =  1.6E-010, |x|= 4.0e+002, |y|= 2.3e-008
+
+Detailed timing (sec)
+   Pre          IPM          Post
+3.004E-002    1.302E-001    0.000E+000    
+Max-norms: ||b||=1, ||c|| = 0,
+Cholesky |add|=0, |skip| = 0, ||L.L|| = 18.1252.
+------------------------------------------------------------------------
+Optimal value (cvx_optval): +0
+Status (cvx_status): Solved
+ 
+Done! 
 </pre><img vspace="5" hspace="5" src="quad_discr_01.png"> <p class="footer"><br>
             Published with MATLAB&reg; 7.1<br></p>
       </div>

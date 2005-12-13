@@ -1,4 +1,4 @@
-% SIMPLE_LP  builds and solves a simple linear program
+% Builds and solves a simple linear program
 
 echo on
 

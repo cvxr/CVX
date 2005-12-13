@@ -1,4 +1,4 @@
-% REGULARIZED_NORM_TRADEOFF  Builds a norm minimization tradeoff curve
+% Builds a norm minimization tradeoff curve
 
 echo on
 

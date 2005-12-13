@@ -98,7 +98,38 @@ fprintf(1,<span class="string">'The Chebyshev center coordinates are: \n'</span>
 disp(x_c);
 fprintf(1,<span class="string">'The radius of the largest Euclidian ball is: \n'</span>);
 disp(r);
-</pre><pre class="codeoutput">Computing Chebyshev center...Done! 
+</pre><pre class="codeoutput">Computing Chebyshev center... 
+Calling SeDuMi: 31 variables (11 free), 20 equality constraints
+------------------------------------------------------------------------
+SeDuMi 1.1 by AdvOL, 2005 and Jos F. Sturm, 1998, 2001-2003.
+Alg = 2: xz-corrector, Adaptive Step-Differentiation, theta = 0.250, beta = 0.500
+Split 11 free variables
+eqs m = 20, order n = 43, dim = 43, blocks = 1
+nnz(A) = 460 + 0, nnz(ADA) = 400, nnz(L) = 210
+ it :     b*y       gap    delta  rate   t/tP*  t/tD*   feas cg cg  prec
+  0 :            5.62E-001 0.000
+  1 :  1.03E-001 1.09E-001 0.000 0.1939 0.9000 0.9000   0.74  1  1  2.0E+000
+  2 : -4.39E-002 3.61E-002 0.000 0.3313 0.9000 0.9000   2.57  1  1  7.3E-001
+  3 : -1.80E-001 1.10E-002 0.000 0.3045 0.9000 0.9000   2.24  1  1  9.4E-002
+  4 : -2.10E-001 2.32E-003 0.000 0.2113 0.9000 0.9000   1.42  1  1  1.3E-002
+  5 : -2.17E-001 7.74E-004 0.000 0.3333 0.9000 0.9000   0.87  1  1  5.2E-003
+  6 : -2.23E-001 3.13E-004 0.000 0.4039 0.9000 0.9000   0.49  1  1  2.7E-003
+  7 : -2.27E-001 1.57E-005 0.000 0.0503 0.9900 0.9900   1.01  1  1  1.6E-004
+  8 : -2.27E-001 1.10E-008 0.000 0.0007 0.9990 0.9990   1.04  1  1  
+iter seconds digits       c*x               b*y
+  8      0.5  14.7 -2.2716335626e-001 -2.2716335626e-001
+|Ax-b| =  7.0e-015, [Ay-c]_+ =  1.4E-016, |x|= 1.1e+001, |y|= 1.6e-001
+
+Detailed timing (sec)
+   Pre          IPM          Post
+3.305E-001    5.107E-001    6.009E-002    
+Max-norms: ||b||=3.438635e+000, ||c|| = 1,
+Cholesky |add|=0, |skip| = 0, ||L.L|| = 2.22501.
+------------------------------------------------------------------------
+Optimal value (cvx_optval): +0.227163
+Status (cvx_status): Solved
+ 
+Done! 
 The Chebyshev center coordinates are: 
     1.3099
    -0.2098

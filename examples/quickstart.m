@@ -1,4 +1,4 @@
-% QUICKSTART  Examples from the CVX User's guide
+% Examples from the CVX User's guide
 
 has_quadprog = exist( 'quadprog' );
 has_quadprog = has_quadprog == 2 | has_quadprog == 3;

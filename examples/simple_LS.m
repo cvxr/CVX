@@ -1,4 +1,4 @@
-% SIMPLE_LS  Builds and solves a simple least-squares problem using cvx
+% Builds and solves a simple least-squares problem using cvx
 
 echo on
 

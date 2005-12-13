@@ -1,5 +1,8 @@
-% MIN_PHASE_SPECTRAL_FACT   Minimal phase spectral factorization
-% An SDP example from the SeDuMi documentation.
+% Minimal phase spectral factorization
+%
+% An SDP example from the SeDuMi documentation, in which a semidefinite
+% matrix is found which minimizes a weighted trace with fixed sums along
+% diagonals.
 
 echo on
 

@@ -1,4 +1,4 @@
-% CLOSEST_TOEPLITZ_PSD  Closest Toeplitz SDP search.
+% Closest Toeplitz SDP search.
 %
 % An SDP example from the SeDuMi documentation, this script finds
 % a Toeplitz Hermitian SDP matrix that is closest, in the Frobenius
