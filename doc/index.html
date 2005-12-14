@@ -8,7 +8,7 @@
 <title>CVX -- software for disciplined convex programming</title>
 </head>
 <body>
-<h1>CVX: Matlab Software for Disciplined Convex Programming</h1>
+<h1><code><b>CVX</b></code>: Matlab Software for Disciplined Convex Programming</h1>
 <h2>Version 0.88 alpha (December 2005)</h2>
 <h3><a href="http://www.stanford.edu/~mcgrant">Michael Grant</a>,
 <a href="http://www.stanford.edu/~boyd">Stephen Boyd</a>, and
@@ -17,6 +17,7 @@
 <ul>
 <li><a href="#intro">Introduction</a></li>
 <li><a href="#system">System requirements</a></li>
+<li><a href="#examples">The example library</a></li>
 <li><a href="#mail">The CVX mailing list</a></li>
 <li><a href="#feed">Request for feedback</a></li>
 <li><a href="#hist">Version history</a></li>
@@ -25,16 +26,14 @@
 <li><a href="#down"><b>Download!</b></a></li>
 </ul>
 <h3><a id="intro" name="intro">Introduction</a></h3>
-<p>CVX is a Matlab-based modeling system that supports <a href=
-"../disc_cvx_prog.html">disciplined convex programming</a>. CVX
+<p><code><b>CVX</b></code> is a Matlab-based modeling system that supports <a href=
+"../disc_cvx_prog.html">disciplined convex programming</a>. <code><b>CVX</b></code>
 turns Matlab into a modeling language, allowing constraints and
 objectives to be specified using standard Matlab expression syntax.
 For example, the following code segment randomly generates a
 constrained norm minimization problem, and solves it:</p>
 <table cellspacing="0" cellpadding="0" summary="CVX code example">
-<tr>
-<td width="15%"></td>
-<td><code>m = 20; n = 10; p = 4;<br />
+<tr><td width="15%"></td><td width="70%"><code>m = 20; n = 10; p = 4;<br />
 A = randn(m,n); b = randn(m,1);<br />
 b = randn(m,1); d = randn(p,1);<br />
 cvx_begin<br />
@@ -48,6 +47,7 @@ cvx_end</code></td>
 <td width="15%"></td>
 </tr>
 </table>
+
 <p>In disciplined convex programming, convex functions and sets are
 built up from a small set of rules from convex analysis, starting
 from a base library of convex functions and sets. Constraints and
@@ -55,15 +55,27 @@ objectives that are expressed using these rules are automatically
 transformed to a canonical form and solved. For the basics of
 convex analysis and convex optimization, see the book
 <cite><a href="../cvxbook.html">Convex Optimization</a>.</cite></p>
-<p>This version of CVX relies on <a href=
+<p>This version of <code><b>CVX</b></code> relies on <a href=
 "http://sedumi.mcmaster.ca/">SeDuMi</a> as the core solver, and so
 is restricted in the functions, sets, and problems it can handle.
 Still, it can handle a wide variety of problems involving various
 norms, matrix inequalities, and other constraints. More information
-can be found in the <cite><a href="cvx_usrguide.pdf">CVX Users'
+can be found in the <cite><a href="cvx_usrguide.pdf"><code><b>CVX</b></code> Users'
 Guide</a>.</cite></p>
+<h3><a id="examples" name="examples">The example library</a></h3>
+<p>The <code><b>CVX</b></code> package includes a growing library of examples to help get you
+started. A large number of examples have been provided
+which reproduce figures or examples from the book
+<cite><a href="../cvxbook.html">Convex Optimization</a>.</cite> We will
+continue to add to this library over time, particularly as new capabilities
+are added to <code><b>CVX</b></code>.</p>
+
+<p>You can browse through this library now&#8212;without having to
+download and install <code><b>CVX</b></code>&#8212;by <a href="examples/">clicking here</a>.
+Of course, if you wish to run any of the examples, please proceed
+to the <a href="#down">download section</a> below.
 <h3><a id="system" name="system">System requirements</a></h3>
-<p>The CVX modeling system is built using <a href=
+<p>The <code><b>CVX</b></code> modeling system is built using <a href=
 "http://www.mathworks.com/products/matlab/">Matlab</a>, and
 requires version 6.1 or later of Matlab to run. It is built using
 both native Matlab code and C MEX files (as is SeDuMi). Precompiled
@@ -72,11 +84,11 @@ distribution, but it should work fine on other platforms as well,
 as long as they support both Matlab and SeDuMi. See Appendix A of
 the <a href="cvx_usrguide.pdf">user guide</a> for more detials, and
 for installation instructions.</p>
-<h3><a id="mail" name="mail">The CVX mailing list</a></h3>
+<h3><a id="mail" name="mail">The <code><b>CVX</b></code> mailing list</a></h3>
 <p>During this alpha period, we will be releasing updates
 incorporating bug fixes, improvements, and new features. The date
 at the bottom of this web page indicates when this distribution was
-last updated. If you would like to be notified automatically when
+last updated. If you would like to be notified when
 an update occurs, we invite you to subscribe to the
 <tt>cvx-announce</tt> mailing list. To do so, simply send a
 plain-text email to</p>
@@ -94,7 +106,7 @@ address above, it will create the email for you. (Outlook users:
 make sure to select "Plain-text" in the "Format" menu, if it is not
 already your default, before sending this message.)</p>
 <h3><a id="feed" name="feed">Feedback</a></h3>
-<p>We welcome your feedback on CVX, particularly in this early
+<p>We welcome your feedback on <code><b>CVX</b></code>, particularly in this early
 stage of development. Please contact <a href=
 "mailto:mcgrant@stanford.edu">Michael Grant</a> or <a href=
 "mailto:boyd@stanford.edu">Stephen Boyd</a> with your bug reports
@@ -102,7 +114,7 @@ and feature suggestions.</p>
 <p>If you do send a bug report, please include the following
 information if possible:</p>
 <ul>
-<li>The versions of CVX, Matlab, and operating system you are
+<li>The versions of <code><b>CVX</b></code>, Matlab, and operating system you are
 using</li>
 <li>A copy of the error messages, if any, produced by Matlab</li>
 <li>A Matlab program ( <tt>.m</tt>) or data ( <tt>.mat</tt>) file
@@ -130,7 +142,7 @@ declared was fixed.</dd>
 <dt>Version 0.87/0.87.1, October 2005:</dt>
 <dd>Improved the setup routine (<tt>cvx_setup</tt>).</dd>
 <dd>Updated the documentation with a table of contents and a new
-section explaining the status messages returned by CVX.</dd>
+section explaining the status messages returned by <code><b>CVX</b></code>.</dd>
 <dd>Implemented workarounds for bugs in SeDuMi's handling of
 certain degenerate problems.</dd>
 <dd>Created a MEX file to improve presolve performance.</dd>
@@ -160,16 +172,21 @@ the list of supported smooth nonlinearities. The current plan is
 to include <tt>logdet()</tt>, <tt>entropy()</tt>, and convex and concave
 branches of <tt>pow(x,p)</tt>. Others may be added upon request.</p>
 <h3><a id="copy" name="copy">Copyright information</a></h3>
-<p>This version of CVX is distributed under the <a href=
+<p>This version of <code><b>CVX</b></code> is distributed under the <a href=
 "http://www.gnu.org/copyleft/gpl.html">GNU General Public
-License</a>. Our intention is for this software to always be usable
-in academic and commercial applications. To that end, the license
+License 2.0</a>. Our intention is for this software to always be usable
+without encumbrance in academic and commercial applications. To that end, the license
 may change in future versions, and we welcome feedback on this
-topic.</p>
+topic. In particular, we do not intend to force anyone to release their
+own applications of <code><b>CVX</b></code> under the GNU license.</p>
+<p>The example library (found in the <tt>examples/</tt> subdirectory of
+the distribution) is public domain. You are free to use
+them in any way you wish; but when you do, we request that you give
+appropriate credit their authors.
 <h3><a id="down" name="down">Download</a></h3>
 <dl>
-<dt>To obtain the CVX distribution, which includes the program
-files, the users' guide, and some examples, use one of the
+<dt>To obtain the <code><b>CVX</b></code> distribution, which includes the program
+files, the users' guide, and the example library, use one of the
 following links:</dt>
 <dd>Windows <tt>.zip</tt> file: <a href="cvx.zip">cvx.zip
 (___ZIP___)</a><br />
