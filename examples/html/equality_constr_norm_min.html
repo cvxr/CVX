@@ -94,6 +94,36 @@ cvx_begin
 cvx_end
 
 echo <span class="string">off</span>
+</pre><pre class="codeoutput"> 
+Calling SeDuMi: 100 variables (20 free), 50 equality constraints
+------------------------------------------------------------------------
+SeDuMi 1.1 by AdvOL, 2005 and Jos F. Sturm, 1998, 2001-2003.
+Alg = 2: xz-corrector, Adaptive Step-Differentiation, theta = 0.250, beta = 0.500
+Split 20 free variables
+eqs m = 50, order n = 121, dim = 121, blocks = 1
+nnz(A) = 2080 + 0, nnz(ADA) = 2500, nnz(L) = 1275
+ it :     b*y       gap    delta  rate   t/tP*  t/tD*   feas cg cg  prec
+  0 :            1.08E+002 0.000
+  1 :  3.09E+001 4.21E+001 0.000 0.3890 0.9000 0.9000   2.36  1  1  1.6E+000
+  2 :  3.89E+001 1.31E+001 0.000 0.3120 0.9000 0.9000   1.34  1  1  5.4E-001
+  3 :  4.25E+001 3.62E+000 0.000 0.2753 0.9000 0.9000   1.08  1  1  1.6E-001
+  4 :  4.38E+001 9.26E-001 0.000 0.2561 0.9000 0.9000   1.02  1  1  4.3E-002
+  5 :  4.42E+001 2.46E-001 0.000 0.2658 0.9000 0.9000   1.00  1  1  1.2E-002
+  6 :  4.43E+001 2.87E-002 0.000 0.1167 0.9197 0.9000   1.00  1  1  2.0E-003
+  7 :  4.43E+001 1.24E-004 0.000 0.0043 0.9990 0.9990   1.00  1  1  
+iter seconds digits       c*x               b*y
+  7      0.1   Inf  4.4300308978e+001  4.4300308978e+001
+|Ax-b| =  2.0e-014, [Ay-c]_+ =  5.2E-015, |x|= 1.9e+001, |y|= 1.3e+001
+
+Detailed timing (sec)
+   Pre          IPM          Post
+4.006E-002    1.202E-001    1.001E-002    
+Max-norms: ||b||=2.810847e+000, ||c|| = 1,
+Cholesky |add|=0, |skip| = 0, ||L.L|| = 1.98904.
+------------------------------------------------------------------------
+Optimal value (cvx_optval): +44.3003
+Status (cvx_status): Solved
+ 
 </pre><p class="footer"><br>
             Published with MATLAB&reg; 7.1<br></p>
       </div>

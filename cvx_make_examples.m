@@ -90,23 +90,13 @@ for k = 1 : length( args ),
         fidw = -1;
     end
 
-%    try,
-        if isempty( file ),
-            generate_directory( mpath, '', force, fidw, base );
-        else,
-            cd( mpath );
-            generate_file( file, '', force );
-        end
-        cd( odir );
-%    catch,
-%        err = lasterror;
-%       cd( odir );
-%        if fidw >= 0,
-%            fclose( fidw );
-%            delete index.html.new
-%        end
-%        rethrow( err );
-%    end
+    if isempty( file ),
+        generate_directory( mpath, '', force, fidw, base );
+    else,
+        cd( mpath );
+        generate_file( file, '', force );
+    end
+    cd( odir );
 
     if fidw >= 0,
         fwrite( fidw, t_tail, 'char' );
@@ -164,30 +154,6 @@ elseif ~isempty( title ),
 end
 
 %
-% If needed, deposit directory name, title, and comments into index.html
-%
-
-if fidc >= 0,
-    dpath = mpath( length(base) + 2 : end );
-    dpath(dpath=='\') = '/';
-    dpath(end+1) = '/';
-    if length( dpath ) > 1,
-        [ dpath2, dname ] = fileparts( mpath );
-        if isempty( title ),
-            fprintf( fidc, '<dt><a href="%s">%s/</a></dt>\n', dpath, dname ),
-        else,
-            fprintf( fidc, '<dt><b>%s</b> (<a href="%s">%s/</a>)</dt>\n', title, dpath, dname );
-        end
-        fprintf( fidc, '<dd>\n' );
-        for k = 1 : length( comments ),
-            fprintf( fidc, '%s\n', comments{k} );
-        end
-    end
-    dlstr = sprintf( '<dl>\n' );
-    fprintf( fidc, dlstr );
-end
-
-%
 % Determine the names of the files and subdirectories to process
 %
 
@@ -205,6 +171,40 @@ for k = 1 : length( dd ),
         if length( name ) < 2 | ~strcmp( name(end-1:end), '.m' ), continue; end
         if strcmp( name, 'Contents.m' ), continue; end
         fnames{end+1} = name;
+    end
+end
+
+%
+% If needed, deposit directory name, title, and comments into index.html
+%
+
+if fidc >= 0,
+    dpath = mpath( length(base) + 2 : end );
+    dpath(dpath=='\') = '/';
+    if ~isempty( dpath ),
+        dpath(end+1) = '/';
+        [ dpath2, dname ] = fileparts( mpath );
+        if isempty( dnames ),
+            mclass = 'liClosed';
+        else,
+            mclass = 'liOpen';
+        end
+        if isempty( title ),
+            fprintf( fidc, '<li class="%s"><a href="%s">%s/</a>\n', mclass, dpath, dname ),
+        else,
+            fprintf( fidc, '<li class="%s"><b>%s</b> (<a href="%s">%s/</a>)\n', mclass, title, dpath, dname );
+        end
+        if false,
+            if ~isempty( comments ),
+                fprintf( fidc, '<br />' );
+                for k = 1 : length( comments ),
+                    fprintf( fidc, '%s\n', comments{k} );
+                end
+            end
+        end
+        fprintf( fidc, '<ul>\n' );
+    else,
+        fprintf( fidc, '<ul class="mktree" id="tree1">\n' );
     end
 end
 
@@ -227,10 +227,9 @@ end
 % Process the files
 %
 
-if fidc >= 0 & length( dpath ) <= 1 & ~isempty( fnames ) & ~isempty( dnames ),
+if fidc >= 0 & isempty( dpath ) & ~isempty( fnames ) & ~isempty( dnames ),
     need_misc = true;
-    fprintf( fidc, '<dt><b>Uncategorized files:</b></dt>\n' );
-    fprintf( fidc, '<dd>\n<dl>\n');
+    fprintf( fidc, '<li><b>Uncategorized files:</b><ul>\n' );
 else,
     need_misc = false;
 end
@@ -241,9 +240,9 @@ for k = 1 : length( fnames ),
     temp = generate_file( name, prefix, force );
     if fidc >= 0,
         if isempty( temp ),
-            fprintf( fidc, '<dt><a href="%s/%s">%s</a></dt>\n', dpath, name, name );
+            fprintf( fidc, '<li><a href="%s%s">%s</a></li>\n', dpath, name, name );
         else,
-            fprintf( fidc, '<dt><a href="%s/html/%shtml">%s</a> (<a href="%s/%s">%s</a>)</dt>\n', dpath, name(1:end-1), temp, dpath, name, name );
+            fprintf( fidc, '<li><a href="%shtml/%shtml">%s</a> (<a href="%s%s">%s</a>)</li>\n', dpath, name(1:end-1), temp, dpath, name, name );
         end
     end
     if isempty( temp ), temp = '(no title)'; end
@@ -251,7 +250,9 @@ for k = 1 : length( fnames ),
     mlen = max( mlen, length( name ) );
 end
 if need_misc,
-    fprintf( fidc, '</dl>\n</dd>\n' );
+    fprintf( fidc, '</ul></li>\n' );
+elseif isempty( fnames ) & isempty( dnames ),
+    fprintf( fidc, '<li>(no files)</li>\n' );
 end
 
 %
@@ -259,9 +260,9 @@ end
 %
 
 if fidc >= 0,
-    fprintf( fidc, '</dl>\n' );
+    fprintf( fidc, '</ul>\n' );
     if ~isempty( dpath ),
-        fprintf( fidc, '</dd>\n' );
+        fprintf( fidc, '</li>\n' );
     end
 end
 
@@ -340,6 +341,7 @@ if force | hdate <= ndate,
         fwrite( fidw, fread( fidr, Inf, 'uint8' ), 'uint8' );
         fclose( fidw );
         cvx_clear
+        cvx_quiet( false );
         publish( name2, struct( 'format', 'html', 'useNewFigure', 0, 'stopOnError', 1, 'createThumbnail', 0 ) );
         delete( name2 );
         if ~isempty( dir( name2 ) ),

@@ -2,6 +2,7 @@
 
 echo on
 
+cvx_quiet( false );
 n = 10;
 A = randn(2*n,n);
 b = randn(2*n,1);
