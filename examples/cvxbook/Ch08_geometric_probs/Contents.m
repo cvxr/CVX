@@ -28,4 +28,3 @@
 %  svm_1.m                  - Figure 8.10: Approximate linear discrimination via linear programming
 %  svm_2.m                  - Figure 8.11: Approximate linear discrimination via support vector classifier
 %  test_floorplan.m         - Example 8.7: Floorplan generation test script
-help Contents

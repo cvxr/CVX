@@ -6,4 +6,3 @@
 %  maxent.m     - (no title)
 %  montecarlo.m - (no title)
 %  probbounds.m - Probability bounds example with voronoi diagram
-help Contents

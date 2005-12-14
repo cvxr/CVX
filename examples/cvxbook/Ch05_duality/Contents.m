@@ -8,4 +8,3 @@
 %  matrix_games_LP.m - Mixed strategies for matrix games (LP formulation)
 %  norm_approx.m     - An L-p norm approximation problem
 %  qcqp.m            - Solves a simple QCQP
-help Contents

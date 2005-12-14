@@ -1,6 +1,6 @@
 function cvx_optval = lp_opt_val( b )
 
-% LP_OPT_VAL  An example of an incomplete problem specification.
+% An example of an incomplete problem specification.
 %
 % This function uses cvx to compute the value of a linear program.
 % The value of the linear program depends upon the value of the
