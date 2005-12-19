@@ -31,81 +31,92 @@ if isempty( args ), args = { base }; end
 %
 
 for k = 1 : length( args ),
-    
-    %
-    % Check the validity of the file or directory
-    %
-    
     file = args{k};
-    switch exist( file ),
-        case 0,
-            error( sprintf( 'Cannot find file or directory: %s', file ) );
-        case 2,
-            [ mpath, file, ext, versn ] = fileparts( which( file ) );
-            file = [ file, ext, versn ];
-            if ~strcmp( ext, '.m' ),
-                error( sprintf( 'Must be an m-file: %s', file ) );
+    if any( file == '*' ),
+        files = dir( file );
+        files = { files.name };
+    else,
+        files = { file };
+    end
+    for j = 1 : length( files );
+        
+        %
+        % Check the validity of the file or directory
+        %
+
+        file = files{j};
+        switch exist( file ),
+            case 0,
+                error( sprintf( 'Cannot find file or directory: %s', file ) );
+            case 2,
+                [ mpath, file, ext, versn ] = fileparts( which( file ) );
+                file = [ file, ext, versn ];
+                if ~strcmp( ext, '.m' ),
+                    error( sprintf( 'Must be an m-file: %s', file ) );
+                elseif strcmp( file, 'Contents.m' ) & length( files ) > 1,
+                    continue;
+                end
+            case 7,
+                cd( file );
+                mpath = cd;
+                cd( odir );
+                file = '';
+            otherwise,
+                error( sprintf( 'Invalid file: %s', file ) );
+        end
+        if length( mpath ) < length( base ) | strncmpi( mpath, base, length( base ) ) == 0,
+            error( sprintf( 'Not a valid a subdirectory of cvx/examples/: %s', mpath ) );
+        end
+
+        %
+        % Process the file or directory
+        %   
+
+        if isempty( file ) & strcmp( mpath, base ),
+            cd( base );
+            [ fidr, message ] = fopen( 'index.html', 'r' );
+            if fidr < 0,
+                error( 'Cannot open index.html\n   %s', message );
             end
-        case 7,
-            cd( file );
-            mpath = cd;
-            cd( odir );
-            file = '';
-        otherwise,
-            error( sprintf( 'Invalid file: %s', file ) );
-    end
-    if length( mpath ) < length( base ) | strncmpi( mpath, base, length( base ) ) == 0,
-        error( sprintf( 'Not a valid a subdirectory of cvx/examples/: %s', mpath ) );
-    end
-    
-    %
-    % Process the file or directory
-    %   
-    
-    if isempty( file ) & strcmp( mpath, base ),
-        cd( base );
-        [ fidr, message ] = fopen( 'index.html', 'r' );
-        if fidr < 0,
-            error( 'Cannot open index.html\n   %s', message );
+            t_head = fread( fidr, Inf, 'uint8=>char' )';
+            t_tail = strfind( t_head, '<!-- END TOC -->' );
+            if length( t_tail ) ~= 1
+                error( 'Corrupt index.html file, cannot proceed.' );
+            end
+            t_tail = t_head( t_tail : end );
+            n_head = strfind( t_head, '<!-- BEGIN TOC -->' );
+            if length( n_head ) ~= 1,
+                error( 'Corrupt index.html file, cannot proceed.' );
+            end
+            t_head( n_head + length( '<!-- BEGIN TOC -->' ) + 1 : end ) = [];
+            fclose( fidr );
+            [ fidw, message ] = fopen( 'index.html.new', 'w+' );
+            if fidw < 0,
+                error( 'Cannot open index.html.new\n   %s', message );
+            end
+            fwrite( fidw, t_head, 'char' );
+            fprintf( fidw, '<h3>Last updated: %s</h3>\n', date );
+            fprintf( fidw, '<a href="#" onClick="expandTree(''tree1''); return false;">Expand all</a>&nbsp;&nbsp;\n' );
+            fprintf( fidw, '<a href="#" onClick="collapseTree(''tree1''); return false;">Collapse all</a>\n' );
+        else,
+            fidw = -1;
         end
-        t_head = fread( fidr, Inf, 'uint8=>char' )';
-        t_tail = strfind( t_head, '<!-- END TOC -->' );
-        if length( t_tail ) ~= 1
-            error( 'Corrupt index.html file, cannot proceed.' );
-        end
-        t_tail = t_head( t_tail : end );
-        n_head = strfind( t_head, '<!-- BEGIN TOC -->' );
-        if length( n_head ) ~= 1,
-            error( 'Corrupt index.html file, cannot proceed.' );
-        end
-        t_head( n_head + length( '<!-- BEGIN TOC -->' ) + 1 : end ) = [];
-        fclose( fidr );
-        [ fidw, message ] = fopen( 'index.html.new', 'w+' );
-        if fidw < 0,
-            error( 'Cannot open index.html.new\n   %s', message );
-        end
-        fwrite( fidw, t_head, 'char' );
-        fprintf( fidw, '<h3>Last updated: %s</h3>\n', date );
-    else,
-        fidw = -1;
-    end
 
-    if isempty( file ),
-        generate_directory( mpath, '', force, fidw, base );
-    else,
-        cd( mpath );
-        generate_file( file, '', force );
-    end
-    cd( odir );
+        if isempty( file ),
+            generate_directory( mpath, '', force, fidw, base );
+        else,
+            cd( mpath );
+            generate_file( file, '', force );
+        end
+        cd( odir );
 
-    if fidw >= 0,
-        fwrite( fidw, t_tail, 'char' );
-        fclose( fidw );
-        cd( mpath )
-        compare_and_replace( '', 'index.html' );
+        if fidw >= 0,
+            fwrite( fidw, t_tail, 'char' );
+            fclose( fidw );
+            cd( mpath )
+            compare_and_replace( '', 'index.html' );
+        end
     end
-    
-
 end
 
 function [ title, files ] = generate_directory( mpath, prefix, force, fidc, base )
@@ -192,7 +203,8 @@ if fidc >= 0,
         if isempty( title ),
             fprintf( fidc, '<li class="%s"><a href="%s">%s/</a>\n', mclass, dpath, dname ),
         else,
-            fprintf( fidc, '<li class="%s"><b>%s</b> (<a href="%s">%s/</a>)\n', mclass, title, dpath, dname );
+            fprintf( fidc, '<li class="%s"><b>%s</b>\n', mclass, title );
+%            fprintf( fidc, '<li class="%s"><b>%s</b> (<a href="%s">%s/</a>)\n', mclass, title, dpath, dname );
         end
         if false,
             if ~isempty( comments ),
@@ -229,7 +241,7 @@ end
 
 if fidc >= 0 & isempty( dpath ) & ~isempty( fnames ) & ~isempty( dnames ),
     need_misc = true;
-    fprintf( fidc, '<li><b>Uncategorized files:</b><ul>\n' );
+    fprintf( fidc, '<li><b>Uncategorized files</b><ul>\n' );
 else,
     need_misc = false;
 end
@@ -292,7 +304,7 @@ function title = generate_file( name, prefix, force )
 
 if length( name ) < 2 | ~strcmp( name(end-1:end), '.m' ),
     error( 'Not an m-file.' );
-elseif strcmp(name(end-1:end), 'Contents.m' ),
+elseif strcmp( name, 'Contents.m' ),
     error( 'To generate the Contents.m file, you must run this function on the entire directory.' );
 else,
     fprintf( 1, '%s%s: ', prefix, name );
@@ -337,7 +349,18 @@ if force | hdate <= ndate,
         if fidw < 0,
             error( 'Cannot open the temporary file\n   %s', message );
         end
-        fprintf( fidw, '%%%% %s\n\n', title );
+        if isempty( title ),
+            fprintf( fidw, '%%%% %s\n\n', name );
+        else,
+            fprintf( fidw, '%%%% %s\n\n', title );
+            while ~feof( fidr ),
+                temp = fgetl( fidr );
+                if temp( 1 ) ~= '%' | any( temp( 2 : end ) ~= ' ' ),
+                    fprintf( fidw, '%s\n', temp );
+                    break;
+                end
+            end
+        end
         fwrite( fidw, fread( fidr, Inf, 'uint8' ), 'uint8' );
         fclose( fidw );
         cvx_clear
