@@ -8,7 +8,7 @@ To make changes, update the M-file and republish this document.
       -->
       <title>Closest Toeplitz SDP search.</title>
       <meta name="generator" content="MATLAB 7.1">
-      <meta name="date" content="2005-12-13">
+      <meta name="date" content="2005-12-14">
       <meta name="m-file" content="closest_toeplitz_psd"><style>
 
 body {
@@ -68,14 +68,20 @@ p.footer {
   </style></head>
    <body>
       <div class="content">
-         <h1>Closest Toeplitz SDP search.</h1><pre class="codeinput"><span class="comment">%</span>
-<span class="comment">% An SDP example from the SeDuMi documentation, this script finds</span>
-<span class="comment">% a Toeplitz Hermitian SDP matrix that is closest, in the Frobenius</span>
-<span class="comment">% sense, to a given matrix.</span>
+         <h1>Closest Toeplitz SDP search.</h1><pre class="codeinput"><span class="comment">% This script finds a Toeplitz Hermitian PSD matrix that is closest to a</span>
+<span class="comment">% given Hermitian matrix, as measured by the Frobenius norm. That is, for</span>
+<span class="comment">% a given matrix P, it solves:</span>
+<span class="comment">%    minimize   || Z - P ||_F</span>
+<span class="comment">%    subject to Z &gt;= 0</span>
+<span class="comment">%</span>
+<span class="comment">% Adapted from an example provided in the SeDuMi documentation.</span>
 
-echo <span class="string">on</span>
+<span class="comment">% The data. P is Hermitian, but is neither Toeplitz nor PSD.</span>
+P = [ 4,     1+2*j,     3-j       ; <span class="keyword">...</span>
+      1-2*j, 3.5,       0.8+2.3*j ; <span class="keyword">...</span>
+      3+j,   0.8-2.3*j, 4         ];
 
-P = [ 4, 1+2*j,3-j;1-2*j,3.5,0.8+2.3*j;3+j,0.8-2.3*j,4 ];
+<span class="comment">% Construct and solve the model</span>
 n = size( P, 1 );
 cvx_begin
     variable <span class="string">Z(n,n)</span> <span class="string">hermitian</span> <span class="string">toeplitz</span>
@@ -84,7 +90,17 @@ cvx_begin
     Z == hermitian_semidefinite( n ) : Q;
 cvx_end
 
-echo <span class="string">off</span>
+<span class="comment">% Display resuls</span>
+disp( <span class="string">'The original matrix, P: '</span> );
+disp( P )
+disp( <span class="string">'The optimal point, Z:'</span> );
+disp( Z )
+disp( <span class="string">'min( eig( Z ) ) (should be nonnegative):'</span> );
+disp( min( eig( Z ) ) )
+disp( <span class="string">'The optimal value, || Z - P ||_F:'</span> );
+disp( norm( Z - P, <span class="string">'fro'</span> ) );
+disp( <span class="string">'Complementary slackness: Z * Q, should be near zero:'</span> );
+disp( Z * Q )
 </pre><pre class="codeoutput"> 
 Calling SeDuMi: 18 variables (0 free), 12 equality constraints
 ------------------------------------------------------------------------
@@ -106,18 +122,41 @@ nnz(A) = 24 + 0, nnz(ADA) = 144, nnz(L) = 78
  10 :  1.45E+000 6.08E-010 0.291 0.0527 0.9122 0.9000   1.00  2  2  2.6E-009
 
 iter seconds digits       c*x               b*y
- 10      0.2   Inf  1.4508035248e+000  1.4508035306e+000
+ 10      0.3   Inf  1.4508035248e+000  1.4508035306e+000
 |Ax-b| =  2.4e-010, [Ay-c]_+ =  1.5E-009, |x|= 9.4e+000, |y|= 1.2e+000
 
 Detailed timing (sec)
    Pre          IPM          Post
-3.004E-002    2.203E-001    0.000E+000    
+6.009E-002    2.604E-001    1.001E-002    
 Max-norms: ||b||=5.656854e+000, ||c|| = 1,
 Cholesky |add|=0, |skip| = 0, ||L.L|| = 1.01381.
 ------------------------------------------------------------------------
 Optimal value (cvx_optval): +1.4508
 Status (cvx_status): Solved
  
+The original matrix, P: 
+   4.0000             1.0000 + 2.0000i   3.0000 - 1.0000i
+   1.0000 - 2.0000i   3.5000             0.8000 + 2.3000i
+   3.0000 + 1.0000i   0.8000 - 2.3000i   4.0000          
+
+The optimal point, Z:
+   4.2827             0.8079 + 1.7342i   2.5575 - 0.7938i
+   0.8079 - 1.7342i   4.2827             0.8079 + 1.7342i
+   2.5575 + 0.7938i   0.8079 - 1.7342i   4.2827          
+
+min( eig( Z ) ) (should be nonnegative):
+  4.1923e-009
+
+The optimal value, || Z - P ||_F:
+    1.4508
+
+Complementary slackness: Z * Q, should be near zero:
+  1.0e-005 *
+
+  -0.1170 - 0.0396i  -0.0119 + 0.1064i   0.1218 - 0.0132i
+  -0.0580 + 0.2611i   0.2326 - 0.0000i  -0.0580 - 0.2611i
+   0.1218 + 0.0132i  -0.0119 - 0.1064i  -0.1170 + 0.0396i
+
 </pre><p class="footer"><br>
             Published with MATLAB&reg; 7.1<br></p>
       </div>
@@ -125,14 +164,20 @@ Status (cvx_status): Solved
 ##### SOURCE BEGIN #####
 %% Closest Toeplitz SDP search.
 
+% This script finds a Toeplitz Hermitian PSD matrix that is closest to a
+% given Hermitian matrix, as measured by the Frobenius norm. That is, for
+% a given matrix P, it solves:
+%    minimize   || Z - P ||_F
+%    subject to Z >= 0
 %
-% An SDP example from the SeDuMi documentation, this script finds
-% a Toeplitz Hermitian SDP matrix that is closest, in the Frobenius
-% sense, to a given matrix.
+% Adapted from an example provided in the SeDuMi documentation.
 
-echo on
-
-P = [ 4, 1+2*j,3-j;1-2*j,3.5,0.8+2.3*j;3+j,0.8-2.3*j,4 ];
+% The data. P is Hermitian, but is neither Toeplitz nor PSD.
+P = [ 4,     1+2*j,     3-j       ; ...
+      1-2*j, 3.5,       0.8+2.3*j ; ...
+      3+j,   0.8-2.3*j, 4         ];
+  
+% Construct and solve the model
 n = size( P, 1 );
 cvx_begin
     variable Z(n,n) hermitian toeplitz
@@ -141,8 +186,17 @@ cvx_begin
     Z == hermitian_semidefinite( n ) : Q;
 cvx_end
 
-echo off
-
+% Display resuls
+disp( 'The original matrix, P: ' );
+disp( P )
+disp( 'The optimal point, Z:' );
+disp( Z )
+disp( 'min( eig( Z ) ) (should be nonnegative):' );
+disp( min( eig( Z ) ) )
+disp( 'The optimal value, || Z - P ||_F:' );
+disp( norm( Z - P, 'fro' ) );
+disp( 'Complementary slackness: Z * Q, should be near zero:' );
+disp( Z * Q )
 
 ##### SOURCE END #####
 -->

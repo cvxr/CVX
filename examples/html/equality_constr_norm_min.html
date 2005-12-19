@@ -8,7 +8,7 @@ To make changes, update the M-file and republish this document.
       -->
       <title>Equality constrained norm minimization.</title>
       <meta name="generator" content="MATLAB 7.1">
-      <meta name="date" content="2005-12-13">
+      <meta name="date" content="2005-12-14">
       <meta name="m-file" content="equality_constr_norm_min"><style>
 
 body {
@@ -68,8 +68,7 @@ p.footer {
   </style></head>
    <body>
       <div class="content">
-         <h1>Equality constrained norm minimization.</h1><pre class="codeinput"><span class="comment">%</span>
-<span class="comment">% This script constructs a random equality-constrained norm minimization</span>
+         <h1>Equality constrained norm minimization.</h1><pre class="codeinput"><span class="comment">% This script constructs a random equality-constrained norm minimization</span>
 <span class="comment">% problem and solves it using CVX. You can also change p to +2 or +Inf</span>
 <span class="comment">% to produce different results. Alternatively, you an replace</span>
 <span class="comment">%     norm( A * x - b, p )</span>
@@ -77,14 +76,15 @@ p.footer {
 <span class="comment">%     norm_largest( A * x - b, 'largest', p )</span>
 <span class="comment">% for 1 &lt;= p &lt;= 2 * n.</span>
 
-echo <span class="string">on</span>
-
+<span class="comment">% Generate data</span>
 p = 1;
-n = 20;
-A = randn(2*n,n);
-b = randn(2*n,1);
-C = randn(0.5*n,n);
-d = randn(0.5*n,1);
+n = 10; m = 2*n; q=0.5*n;
+A = randn(m,n);
+b = randn(m,1);
+C = randn(q,n);
+d = randn(q,1);
+
+<span class="comment">% Create and solve problem</span>
 cvx_begin
    variable <span class="string">x(n)</span>
    dual <span class="string">variable</span> <span class="string">y</span>
@@ -93,37 +93,56 @@ cvx_begin
         y : C * x == d;
 cvx_end
 
-echo <span class="string">off</span>
+<span class="comment">% Display results</span>
+disp( sprintf( <span class="string">'norm(A*x-b,%g):'</span>, p ) );
+disp( [ <span class="string">'   ans   =   '</span>, sprintf( <span class="string">'%7.4f'</span>, norm(A*x-b,p) ) ] );
+disp( <span class="string">'Optimal vector:'</span> );
+disp( [ <span class="string">'   x     = [ '</span>, sprintf( <span class="string">'%7.4f '</span>, x ), <span class="string">']'</span> ] );
+disp( <span class="string">'Residual vector:'</span> );
+disp( [ <span class="string">'   A*x-b = [ '</span>, sprintf( <span class="string">'%7.4f '</span>, A*x-b ), <span class="string">']'</span> ] );
+disp( <span class="string">'Equality constraints:'</span> );
+disp( [ <span class="string">'   C*x   = [ '</span>, sprintf( <span class="string">'%7.4f '</span>, C*x ), <span class="string">']'</span> ] );
+disp( [ <span class="string">'   d     = [ '</span>, sprintf( <span class="string">'%7.4f '</span>, d   ), <span class="string">']'</span> ] );
 </pre><pre class="codeoutput"> 
-Calling SeDuMi: 100 variables (20 free), 50 equality constraints
+Calling SeDuMi: 50 variables (10 free), 25 equality constraints
 ------------------------------------------------------------------------
 SeDuMi 1.1 by AdvOL, 2005 and Jos F. Sturm, 1998, 2001-2003.
 Alg = 2: xz-corrector, Adaptive Step-Differentiation, theta = 0.250, beta = 0.500
-Split 20 free variables
-eqs m = 50, order n = 121, dim = 121, blocks = 1
-nnz(A) = 2080 + 0, nnz(ADA) = 2500, nnz(L) = 1275
+Split 10 free variables
+eqs m = 25, order n = 61, dim = 61, blocks = 1
+nnz(A) = 540 + 0, nnz(ADA) = 625, nnz(L) = 325
  it :     b*y       gap    delta  rate   t/tP*  t/tD*   feas cg cg  prec
-  0 :            1.08E+002 0.000
-  1 :  3.09E+001 4.21E+001 0.000 0.3890 0.9000 0.9000   2.36  1  1  1.6E+000
-  2 :  3.89E+001 1.31E+001 0.000 0.3120 0.9000 0.9000   1.34  1  1  5.4E-001
-  3 :  4.25E+001 3.62E+000 0.000 0.2753 0.9000 0.9000   1.08  1  1  1.6E-001
-  4 :  4.38E+001 9.26E-001 0.000 0.2561 0.9000 0.9000   1.02  1  1  4.3E-002
-  5 :  4.42E+001 2.46E-001 0.000 0.2658 0.9000 0.9000   1.00  1  1  1.2E-002
-  6 :  4.43E+001 2.87E-002 0.000 0.1167 0.9197 0.9000   1.00  1  1  2.0E-003
-  7 :  4.43E+001 1.24E-004 0.000 0.0043 0.9990 0.9990   1.00  1  1  
+  0 :            4.76E+001 0.000
+  1 :  2.30E+001 1.71E+001 0.000 0.3595 0.9000 0.9000   1.79  1  1  1.5E+000
+  2 :  2.97E+001 4.42E+000 0.000 0.2585 0.9000 0.9000   1.22  1  1  4.3E-001
+  3 :  3.12E+001 1.06E+000 0.000 0.2407 0.9000 0.9000   1.04  1  1  1.1E-001
+  4 :  3.17E+001 2.55E-001 0.000 0.2398 0.9000 0.9000   1.01  1  1  2.6E-002
+  5 :  3.18E+001 5.21E-002 0.000 0.2041 0.9000 0.9000   1.00  1  1  5.4E-003
+  6 :  3.19E+001 8.10E-004 0.000 0.0155 0.9902 0.9900   1.00  1  1  1.2E-004
+  7 :  3.19E+001 1.64E-004 0.000 0.2029 0.9000 0.8885   1.00  1  1  1.9E-005
+  8 :  3.19E+001 4.92E-007 0.000 0.0030 0.9990 0.9990   1.00  1  1  
 iter seconds digits       c*x               b*y
-  7      0.1   Inf  4.4300308978e+001  4.4300308978e+001
-|Ax-b| =  2.0e-014, [Ay-c]_+ =  5.2E-015, |x|= 1.9e+001, |y|= 1.3e+001
+  8      0.1  15.2  3.1864841655e+001  3.1864841655e+001
+|Ax-b| =  1.1e-014, [Ay-c]_+ =  1.7E-015, |x|= 1.5e+001, |y|= 8.1e+000
 
 Detailed timing (sec)
    Pre          IPM          Post
-4.006E-002    1.202E-001    1.001E-002    
-Max-norms: ||b||=2.810847e+000, ||c|| = 1,
-Cholesky |add|=0, |skip| = 0, ||L.L|| = 1.98904.
+3.004E-002    1.302E-001    0.000E+000    
+Max-norms: ||b||=2.129089e+000, ||c|| = 1,
+Cholesky |add|=0, |skip| = 0, ||L.L|| = 2.06376.
 ------------------------------------------------------------------------
-Optimal value (cvx_optval): +44.3003
+Optimal value (cvx_optval): +31.8648
 Status (cvx_status): Solved
  
+norm(A*x-b,1):
+   ans   =   31.8648
+Optimal vector:
+   x     = [ -0.0920 -0.6504  0.5092  1.1764  0.3061  0.4241  2.1030  0.2184 -0.0958 -1.1023 ]
+Residual vector:
+   A*x-b = [  4.5431 -0.0000 -2.0585 -0.0000  1.1874 -3.2475  0.0000 -1.6841  3.0523  2.5678  0.0058 -0.0000  2.3836 -0.2346 -2.8540  0.6563 -1.5894 -3.9998 -0.0000 -1.8007 ]
+Equality constraints:
+   C*x   = [  0.6927  1.0654  1.3774  0.2713 -2.1291 ]
+   d     = [  0.6927  1.0654  1.3774  0.2713 -2.1291 ]
 </pre><p class="footer"><br>
             Published with MATLAB&reg; 7.1<br></p>
       </div>
@@ -131,7 +150,6 @@ Status (cvx_status): Solved
 ##### SOURCE BEGIN #####
 %% Equality constrained norm minimization.
 
-%
 % This script constructs a random equality-constrained norm minimization
 % problem and solves it using CVX. You can also change p to +2 or +Inf
 % to produce different results. Alternatively, you an replace
@@ -140,14 +158,15 @@ Status (cvx_status): Solved
 %     norm_largest( A * x - b, 'largest', p )
 % for 1 <= p <= 2 * n.
 
-echo on
-
+% Generate data
 p = 1;
-n = 20;
-A = randn(2*n,n);
-b = randn(2*n,1);
-C = randn(0.5*n,n);
-d = randn(0.5*n,1);
+n = 10; m = 2*n; q=0.5*n;
+A = randn(m,n);
+b = randn(m,1);
+C = randn(q,n);
+d = randn(q,1);
+
+% Create and solve problem
 cvx_begin
    variable x(n)
    dual variable y
@@ -156,8 +175,16 @@ cvx_begin
         y : C * x == d;
 cvx_end
 
-echo off
-
+% Display results
+disp( sprintf( 'norm(A*x-b,%g):', p ) );
+disp( [ '   ans   =   ', sprintf( '%7.4f', norm(A*x-b,p) ) ] );
+disp( 'Optimal vector:' );
+disp( [ '   x     = [ ', sprintf( '%7.4f ', x ), ']' ] );
+disp( 'Residual vector:' );
+disp( [ '   A*x-b = [ ', sprintf( '%7.4f ', A*x-b ), ']' ] );
+disp( 'Equality constraints:' );
+disp( [ '   C*x   = [ ', sprintf( '%7.4f ', C*x ), ']' ] );
+disp( [ '   d     = [ ', sprintf( '%7.4f ', d   ), ']' ] );
 
 ##### SOURCE END #####
 -->

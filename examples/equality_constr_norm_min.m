@@ -8,14 +8,15 @@
 %     norm_largest( A * x - b, 'largest', p )
 % for 1 <= p <= 2 * n.
 
-echo on
-
+% Generate data
 p = 1;
-n = 20;
-A = randn(2*n,n);
-b = randn(2*n,1);
-C = randn(0.5*n,n);
-d = randn(0.5*n,1);
+n = 10; m = 2*n; q=0.5*n;
+A = randn(m,n);
+b = randn(m,1);
+C = randn(q,n);
+d = randn(q,1);
+
+% Create and solve problem
 cvx_begin
    variable x(n)
    dual variable y
@@ -24,5 +25,13 @@ cvx_begin
         y : C * x == d;
 cvx_end
 
-echo off
-
+% Display results
+disp( sprintf( 'norm(A*x-b,%g):', p ) );
+disp( [ '   ans   =   ', sprintf( '%7.4f', norm(A*x-b,p) ) ] );
+disp( 'Optimal vector:' );
+disp( [ '   x     = [ ', sprintf( '%7.4f ', x ), ']' ] );
+disp( 'Residual vector:' );
+disp( [ '   A*x-b = [ ', sprintf( '%7.4f ', A*x-b ), ']' ] );
+disp( 'Equality constraints:' );
+disp( [ '   C*x   = [ ', sprintf( '%7.4f ', C*x ), ']' ] );
+disp( [ '   d     = [ ', sprintf( '%7.4f ', d   ), ']' ] );
