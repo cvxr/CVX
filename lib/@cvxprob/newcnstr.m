@@ -75,13 +75,16 @@ else,
     dx = getdual( y );
 end
 if ~isempty( dx ),
+    duals = cvx___.problems( p ).duals;
     try,
-        dual = subsref( cvx___.problems( p ).duals, struct( 'type', '.', 'subs', dx ) );
+        dual = builtin( 'subsref', duals, dx );
     catch,
-        error( [ 'Dual variable "', dx, '" has not been declared.' ] );
+        nm = cvx_subs2str( dx );
+        error( [ 'Dual variable "', nm(2:end), '" has not been declared.' ] );
     end
     if ~isempty( dual ),
-        error( [ 'Dual variable "', dx, '" already in use.' ] );
+        nm = cvx_subs2str( dx );
+        error( [ 'Dual variable "', nm(2:end), '" already in use.' ] );
     end
 end
 
@@ -169,7 +172,7 @@ cvx___.problems( p ).y = [];
 
 if ~isempty( dx ),
     zI = zI * sparse( 1 : size( zI, 2 ), oeqs + 1 : neqs + 1, 1 );
-    cvx___.problems( p ).duals = builtin( 'subsasgn', cvx___.problems( p ).duals, struct( 'type', '.', 'subs', dx ), cvx( prob, zS, zI ) );
+    cvx___.problems( p ).duals = builtin( 'subsasgn', duals, dx, cvx( prob, zS, zI ));
 end
 
 % Copyright 2005 Michael C. Grant and Stephen P. Boyd. 

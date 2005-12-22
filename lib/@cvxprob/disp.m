@@ -23,7 +23,7 @@ else,
     nm = [ p.name, ': ' ];
 end
 
-if all( [ nvars, neqns, nslck ] == 0 ),
+if nvars + neqns + nslck + nduls == 0,
     disp( [ prefix, nm, 'cvx problem object' ] );
 else,
     switch prod( size( p.objective ) ),
@@ -38,24 +38,22 @@ else,
     end
     disp( [ prefix, nm, 'cvx ', tp, ' problem' ] );
     disp( sprintf( '%s   %d variables (%d free), %d equalities', prefix, length( p.reserved ) - 1, sum( 1 - p.reserved ), size( p.equalities, 1 ) ) );
-    if nvars > 0 | nduls > 0,
-        if nvars > 0,
-            disp( [ prefix, 'variables: ' ] );
-            [ vnam, vsiz ] = dispvar( p.variables, '' );
-            vnam = strvcat( vnam );
-            vsiz = strvcat( vsiz );
-            for k = 1 : size( vnam ),
-                disp( [ prefix, '   ', vnam( k, : ), '  ', vsiz( k, : ) ] );
-            end
+    if nvars > 0,
+        disp( [ prefix, 'variables: ' ] );
+        [ vnam, vsiz ] = dispvar( p.variables, '' );
+        vnam = strvcat( vnam );
+        vsiz = strvcat( vsiz );
+        for k = 1 : size( vnam ),
+            disp( [ prefix, '   ', vnam( k, : ), '  ', vsiz( k, : ) ] );
         end
-        if nduls > 0,
-            disp( [ prefix, 'dual variables: ' ] );
-            [ vnam, vsiz ] = dispvar( p.duals, '' );
-            vnam = strvcat( vnam );
-            vsiz = strvcat( vsiz );
-            for k = 1 : size( vnam ),
-                disp( [ prefix, '   ', vnam( k, : ), '  ', vsiz( k, : ) ] );
-            end
+    end
+    if nduls > 0,
+        disp( [ prefix, 'dual variables: ' ] );
+        [ vnam, vsiz ] = dispvar( p.duals, '' );
+        vnam = strvcat( vnam );
+        vsiz = strvcat( vsiz );
+        for k = 1 : size( vnam ),
+            disp( [ prefix, '   ', vnam( k, : ), '  ', vsiz( k, : ) ] );
         end
     end
     if nslck > 0 | neqns > 0,
@@ -78,7 +76,8 @@ else,
     end
 end
 
-function [ names, sizes ] = dispvar( v, name )
+function [ names, sizes ] = dispvar( v, name, isdual )
+if nargin < 3, isdual = false; end
 
 switch class( v ),
     case 'struct',
@@ -86,15 +85,21 @@ switch class( v ),
         if ~isempty( name ), name( end + 1 ) = '.'; end
         names = {}; sizes = {};
         for k = 1 : length( fn ),
-            [ name2, size2 ] = dispvar( subsref(v,struct('type','.','subs',fn{k})), [ name, fn{k} ] );
+            [ name2, size2 ] = dispvar( subsref(v,struct('type','.','subs',fn{k})), [ name, fn{k} ], isdual );
             names( end + 1 : end + length( name2 ) ) = name2;
             sizes( end + 1 : end + length( size2 ) ) = size2;
             if k == 1 & ~isempty( name ), name( 1 : end - 1 ) = ' '; end
         end
     case 'cell',
+        nsiz = size( v );
+        ntot = prod( nsiz );
+        ndxs = cell( 1, length( nsiz ) - ( nsiz(end) == 1 ) );
+        [ ndxs{:} ] = ind2sub( nsiz, 1 : ntot );
+        ndxs = vertcat( ndxs{:} );
         names = {}; sizes = {};
-        for k = 1 : length( v ),
-            [ name2, size2 ] = dispvar( v{k}, sprintf( '%s{%d}', name, k ) );
+        for k = 1 : ntot,
+            temp = sprintf( '%d,', ndxs(:,k) );
+            [ name2, size2 ] = dispvar( v{k}, sprintf( '%s{%s}', name, temp(1:end-1) ), isdual );
             names( end + 1 : end + length( name2 ) ) = name2;
             sizes( end + 1 : end + length( size2 ) ) = size2;
             if k == 1, name( 1 : end ) = ' '; end

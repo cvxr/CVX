@@ -23,6 +23,8 @@ if ischar( name ),
             error( sprintf( 'Invalid variable name: %s', name ) );
         elseif isfield( cvx___.problems( p ).variables, name ),
             error( sprintf( 'Variable already exists: %s', name ) );
+        elseif isfield( cvx___.problems( p ).duals, name ),
+            error( sprintf( 'Primal/dual variable name conflict: %s', name ) );
         end
         nstr = struct( 'type', '.', 'subs', name );
     else,
@@ -71,8 +73,20 @@ vars = cvx___.problems( p ).variables;
 if ~isempty( nstr ),
     if isfield( cvx___.problems( p ).duals, nstr(1).subs ),
         error( sprintf( 'Primal/dual variable name conflict: %s', nstr(1).subs ) );
-    elseif isfield( vars, nstr(1).subs ) & isa( subsref( vars, nstr(1) ), 'cvx' ),
-        error( [ 'Variable name conflict: ', nstr(1).subs ] );
+    else,
+        try,
+            temp = builtin( 'subsref', vars, nstr );
+        catch,
+            temp = [];
+        end
+        if isa( temp, 'cvx' ),
+            error( [ 'Variable already declared: ', name ] );
+        end
+        try,
+            vars = builtin( 'subsasgn', vars, nstr, 0 );
+        catch,
+            error( sprintf( 'Invalid variable name: %s\n   %s', name, lasterror ) );
+        end
     end
 end
 
@@ -119,7 +133,8 @@ str2 = sparse( 1 : dof, dims, 1, dof, dims(end) );
 if ~isempty( str ), str2 = str * str2; end
 y = cvx( prob, siz, str2, dof );
 if ~isempty( nstr ),
-    cvx___.problems( p ).variables = builtin( 'subsasgn', vars, nstr, y );
+    vars = builtin( 'subsasgn', vars, nstr, y );
+    cvx___.problems( p ).variables = vars;
 end
 cvx___.problems( p ).reserved( dims, 1 ) = 0;
 cvx___.problems( p ).vexity(   dims, 1 ) = 0;

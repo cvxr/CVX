@@ -68,9 +68,9 @@ end
 
 if ischar( x.size ),
     x.size = evalin( 'caller', [ '[', x.size, '];' ], 'NaN' );
-    [ temp, x.size ] = cvx_check_dimlist( x.size, false );
+    [ temp, x.size ] = cvx_check_dimlist( x.size, true );
     if ~temp,
-        error( sprintf( [ 'Invalid variable specification: ', nm, '\n   Dimension list must be a vector of finite positive integers.' ] ) );
+        error( sprintf( [ 'Invalid variable specification: ', nm, '\n   Dimension list must be a vector of finite nonnegative integers.' ] ) );
     end
 end
 
@@ -112,8 +112,11 @@ if isempty( str ),
 end
 
 v = newvar( prob, x.name, x.size, str );
-assignin( 'caller', x.name, v );
-if nargout > 0, varargout{1} = v; end
+if nargout > 0,
+    varargout{1} = v;
+else,
+    assignin( 'caller', x.name, v );
+end
 
 % Copyright 2005 Michael C. Grant and Stephen P. Boyd.
 % See the file COPYING.txt for full copyright information.

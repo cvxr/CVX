@@ -1,11 +1,10 @@
 function display( x )
-nm = inputname( 1 );
-usename = ~isequal( nm, name( x ) );
+nm = inputname(1);
 long = ~isequal(get(0,'FormatSpacing'),'compact');
 if long, disp( ' ' ); end
 disp([nm ' =']);
 if long, disp( ' ' ); end
-disp(x,'    ',usename)
+disp(x,'    ',nm);
 if long, disp( ' ' ); end
 
 % Copyright 2005 Michael C. Grant and Stephen P. Boyd. 

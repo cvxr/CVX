@@ -1,6 +1,6 @@
 function y = cvxaff( x )
 y = struct( problem( x ) );
-y = subsref( y.duals, struct( 'type', '.', 'subs', x.name_ ) );
+y = builtin( 'subsref', y.duals, x.name_ );
 
 % Copyright 2005 Michael C. Grant and Stephen P. Boyd. 
 % See the file COPYING.txt for full copyright information.

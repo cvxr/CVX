@@ -27,7 +27,8 @@ else,
 end
 
 if inuse( d ),
-    error( [ 'Dual variable "', d.name_, '" has already been used.' ] );
+    nm = cvx_subs2str( d.name_ );
+    error( [ 'Dual variable "', nm(2:end), '" has already been used.' ] );
 else,
     z = setdual( z, d.name_ );
 end

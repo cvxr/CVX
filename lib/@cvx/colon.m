@@ -13,7 +13,8 @@ else,
 end
 
 if inuse( d ),
-    error( [ 'Dual variable "', name( d ), '" has already been used.' ] );
+    nm = cvx_subs2str( name( d ) );
+    error( [ 'Dual variable "', nm(2:end), '" has already been used.' ] );
 else,
     z = setdual( z, name( d ) );
 end
