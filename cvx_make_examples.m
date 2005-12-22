@@ -300,7 +300,7 @@ fclose( fidw );
 cd( mpath )
 compare_and_replace( prefix, 'Contents.m' );
 
-function title = generate_file( name, prefix, force )
+function [ title, isfunc ] = generate_file( name, prefix, force )
 
 if length( name ) < 2 | ~strcmp( name(end-1:end), '.m' ),
     error( 'Not an m-file.' );
@@ -316,14 +316,35 @@ ndate = date_convert( dd.date );
 if fidr < 0,
     error( 'Cannot open the source file\n   %s', message );
 end
-title = fgetl( fidr );
-if title( 1 ) ~= '%',
-    fclose( fidr );
-    fprintf( 1, 'not in publishable form (perhaps a function?).\n' );
-    title = '';
-    return
-else,
-    title = title( min( find( title ~= '%' & title ~= ' ' ) ) : end );
+title = '';
+isfunc = false;
+lasttitle = false;
+founddata = false;
+prefixes = {};
+while ~feof( fidr ) && ( ~founddata || isempty( title ) || lasttitle ),
+    temp1 = fgetl( fidr );
+    temp2 = strtrim( temp1 );
+    if isempty( temp2 ),
+        if lasttitle, continue; end
+    elseif temp2( 1 ) == '%',
+        temp3 = strtrim( temp2( min( find( temp2 ~= '%' ) ) : end ) );
+        if isempty( temp3 ),
+            if lasttitle, continue; end
+        elseif isempty( title ),
+            title = temp3;
+            lasttitle = true;
+            continue;
+        else,
+            lasttitle = false;
+        end
+    else,
+        lasttitle = false;
+        founddata = true;
+        if strncmp( temp2, 'function', 8 ) && ( length( temp2 ) == 8 || ~isvarname( temp2( 1 : 9 ) ) ),
+            isfunc = true;
+        end
+    end
+    prefixes{end+1} = temp1;
 end
 hfile = [ name(1:end-1), 'html' ];
 odir = cd;
@@ -349,23 +370,22 @@ if force | hdate <= ndate,
         if fidw < 0,
             error( 'Cannot open the temporary file\n   %s', message );
         end
-        if isempty( title ),
-            fprintf( fidw, '%%%% %s\n\n', name );
+        if isfunc,
+            fstr = ' (function)';
         else,
-            fprintf( fidw, '%%%% %s\n\n', title );
-            while ~feof( fidr ),
-                temp = fgetl( fidr );
-                if temp( 1 ) ~= '%' | any( temp( 2 : end ) ~= ' ' ),
-                    fprintf( fidw, '%s\n', temp );
-                    break;
-                end
-            end
+            fstr = '';
         end
+        if isempty( title ),
+            fprintf( fidw, '%%%% %s%s\n\n', name, fstr );
+        else,
+            fprintf( fidw, '%%%% %s%s\n\n', title, fstr );
+        end
+        fprintf( fidw, '%s\n', prefixes{:} );
         fwrite( fidw, fread( fidr, Inf, 'uint8' ), 'uint8' );
         fclose( fidw );
         cvx_clear
         cvx_quiet( false );
-        publish( name2, struct( 'format', 'html', 'useNewFigure', 0, 'stopOnError', 1, 'createThumbnail', 0 ) );
+        publish( name2, struct( 'evalCode', ~isfunc, 'format', 'html', 'useNewFigure', 0, 'stopOnError', 1, 'createThumbnail', 0 ) );
         delete( name2 );
         if ~isempty( dir( name2 ) ),
             error( 'Cannot delete the temporary file' );
