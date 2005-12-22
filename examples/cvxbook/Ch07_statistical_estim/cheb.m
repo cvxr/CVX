@@ -1,7 +1,9 @@
-function [prob,P,q,r,X,lambda] = cheb(A,b,Sigma);
+function [cvx_optval,P,q,r,X,lambda] = cheb(A,b,Sigma);
 
-% calculates lower bound on probability than random vector x in R2
-% with mean zero and covariance Sigma satisfies Ax <= b
+% Computes Chebyshev lower bounds on probability vectors
+%
+% Calculates a lower bound on the probability that a random vector
+% x with mean zero and covariance Sigma satisfies A x <= b
 %
 % Sigma must be positive definite
 %
@@ -15,8 +17,8 @@ function [prob,P,q,r,X,lambda] = cheb(A,b,Sigma);
 
 %
 % maximize  1 - Tr Sigma*P - r 
-% s.t.      [ P                 q-taui*ai/2     ] 
-%           [ (q-taui*ai/2)'    r-1 + taui*b(i) ]  >= 0 i=1,...m
+% s.t.      [ P  q     ]             [ 0      a_i/2 ]
+%           [ q' r - 1 ] >= tau(i) * [ a_i'/2  -b_i ], i=1,...,m
 %           taui >= 0
 %           [ P q  ]
 %           [ q' r ] >= 0
@@ -24,77 +26,30 @@ function [prob,P,q,r,X,lambda] = cheb(A,b,Sigma);
 % variables P in Sn, q in Rn, r in R
 %
 
-m = size(A,1);
-novars = 3+2+1+m;  % P,q,r,tau
+[ m, n ] = size( A );
+cvx_begin
+    variable P(n,n) symmetric
+    variables q(n) r tau(m)
+    dual variables Z{m}
+    maximize( 1 - trace( Sigma * P ) - r )
+    subject to
+        for i = 1 : m,
+            qadj = q - 0.5 * tau(i) * A(i,:)';
+            radj = r - 1 + tau(i) * b(i);
+            [ P, qadj ; qadj', radj ] == semidefinite(n+1) : Z{i};
+        end
+        [ P, q ; q', r ] == semidefinite(n+1);
+        tau >= 0;
+cvx_end
 
-% minimize Tr Sigma*P + r
-c = [Sigma(1,1); 2*Sigma(2,1); Sigma(2,2); 0; 0; 1; zeros(m,1)]; 
-
-szs = [3*ones(m,1); ones(m,1); 3];
-F = zeros(sum(szs.^2), novars+1);
-
-% blocks 1...m;
-for i=1:m
-   blk = [0 0 0; 0 0 0; 0 0 -1];
-   F((i-1)*9+[1:9],1) = blk(:); 
-   blk = [1 0 0 ; 0 0 0; 0 0 0];  % coeff of P(1,1)
-   F((i-1)*9+[1:9],2) = blk(:);
-   blk = [0 1 0 ; 1 0 0; 0 0 0];  % coeff of P(2,1)
-   F((i-1)*9+[1:9],3) = blk(:);
-   blk = [0 0 0 ; 0 1 0; 0 0 0];  % coeff of P(2,2)
-   F((i-1)*9+[1:9],4) = blk(:);
-   blk = [0 0 1 ; 0 0 0; 1 0 0];  % coeff of q(1)
-   F((i-1)*9+[1:9],5) = blk(:);
-   blk = [0 0 0 ; 0 0 1; 0 1 0];  % coeff of q(2)
-   F((i-1)*9+[1:9],6) = blk(:);
-   blk = [0 0 0 ; 0 0 0; 0 0 1];  % coeff of r
-   F((i-1)*9+[1:9],7) = blk(:);
-   blk = (1/2)*[0 0 -A(i,1) ; 
-                0 0 -A(i,2); 
-               -A(i,1) -A(i,2) 2*b(i)];  % coeff of taui
-   F((i-1)*9+[1:9],7+i) = blk(:);
-end;
-
-% taui >= 0, i=1,...m
-F(m*9+[1:m], 7+[1:m]) = eye(m);
-
-% last block
-blk = [1 0 0 ; 0 0 0; 0 0 0];  % coeff of P(1,1)
-F(10*m+[1:9],2) = blk(:);
-blk = [0 1 0 ; 1 0 0; 0 0 0];  % coeff of P(2,1)
-F(10*m+[1:9],3) = blk(:);
-blk = [0 0 0 ; 0 1 0; 0 0 0];  % coeff of P(2,2)
-F(10*m+[1:9],4) = blk(:);
-blk = [0 0 1 ; 0 0 0; 1 0 0];  % coeff of q(1)
-F(10*m+[1:9],5) = blk(:);
-blk = [0 0 0 ; 0 0 1; 0 1 0];  % coeff of q(2)
-F(10*m+[1:9],6) = blk(:);
-blk = [0 0 0 ; 0 0 0; 0 0 1];  % coeff of r
-F(10*m+[1:9],7) = blk(:);
-
-% initial point
-tau = ones(m,1);
-t = 0;
-for i=1:m
-    blk = (1/2)*[0 0 tau(i)*A(i,1);  
-                 0 0 tau(i)*A(i,2);  
-                 tau(i)*A(i,1)   tau(i)*A(i,2)  2*(1-tau(i)*b(i)) ]; 
-    t = max(t , max(eig(blk)));
-end;
-t = t+1;
-P = t*eye(2);  q=[0;0];  r=t;
-x0 = [P(1,1); P(1,2); P(2,2); q; r; tau];
-
-[x,Z,z,ul,time] = bigM(F,szs,c,x0,1e4,10,1e-8,1e-6,0,100);
-P = [x(1) x(2); x(2) x(3)];
-q = [x(4); x(5)];
-r = x(6);
-prob = 1-ul(1);
+if nargout < 4,
+    return
+end
 
 X = [];
 lambda = [];
 for i=1:m
-   Zi = reshape(Z((i-1)*9+[1:9]),3,3);
+   Zi = Z{i};
    if (abs(Zi(3,3)) > 1e-4)
       lambda = [lambda; Zi(3,3)];
       X = [X Zi(1:2,3)/Zi(3,3)];

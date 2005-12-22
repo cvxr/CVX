@@ -2,7 +2,7 @@
 %
 %  basispursuit.m         - Basis pursuit using Gabor functions
 %  convex_interpolation.m - Fitting a convex function to given data
-%  deadzone.m             - Residual minimization with deadzone penalty 
+%  deadzone.m             - Residual minimization with deadzone penalty
 %  fig6_15.m              - A comparison of stochastic and worst-case robust approximation
 %  fig6_19.m              - Polynomial fitting
 %  fig6_20.m              - Spline fitting
@@ -15,4 +15,4 @@
 %  smoothrec_cvx.m        - Quadratic smoothing example
 %  tv_cvx.m               - Total variation reconstruction
 %  utilfun.m              - (no title)
-%  wcrobls.m              - Comparison of worst-case robust, Tickhonov and nominal least squares 
+%  wcrobls.m              - Comparison of worst-case robust, Tickhonov and nominal least squares

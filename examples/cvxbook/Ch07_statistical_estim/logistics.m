@@ -1,4 +1,4 @@
-% logistics regresssion example
+% Logistic regresssion example
 
 randn('state',0);
 rand('state',0);

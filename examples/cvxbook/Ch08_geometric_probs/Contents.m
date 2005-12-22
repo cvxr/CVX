@@ -12,7 +12,7 @@
 %  ex_8_5.m                 - One free point localization
 %  floor_plan.m             - Floor planning
 %  floor_plan_graphs.m      - Solve a floor planning problem given graphs H & V
-%  floorplan.m              - (no title)
+%  floorplan.m              - Computes a minimum-perimeter bounding box subject to positioning constraints
 %  linear_discr.m           - Figure 8.8: Simplest linear discrimination
 %  min_vol_elp_finite_set.m - Minimum volume ellipsoid covering a finite set
 %  placement_lin.m          - Figure 8.15: Linear placement problem

@@ -1,7 +1,7 @@
 %  cvxbook/                    - Figures, examples, and exercises from Boyd & Vandenberghe, "Convex Optimization"
 %  closest_toeplitz_psd.m      - Closest Toeplitz SDP search.
 %  equality_constr_norm_min.m  - Equality constrained norm minimization.
-%  lp_opt_val.m                - (no title)
+%  lp_opt_val.m                - An example of an incomplete problem specification.
 %  min_phase_spectral_fact.m   - Minimal phase spectral factorization
 %  quickstart.m                - Examples from the CVX User's guide
 %  regularized_norm_tradeoff.m - Builds a norm minimization tradeoff curve

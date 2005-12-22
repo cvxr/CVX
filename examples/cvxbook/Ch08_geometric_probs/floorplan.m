@@ -1,18 +1,17 @@
 function [W, H, w, h, x, y] = floorplan(adj_H, adj_V, rho, Amin, l, u )
 
-% FLOOR_PLANNING    minimize the perimiter of the bounding box of width W
-%                   and height H containing the cells of widths, heights
-%                   and positions given by w_i, h_i, (x_i, y_i), subject to
-%                   relative positioning constraints (represented by the
-%                   adjacency matrices adj_H and adj_V), a minimum spacing
-%                   constraint (w_i*h_i>=Amin) and aspect ratio constraints
-%                   (l_i <= h_i/w_i <= u_i)
-%                   If n is the number of cells, then adj_H and adj_V must
-%                   be nxn matrices.
-%                   Amin, l and u must be vectors of length n.
-%                   The default values of rho and Amin are 0.
+% Computes a minimum-perimeter bounding box subject to positioning constraints
+%
+% Inputs:
+%      adj_H,adj_V: adjacency matrices
+%      Amin:        minimum spacing: w_i * h_i >= Amin
+%      rho:         boundaries: rho <= x_i <= W-rho, rho <= y_i <= H-rho
+%      l, u:        aspect ratio constraints: l_i <= h_i/w_i <= u_i
+% Only adj_H and adj_V are required; the rest are optional. If n is the
+% number of cells, then adj_H and adj_V must be nxn matrices, and Amin,
+% l, and u must be vectors of length n. rho must be a scalar. The default
+% values of rho and Amin are 0.
 % Joelle Skaf - 12/04/05
-
 
 if nargin < 2
     error('Insufficient number of input arguments');
