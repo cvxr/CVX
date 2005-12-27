@@ -8,7 +8,7 @@ To make changes, update the M-file and republish this document.
       -->
       <title>Section 7.4.3: Probability bounds example with Voronoi diagram</title>
       <meta name="generator" content="MATLAB 7.1">
-      <meta name="date" content="2005-12-21">
+      <meta name="date" content="2005-12-26">
       <meta name="m-file" content="probbounds"><style>
 
 body {
@@ -73,224 +73,160 @@ p.footer {
 <span class="comment">% Adapted for CVX by Michael Grant, 2005/12/19</span>
 <span class="comment">% Generates figures 7.5-7.8</span>
 
-randn(<span class="string">'state'</span>,1);
-rand(<span class="string">'state'</span>,0);
+cvxq = cvx_quiet( true );
 
-<span class="comment">% The vertices of the first voronoi set</span>
-Vs = [ 1 1 ; -1 2 ; -2 1 ; -2 -1 ; 0 -2 ; 1.5 -1 ; 1 1 ]';
+<span class="comment">% The constellation points. Feel free to change them, but they must</span>
+<span class="comment">% produce a valid Voronoi diagram. Therefore, there must be three or</span>
+<span class="comment">% more points, and no three can be collinear. To test your selected</span>
+<span class="comment">% points, run VORONOI( Cs(:,1), Cs(:,2) ) and see if a complete diagram</span>
+<span class="comment">% is drawn; if so, your points should work.</span>
+Cs = [ <span class="keyword">...</span>
+    0,    0   ; <span class="keyword">...</span>
+    1.2,  2.4 ; <span class="keyword">...</span>
+    -3,   +3   ; <span class="keyword">...</span>
+    -4,    0   ; <span class="keyword">...</span>
+    -1.6, -3.2 ; <span class="keyword">...</span>
+    1.84615384615385, -2.76923076923077 ; <span class="keyword">...</span>
+    2.35294117647059,  0.58823529411765 ];
+Cmax = max(max(abs(Cs))) * 1.25;
 
-<span class="comment">% express first set as Ax &lt;= b and compute the other constellation</span>
-<span class="comment">% points</span>
-nopts = size( Vs, 2 );
-m     = nopts - 1;
-As{1} = zeros(m,2);
-bs{1} = zeros(m,1);
-Cs    = zeros( 2, nopts );
-<span class="keyword">for</span> i=1:m
-   As{1}(i,:) = [-(Vs(2,i)-Vs(2,i+1))  Vs(1,i)-Vs(1,i+1)];
-   bs{1}(i) = As{1}(i,:)*Vs(:,i);
-   Cs(:,i+1)= 2* bs{1}(i)* As{1}(i,:)'/norm(As{1}(i,:))^2;
-<span class="keyword">end</span>;
-figure(1)
-plot([Vs(1,:) Vs(1,m)], [Vs(2,:), Vs(2,m)], <span class="string">'-'</span>, Cs(1,:), Cs(2,:), <span class="string">'o'</span>);
+<span class="comment">% Plot the constellation points and the Voronoi tesselation</span>
+clf
+Cx = Cs( :, 1 );
+Cy = Cs( :, 2 );
+Cs = Cs';
+[ Vx, Vy ] = voronoi( Cx, Cy );
+plot( Vx, Vy, <span class="string">'b-'</span>, Cx, Cy, <span class="string">'o'</span> );
+axis <span class="string">equal</span>
+axis( Cmax * [ -1, 1, -1, 1 ] );
+axis <span class="string">off</span>
 hold <span class="string">on</span>
 
-<span class="comment">% ellipses</span>
-<span class="keyword">for</span> i=1 : nopts,
-   noangles = 1000;
-   text( Cs(1,i)+0.25, Cs(2,i)+0.25, [ <span class="string">'s_'</span>, int2str(i) ] );
-   angles = linspace( 0, 2*pi, noangles );
-<span class="comment">%  R = sqrt(chi2inv(.5,2));  % 50% confidence ellipse</span>
-   R = 1;  <span class="comment">% sigma = 1 ellipse</span>
-   ellipse = R * [ cos(angles) ; sin(angles) ] + Cs(:,i) * ones(1,noangles);
-   plot( ellipse(1,:), ellipse(2,:), <span class="string">':'</span> );
+<span class="comment">% Draw unit circles around each constellation point</span>
+noangles = 200;
+angles   = linspace( 0, 2 * pi, noangles );
+crcpts   = [ cos(angles) ; sin(angles) ];
+<span class="keyword">for</span> i=1 : m,
+    text( Cx(i)+0.25, Cy(i)+0.25, [ <span class="string">'s'</span>, int2str(i) ] );
+    ellipse = [ cos(angles) ; sin(angles) ] + Cs(:,i) * ones(1,noangles);
+    plot( ellipse(1,:), ellipse(2,:), <span class="string">':'</span> );
 <span class="keyword">end</span>;
+<span class="comment">% print -deps chebbnds_example.eps</span>
 
-<span class="comment">% Voronoi set around Cs(:,2)</span>
-As{2} = [-As{1}(1,:);
-         (Cs(:,m+1) - Cs(:,2))';
-         (Cs(:,3) - Cs(:,2))'];
-bs{2} = [-bs{1}(1);
-         As{2}(2,:)*(Cs(:,m+1)+Cs(:,2))/2;
-         As{2}(3,:)*(Cs(:,3)+Cs(:,2))/2];
-v = Vs(:,1);
-dir = (Cs(:,m+1)+Cs(:,2))/2 - v;
-plot( [v(1) v(1) + 5*dir(1)], [v(2)  v(2) + 5*dir(2)], <span class="string">'-'</span>);
-v = Vs(:,2);
-dir = (Cs(:,3)+Cs(:,2))/2 - v;
-plot( [v(1) v(1) + 5*dir(1)], [v(2)  v(2) + 5*dir(2)], <span class="string">'-'</span>);
+<span class="comment">% Determine the polyhedrons for each Voronoi region by computing the</span>
+<span class="comment">% Delaunay triangulation; that is, matrices A and b such that</span>
+<span class="comment">%     A * ( x - c ) &lt;= b</span>
+<span class="comment">% where c is the constellation point. The faces of a polyhedron for a given</span>
+<span class="comment">% point consist of the perpindicular bisectors of edges of the Delaunay</span>
+<span class="comment">% triangles to which it belongs.</span>
+m    = size( Cs, 2 );
+tri  = delaunay( Cx, Cy );
+ee   = sparse( tri, tri( :, [ 3, 1, 2 ] ), 1, m, m );
+ee   = ee + ee';
+<span class="keyword">for</span> k = 1 : m,
+    v2 = find( ee( :, k ) );
+    pk = Cs( :, v2 );
+    qk = Cs( :, k  ) * ones( 1, length( v2 ) );
+    Ak = pk - qk;
+    bk = 0.5 * sum( Ak .* Ak, 1 );
+    As{k} = Ak';
+    bs{k} = bk';
+<span class="keyword">end</span>
 
-<span class="comment">% Voronoi sets around Cs(:,i), i=3,4, .. nopts-1</span>
-<span class="keyword">for</span> i=3:nopts-1
-   As{i} = [-As{1}(i-1,:);
-            (Cs(:,i-1) - Cs(:,i))';
-            (Cs(:,i+1) - Cs(:,i))'];
-   bs{i} = [-bs{1}(i-1);
-            As{i}(2,:)*(Cs(:,i-1)+Cs(:,i))/2;
-            As{i}(3,:)*(Cs(:,i+1)+Cs(:,i))/2];
-   v = Vs(:,i-1);
-   dir = (Cs(:,i-1)+Cs(:,i))/2 - v;
-   plot( [v(1) v(1) + 4*dir(1)], [v(2)  v(2) + 4*dir(2)], <span class="string">'-'</span>);
-   v = Vs(:,i);
-   dir = (Cs(:,i+1)+Cs(:,i))/2 - v;
-   plot( [v(1) v(1) + 4*dir(1)], [v(2)  v(2) + 4*dir(2)], <span class="string">'-'</span>);
-<span class="keyword">end</span>;
-
-<span class="comment">% Voronoi sets around Cs(:,nopts)</span>
-As{nopts} = [-As{1}(nopts-1,:);
-             (Cs(:,nopts-1) - Cs(:,nopts))';
-             (Cs(:,2) - Cs(:,nopts))'];
-bs{nopts} = [-bs{1}(nopts-1);
-             As{nopts}(2,:)*(Cs(:,nopts-1)+Cs(:,nopts))/2;
-             As{nopts}(3,:)*(Cs(:,2)+Cs(:,nopts))/2];
-v = Vs(:,nopts-1);
-dir = (Cs(:,nopts-1)+Cs(:,nopts))/2 - v;
-plot( [v(1) v(1) + 6*dir(1)], [v(2)  v(2) + 6*dir(2)], <span class="string">'-'</span>);
-v = Vs(:,1);
-dir = (Cs(:,2)+Cs(:,nopts))/2 - v;
-plot( [v(1) v(1) + 6*dir(1)], [v(2)  v(2) + 6*dir(2)], <span class="string">'-'</span>);
-
-axis(<span class="string">'equal'</span>);
-axis(5*[-1 1 -1 1]);
-axis <span class="string">off</span>
-<span class="comment">%print -deps chebbnds_example.eps</span>
-
-<span class="comment">% Chebyshev lower bounds on probability of correct detection with</span>
-<span class="comment">% sigma = 1 for set 1</span>
-
-<span class="comment">% we calculate the chebyshev lower bound on</span>
-<span class="comment">%  prob As{1}*(Cs(1) + v) &lt;= bs{1}</span>
-A = As{1};
-b = bs{1} - A*Cs(:,1);
-[cd_cheb,P,q,r, X,lambda] = cheb(A,b,eye(2));
-
-<span class="comment">% to check the results, plot the ellipsoid</span>
-<span class="comment">%  x'*P*x + 2*q'*x + r = 1</span>
-
-noangles = 500;
-angles = linspace(0,2*pi, noangles);
-pts = [cos(angles); sin(angles)];
-ellipse = sqrt(1-r+q'*(P\q)) * P^(-1/2)*pts + <span class="keyword">...</span>
-     (-P\q + Cs(:,1))*ones(1,noangles);
-plot(ellipse(1,:), ellipse(2,:), <span class="string">'r-'</span>);
-dots= plot(X(1,:), X(2,:), <span class="string">'ro'</span>);
-set(dots,<span class="string">'MarkerFaceColor'</span>,<span class="string">'red'</span>);
-set(dots,<span class="string">'MarkerSize'</span>,4);
-
-<span class="comment">%print -deps chebbnds_example2.eps</span>
+<span class="comment">% For each polyhedron, compute lower bounds on the probability of</span>
+<span class="comment">% correct detection with sigma = 1. Check the results by plotting the</span>
+<span class="comment">% ellipsoid x'*P*x + 2*q'*x + r = 1, which should inscribe the polyhedron.</span>
+ints = 1 : m;
+<span class="comment">% Uncomment to do only the first polyhedron, like the book does</span>
+<span class="comment">% ints = 1;</span>
+<span class="keyword">for</span> i = ints( : ).',
+    [ cd_cheb, P, q, r, X, lambda ] = cheb( As{i}, bs{i}, eye(2) );
+    ellipse = sqrt(1-r+q'*(P\q)) * P^(-1/2) * crcpts + <span class="keyword">...</span>
+        (-P\q + Cs(:,i)) * ones(1,noangles);
+    plot( ellipse(1,:), ellipse(2,:), <span class="string">'r-'</span> );
+    dots = plot( X(1,:)+Cx(i), X(2,:)+Cy(i), <span class="string">'ro'</span> );
+    set( dots, <span class="string">'MarkerFaceColor'</span>, <span class="string">'red'</span> );
+    set( dots, <span class="string">'MarkerSize'</span>, 4 );
+<span class="keyword">end</span>
 hold <span class="string">off</span>
+<span class="comment">% print -deps chebbnds_example2.eps</span>
 
-<span class="comment">%</span>
-<span class="comment">% compute lower bounds vs sigma for a few sets</span>
-<span class="comment">%</span>
-
-nosigmas = 100;
-sigmas   = linspace( 0.001, 6.0, nosigmas )';
-cd_cheb  = zeros( nosigmas, nopts );
-cvxq     = cvx_quiet( true );
+<span class="comment">% Compute Chebyshev lower bounds for Prob( As(i) * v &lt;= bs(i) )</span>
+<span class="comment">% where v = N(Cs(i),sigma) for varying values of sigma</span>
+nsigma   = 500;
+sigmas   = linspace( 0.001, 6.0, nsigma )';
+cd_cheb  = zeros( nsigma, m );
 fprintf( <span class="string">'Computing lower bounds'</span> );
-<span class="keyword">for</span> k=1 : nosigmas,
-    <span class="keyword">for</span> i = 1 : 3,
-        <span class="comment">% Compute chebyshev lower bound for As{i}*(Cs(i)+v) &lt;= bs{i}</span>
-        A = As{i};
-        b = bs{i} - A*Cs(:,i);
-        cd_cheb(k,i) = cheb( A, b, sigmas(k) * eye(2) );
-   <span class="keyword">end</span>;
-   <span class="keyword">if</span> rem( k, 10 ) == 0,
-       fprintf( <span class="string">'.'</span> );
-   <span class="keyword">end</span>
+<span class="comment">% Uncomment to match the book</span>
+ints = 1 : m;
+<span class="comment">% ints     = 1 : 3;</span>
+<span class="keyword">for</span> i = ints( : ).',
+    <span class="keyword">for</span> k = 1 : nsigma,
+        cd_cheb(k,i) = cheb( As{i}, bs{i}, sigmas(k) * eye(2) );
+    <span class="keyword">end</span>;
+    <span class="keyword">if</span> rem( k, 10 ) == 0,
+        fprintf( <span class="string">'.'</span> );
+    <span class="keyword">end</span>
 <span class="keyword">end</span>;
 fprintf( <span class="string">'done.\n'</span> );
-cvx_quiet( cvxq );
 
 figure(2)
-plot(sqrt(sigmas(:,ones(1,3))), cd_cheb(:,[1 2 3]));
-<span class="keyword">for</span> i = 1 : 3,
-   text( sqrt(sigmas(nosigmas/4)), cd_cheb(nosigmas/4,i), [<span class="string">'b'</span>,int2str(i)] );
+mc = size( cd_cheb, 2 );
+plot(sqrt(sigmas(:,ones(1,mc))), cd_cheb);
+<span class="keyword">for</span> i = 1 : mc,
+    text( sqrt(sigmas(nsigma/4)), cd_cheb(nsigma/4,i), [<span class="string">'b'</span>,int2str(i)] );
 <span class="keyword">end</span>;
 xlabel(<span class="string">'x'</span>);
 ylabel(<span class="string">'y'</span>);
-axis([0 2.5 0 1]);
+axis( [ 0, 2.5, 0, 1 ] );
 
-<span class="comment">%</span>
+<span class="comment">% For the central set, compute Chebyshev lower bounds, Monte Carlo</span>
+<span class="comment">% estimates, and Chernoff bounds.</span>
 <span class="comment">% for central set, compute cheb lower bounds,  mc estimates,</span>
 <span class="comment">% and chernoff bounds</span>
 <span class="comment">%</span>
 
-nosigmas = 50;
-sigmas   = linspace( 0.1, 0.5, nosigmas);
-cd1      = zeros( 1, nosigmas );     <span class="comment">% lower bounds for prob( x in C1 )</span>
-mc1      = zeros( 1, nosigmas );     <span class="comment">% monte carlo estimates of prob( x in C1 )</span>
-cher1    = zeros( nopts-1, nosigmas ); <span class="comment">% chernoff upper bounds on</span>
-                                     <span class="comment">% Prob(x in Cj| s=s_1)</span>
-cvxq = cvx_quiet( true );
-fprintf( <span class="string">'Computing upper bounds, lower bounds, and Monte Carlo sims'</span> );
-<span class="keyword">for</span> i = 1 : nosigmas,
-
-   <span class="comment">% calculate the chebyshev lower bound on</span>
-   <span class="comment">% prob that As{1}*(Cs(1) + v) &lt;= bs{1}</span>
-
-   A = As{1};
-   b = bs{1} - A*Cs(:,1);
-   Sigma = sigmas(i) ^ 2 * eye(2);
-   cd1(i) = cheb( A, b, Sigma );
-   mc1(i) = montecarlo( A, b, Sigma, 10000 );
-
-   <span class="comment">% upper bounds on prob that Cs(1)+v in other sets</span>
-   <span class="comment">% ie, As(j)*(Cs(1) + v ) &lt;= bs(j)</span>
-   <span class="keyword">for</span> j=2:nopts
-       A = As{j};
-       b = bs{j} - A*Cs(:,1);
-       cher1( j-1, i ) = cher( A, b, Sigma );
-   <span class="keyword">end</span>;
-   <span class="keyword">if</span> rem( i, 5 ) == 0,
-       fprintf( <span class="string">'.'</span> );
-   <span class="keyword">end</span>
+nsigma = 50;
+sigmas = linspace( 0.1, 0.5, nsigma );
+cd1    = zeros( 1, nsigma );   <span class="comment">% lower bounds for prob( x in C1 )</span>
+mc1    = zeros( 1, nsigma );   <span class="comment">% monte carlo estimates of prob( x in C1 )</span>
+cher1  = zeros( m-1, nsigma ); <span class="comment">% chernoff upper bounds on Prob( x in Cj | s = s_1 )</span>
+fprintf( <span class="string">'Computing lower bounds and Monte Carlo sims'</span> );
+<span class="keyword">for</span> i = 1 : nsigma,
+    <span class="comment">% Compute the Chebyshev lower bound on Prob( As{1} * v &lt;= bs{1} )</span>
+    <span class="comment">% for v in N( 0, Sigma )</span>
+    Sigma  = sigmas(i)^2 * eye(2);
+    cd1(i) = cheb( As{1}, bs{1}, Sigma );
+    mc1(i) = montecarlo( As{1}, bs{1}, Sigma, 10000 );
+    <span class="keyword">if</span> rem( i, 5 ) == 0,
+        fprintf( <span class="string">'.'</span> );
+    <span class="keyword">end</span>
+<span class="keyword">end</span>
+fprintf( <span class="string">'done.\nComputing upper bounds'</span> );
+<span class="keyword">for</span> j = 2 : m,
+    A = As{j};
+    b = bs{j} - A * ( Cs(:,1) - Cs(:,j) );
+    <span class="comment">% Compute the Chernoff upper bound on</span>
+    <span class="comment">%     Prob( As{j} * ( v + Cs{1} - Cs{j} ) &lt;= bs{j} )</span>
+    <span class="comment">% for v in N( 0, Sigma )</span>
+    <span class="keyword">for</span> i = 1 : nsigma,
+        cher1( j - 1, i ) = cher( A, b, sigmas(i)^2*eye(2) );
+    <span class="keyword">end</span>
+    fprintf( <span class="string">'.'</span> );
 <span class="keyword">end</span>;
-cher1 = max( 1 - sum( cher1 ), 0 );
-cvx_quiet( cvxq );
 fprintf( <span class="string">'done.\n'</span> );
-
+cher1 = max( 1 - sum( cher1 ), 0 );
 figure(4)
-plot(sigmas, cher1, <span class="string">'-'</span>, sigmas, mc1, <span class="string">'--'</span>);
-axis([0.2 0.5 0.9 1]);
-xlabel(<span class="string">'x'</span>);
-ylabel(<span class="string">'y'</span>);
+plot( sigmas, cher1, <span class="string">'-'</span>, sigmas, mc1, <span class="string">'--'</span> );
+axis( [ 0.2 0.5 0.9 1 ] );
+xlabel( <span class="string">'x'</span> );
+ylabel( <span class="string">'y'</span> );
 <span class="comment">%print -deps chernoff_example.eps</span>
-</pre><pre class="codeoutput"> 
-Calling SeDuMi: 48 variables (0 free), 36 equality constraints
-------------------------------------------------------------------------
-SeDuMi 1.1 by AdvOL, 2005 and Jos F. Sturm, 1998, 2001-2003.
-Alg = 2: xz-corrector, Adaptive Step-Differentiation, theta = 0.250, beta = 0.500
-eqs m = 36, order n = 28, dim = 70, blocks = 8
-nnz(A) = 89 + 0, nnz(ADA) = 856, nnz(L) = 583
- it :     b*y       gap    delta  rate   t/tP*  t/tD*   feas cg cg  prec
-  0 :            3.22E+000 0.000
-  1 :  6.16E-001 1.09E+000 0.000 0.3386 0.9000 0.9000   2.78  1  1  1.6E+000
-  2 :  8.11E-001 2.05E-001 0.000 0.1875 0.9000 0.9000   1.96  1  1  2.3E-001
-  3 :  7.97E-001 3.96E-002 0.000 0.1936 0.9000 0.9000   0.90  1  1  5.0E-002
-  4 :  7.95E-001 8.61E-003 0.000 0.2172 0.9000 0.9000   0.93  1  1  1.1E-002
-  5 :  7.95E-001 2.49E-004 0.000 0.0289 0.9900 0.9900   0.98  1  1  3.4E-004
-  6 :  7.95E-001 2.82E-006 0.329 0.0113 0.9903 0.9900   1.00  1  1  6.4E-006
-  7 :  7.95E-001 2.38E-007 0.000 0.0844 0.9090 0.9000   1.00  1  1  7.7E-007
-  8 :  7.95E-001 1.82E-008 0.487 0.0767 0.9900 0.9900   1.00  1  1  6.1E-008
-  9 :  7.95E-001 4.26E-010 0.000 0.0234 0.9900 0.9192   1.00  2  2  4.6E-009
 
-iter seconds digits       c*x               b*y
-  9      0.1   Inf  7.9523809994e-001  7.9523810301e-001
-|Ax-b| =  2.6e-009, [Ay-c]_+ =  2.7E-009, |x|= 4.0e+000, |y|= 1.4e+000
-
-Detailed timing (sec)
-   Pre          IPM          Post
-1.001E-002    9.013E-002    0.000E+000    
-Max-norms: ||b||=1, ||c|| = 1,
-Cholesky |add|=0, |skip| = 0, ||L.L|| = 24.9735.
-------------------------------------------------------------------------
-Optimal value (cvx_optval): +0.204762
-Status (cvx_status): Solved
- 
-Computing lower bounds..........done.
-Computing upper bounds, lower bounds, and Monte Carlo sims..........done.
+cvx_quiet( cvxq );
+</pre><pre class="codeoutput">Computing lower bounds.......done.
+Computing lower bounds and Monte Carlo sims..........done.
+Computing upper bounds......done.
 </pre><img vspace="5" hspace="5" src="probbounds_01.png"> <img vspace="5" hspace="5" src="probbounds_02.png"> <img vspace="5" hspace="5" src="probbounds_03.png"> <p class="footer"><br>
             Published with MATLAB&reg; 7.1<br></p>
       </div>
@@ -303,190 +239,158 @@ Computing upper bounds, lower bounds, and Monte Carlo sims..........done.
 % Adapted for CVX by Michael Grant, 2005/12/19
 % Generates figures 7.5-7.8
 
-randn('state',1);
-rand('state',0);
+cvxq = cvx_quiet( true );
 
-% The vertices of the first voronoi set
-Vs = [ 1 1 ; -1 2 ; -2 1 ; -2 -1 ; 0 -2 ; 1.5 -1 ; 1 1 ]';
+% The constellation points. Feel free to change them, but they must
+% produce a valid Voronoi diagram. Therefore, there must be three or
+% more points, and no three can be collinear. To test your selected
+% points, run VORONOI( Cs(:,1), Cs(:,2) ) and see if a complete diagram
+% is drawn; if so, your points should work.
+Cs = [ ...
+    0,    0   ; ...
+    1.2,  2.4 ; ...
+    -3,   +3   ; ...
+    -4,    0   ; ...
+    -1.6, -3.2 ; ...
+    1.84615384615385, -2.76923076923077 ; ...
+    2.35294117647059,  0.58823529411765 ];
+Cmax = max(max(abs(Cs))) * 1.25;
 
-% express first set as Ax <= b and compute the other constellation
-% points
-nopts = size( Vs, 2 );
-m     = nopts - 1; 
-As{1} = zeros(m,2);  
-bs{1} = zeros(m,1);
-Cs    = zeros( 2, nopts );
-for i=1:m
-   As{1}(i,:) = [-(Vs(2,i)-Vs(2,i+1))  Vs(1,i)-Vs(1,i+1)];
-   bs{1}(i) = As{1}(i,:)*Vs(:,i);
-   Cs(:,i+1)= 2* bs{1}(i)* As{1}(i,:)'/norm(As{1}(i,:))^2;
-end;
-figure(1)
-plot([Vs(1,:) Vs(1,m)], [Vs(2,:), Vs(2,m)], '-', Cs(1,:), Cs(2,:), 'o');
+% Plot the constellation points and the Voronoi tesselation
+clf
+Cx = Cs( :, 1 );
+Cy = Cs( :, 2 );
+Cs = Cs';
+[ Vx, Vy ] = voronoi( Cx, Cy );
+plot( Vx, Vy, 'b-', Cx, Cy, 'o' );
+axis equal
+axis( Cmax * [ -1, 1, -1, 1 ] );
+axis off
 hold on
 
-% ellipses
-for i=1 : nopts,
-   noangles = 1000;
-   text( Cs(1,i)+0.25, Cs(2,i)+0.25, [ 's_', int2str(i) ] );
-   angles = linspace( 0, 2*pi, noangles );
-%  R = sqrt(chi2inv(.5,2));  % 50% confidence ellipse
-   R = 1;  % sigma = 1 ellipse
-   ellipse = R * [ cos(angles) ; sin(angles) ] + Cs(:,i) * ones(1,noangles);
-   plot( ellipse(1,:), ellipse(2,:), ':' );
+% Draw unit circles around each constellation point
+noangles = 200;
+angles   = linspace( 0, 2 * pi, noangles );
+crcpts   = [ cos(angles) ; sin(angles) ];
+for i=1 : m,
+    text( Cx(i)+0.25, Cy(i)+0.25, [ 's', int2str(i) ] );
+    ellipse = [ cos(angles) ; sin(angles) ] + Cs(:,i) * ones(1,noangles);
+    plot( ellipse(1,:), ellipse(2,:), ':' );
 end;
+% print -deps chebbnds_example.eps
 
-% Voronoi set around Cs(:,2)
-As{2} = [-As{1}(1,:);
-         (Cs(:,m+1) - Cs(:,2))';
-         (Cs(:,3) - Cs(:,2))'];
-bs{2} = [-bs{1}(1);
-         As{2}(2,:)*(Cs(:,m+1)+Cs(:,2))/2;
-         As{2}(3,:)*(Cs(:,3)+Cs(:,2))/2];
-v = Vs(:,1);
-dir = (Cs(:,m+1)+Cs(:,2))/2 - v;
-plot( [v(1) v(1) + 5*dir(1)], [v(2)  v(2) + 5*dir(2)], '-');
-v = Vs(:,2);
-dir = (Cs(:,3)+Cs(:,2))/2 - v;
-plot( [v(1) v(1) + 5*dir(1)], [v(2)  v(2) + 5*dir(2)], '-');
+% Determine the polyhedrons for each Voronoi region by computing the
+% Delaunay triangulation; that is, matrices A and b such that 
+%     A * ( x - c ) <= b
+% where c is the constellation point. The faces of a polyhedron for a given
+% point consist of the perpindicular bisectors of edges of the Delaunay
+% triangles to which it belongs.
+m    = size( Cs, 2 );
+tri  = delaunay( Cx, Cy );
+ee   = sparse( tri, tri( :, [ 3, 1, 2 ] ), 1, m, m );
+ee   = ee + ee';
+for k = 1 : m,
+    v2 = find( ee( :, k ) );
+    pk = Cs( :, v2 );
+    qk = Cs( :, k  ) * ones( 1, length( v2 ) );
+    Ak = pk - qk;
+    bk = 0.5 * sum( Ak .* Ak, 1 );
+    As{k} = Ak';
+    bs{k} = bk';
+end
 
-% Voronoi sets around Cs(:,i), i=3,4, .. nopts-1
-for i=3:nopts-1
-   As{i} = [-As{1}(i-1,:);
-            (Cs(:,i-1) - Cs(:,i))';
-            (Cs(:,i+1) - Cs(:,i))'];
-   bs{i} = [-bs{1}(i-1);
-            As{i}(2,:)*(Cs(:,i-1)+Cs(:,i))/2;
-            As{i}(3,:)*(Cs(:,i+1)+Cs(:,i))/2];
-   v = Vs(:,i-1);
-   dir = (Cs(:,i-1)+Cs(:,i))/2 - v;
-   plot( [v(1) v(1) + 4*dir(1)], [v(2)  v(2) + 4*dir(2)], '-');
-   v = Vs(:,i);
-   dir = (Cs(:,i+1)+Cs(:,i))/2 - v;
-   plot( [v(1) v(1) + 4*dir(1)], [v(2)  v(2) + 4*dir(2)], '-');
-end;
-
-% Voronoi sets around Cs(:,nopts)
-As{nopts} = [-As{1}(nopts-1,:);
-             (Cs(:,nopts-1) - Cs(:,nopts))';
-             (Cs(:,2) - Cs(:,nopts))'];
-bs{nopts} = [-bs{1}(nopts-1);
-             As{nopts}(2,:)*(Cs(:,nopts-1)+Cs(:,nopts))/2;
-             As{nopts}(3,:)*(Cs(:,2)+Cs(:,nopts))/2];
-v = Vs(:,nopts-1);
-dir = (Cs(:,nopts-1)+Cs(:,nopts))/2 - v;
-plot( [v(1) v(1) + 6*dir(1)], [v(2)  v(2) + 6*dir(2)], '-');
-v = Vs(:,1);
-dir = (Cs(:,2)+Cs(:,nopts))/2 - v;
-plot( [v(1) v(1) + 6*dir(1)], [v(2)  v(2) + 6*dir(2)], '-');
-
-axis('equal');
-axis(5*[-1 1 -1 1]);
-axis off
-%print -deps chebbnds_example.eps
-
-% Chebyshev lower bounds on probability of correct detection with
-% sigma = 1 for set 1
-
-% we calculate the chebyshev lower bound on
-%  prob As{1}*(Cs(1) + v) <= bs{1}
-A = As{1};
-b = bs{1} - A*Cs(:,1);
-[cd_cheb,P,q,r, X,lambda] = cheb(A,b,eye(2));
-
-% to check the results, plot the ellipsoid
-%  x'*P*x + 2*q'*x + r = 1
-
-noangles = 500;
-angles = linspace(0,2*pi, noangles);
-pts = [cos(angles); sin(angles)];
-ellipse = sqrt(1-r+q'*(P\q)) * P^(-1/2)*pts + ...
-     (-P\q + Cs(:,1))*ones(1,noangles);
-plot(ellipse(1,:), ellipse(2,:), 'r-');
-dots= plot(X(1,:), X(2,:), 'ro');
-set(dots,'MarkerFaceColor','red');
-set(dots,'MarkerSize',4);
-
-%print -deps chebbnds_example2.eps
+% For each polyhedron, compute lower bounds on the probability of
+% correct detection with sigma = 1. Check the results by plotting the
+% ellipsoid x'*P*x + 2*q'*x + r = 1, which should inscribe the polyhedron.
+ints = 1 : m;
+% Uncomment to do only the first polyhedron, like the book does
+% ints = 1;
+for i = ints( : ).',
+    [ cd_cheb, P, q, r, X, lambda ] = cheb( As{i}, bs{i}, eye(2) );
+    ellipse = sqrt(1-r+q'*(P\q)) * P^(-1/2) * crcpts + ...
+        (-P\q + Cs(:,i)) * ones(1,noangles);
+    plot( ellipse(1,:), ellipse(2,:), 'r-' );
+    dots = plot( X(1,:)+Cx(i), X(2,:)+Cy(i), 'ro' );
+    set( dots, 'MarkerFaceColor', 'red' );
+    set( dots, 'MarkerSize', 4 );
+end
 hold off
+% print -deps chebbnds_example2.eps
 
-%
-% compute lower bounds vs sigma for a few sets
-%
-
-nosigmas = 100;
-sigmas   = linspace( 0.001, 6.0, nosigmas )';
-cd_cheb  = zeros( nosigmas, nopts );
-cvxq     = cvx_quiet( true );
+% Compute Chebyshev lower bounds for Prob( As(i) * v <= bs(i) )
+% where v = N(Cs(i),sigma) for varying values of sigma
+nsigma   = 500;
+sigmas   = linspace( 0.001, 6.0, nsigma )';
+cd_cheb  = zeros( nsigma, m );
 fprintf( 'Computing lower bounds' );
-for k=1 : nosigmas,
-    for i = 1 : 3,
-        % Compute chebyshev lower bound for As{i}*(Cs(i)+v) <= bs{i}
-        A = As{i};
-        b = bs{i} - A*Cs(:,i);
-        cd_cheb(k,i) = cheb( A, b, sigmas(k) * eye(2) );
-   end;
-   if rem( k, 10 ) == 0,
-       fprintf( '.' );
-   end
+% Uncomment to match the book
+ints = 1 : m;
+% ints     = 1 : 3;
+for i = ints( : ).',
+    for k = 1 : nsigma,
+        cd_cheb(k,i) = cheb( As{i}, bs{i}, sigmas(k) * eye(2) );
+    end;
+    if rem( k, 10 ) == 0,
+        fprintf( '.' );
+    end
 end;
 fprintf( 'done.\n' );
-cvx_quiet( cvxq );
 
 figure(2)
-plot(sqrt(sigmas(:,ones(1,3))), cd_cheb(:,[1 2 3]));
-for i = 1 : 3,
-   text( sqrt(sigmas(nosigmas/4)), cd_cheb(nosigmas/4,i), ['b',int2str(i)] );
+mc = size( cd_cheb, 2 );
+plot(sqrt(sigmas(:,ones(1,mc))), cd_cheb);
+for i = 1 : mc,
+    text( sqrt(sigmas(nsigma/4)), cd_cheb(nsigma/4,i), ['b',int2str(i)] );
 end;
 xlabel('x');
 ylabel('y');
-axis([0 2.5 0 1]);
+axis( [ 0, 2.5, 0, 1 ] );
 
-%
+% For the central set, compute Chebyshev lower bounds, Monte Carlo
+% estimates, and Chernoff bounds.
 % for central set, compute cheb lower bounds,  mc estimates,
 % and chernoff bounds
 %
 
-nosigmas = 50;
-sigmas   = linspace( 0.1, 0.5, nosigmas);
-cd1      = zeros( 1, nosigmas );     % lower bounds for prob( x in C1 )
-mc1      = zeros( 1, nosigmas );     % monte carlo estimates of prob( x in C1 )
-cher1    = zeros( nopts-1, nosigmas ); % chernoff upper bounds on
-                                     % Prob(x in Cj| s=s_1)
-cvxq = cvx_quiet( true );
-fprintf( 'Computing upper bounds, lower bounds, and Monte Carlo sims' );
-for i = 1 : nosigmas,
-
-   % calculate the chebyshev lower bound on
-   % prob that As{1}*(Cs(1) + v) <= bs{1}
-
-   A = As{1};  
-   b = bs{1} - A*Cs(:,1);
-   Sigma = sigmas(i) ^ 2 * eye(2);
-   cd1(i) = cheb( A, b, Sigma );
-   mc1(i) = montecarlo( A, b, Sigma, 10000 );
-
-   % upper bounds on prob that Cs(1)+v in other sets
-   % ie, As(j)*(Cs(1) + v ) <= bs(j)
-   for j=2:nopts
-       A = As{j};
-       b = bs{j} - A*Cs(:,1);
-       cher1( j-1, i ) = cher( A, b, Sigma );
-   end;
-   if rem( i, 5 ) == 0,
-       fprintf( '.' );
-   end
+nsigma = 50;
+sigmas = linspace( 0.1, 0.5, nsigma );
+cd1    = zeros( 1, nsigma );   % lower bounds for prob( x in C1 )
+mc1    = zeros( 1, nsigma );   % monte carlo estimates of prob( x in C1 )
+cher1  = zeros( m-1, nsigma ); % chernoff upper bounds on Prob( x in Cj | s = s_1 )
+fprintf( 'Computing lower bounds and Monte Carlo sims' );
+for i = 1 : nsigma,
+    % Compute the Chebyshev lower bound on Prob( As{1} * v <= bs{1} )
+    % for v in N( 0, Sigma )
+    Sigma  = sigmas(i)^2 * eye(2);
+    cd1(i) = cheb( As{1}, bs{1}, Sigma );
+    mc1(i) = montecarlo( As{1}, bs{1}, Sigma, 10000 );
+    if rem( i, 5 ) == 0, 
+        fprintf( '.' );
+    end
+end
+fprintf( 'done.\nComputing upper bounds' );
+for j = 2 : m,
+    A = As{j};
+    b = bs{j} - A * ( Cs(:,1) - Cs(:,j) );
+    % Compute the Chernoff upper bound on 
+    %     Prob( As{j} * ( v + Cs{1} - Cs{j} ) <= bs{j} )
+    % for v in N( 0, Sigma )
+    for i = 1 : nsigma,
+        cher1( j - 1, i ) = cher( A, b, sigmas(i)^2*eye(2) );
+    end
+    fprintf( '.' );
 end;
-cher1 = max( 1 - sum( cher1 ), 0 );
-cvx_quiet( cvxq );
 fprintf( 'done.\n' );
-
+cher1 = max( 1 - sum( cher1 ), 0 );
 figure(4)
-plot(sigmas, cher1, '-', sigmas, mc1, 'REPLACE_WITH_DASH_DASH');
-axis([0.2 0.5 0.9 1]);
-xlabel('x'); 
-ylabel('y');
+plot( sigmas, cher1, '-', sigmas, mc1, 'REPLACE_WITH_DASH_DASH' );
+axis( [ 0.2 0.5 0.9 1 ] );
+xlabel( 'x' );
+ylabel( 'y' );
 %print -deps chernoff_example.eps
+
+cvx_quiet( cvxq );
+
 
 ##### SOURCE END #####
 -->
