@@ -47,6 +47,6 @@ hold on;
 plot(x(1),x(2),'k.')
 plot(y(1),y(2),'k.')
 plot([x(1) y(1)],[x(2) y(2)])
-title('Euclidian distance between 2 polyhedron in R^2');
+title('Euclidean distance between 2 polyhedron in R^2');
 xlabel('x_1');
 ylabel('x_2');

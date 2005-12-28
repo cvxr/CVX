@@ -3,7 +3,7 @@
 % Joëlle Skaf - 08/16/05
 % (a figure is generated)
 %
-% The goal is to find the largest Euclidian ball (i.e. its center and
+% The goal is to find the largest Euclidean ball (i.e. its center and
 % radius) that lies in a polyhedron described by linear inequalites in this
 % fashion: P = {x : a_i'*x <= b_i, i=1,...,m} where x is in R^2
 
@@ -37,6 +37,6 @@ plot( x_c(1) + r*cos(theta), x_c(2) + r*sin(theta), 'r');
 plot(x_c(1),x_c(2),'k+')
 xlabel('x_1')
 ylabel('x_2')
-title('Largest Euclidian ball lying in a 2D polyhedron');
+title('Largest Euclidean ball lying in a 2D polyhedron');
 axis([-1 1 -1 1])
 axis equal

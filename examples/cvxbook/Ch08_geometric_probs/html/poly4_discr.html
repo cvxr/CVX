@@ -8,7 +8,7 @@ To make changes, update the M-file and republish this document.
       -->
       <title>Polynomial discrimination</title>
       <meta name="generator" content="MATLAB 7.1">
-      <meta name="date" content="2005-12-13">
+      <meta name="date" content="2005-12-27">
       <meta name="m-file" content="poly4_discr"><style>
 
 body {
@@ -73,7 +73,7 @@ p.footer {
 <span class="comment">% Adapted for CVX by Joelle Skaf - 10/23/05</span>
 <span class="comment">% (a figure is generated)</span>
 <span class="comment">%</span>
-<span class="comment">% The goal is to find the polynomial of degree 4 on IR^n that separates</span>
+<span class="comment">% The goal is to find the polynomial of degree 4 on R^n that separates</span>
 <span class="comment">% two sets of points {x_1,...,x_N} and {y_1,...,y_N}. We are trying to find</span>
 <span class="comment">% the coefficients of an order-4-polynomial P(x) that would satisfy:</span>
 <span class="comment">%           minimize    t</span>
@@ -170,7 +170,7 @@ iter seconds  |Ax|    [Ay]_+     |x|       |y|
 
 Detailed timing (sec)
    Pre          IPM          Post
-8.012E-002    3.205E-001    0.000E+000    
+5.007E-002    3.305E-001    1.001E-002    
 Max-norms: ||b||=0, ||c|| = 1,
 Cholesky |add|=0, |skip| = 0, ||L.L|| = 1.
 ------------------------------------------------------------------------
@@ -190,7 +190,7 @@ Done!
 % Adapted for CVX by Joelle Skaf - 10/23/05
 % (a figure is generated)
 %
-% The goal is to find the polynomial of degree 4 on IR^n that separates
+% The goal is to find the polynomial of degree 4 on R^n that separates
 % two sets of points {x_1,...,x_N} and {y_1,...,y_N}. We are trying to find
 % the coefficients of an order-4-polynomial P(x) that would satisfy:
 %           minimize    t

@@ -8,7 +8,7 @@ To make changes, update the M-file and republish this document.
       -->
       <title>Euclidean distance between polyhedra in 2D</title>
       <meta name="generator" content="MATLAB 7.1">
-      <meta name="date" content="2005-12-12">
+      <meta name="date" content="2005-12-27">
       <meta name="m-file" content="eucl_dist_poly_2D"><style>
 
 body {
@@ -116,10 +116,40 @@ hold <span class="string">on</span>;
 plot(x(1),x(2),<span class="string">'k.'</span>)
 plot(y(1),y(2),<span class="string">'k.'</span>)
 plot([x(1) y(1)],[x(2) y(2)])
-title(<span class="string">'Euclidian distance between 2 polyhedron in R^2'</span>);
+title(<span class="string">'Euclidean distance between 2 polyhedron in R^2'</span>);
 xlabel(<span class="string">'x_1'</span>);
 ylabel(<span class="string">'x_2'</span>);
-</pre><pre class="codeoutput">Computing the distance between the 2 polyhedra...Done! 
+</pre><pre class="codeoutput">Computing the distance between the 2 polyhedra... 
+Calling SeDuMi: 11 variables (0 free), 5 equality constraints
+------------------------------------------------------------------------
+SeDuMi 1.1 by AdvOL, 2005 and Jos F. Sturm, 1998, 2001-2003.
+Alg = 2: xz-corrector, Adaptive Step-Differentiation, theta = 0.250, beta = 0.500
+eqs m = 5, order n = 11, dim = 12, blocks = 2
+nnz(A) = 18 + 0, nnz(ADA) = 15, nnz(L) = 10
+ it :     b*y       gap    delta  rate   t/tP*  t/tD*   feas cg cg  prec
+  0 :            6.27E+000 0.000
+  1 :  1.24E-001 1.96E+000 0.000 0.3117 0.9000 0.9000   2.28  1  1  2.2E+000
+  2 :  1.41E+000 5.50E-001 0.000 0.2812 0.9000 0.9000   1.00  1  1  6.1E-001
+  3 :  2.06E+000 4.86E-002 0.000 0.0884 0.9900 0.9900   1.24  1  1  5.3E-002
+  4 :  2.12E+000 1.96E-003 0.000 0.0403 0.9900 0.9900   1.01  1  1  2.1E-003
+  5 :  2.12E+000 1.32E-004 0.431 0.0674 0.9900 0.9900   1.00  1  1  1.4E-004
+  6 :  2.12E+000 2.36E-006 0.000 0.0179 0.9900 0.9905   1.00  1  1  5.5E-006
+  7 :  2.12E+000 1.54E-010 0.294 0.0001 0.9999 1.0000   1.00  1  1  6.6E-010
+
+iter seconds digits       c*x               b*y
+  7      0.1   Inf  2.1213203432e+000  2.1213203433e+000
+|Ax-b| =  2.0e-009, [Ay-c]_+ =  6.7E-012, |x|= 3.7e+000, |y|= 1.6e+000
+
+Detailed timing (sec)
+   Pre          IPM          Post
+2.003E-002    1.202E-001    0.000E+000    
+Max-norms: ||b||=4, ||c|| = 1,
+Cholesky |add|=0, |skip| = 0, ||L.L|| = 1.
+------------------------------------------------------------------------
+Optimal value (cvx_optval): +2.12132
+Status (cvx_status): Solved
+ 
+Done! 
 ------------------------------------------------------------------
 The distance between the 2 polyhedra C and D is: 
 dist(C,D) = 2.1213
@@ -187,7 +217,7 @@ hold on;
 plot(x(1),x(2),'k.')
 plot(y(1),y(2),'k.')
 plot([x(1) y(1)],[x(2) y(2)])
-title('Euclidian distance between 2 polyhedron in R^2');
+title('Euclidean distance between 2 polyhedron in R^2');
 xlabel('x_1');
 ylabel('x_2');
 

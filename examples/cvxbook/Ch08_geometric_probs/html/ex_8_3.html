@@ -8,7 +8,7 @@ To make changes, update the M-file and republish this document.
       -->
       <title>Example 8.3: Bounding correlation coefficients</title>
       <meta name="generator" content="MATLAB 7.1">
-      <meta name="date" content="2005-12-12">
+      <meta name="date" content="2005-12-27">
       <meta name="m-file" content="ex_8_3"><style>
 
 body {
@@ -73,7 +73,7 @@ p.footer {
 <span class="comment">%</span>
 <span class="comment">% Let C be a correlation matrix. Given lower and upper bounds on</span>
 <span class="comment">% some of the angles (or correlation coeff.), find the maximum and minimum</span>
-<span class="comment">% possible values of rho_14 by solving 2 SPD's</span>
+<span class="comment">% possible values of rho_14 by solving 2 SDP's</span>
 <span class="comment">%           minimize/maximize   rho_14</span>
 <span class="comment">%                        s.t.   C &gt;=0</span>
 <span class="comment">%                               0.6 &lt;= rho_12 &lt;=  0.9</span>
@@ -89,16 +89,16 @@ fprintf(1,<span class="string">'Solving the upper bound SDP ...'</span>);
 cvx_begin
     variable <span class="string">C1(n,n)</span> <span class="string">symmetric</span>
     maximize ( C1(1,4) )
-    C1 == semidefinite(n)
-    diag(C1) == ones(n,1)
-    C1(1,2) &gt;= 0.6
-    C1(1,2) &lt;= 0.9
-    C1(1,3) &gt;= 0.8
-    C1(1,3) &lt;= 0.9
-    C1(2,4) &gt;= 0.5
-    C1(2,4) &lt;= 0.7
-    C1(3,4) &gt;= -0.8
-    C1(3,4) &lt;= -0.4
+    C1 == semidefinite(n);
+    diag(C1) == ones(n,1);
+    C1(1,2) &gt;= 0.6;
+    C1(1,2) &lt;= 0.9;
+    C1(1,3) &gt;= 0.8;
+    C1(1,3) &lt;= 0.9;
+    C1(2,4) &gt;= 0.5;
+    C1(2,4) &lt;= 0.7;
+    C1(3,4) &gt;= -0.8;
+    C1(3,4) &lt;= -0.4;
 cvx_end
 
 fprintf(1,<span class="string">'Done! \n'</span>);
@@ -109,16 +109,16 @@ fprintf(1,<span class="string">'Solving the lower bound SDP ...'</span>);
 cvx_begin
     variable <span class="string">C2(n,n)</span> <span class="string">symmetric</span>
     minimize ( C2(1,4) )
-    C2 == semidefinite(n)
-    diag(C2) == ones(n,1)
-    C2(1,2) &gt;= 0.6
-    C2(1,2) &lt;= 0.9
-    C2(1,3) &gt;= 0.8
-    C2(1,3) &lt;= 0.9
-    C2(2,4) &gt;= 0.5
-    C2(2,4) &lt;= 0.7
-    C2(3,4) &gt;= -0.8
-    C2(3,4) &lt;= -0.4
+    C2 == semidefinite(n);
+    diag(C2) == ones(n,1);
+    C2(1,2) &gt;= 0.6;
+    C2(1,2) &lt;= 0.9;
+    C2(1,3) &gt;= 0.8;
+    C2(1,3) &lt;= 0.9;
+    C2(2,4) &gt;= 0.5;
+    C2(2,4) &lt;= 0.7;
+    C2(3,4) &gt;= -0.8;
+    C2(3,4) &lt;= -0.4;
 cvx_end
 
 fprintf(1,<span class="string">'Done! \n'</span>);
@@ -128,8 +128,70 @@ disp([<span class="string">'The minimum and maximum values of rho_14 are: '</spa
 disp(<span class="string">'with corresponding correlation matrices: '</span>);
 disp(C2)
 disp(C1)
-</pre><pre class="codeoutput">Solving the upper bound SDP ...Done! 
-Solving the lower bound SDP ...Done! 
+</pre><pre class="codeoutput">Solving the upper bound SDP ... 
+Calling SeDuMi: 18 variables (0 free), 12 equality constraints
+------------------------------------------------------------------------
+SeDuMi 1.1 by AdvOL, 2005 and Jos F. Sturm, 1998, 2001-2003.
+Alg = 2: xz-corrector, Adaptive Step-Differentiation, theta = 0.250, beta = 0.500
+eqs m = 12, order n = 13, dim = 25, blocks = 2
+nnz(A) = 20 + 0, nnz(ADA) = 144, nnz(L) = 78
+ it :     b*y       gap    delta  rate   t/tP*  t/tD*   feas cg cg  prec
+  0 :            1.49E+000 0.000
+  1 : -2.96E-001 4.40E-001 0.000 0.2954 0.9000 0.9000   1.63  1  1  1.2E+000
+  2 : -4.38E-001 1.20E-001 0.000 0.2726 0.9000 0.9000   1.48  1  1  3.0E-001
+  3 : -2.52E-001 9.66E-003 0.000 0.0806 0.9900 0.9900   1.55  1  1  2.4E-002
+  4 : -2.31E-001 5.64E-004 0.355 0.0584 0.9900 0.9900   1.08  1  1  1.4E-003
+  5 : -2.30E-001 2.30E-005 0.000 0.0408 0.9900 0.9900   1.00  1  1  5.7E-005
+  6 : -2.30E-001 1.31E-007 0.325 0.0057 0.9853 0.9990   1.00  1  1  5.0E-007
+  7 : -2.30E-001 8.10E-009 0.000 0.0616 0.9900 0.9900   1.00  1  1  3.1E-008
+  8 : -2.30E-001 2.90E-010 0.389 0.0358 0.9900 0.9900   1.00  2  2  1.1E-009
+
+iter seconds digits       c*x               b*y
+  8      0.1   Inf -2.2990908487e-001 -2.2990908453e-001
+|Ax-b| =  1.7e-009, [Ay-c]_+ =  2.4E-010, |x|= 2.8e+000, |y|= 2.3e+000
+
+Detailed timing (sec)
+   Pre          IPM          Post
+4.006E-002    1.202E-001    0.000E+000    
+Max-norms: ||b||=1, ||c|| = 1,
+Cholesky |add|=0, |skip| = 0, ||L.L|| = 1159.49.
+------------------------------------------------------------------------
+Optimal value (cvx_optval): +0.229909
+Status (cvx_status): Solved
+ 
+Done! 
+Solving the lower bound SDP ... 
+Calling SeDuMi: 18 variables (0 free), 12 equality constraints
+------------------------------------------------------------------------
+SeDuMi 1.1 by AdvOL, 2005 and Jos F. Sturm, 1998, 2001-2003.
+Alg = 2: xz-corrector, Adaptive Step-Differentiation, theta = 0.250, beta = 0.500
+eqs m = 12, order n = 13, dim = 25, blocks = 2
+nnz(A) = 20 + 0, nnz(ADA) = 144, nnz(L) = 78
+ it :     b*y       gap    delta  rate   t/tP*  t/tD*   feas cg cg  prec
+  0 :            1.49E+000 0.000
+  1 : -3.13E-001 4.52E-001 0.000 0.3033 0.9000 0.9000   1.63  1  1  1.2E+000
+  2 : -5.41E-001 1.28E-001 0.000 0.2843 0.9000 0.9000   1.52  1  1  3.1E-001
+  3 : -4.09E-001 1.21E-002 0.000 0.0943 0.9900 0.9900   1.62  1  1  2.3E-002
+  4 : -3.93E-001 2.43E-004 0.000 0.0201 0.9900 0.9900   1.11  1  1  4.4E-004
+  5 : -3.93E-001 1.26E-005 0.145 0.0520 0.9900 0.9900   1.00  1  1  2.3E-005
+  6 : -3.93E-001 1.76E-007 0.000 0.0139 0.9574 0.9900   1.00  1  1  5.8E-007
+  7 : -3.93E-001 6.55E-009 0.030 0.0372 0.9900 0.9815   1.00  1  1  2.2E-008
+  8 : -3.93E-001 1.28E-009 0.062 0.1955 0.8976 0.9000   1.00  2  2  4.2E-009
+
+iter seconds digits       c*x               b*y
+  8      0.1   Inf -3.9282032729e-001 -3.9282032607e-001
+|Ax-b| =  6.6e-009, [Ay-c]_+ =  9.5E-010, |x|= 2.8e+000, |y|= 1.8e+000
+
+Detailed timing (sec)
+   Pre          IPM          Post
+3.004E-002    1.001E-001    1.001E-002    
+Max-norms: ||b||=1, ||c|| = 1,
+Cholesky |add|=0, |skip| = 0, ||L.L|| = 2421.03.
+------------------------------------------------------------------------
+Optimal value (cvx_optval): -0.39282
+Status (cvx_status): Solved
+ 
+Done! 
 --------------------------------------------------------------------------------
 The minimum and maximum values of rho_14 are: -0.39282 and 0.22991
 with corresponding correlation matrices: 
@@ -155,7 +217,7 @@ with corresponding correlation matrices:
 %
 % Let C be a correlation matrix. Given lower and upper bounds on
 % some of the angles (or correlation coeff.), find the maximum and minimum
-% possible values of rho_14 by solving 2 SPD's
+% possible values of rho_14 by solving 2 SDP's
 %           minimize/maximize   rho_14
 %                        s.t.   C >=0
 %                               0.6 <= rho_12 <=  0.9
@@ -171,16 +233,16 @@ fprintf(1,'Solving the upper bound SDP ...');
 cvx_begin
     variable C1(n,n) symmetric
     maximize ( C1(1,4) )
-    C1 == semidefinite(n)
-    diag(C1) == ones(n,1)
-    C1(1,2) >= 0.6
-    C1(1,2) <= 0.9
-    C1(1,3) >= 0.8
-    C1(1,3) <= 0.9
-    C1(2,4) >= 0.5
-    C1(2,4) <= 0.7
-    C1(3,4) >= -0.8
-    C1(3,4) <= -0.4
+    C1 == semidefinite(n);
+    diag(C1) == ones(n,1);
+    C1(1,2) >= 0.6;
+    C1(1,2) <= 0.9;
+    C1(1,3) >= 0.8;
+    C1(1,3) <= 0.9;
+    C1(2,4) >= 0.5;
+    C1(2,4) <= 0.7;
+    C1(3,4) >= -0.8;
+    C1(3,4) <= -0.4;
 cvx_end
 
 fprintf(1,'Done! \n');
@@ -191,16 +253,16 @@ fprintf(1,'Solving the lower bound SDP ...');
 cvx_begin
     variable C2(n,n) symmetric
     minimize ( C2(1,4) )
-    C2 == semidefinite(n)
-    diag(C2) == ones(n,1)
-    C2(1,2) >= 0.6
-    C2(1,2) <= 0.9
-    C2(1,3) >= 0.8
-    C2(1,3) <= 0.9
-    C2(2,4) >= 0.5
-    C2(2,4) <= 0.7
-    C2(3,4) >= -0.8
-    C2(3,4) <= -0.4
+    C2 == semidefinite(n);
+    diag(C2) == ones(n,1);
+    C2(1,2) >= 0.6;
+    C2(1,2) <= 0.9;
+    C2(1,3) >= 0.8;
+    C2(1,3) <= 0.9;
+    C2(2,4) >= 0.5;
+    C2(2,4) <= 0.7;
+    C2(3,4) >= -0.8;
+    C2(3,4) <= -0.4;
 cvx_end
 
 fprintf(1,'Done! \n');

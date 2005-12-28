@@ -6,5 +6,5 @@
 %  ex_5_39.m         - SDP relaxations of the two-way partitioning problem
 %  matrix_games.m    - Mixed strategies for matrix games
 %  matrix_games_LP.m - Mixed strategies for matrix games (LP formulation)
-%  norm_approx.m     - An L-p norm approximation problem
+%  norm_approx.m     - An l_p norm approximation problem
 %  qcqp.m            - Solves a simple QCQP

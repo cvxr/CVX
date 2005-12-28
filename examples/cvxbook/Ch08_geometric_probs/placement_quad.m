@@ -6,7 +6,7 @@
 %
 % Placement problem with 6 free points, 8 fixed points and 27 links.
 % The coordinates of the free points minimize the sum of the squares of
-% Euclidian lengths of the links, i.e.
+% Euclidean lengths of the links, i.e.
 %           minimize    sum_{i<j) h(||x_i - x_j||)
 % where h(z) = z^2.
 

@@ -4,7 +4,7 @@
 % Adapted for CVX by Joelle Skaf - 10/23/05
 % (a figure is generated)
 %
-% The goal is to find the polynomial of degree 4 on IR^n that separates
+% The goal is to find the polynomial of degree 4 on R^n that separates
 % two sets of points {x_1,...,x_N} and {y_1,...,y_N}. We are trying to find
 % the coefficients of an order-4-polynomial P(x) that would satisfy:
 %           minimize    t

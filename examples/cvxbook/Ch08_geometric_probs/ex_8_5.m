@@ -4,7 +4,7 @@
 %
 % K fixed points x_1,...,x_K in R^2 are given and the goal is to place
 % one additional point x such that the sum of the squares of the
-% Euclidian distances to fixed points is minimized:
+% Euclidean distances to fixed points is minimized:
 %           minimize    sum_{i=1}^K  ||x - x_i||^2
 % The optimal point is the average of the given fixed points
 
@@ -14,7 +14,7 @@ K = 11;
 randn('state',0);
 P = randn(n,K);
 
-% minimizing the sum of Euclidian distance
+% minimizing the sum of Euclidean distance
 fprintf(1,'Minimizing the sum of the squares the distances to fixed points...');
 
 cvx_begin

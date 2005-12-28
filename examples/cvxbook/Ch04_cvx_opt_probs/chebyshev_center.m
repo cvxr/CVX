@@ -2,7 +2,7 @@
 % Sec. 4.3.1, Boyd & Vandenberghe "Convex Optimization"
 % Joëlle Skaf - 08/16/05
 %
-% The goal is to find the largest Euclidian ball (i.e. its center and
+% The goal is to find the largest Euclidean ball (i.e. its center and
 % radius) that lies in a polyhedron described by linear inequalites in this
 % fashion: P = {x : a_i'*x <= b_i, i=1,...,m}
 
@@ -27,5 +27,5 @@ fprintf(1,'Done! \n');
 % Display results
 fprintf(1,'The Chebyshev center coordinates are: \n');
 disp(x_c);
-fprintf(1,'The radius of the largest Euclidian ball is: \n');
+fprintf(1,'The radius of the largest Euclidean ball is: \n');
 disp(r);

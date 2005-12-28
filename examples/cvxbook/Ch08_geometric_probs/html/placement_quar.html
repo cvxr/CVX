@@ -8,7 +8,7 @@ To make changes, update the M-file and republish this document.
       -->
       <title>Figure 8.17: Fourth-order placement problem</title>
       <meta name="generator" content="MATLAB 7.1">
-      <meta name="date" content="2005-12-13">
+      <meta name="date" content="2005-12-27">
       <meta name="m-file" content="placement_quar"><style>
 
 body {
@@ -75,7 +75,7 @@ p.footer {
 <span class="comment">%</span>
 <span class="comment">% Placement problem with 6 free points, 8 fixed points and 27 links.</span>
 <span class="comment">% The coordinates of the free points minimize the sum of the squares of</span>
-<span class="comment">% Euclidian lengths of the links, i.e.</span>
+<span class="comment">% Euclidean lengths of the links, i.e.</span>
 <span class="comment">%           minimize    sum_{i&lt;j) h(||x_i - x_j||)</span>
 <span class="comment">% where h(z) = z^4.</span>
 
@@ -190,7 +190,7 @@ iter seconds digits       c*x               b*y
 
 Detailed timing (sec)
    Pre          IPM          Post
-2.003E-002    2.403E-001    1.001E-002    
+4.006E-002    2.403E-001    1.001E-002    
 Max-norms: ||b||=1, ||c|| = 1,
 Cholesky |add|=0, |skip| = 0, ||L.L|| = 150.402.
 ------------------------------------------------------------------------
@@ -212,7 +212,7 @@ Done!
 %
 % Placement problem with 6 free points, 8 fixed points and 27 links.
 % The coordinates of the free points minimize the sum of the squares of
-% Euclidian lengths of the links, i.e.
+% Euclidean lengths of the links, i.e.
 %           minimize    sum_{i<j) h(||x_i - x_j||)
 % where h(z) = z^4.
 
