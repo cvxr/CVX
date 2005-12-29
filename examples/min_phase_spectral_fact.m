@@ -3,8 +3,8 @@
 % A PSD matrix is found which minimizes a weighted trace while obtaining
 % fixed sums along the diagonals. Notice the use of a FOR loop to access
 % the diagonals of X. A later version of CVX will eliminate the need for
-% this by allowing the use of the SPDIAGS function in side models. 
-% Nevertheless, this example provides an illustration of the use of 
+% this by allowing the use of the SPDIAGS function in side models.
+% Nevertheless, this example provides an illustration of the use of
 % standard Matlab control statements to build models.
 %
 % Adapted from an example provided in the SeDuMi documentation.
@@ -16,15 +16,14 @@ n = length( b );
 % Create and solve model
 cvx_begin
     variable X( n, n ) symmetric
-    variable sums( n )
-    dual variable y
+    dual variable y{n}
     minimize( ( n - 1 : -1 : 0 ) * diag( X ) );
-    for k = 0 : n - 1,
-        sums( k + 1 ) == sum( diag( X, k ) );
+    for k = 1 : n,
+        sum( diag( X, k - 1 ) ) == b( k ) : y{k};
     end
-    y : sums == b;
     X == semidefinite( n );
 cvx_end
+y = [ y{:} ]';
 
 % Display resuls
 disp( 'The optimal point, X:' );

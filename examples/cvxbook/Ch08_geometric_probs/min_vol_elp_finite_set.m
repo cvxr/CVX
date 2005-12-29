@@ -12,6 +12,8 @@
 %
 % Note: CVX still needs to handle log det problems
 
+error( 'This example does not yet work; it requires support for logdet() within CVX.' );
+
 x = [ 0.55  0.0;
       0.25  0.35
      -0.2   0.2
@@ -24,7 +26,7 @@ x = [ 0.55  0.0;
 cvx_begin
     variable A(n,n) symmetric
     variable b(n)
-    minimize ( log det inv(A) )
+    maximize logdet(A)
     for k = 1:m
       norm ( A*x(:,k) + b ) <= 1
     end

@@ -161,7 +161,7 @@ else,
     catch,
         ndxs = 1;
     end
-    base(2).subs = { ndxs };
+    base(2).subs = { ndxs, 1 };
     vars = apply_map( prob.variables, map, nprob );
     vars = cvx_collapse( vars, true, false );
     nvars = builtin( 'subsasgn', nvars, base, vars );

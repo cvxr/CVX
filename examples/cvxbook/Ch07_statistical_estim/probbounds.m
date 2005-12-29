@@ -25,6 +25,7 @@ Cmax = max(max(abs(Cs))) * 1.25;
 clf
 Cx = Cs( :, 1 );
 Cy = Cs( :, 2 );
+m  = length( Cx );
 Cs = Cs';
 [ Vx, Vy ] = voronoi( Cx, Cy );
 plot( Vx, Vy, 'b-', Cx, Cy, 'o' );

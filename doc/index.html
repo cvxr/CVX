@@ -9,7 +9,7 @@
 </head>
 <body>
 <h1><code><b>CVX</b></code>: Matlab Software for Disciplined Convex Programming</h1>
-<h2>Version 0.88 alpha (December 2005)</h2>
+<h2>Version 0.89 alpha (December 2005)</h2>
 <h3><a href="http://www.stanford.edu/~mcgrant">Michael Grant</a>,
 <a href="http://www.stanford.edu/~boyd">Stephen Boyd</a>, and
 <a href="http://www.stanford.edu/~yyye">Yinyu Ye</a></h3>
@@ -26,8 +26,8 @@
 <li><a href="#down"><b>Download!</b></a></li>
 </ul>
 <h3><a id="intro" name="intro">Introduction</a></h3>
-<p><code><b>CVX</b></code> is a Matlab-based modeling system that supports <a href=
-"../disc_cvx_prog.html">disciplined convex programming</a>. <code><b>CVX</b></code>
+<p><code><b>CVX</b></code> is a Matlab-based modeling system for convex
+optimization. <code><b>CVX</b></code>
 turns Matlab into a modeling language, allowing constraints and
 objectives to be specified using standard Matlab expression syntax.
 For example, the following code segment randomly generates a
@@ -48,11 +48,17 @@ cvx_end</code></td>
 </tr>
 </table>
 
-<p>In disciplined convex programming, convex functions and sets are
+<p>To be precise, <code><b>CVX</b></code> supports a particular approach
+to convex optimization that we call
+<i>disciplined convex programming</i>.
+Under this approach, convex functions and sets are
 built up from a small set of rules from convex analysis, starting
 from a base library of convex functions and sets. Constraints and
 objectives that are expressed using these rules are automatically
-transformed to a canonical form and solved. For the basics of
+transformed to a canonical form and solved. For more information
+on disciplined convex programming, see
+<a href="http://www.stanford.edu/~boyd/disc_cvx_prog.html">this paper</a>;
+for the basics of
 convex analysis and convex optimization, see the book
 <cite><a href="http://www.stanford.edu/~boyd/cvxbook">Convex Optimization</a>.</cite></p>
 <p>This version of <code><b>CVX</b></code> relies on <a href=
@@ -71,7 +77,7 @@ continue to add to this library over time, particularly as new capabilities
 are added to <code><b>CVX</b></code>.</p>
 
 <p>You can browse through this library now&#8212;without having to
-download and install <code><b>CVX</b></code>&#8212;by <a href="examples/">clicking here</a>.
+download and install <code><b>CVX</b></code>&#8212;by <a href="http://www.stanford.edu/~boyd/cvx/examples/">clicking here</a>.
 Of course, if you wish to run any of the examples, please proceed
 to the <a href="#down">download section</a> below.
 <h3><a id="system" name="system">System requirements</a></h3>
@@ -159,6 +165,9 @@ if it were exercised, it would likely produce <i>obviously</i>
 invalid results.</dd>
 <dd>Improvements have been made to prevent <tt>OUT OF MEMORY</tt>
 errors for certain large problems.</dd>
+<dt>Version 0.89, December 2005:</dt>
+<dd>Official release of the expanded example library.
+<dd>Added support for indexed dual variables; see the documentation for details.
 </dl>
 <h3><a id="plans" name="plans">Future plans</a></h3>
 <p>A major revision to <tt>cvx</tt> is in progress; we hope to have

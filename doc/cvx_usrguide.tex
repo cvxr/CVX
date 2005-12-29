@@ -1039,6 +1039,12 @@ This line must be executed \emph{after} the \verb@cvx_end@ command
 generate an error if it is executed inside the \cvx specification,
 where \verb@y@ and \verb@b-A*x@ are still just abstract expressions.
 
+The \cvx language also supports the declaration of \emph{indexed} dual
+variables. These prove useful when the \emph{number} of constraints in
+a model (and, therefore, the number of dual variables) depends upon the
+parameters themselves. For more information on index dual variables,
+see \S\ref{sec:indexeddual}.
+
 \section{The DCP ruleset}
 \label{sec:rules}
 
@@ -1550,7 +1556,13 @@ constraint---so the second form may actually be more efficient. So we encourage
 you to re-evaluate the use of quadratic forms in your models, in light of the
 new capabilities afforded by disciplined convex programming.
 
-\section{Expanding the \cvx atom library}
+\section{Advanced topics}
+
+In this section we describe a number of the more advanced capabilities of \cvx.
+We recommend that you \emph{skip} this section at first, until you are comfortable
+with the basic capabilities described above.
+
+\subsection{Expanding the \cvx atom library}
 
 The restrictions imposed by the DCP ruleset imply that,
 for a fixed atom library, the variety of constraints and objective 
@@ -1806,18 +1818,17 @@ Good choices include \verb@huber@, \verb@inv_pos@, \verb@lambda_min@,
 a bit difficult to read because of diagnostic or error-checking code,
 but these are relatively simple.
 
-%\subsection{New differentiable atoms}
-%Future versions of \cvx will support smooth functions as well.
-%mention new atoms possible (see \S XXX). must provide fct value,
-%gradient, and hessian.
+\iffalse
+\subsection{New differentiable atoms}
+Future versions of \cvx will support smooth functions as well.
+mention new atoms possible (see \S XXX). must provide fct value,
+gradient, and hessian.
 
 \subsection{Defining new sets}
-
 This version of \cvx does not support user-defined sets,
 since we haven't yet settled on the best syntax.
 This support will be added soon.
 
-\iffalse
 We can define new sets in \cvx in three basic ways, two of which
 are supported in this first release.
 The simplest is to use expressions and overloading, and the usual
@@ -1869,6 +1880,82 @@ interior, is to provide a barrier function (and its first and
 second derivatives) for the set.
 This is not supported in the current version.
 \fi
+
+\subsection{Indexed dual variables}
+\label{sec:indexeddual}
+
+In some models, the \emph{number} of constraints depends on the model
+parameters---not just their sizes. It is
+straightforward to build such models in \cvx using, say, a
+MATLAB \verb@for@ loop. In order to assign each of these constraints
+a separate dual variable, we must find a way to adjust the number of
+dual variables as well. For this reason, \cvx supports
+\emph{indexed dual variables}. In reality, they are simply standard
+MATLAB cell arrays whose entries are \cvx dual variable objects.
+
+Let us illustrate by example how to declare and use indexed dual
+variables. Consider the following semidefinite program:
+\begin{equation}
+	\begin{array}{rl}
+		\text{minimize}   & \sum_{i=1}^n (n-1) * X_{ii} \\
+		\text{subject to} & \sum_{i=1}^n X_{i,i+k} = b_k, ~ k = 1,2,\dots,n \\
+				  & X \succeq 0
+	\end{array}
+\end{equation}
+(\cite{Stu:99}). This problem minimizes a weighted sum of the main diagonal
+of a positive semidefinite matrix, while holding the sums along each diagonal
+constant. The parameters of the problem are
+the elements of the vector $b\in\Rn$, and the optimization variable is a
+symmetric matrix $X\in\Rnn$. The \cvx version of this model is
+\begin{code}
+	cvx_begin
+	    variable X( n, n ) symmetric
+	    minimize( ( n - 1 : -1 : 0 ) * diag( X ) );
+	    for k = 0 : n-1,
+	        sum( diag( X, k ) ) == b( k+1 );
+	    end
+	    X == semidefinite( n );
+	cvx_end
+\end{code}
+If we wish to obtain dual information for the $n$ simple equality constraints,
+we need a way to assign each constraint in the \verb@for@ loop a separate dual variable.
+This is accomplished as follows:
+\begin{code}
+	cvx_begin
+	    variable X( n, n ) symmetric
+	    dual variables y{n}
+	    minimize( ( n - 1 : -1 : 0 ) * diag( X ) );
+	    for k = 0 : n-1,
+	        sum( diag( X, k ) ) == b( k+1 ) : y{k+1};
+	    end
+	    X == semidefinite( n );
+	cvx_end
+\end{code}
+The statement
+\begin{code}
+	dual variables y{n}
+\end{code}
+allocates a cell array $n$ dual variables, and stores the result in the MATLAB
+variable \verb@Z@. The equality constraint in the \verb@for@ loop has been augmented
+with a reference to \verb@y{k+1}@, so that each constraint is assigned a separate
+dual variable.
+When the \verb@cvx_end@ command is issued, \cvx will compute the optimal values
+of these dual variables, and deposit them into an $n$-element cell array \verb@y@.
+
+This example admittedly is a bit simplistic. With a bit of careful arrangement,
+it is possible to rewrite this model so that the $n$ equality constraints can be
+combined into a single vector constraint, which in turn would require only a single
+vector dual variable.\footnote{Indeed, a future version of \cvx will support the
+use of the MATLAB function \texttt{spdiags}, which will reduce the entire for loop
+to the single constraint \texttt{spdiags(X,0:n-1)==b.}} For a more complex example
+that is not amenable to such a simplification, see the file
+\begin{code}
+	examples/cvxbook/Ch07_statistical_estim/cheb.m
+\end{code}
+in the \cvx distribution.
+In that problem, each constraint in the \verb@for@ loop is a linear matrix
+inequality, not a scalar linear equation;
+so the indexed dual variables are symmetric matrices, not scalars.
 
 \newpage
 \appendix

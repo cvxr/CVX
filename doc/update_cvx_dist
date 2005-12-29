@@ -32,9 +32,15 @@ cd $CPYDIR
 rm $DSTDIR/cvx.{tar.gz,zip}
 tar cvfz $DSTDIR/cvx.tar.gz cvx/*.{m,txt} cvx/doc/*.pdf cvx/{@double,examples,functions,keywords,lib,matlab6,sedumi,sets,structures}
 zip -r -9 $DSTDIR/cvx.zip cvx/*.{m,txt} cvx/doc/*.pdf cvx/{@double,examples,functions,keywords,lib,matlab6,sedumi,sets,structures}
+cd cvx
+tar cvf $DSTDIR/cvx-examples.tar examples
 
-# Copy the documentation over
-cp $CPYDIR/cvx/doc/*.pdf $DSTDIR
+# Copy the documentation over and extract examples
+cd $DSTDIR
+cp $CPYDIR/cvx/doc/*.pdf .
+rm -rf examples
+tar xvf cvx-examples.tar
+rm -rf cvx-examples.tar
 
 # Update the index file
 MYDATE=`date`
