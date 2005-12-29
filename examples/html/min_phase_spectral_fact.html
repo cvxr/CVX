@@ -8,7 +8,7 @@ To make changes, update the M-file and republish this document.
       -->
       <title>Minimal phase spectral factorization</title>
       <meta name="generator" content="MATLAB 7.1">
-      <meta name="date" content="2005-12-14">
+      <meta name="date" content="2005-12-28">
       <meta name="m-file" content="min_phase_spectral_fact"><style>
 
 body {
@@ -84,15 +84,14 @@ n = length( b );
 <span class="comment">% Create and solve model</span>
 cvx_begin
     variable <span class="string">X( n, n )</span> <span class="string">symmetric</span>
-    variable <span class="string">sums( n )</span>
-    dual <span class="string">variable</span> <span class="string">y</span>
+    dual <span class="string">variable</span> <span class="string">y{n}</span>
     minimize( ( n - 1 : -1 : 0 ) * diag( X ) );
-    <span class="keyword">for</span> k = 0 : n - 1,
-        sums( k + 1 ) == sum( diag( X, k ) );
+    <span class="keyword">for</span> k = 1 : n,
+        sum( diag( X, k - 1 ) ) == b( k ) : y{k};
     <span class="keyword">end</span>
-    y : sums == b;
     X == semidefinite( n );
 cvx_end
+y = [ y{:} ]';
 
 <span class="comment">% Display resuls</span>
 disp( <span class="string">'The optimal point, X:'</span> );
@@ -126,7 +125,7 @@ iter seconds digits       c*x               b*y
 
 Detailed timing (sec)
    Pre          IPM          Post
-4.006E-002    1.102E-001    1.001E-002    
+3.004E-002    9.013E-002    0.000E+000    
 Max-norms: ||b||=2, ||c|| = 2,
 Cholesky |add|=0, |skip| = 0, ||L.L|| = 1.
 ------------------------------------------------------------------------
@@ -157,8 +156,8 @@ The optimal weighted trace:
 % A PSD matrix is found which minimizes a weighted trace while obtaining
 % fixed sums along the diagonals. Notice the use of a FOR loop to access
 % the diagonals of X. A later version of CVX will eliminate the need for
-% this by allowing the use of the SPDIAGS function in side models. 
-% Nevertheless, this example provides an illustration of the use of 
+% this by allowing the use of the SPDIAGS function in side models.
+% Nevertheless, this example provides an illustration of the use of
 % standard Matlab control statements to build models.
 %
 % Adapted from an example provided in the SeDuMi documentation.
@@ -170,15 +169,14 @@ n = length( b );
 % Create and solve model
 cvx_begin
     variable X( n, n ) symmetric
-    variable sums( n )
-    dual variable y
+    dual variable y{n}
     minimize( ( n - 1 : -1 : 0 ) * diag( X ) );
-    for k = 0 : n - 1,
-        sums( k + 1 ) == sum( diag( X, k ) );
+    for k = 1 : n,
+        sum( diag( X, k - 1 ) ) == b( k ) : y{k};
     end
-    y : sums == b;
     X == semidefinite( n );
 cvx_end
+y = [ y{:} ]';
 
 % Display resuls
 disp( 'The optimal point, X:' );

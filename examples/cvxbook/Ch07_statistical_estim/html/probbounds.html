@@ -8,7 +8,7 @@ To make changes, update the M-file and republish this document.
       -->
       <title>Section 7.4.3: Probability bounds example with Voronoi diagram</title>
       <meta name="generator" content="MATLAB 7.1">
-      <meta name="date" content="2005-12-26">
+      <meta name="date" content="2005-12-28">
       <meta name="m-file" content="probbounds"><style>
 
 body {
@@ -94,6 +94,7 @@ Cmax = max(max(abs(Cs))) * 1.25;
 clf
 Cx = Cs( :, 1 );
 Cy = Cs( :, 2 );
+m  = length( Cx );
 Cs = Cs';
 [ Vx, Vy ] = voronoi( Cx, Cy );
 plot( Vx, Vy, <span class="string">'b-'</span>, Cx, Cy, <span class="string">'o'</span> );
@@ -260,6 +261,7 @@ Cmax = max(max(abs(Cs))) * 1.25;
 clf
 Cx = Cs( :, 1 );
 Cy = Cs( :, 2 );
+m  = length( Cx );
 Cs = Cs';
 [ Vx, Vy ] = voronoi( Cx, Cy );
 plot( Vx, Vy, 'b-', Cx, Cy, 'o' );
