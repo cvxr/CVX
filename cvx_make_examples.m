@@ -96,8 +96,8 @@ for k = 1 : length( args ),
             end
             fwrite( fidw, t_head, 'char' );
             fprintf( fidw, '<h3>Last updated: %s</h3>\n', date );
-            fprintf( fidw, '<a href="#" onClick="expandTree(''tree1''); return false;">Expand all</a>&nbsp;&nbsp;\n' );
-            fprintf( fidw, '<a href="#" onClick="collapseTree(''tree1''); return false;">Collapse all</a>\n' );
+            fprintf( fidw, '<p><a href="#" onclick="expandTree(''tree1''); return false;">Expand all</a>&nbsp;&nbsp;\n' );
+            fprintf( fidw, '<a href="#" onclick="collapseTree(''tree1''); return false;">Collapse all</a></p>\n' );
         else,
             fidw = -1;
         end
@@ -120,6 +120,12 @@ for k = 1 : length( args ),
 end
 
 function [ title, files ] = generate_directory( mpath, prefix, force, fidc, base )
+
+persistent htmlsrc htmldst
+if isempty( htmlsrc ),
+    htmlsrc = { '&', '<', '>' };
+    htmldst = { '&amp;', '&lt;', '&gt;' };
+end
 
 disp( sprintf( '%sDirectory: %s', prefix, mpath ) );
 prefix = [ prefix, '   ' ];
@@ -203,7 +209,7 @@ if fidc >= 0,
         if isempty( title ),
             fprintf( fidc, '<li class="%s"><a href="%s">%s/</a>\n', mclass, dpath, dname ),
         else,
-            fprintf( fidc, '<li class="%s"><b>%s</b>\n', mclass, title );
+            fprintf( fidc, '<li class="%s"><b>%s</b>\n', mclass, regexprep( title, htmlsrc, htmldst ) );
 %            fprintf( fidc, '<li class="%s"><b>%s</b> (<a href="%s">%s/</a>)\n', mclass, title, dpath, dname );
         end
         if false,
@@ -254,7 +260,7 @@ for k = 1 : length( fnames ),
         if isempty( temp ),
             fprintf( fidc, '<li><a href="%s%s">%s</a></li>\n', dpath, name, name );
         else,
-            fprintf( fidc, '<li><a href="%shtml/%shtml">%s</a> (<a href="%s%s">%s</a>)</li>\n', dpath, name(1:end-1), temp, dpath, name, name );
+            fprintf( fidc, '<li><a href="%shtml/%shtml">%s</a> (<a href="%s%s">%s</a>)</li>\n', dpath, name(1:end-1), regexprep( temp, htmlsrc, htmldst ), dpath, name, name );
         end
     end
     if isempty( temp ), temp = '(no title)'; end
