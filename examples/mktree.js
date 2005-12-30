@@ -173,7 +173,9 @@ function processList( ul, cstr, cndx ) {
             if (subLists) {
                 // This LI has UL's in it, so it's a +/- node
                 if ( cndx < cstr.length ) {
-                    item.className = cstr[cndx++] == "-" ? nodeOpenClass : nodeClosedClass;
+                    thisC = cstr.substring( cndx, cndx + 1 ); 
+                    item.className = thisC == "-" ? nodeOpenClass : nodeClosedClass;
+                    ++cndx;
                 } else if ( item.className == null || item.className == "" )
                     item.className = nodeClosedClass;
                 // If it's just text, make the text work as the link also
