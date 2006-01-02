@@ -15,7 +15,7 @@
   <h1><tt>CVX</tt>: Matlab Software for Disciplined Convex
   Programming</h1>
 
-  <h2>Version 0.89 alpha (December 2005)</h2>
+  <h2>Version 0.90 alpha (January 2006)</h2>
 
   <h3><a href="http://www.stanford.edu/~mcgrant">Michael Grant</a>,
   <a href="http://www.stanford.edu/~boyd">Stephen Boyd</a>, and
@@ -240,6 +240,16 @@
 
     <dd>Added support for indexed dual variables; see the
     documentation for details.</dd>
+
+    <dt>Version 0.90, January 2006:</dt>
+
+    <dd>Added support for the geometric mean function
+    <tt>geomean</tt> and the determinant function <tt>det_root2n</tt>,
+    enabling the solution of determinant maximization problems. (Previous
+    versions of <tt>cvx</tt> provided the <tt>geomean</tt> function,
+    but it was not documented or supported because of its unreliability in infeasible
+    problems. This shortcoming has been addressed, so now we have made it
+    "official.")
   </dl>
 
   <h3><a id="plans" name="plans">Future plans</a></h3>
