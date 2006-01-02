@@ -2151,8 +2151,12 @@ Adds constraint that entries are nonnegative.
 Concave and increasing.
 \end{itemize}
 
-We note that in this version of \cvx, powers such as \verb@x^4@
-or \verb@x^(1/2)@, are \emph{not} supported.
+We note that in this version of \cvx, most powers such as \verb@x^4@
+or \verb@x^(1/3)@, are \emph{not} supported. The only exception is
+the power of $2$ which is translated to an appropriate call to 
+\verb@square@. Furthermore, an expression such as \verb@x^(1/2)@ can
+usually be adequately represented by \verb@sqrt(x)@, as long as \verb@x@
+is intended to be real and nonnegative.
 
 \subsection{New nonlinear functions}
 
@@ -2160,18 +2164,16 @@ The following functions are part of the base \cvx library.
 These functions work both inside a \cvx specification,
 and outside a \cvx specification (with numerical arguments).
 \begin{itemize}
-%\item \verb@geomean@, geometric mean,
-%$\left( \prod_{k=1}^n x_k \right)^{1/n}$.  Inside a \cvx
-%specification, adds constraint
-%that arguments are all nonnegative.
-%When evaluated outside a \cvx specification, returns $-\infty$
-%if any $x_k$ is negative.
-%Concave and increasing.
-%\item XXX \verb@detroot@: $n$-th root of the determinant of a symmetric matrix:
-%\begin{equation*}
-	%g:\R^{n\times n}\rightarrow\R\cup-\infty, \quad
-	%g(X) = \Cases{ (\det X)^{1/n} & X=X^T,~X\succeq 0 \\ -\infty & \text{otherwise} }
-%\end{equation*}
+\item \verb@geomean@: the geometric mean of a vector, $\left( \prod_{k=1}^n x_k \right)^{1/n}$. When
+used inside a \cvx specification, \verb@geomean@ constrains the elements of the vector
+to be nonnegative. When used with numerical arguments, \verb@geomean@ returns \verb@-Inf@
+if any element is negative.
+Concave and increasing.
+\item \verb@det_root2n@: $2n$-th root of the determinant of a semidefinite matrix,
+$(\det X)^{1/2n}$. When used inside a \cvx specification, \verb@det_root2n@ constrains
+the matrix to be symmetric (if real) or Hermitian (if complex) and positive semidefinite. 
+When used with numerical arguments, \verb@det_root2n@ returns \verb@-Inf@ if these
+constraints are not met. Concave.
 \item \verb@huber(x)@, defined as $2|x|-1$ for $|x|\geq 1$,
 and $x^2$ for $|x|<1$.  Convex.
 \item \verb@inv_pos@, inverse of the positive portion, $1/\max\{x,0\}$.
@@ -2193,7 +2195,7 @@ Concave.
 $x^TY^{-1}x$.  In \cvx, imposes constraint that $Y$ is 
 symmetric (or Hermitian) and positive definite; outside \cvx,
 returns $+\infty$ unless $Y=Y^T\succ 0$.
-Convex.  
+Convex. 
 %Note that \cvx will \emph{not} recognize \verb@x'*(Y\x)@ as convex.
 \item \verb@norm_largest( x, k )@, for real and complex vectors.
 Convex.
@@ -2413,7 +2415,7 @@ Suppose that we tried to express this problem in \cvx as follows:
 	        X = semidefinite(n);		!label{code:badass}
 	cvx_end
 \end{code2}
-At first glance, line~\ref{code:badass} looks like it constraints \verb@X@ to be positive
+At first glance, line~\ref{code:badass} looks like it constrains \verb@X@ to be positive
 semidefinite; but in fact, it is an assignment, not an equality constraint. So
 it actually \emph{overwrites} the
 variable \verb@X@ with an anonymous, positive semidefinite variable; and \verb@X@
@@ -2461,12 +2463,13 @@ practice may \emph{improve} performance by exposing more of your problem's struc
 Even when this is not the case, \cvx's presolve routine insures that it will perform
 no \emph{worse} than the first form.
 
-So while we cannot prevent you from using assignments in your \cvx specifications,
-we strongly discourage you from doing so, both as an issue of style and
-as a means to reduce the likelihood of unintended consequences.
 What about assignments involving purely constant expressions, such as \verb@a=2@?
 We would simply recommend that for style reasons they be placed \emph{before}
 the \verb@cvx_begin@ command, as we do in the examples presented in this document.
+
+So while we cannot prevent you from using assignments in your \cvx specifications,
+we strongly discourage you from doing so, both as an issue of style and
+as a means to reduce the likelihood of unintended consequences.
 
 
 \subsection{Overdetermined problems}

@@ -5,8 +5,10 @@ error( nargchk( 1, 2, nargin ) );
 % Check size vector
 %
 
-if ~isnumeric( n ) | length( n ) ~= 1 | n <= 0 | n ~= floor( n ),
-    error( 'First argument must be a positive integer.' );
+if ~isnumeric( n ) | isempty( n ) | any( n < 0 ) | any( n ~= floor( n ) ),
+    error( 'First argument must be a positive integer or a valid size vector.' );
+elseif length( n ) > 1 & n( 1 ) ~= n( 2 ),
+    error( 'If a size vector is supplied, the first two dimensions must be identical.' );
 end
 
 %
@@ -23,22 +25,39 @@ end
 % Construct the cone
 %
 
+if length( n ) == 1,
+    sz = [ n, n ];
+    nv = 1;
+else,
+    sz = n;
+    n = sz( 1 );
+    nv = prod( sz( 3 : end ) );
+end
+if iscplx,
+    ntri = n * n;
+else,
+    ntri = n * ( n + 1 ) / 2;
+end
+if ntri == 0 | nv == 0,
+    cvx_optpnt = zeros( sz );
+    return
+end
 cvx_begin_set
    if iscplx,
-       variable x( n, n ) hermitian
+       variable x( sz ) hermitian
    else,
-       variable x( n, n ) symmetric
+       variable x( sz ) symmetric
    end
    global cvx___
    p = index( cvx_problem );
-   nn = 2 : length( cvx___.problems( p ).reserved );
-   cvx___.problems( p ).reserved( nn ) = 1;
+   cvx___.problems( p ).reserved( : ) = 1;
    if iscplx,
        s = 'hermitian-semidefinite';
    else,
        s = 'semidefinite';
    end
-   cvx___.problems( p ).cones = struct( 'type', s, 'indices', nn( : ) );
+   nn = reshape( 2 : length( cvx___.problems( p ).reserved ), ntri, nv );
+   cvx___.problems( p ).cones = struct( 'type', s, 'indices', nn );
 cvx_end_set
 
 % Copyright 2005 Michael C. Grant and Stephen P. Boyd. 

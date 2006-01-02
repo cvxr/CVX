@@ -107,12 +107,24 @@ cvx_begin
         n2 = ceil( nx * 0.5 );
         if n2 * 2 ~= nx, x = [ x ; y( end, : ) ]; end
         xmean = variable( sprintf( 'z%d( n2, nv )', iter ) );
-        { xmean, x( 1 : 2 : end, : ), x( 2 : 2 : end, : ) } == rotated_lorentz( [ n2, nv ], 0 );
+        if 0,
+            temp = rotated_lorentz( [ n2, nv ], 0 );
+        else,
+            temp = reshape( semidefinite( [ 2, 2, n2, nv ] ), 4 * n2, nv );
+            temp = { temp( 2 : 4 : end, : ), temp( 1 : 4 : end, : ), temp( 4 : 4 : end, : ) };
+        end
+        { xmean, x( 1 : 2 : end, : ), x( 2 : 2 : end, : ) } == temp;
         iter = iter + 1;
         x = xmean;
         nx = n2;
     end
-    { y, x( 1, : ), x( 2, : ) } == rotated_lorentz( [ 1, nv ], 0 );
+    if 0,
+        temp = rotated_lorentz( [ 1, nv ], 0 );
+    else,
+        temp = reshape( semidefinite( [ 2, 2, nv ] ), 4, nv );
+        temp = { temp( 2, : ), temp( 1, : ), temp( 4, : ) };
+    end
+    { y, x( 1, : ), x( 2, : ) } == temp;
 cvx_end
 
 %
