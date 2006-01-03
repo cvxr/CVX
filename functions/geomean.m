@@ -92,39 +92,34 @@ end
 %     recursion for lengths that are not powers of two.
 %
 
+nq = 0;
+nx2 = nx;
+while nx2 >= 2,
+    nx2 = ceil( 0.5 * nx2 );
+    nq = nq + nx2;
+end
 iter = 1;
 nv = prod( sx ) / nx;
 x = reshape( x, nx, nv );
 cvx_begin
-    variables y( 1, nv )
-    maximize y
     if ~cvx_isaffine( x ),
         variable x2( nx, nv );
         x2 >= x;
         x = x2;
     end
-    while nx > 2,
+    y = semidefinite( [ 2, 2, nq, nv ] );
+    yend = reshape( y( 2, 1, end, : ), 1, nv );
+    nq = 0;
+    while nx >= 2,
         n2 = ceil( nx * 0.5 );
-        if n2 * 2 ~= nx, x = [ x ; y( end, : ) ]; end
-        xmean = variable( sprintf( 'z%d( n2, nv )', iter ) );
-        if 0,
-            temp = rotated_lorentz( [ n2, nv ], 0 );
-        else,
-            temp = reshape( semidefinite( [ 2, 2, n2, nv ] ), 4 * n2, nv );
-            temp = { temp( 2 : 4 : end, : ), temp( 1 : 4 : end, : ), temp( 4 : 4 : end, : ) };
-        end
-        { xmean, x( 1 : 2 : end, : ), x( 2 : 2 : end, : ) } == temp;
-        iter = iter + 1;
-        x = xmean;
+        if n2 * 2 ~= nx, x = [ x ; yend ]; end
+        nq = nq( end ) + 1 : nq( end ) + n2;
+        x( 1 : 2 : end, : ) == reshape( y( 1, 1, nq, : ), n2, nv );
+        x( 2 : 2 : end, : ) == reshape( y( 2, 2, nq, : ), n2, nv );
+        x = reshape( y( 2, 1, nq, : ), n2, nv );
         nx = n2;
     end
-    if 0,
-        temp = rotated_lorentz( [ 1, nv ], 0 );
-    else,
-        temp = reshape( semidefinite( [ 2, 2, nv ] ), 4, nv );
-        temp = { temp( 2, : ), temp( 1, : ), temp( 4, : ) };
-    end
-    { y, x( 1, : ), x( 2, : ) } == temp;
+    maximize( x );
 cvx_end
 
 %
