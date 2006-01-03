@@ -12,8 +12,9 @@ error( nargchk( 1, 1, nargin ) );
 %       SQRT(X) is concave and nondecreasing in X. Thus when used in CVX
 %       expressions, X must be concave (or affine).
 
+sx = size( x );
 cvx_begin
-    variable y( size( x ) )
+    variable y( sx )
     maximize y
     square( y ) <= x;
 cvx_end

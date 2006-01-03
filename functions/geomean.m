@@ -2,11 +2,11 @@ function cvx_optval = geomean( x, dim )
 error( nargchk( 1, 2, nargin ) );
 
 % GEOMEAN   Geometric mean.
-%     For vectors, GEOMEAN(X) is the geometric mean of the elements of X. 
+%     For vectors, GEOMEAN(X) is the geometric mean of the elements of X.
 %     If any of the elements of X are negative, then Y=-Inf. Otherwise,
 %     Y = PROD(X)^(1/LENGTH(X)). All elements must be real.
 %
-%     For matrices, GEOMEAN(X) is a row vector containing the geometric 
+%     For matrices, GEOMEAN(X) is a row vector containing the geometric
 %     means of the columns. For N-D arrays, GEOMEAN(X) is an array of the
 %     geometric means taken along the first non-singleton dimension of X.
 %
@@ -24,8 +24,8 @@ error( nargchk( 1, 2, nargin ) );
 % Check types
 %
 
-if ~isreal( x ), 
-    error( 'First argument must be real.' ); 
+if ~isreal( x ),
+    error( 'First argument must be real.' );
 elseif ~cvx_isconcave( x ),
     error( sprintf( 'Disciplined convex programming error: \n    GEOMEAN is concave and nondecreasing; its argument must therefore be concave.' ) );
 elseif nargin < 2,
@@ -55,7 +55,7 @@ end
 %
 % A single element: -Inf if x < 0, x if x >= 0
 %
-    
+
 if nx == 1,
     cvx_begin
         variable z( sz )
@@ -81,7 +81,7 @@ else,
 end
 
 %
-% Construct the problem. 
+% Construct the problem.
 % --- For n == 2, we use the following equivalency
 %     sqrt(x*y)>=z, x>=0, y>=0 <--> z^2/x <= y
 % --- For n == 2^k, we can recursively apply this log(k,2) times.
@@ -92,34 +92,28 @@ end
 %     recursion for lengths that are not powers of two.
 %
 
-nq = 0;
-nx2 = nx;
-while nx2 >= 2,
-    nx2 = ceil( 0.5 * nx2 );
-    nq = nq + nx2;
-end
-iter = 1;
 nv = prod( sx ) / nx;
 x = reshape( x, nx, nv );
 cvx_begin
-    if ~cvx_isaffine( x ),
-        variable x2( nx, nv );
-        x2 >= x;
-        x = x2;
+    tt = ~cvx_isaffine( x, true );
+    if any( tt ),
+        temp = x( tt );
+        variable x2( size( temp ) );
+        x( tt ) = x2;
+        temp >= x2;
     end
-    y = semidefinite( [ 2, 2, nq, nv ] );
-    yend = reshape( y( 2, 1, end, : ), 1, nv );
-    nq = 0;
+    variable y( 1, nv )
+    maximize( y )
     while nx >= 2,
         n2 = ceil( nx * 0.5 );
-        if n2 * 2 ~= nx, x = [ x ; yend ]; end
-        nq = nq( end ) + 1 : nq( end ) + n2;
-        x( 1 : 2 : end, : ) == reshape( y( 1, 1, nq, : ), n2, nv );
-        x( 2 : 2 : end, : ) == reshape( y( 2, 2, nq, : ), n2, nv );
-        x = reshape( y( 2, 1, nq, : ), n2, nv );
+        if n2 * 2 ~= nx, x = [ x ; y ]; end
+        cone = rotated_lorentz( [ n2, nv ], 0 );
+        cone.y == x( 1 : 2 : end, : );
+        cone.z == x( 2 : 2 : end, : );
+        x = cone.x;
         nx = n2;
     end
-    maximize( x );
+    y == x;
 cvx_end
 
 %
@@ -132,6 +126,6 @@ if ~isempty( perm ),
     cvx_optval = ipermute( cvx_optval, perm );
 end
 
-% Copyright 2005 Michael C. Grant and Stephen P. Boyd. 
+% Copyright 2005 Michael C. Grant and Stephen P. Boyd.
 % See the file COPYING.txt for full copyright information.
 % The command 'cvx_where' will show where this file is located.

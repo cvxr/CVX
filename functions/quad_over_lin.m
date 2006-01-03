@@ -81,7 +81,7 @@ cvx_begin
 	    y2 <= y;
 	else
 	    y2 = y;
-	end
+    end
     { x, y2, z } == rotated_lorentz( sx, dim, ~isreal( x ) );
 cvx_end
 

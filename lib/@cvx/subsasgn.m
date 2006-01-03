@@ -39,7 +39,9 @@ else,
     if size( by, 1 ) < nlz,
         by = by( ones( 1, nlz ), : );
     end
-    bx( ndx_x, 1 : size( by, 2 ) ) = by;
+    ny = size( by, 2 );
+    bx( ndx_x, ny + 1 : end ) = 0;
+    bx( ndx_x, 1 : ny ) = by;
 end
 
 %

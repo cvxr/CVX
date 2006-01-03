@@ -48,16 +48,23 @@ if iscplx,
     sx( dim ) = 2 * sx( dim );
 end
 
-sx( dim ) = sx( dim ) + 1;
-cone = lorentz( sx, dim );
-ndxs = cell( 1, nd );
-[ ndxs{:} ] = deal( ':' );
-ndxs{ dim } = 1 : sx( dim ) - 1;
-cvx_optpnt.x = cone.x( ndxs{:} );
-ndxs{ dim } = sx( dim );
-temp = cone.x( ndxs{:} );
-cvx_optpnt.y = cone.y + temp;
-cvx_optpnt.z = cone.y - temp;
+if sx( dim ) == 1,
+    cone = semidefinite( [ 2, 2, sx ] );
+    cvx_optpnt.x = reshape( cone( 2, 1, : ), sx );
+    cvx_optpnt.y = reshape( cone( 1, 1, : ), sx );
+    cvx_optpnt.z = reshape( cone( 2, 2, : ), sx );
+else,
+    sx( dim ) = sx( dim ) + 1;
+    cone = lorentz( sx, dim );
+    ndxs = cell( 1, nd );
+    [ ndxs{:} ] = deal( ':' );
+    ndxs{ dim } = 1 : sx( dim ) - 1;
+    cvx_optpnt.x = cone.x( ndxs{:} );
+    ndxs{ dim } = sx( dim );
+    temp = cone.x( ndxs{:} );
+    cvx_optpnt.y = cone.y + temp;
+    cvx_optpnt.z = cone.y - temp;
+end
 
 if iscplx,
     cvx_optpnt.x = cvx_r2c( cvx_optpnt.x, dim );
