@@ -10,14 +10,14 @@
 %           maximize     log det A
 %           subject to   || A x_i + b || <= 1   for all i
 %
-% CVX cannot yet handle the logdet function, but this problem can be 
+% CVX cannot yet handle the logdet function, but this problem can be
 % represented in an equivalent way as follows:
 %
-%           maximize     det(A)^(1/2n)
+%           maximize     det(A)^(1/n)
 %           subject to   || A x_i + b || <= 1   for all i
 %
-% The expression det(A)^(1/2n) is SDP-representable, and is implemented
-% by the MATLAB function det_root2n().
+% The expression det(A)^(1/n) is SDP-representable, and is implemented
+% by the MATLAB function det_rootn().
 
 % Generate data
 x = [ 0.55  0.0;
@@ -32,7 +32,7 @@ x = [ 0.55  0.0;
 cvx_begin
     variable A(n,n) symmetric
     variable b(n)
-    maximize( det_root2n( A ) )
+    maximize( det_rootn( A ) )
     subject to
         norms( A * x + b * ones( 1, m ), 2 ) <= 1;
 cvx_end
