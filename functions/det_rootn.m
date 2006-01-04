@@ -33,9 +33,10 @@ elseif isreal( X ),
     n = size(X,1);
     cvx_begin
         variable Z(n,n) lower_triangular
-        maximize geomean( diag( Z ) )
+        D = diag( Z );
+        maximize geomean( D )
         subject to
-            [ eye(n,n), Z' ; Z, X ] == semidefinite(2*n);
+            [ diag( D ), Z' ; Z, X ] == semidefinite(2*n);
     cvx_end
     
 else,
@@ -43,10 +44,10 @@ else,
     n = size(X,1);
     cvx_begin
         variable Z(n,n) lower_triangular complex
-        maximize geomean( real( diag( Z ) ) )
+        D = diag( Z );
+        maximize geomean( D )
         subject to
-            [ eye(n,n), Z' ; Z, X ] == hermitian_semidefinite(2*n);
-            imag( diag( Z ) ) == 0;
+            [ diag( D ), Z' ; Z, X ] == hermitian_semidefinite(2*n);
     cvx_end
     
 end
