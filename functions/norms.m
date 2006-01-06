@@ -77,7 +77,11 @@ else,
             cvx_begin
                 variable z( sz )
                 minimize z
-                { x, z } == lorentz( sx, dim, ~isreal( x ) );
+                if isreal( x ),
+                    { x, z } == lorentz( sx, dim );
+                else,
+                    { x, z } == complex_lorentz( sx, dim );
+                end
             cvx_end
         case Inf,
             cvx_optval = max( abs( x ), [], dim );

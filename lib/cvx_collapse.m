@@ -7,8 +7,8 @@ while true,
     nx = prod( sx );
     switch class( x ),
         case 'cell',
-            if nx == 1, 
-                x = x{1}; 
+            if nx == 1,
+                x = x{1};
                 continue;
             end
             x = reshape( x, 1, nx );
@@ -16,8 +16,8 @@ while true,
             if keeptemp,
                 fx = fieldnames( x );
             else,
-	        [ fx, ndxs ] = cvx_fieldnames( x );
-	    end
+                [ fx, ndxs ] = cvx_fieldnames( x );
+            end
             nfx = length( fx );
             if nfx == 1 & nx == 1,
                 x = subsref( x, struct( 'type', '.', 'subs', fx{1} ) );

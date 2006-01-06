@@ -95,13 +95,7 @@ end
 nv = prod( sx ) / nx;
 x = reshape( x, nx, nv );
 cvx_begin
-    tt = ~cvx_isaffine( x, true );
-    if any( tt ),
-        temp = x( tt );
-        variable x2( size( temp ) );
-        x( tt ) = x2;
-        temp >= x2;
-    end
+    x = cvx_accept_concave( x );
     variable y( 1, nv )
     maximize( y )
     while nx >= 2,

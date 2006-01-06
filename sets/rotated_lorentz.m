@@ -9,7 +9,6 @@ error( nargchk( 1, 3, nargin ) );
 if ~temp,
     error( 'First argument must be a non-empty dimension vector.' );
 end
-nd = length( sx );
 
 %
 % Check dimension
@@ -19,13 +18,12 @@ if nargin < 2 | isempty( dim ),
     dim = cvx_default_dimension( sx );
 elseif ~cvx_check_dimension( dim, true ),
     error( 'Second argument must be a dimension (or zero).' );
-elseif dim > nd,
+elseif dim == 0 | dim > nd | sx( dim ) == 1,
+    dim = cvx_default_dimension( sx );
+end
+if dim > nd,
     sx( end + 1 : dim ) = 1;
     nd = dim;
-elseif dim == 0,
-    dim = min( find( sx == 1 ) );
-    if isempty( dim ), dim = nd + 1; end
-    sx( dim ) = 1;
 end
 
 %
@@ -70,6 +68,6 @@ if iscplx,
     cvx_optpnt.x = cvx_r2c( cvx_optpnt.x, dim );
 end
 
-% Copyright 2005 Michael C. Grant and Stephen P. Boyd. 
+% Copyright 2005 Michael C. Grant and Stephen P. Boyd.
 % See the file COPYING.txt for full copyright information.
 % The command 'cvx_where' will show where this file is located.
