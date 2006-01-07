@@ -16,7 +16,7 @@ end
 
 if nargin < 2 | isempty( dim ),
     dim = cvx_default_dimension( sx );
-elseif ~cvx_check_dimension( dim true ),
+elseif ~cvx_check_dimension( dim, true ),
     error( 'Second argument must be a dimension (or zero).' );
 end
 sy = sx;
@@ -24,7 +24,7 @@ nd = length( sx );
 if dim <= 0 | dim > nd | sx( dim ) == 1,
     nv  = 1;
     dim = 0;
-elseif
+else,
     nv = sx( dim );
     sy( dim ) = 1;
 end
