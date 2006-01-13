@@ -5,7 +5,7 @@ error( nargchk( 1, 3, nargin ) );
 % Check size vector
 %
 
-[ temp, sx ] = cvx_check_dimlist( sx, false );
+[ temp, sx ] = cvx_check_dimlist( sx, true );
 if ~temp,
     error( 'First argument must be a non-empty dimension vector.' );
 end

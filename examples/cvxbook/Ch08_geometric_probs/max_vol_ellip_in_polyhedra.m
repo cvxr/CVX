@@ -51,9 +51,12 @@ noangles = 200;
 angles   = linspace( 0, 2 * pi, noangles );
 ellipse_inner  = B * [ cos(angles) ; sin(angles) ] + d * ones( 1, noangles );
 ellipse_outer  = 2*B * [ cos(angles) ; sin(angles) ] + d * ones( 1, noangles );
+
 clf
-plot(px,py), hold on
+plot(px,py)
+hold on
 plot( ellipse_inner(1,:), ellipse_inner(2,:), 'r--' );
 plot( ellipse_outer(1,:), ellipse_outer(2,:), 'r--' );
+axis square
+axis off
 hold off
-axis('square'), axis('off')

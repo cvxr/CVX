@@ -56,14 +56,18 @@ b = A\btilde;
 % plot ellipsoids using { x | || A_i x + b_i || <= alpha } parametrization
 noangles = 200;
 angles   = linspace( 0, 2 * pi, noangles );
-figure(1), hold on
+
+clf
 for i=1:m
   Ai = sqrtm(As{i}); bi = Ai\bs{i};
   alpha = bs{i}'*inv(As{i})*bs{i} - cs{i};
   ellipse  = Ai \ [ sqrt(alpha)*cos(angles)-bi(1) ; sqrt(alpha)*sin(angles)-bi(2) ];
   plot( ellipse(1,:), ellipse(2,:), 'b-' );
+  hold on
 end
 ellipse  = A \ [ cos(angles) - b(1) ; sin(angles) - b(2) ];
+
 plot( ellipse(1,:), ellipse(2,:), 'r--' );
+axis square
+axis off
 hold off
-axis('square'), axis('off')

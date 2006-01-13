@@ -21,6 +21,7 @@ elseif ~cvx_check_dimension( dim, true ),
 elseif dim == 0 | dim > nd | sx( dim ) == 1,
     dim = cvx_default_dimension( sx );
 end
+nd = length( sx );
 if dim > nd,
     sx( end + 1 : dim ) = 1;
     nd = dim;

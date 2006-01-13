@@ -9,57 +9,42 @@ if nargin < 5, cheat = false; end
 if ~isa( prob, 'cvxprob' ),
     error( 'First argument must be a cvxprob object.' );
 end
-
-%
-% Descend the expression tree and process the constraints
-%
-
-ans = newcnstr2( prob, x, y, op, cheat );
-if ~ans,
-    error( 'Left- and right-hand sides have incompatible sizes.' );
-end
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% NEWCNSTR2 --- descends the tree %
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-function ans = newcnstr2( prob, x, y, op, cheat )
-
-ans = false;
-x = cvx_collapse( x, false, true );
-y = cvx_collapse( y, false, true );
-sx = size( x );
-sy = size( y );
-
-if iscell( x ),
-    if ~iscell( x ) | op(1) ~= '=' | ~isequal( sx, sy ),
-        return;
-    end
-    for k = 1 : prod( sx ),
-        if ~newcnstr2( prob, x{k}, y{k}, op, cheat ), 
-            return; 
-        end
-    end
-else,
-    if iscell( x ),
-        return;
-    elseif any( sx ~= 1 ) & any( sy ~= 1 ) & ~isequal( sx, sy ),
-        return;
-    end
-    newcnstr3( prob, x, y, op, cheat );
-end
-
-ans = true;
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% NEWCNSTR3 --- adds individual constraints %
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-function newcnstr3( prob, x, y, op, cheat )
-[ prob, x, y ] = cvx_operate( prob, x, y );
-
 global cvx___
 p = index( prob );
+
+%
+% Check arguments
+%
+
+cx = isnumeric( x ) | isa( x, 'cvx' );
+if ~cx,
+    x  = cvx_collapse( x, false, true );
+    cx = isnumeric( x ) | isa( x, 'cvx' );
+end
+cy = isnumeric( y ) | isa( y, 'cvx' );
+if ~cy,
+    y  = cvx_collapse( y, false, true );
+    cy = isnumeric( y ) | isa( y, 'cvx' );
+end
+sx = size( x );
+sy = size( y );
+if ~cx | ~cy,
+    if ~iscell( x ) | ~iscell( y ),
+        error( 'Cannot form a valid CVX constraint from this expression.' );
+    elseif ~isequal( sx, sy ),
+        error( 'The left- and right-hand sides have incompatible sizes.' );
+    elseif op(1) ~= '=',
+        error( 'Only equality constraints may use composite forms.' );
+    else,
+        nx = prod( sx );
+        for k = 1 : nx,
+            newcnstr( prob, x{k}, y{k}, op, cheat );
+        end
+        return
+    end
+else,
+    [ prob, x, y ] = cvx_operate( prob, x, y );
+end
 
 %
 % Check for a dual reference
@@ -86,6 +71,27 @@ if ~isempty( dx ),
         nm = cvx_subs2str( dx );
         error( [ 'Dual variable "', nm(2:end), '" already in use.' ] );
     end
+end
+
+%
+% Handle the SDP case
+%
+
+mx = sx( 1 ) > 1 & sx( 2 ) > 1;
+my = sy( 1 ) > 1 & sy( 2 ) > 1;
+if op(1) ~= '=' & cvx___.problems( p ).sdp & ( mx | my ),
+    if sx( 1 ) ~= sx( 2 ) | sy( 1 ) ~= sy( 2 ),
+        error( 'SDP constraints must be square.' );
+    elseif ~isequal( sx, sy ) & ( mx | cvx_isnonzero( x ) ) & ( my | cvx_isnonzero( y ) ),
+        error( 'Left- and right-hand sides have incompatible sizes.' );
+    elseif op( 1 ) == '>',
+        x = pluslikeoper( x, y, 'minus', cheat );
+        y = semidefinite( size( x ), ~isreal( x ) );
+    else,
+        y = pluslikeoper( y, x, 'minus', cheat );
+        x = semidefinite( size( y ), ~isreal( y ) );
+    end    
+    op = '==';
 end
 
 %
@@ -124,7 +130,6 @@ else,
         end
     end
 end
-
 %
 % Add slacks
 %

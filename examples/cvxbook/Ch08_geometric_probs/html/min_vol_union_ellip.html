@@ -1,0 +1,259 @@
+<html xmlns:mwsh="http://www.mathworks.com/namespace/mcode/v1/syntaxhighlight.dtd">
+   <head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   
+      <!--
+This HTML is auto-generated from an M-file.
+To make changes, update the M-file and republish this document.
+      -->
+      <title>Minimum volume ellipsoid covering union of ellipsoids</title>
+      <meta name="generator" content="MATLAB 7.1">
+      <meta name="date" content="2006-01-12">
+      <meta name="m-file" content="min_vol_union_ellip"><style>
+
+body {
+  background-color: white;
+  margin:10px;
+}
+
+h1 {
+  color: #990000; 
+  font-size: x-large;
+}
+
+h2 {
+  color: #990000;
+  font-size: medium;
+}
+
+/* Make the text shrink to fit narrow windows, but not stretch too far in 
+wide windows.  On Gecko-based browsers, the shrink-to-fit doesn't work. */ 
+p,h1,h2,div.content div {
+  /* for MATLAB's browser */
+  width: 600px;
+  /* for Mozilla, but the "width" tag overrides it anyway */
+  max-width: 600px;
+  /* for IE */
+  width:expression(document.body.clientWidth > 620 ? "600px": "auto" );
+}
+
+pre.codeinput {
+  background: #EEEEEE;
+  padding: 10px;
+}
+
+span.keyword {color: #0000FF}
+span.comment {color: #228B22}
+span.string {color: #A020F0}
+span.untermstring {color: #B20000}
+span.syscmd {color: #B28C00}
+
+pre.codeoutput {
+  color: #666666;
+  padding: 10px;
+}
+
+pre.error {
+  color: red;
+}
+
+p.footer {
+  text-align: right;
+  font-size: xx-small;
+  font-weight: lighter;
+  font-style: italic;
+  color: gray;
+}
+
+  </style></head>
+   <body>
+      <div class="content">
+         <h1>Minimum volume ellipsoid covering union of ellipsoids</h1><pre class="codeinput"><span class="comment">% Section 8.4.1, Boyd &amp; Vandenberghe "Convex Optimization"</span>
+<span class="comment">% Original version by Lieven Vandenberghe</span>
+<span class="comment">% Updated for CVX by Almir Mutapcic - Jan 2006</span>
+<span class="comment">% (a figure is generated)</span>
+<span class="comment">%</span>
+<span class="comment">% We find a smallest ellipsoid containing m ellipsoids</span>
+<span class="comment">% { x'*A_i*x + 2*b_i'*x + c &lt; 0 }, for i = 1,...,m</span>
+<span class="comment">%</span>
+<span class="comment">% Problem data:</span>
+<span class="comment">% As = {A1, A2, ..., Am}:  cell array of m pos. def. matrices</span>
+<span class="comment">% bs = {b1, b2, ..., bm}:  cell array of m 2-vectors</span>
+<span class="comment">% cs = {c1, c2, ..., cm}:  cell array of m scalars</span>
+
+<span class="comment">% ellipse data</span>
+As = {}; bs = {}; cs = {};
+As{1} = [ 0.1355    0.1148;  0.1148    0.4398];
+As{2} = [ 0.6064   -0.1022; -0.1022    0.7344];
+As{3} = [ 0.7127   -0.0559; -0.0559    0.9253];
+As{4} = [ 0.2706   -0.1379; -0.1379    0.2515];
+As{5} = [ 0.4008   -0.1112; -0.1112    0.2107];
+bs{1} = [ -0.2042  0.0264]';
+bs{2} = [  0.8259 -2.1188]';
+bs{3} = [ -0.0256  1.0591]';
+bs{4} = [  0.1827 -0.3844]';
+bs{5} = [  0.3823 -0.8253]';
+cs{1} = 0.2351;
+cs{2} = 5.8250;
+cs{3} = 0.9968;
+cs{4} = -0.2981;
+cs{5} = 2.6735;
+
+<span class="comment">% dimensions</span>
+n = 2;
+m = size(bs,2);    <span class="comment">% m ellipsoids given</span>
+
+<span class="comment">% construct and solve the problem as posed in the book</span>
+cvx_begin
+    variable <span class="string">Asqr(n,n)</span> <span class="string">symmetric</span>
+    variable <span class="string">btilde(n)</span>
+    variable <span class="string">t(m)</span>
+    maximize( det_rootn( Asqr ) )
+    subject <span class="string">to</span>
+        t &gt;= 0;
+        <span class="keyword">for</span> i = 1:m
+            [ -(Asqr - t(i)*As{i}), -(btilde - t(i)*bs{i}), zeros(n,n);
+              -(btilde - t(i)*bs{i})', -(- 1 - t(i)*cs{i}), -btilde';
+               zeros(n,n), -btilde, Asqr] == semidefinite(2*n+1);
+        <span class="keyword">end</span>
+cvx_end
+
+<span class="comment">% convert to ellipsoid parametrization E = { x | || Ax + b || &lt;= 1 }</span>
+A = sqrtm(Asqr);
+b = A\btilde;
+
+<span class="comment">% plot ellipsoids using { x | || A_i x + b_i || &lt;= alpha } parametrization</span>
+noangles = 200;
+angles   = linspace( 0, 2 * pi, noangles );
+
+clf
+<span class="keyword">for</span> i=1:m
+  Ai = sqrtm(As{i}); bi = Ai\bs{i};
+  alpha = bs{i}'*inv(As{i})*bs{i} - cs{i};
+  ellipse  = Ai \ [ sqrt(alpha)*cos(angles)-bi(1) ; sqrt(alpha)*sin(angles)-bi(2) ];
+  plot( ellipse(1,:), ellipse(2,:), <span class="string">'b-'</span> );
+  hold <span class="string">on</span>
+<span class="keyword">end</span>
+ellipse  = A \ [ cos(angles) - b(1) ; sin(angles) - b(2) ];
+
+plot( ellipse(1,:), ellipse(2,:), <span class="string">'r--'</span> );
+axis <span class="string">square</span>
+axis <span class="string">off</span>
+hold <span class="string">off</span>
+</pre><pre class="codeoutput"> 
+Calling SeDuMi: 95 variables (0 free), 79 equality constraints
+------------------------------------------------------------------------
+SeDuMi 1.1 by AdvOL, 2005 and Jos F. Sturm, 1998, 2001-2003.
+Alg = 2: xz-corrector, Adaptive Step-Differentiation, theta = 0.250, beta = 0.500
+eqs m = 79, order n = 39, dim = 153, blocks = 8
+nnz(A) = 163 + 0, nnz(ADA) = 2793, nnz(L) = 1580
+ it :     b*y       gap    delta  rate   t/tP*  t/tD*   feas cg cg  prec
+  0 :            1.78E+000 0.000
+  1 : -6.10E-001 5.06E-001 0.000 0.2850 0.9000 0.9000   1.03  1  1  3.8E+000
+  2 : -2.94E-001 1.67E-001 0.000 0.3289 0.9000 0.9000   1.91  1  1  9.1E-001
+  3 : -1.16E-001 4.17E-002 0.000 0.2503 0.9000 0.9000   1.84  1  1  1.9E-001
+  4 : -7.98E-002 7.70E-003 0.000 0.1847 0.9000 0.9000   1.33  1  1  3.3E-002
+  5 : -7.95E-002 1.75E-003 0.000 0.2277 0.9000 0.9000   0.95  1  1  7.7E-003
+  6 : -7.87E-002 5.28E-005 0.000 0.0301 0.9901 0.9900   0.99  1  1  2.8E-004
+  7 : -7.87E-002 1.43E-006 0.000 0.0270 0.9900 0.9900   1.00  1  1  7.2E-006
+  8 : -7.87E-002 7.27E-008 0.412 0.0510 0.9904 0.9900   1.00  1  1  5.9E-007
+  9 : -7.87E-002 1.82E-008 0.003 0.2507 0.9000 0.9006   1.00  1  1  1.5E-007
+ 10 : -7.87E-002 9.56E-010 0.108 0.0525 0.9900 0.9901   1.00  2  2  7.6E-009
+
+iter seconds digits       c*x               b*y
+ 10      0.2   7.8 -7.8681463506e-002 -7.8681464686e-002
+|Ax-b| =  2.6e-009, [Ay-c]_+ =  5.2E-010, |x|= 6.3e+000, |y|= 2.2e+000
+
+Detailed timing (sec)
+   Pre          IPM          Post
+3.004E-002    1.702E-001    0.000E+000    
+Max-norms: ||b||=1, ||c|| = 1,
+Cholesky |add|=0, |skip| = 0, ||L.L|| = 1568.68.
+------------------------------------------------------------------------
+Optimal value (cvx_optval): +0.0786815
+Status (cvx_status): Solved
+ 
+</pre><img vspace="5" hspace="5" src="min_vol_union_ellip_01.png"> <p class="footer"><br>
+            Published with MATLAB&reg; 7.1<br></p>
+      </div>
+      <!--
+##### SOURCE BEGIN #####
+%% Minimum volume ellipsoid covering union of ellipsoids
+
+% Section 8.4.1, Boyd & Vandenberghe "Convex Optimization"
+% Original version by Lieven Vandenberghe
+% Updated for CVX by Almir Mutapcic - Jan 2006
+% (a figure is generated)
+%
+% We find a smallest ellipsoid containing m ellipsoids
+% { x'*A_i*x + 2*b_i'*x + c < 0 }, for i = 1,...,m
+% 
+% Problem data:
+% As = {A1, A2, ..., Am}:  cell array of m pos. def. matrices
+% bs = {b1, b2, ..., bm}:  cell array of m 2-vectors
+% cs = {c1, c2, ..., cm}:  cell array of m scalars
+
+% ellipse data
+As = {}; bs = {}; cs = {};
+As{1} = [ 0.1355    0.1148;  0.1148    0.4398];
+As{2} = [ 0.6064   -0.1022; -0.1022    0.7344];
+As{3} = [ 0.7127   -0.0559; -0.0559    0.9253];
+As{4} = [ 0.2706   -0.1379; -0.1379    0.2515];
+As{5} = [ 0.4008   -0.1112; -0.1112    0.2107];
+bs{1} = [ -0.2042  0.0264]';
+bs{2} = [  0.8259 -2.1188]';
+bs{3} = [ -0.0256  1.0591]';
+bs{4} = [  0.1827 -0.3844]';
+bs{5} = [  0.3823 -0.8253]';
+cs{1} = 0.2351;
+cs{2} = 5.8250;
+cs{3} = 0.9968;
+cs{4} = -0.2981;
+cs{5} = 2.6735;
+
+% dimensions
+n = 2;
+m = size(bs,2);    % m ellipsoids given
+
+% construct and solve the problem as posed in the book
+cvx_begin
+    variable Asqr(n,n) symmetric
+    variable btilde(n)
+    variable t(m)
+    maximize( det_rootn( Asqr ) )
+    subject to
+        t >= 0;
+        for i = 1:m
+            [ -(Asqr - t(i)*As{i}), -(btilde - t(i)*bs{i}), zeros(n,n);
+              -(btilde - t(i)*bs{i})', -(- 1 - t(i)*cs{i}), -btilde';
+               zeros(n,n), -btilde, Asqr] == semidefinite(2*n+1);
+        end
+cvx_end
+
+% convert to ellipsoid parametrization E = { x | || Ax + b || <= 1 }
+A = sqrtm(Asqr);
+b = A\btilde;
+
+% plot ellipsoids using { x | || A_i x + b_i || <= alpha } parametrization
+noangles = 200;
+angles   = linspace( 0, 2 * pi, noangles );
+
+clf
+for i=1:m
+  Ai = sqrtm(As{i}); bi = Ai\bs{i};
+  alpha = bs{i}'*inv(As{i})*bs{i} - cs{i};
+  ellipse  = Ai \ [ sqrt(alpha)*cos(angles)-bi(1) ; sqrt(alpha)*sin(angles)-bi(2) ];
+  plot( ellipse(1,:), ellipse(2,:), 'b-' );
+  hold on
+end
+ellipse  = A \ [ cos(angles) - b(1) ; sin(angles) - b(2) ];
+
+plot( ellipse(1,:), ellipse(2,:), 'rREPLACE_WITH_DASH_DASH' );
+axis square
+axis off
+hold off
+
+##### SOURCE END #####
+-->
+   </body>
+</html>
