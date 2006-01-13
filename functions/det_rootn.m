@@ -1,7 +1,7 @@
 function cvx_optval = det_rootn( X )
 error( nargchk( 1, 1, nargin ) );
 
-% DET_ROOT2N    n-th root of the determinant of a symmetric matrix.
+% DET_ROOTN    n-th root of the determinant of a symmetric matrix.
 %     For a square matrix X, DET_ROOTN(X) returns
 %         POW(DET(X),1/(size(X,1))
 %     if X is symmetric (real) or Hermitian (complex) and positive
