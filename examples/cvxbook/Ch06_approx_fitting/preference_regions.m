@@ -92,17 +92,14 @@ plot(data(:,1),data(:,2),'o');
 hold on;
 
 [X,Y] = meshgrid(0:.01:1,0:.01:1);
-Z=utilfun(X,Y);
+Z=(1.1*X.^(1/2)+0.8*Y.^(1/2))/1.9;
 
-
-[C,h] = contour(X,Y,Z,utilfun(1,1)*[.1,.2,.3,.4,.5,.6,.7,.8,.9],'--');
+[C,h] = contour(X,Y,Z,[.1,.2,.3,.4,.5,.6,.7,.8,.9],'--');
 clear X Y Z C
 hold off;
 xlabel('x_1');
 ylabel('x_2');
 hold off
-%keyboard
-%print -deps pref_util_curves2.eps
 
 m = size(data,1);  % number of baskets, including 0,1
 
@@ -110,8 +107,8 @@ m = size(data,1);  % number of baskets, including 0,1
 Pweak = zeros(m+1,m+1);
 for i=1:m,
    for j=1:m
-      if (i~=j) & ((utilfun(data(i,1),data(i,2)) >= ...  
-             utilfun(data(j,1),data(j,2)))),
+      if (i~=j) & (1.1*data(i,1).^(1/2)+0.8*data(i,2).^(1/2))/1.9 >= ...  
+             (1.1*data(j,1).^(1/2)+0.8*data(j,2).^(1/2))/1.9,
          Pweak(i,j) = 1;
       end;
    end;
