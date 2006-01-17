@@ -14,5 +14,4 @@
 %  regressor_cvx.m        - Regressor selection problem
 %  smoothrec_cvx.m        - Quadratic smoothing example
 %  tv_cvx.m               - Total variation reconstruction
-%  utilfun.m              - (no title)
 %  wcrobls.m              - Comparison of worst-case robust, Tickhonov and nominal least squares
