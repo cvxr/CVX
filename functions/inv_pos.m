@@ -24,7 +24,7 @@ elseif cvx_isconcave( x ),
     cvx_begin
         variable y( size( x ) )
         minimize y
-        quad_over_lin( 1, x, 0 ) <= y;
+        quad_over_lin( 1, x ) <= y;
     cvx_end
     
 else,

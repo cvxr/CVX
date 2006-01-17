@@ -1,6 +1,6 @@
 function x = cvx_accept_concave( x )
-t = cvx_isconcave( x, true );
-if any( t ),
+t = cvx_vexity( x ) == -1;
+if any( t( : ) ),
     prob = cvxprob( 'current' );
     if all( t ),
         src = x;

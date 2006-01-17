@@ -50,17 +50,21 @@ if ~xc & ~yc,
     %
     % Separate the quadratic and non-quadratic terms
     %
-
-    qq = cvx_isconstant( x, true )' | cvx_isconstant( y, true );
-    if any( qq ),
+    
+    qx = cvx_isconstant( x, true )';
+    qy = cvx_isconstant( y, true );
+    if any( qx | qy ),
         z = 0;
         qt.type = '()';
-        for k = 1 : 2,
-            qt.subs = { qq };
-            xx = subref( x, qt.subs, 0 );
-            yy = subref( y, qt.subs, 0 );
-            z  = z + mtimes( xx( : ).' * yy( : ) );
-            qq = ~qq;
+        for k = 0 : 3,
+            qt.subs = { qx & qy };
+            if any( qt.subs{1} ),
+                z = z + subsref( x, qt ) * subsref( y, qt );
+            end
+            if rem( k, 2 ) == 1, 
+                qy = ~qy; 
+            end
+            qx = ~qx;
         end
         return
     end

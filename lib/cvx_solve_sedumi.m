@@ -79,6 +79,7 @@ if quiet,
     pars.fid = 0;
 end
 pars.free = 0; % ~isempty( K.q ) | ~isempty( K.s );
+pars.sdp = 0;
 
 if ~quiet,
     disp( ' ' );

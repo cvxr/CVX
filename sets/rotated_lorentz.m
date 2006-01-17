@@ -14,14 +14,19 @@ end
 % Check dimension
 %
 
+nd = length( sx );
 if nargin < 2 | isempty( dim ),
     dim = cvx_default_dimension( sx );
 elseif ~cvx_check_dimension( dim, true ),
     error( 'Second argument must be a dimension (or zero).' );
 elseif dim == 0 | dim > nd | sx( dim ) == 1,
-    dim = cvx_default_dimension( sx );
+    dim = find( sx == 1 );
+    if isempty( dim ),
+        dim = nd + 1;
+    else,
+        dim = dim( 1 );
+    end
 end
-nd = length( sx );
 if dim > nd,
     sx( end + 1 : dim ) = 1;
     nd = dim;

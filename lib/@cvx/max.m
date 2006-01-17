@@ -78,7 +78,7 @@ else,
     %
 
     if dim > length( sx ) | sx( dim ) == 1,
-        z = x;
+        cvx_optval = x;
         return
     end
 
