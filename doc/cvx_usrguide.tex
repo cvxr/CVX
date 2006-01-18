@@ -2276,11 +2276,14 @@ used inside a \cvx specification, \verb@geomean@ constrains the elements of the 
 to be nonnegative. When used with numerical arguments, \verb@geomean@ returns \verb@-Inf@
 if any element is negative.
 Concave and increasing.
-\item \verb@det_root2n@: $2n$-th root of the determinant of a semidefinite matrix,
-$(\det X)^{1/2n}$. When used inside a \cvx specification, \verb@det_root2n@ constrains
+\item \verb@det_rootn@: $n$-th root of the determinant of a semidefinite matrix,
+$(\det X)^{1/n}$. When used inside a \cvx specification, \verb@det_rootn@ constrains
 the matrix to be symmetric (if real) or Hermitian (if complex) and positive semidefinite. 
-When used with numerical arguments, \verb@det_root2n@ returns \verb@-Inf@ if these
+When used with numerical arguments, \verb@det_rootn@ returns \verb@-Inf@ if these
 constraints are not met. Concave.
+\item \verb@det_root2n@: the $2n$-th root of the determinant of a semidefinite
+matrix; \ie, \verb@det_root2n(X)=sqrt(det_rootn(X))@. Concave. Maintained
+solely for back-compatibility purposes.
 \item \verb@huber(x)@, defined as $2|x|-1$ for $|x|\geq 1$,
 and $x^2$ for $|x|<1$.  Convex.
 \item \verb@inv_pos@, inverse of the positive portion, $1/\max\{x,0\}$.
