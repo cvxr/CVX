@@ -15,7 +15,7 @@
   <h1><tt>CVX</tt>: Matlab Software for Disciplined Convex
   Programming</h1>
 
-  <h2>Version 0.90 alpha (January 2006)</h2>
+  <h2>Version 0.91 alpha (January 2006)</h2>
 
   <h3><a href="http://www.stanford.edu/~mcgrant">Michael Grant</a>,
   <a href="http://www.stanford.edu/~boyd">Stephen Boyd</a>, and
@@ -250,6 +250,17 @@
     but it was not documented or supported because of its unreliability in infeasible
     problems. This shortcoming has been addressed, so now we have made it
     "official.")
+
+    <dt>Version 0.91, January 2006:</dt>
+
+    <dd>Added support for the determinant function <tt>det_rootn</tt>.</dd>
+    <dd>Added a new semidefinite programming mode, which is activated
+    with the command <tt>cvx_begin sdp</tt>; see the user guide
+    for details.</dd>
+    <dd>Miscellaneous bug fixes related to the solution of complex
+    norm minimization problems, convex quadratic forms,
+    and a workaround for a SeDuMi bug.</dd>
+
   </dl>
 
   <h3><a id="plans" name="plans">Future plans</a></h3>
