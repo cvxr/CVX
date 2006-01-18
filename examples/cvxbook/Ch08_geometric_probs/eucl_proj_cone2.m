@@ -25,10 +25,10 @@ fprintf(1,'Done! \n');
 % Solution via CVX
 fprintf(1,'Computing the optimal solution by solving an SDP...');
 
-cvx_begin
+cvx_begin sdp
     variable X(n,n) symmetric
     minimize ( norm(X-X0,'fro') )
-    X == semidefinite(n);
+    X >= 0;
 cvx_end
 
 fprintf(1,'Done! \n');

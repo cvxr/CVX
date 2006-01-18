@@ -8,7 +8,7 @@ To make changes, update the M-file and republish this document.
       -->
       <title>Experiment design examples</title>
       <meta name="generator" content="MATLAB 7.1">
-      <meta name="date" content="2006-01-16">
+      <meta name="date" content="2006-01-17">
       <meta name="m-file" content="expdesign"><style>
 
 body {
@@ -142,13 +142,13 @@ hold <span class="string">off</span>, axis <span class="string">off</span>
 
 <span class="comment">% SDP formulation</span>
 e = eye(2,2);
-cvx_begin
+cvx_begin <span class="string">sdp</span>
   variables <span class="string">lambda(p)</span> <span class="string">u(n)</span>
   minimize ( sum(u) )
   subject <span class="string">to</span>
     <span class="keyword">for</span> k = 1:n
       [ V*diag(lambda)*V'  e(:,k);
-        e(k,:)             u(k)   ] == semidefinite(n+1);
+        e(k,:)             u(k)   ] &gt;= 0;
     <span class="keyword">end</span>
     sum(lambda) == 1
     lambda &gt;= 0
@@ -193,13 +193,13 @@ axis <span class="string">off</span>, hold <span class="string">off</span>
 <span class="comment">%                  lambda &gt;= 0,  1'*lambda = 1;</span>
 <span class="comment">%</span>
 
-cvx_begin
+cvx_begin <span class="string">sdp</span>
   variables <span class="string">t</span> <span class="string">lambda(p)</span>
   maximize ( t )
   subject <span class="string">to</span>
-    V*diag(lambda)*V' - t*eye(n,n) == semidefinite(n)
-    sum(lambda) == 1
-    lambda &gt;= 0
+    V*diag(lambda)*V' &gt;= t*eye(n,n);
+    sum(lambda) == 1;
+    lambda &gt;= 0;
 cvx_end
 
 lambdaE = lambda; <span class="comment">% save the solution for confidence ellipsoids</span>
@@ -300,12 +300,12 @@ nnz(A) = 91 + 0, nnz(ADA) = 88, nnz(L) = 49
  13 : -3.18E+000 3.62E-010 0.308 0.0826 0.9900 0.9900   1.00  2  2  9.9E-010
 
 iter seconds digits       c*x               b*y
- 13      0.2   Inf -3.1819805148e+000 -3.1819805112e+000
+ 13      0.1   Inf -3.1819805148e+000 -3.1819805112e+000
 |Ax-b| =  9.0e-010, [Ay-c]_+ =  2.2E-010, |x|= 1.7e+001, |y|= 4.3e+000
 
 Detailed timing (sec)
    Pre          IPM          Post
-3.004E-002    2.103E-001    1.001E-002    
+3.004E-002    1.302E-001    1.001E-002    
 Max-norms: ||b||=1, ||c|| = 1,
 Cholesky |add|=0, |skip| = 0, ||L.L|| = 6.87548.
 ------------------------------------------------------------------------
@@ -345,7 +345,7 @@ iter seconds digits       c*x               b*y
 
 Detailed timing (sec)
    Pre          IPM          Post
-2.003E-002    1.702E-001    0.000E+000    
+3.004E-002    1.502E-001    1.001E-002    
 Max-norms: ||b||=1, ||c|| = 1,
 Cholesky |add|=0, |skip| = 0, ||L.L|| = 19.0574.
 ------------------------------------------------------------------------
@@ -379,7 +379,7 @@ iter seconds digits       c*x               b*y
 
 Detailed timing (sec)
    Pre          IPM          Post
-3.004E-002    7.010E-002    1.001E-002    
+1.001E-002    7.010E-002    1.001E-002    
 Max-norms: ||b||=1, ||c|| = 1,
 Cholesky |add|=0, |skip| = 0, ||L.L|| = 1.
 ------------------------------------------------------------------------
@@ -470,13 +470,13 @@ hold off, axis off
 
 % SDP formulation
 e = eye(2,2);
-cvx_begin
+cvx_begin sdp
   variables lambda(p) u(n)
   minimize ( sum(u) )
   subject to
     for k = 1:n
       [ V*diag(lambda)*V'  e(:,k);
-        e(k,:)             u(k)   ] == semidefinite(n+1);
+        e(k,:)             u(k)   ] >= 0;
     end
     sum(lambda) == 1
     lambda >= 0
@@ -521,13 +521,13 @@ axis off, hold off
 %                  lambda >= 0,  1'*lambda = 1;
 %
 
-cvx_begin
+cvx_begin sdp
   variables t lambda(p)
   maximize ( t )
   subject to
-    V*diag(lambda)*V' - t*eye(n,n) == semidefinite(n)
-    sum(lambda) == 1
-    lambda >= 0
+    V*diag(lambda)*V' >= t*eye(n,n);
+    sum(lambda) == 1;
+    lambda >= 0;
 cvx_end
 
 lambdaE = lambda; % save the solution for confidence ellipsoids

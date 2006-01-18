@@ -955,6 +955,113 @@ can be rewritten
 	in( { x, y }, lorentz( n ) );
 \end{code}
 
+\subsection{Semidefinite programming mode}
+
+Those who are familiar with the practice of \emph{semidefinite
+programming} (SDP) know that the constraints that utilize
+the set \verb@semidefinite(n)@ above are, in practice, typically
+expressed using \emph{linear matrix inequality} (LMI) notation. 
+For example, given $X=X^T\in\Rnn$, the
+constraint $X\succeq 0$ denotes that $X\in\symm^n_+$; that is, that
+$X$ is positive semidefinite.
+
+\cvx provides a special \emph{SDP mode} which allows this
+LMI convention to be employed inside \cvx models
+using MATLAB's standard inequality operators \verb@>=@, \verb@<=@, \etc.
+In order to use it, one must simply begin a model with the statement
+\verb@cvx_begin sdp@ instead of simply \verb@cvx_begin@. When SDP mode 
+is engaged, \cvx interprets certain inequality constraints in a
+different manner. To be specific:
+\begin{itemize}
+\item Equality constraints are interpreted the same (\ie, elementwise).
+\item Inequality constraints involving vectors and scalars are interpreted
+      the same; \ie, elementwise.
+\item Inequality constraints involving non-square matrices are \emph{disallowed};
+      attempting to use them causes an error.
+\item Inequality constraints involving real, square matrices are interpreted as follows:
+	\begin{center}
+	\begin{tabular}{ccccc}
+	\verb@X >= Y@ & and & \verb@X > Y@ & become & \verb@X - Y == semidefinite(n)@ \\
+	\verb@X <= Y@ & and & \verb@X > Y@  & become & \verb@Y - X == semidefinite(n)@
+	\end{tabular}
+	\end{center}
+      If either side is complex, then the inequalities are
+      interpreted as follows:
+	\begin{center}
+	\begin{tabular}{ccccc}
+	\verb@X >= Y@ & and & \verb@X > Y@ & become & \verb@X - Y == hermitian_semidefinite(n)@ \\
+	\verb@X <= Y@ & and & \verb@X > Y@  & become & \verb@Y - X == hermitian_semidefinite(n)@
+	\end{tabular}
+	\end{center}
+      In the above, \verb@n=max(size(X,1),size(Y,1))@.
+\item There is one additional restriction: both
+      \verb@X@ and \verb@Y@ must be the same size, or one must
+      be the scalar zero. For example, if \verb@X@ and \verb@Y@ are
+      matrices of size \verb@n@,
+      \begin{center}
+      \begin{tabular}{cccc}
+      	\verb@X >= 1@ & or & \verb@1 >= Y@ & \emph{illegal} \\
+      	\verb@X >= ones(n,n)@ & or & \verb@ones(n,n) >= Y@ & \emph{legal} \\
+      	\verb@X >= 0@ & or & \verb@0 >= Y@ & \emph{legal} \\
+      \end{tabular}
+      \end{center}
+      In effect, \cvx enforces a stricter interpretation of the inequality
+      operators for LMI constraints.
+\item Note that LMI constraints enforce symmetry (real or Hermitian, as
+      appropriate) on their inputs. Unlike SDPSOL \cite{SDPSOL}, \cvx 
+      does not extract the symmetric part for you: you must take
+      care to insure symmetry yourself. Since \cvx supports the declaration
+      of symmetric matrices, this is reasonably straightforward.
+\item A dual variable, if supplied, will be applied to the converted
+      equality constraint. It will be given a 
+      positive semidefinite value if an optimal point is found.
+\end{itemize}
+So, for example, the \cvx model found in the file
+\verb@examples/closest_toeplitz_sdp.m@,
+\begin{code}
+cvx_begin
+    variable Z(n,n) hermitian toeplitz
+    dual variable Q
+    minimize( norm( Z - P, 'fro' ) )
+    Z == hermitian_semidefinite( n ) : Q;
+cvx_end
+\end{code}
+can also be written as follows:
+\begin{code}
+cvx_begin sdp
+    variable Z(n,n) hermitian toeplitz
+    dual variable Q
+    minimize( norm( Z - P, 'fro' ) )
+    Z >= 0 : Q;
+cvx_end
+\end{code}
+Many other examples in the \cvx example library utilize semidefinite
+constraints; and all of them use SDP mode. To find them, simply 
+search for the text \verb@cvx_begin sdp@ in the \verb@examples/@
+subdirectory tree using your favorite file search tool. One
+of these examples is reproduced in \S\ref{sec:indexeddual}.
+
+Since semidefinite programming is popular, some
+may wonder why SDP mode is not the default behavior.
+The reason for this is that we place a
+strong emphasis on maintaining consistency between MATLAB's native
+behavior and that of \cvx; and 
+the use of the \verb@>=@,\verb@<=@,\verb@>@,\verb@<@
+operators to create LMIs
+represents a deviation from that ideal.
+For example, inside a \cvx model in SDP mode,
+the expression \verb@X >= 0@ above constrains \verb@X@
+to be positive semidefinite. But after the model has been solved
+and \verb@X@ has been replaced with a numeric value,
+the expression \verb@X >= 0@ will test for the \emph{elementwise}
+nonnegativity of \verb@X@.
+
+Therefore, we ask that
+users explicity request SDP mode when they intend to use it,
+so that they acknowledge and accept this inconsistency in advance.
+We hope that you will agree that this represents only a slight
+inconvenience even to those who use it most frequently.
+
 \subsection{Dual variables}
 When a disciplined convex program is solved, the associated 
 \emph{dual problem} is also solved.
@@ -1683,7 +1790,7 @@ parameterized by $x$:
 	\end{array}
 \end{equation}
 Specifically, the optimal value of the this QP is equal to the Huber
-penlaty function.
+penalty function.
 We can implement the Huber penalty function in \cvx as follows:
 \begin{code}
 	function cvx_optval = huber( x )
@@ -1897,7 +2004,7 @@ Let us illustrate by example how to declare and use indexed dual
 variables. Consider the following semidefinite program:
 \begin{equation}
 	\begin{array}{rl}
-		\text{minimize}   & \sum_{i=1}^n (n-1) * X_{ii} \\
+		\text{minimize}   & \sum_{i=1}^n (n-i) * X_{ii} \\
 		\text{subject to} & \sum_{i=1}^n X_{i,i+k} = b_k, ~ k = 1,2,\dots,n \\
 				  & X \succeq 0
 	\end{array}
@@ -1908,27 +2015,27 @@ constant. The parameters of the problem are
 the elements of the vector $b\in\Rn$, and the optimization variable is a
 symmetric matrix $X\in\Rnn$. The \cvx version of this model is
 \begin{code}
-	cvx_begin
+	cvx_begin sdp
 	    variable X( n, n ) symmetric
 	    minimize( ( n - 1 : -1 : 0 ) * diag( X ) );
 	    for k = 0 : n-1,
 	        sum( diag( X, k ) ) == b( k+1 );
 	    end
-	    X == semidefinite( n );
+	    X >= 0;
 	cvx_end
 \end{code}
 If we wish to obtain dual information for the $n$ simple equality constraints,
 we need a way to assign each constraint in the \verb@for@ loop a separate dual variable.
 This is accomplished as follows:
 \begin{code}
-	cvx_begin
+	cvx_begin sdp
 	    variable X( n, n ) symmetric
 	    dual variables y{n}
 	    minimize( ( n - 1 : -1 : 0 ) * diag( X ) );
 	    for k = 0 : n-1,
 	        sum( diag( X, k ) ) == b( k+1 ) : y{k+1};
 	    end
-	    X == semidefinite( n );
+	    X >= 0;
 	cvx_end
 \end{code}
 The statement

@@ -6,7 +6,7 @@
 %
 % We find a smallest ellipsoid containing m ellipsoids
 % { x'*A_i*x + 2*b_i'*x + c < 0 }, for i = 1,...,m
-% 
+%
 % Problem data:
 % As = {A1, A2, ..., Am}:  cell array of m pos. def. matrices
 % bs = {b1, b2, ..., bm}:  cell array of m 2-vectors
@@ -35,7 +35,7 @@ n = 2;
 m = size(bs,2);    % m ellipsoids given
 
 % construct and solve the problem as posed in the book
-cvx_begin
+cvx_begin sdp
     variable Asqr(n,n) symmetric
     variable btilde(n)
     variable t(m)
@@ -45,7 +45,7 @@ cvx_begin
         for i = 1:m
             [ -(Asqr - t(i)*As{i}), -(btilde - t(i)*bs{i}), zeros(n,n);
               -(btilde - t(i)*bs{i})', -(- 1 - t(i)*cs{i}), -btilde';
-               zeros(n,n), -btilde, Asqr] == semidefinite(2*n+1);
+               zeros(n,n), -btilde, Asqr] >= 0;
         end
 cvx_end
 

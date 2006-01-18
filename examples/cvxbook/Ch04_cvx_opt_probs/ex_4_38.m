@@ -17,10 +17,10 @@ B = randn(n); B = B'*B;
 c = -1;
 
 % Create and solve the model
-cvx_begin
+cvx_begin sdp
     variable t
     minimize ( c*t )
-    (A - t*B) == semidefinite(n)
+    A >= t * B;
 cvx_end
 
 % Display results

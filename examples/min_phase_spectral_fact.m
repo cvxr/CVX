@@ -14,14 +14,14 @@ b = [2; 0.2; -0.3];
 n = length( b );
 
 % Create and solve model
-cvx_begin
+cvx_begin sdp
     variable X( n, n ) symmetric
     dual variable y{n}
     minimize( ( n - 1 : -1 : 0 ) * diag( X ) );
     for k = 1 : n,
         sum( diag( X, k - 1 ) ) == b( k ) : y{k};
     end
-    X == semidefinite( n );
+    X >= 0;
 cvx_end
 y = [ y{:} ]';
 

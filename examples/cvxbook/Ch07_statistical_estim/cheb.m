@@ -11,12 +11,12 @@ function [cvx_optval,P,q,r,X,lambda] = cheb(A,b,Sigma);
 % - prob: lower bound on probability
 % - P,q,r: x'*P*x + 2*q'*x + r is a quadratic function
 %   that majorizes the 0-1 indicator function of the complement
-%   of the polyhedron, 
-% - X, lambda:  a discrete distribution with mean zero, covariance 
+%   of the polyhedron,
+% - X, lambda:  a discrete distribution with mean zero, covariance
 %   Sigma and Prob(X not in C)  >= 1-prob
 
 %
-% maximize  1 - Tr Sigma*P - r 
+% maximize  1 - Tr Sigma*P - r
 % s.t.      [ P  q     ]             [ 0      a_i/2 ]
 %           [ q' r - 1 ] >= tau(i) * [ a_i'/2  -b_i ], i=1,...,m
 %           taui >= 0
@@ -27,7 +27,7 @@ function [cvx_optval,P,q,r,X,lambda] = cheb(A,b,Sigma);
 %
 
 [ m, n ] = size( A );
-cvx_begin
+cvx_begin sdp
     variable P(n,n) symmetric
     variables q(n) r tau(m)
     dual variables Z{m}
@@ -36,9 +36,9 @@ cvx_begin
         for i = 1 : m,
             qadj = q - 0.5 * tau(i) * A(i,:)';
             radj = r - 1 + tau(i) * b(i);
-            [ P, qadj ; qadj', radj ] == semidefinite(n+1) : Z{i};
+            [ P, qadj ; qadj', radj ] >= 0 : Z{i};
         end
-        [ P, q ; q', r ] == semidefinite(n+1);
+        [ P, q ; q', r ] >= 0;
         tau >= 0;
 cvx_end
 

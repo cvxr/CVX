@@ -8,7 +8,7 @@ To make changes, update the M-file and republish this document.
       -->
       <title>Quadratic discrimination (separating ellipsoid)</title>
       <meta name="generator" content="MATLAB 7.1">
-      <meta name="date" content="2005-12-13">
+      <meta name="date" content="2006-01-17">
       <meta name="m-file" content="quad_discr"><style>
 
 body {
@@ -93,13 +93,13 @@ T = [1 -1; 2 1];  X = T*X;  Y = T*Y;
 <span class="comment">% Solution via CVX</span>
 fprintf(1,<span class="string">'Find the optimal ellipsoid that seperates the 2 classes...'</span>);
 
-cvx_begin
+cvx_begin <span class="string">sdp</span>
     variable <span class="string">P(n,n)</span> <span class="string">symmetric</span>
     variables <span class="string">q(n)</span> <span class="string">r(1)</span>
     minimize (0)
-    (-P - eye(n)) == semidefinite(n)
-    sum((X'*P).*X',2) + X'*q + r &gt;= 1
-    sum((Y'*P).*Y',2) + Y'*q + r &lt;= -1
+    P &lt;= -eye(n);
+    sum((X'*P).*X',2) + X'*q + r &gt;= +1;
+    sum((Y'*P).*Y',2) + Y'*q + r &lt;= -1;
 cvx_end
 
 fprintf(1,<span class="string">'Done! \n'</span>);
@@ -139,7 +139,7 @@ iter seconds digits       c*x               b*y
 
 Detailed timing (sec)
    Pre          IPM          Post
-3.004E-002    1.302E-001    0.000E+000    
+3.004E-002    1.402E-001    0.000E+000    
 Max-norms: ||b||=1, ||c|| = 0,
 Cholesky |add|=0, |skip| = 0, ||L.L|| = 18.1252.
 ------------------------------------------------------------------------
@@ -179,13 +179,13 @@ T = [1 -1; 2 1];  X = T*X;  Y = T*Y;
 % Solution via CVX
 fprintf(1,'Find the optimal ellipsoid that seperates the 2 classes...');
 
-cvx_begin
+cvx_begin sdp
     variable P(n,n) symmetric
     variables q(n) r(1)
     minimize (0)
-    (-P - eye(n)) == semidefinite(n)
-    sum((X'*P).*X',2) + X'*q + r >= 1
-    sum((Y'*P).*Y',2) + Y'*q + r <= -1
+    P <= -eye(n);
+    sum((X'*P).*X',2) + X'*q + r >= +1;
+    sum((Y'*P).*Y',2) + Y'*q + r <= -1;
 cvx_end
 
 fprintf(1,'Done! \n');

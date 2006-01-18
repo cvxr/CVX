@@ -6,7 +6,8 @@
 %    minimize   || Z - P ||_F
 %    subject to Z >= 0
 %
-% Adapted from an example provided in the SeDuMi documentation.
+% Adapted from an example provided in the SeDuMi documentation. Notice
+% the use of SDP mode to simplify the semidefinite constraint.
 
 % The data. P is Hermitian, but is neither Toeplitz nor PSD.
 P = [ 4,     1+2*j,     3-j       ; ...
@@ -15,11 +16,11 @@ P = [ 4,     1+2*j,     3-j       ; ...
   
 % Construct and solve the model
 n = size( P, 1 );
-cvx_begin
+cvx_begin sdp
     variable Z(n,n) hermitian toeplitz
     dual variable Q
     minimize( norm( Z - P, 'fro' ) )
-    Z == hermitian_semidefinite( n ) : Q;
+    Z >= 0 : Q;
 cvx_end
 
 % Display resuls

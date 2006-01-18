@@ -8,7 +8,7 @@ To make changes, update the M-file and republish this document.
       -->
       <title>Computes Chebyshev lower bounds on probability vectors (function)</title>
       <meta name="generator" content="MATLAB 7.1">
-      <meta name="date" content="2005-12-21">
+      <meta name="date" content="2006-01-17">
       <meta name="m-file" content="cheb"><style>
 
 body {
@@ -95,7 +95,7 @@ p.footer {
 <span class="comment">%</span>
 
 [ m, n ] = size( A );
-cvx_begin
+cvx_begin <span class="string">sdp</span>
     variable <span class="string">P(n,n)</span> <span class="string">symmetric</span>
     variables <span class="string">q(n)</span> <span class="string">r</span> <span class="string">tau(m)</span>
     dual <span class="string">variables</span> <span class="string">Z{m}</span>
@@ -104,9 +104,9 @@ cvx_begin
         <span class="keyword">for</span> i = 1 : m,
             qadj = q - 0.5 * tau(i) * A(i,:)';
             radj = r - 1 + tau(i) * b(i);
-            [ P, qadj ; qadj', radj ] == semidefinite(n+1) : Z{i};
+            [ P, qadj ; qadj', radj ] &gt;= 0 : Z{i};
         <span class="keyword">end</span>
-        [ P, q ; q', r ] == semidefinite(n+1);
+        [ P, q ; q', r ] &gt;= 0;
         tau &gt;= 0;
 cvx_end
 
@@ -161,12 +161,12 @@ function [cvx_optval,P,q,r,X,lambda] = cheb(A,b,Sigma);
 % - prob: lower bound on probability
 % - P,q,r: x'*P*x + 2*q'*x + r is a quadratic function
 %   that majorizes the 0-1 indicator function of the complement
-%   of the polyhedron, 
-% - X, lambda:  a discrete distribution with mean zero, covariance 
+%   of the polyhedron,
+% - X, lambda:  a discrete distribution with mean zero, covariance
 %   Sigma and Prob(X not in C)  >= 1-prob
 
 %
-% maximize  1 - Tr Sigma*P - r 
+% maximize  1 - Tr Sigma*P - r
 % s.t.      [ P  q     ]             [ 0      a_i/2 ]
 %           [ q' r - 1 ] >= tau(i) * [ a_i'/2  -b_i ], i=1,...,m
 %           taui >= 0
@@ -177,7 +177,7 @@ function [cvx_optval,P,q,r,X,lambda] = cheb(A,b,Sigma);
 %
 
 [ m, n ] = size( A );
-cvx_begin
+cvx_begin sdp
     variable P(n,n) symmetric
     variables q(n) r tau(m)
     dual variables Z{m}
@@ -186,9 +186,9 @@ cvx_begin
         for i = 1 : m,
             qadj = q - 0.5 * tau(i) * A(i,:)';
             radj = r - 1 + tau(i) * b(i);
-            [ P, qadj ; qadj', radj ] == semidefinite(n+1) : Z{i};
+            [ P, qadj ; qadj', radj ] >= 0 : Z{i};
         end
-        [ P, q ; q', r ] == semidefinite(n+1);
+        [ P, q ; q', r ] >= 0;
         tau >= 0;
 cvx_end
 

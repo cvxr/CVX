@@ -1,19 +1,19 @@
-% Comparison of worst-case robust, Tickhonov and nominal least squares 
-% Sec. 6.4.2, EX. 6.6/fig. 6.16, 
+% Comparison of worst-case robust, Tickhonov and nominal least squares
+% Sec. 6.4.2, EX. 6.6/fig. 6.16,
 % Boyd & Vandenberghe "Convex Optimization"
-% Original by Lieven Vandenberghe 
+% Original by Lieven Vandenberghe
 % Adapted for CVX Argyris Zymnis - 11/27/05
 % (a figure is generated)
 %
 % Consider the least-squares problem:
-%       minimize ||(A0 + u1*A1 + u2*A2)x - b||_2 
-% where u = [u1 u2]' is an uncertain parameter and ||u||_2 <= 1 
+%       minimize ||(A0 + u1*A1 + u2*A2)x - b||_2
+% where u = [u1 u2]' is an uncertain parameter and ||u||_2 <= 1
 % Three approximate solutions are found:
 %   1- nominal optimal (i.e. letting u=0)
-%   2- Tikhonov Regularized Solution:     
-%           minimize ||A0*x - b||_2 + delta*||x||_2 
+%   2- Tikhonov Regularized Solution:
+%           minimize ||A0*x - b||_2 + delta*||x||_2
 %      for some delta (in this case we set delta = 0.1)
-%   3- worst-case robust approximation: 
+%   3- worst-case robust approximation:
 %           minimize sup{||u||_2 <= 1} ||(A0 + u1*A1 + u2*A2)x - b||_2)
 %      (reduces to solving an SDP, see pages 323-324 in the book)
 
@@ -48,13 +48,13 @@ delta = .1;
 xtych =  [A0; sqrt(delta)*eye(n)] \ [b; zeros(n,1)];
 
 % Robust Least Squares solution
-cvx_begin
+cvx_begin sdp
     variables t lambda xrob(n)
     minimize(t+lambda)
     subject to
         [eye(m) A1*xrob A2*xrob A0*xrob-b; ...
          [A1*xrob A2*xrob]' lambda*eye(2) zeros(2,1); ...
-         [A0*xrob-b]' zeros(1,2) t] == semidefinite(m+3)
+         [A0*xrob-b]' zeros(1,2) t] >= 0;
 cvx_end
 
 % Generate Random Trials
@@ -68,8 +68,8 @@ rob_res = zeros(1,notrials);
 tych_res = zeros(1,notrials);
 
 for i =1:notrials
- 
-  A = A0 + v(i,1)*A1 + v(i,2)*A2; 
+
+  A = A0 + v(i,1)*A1 + v(i,2)*A2;
   ls_res(i) = norm(A*xnom-b);
   rob_res(i) = norm(A*xrob-b);
   tych_res(i) = norm(A*xtych-b);

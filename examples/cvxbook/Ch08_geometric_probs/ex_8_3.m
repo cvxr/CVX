@@ -17,10 +17,10 @@ n = 4;
 % Upper bound SDP
 fprintf(1,'Solving the upper bound SDP ...');
 
-cvx_begin
+cvx_begin sdp
     variable C1(n,n) symmetric
     maximize ( C1(1,4) )
-    C1 == semidefinite(n);
+    C1 >= 0;
     diag(C1) == ones(n,1);
     C1(1,2) >= 0.6;
     C1(1,2) <= 0.9;
@@ -37,10 +37,10 @@ fprintf(1,'Done! \n');
 % Lower bound SDP
 fprintf(1,'Solving the lower bound SDP ...');
 
-cvx_begin
+cvx_begin sdp
     variable C2(n,n) symmetric
     minimize ( C2(1,4) )
-    C2 == semidefinite(n);
+    C2 >= 0;
     diag(C2) == ones(n,1);
     C2(1,2) >= 0.6;
     C2(1,2) <= 0.9;
