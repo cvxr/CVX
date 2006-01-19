@@ -63,7 +63,7 @@ elseif strcmp( varargin{1}, 'variables' ),
     varargin(1) = [];
 end
 
-nargs = length( nargin );
+nargs = length( varargin );
 if nargout > 0,
     error( nargoutchk( nargs, nargs, nargout ) );
 end
