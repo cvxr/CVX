@@ -3,7 +3,7 @@
 # Key directories
 SRCBASE=/home/boyd/src
 CPYDIR=$SRCBASE/cvx.dist
-ARCHIVE=file://$SRCBASE/svn/cvx
+ARCHIVE=file://$SRCBASE/svn/cvx/trunk
 DSTDIR=/home/boyd/WWW/cvx
 
 # Synchronize the remote web site
