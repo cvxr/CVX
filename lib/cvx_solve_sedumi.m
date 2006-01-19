@@ -135,7 +135,7 @@ else,
         value = +Inf * sign;
     elseif info.dinf ~= 0,
         status = 'Unbounded';
-        y = NaN * ones( nn, 1 );
+        y = NaN * ones( m, 1 );
         value = -Inf * sign;
     else,
         status = 'Solved';
