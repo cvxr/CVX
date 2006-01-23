@@ -27,7 +27,6 @@ fprintf(1,'Find the optimal ellipsoid that seperates the 2 classes...');
 cvx_begin sdp
     variable P(n,n) symmetric
     variables q(n) r(1)
-    minimize (0)
     P <= -eye(n);
     sum((X'*P).*X',2) + X'*q + r >= +1;
     sum((Y'*P).*Y',2) + Y'*q + r <= -1;
