@@ -123,19 +123,12 @@ ndxs = cell( 1, length( sx ) );
 [ ndxs{:} ] = deal( ':' );
 ndxs{dim} = ones( 1, sx( dim ) );
 
-cvx_begin sdp
+cvx_begin sdp separable
     variable y(sy);
-    if cvx_isconstant( x ),
-        minimize sum( y( : ) );
-    else,
-        minimize y;
-    end
+    minimize y;
     temp = ( ( x - y( ndxs{:} ) ) + xoff ) / xoff;
     temp = max( temp, 0 );
     temp = cvx_accept_convex( temp );
     sum( polyval_sdp( p, temp ), dim ) <= 1;
 cvx_end
-if isnumeric( x ),
-    cvx_optval = y;
-end
 

@@ -5,8 +5,10 @@ global cvx___
 prob = index( prob );
 p = cvx___.problems( prob );
 
-if length( p.objective ) > 1,
-    error( 'Multiobjective problems are not supported.' );
+objsize = size( p.objective );
+nobj = prod( objsize );
+if nobj > 1 & ~p.separable,
+    error( 'Non-separable, multiobjective problems are not supported.' );
 end
 
 n = length( p.reserved );
@@ -24,16 +26,17 @@ if isempty( p.objective ),
     d = 0;
 else,
     c = cvx_basis( p.objective );
-    if any( size( c ) < [ 1, n ] ), 
-        c( 1, n ) = 0; 
+    if size( c, 2 ) < n,
+        c( :, n ) = 0;
     end
     switch p.direction,
         case 'minimize', sign = +1;
         case 'maximize', sign = -1;
     end
-    d = c( :, 1 ); 
-    c = c( :, 2 : end )';
+    d = c( :, 1 ).'; 
+    c = c( :, 2 : end ).';
 end
+lambda = ones( nobj, 1 );
 
 [ m, n ] = size( A );
 n = n - 1;
@@ -47,7 +50,7 @@ if m > n & n > 0,
     
     x( : ) = NaN;
     y( : ) = NaN;
-    value  = NaN;
+    value  = NaN * ones( objsize );
     status = 'Overdetermined';
     warning( 'Overdetermined equality constraints; problem is likely infeasible.' );
     pval = NaN;
@@ -63,14 +66,14 @@ elseif n == 0,
 
         status = 'Infeasible';
         y = - P * sign( b );
-        value = sign * Inf;
+        value = sign * Inf * ones( objsize );
         pval = 1;
         dval = 0;
 
     else,
 
         status = 'Solved';
-        value = d;
+        value = reshape( d, objsize );
         pval = 1;
         dval = 1;
 
@@ -78,21 +81,25 @@ elseif n == 0,
 
 else,
     
-    [ value, x, y, status ] = cvx_solve_sedumi( A, b, c, d, sign, p.cones, quiet );
+    [ value, x, y, status ] = cvx_solve_sedumi( A, b, c * lambda, d * lambda, sign, p.cones, quiet );
     switch status,
     case { 'Solved', 'Inaccurate/Solved' },
+        if nobj > 1, value = reshape( c' * x + d', objsize ); end
         pval = 1;
         dval = 1;
     case { 'Infeasible', 'Inaccurate/Infeasible' },
+        if nobj > 1, value = sign * Inf * ones( objsize ); end
         pval = 1;
         dval = 0;
     case { 'Unbounded', 'Inaccurate/Unbounded' },
+        if nobj > 1, value = reshape( c' * x, objsize ); end
         pval = 0;
         dval = 1;
     otherwise,
+        if nobj > 1, value = NaN * ones( objsize ); end
         pval = NaN;
         dval = NaN;
-    end        
+    end
 
 end
 

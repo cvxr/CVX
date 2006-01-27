@@ -66,20 +66,13 @@ degr = n - 1;
 deg2 = 0.5 * degr + 1;
 nv   = prod( sx );
 p    = p(:).';
-cvx_begin sdp
+cvx_begin sdp separable
     variable y(sx);
     variable P(deg2,deg2,sx) hankel;
     P >= 0;
     1 == P(1,1,:);
     x == reshape( P(2,1,:), sx );
     y == reshape( p(end:-1:1) * [ reshape( P(1,:,:), deg2, nv ) ; reshape( P(2:end,end,:), deg2-1, nv ) ], sx );
-    if cvx_isconstant( x ),
-        minimize sum( y( : ) );
-    else,
-        minimize( y );
-    end
+    minimize( y );
 cvx_end
-if isnumeric( x ),
-    cvx_optval = y;
-end
 

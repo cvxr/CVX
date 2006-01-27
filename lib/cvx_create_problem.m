@@ -22,6 +22,8 @@ if nargin > 0,
                 cvx___.problems( p ).direction = 'find';
             case 'sdp',
                 cvx___.problems( p ).sdp = true;
+            case 'separable',
+                cvx___.problems( p ).separable = true;
         end
     end
 end
