@@ -114,7 +114,7 @@ elseif ntol >= +3.701856466820086e-005,
             +3.701856466438633e-005 ];
 else,
     tmax = -log( 1 - 3.701856466820086e-005 * sx(dim) );
-    error( sprintf( 'A polynomial of required accuracy (%g) has not been supplied.\nConsider reducing the tolerance to %g to proceed.', tol, tmax ) )';
+    error( sprintf( 'A polynomial of required accuracy (%g) has not been supplied.\nConsider raising the tolerance to %g or greater to proceed.', tol, tmax ) );
 end
 
 sy = sx;
