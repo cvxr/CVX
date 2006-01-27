@@ -6,15 +6,23 @@ function cvx_optval = logsumexp_sdp( x, dim, tol )
 %   LOG(SUM(EXP(X))) using semidefinite programming techniques.
 %   The approximation is chosen so that, to within the numerical
 %   tolerance of the SDP solver,
-%         Y <= LOGSUMEXP_SDP(X) <= 1.01*Y
+%         Y <= LOGSUMEXP_SDP(X) <= Y + TOL
 %   where Y = LOG(SUM(EXP(X))).
 %
-%   The one-sided nature of the approximation is deliberate, and has
-%   important practical consequences when LOGSUMEXP_SDP is used in
-%   a convex program: it guarantees that the constraints are
-%   conservative. That is, if a disciplined convex program using
-%   LOGSUMEXP_SDP in its constraints is feasible, then the same
-%   problem using LOGSUMEXP instead will also be feasible.
+%   Our specific choice of a one-sided, absolute approximation has
+%   two important consequences. First of all, the one-sidedness insures
+%   that constraints that utilize LOGSUMEXP_SDP are conservative; that
+%   is, they are tighter than if they were to use LOGSUMEXP exactly.
+%   So if the approximate disciplined convex program is feasible, so
+%   is the original.
+%
+%   Secondly, for geometric programs, the absolute tolerance TOL
+%   translates to a *relative* tolerance of EXP(TOL) in a posynomial
+%   constraint. That is, given a constraint
+%       P(X) <= M(X)
+%   where P(X) is posynomial and M(X) is monomial, the approximation
+%   has the effect of, in the worst case, producing
+%       P(X) <= M(X)*EXP(-TOL).
 %
 %   If X is a matrix, LOGSUMEXP_SDP(X) will perform its computations
 %   along each column of X. If X is an N-D array, LOGSUMEXP_SDP(X)
@@ -25,7 +33,7 @@ function cvx_optval = logsumexp_sdp( x, dim, tol )
 %   LOGSUMEXP_SDP(X,[],TOL) and LOGSUMEXP_SDP(X,DIM,TOL) allow you to
 %   specify a different tolerance level TOL. The function will attempt
 %   to select a polynomial that guarantees that
-%         Y <= LOGSUMEXP_SDP(X) <= (1+TOL)*Y
+%         Y <= LOGSUMEXP_SDP(X) <= Y + TOL.
 %   where Y = LOG(SUM(EXP(X))). Note that a fixed set of polynomials
 %   have been hard-coded into this function. So if TOL is too small, an
 %   error will result. In particular, the tightest tolerance currently
@@ -62,7 +70,7 @@ elseif any( sx == 0 ),
     cvx_optval = zeros( sx );
 end
 
-ntol = tol / sx( dim );
+ntol = ( 1 - exp( -tol ) ) / sx( dim );
 if ntol >= +1.096784836686553e-002,
     xoff = +4.594230245949757e+000;
     p = [ +2.198615202645529e+000 ...
@@ -104,7 +112,7 @@ elseif ntol >= +3.701856466820086e-005,
             -9.375230384581923e-005 ...
             +3.701856466438633e-005 ];
 else,
-    tmax = +3.701856466820086e-005 * sx(dim);
+    tmax = -log( 1 - 3.701856466820086e-005 * sx(dim) );
     error( sprintf( 'A polynomial of required accuracy (%g) has not been supplied.\nConsider reducing the tolerance to %g to proceed.', tol, tmax ) )';
 end
 
@@ -126,7 +134,7 @@ cvx_begin sdp
     temp = cvx_accept_convex( temp );
     sum( polyval_sdp( p, temp ), dim ) <= 1;
 cvx_end
-if cvx_isconstant( x ),
+if isnumeric( x ),
     cvx_optval = y;
 end
 
