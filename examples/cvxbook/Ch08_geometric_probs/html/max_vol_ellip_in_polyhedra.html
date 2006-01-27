@@ -8,7 +8,7 @@ To make changes, update the M-file and republish this document.
       -->
       <title>Maximum volume inscribed ellipsoid in a polyhedron</title>
       <meta name="generator" content="MATLAB 7.1">
-      <meta name="date" content="2006-01-12">
+      <meta name="date" content="2006-01-26">
       <meta name="m-file" content="max_vol_ellip_in_polyhedra"><style>
 
 body {
@@ -130,33 +130,34 @@ axis <span class="string">square</span>
 axis <span class="string">off</span>
 hold <span class="string">off</span>
 </pre><pre class="codeoutput"> 
-Calling SeDuMi: 32 variables (2 free), 21 equality constraints
+Calling SeDuMi: 30 variables (2 free), 21 equality constraints
 ------------------------------------------------------------------------
 SeDuMi 1.1 by AdvOL, 2005 and Jos F. Sturm, 1998, 2001-2003.
 Alg = 2: xz-corrector, Adaptive Step-Differentiation, theta = 0.250, beta = 0.500
 Split 2 free variables
-eqs m = 21, order n = 23, dim = 42, blocks = 8
-nnz(A) = 67 + 0, nnz(ADA) = 301, nnz(L) = 181
+eqs m = 21, order n = 21, dim = 40, blocks = 8
+nnz(A) = 65 + 0, nnz(ADA) = 301, nnz(L) = 181
  it :     b*y       gap    delta  rate   t/tP*  t/tD*   feas cg cg  prec
-  0 :            9.94E-001 0.000
-  1 : -1.06E+000 2.63E-001 0.000 0.2647 0.9000 0.9000   2.64  1  1  8.8E-001
-  2 : -7.38E-001 7.17E-002 0.000 0.2725 0.9000 0.9000   1.57  1  1  2.0E-001
-  3 : -9.42E-001 4.95E-003 0.000 0.0690 0.9900 0.9900   0.92  1  1  1.3E-002
-  4 : -9.52E-001 1.78E-004 0.000 0.0360 0.9900 0.9900   1.01  1  1  4.8E-004
-  5 : -9.52E-001 1.61E-005 0.061 0.0905 0.9450 0.9450   1.00  1  1  4.3E-005
-  6 : -9.52E-001 4.49E-007 0.452 0.0279 0.9900 0.7949   1.00  1  1  5.2E-006
-  7 : -9.52E-001 1.60E-008 0.337 0.0356 0.9900 0.9698   1.00  1  1  1.9E-007
-  8 : -9.52E-001 5.88E-010 0.000 0.0368 0.9900 0.9789   1.00  1  1  6.9E-009
+  0 :            1.09E+000 0.000
+  1 : -1.14E+000 2.86E-001 0.000 0.2627 0.9000 0.9000   2.64  1  1  8.2E-001
+  2 : -7.37E-001 7.53E-002 0.000 0.2630 0.9000 0.9000   1.53  1  1  1.8E-001
+  3 : -9.44E-001 5.13E-003 0.000 0.0681 0.9900 0.9900   0.89  1  1  1.2E-002
+  4 : -9.52E-001 1.90E-004 0.000 0.0371 0.9900 0.9900   1.01  1  1  4.4E-004
+  5 : -9.52E-001 4.50E-006 0.151 0.0237 0.9900 0.9900   1.00  1  1  1.1E-005
+  6 : -9.52E-001 3.41E-007 0.273 0.0757 0.9900 0.9166   1.00  1  1  8.9E-007
+  7 : -9.52E-001 1.73E-008 0.383 0.0508 0.9900 0.9906   1.00  1  1  5.1E-008
+  8 : -9.52E-001 4.32E-009 0.000 0.2496 0.9028 0.9000   1.00  2  2  1.2E-008
+  9 : -9.52E-001 1.08E-010 0.386 0.0251 0.9900 0.9894   1.00  2  2  6.8E-010
 
 iter seconds digits       c*x               b*y
-  8      0.2   Inf -9.5230750157e-001 -9.5230749586e-001
-|Ax-b| =  8.8e-009, [Ay-c]_+ =  3.0E-009, |x|= 5.6e+000, |y|= 1.8e+000
+  9      0.2   Inf -9.5230750989e-001 -9.5230750977e-001
+|Ax-b| =  2.8e-009, [Ay-c]_+ =  2.3E-011, |x|= 5.8e+000, |y|= 1.8e+000
 
 Detailed timing (sec)
    Pre          IPM          Post
-2.003E-002    1.502E-001    0.000E+000    
+3.004E-002    1.702E-001    0.000E+000    
 Max-norms: ||b||=2.474874e+000, ||c|| = 1,
-Cholesky |add|=0, |skip| = 0, ||L.L|| = 272.237.
+Cholesky |add|=0, |skip| = 0, ||L.L|| = 1136.81.
 ------------------------------------------------------------------------
 Optimal value (cvx_optval): +0.952308
 Status (cvx_status): Solved

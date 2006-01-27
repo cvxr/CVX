@@ -8,7 +8,7 @@ To make changes, update the M-file and republish this document.
       -->
       <title>Figure 8.8: Simplest linear discrimination</title>
       <meta name="generator" content="MATLAB 7.1">
-      <meta name="date" content="2005-12-13">
+      <meta name="date" content="2006-01-26">
       <meta name="m-file" content="linear_discr"><style>
 
 body {
@@ -93,9 +93,8 @@ fprintf(<span class="string">'Finding a separating hyperplane...'</span>);
 
 cvx_begin
     variables <span class="string">a(n)</span> <span class="string">b(1)</span>
-    minimize (0)
-    X'*a - b &gt;= 1
-    Y'*a - b &lt;= -1
+    X'*a - b &gt;= 1;
+    Y'*a - b &lt;= -1;
 cvx_end
 
 fprintf(1,<span class="string">'Done! \n'</span>);
@@ -136,7 +135,7 @@ iter seconds digits       c*x               b*y
 
 Detailed timing (sec)
    Pre          IPM          Post
-2.003E-002    7.010E-002    0.000E+000    
+2.103E-001    9.013E-002    1.001E-002    
 Max-norms: ||b||=1, ||c|| = 0,
 Cholesky |add|=0, |skip| = 0, ||L.L|| = 2.50456.
 ------------------------------------------------------------------------
@@ -176,9 +175,8 @@ fprintf('Finding a separating hyperplane...');
 
 cvx_begin
     variables a(n) b(1)
-    minimize (0)
-    X'*a - b >= 1
-    Y'*a - b <= -1
+    X'*a - b >= 1;
+    Y'*a - b <= -1;
 cvx_end
 
 fprintf(1,'Done! \n');

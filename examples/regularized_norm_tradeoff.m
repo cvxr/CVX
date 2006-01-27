@@ -12,7 +12,7 @@ n = 10;
 A = randn(2*n,n);
 b = randn(2*n,1);
 gamma = logspace( -1, 3 );
-norms = zeros( size( gamma ) );
+nrms = zeros( size( gamma ) );
 xnrms = zeros( size( gamma ) );
 fprintf( 1, 'Gamma: ' );
 for k = 1 : length( gamma ),
@@ -26,10 +26,10 @@ for k = 1 : length( gamma ),
    xnrms( k ) = norm( x, Inf );
 end
 fprintf( 1, 'done.\n' );
-semilogx( gamma, norms );
+semilogx( gamma, nrms );
 xlabel( '\gamma' );
 ylabel( '|| A * x - b ||_1' );
 figure
-plot( xnrms, norms );
+plot( xnrms, nrms );
 xlabel( '|| x ||_{\infty}' );
 ylabel( '|| A * x - b ||_1' );

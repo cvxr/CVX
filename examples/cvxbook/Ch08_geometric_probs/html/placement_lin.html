@@ -8,7 +8,7 @@ To make changes, update the M-file and republish this document.
       -->
       <title>Figure 8.15: Linear placement problem</title>
       <meta name="generator" content="MATLAB 7.1">
-      <meta name="date" content="2005-12-27">
+      <meta name="date" content="2006-01-26">
       <meta name="m-file" content="placement_lin"><style>
 
 body {
@@ -139,9 +139,9 @@ hold <span class="string">on</span>
 legend(<span class="string">'Free points'</span>,<span class="string">'Fixed points'</span>,<span class="string">'Location'</span>,<span class="string">'Best'</span>);
 <span class="keyword">for</span> i=1:nolinks
   ind = find(A(i,:));
-  line = plot(x(ind,1), x(ind,2), <span class="string">':k'</span>);
+  line2 = plot(x(ind,1), x(ind,2), <span class="string">':k'</span>);
   hold <span class="string">on</span>
-  set(line,<span class="string">'LineWidth'</span>,linewidth);
+  set(line2,<span class="string">'LineWidth'</span>,linewidth);
 <span class="keyword">end</span>
 axis([-1.1 1.1 -1.1 1.1]) ;
 axis <span class="string">equal</span>;
@@ -185,12 +185,12 @@ nnz(A) = 202 + 0, nnz(ADA) = 504, nnz(L) = 439
  11 :  2.19E+001 6.66E-009 0.000 0.1781 0.9171 0.9000   1.00  2  2  2.8E-009
 
 iter seconds digits       c*x               b*y
- 11      0.2   9.0  2.1908263779e+001  2.1908263755e+001
+ 11      0.7   9.0  2.1908263779e+001  2.1908263755e+001
 |Ax-b| =  5.7e-010, [Ay-c]_+ =  9.7E-010, |x|= 9.2e+000, |y|= 5.2e+000
 
 Detailed timing (sec)
    Pre          IPM          Post
-2.003E-002    1.903E-001    1.001E-002    
+2.704E-001    6.509E-001    5.007E-002    
 Max-norms: ||b||=1, ||c|| = 1,
 Cholesky |add|=0, |skip| = 0, ||L.L|| = 6.31379.
 ------------------------------------------------------------------------
@@ -276,9 +276,9 @@ hold on
 legend('Free points','Fixed points','Location','Best');
 for i=1:nolinks
   ind = find(A(i,:));
-  line = plot(x(ind,1), x(ind,2), ':k');
+  line2 = plot(x(ind,1), x(ind,2), ':k');
   hold on
-  set(line,'LineWidth',linewidth);
+  set(line2,'LineWidth',linewidth);
 end
 axis([-1.1 1.1 -1.1 1.1]) ;
 axis equal;

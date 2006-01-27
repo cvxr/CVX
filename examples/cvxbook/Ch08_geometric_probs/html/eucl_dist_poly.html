@@ -8,7 +8,7 @@ To make changes, update the M-file and republish this document.
       -->
       <title>Euclidean distance between polyhedra</title>
       <meta name="generator" content="MATLAB 7.1">
-      <meta name="date" content="2005-12-12">
+      <meta name="date" content="2006-01-26">
       <meta name="m-file" content="eucl_dist_poly"><style>
 
 body {
@@ -99,9 +99,42 @@ cvx_end
 disp(<span class="string">'------------------------------------------------------------------'</span>);
 disp(<span class="string">'The distance between the 2 polyhedra C and D is: '</span> );
 disp([<span class="string">'dist(C,D) = '</span> num2str(cvx_optval)]);
-</pre><pre class="codeoutput">------------------------------------------------------------------
+</pre><pre class="codeoutput"> 
+Calling SeDuMi: 41 variables (10 free), 30 equality constraints
+------------------------------------------------------------------------
+SeDuMi 1.1 by AdvOL, 2005 and Jos F. Sturm, 1998, 2001-2003.
+Alg = 2: xz-corrector, Adaptive Step-Differentiation, theta = 0.250, beta = 0.500
+Split 10 free variables
+eqs m = 30, order n = 48, dim = 52, blocks = 2
+nnz(A) = 300 + 0, nnz(ADA) = 600, nnz(L) = 315
+ it :     b*y       gap    delta  rate   t/tP*  t/tD*   feas cg cg  prec
+  0 :            1.26E+000 0.000
+  1 : -4.74E-002 5.21E-001 0.000 0.4152 0.9000 0.9000   2.45  1  1  1.8E+000
+  2 :  2.79E+000 1.55E-001 0.000 0.2965 0.9000 0.9000   2.45  1  1  2.4E-001
+  3 :  2.96E+000 3.32E-002 0.000 0.2151 0.9000 0.9000   1.40  1  1  4.3E-002
+  4 :  3.00E+000 8.52E-003 0.000 0.2561 0.9000 0.9000   1.03  1  1  1.1E-002
+  5 :  3.01E+000 7.99E-004 0.000 0.0938 0.9900 0.9900   0.99  1  1  1.1E-003
+  6 :  3.01E+000 3.72E-005 0.500 0.0466 0.9900 0.7116   0.99  1  1  1.3E-004
+  7 :  3.01E+000 1.08E-006 0.000 0.0290 0.9900 0.9901   1.00  1  1  3.3E-006
+  8 :  3.01E+000 2.53E-008 0.000 0.0235 0.9900 0.9657   1.00  1  1  1.0E-007
+  9 :  3.01E+000 9.45E-010 0.442 0.0374 0.9900 0.9901   1.00  2  1  3.4E-009
+
+iter seconds digits       c*x               b*y
+  9      0.1   8.8  3.0058811440e+000  3.0058811390e+000
+|Ax-b| =  1.1e-008, [Ay-c]_+ =  1.1E-009, |x|= 1.0e+001, |y|= 1.4e+000
+
+Detailed timing (sec)
+   Pre          IPM          Post
+3.004E-002    1.402E-001    0.000E+000    
+Max-norms: ||b||=5.578524e+000, ||c|| = 1,
+Cholesky |add|=0, |skip| = 0, ||L.L|| = 3.94298.
+------------------------------------------------------------------------
+Optimal value (cvx_optval): +3.00588
+Status (cvx_status): Solved
+ 
+------------------------------------------------------------------
 The distance between the 2 polyhedra C and D is: 
-dist(C,D) = 3.1213
+dist(C,D) = 3.0059
 </pre><p class="footer"><br>
             Published with MATLAB&reg; 7.1<br></p>
       </div>

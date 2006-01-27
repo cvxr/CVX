@@ -69,9 +69,9 @@ hold on
 legend('Free points','Fixed points','Location','Best');
 for i=1:nolinks
   ind = find(A(i,:));
-  line = plot(x(ind,1), x(ind,2), ':k');
+  line2 = plot(x(ind,1), x(ind,2), ':k');
   hold on
-  set(line,'LineWidth',linewidth);
+  set(line2,'LineWidth',linewidth);
 end
 axis([-1.1 1.1 -1.1 1.1]) ;
 axis equal;
