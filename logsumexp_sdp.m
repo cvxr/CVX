@@ -21,8 +21,9 @@ function cvx_optval = logsumexp_sdp( x, dim, tol )
 %   constraint. That is, given a constraint
 %       P(X) <= M(X)
 %   where P(X) is posynomial and M(X) is monomial, the approximation
-%   has the effect of, in the worst case, producing
-%       P(X) <= M(X)*EXP(-TOL).
+%   has the effect of enforcing a constraint
+%       P(X) <= M(X)/(1+E)
+%   for some unknown 0 <= E <= TOL, if TOL is sufficiently small.
 %
 %   If X is a matrix, LOGSUMEXP_SDP(X) will perform its computations
 %   along each column of X. If X is an N-D array, LOGSUMEXP_SDP(X)
