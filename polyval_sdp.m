@@ -79,7 +79,7 @@ cvx_begin sdp
         minimize( y );
     end
 cvx_end
-if cvx_isconstant( x ),
+if isnumeric( x ),
     cvx_optval = y;
 end
 
