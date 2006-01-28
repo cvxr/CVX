@@ -9,7 +9,7 @@
 %                       norm(mu)* <= 1
 %                       lambda >= 0
 
-cvx_quiet(true)
+cvx_quiet(true);
 % Input data
 randn('seed',0);
 n  = 10;

@@ -9,7 +9,9 @@
 %                       A2*y <= b2
 
 % Input data
-randn('seed',0);
+randn('state',0);
+rand('state',0);
+
 n  = 5;
 m1 = 2*n;
 m2 = 3*n;
