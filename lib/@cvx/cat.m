@@ -55,11 +55,12 @@ end
 ndx = 0;
 y = sparse( [], [], [], prod( sz ), nz, nzer );
 if nzer ~= 0,
+    bi = {}; bj = {}; bv = {};
     for k = 1 : nargin - 1,
         x = varargin{ k };
         s = size( x );
         if all( s ~= 0 ),
-            b = cvx_basis( x );
+            [ bi{end+1}, bj{end+1}, bv{end+1} ] = find( cvx_basis( x ) );
             s = [ s, ones( 1, dim - length( s ) ) ];
             tsiz = s( dim );
             ltsiz = lsiz * tsiz;
@@ -69,9 +70,16 @@ if nzer ~= 0,
                 rndx = rndx( : );
                 rndx = rndx( :, ones( 1, rsiz ) ) + nmvec( ones( 1, ltsiz ), : );
             end
-            y( rndx( : ), 1 : size( b, 2 ) ) = b;
+            nnz = length(bi{end});
+            bi{end} = reshape( rndx(bi{end}), nnz, 1 );
+            bj{end} = reshape( bj{end}, nnz, 1 );
+            bv{end} = reshape( bv{end}, nnz, 1 );
         end
     end
+    y = sparse( cat( 1, bi{:} ), cat( 1, bj{:} ), cat( 1, bv{:} ), prod( sz ), nz );
+    clear bi bj bv
+else,
+    y = sparse( prod( sz ), nz );
 end
 
 %

@@ -92,7 +92,7 @@ else,
         pval = 1;
         dval = 0;
     case { 'Unbounded', 'Inaccurate/Unbounded' },
-        if nobj > 1, value = reshape( c' * x, objsize ); end
+        if nobj > 1, value = -sign * Inf * ones( objsize ); end
         pval = 0;
         dval = 1;
     otherwise,
