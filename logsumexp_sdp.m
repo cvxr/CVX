@@ -122,11 +122,15 @@ lintol = - log( 1 - nx * tolerances );
 dectol = - nlevs * log( 1 - 2 * tolerances );
 ls2tol = + nlevs * tols_lse2;
 degs = [ min([find(ls2tol<=tol),Inf]), min([find(dectol<=tol),Inf]), min([find(lintol<=tol),Inf]) ];
-if ~isnumeric( x ) & ~cvx_isaffine( x ), 
+if 1, % ~isnumeric( x ) & ~cvx_isaffine( x ), 
     degs(1) = Inf; 
 end
 if all( isinf( degs ) ),
-    tmax = min( [ lintol(end), ls2tol(end), dectol(end) ] );
+    if 1,
+        tmax = min( [ lintol(end), dectol(end) ] );
+    else,
+        tmax = min( [ lintol(end), ls2tol(end), dectol(end) ] );
+    end
     error( sprintf( 'A polynomial of required accuracy (%g) has not been supplied.\nConsider raising the tolerance to %g or greater to proceed.', tol, tmax ) );
 end
 nnx = nx;
@@ -135,7 +139,8 @@ for k = 1 : nlevs,
     npairs = npairs + floor( 0.5 * nnx );
     nnx = ceil( 0.5 * nnx );
 end
-[ dmin, dndx ] = min( ( 0.5 .* ( degs + 2 ) .* ( degs + 3 ) + [ 4, 2, 2 ] ) .* [ npairs, 2 * npairs, nx ] );
+cplx = ( 0.5 .* ( degs + 2 ) .* ( degs + 3 ) + [ 4, 2, 2 ] ) .* [ npairs, 2 * npairs, nx ];
+[ cmin, dndx ] = min( cplx );
 use_lse2 = dndx == 1;
 if use_lse2,
     xoff = xmax_lse2(degs(1));
