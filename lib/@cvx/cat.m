@@ -70,10 +70,10 @@ if nzer ~= 0,
                 rndx = rndx( : );
                 rndx = rndx( :, ones( 1, rsiz ) ) + nmvec( ones( 1, ltsiz ), : );
             end
-            nnz = length(bi{end});
-            bi{end} = reshape( rndx(bi{end}), nnz, 1 );
-            bj{end} = reshape( bj{end}, nnz, 1 );
-            bv{end} = reshape( bv{end}, nnz, 1 );
+            nzs = length(bi{end});
+            bi{end} = reshape( rndx(bi{end}), nzs, 1 );
+            bj{end} = reshape( bj{end}, nzs, 1 );
+            bv{end} = reshape( bv{end}, nzs, 1 );
         end
     end
     y = sparse( cat( 1, bi{:} ), cat( 1, bj{:} ), cat( 1, bv{:} ), prod( sz ), nz );
