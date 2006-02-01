@@ -94,21 +94,12 @@ if isempty( offsets ),
     };
     tols_lse2 = [ ...
        +2.604468524197358e-003 ...
-       +2.022482781090407e-003 ...
-       +6.257095333954479e-004 ...
-       +1.320515665951261e-004 ...
     ];
     xmax_lse2 = [ ...
        +3.022262664158867e+000 ...
-       +3.146092842063537e+000 ...
-       +3.698419553185473e+000 ...
-       +4.466321317326180e+000 ...
     ];
     poly_lse2 = { ...
         [ 1.316208971334575e+000, -4.308372321551013e+000, 5.360536986239956e+000, -3.716409635631861e-002, 6.936575930158925e-001 ], ...
-        [ 2.114695675866512e-002, -4.021743192216039e-001, 2.478446197582954e+000, -5.680808636951619e+000, 6.122208891785917e+000, -8.587342845061649e-002, 6.951696633411117e-001 ], ...
-        [ 2.238680981345468e+000, -4.916851715324444e+000, -1.241283461525152e+000, 1.068640312872398e+001, -7.060096383079273e+000, -4.170662085777762e+000, 7.505263404467254e+000, -3.618149620453016e-002, 6.937728900933433e-001 ], ...
-        [ 2.318845990154014e+001, -1.049327417628130e+002, 1.821312292739570e+002, -1.313967517785551e+002, -7.093134993651702e+000, 7.468652081695419e+001, -4.263157131904465e+001, -2.948297350950728e-001, 1.012436394422319e+001, -8.370210607070858e-003, 6.932792320601421e-001 ], ...
     };
 end
 
@@ -122,7 +113,7 @@ lintol = - log( 1 - nx * tolerances );
 dectol = - nlevs * log( 1 - 2 * tolerances );
 ls2tol = + nlevs * tols_lse2;
 degs = [ min([find(ls2tol<=tol),Inf]), min([find(dectol<=tol),Inf]), min([find(lintol<=tol),Inf]) ];
-if 1, % ~isnumeric( x ) & ~cvx_isaffine( x ), 
+if ~isnumeric( x ) & ~cvx_isaffine( x ), 
     degs(1) = Inf; 
 end
 if all( isinf( degs ) ),
@@ -139,7 +130,7 @@ for k = 1 : nlevs,
     npairs = npairs + floor( 0.5 * nnx );
     nnx = ceil( 0.5 * nnx );
 end
-cplx = ( 0.5 .* ( degs + 2 ) .* ( degs + 3 ) + [ 4, 2, 2 ] ) .* [ npairs, 2 * npairs, nx ];
+cplx = ( 0.5 .* ( degs + 2 ) .* ( degs + 3 ) + [ 5, 2, 2 ] ) .* [ npairs, 2 * npairs, nx ];
 [ cmin, dndx ] = min( cplx );
 use_lse2 = dndx == 1;
 if use_lse2,
@@ -176,17 +167,21 @@ cvx_begin sdp separable
     minimize( y )
     if npairs > 1,
         variable xtemp( npairs - 1, nv );
-        x = reshape( [ x ; xtemp ], 2, npairs * nv );
-        y = reshape( [ xtemp ; y ], 1, npairs * nv );
+        xq = reshape( [ x ; xtemp ], 2, npairs * nv );
+        yq = reshape( [ xtemp ; y ], 1, npairs * nv );
+    else,
+        xq = x;
+        yq = y;
     end
     if use_lse2,
         variables w( 1, npairs * nv ) v( 1, npairs * nv )
-        abs( [0.5,-0.5]*x ) <= xoff*w + v;
-        w <= 1;
+        abs( [0.5,-0.5]*xq ) <= w + v;
+        w <= xoff;
+        w >= 0;
         v >= 0;
-        polyval_sdp( p, w ) + v + [0.5,0.5]*x <= y;
+        polyval_sdp( p, w / xoff ) + v + [0.5,0.5]*xq <= yq;
     else,
-        xy = x - ones(size(x,1),1) * y;
+        xy = xq - ones(size(xq,1),1) * yq;
         xy = cvx_accept_convex( max( 0, xy + xoff ) / xoff );
         sum( polyval_sdp( p, xy ), 1 ) <= 1;
     end
