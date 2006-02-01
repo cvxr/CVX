@@ -122,7 +122,7 @@ lintol = - log( 1 - nx * tolerances );
 dectol = - nlevs * log( 1 - 2 * tolerances );
 ls2tol = + nlevs * tols_lse2;
 degs = [ min([find(ls2tol<=tol),Inf]), min([find(dectol<=tol),Inf]), min([find(lintol<=tol),Inf]) ];
-if ~cvx_isaffine( x ), 
+if ~isnumeric( x ) & ~cvx_isaffine( x ), 
     degs(1) = Inf; 
 end
 if all( isinf( degs ) ),
