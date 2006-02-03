@@ -36,7 +36,7 @@ else,
     d = c( :, 1 ).'; 
     c = c( :, 2 : end ).';
 end
-lambda = ones( nobj, 1 );
+lambda = ones( max( nobj, 1 ), 1 );
 
 [ m, n ] = size( A );
 n = n - 1;

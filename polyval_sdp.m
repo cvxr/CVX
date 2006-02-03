@@ -38,7 +38,7 @@ end
 sx = size( x );
 if ~isreal( x ),
     error( 'Second argument must be real.' );
-elseif ~cvx_isaffine( x ),
+elseif ~isnumeric( x ) & ~cvx_isaffine( x ),
     error( sprintf( 'Disciplined convex programming error:\n   POLYVAL_SDP(P,X) requires that X be affine.' ) );
 end
 

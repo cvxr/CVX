@@ -106,9 +106,13 @@ for k = 1 : length( varargin ),
     end
     modifiers = [ modifiers, ' ', strs ];
 end
-str = cvx_create_structure( x.size, varargin{:} );
-if isempty( str ),
-    error( sprintf( 'Incompatible structure modifiers:%s', modifiers ) );
+if ~isempty( varargin ),
+    str = cvx_create_structure( x.size, varargin{:} );
+    if isempty( str ),
+        error( sprintf( 'Incompatible structure modifiers:%s', modifiers ) );
+    end
+else,
+    str = [];
 end
 
 v = newvar( prob, x.name, x.size, str );

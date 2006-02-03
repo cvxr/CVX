@@ -32,6 +32,16 @@ else,
 end
 
 %
+% Handle empty matrices
+%
+
+if any( sz == 0 ),
+    [ prob, x, y ] = cvx_operate( [], x, y );
+    z = cvx( prob, sz, [] );
+    return
+end
+
+%
 % Quadratic form test
 %
 

@@ -159,7 +159,7 @@ oeqs = length( cvx___.problems( p ).equalities ) + 1;
 neqs = oeqs + nZ - 1;
 if oeqs == 1,
     cvx___.problems( p ).equalities = cvx( prob, nZ, zR );
-else,
+elseif nZ > 0,
     t1 = cvx_basis( cvx___.problems( p ).equalities ); 
     c1 = size( t1, 2 );
     c2 = size( zR, 2 );

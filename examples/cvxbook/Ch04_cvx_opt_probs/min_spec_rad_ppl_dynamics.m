@@ -36,10 +36,10 @@ c_nom = [1 1];
 cvx_begin 
     variables x(n) y(n-1) z(2) t(n) u
     minimize (u)
-    logsumexp_sdp(x+t)<= u+t(1)
-    y(1:3) + t(1:3) <= u + t(2:4)
-    z <= log(2) 
-    z >= log(1/2)
+    logsumexp_sdp(x+t)<= u+t(1);
+    y(1:3) + t(1:3) <= u + t(2:4);
+    z <= log(2);
+    z >= log(1/2);
     for i=1:n
         x(i) == log(b_nom(i))+alphas(i)*(z(1)-log(c_nom(1)))+ ...
                         betas(i)*(z(2) - log(c_nom(2)));
@@ -69,9 +69,3 @@ disp('The concentration of chemical 1 achieving this result is: ');
 disp(c(1));
 disp('The concentration of chemical 2 achieving this result is: ');
 disp(c(2));
-
-
-
-
-
-

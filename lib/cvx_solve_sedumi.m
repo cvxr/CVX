@@ -117,7 +117,7 @@ elseif isempty( b ),
         status = 'Unbounded';
         value = -Inf * sign;
     end
-    if info.numerr == 1,
+    if info.numerr == 1 & pars.eps > 0,
         status = [ 'Inaccurate/', status ];
     end
 else,
@@ -141,7 +141,7 @@ else,
         status = 'Solved';
         value = c' * x + d;
     end
-    if info.numerr == 1,
+    if info.numerr == 1 & pars.eps > 0,
         status = [ 'Inaccurate/', status ];
     end
 end

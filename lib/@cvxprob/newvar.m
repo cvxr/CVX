@@ -94,13 +94,9 @@ end
 % Check size
 %
 
-[ temp, siz ] = cvx_check_dimlist( siz, false );
+[ temp, siz ] = cvx_check_dimlist( siz, true );
 if ~temp,
-    if cvx_check_dimlist( siz, true ),
-        error( 'Invalid size vector (cannot be empty).' );
-    else,
-        error( 'Invalid size vector.' );
-    end
+    error( 'Invalid size vector.' );
 end
 
 %
@@ -127,17 +123,21 @@ end
 % Add the variable to the problem
 %
 
-dims = length( cvx___.problems( p ).reserved );
-dims = dims + 1 : dims + dof;
-str2 = sparse( 1 : dof, dims, 1, dof, dims(end) );
-if ~isempty( str ), str2 = str * str2; end
-y = cvx( prob, siz, str2, dof );
+if len > 0,
+    dims = length( cvx___.problems( p ).reserved );
+    dims = dims + 1 : dims + dof;
+    str2 = sparse( 1 : dof, dims, 1, dof, dims(end) );
+    if ~isempty( str ), str2 = str * str2; end
+    y = cvx( prob, siz, str2, dof );
+    cvx___.problems( p ).reserved( dims, 1 ) = 0;
+    cvx___.problems( p ).vexity(   dims, 1 ) = 0;
+else,
+    y = cvx( prob, siz, [], 0 );
+end    
 if ~isempty( nstr ),
     vars = builtin( 'subsasgn', vars, nstr, y );
     cvx___.problems( p ).variables = vars;
 end
-cvx___.problems( p ).reserved( dims, 1 ) = 0;
-cvx___.problems( p ).vexity(   dims, 1 ) = 0;
 cvx___.problems( p ).x = [];
 cvx___.problems( p ).y = [];
 
