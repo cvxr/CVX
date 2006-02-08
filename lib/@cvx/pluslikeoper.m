@@ -131,13 +131,13 @@ if ~cheat,
         case 'ldivide',
             if ~xc,
                 error( sprintf( 'Disciplined convex programming error:\n   Division by a non-constant expression is forbidden.' ) );
-            elseif any( x.basis_( 1, : ) == 0 ),
+            elseif nnz( cvx_constant( x ) ) ~= prod( size( x ) ),
                 error( 'Division by zero.' );
             end
         case 'rdivide',
             if ~yc,
                 error( sprintf( 'Disciplined convex programming error:\n   Division by a non-constant expression is forbidden.' ) );
-            elseif any( y.basis_( 1, : ) == 0 ),
+            elseif nnz( cvx_constant( y ) ) ~= prod( size( y ) ),
                 error( 'Division by zero.' );
             end
     end
