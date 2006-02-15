@@ -1,0 +1,255 @@
+<html xmlns:mwsh="http://www.mathworks.com/namespace/mcode/v1/syntaxhighlight.dtd">
+   <head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   
+      <!--
+This HTML is auto-generated from an M-file.
+To make changes, update the M-file and republish this document.
+      -->
+      <title>SDP relaxations of the two-way partitioning problem</title>
+      <meta name="generator" content="MATLAB 7.1">
+      <meta name="date" content="2006-02-15">
+      <meta name="m-file" content="ex_5_39"><style>
+
+body {
+  background-color: white;
+  margin:10px;
+}
+
+h1 {
+  color: #990000; 
+  font-size: x-large;
+}
+
+h2 {
+  color: #990000;
+  font-size: medium;
+}
+
+/* Make the text shrink to fit narrow windows, but not stretch too far in 
+wide windows.  On Gecko-based browsers, the shrink-to-fit doesn't work. */ 
+p,h1,h2,div.content div {
+  /* for MATLAB's browser */
+  width: 600px;
+  /* for Mozilla, but the "width" tag overrides it anyway */
+  max-width: 600px;
+  /* for IE */
+  width:expression(document.body.clientWidth > 620 ? "600px": "auto" );
+}
+
+pre.codeinput {
+  background: #EEEEEE;
+  padding: 10px;
+}
+
+span.keyword {color: #0000FF}
+span.comment {color: #228B22}
+span.string {color: #A020F0}
+span.untermstring {color: #B20000}
+span.syscmd {color: #B28C00}
+
+pre.codeoutput {
+  color: #666666;
+  padding: 10px;
+}
+
+pre.error {
+  color: red;
+}
+
+p.footer {
+  text-align: right;
+  font-size: xx-small;
+  font-weight: lighter;
+  font-style: italic;
+  color: gray;
+}
+
+  </style></head>
+   <body>
+      <div class="content">
+         <h1>SDP relaxations of the two-way partitioning problem</h1><pre class="codeinput"><span class="comment">% Exercise 5.33, Boyd &amp; Vandenberghe "Convex Optimization"</span>
+<span class="comment">% Jo&euml;lle Skaf - 09/07/05</span>
+<span class="comment">% (a figure is generated)</span>
+<span class="comment">%</span>
+<span class="comment">% Compares the optimal values of:</span>
+<span class="comment">% 1) the Lagrange dual of the two-way partitioning problem</span>
+<span class="comment">%               maximize    -sum(nu)</span>
+<span class="comment">%                   s.t.    W + diag(nu) &gt;= 0</span>
+<span class="comment">% 2) the SDP relaxation of the two-way partitioning problem</span>
+<span class="comment">%               minimize    trace(WX)</span>
+<span class="comment">%                   s.t.    X &gt;= 0</span>
+<span class="comment">%                           X_ii = 1</span>
+
+<span class="comment">% Input data</span>
+randn(<span class="string">'state'</span>,0);
+n = 10;
+W = randn(n); W = 0.5*(W + W');
+
+<span class="comment">% Lagrange dual</span>
+fprintf(1,<span class="string">'Solving the dual of the two-way partitioning problem...'</span>);
+
+cvx_begin <span class="string">sdp</span>
+    variable <span class="string">nu(n)</span>
+    maximize ( -sum(nu) )
+    W + diag(nu) &gt;= 0;
+cvx_end
+
+fprintf(1,<span class="string">'Done! \n'</span>);
+opt1 = cvx_optval;
+
+<span class="comment">% SDP relaxation</span>
+fprintf(1,<span class="string">'Solving the SDP relaxation of the two-way partitioning problem...'</span>);
+
+cvx_begin <span class="string">sdp</span>
+    variable <span class="string">X(n,n)</span> <span class="string">symmetric</span>
+    minimize ( trace(W*X) )
+    diag(X) == 1;
+    X &gt;= 0;
+cvx_end
+
+fprintf(1,<span class="string">'Done! \n'</span>);
+opt2 = cvx_optval;
+
+<span class="comment">% Displaying results</span>
+disp(<span class="string">'------------------------------------------------------------------------'</span>);
+disp(<span class="string">'The optimal value of the Lagrange dual and the SDP relaxation fo the    '</span>);
+disp(<span class="string">'two-way partitioning problem are, respectively, '</span>);
+disp([opt1 opt2])
+disp(<span class="string">'They are equal as expected!'</span>);
+</pre><pre class="codeoutput">Solving the dual of the two-way partitioning problem... 
+Calling SeDuMi: 55 variables (0 free), 45 equality constraints
+------------------------------------------------------------------------
+SeDuMi 1.1 by AdvOL, 2005 and Jos F. Sturm, 1998, 2001-2003.
+Alg = 2: xz-corrector, Adaptive Step-Differentiation, theta = 0.250, beta = 0.500
+eqs m = 45, order n = 11, dim = 101, blocks = 2
+nnz(A) = 45 + 0, nnz(ADA) = 2025, nnz(L) = 1035
+ it :     b*y       gap    delta  rate   t/tP*  t/tD*   feas cg cg  prec
+  0 :            1.84E+001 0.000
+  1 :  1.21E+001 6.82E+000 0.000 0.3704 0.9000 0.9000   0.11  1  1  1.5E+000
+  2 :  2.52E+001 1.37E+000 0.000 0.2016 0.9000 0.9000   0.45  1  1  3.9E-001
+  3 :  2.80E+001 2.68E-001 0.000 0.1952 0.9000 0.9000   0.90  1  1  8.0E-002
+  4 :  2.88E+001 1.65E-002 0.000 0.0615 0.9900 0.9900   0.98  1  1  5.0E-003
+  5 :  2.88E+001 3.37E-003 0.000 0.2039 0.9000 0.9000   1.00  1  1  1.0E-003
+  6 :  2.88E+001 2.87E-004 0.410 0.0852 0.9900 0.9900   1.00  1  1  8.6E-005
+  7 :  2.88E+001 1.31E-006 0.000 0.0046 0.9900 0.9904   1.00  1  1  2.5E-006
+  8 :  2.88E+001 1.96E-008 0.000 0.0150 0.8452 0.9000   1.00  1  1  5.0E-007
+  9 :  2.88E+001 3.80E-009 0.000 0.1939 0.9000 0.9000   1.00  1  1  9.6E-008
+ 10 :  2.88E+001 7.86E-010 0.000 0.2070 0.9000 0.9000   1.00  2  2  2.0E-008
+ 11 :  2.88E+001 6.44E-011 0.374 0.0820 0.9900 0.9900   1.00  2  2  1.6E-009
+
+iter seconds digits       c*x               b*y
+ 11      0.2   Inf  2.8825674962e+001  2.8825674966e+001
+|Ax-b| =  5.0e-009, [Ay-c]_+ =  0.0E+000, |x|= 1.2e+001, |y|= 1.1e+001
+
+Detailed timing (sec)
+   Pre          IPM          Post
+6.009E-002    2.203E-001    1.001E-002    
+Max-norms: ||b||=1.436592e+000, ||c|| = 1,
+Cholesky |add|=0, |skip| = 0, ||L.L|| = 1.23054.
+------------------------------------------------------------------------
+Status (cvx_status): Solved
+ 
+Optimal value (cvx_optval): -26.6924
+Done! 
+Solving the SDP relaxation of the two-way partitioning problem... 
+Calling SeDuMi: 55 variables (0 free), 10 equality constraints
+------------------------------------------------------------------------
+SeDuMi 1.1 by AdvOL, 2005 and Jos F. Sturm, 1998, 2001-2003.
+Alg = 2: xz-corrector, Adaptive Step-Differentiation, theta = 0.250, beta = 0.500
+eqs m = 10, order n = 11, dim = 101, blocks = 2
+nnz(A) = 10 + 0, nnz(ADA) = 100, nnz(L) = 55
+ it :     b*y       gap    delta  rate   t/tP*  t/tD*   feas cg cg  prec
+  0 :            1.36E+000 0.000
+  1 : -1.28E+001 4.80E-001 0.000 0.3538 0.9000 0.9000   0.88  1  1  1.1E+000
+  2 : -2.51E+001 1.08E-001 0.000 0.2254 0.9000 0.9000   0.68  1  1  2.8E-001
+  3 : -2.80E+001 2.00E-002 0.000 0.1851 0.9000 0.9000   0.95  1  1  5.4E-002
+  4 : -2.88E+001 1.25E-003 0.000 0.0624 0.9900 0.9900   0.98  1  1  3.4E-003
+  5 : -2.88E+001 2.71E-004 0.000 0.2167 0.9000 0.9000   1.00  1  1  7.3E-004
+  6 : -2.88E+001 1.25E-006 0.212 0.0046 0.9900 0.9784   1.00  1  1  4.0E-005
+  7 : -2.88E+001 1.14E-007 0.000 0.0914 0.9900 0.9900   1.00  1  1  3.7E-006
+  8 : -2.88E+001 1.02E-008 0.457 0.0887 0.9900 0.9900   1.00  1  1  3.3E-007
+  9 : -2.88E+001 9.47E-010 0.310 0.0933 0.9900 0.9900   1.00  1  1  3.1E-008
+ 10 : -2.88E+001 2.84E-010 0.058 0.2998 0.9000 0.9000   1.00  2  2  9.2E-009
+
+iter seconds digits       c*x               b*y
+ 10      0.1   Inf -2.8825674845e+001 -2.8825674817e+001
+|Ax-b| =  8.5e-009, [Ay-c]_+ =  2.1E-008, |x|= 8.6e+000, |y|= 1.0e+001
+
+Detailed timing (sec)
+   Pre          IPM          Post
+2.003E-002    1.202E-001    1.001E-002    
+Max-norms: ||b||=1, ||c|| = 2.873183e+000,
+Cholesky |add|=0, |skip| = 0, ||L.L|| = 604.222.
+------------------------------------------------------------------------
+Status (cvx_status): Solved
+ 
+Optimal value (cvx_optval): -26.6924
+Done! 
+------------------------------------------------------------------------
+The optimal value of the Lagrange dual and the SDP relaxation fo the    
+two-way partitioning problem are, respectively, 
+  -26.6924  -26.6924
+
+They are equal as expected!
+</pre><p class="footer"><br>
+            Published with MATLAB&reg; 7.1<br></p>
+      </div>
+      <!--
+##### SOURCE BEGIN #####
+%% SDP relaxations of the two-way partitioning problem
+
+% Exercise 5.33, Boyd & Vandenberghe "Convex Optimization"
+% Joëlle Skaf - 09/07/05
+% (a figure is generated)
+%
+% Compares the optimal values of:
+% 1) the Lagrange dual of the two-way partitioning problem
+%               maximize    -sum(nu)
+%                   s.t.    W + diag(nu) >= 0
+% 2) the SDP relaxation of the two-way partitioning problem
+%               minimize    trace(WX)
+%                   s.t.    X >= 0
+%                           X_ii = 1
+
+% Input data
+randn('state',0);
+n = 10;
+W = randn(n); W = 0.5*(W + W');
+
+% Lagrange dual
+fprintf(1,'Solving the dual of the two-way partitioning problem...');
+
+cvx_begin sdp
+    variable nu(n)
+    maximize ( -sum(nu) )
+    W + diag(nu) >= 0;
+cvx_end
+
+fprintf(1,'Done! \n');
+opt1 = cvx_optval;
+
+% SDP relaxation
+fprintf(1,'Solving the SDP relaxation of the two-way partitioning problem...');
+
+cvx_begin sdp
+    variable X(n,n) symmetric
+    minimize ( trace(W*X) )
+    diag(X) == 1;
+    X >= 0;
+cvx_end
+
+fprintf(1,'Done! \n');
+opt2 = cvx_optval;
+
+% Displaying results
+disp('REPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASH');
+disp('The optimal value of the Lagrange dual and the SDP relaxation fo the    ');
+disp('two-way partitioning problem are, respectively, ');
+disp([opt1 opt2])
+disp('They are equal as expected!');
+
+##### SOURCE END #####
+-->
+   </body>
+</html>

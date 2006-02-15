@@ -1,0 +1,360 @@
+<html xmlns:mwsh="http://www.mathworks.com/namespace/mcode/v1/syntaxhighlight.dtd">
+   <head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   
+      <!--
+This HTML is auto-generated from an M-file.
+To make changes, update the M-file and republish this document.
+      -->
+      <title>Basis pursuit using Gabor functions</title>
+      <meta name="generator" content="MATLAB 7.1">
+      <meta name="date" content="2006-02-15">
+      <meta name="m-file" content="basispursuit"><style>
+
+body {
+  background-color: white;
+  margin:10px;
+}
+
+h1 {
+  color: #990000; 
+  font-size: x-large;
+}
+
+h2 {
+  color: #990000;
+  font-size: medium;
+}
+
+/* Make the text shrink to fit narrow windows, but not stretch too far in 
+wide windows.  On Gecko-based browsers, the shrink-to-fit doesn't work. */ 
+p,h1,h2,div.content div {
+  /* for MATLAB's browser */
+  width: 600px;
+  /* for Mozilla, but the "width" tag overrides it anyway */
+  max-width: 600px;
+  /* for IE */
+  width:expression(document.body.clientWidth > 620 ? "600px": "auto" );
+}
+
+pre.codeinput {
+  background: #EEEEEE;
+  padding: 10px;
+}
+
+span.keyword {color: #0000FF}
+span.comment {color: #228B22}
+span.string {color: #A020F0}
+span.untermstring {color: #B20000}
+span.syscmd {color: #B28C00}
+
+pre.codeoutput {
+  color: #666666;
+  padding: 10px;
+}
+
+pre.error {
+  color: red;
+}
+
+p.footer {
+  text-align: right;
+  font-size: xx-small;
+  font-weight: lighter;
+  font-style: italic;
+  color: gray;
+}
+
+  </style></head>
+   <body>
+      <div class="content">
+         <h1>Basis pursuit using Gabor functions</h1><pre class="codeinput"><span class="comment">% Sec. 6.5.4, fig 6.21, 6.22 and 6.23</span>
+<span class="comment">% Boyd &amp; Vandenberghe "Convex Optimization"</span>
+<span class="comment">% Original by Lieven Vandenberghe</span>
+<span class="comment">% Adapted for CVX by Argyris Zymnis - 11/27/2005</span>
+<span class="comment">% (figures are generated)</span>
+<span class="comment">%</span>
+<span class="comment">% Here we find a sparse basis for a signal y out of</span>
+<span class="comment">% a set of Gabor functions. We do this by solving</span>
+<span class="comment">%       minimize  ||A*x-y||_2 + ||x||_1</span>
+<span class="comment">%</span>
+<span class="comment">% where the columns of A are sampled Gabor functions.</span>
+<span class="comment">% We then fix the sparsity pattern obtained and solve</span>
+<span class="comment">%       minimize  ||A*x-y||_2</span>
+<span class="comment">%</span>
+<span class="comment">% NOTE: The file takes a while to run</span>
+
+clear
+
+<span class="comment">% Problem parameters</span>
+sigma = 0.05; <span class="comment">% Size of Gaussian function</span>
+T = 0.002; <span class="comment">% Sample time</span>
+Thr = 0.001; <span class="comment">% Basis signal threshold</span>
+kmax = 30; <span class="comment">% Number of signals are 2*kmax+1</span>
+w0 = 5;    <span class="comment">% Base frequency (w0 * kmax should be 150 for good results)</span>
+
+<span class="comment">% Build dictionary matrix</span>
+disp(<span class="string">'Building dictionary matrix...'</span>);
+A = sparse(401,401*61);
+p = 1;
+t = (0:T:1)';
+<span class="keyword">for</span> s = 0:T:1
+  x = exp(-(t-s).^2/(sigma^2)); x(find(x &lt; Thr)) = 0;
+  A(find(x),p) = x(find(x)); <span class="comment">% Gaussian</span>
+  p = p+1;
+  <span class="keyword">for</span> k=1:kmax
+    c = x.*sin(w0*t*k);
+    A(find(c),p) = c(find(c)); <span class="comment">% Sinus basis</span>
+    p = p + 1;
+    c = x.*cos(w0*t*k);
+    A(find(c),p) = c(find(c)); <span class="comment">% Cosine basis</span>
+    p = p + 1;
+  <span class="keyword">end</span>;
+<span class="keyword">end</span>;
+disp(<span class="string">'done.'</span>);
+
+<span class="comment">% Construct example signal</span>
+a = 0.5*sin(t*11)+1;
+theta = sin(5*t)*30;
+b = a.*sin(theta);
+
+<span class="comment">% Solve the Basis Pursuit problem</span>
+disp(<span class="string">'Solving Basis Pursuit problem...'</span>);
+tic
+cvx_begin
+    variable <span class="string">x(30561)</span>
+    minimize(square_pos(norm(A*x-b,2))+norm(x,1))
+cvx_end
+disp(<span class="string">'done'</span>);
+toc
+
+<span class="comment">% Reoptimize problem over nonzero coefficients</span>
+p = find(abs(x) &gt; 1e-5);
+A2 = A(:,p);
+x2 = A2 \ b;
+
+<span class="comment">% Constants</span>
+M = 61; <span class="comment">% Number of different Basis signals</span>
+sk = 250; <span class="comment">% Index of s = 0.5</span>
+
+<span class="comment">% Plot example basis functions;</span>
+<span class="comment">%if (0) % to do this, re-run basispursuit.m to create A</span>
+figure(1); clf;
+subplot(3,1,1); plot(t,A(:,M*sk+1)); axis([0 1 -1 1]);
+title(<span class="string">'Basis function 1'</span>);
+subplot(3,1,2); plot(t,A(:,M*sk+31)); axis([0 1 -1 1]);
+title(<span class="string">'Basis function 2'</span>);
+subplot(3,1,3); plot(t,A(:,M*sk+61)); axis([0 1 -1 1]);
+title(<span class="string">'Basis function 3'</span>);
+<span class="comment">%print -deps bp-dict_helv.eps</span>
+
+<span class="comment">% Plot reconstructed signal</span>
+figure(2); clf;
+subplot(2,1,1);
+plot(t,A2*x2,<span class="string">'--'</span>,t,b,<span class="string">'-'</span>); axis([0 1 -1.5 1.5]);
+xlabel(<span class="string">'t'</span>); ylabel(<span class="string">'y_{hat} and y'</span>);
+title(<span class="string">'Original and Reconstructed signals'</span>)
+subplot(2,1,2);
+plot(t,A2*x2-b); axis([0 1 -0.06 0.06]);
+title(<span class="string">'Reconstruction error'</span>)
+xlabel(<span class="string">'t'</span>); ylabel(<span class="string">'y - y_{hat}'</span>);
+<span class="comment">%print -deps bp-approx_helv.eps</span>
+
+<span class="comment">% Plot frequency plot</span>
+figure(3); clf;
+
+subplot(2,1,1);
+plot(t,b); xlabel(<span class="string">'t'</span>); ylabel(<span class="string">'y'</span>); axis([0 1 -1.5 1.5]);
+title(<span class="string">'Original Signal'</span>)
+subplot(2,1,2);
+plot(t,150*abs(cos(w0*t)),<span class="string">'--'</span>);
+hold <span class="string">on</span>;
+<span class="keyword">for</span> k = 1:length(t);
+  <span class="keyword">if</span>(abs(x((k-1)*M+1)) &gt; 1e-5), plot(t(k),0,<span class="string">'o'</span>); <span class="keyword">end</span>;
+  <span class="keyword">for</span> j = 2:2:kmax*2
+    <span class="keyword">if</span>((abs(x((k-1)*M+j)) &gt; 1e-5) | (abs(x((k-1)*M+j+1)) &gt; 1e-5)),
+      plot(t(k),w0*j/2,<span class="string">'o'</span>);
+    <span class="keyword">end</span>;
+  <span class="keyword">end</span>;
+<span class="keyword">end</span>;
+xlabel(<span class="string">'t'</span>); ylabel(<span class="string">'w'</span>);
+title(<span class="string">'Instantaneous frequency'</span>)
+hold <span class="string">off</span>;
+</pre><pre class="codeoutput">Building dictionary matrix...
+done.
+Solving Basis Pursuit problem...
+ 
+Calling SeDuMi: 61627 variables (0 free), 503 equality constraints
+------------------------------------------------------------------------
+SeDuMi 1.1 by AdvOL, 2005 and Jos F. Sturm, 1998, 2001-2003.
+Alg = 2: xz-corrector, Adaptive Step-Differentiation, theta = 0.250, beta = 0.500
+eqs m = 503, order n = 61127, dim = 61629, blocks = 3
+nnz(A) = 7480146 + 0, nnz(ADA) = 252007, nnz(L) = 126255
+ it :     b*y       gap    delta  rate   t/tP*  t/tD*   feas cg cg  prec
+  0 :            7.63E+004 0.000
+  1 : -2.25E-001 3.37E+002 0.000 0.0044 0.9990 0.9990   3.00  1  1  5.1E-001
+  2 :  5.00E+000 1.13E+002 0.000 0.3363 0.9000 0.9000   1.00  1  1  4.8E-001
+  3 :  1.03E+001 4.80E+001 0.000 0.4240 0.9000 0.9000   1.00  1  1  4.1E-001
+  4 :  1.19E+001 2.71E+001 0.000 0.5649 0.9000 0.9000   1.00  1  1  3.5E-001
+  5 :  1.24E+001 1.69E+001 0.000 0.6219 0.9000 0.9000   1.00  1  1  2.9E-001
+  6 :  1.26E+001 1.15E+001 0.000 0.6804 0.9000 0.9193   1.00  1  1  2.4E-001
+  7 :  1.27E+001 8.48E+000 0.000 0.7392 0.9000 0.9381   1.00  1  1  2.0E-001
+  8 :  1.28E+001 6.76E+000 0.000 0.7972 0.9000 0.9491   1.00  1  1  1.7E-001
+  9 :  1.28E+001 4.86E+000 0.000 0.7183 0.9000 0.9070   1.00  1  1  1.4E-001
+ 10 :  1.28E+001 3.77E+000 0.000 0.7766 0.9000 0.9488   1.00  1  1  1.1E-001
+ 11 :  1.28E+001 2.60E+000 0.000 0.6888 0.9000 0.9039   1.00  1  1  8.4E-002
+ 12 :  1.28E+001 1.85E+000 0.000 0.7107 0.9000 0.9442   1.00  1  1  6.3E-002
+ 13 :  1.28E+001 8.77E-001 0.000 0.4746 0.9326 0.9000   1.00  1  1  3.2E-002
+ 14 :  1.28E+001 5.59E-001 0.000 0.6379 0.9000 0.9143   1.00  1  1  2.1E-002
+ 15 :  1.28E+001 2.92E-001 0.000 0.5220 0.9267 0.9000   1.00  1  1  1.1E-002
+ 16 :  1.28E+001 1.82E-001 0.000 0.6240 0.9000 0.9085   1.00  1  1  7.0E-003
+ 17 :  1.28E+001 9.48E-002 0.000 0.5204 0.9000 0.9152   1.00  1  1  3.7E-003
+ 18 :  1.28E+001 4.77E-002 0.000 0.5033 0.9055 0.9000   1.00  1  1  1.9E-003
+ 19 :  1.28E+001 1.48E-002 0.000 0.3097 0.9000 0.9019   1.00  2  2  5.7E-004
+ 20 :  1.28E+001 2.26E-003 0.000 0.1529 0.9054 0.9000   1.00  2  2  8.8E-005
+ 21 :  1.28E+001 1.01E-004 0.000 0.0449 0.9900 0.9900   1.00  2  2  3.9E-006
+ 22 :  1.28E+001 2.10E-005 0.000 0.2075 0.9000 0.9023   1.00  3  3  8.2E-007
+ 23 :  1.28E+001 4.34E-006 0.000 0.2065 0.9029 0.9000   1.00  3  3  1.7E-007
+ 24 :  1.28E+001 1.03E-006 0.000 0.2373 0.9087 0.9000   1.00  3  3  4.0E-008
+ 25 :  1.28E+001 3.41E-007 0.000 0.3310 0.9069 0.9000   1.00  3  3  1.3E-008
+ 26 :  1.28E+001 1.27E-007 0.000 0.3736 0.9000 0.9173   1.00  3  3  5.0E-009
+
+iter seconds digits       c*x               b*y
+ 26   1028.6   8.0  1.2845155814e+001  1.2845155686e+001
+|Ax-b| =  1.5e-011, [Ay-c]_+ =  0.0E+000, |x|= 2.8e+000, |y|= 1.4e+000
+
+Detailed timing (sec)
+   Pre          IPM          Post
+3.140E+001    1.029E+003    1.472E+000    
+Max-norms: ||b||=1.497811e+000, ||c|| = 1,
+Cholesky |add|=0, |skip| = 0, ||L.L|| = 3307.89.
+------------------------------------------------------------------------
+Status (cvx_status): Solved
+ 
+Optimal value (cvx_optval): 12.8452
+done
+Elapsed time is 1431.840412 seconds.
+</pre><img vspace="5" hspace="5" src="basispursuit_01.png"> <img vspace="5" hspace="5" src="basispursuit_02.png"> <img vspace="5" hspace="5" src="basispursuit_03.png"> <p class="footer"><br>
+            Published with MATLAB&reg; 7.1<br></p>
+      </div>
+      <!--
+##### SOURCE BEGIN #####
+%% Basis pursuit using Gabor functions
+
+% Sec. 6.5.4, fig 6.21, 6.22 and 6.23 
+% Boyd & Vandenberghe "Convex Optimization"
+% Original by Lieven Vandenberghe 
+% Adapted for CVX by Argyris Zymnis - 11/27/2005
+% (figures are generated)
+% 
+% Here we find a sparse basis for a signal y out of 
+% a set of Gabor functions. We do this by solving
+%       minimize  ||A*x-y||_2 + ||x||_1
+%
+% where the columns of A are sampled Gabor functions.
+% We then fix the sparsity pattern obtained and solve
+%       minimize  ||A*x-y||_2
+%
+% NOTE: The file takes a while to run
+
+clear
+
+% Problem parameters
+sigma = 0.05; % Size of Gaussian function
+T = 0.002; % Sample time
+Thr = 0.001; % Basis signal threshold
+kmax = 30; % Number of signals are 2*kmax+1
+w0 = 5;    % Base frequency (w0 * kmax should be 150 for good results)
+
+% Build dictionary matrix
+disp('Building dictionary matrix...');
+A = sparse(401,401*61);
+p = 1;
+t = (0:T:1)';
+for s = 0:T:1
+  x = exp(-(t-s).^2/(sigma^2)); x(find(x < Thr)) = 0;
+  A(find(x),p) = x(find(x)); % Gaussian
+  p = p+1;
+  for k=1:kmax
+    c = x.*sin(w0*t*k);
+    A(find(c),p) = c(find(c)); % Sinus basis
+    p = p + 1;
+    c = x.*cos(w0*t*k);
+    A(find(c),p) = c(find(c)); % Cosine basis
+    p = p + 1;
+  end;
+end;
+disp('done.');
+
+% Construct example signal
+a = 0.5*sin(t*11)+1; 
+theta = sin(5*t)*30;
+b = a.*sin(theta);
+
+% Solve the Basis Pursuit problem
+disp('Solving Basis Pursuit problem...');
+tic
+cvx_begin
+    variable x(30561)
+    minimize(square_pos(norm(A*x-b,2))+norm(x,1))
+cvx_end
+disp('done');
+toc
+
+% Reoptimize problem over nonzero coefficients
+p = find(abs(x) > 1e-5);
+A2 = A(:,p);
+x2 = A2 \ b;
+
+% Constants
+M = 61; % Number of different Basis signals
+sk = 250; % Index of s = 0.5 
+
+% Plot example basis functions;  
+%if (0) % to do this, re-run basispursuit.m to create A
+figure(1); clf;
+subplot(3,1,1); plot(t,A(:,M*sk+1)); axis([0 1 -1 1]);
+title('Basis function 1');
+subplot(3,1,2); plot(t,A(:,M*sk+31)); axis([0 1 -1 1]);
+title('Basis function 2');
+subplot(3,1,3); plot(t,A(:,M*sk+61)); axis([0 1 -1 1]);
+title('Basis function 3');
+%print -deps bp-dict_helv.eps
+
+% Plot reconstructed signal
+figure(2); clf;
+subplot(2,1,1);
+plot(t,A2*x2,'REPLACE_WITH_DASH_DASH',t,b,'-'); axis([0 1 -1.5 1.5]);
+xlabel('t'); ylabel('y_{hat} and y');
+title('Original and Reconstructed signals')
+subplot(2,1,2);
+plot(t,A2*x2-b); axis([0 1 -0.06 0.06]);
+title('Reconstruction error')
+xlabel('t'); ylabel('y - y_{hat}');
+%print -deps bp-approx_helv.eps
+
+% Plot frequency plot
+figure(3); clf;
+
+subplot(2,1,1); 
+plot(t,b); xlabel('t'); ylabel('y'); axis([0 1 -1.5 1.5]);
+title('Original Signal')
+subplot(2,1,2); 
+plot(t,150*abs(cos(w0*t)),'REPLACE_WITH_DASH_DASH'); 
+hold on;
+for k = 1:length(t);
+  if(abs(x((k-1)*M+1)) > 1e-5), plot(t(k),0,'o'); end;
+  for j = 2:2:kmax*2
+    if((abs(x((k-1)*M+j)) > 1e-5) | (abs(x((k-1)*M+j+1)) > 1e-5)),
+      plot(t(k),w0*j/2,'o');
+    end;
+  end;
+end;
+xlabel('t'); ylabel('w');
+title('Instantaneous frequency')
+hold off;
+
+##### SOURCE END #####
+-->
+   </body>
+</html>

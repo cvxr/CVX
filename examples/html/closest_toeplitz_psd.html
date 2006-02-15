@@ -1,0 +1,205 @@
+<html xmlns:mwsh="http://www.mathworks.com/namespace/mcode/v1/syntaxhighlight.dtd">
+   <head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   
+      <!--
+This HTML is auto-generated from an M-file.
+To make changes, update the M-file and republish this document.
+      -->
+      <title>Closest Toeplitz SDP search.</title>
+      <meta name="generator" content="MATLAB 7.1">
+      <meta name="date" content="2006-02-15">
+      <meta name="m-file" content="closest_toeplitz_psd"><style>
+
+body {
+  background-color: white;
+  margin:10px;
+}
+
+h1 {
+  color: #990000; 
+  font-size: x-large;
+}
+
+h2 {
+  color: #990000;
+  font-size: medium;
+}
+
+/* Make the text shrink to fit narrow windows, but not stretch too far in 
+wide windows.  On Gecko-based browsers, the shrink-to-fit doesn't work. */ 
+p,h1,h2,div.content div {
+  /* for MATLAB's browser */
+  width: 600px;
+  /* for Mozilla, but the "width" tag overrides it anyway */
+  max-width: 600px;
+  /* for IE */
+  width:expression(document.body.clientWidth > 620 ? "600px": "auto" );
+}
+
+pre.codeinput {
+  background: #EEEEEE;
+  padding: 10px;
+}
+
+span.keyword {color: #0000FF}
+span.comment {color: #228B22}
+span.string {color: #A020F0}
+span.untermstring {color: #B20000}
+span.syscmd {color: #B28C00}
+
+pre.codeoutput {
+  color: #666666;
+  padding: 10px;
+}
+
+pre.error {
+  color: red;
+}
+
+p.footer {
+  text-align: right;
+  font-size: xx-small;
+  font-weight: lighter;
+  font-style: italic;
+  color: gray;
+}
+
+  </style></head>
+   <body>
+      <div class="content">
+         <h1>Closest Toeplitz SDP search.</h1><pre class="codeinput"><span class="comment">% This script finds a Toeplitz Hermitian PSD matrix that is closest to a</span>
+<span class="comment">% given Hermitian matrix, as measured by the Frobenius norm. That is, for</span>
+<span class="comment">% a given matrix P, it solves:</span>
+<span class="comment">%    minimize   || Z - P ||_F</span>
+<span class="comment">%    subject to Z &gt;= 0</span>
+<span class="comment">%</span>
+<span class="comment">% Adapted from an example provided in the SeDuMi documentation. Notice</span>
+<span class="comment">% the use of SDP mode to simplify the semidefinite constraint.</span>
+
+<span class="comment">% The data. P is Hermitian, but is neither Toeplitz nor PSD.</span>
+P = [ 4,     1+2*j,     3-j       ; <span class="keyword">...</span>
+      1-2*j, 3.5,       0.8+2.3*j ; <span class="keyword">...</span>
+      3+j,   0.8-2.3*j, 4         ];
+
+<span class="comment">% Construct and solve the model</span>
+n = size( P, 1 );
+cvx_begin <span class="string">sdp</span>
+    variable <span class="string">Z(n,n)</span> <span class="string">hermitian</span> <span class="string">toeplitz</span>
+    dual <span class="string">variable</span> <span class="string">Q</span>
+    minimize( norm( Z - P, <span class="string">'fro'</span> ) )
+    Z &gt;= 0 : Q;
+cvx_end
+
+<span class="comment">% Display resuls</span>
+disp( <span class="string">'The original matrix, P: '</span> );
+disp( P )
+disp( <span class="string">'The optimal point, Z:'</span> );
+disp( Z )
+disp( <span class="string">'min( eig( Z ) ) (should be nonnegative):'</span> );
+disp( min( eig( Z ) ) )
+disp( <span class="string">'The optimal value, || Z - P ||_F:'</span> );
+disp( norm( Z - P, <span class="string">'fro'</span> ) );
+disp( <span class="string">'Complementary slackness: Z * Q, should be near zero:'</span> );
+disp( Z * Q )
+</pre><pre class="codeoutput"> 
+Calling SeDuMi: 20 variables (0 free), 14 equality constraints
+------------------------------------------------------------------------
+SeDuMi 1.1 by AdvOL, 2005 and Jos F. Sturm, 1998, 2001-2003.
+Alg = 2: xz-corrector, Adaptive Step-Differentiation, theta = 0.250, beta = 0.500
+eqs m = 14, order n = 6, dim = 30, blocks = 3
+nnz(A) = 28 + 0, nnz(ADA) = 190, nnz(L) = 102
+ it :     b*y       gap    delta  rate   t/tP*  t/tD*   feas cg cg  prec
+  0 :            1.99E+001 0.000
+  1 :  3.46E+001 5.48E+000 0.000 0.2757 0.9000 0.9000  -0.10  1  1  1.7E+000
+  2 :  3.06E+001 1.10E+000 0.000 0.2003 0.9000 0.9000   1.47  1  1  3.0E-001
+  3 :  3.15E+001 2.27E-001 0.000 0.2067 0.9000 0.9000   1.25  1  1  5.4E-002
+  4 :  3.17E+001 5.18E-002 0.000 0.2283 0.9000 0.9000   1.11  1  1  1.2E-002
+  5 :  3.17E+001 1.24E-002 0.000 0.2387 0.9000 0.9000   1.05  1  1  2.7E-003
+  6 :  3.18E+001 2.65E-003 0.000 0.2146 0.9000 0.9000   1.02  1  1  5.6E-004
+  7 :  3.18E+001 1.79E-004 0.169 0.0676 0.9900 0.9900   1.01  1  1  3.8E-005
+  8 :  3.18E+001 2.00E-008 0.000 0.0001 0.9812 0.9990   1.00  1  1  4.1E-007
+  9 :  3.18E+001 1.26E-010 0.000 0.0063 0.9943 0.9990   1.00  1  1  2.6E-009
+
+iter seconds digits       c*x               b*y
+  9      0.2   Inf  3.1758883265e+001  3.1758883274e+001
+|Ax-b| =  3.8e-008, [Ay-c]_+ =  3.3E-010, |x|= 4.6e+001, |y|= 9.8e-001
+
+Detailed timing (sec)
+   Pre          IPM          Post
+4.006E-002    2.103E-001    2.003E-002    
+Max-norms: ||b||=1.690000e+001, ||c|| = 1,
+Cholesky |add|=0, |skip| = 0, ||L.L|| = 1.36649.
+------------------------------------------------------------------------
+Status (cvx_status): Solved
+ 
+Optimal value (cvx_optval): 31.7589
+The original matrix, P: 
+    4.0000   15.0000   -4.0000
+  -13.0000    3.5000   16.9000
+   10.0000  -15.3000    4.0000
+
+The optimal point, Z:
+    3.8337    0.9000    3.0004
+    0.9000    3.8337    0.9000
+    3.0004    0.9000    3.8337
+
+min( eig( Z ) ) (should be nonnegative):
+    0.8333
+
+The optimal value, || Z - P ||_F:
+   31.7589
+
+Complementary slackness: Z * Q, should be near zero:
+  1.0e-008 *
+
+    0.3719   -0.0302    0.0694
+   -0.0218    0.4783   -0.0218
+    0.0694   -0.0302    0.3719
+
+</pre><p class="footer"><br>
+            Published with MATLAB&reg; 7.1<br></p>
+      </div>
+      <!--
+##### SOURCE BEGIN #####
+%% Closest Toeplitz SDP search.
+
+% This script finds a Toeplitz Hermitian PSD matrix that is closest to a
+% given Hermitian matrix, as measured by the Frobenius norm. That is, for
+% a given matrix P, it solves:
+%    minimize   || Z - P ||_F
+%    subject to Z >= 0
+%
+% Adapted from an example provided in the SeDuMi documentation. Notice
+% the use of SDP mode to simplify the semidefinite constraint.
+
+% The data. P is Hermitian, but is neither Toeplitz nor PSD.
+P = [ 4,     1+2*j,     3-j       ; ...
+      1-2*j, 3.5,       0.8+2.3*j ; ...
+      3+j,   0.8-2.3*j, 4         ];
+  
+% Construct and solve the model
+n = size( P, 1 );
+cvx_begin sdp
+    variable Z(n,n) hermitian toeplitz
+    dual variable Q
+    minimize( norm( Z - P, 'fro' ) )
+    Z >= 0 : Q;
+cvx_end
+
+% Display resuls
+disp( 'The original matrix, P: ' );
+disp( P )
+disp( 'The optimal point, Z:' );
+disp( Z )
+disp( 'min( eig( Z ) ) (should be nonnegative):' );
+disp( min( eig( Z ) ) )
+disp( 'The optimal value, || Z - P ||_F:' );
+disp( norm( Z - P, 'fro' ) );
+disp( 'Complementary slackness: Z * Q, should be near zero:' );
+disp( Z * Q )
+
+##### SOURCE END #####
+-->
+   </body>
+</html>

@@ -1,0 +1,340 @@
+<html xmlns:mwsh="http://www.mathworks.com/namespace/mcode/v1/syntaxhighlight.dtd">
+   <head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   
+      <!--
+This HTML is auto-generated from an M-file.
+To make changes, update the M-file and republish this document.
+      -->
+      <title>Comparison of worst-case robust, Tickhonov and nominal least squares</title>
+      <meta name="generator" content="MATLAB 7.1">
+      <meta name="date" content="2006-02-15">
+      <meta name="m-file" content="wcrobls"><style>
+
+body {
+  background-color: white;
+  margin:10px;
+}
+
+h1 {
+  color: #990000; 
+  font-size: x-large;
+}
+
+h2 {
+  color: #990000;
+  font-size: medium;
+}
+
+/* Make the text shrink to fit narrow windows, but not stretch too far in 
+wide windows.  On Gecko-based browsers, the shrink-to-fit doesn't work. */ 
+p,h1,h2,div.content div {
+  /* for MATLAB's browser */
+  width: 600px;
+  /* for Mozilla, but the "width" tag overrides it anyway */
+  max-width: 600px;
+  /* for IE */
+  width:expression(document.body.clientWidth > 620 ? "600px": "auto" );
+}
+
+pre.codeinput {
+  background: #EEEEEE;
+  padding: 10px;
+}
+
+span.keyword {color: #0000FF}
+span.comment {color: #228B22}
+span.string {color: #A020F0}
+span.untermstring {color: #B20000}
+span.syscmd {color: #B28C00}
+
+pre.codeoutput {
+  color: #666666;
+  padding: 10px;
+}
+
+pre.error {
+  color: red;
+}
+
+p.footer {
+  text-align: right;
+  font-size: xx-small;
+  font-weight: lighter;
+  font-style: italic;
+  color: gray;
+}
+
+  </style></head>
+   <body>
+      <div class="content">
+         <h1>Comparison of worst-case robust, Tickhonov and nominal least squares</h1><pre class="codeinput"><span class="comment">% Sec. 6.4.2, EX. 6.6/fig. 6.16,</span>
+<span class="comment">% Boyd &amp; Vandenberghe "Convex Optimization"</span>
+<span class="comment">% Original by Lieven Vandenberghe</span>
+<span class="comment">% Adapted for CVX Argyris Zymnis - 11/27/05</span>
+<span class="comment">% (a figure is generated)</span>
+<span class="comment">%</span>
+<span class="comment">% Consider the least-squares problem:</span>
+<span class="comment">%       minimize ||(A0 + u1*A1 + u2*A2)x - b||_2</span>
+<span class="comment">% where u = [u1 u2]' is an uncertain parameter and ||u||_2 &lt;= 1</span>
+<span class="comment">% Three approximate solutions are found:</span>
+<span class="comment">%   1- nominal optimal (i.e. letting u=0)</span>
+<span class="comment">%   2- Tikhonov Regularized Solution:</span>
+<span class="comment">%           minimize ||A0*x - b||_2 + delta*||x||_2</span>
+<span class="comment">%      for some delta (in this case we set delta = 0.1)</span>
+<span class="comment">%   3- worst-case robust approximation:</span>
+<span class="comment">%           minimize sup{||u||_2 &lt;= 1} ||(A0 + u1*A1 + u2*A2)x - b||_2)</span>
+<span class="comment">%      (reduces to solving an SDP, see pages 323-324 in the book)</span>
+
+clear
+cvx_quiet(false);
+
+m = 50;
+n = 20;
+randn(<span class="string">'state'</span>,0);
+rand(<span class="string">'state'</span>,0);
+
+A0 = randn(m,n);
+[U,S,V] = svd(A0);
+S= diag(fliplr(logspace(-0.7,1,n)));
+A0 = U(:,1:n)*S*V';
+A1 = randn(m,n);  A1 = A1/norm(A1);
+A2 = randn(m,n);  A2 = A2/norm(A2);
+
+Aperb0 = [A1;A2];
+p = 2;
+
+b = U(:,1:n)*randn(n,1) + .1*randn(m,1);
+
+<span class="comment">% we consider LS problems || (A0 + u1*A1 + u2*A2) x - b||</span>
+<span class="comment">% where  ||u|| leq rho</span>
+
+<span class="comment">% Nominal Solution</span>
+xnom = A0\b;
+
+<span class="comment">% Tikhonov Regularized Solution</span>
+delta = .1;
+xtych =  [A0; sqrt(delta)*eye(n)] \ [b; zeros(n,1)];
+
+<span class="comment">% Robust Least Squares solution</span>
+cvx_begin <span class="string">sdp</span>
+    variables <span class="string">t</span> <span class="string">lambda</span> <span class="string">xrob(n)</span>
+    minimize(t+lambda)
+    subject <span class="string">to</span>
+        [eye(m) A1*xrob A2*xrob A0*xrob-b; <span class="keyword">...</span>
+         [A1*xrob A2*xrob]' lambda*eye(2) zeros(2,1); <span class="keyword">...</span>
+         [A0*xrob-b]' zeros(1,2) t] &gt;= 0;
+cvx_end
+
+<span class="comment">% Generate Random Trials</span>
+notrials=100000;
+r = sqrt(rand(notrials,1));     <span class="comment">% random on [0,1] with pdf g(r) = 2r;</span>
+theta = 2*pi*rand(notrials,1);  <span class="comment">% uniform on [0,2pi]</span>
+v = [r.*cos(theta)  r.*sin(theta)];
+ls_res = zeros(1,notrials);
+rob2_res = zeros(1,notrials);
+rob_res = zeros(1,notrials);
+tych_res = zeros(1,notrials);
+
+<span class="keyword">for</span> i =1:notrials
+
+  A = A0 + v(i,1)*A1 + v(i,2)*A2;
+  ls_res(i) = norm(A*xnom-b);
+  rob_res(i) = norm(A*xrob-b);
+  tych_res(i) = norm(A*xtych-b);
+
+<span class="keyword">end</span>;
+
+
+<span class="comment">% Plot histograms</span>
+figure
+<span class="comment">%subplot(211)</span>
+[N1, hist1] = hist(ls_res,[min(ls_res):.1:max(ls_res)]);
+freq1 = N1/notrials;
+[N2, hist2] = hist(rob_res,hist1);
+freq2 = N2/notrials;
+[N3, hist3] = hist(tych_res,hist1);
+freq3 = N3/notrials;
+
+
+
+h = bar(hist3,freq3);
+text(3, 0.07, <span class="string">'Tikhonov'</span>);
+set(h,<span class="string">'FaceColor'</span>,0.90*[1 1 1]);
+hold <span class="string">on</span>
+
+h = bar(hist2,freq2);
+text(4.2, 0.05, <span class="string">'Nominal'</span>);
+set(h,<span class="string">'FaceColor'</span>,0.80*[1 1 1]);
+
+h = bar(hist2,freq2);
+set(h,<span class="string">'FaceColor'</span>,<span class="string">'none'</span>);
+text(2.6, 0.2, <span class="string">'Robust LS'</span>);
+
+h = bar(hist3,freq3);
+set(h,<span class="string">'FaceColor'</span>,<span class="string">'none'</span>);
+h = bar(hist1,freq1);
+set(h,<span class="string">'FaceColor'</span>,<span class="string">'none'</span>);
+
+xlabel(<span class="string">'||(A0 + u1*A1 + u2*A2)*x - b||_2'</span>)
+ylabel(<span class="string">'Frequency'</span>)
+hold <span class="string">off</span>
+</pre><pre class="codeoutput"> 
+Calling SeDuMi: 1451 variables (20 free), 1429 equality constraints
+------------------------------------------------------------------------
+SeDuMi 1.1 by AdvOL, 2005 and Jos F. Sturm, 1998, 2001-2003.
+Alg = 2: xz-corrector, Adaptive Step-Differentiation, theta = 0.250, beta = 0.500
+Split 20 free variables
+eqs m = 1429, order n = 94, dim = 2850, blocks = 2
+nnz(A) = 7430 + 0, nnz(ADA) = 2042041, nnz(L) = 1021735
+ it :     b*y       gap    delta  rate   t/tP*  t/tD*   feas cg cg  prec
+  0 :            3.68E-001 0.000
+  1 :  5.13E+000 1.23E-001 0.000 0.3345 0.9000 0.9000   2.53  1  1  7.0E-001
+  2 :  6.12E+000 3.39E-002 0.000 0.2757 0.9000 0.9000   1.34  1  1  1.7E-001
+  3 :  6.59E+000 6.42E-003 0.000 0.1896 0.9000 0.9000   1.07  1  1  3.3E-002
+  4 :  6.74E+000 4.87E-004 0.000 0.0758 0.9900 0.9900   1.01  1  1  2.5E-003
+  5 :  6.76E+000 1.09E-004 0.000 0.2238 0.9000 0.9000   1.00  1  1  5.7E-004
+  6 :  6.76E+000 8.25E-007 0.120 0.0076 0.9166 0.9900   1.00  1  1  5.6E-005
+  7 :  6.76E+000 2.01E-007 0.000 0.2439 0.9000 0.8356   1.00  1  1  1.3E-005
+  8 :  6.76E+000 1.95E-008 0.170 0.0968 0.9900 0.9162   1.00  1  1  1.3E-006
+  9 :  6.76E+000 3.44E-009 0.000 0.1765 0.8235 0.9000   1.00  2  2  2.3E-007
+ 10 :  6.76E+000 2.19E-010 0.407 0.0637 0.9900 0.9882   1.00  2  2  1.4E-008
+ 11 :  6.76E+000 5.84E-011 0.000 0.2666 0.9000 0.8365   1.00  2  2  3.8E-009
+
+iter seconds digits       c*x               b*y
+ 11    135.9   Inf  6.7594995662e+000  6.7594995715e+000
+|Ax-b| =  1.9e-008, [Ay-c]_+ =  1.4E-009, |x|= 1.4e+001, |y|= 8.7e+000
+
+Detailed timing (sec)
+   Pre          IPM          Post
+1.031E+000    1.359E+002    1.001E-002    
+Max-norms: ||b||=1.466545e+000, ||c|| = 1,
+Cholesky |add|=0, |skip| = 0, ||L.L|| = 8.38748.
+------------------------------------------------------------------------
+Status (cvx_status): Solved
+ 
+Optimal value (cvx_optval): 6.7595
+</pre><img vspace="5" hspace="5" src="wcrobls_01.png"> <p class="footer"><br>
+            Published with MATLAB&reg; 7.1<br></p>
+      </div>
+      <!--
+##### SOURCE BEGIN #####
+%% Comparison of worst-case robust, Tickhonov and nominal least squares
+
+% Sec. 6.4.2, EX. 6.6/fig. 6.16,
+% Boyd & Vandenberghe "Convex Optimization"
+% Original by Lieven Vandenberghe
+% Adapted for CVX Argyris Zymnis - 11/27/05
+% (a figure is generated)
+%
+% Consider the least-squares problem:
+%       minimize ||(A0 + u1*A1 + u2*A2)x - b||_2
+% where u = [u1 u2]' is an uncertain parameter and ||u||_2 <= 1
+% Three approximate solutions are found:
+%   1- nominal optimal (i.e. letting u=0)
+%   2- Tikhonov Regularized Solution:
+%           minimize ||A0*x - b||_2 + delta*||x||_2
+%      for some delta (in this case we set delta = 0.1)
+%   3- worst-case robust approximation:
+%           minimize sup{||u||_2 <= 1} ||(A0 + u1*A1 + u2*A2)x - b||_2)
+%      (reduces to solving an SDP, see pages 323-324 in the book)
+
+clear
+cvx_quiet(false);
+
+m = 50;
+n = 20;
+randn('state',0);
+rand('state',0);
+
+A0 = randn(m,n);
+[U,S,V] = svd(A0);
+S= diag(fliplr(logspace(-0.7,1,n)));
+A0 = U(:,1:n)*S*V';
+A1 = randn(m,n);  A1 = A1/norm(A1);
+A2 = randn(m,n);  A2 = A2/norm(A2);
+
+Aperb0 = [A1;A2];
+p = 2;
+
+b = U(:,1:n)*randn(n,1) + .1*randn(m,1);
+
+% we consider LS problems || (A0 + u1*A1 + u2*A2) x - b||
+% where  ||u|| leq rho
+
+% Nominal Solution
+xnom = A0\b;
+
+% Tikhonov Regularized Solution
+delta = .1;
+xtych =  [A0; sqrt(delta)*eye(n)] \ [b; zeros(n,1)];
+
+% Robust Least Squares solution
+cvx_begin sdp
+    variables t lambda xrob(n)
+    minimize(t+lambda)
+    subject to
+        [eye(m) A1*xrob A2*xrob A0*xrob-b; ...
+         [A1*xrob A2*xrob]' lambda*eye(2) zeros(2,1); ...
+         [A0*xrob-b]' zeros(1,2) t] >= 0;
+cvx_end
+
+% Generate Random Trials
+notrials=100000;
+r = sqrt(rand(notrials,1));     % random on [0,1] with pdf g(r) = 2r;
+theta = 2*pi*rand(notrials,1);  % uniform on [0,2pi]
+v = [r.*cos(theta)  r.*sin(theta)];
+ls_res = zeros(1,notrials);
+rob2_res = zeros(1,notrials);
+rob_res = zeros(1,notrials);
+tych_res = zeros(1,notrials);
+
+for i =1:notrials
+
+  A = A0 + v(i,1)*A1 + v(i,2)*A2;
+  ls_res(i) = norm(A*xnom-b);
+  rob_res(i) = norm(A*xrob-b);
+  tych_res(i) = norm(A*xtych-b);
+
+end;
+
+
+% Plot histograms
+figure
+%subplot(211)
+[N1, hist1] = hist(ls_res,[min(ls_res):.1:max(ls_res)]);
+freq1 = N1/notrials;
+[N2, hist2] = hist(rob_res,hist1);
+freq2 = N2/notrials;
+[N3, hist3] = hist(tych_res,hist1);
+freq3 = N3/notrials;
+
+
+
+h = bar(hist3,freq3);
+text(3, 0.07, 'Tikhonov');
+set(h,'FaceColor',0.90*[1 1 1]);
+hold on
+
+h = bar(hist2,freq2);
+text(4.2, 0.05, 'Nominal');
+set(h,'FaceColor',0.80*[1 1 1]);
+
+h = bar(hist2,freq2);
+set(h,'FaceColor','none');
+text(2.6, 0.2, 'Robust LS');
+
+h = bar(hist3,freq3);
+set(h,'FaceColor','none');
+h = bar(hist1,freq1);
+set(h,'FaceColor','none');
+
+xlabel('||(A0 + u1*A1 + u2*A2)*x - b||_2')
+ylabel('Frequency')
+hold off
+
+
+##### SOURCE END #####
+-->
+   </body>
+</html>

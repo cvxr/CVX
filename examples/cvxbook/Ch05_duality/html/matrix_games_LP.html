@@ -1,0 +1,267 @@
+<html xmlns:mwsh="http://www.mathworks.com/namespace/mcode/v1/syntaxhighlight.dtd">
+   <head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   
+      <!--
+This HTML is auto-generated from an M-file.
+To make changes, update the M-file and republish this document.
+      -->
+      <title>Mixed strategies for matrix games (LP formulation)</title>
+      <meta name="generator" content="MATLAB 7.1">
+      <meta name="date" content="2006-02-15">
+      <meta name="m-file" content="matrix_games_LP"><style>
+
+body {
+  background-color: white;
+  margin:10px;
+}
+
+h1 {
+  color: #990000; 
+  font-size: x-large;
+}
+
+h2 {
+  color: #990000;
+  font-size: medium;
+}
+
+/* Make the text shrink to fit narrow windows, but not stretch too far in 
+wide windows.  On Gecko-based browsers, the shrink-to-fit doesn't work. */ 
+p,h1,h2,div.content div {
+  /* for MATLAB's browser */
+  width: 600px;
+  /* for Mozilla, but the "width" tag overrides it anyway */
+  max-width: 600px;
+  /* for IE */
+  width:expression(document.body.clientWidth > 620 ? "600px": "auto" );
+}
+
+pre.codeinput {
+  background: #EEEEEE;
+  padding: 10px;
+}
+
+span.keyword {color: #0000FF}
+span.comment {color: #228B22}
+span.string {color: #A020F0}
+span.untermstring {color: #B20000}
+span.syscmd {color: #B28C00}
+
+pre.codeoutput {
+  color: #666666;
+  padding: 10px;
+}
+
+pre.error {
+  color: red;
+}
+
+p.footer {
+  text-align: right;
+  font-size: xx-small;
+  font-weight: lighter;
+  font-style: italic;
+  color: gray;
+}
+
+  </style></head>
+   <body>
+      <div class="content">
+         <h1>Mixed strategies for matrix games (LP formulation)</h1><pre class="codeinput"><span class="comment">% Sec. 5.2.5, Boyd &amp; Vandenberghe "Convex Optimization"</span>
+<span class="comment">% Jo&euml;lle Skaf - 08/24/05</span>
+<span class="comment">%</span>
+<span class="comment">% Player 1 wishes to choose u to minimize his expected payoff u'Pv, while</span>
+<span class="comment">% player 2 wishes to choose v to maximize u'Pv, where P is the payoff</span>
+<span class="comment">% matrix, u and v are the probability distributions of the choices of each</span>
+<span class="comment">% player (i.e. u&gt;=0, v&gt;=0, sum(u_i)=1, sum(v_i)=1)</span>
+<span class="comment">% LP formulation:   minimize    t</span>
+<span class="comment">%                       s.t.    u &gt;=0 , sum(u) = 1, P'*u &lt;= t*1</span>
+<span class="comment">%                   maximize    t</span>
+<span class="comment">%                       s.t.    v &gt;=0 , sum(v) = 1, P*v &gt;= t*1</span>
+
+<span class="comment">% Input data</span>
+randn(<span class="string">'state'</span>,0);
+n = 12;
+m = 12;
+P = randn(n,m);
+
+<span class="comment">% Optimal strategy for Player 1</span>
+fprintf(1,<span class="string">'Computing the optimal strategy for player 1 ... '</span>);
+
+cvx_begin
+    variables <span class="string">u(n)</span> <span class="string">t1</span>
+    minimize ( t1 )
+    u &gt;= 0;
+    ones(1,n)*u == 1;
+    P'*u &lt;= t1*ones(m,1);
+cvx_end
+
+fprintf(1,<span class="string">'Done! \n'</span>);
+
+<span class="comment">% Optimal strategy for Player 2</span>
+fprintf(1,<span class="string">'Computing the optimal strategy for player 2 ... '</span>);
+
+cvx_begin
+    variables <span class="string">v(m)</span> <span class="string">t2</span>
+    maximize ( t2 )
+    v &gt;= 0;
+    ones(1,m)*v == 1;
+    P*v &gt;= t2*ones(n,1);
+cvx_end
+
+fprintf(1,<span class="string">'Done! \n'</span>);
+
+<span class="comment">% Displaying results</span>
+disp(<span class="string">'------------------------------------------------------------------------'</span>);
+disp(<span class="string">'The optimal strategies for players 1 and 2 are respectively: '</span>);
+disp([u v]);
+disp(<span class="string">'The expected payoffs for player 1 and player 2 respectively are: '</span>);
+[t1 t2]
+disp(<span class="string">'They are equal as expected!'</span>);
+</pre><pre class="codeoutput">Computing the optimal strategy for player 1 ...  
+Calling SeDuMi: 25 variables (1 free), 13 equality constraints
+------------------------------------------------------------------------
+SeDuMi 1.1 by AdvOL, 2005 and Jos F. Sturm, 1998, 2001-2003.
+Alg = 2: xz-corrector, Adaptive Step-Differentiation, theta = 0.250, beta = 0.500
+Split 1 free variables
+eqs m = 13, order n = 27, dim = 27, blocks = 1
+nnz(A) = 192 + 0, nnz(ADA) = 169, nnz(L) = 91
+ it :     b*y       gap    delta  rate   t/tP*  t/tD*   feas cg cg  prec
+  0 :            8.33E+000 0.000
+  1 : -3.47E-001 3.67E+000 0.000 0.4406 0.9000 0.9000   2.44  1  1  6.6E+000
+  2 : -4.31E-002 1.64E+000 0.000 0.4457 0.9000 0.9000   4.60  1  1  1.1E+000
+  3 : -4.52E-002 4.48E-001 0.000 0.2738 0.9000 0.9000   1.52  1  1  2.3E-001
+  4 : -4.50E-002 8.38E-002 0.000 0.1872 0.9000 0.9000   1.13  1  1  4.2E-002
+  5 : -4.49E-002 7.41E-003 0.000 0.0884 0.9900 0.9900   1.03  1  1  3.9E-003
+  6 : -4.48E-002 1.39E-005 0.000 0.0019 0.9990 0.9990   1.01  1  1  
+iter seconds digits       c*x               b*y
+  6      0.1  15.8 -4.4840422221e-002 -4.4840422221e-002
+|Ax-b| =  2.2e-016, [Ay-c]_+ =  2.3E-017, |x|= 1.0e+000, |y|= 4.0e-001
+
+Detailed timing (sec)
+   Pre          IPM          Post
+1.001E-002    1.302E-001    1.001E-002    
+Max-norms: ||b||=1, ||c|| = 1,
+Cholesky |add|=0, |skip| = 0, ||L.L|| = 1.40372.
+------------------------------------------------------------------------
+Status (cvx_status): Solved
+ 
+Optimal value (cvx_optval): -0.0448404
+Done! 
+Computing the optimal strategy for player 2 ...  
+Calling SeDuMi: 25 variables (1 free), 13 equality constraints
+------------------------------------------------------------------------
+SeDuMi 1.1 by AdvOL, 2005 and Jos F. Sturm, 1998, 2001-2003.
+Alg = 2: xz-corrector, Adaptive Step-Differentiation, theta = 0.250, beta = 0.500
+Split 1 free variables
+eqs m = 13, order n = 27, dim = 27, blocks = 1
+nnz(A) = 192 + 0, nnz(ADA) = 169, nnz(L) = 91
+ it :     b*y       gap    delta  rate   t/tP*  t/tD*   feas cg cg  prec
+  0 :            8.33E+000 0.000
+  1 : -3.23E-001 3.71E+000 0.000 0.4455 0.9000 0.9000   2.42  1  1  6.7E+000
+  2 :  1.15E-002 1.61E+000 0.000 0.4343 0.9000 0.9000   4.60  1  1  1.0E+000
+  3 :  3.84E-002 4.33E-001 0.000 0.2688 0.9000 0.9000   1.51  1  1  2.2E-001
+  4 :  4.33E-002 8.56E-002 0.000 0.1975 0.9000 0.9000   1.12  1  1  4.3E-002
+  5 :  4.47E-002 6.91E-003 0.000 0.0808 0.9900 0.9900   1.03  1  1  3.6E-003
+  6 :  4.48E-002 5.43E-005 0.000 0.0079 0.9990 0.9825   1.01  1  1  
+iter seconds digits       c*x               b*y
+  6      0.1  14.8  4.4840422221e-002  4.4840422221e-002
+|Ax-b| =  2.8e-016, [Ay-c]_+ =  2.4E-016, |x|= 8.4e-001, |y|= 4.4e-001
+
+Detailed timing (sec)
+   Pre          IPM          Post
+1.001E-002    6.009E-002    0.000E+000    
+Max-norms: ||b||=1, ||c|| = 1,
+Cholesky |add|=0, |skip| = 0, ||L.L|| = 5.12072.
+------------------------------------------------------------------------
+Status (cvx_status): Solved
+ 
+Optimal value (cvx_optval): -0.0448404
+Done! 
+------------------------------------------------------------------------
+The optimal strategies for players 1 and 2 are respectively: 
+    0.2695    0.0686
+         0    0.1619
+    0.0973         0
+    0.1573    0.2000
+    0.1145         0
+    0.0434    0.1545
+         0    0.1146
+         0         0
+    0.2511    0.1030
+    0.0670         0
+         0         0
+         0    0.1974
+
+The expected payoffs for player 1 and player 2 respectively are: 
+
+ans =
+
+   -0.0448   -0.0448
+
+They are equal as expected!
+</pre><p class="footer"><br>
+            Published with MATLAB&reg; 7.1<br></p>
+      </div>
+      <!--
+##### SOURCE BEGIN #####
+%% Mixed strategies for matrix games (LP formulation)
+
+% Sec. 5.2.5, Boyd & Vandenberghe "Convex Optimization"
+% Joëlle Skaf - 08/24/05
+%
+% Player 1 wishes to choose u to minimize his expected payoff u'Pv, while 
+% player 2 wishes to choose v to maximize u'Pv, where P is the payoff
+% matrix, u and v are the probability distributions of the choices of each 
+% player (i.e. u>=0, v>=0, sum(u_i)=1, sum(v_i)=1)
+% LP formulation:   minimize    t 
+%                       s.t.    u >=0 , sum(u) = 1, P'*u <= t*1
+%                   maximize    t
+%                       s.t.    v >=0 , sum(v) = 1, P*v >= t*1
+  
+% Input data
+randn('state',0);
+n = 12;
+m = 12;
+P = randn(n,m);
+
+% Optimal strategy for Player 1
+fprintf(1,'Computing the optimal strategy for player 1 ... ');
+
+cvx_begin
+    variables u(n) t1
+    minimize ( t1 )
+    u >= 0;
+    ones(1,n)*u == 1;
+    P'*u <= t1*ones(m,1);
+cvx_end
+
+fprintf(1,'Done! \n');
+
+% Optimal strategy for Player 2
+fprintf(1,'Computing the optimal strategy for player 2 ... ');
+
+cvx_begin 
+    variables v(m) t2
+    maximize ( t2 )
+    v >= 0;
+    ones(1,m)*v == 1;
+    P*v >= t2*ones(n,1);
+cvx_end
+
+fprintf(1,'Done! \n');
+
+% Displaying results
+disp('REPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASH');
+disp('The optimal strategies for players 1 and 2 are respectively: ');
+disp([u v]);
+disp('The expected payoffs for player 1 and player 2 respectively are: ');
+[t1 t2]
+disp('They are equal as expected!');
+
+
+##### SOURCE END #####
+-->
+   </body>
+</html>

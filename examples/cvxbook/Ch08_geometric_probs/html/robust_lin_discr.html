@@ -1,0 +1,211 @@
+<html xmlns:mwsh="http://www.mathworks.com/namespace/mcode/v1/syntaxhighlight.dtd">
+   <head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   
+      <!--
+This HTML is auto-generated from an M-file.
+To make changes, update the M-file and republish this document.
+      -->
+      <title>Figure 8.9: Robust linear discrimination problem</title>
+      <meta name="generator" content="MATLAB 7.1">
+      <meta name="date" content="2006-02-15">
+      <meta name="m-file" content="robust_lin_discr"><style>
+
+body {
+  background-color: white;
+  margin:10px;
+}
+
+h1 {
+  color: #990000; 
+  font-size: x-large;
+}
+
+h2 {
+  color: #990000;
+  font-size: medium;
+}
+
+/* Make the text shrink to fit narrow windows, but not stretch too far in 
+wide windows.  On Gecko-based browsers, the shrink-to-fit doesn't work. */ 
+p,h1,h2,div.content div {
+  /* for MATLAB's browser */
+  width: 600px;
+  /* for Mozilla, but the "width" tag overrides it anyway */
+  max-width: 600px;
+  /* for IE */
+  width:expression(document.body.clientWidth > 620 ? "600px": "auto" );
+}
+
+pre.codeinput {
+  background: #EEEEEE;
+  padding: 10px;
+}
+
+span.keyword {color: #0000FF}
+span.comment {color: #228B22}
+span.string {color: #A020F0}
+span.untermstring {color: #B20000}
+span.syscmd {color: #B28C00}
+
+pre.codeoutput {
+  color: #666666;
+  padding: 10px;
+}
+
+pre.error {
+  color: red;
+}
+
+p.footer {
+  text-align: right;
+  font-size: xx-small;
+  font-weight: lighter;
+  font-style: italic;
+  color: gray;
+}
+
+  </style></head>
+   <body>
+      <div class="content">
+         <h1>Figure 8.9: Robust linear discrimination problem</h1><pre class="codeinput"><span class="comment">% Section 8.6.1, Boyd &amp; Vandenberghe "Convex Optimization"</span>
+<span class="comment">% Original by Lieven Vandenberghe</span>
+<span class="comment">% Adapted for CVX by Joelle Skaf - 10/16/05</span>
+<span class="comment">% (a figure is generated)</span>
+<span class="comment">%</span>
+<span class="comment">% The goal is to find a function f(x) = a'*x - b that classifies the points</span>
+<span class="comment">% {x_1,...,x_N} and {y_1,...,y_M} with maximal 'gap'. a and b can be</span>
+<span class="comment">% obtained by solving the following problem:</span>
+<span class="comment">%           maximize    t</span>
+<span class="comment">%               s.t.    a'*x_i - b &gt;=  t     for i = 1,...,N</span>
+<span class="comment">%                       a'*y_i - b &lt;= -t     for i = 1,...,M</span>
+<span class="comment">%                       ||a||_2 &lt;= 1</span>
+
+<span class="comment">% data generation</span>
+n = 2;
+randn(<span class="string">'state'</span>,3);
+N = 10; M = 6;
+Y = [1.5+1*randn(1,M); 2*randn(1,M)];
+X = [-1.5+1*randn(1,N); 2*randn(1,N)];
+T = [-1 1; 1 1];
+Y = T*Y;  X = T*X;
+
+<span class="comment">% Solution via CVX</span>
+cvx_begin
+    variables <span class="string">a(n)</span> <span class="string">b(1)</span> <span class="string">t(1)</span>
+    maximize (t)
+    X'*a - b &gt;= t;
+    Y'*a - b &lt;= -t;
+    norm(a) &lt;= 1;
+cvx_end
+
+<span class="comment">% Displaying results</span>
+linewidth = 0.5;  <span class="comment">% for the squares and circles</span>
+t_min = min([X(1,:),Y(1,:)]);
+t_max = max([X(1,:),Y(1,:)]);
+tt = linspace(t_min-1,t_max+1,100);
+p = -a(1)*tt/a(2) + b/a(2);
+p1 = -a(1)*tt/a(2) + (b+t)/a(2);
+p2 = -a(1)*tt/a(2) + (b-t)/a(2);
+
+graph = plot(X(1,:),X(2,:), <span class="string">'o'</span>, Y(1,:), Y(2,:), <span class="string">'o'</span>);
+set(graph(1),<span class="string">'LineWidth'</span>,linewidth);
+set(graph(2),<span class="string">'LineWidth'</span>,linewidth);
+set(graph(2),<span class="string">'MarkerFaceColor'</span>,[0 0.5 0]);
+hold <span class="string">on</span>;
+plot(tt,p, <span class="string">'-r'</span>, tt,p1, <span class="string">'--r'</span>, tt,p2, <span class="string">'--r'</span>);
+axis <span class="string">equal</span>
+title(<span class="string">'Robust linear discrimination problem'</span>);
+<span class="comment">% print -deps linsep.eps</span>
+</pre><pre class="codeoutput"> 
+Calling SeDuMi: 21 variables (2 free), 17 equality constraints
+------------------------------------------------------------------------
+SeDuMi 1.1 by AdvOL, 2005 and Jos F. Sturm, 1998, 2001-2003.
+Alg = 2: xz-corrector, Adaptive Step-Differentiation, theta = 0.250, beta = 0.500
+Split 2 free variables
+eqs m = 17, order n = 23, dim = 24, blocks = 2
+nnz(A) = 113 + 0, nnz(ADA) = 289, nnz(L) = 153
+ it :     b*y       gap    delta  rate   t/tP*  t/tD*   feas cg cg  prec
+  0 :            8.80E-001 0.000
+  1 :  7.88E-002 2.46E-001 0.000 0.2792 0.9000 0.9000   2.35  1  1  1.1E+000
+  2 : -2.99E-002 7.25E-002 0.000 0.2948 0.9000 0.9000   1.91  1  1  7.3E-001
+  3 : -1.83E-001 2.55E-002 0.000 0.3522 0.9000 0.9000   0.01  1  1  1.2E-001
+  4 : -4.59E-001 8.74E-003 0.000 0.3424 0.9000 0.9000   0.76  1  1  6.1E-002
+  5 : -5.06E-001 6.41E-004 0.000 0.0734 0.9900 0.9900   0.89  1  1  4.4E-003
+  6 : -5.11E-001 2.89E-006 0.000 0.0045 0.9990 0.9990   0.99  1  1  1.9E-005
+  7 : -5.11E-001 9.07E-010 0.000 0.0003 0.9999 0.9986   1.00  1  1  1.5E-008
+  8 : -5.11E-001 3.44E-011 0.000 0.0379 0.9905 0.9900   1.00  2  2  6.9E-010
+
+iter seconds digits       c*x               b*y
+  8      0.2   Inf -5.1122989593e-001 -5.1122989530e-001
+|Ax-b| =  1.4e-010, [Ay-c]_+ =  3.3E-010, |x|= 9.2e+000, |y|= 8.1e-001
+
+Detailed timing (sec)
+   Pre          IPM          Post
+3.004E-002    1.702E-001    0.000E+000    
+Max-norms: ||b||=1, ||c|| = 1,
+Cholesky |add|=0, |skip| = 0, ||L.L|| = 1185.25.
+------------------------------------------------------------------------
+Status (cvx_status): Solved
+ 
+Optimal value (cvx_optval): 0.51123
+</pre><img vspace="5" hspace="5" src="robust_lin_discr_01.png"> <p class="footer"><br>
+            Published with MATLAB&reg; 7.1<br></p>
+      </div>
+      <!--
+##### SOURCE BEGIN #####
+%% Figure 8.9: Robust linear discrimination problem
+
+% Section 8.6.1, Boyd & Vandenberghe "Convex Optimization"
+% Original by Lieven Vandenberghe
+% Adapted for CVX by Joelle Skaf - 10/16/05
+% (a figure is generated)
+%
+% The goal is to find a function f(x) = a'*x - b that classifies the points
+% {x_1,...,x_N} and {y_1,...,y_M} with maximal 'gap'. a and b can be
+% obtained by solving the following problem:
+%           maximize    t
+%               s.t.    a'*x_i - b >=  t     for i = 1,...,N
+%                       a'*y_i - b <= -t     for i = 1,...,M
+%                       ||a||_2 <= 1
+
+% data generation
+n = 2;
+randn('state',3);
+N = 10; M = 6;
+Y = [1.5+1*randn(1,M); 2*randn(1,M)];
+X = [-1.5+1*randn(1,N); 2*randn(1,N)];
+T = [-1 1; 1 1];
+Y = T*Y;  X = T*X;
+
+% Solution via CVX
+cvx_begin
+    variables a(n) b(1) t(1)
+    maximize (t)
+    X'*a - b >= t;
+    Y'*a - b <= -t;
+    norm(a) <= 1;
+cvx_end
+
+% Displaying results
+linewidth = 0.5;  % for the squares and circles
+t_min = min([X(1,:),Y(1,:)]);
+t_max = max([X(1,:),Y(1,:)]);
+tt = linspace(t_min-1,t_max+1,100);
+p = -a(1)*tt/a(2) + b/a(2);
+p1 = -a(1)*tt/a(2) + (b+t)/a(2);
+p2 = -a(1)*tt/a(2) + (b-t)/a(2);
+
+graph = plot(X(1,:),X(2,:), 'o', Y(1,:), Y(2,:), 'o');
+set(graph(1),'LineWidth',linewidth);
+set(graph(2),'LineWidth',linewidth);
+set(graph(2),'MarkerFaceColor',[0 0.5 0]);
+hold on;
+plot(tt,p, '-r', tt,p1, 'REPLACE_WITH_DASH_DASHr', tt,p2, 'REPLACE_WITH_DASH_DASHr');
+axis equal
+title('Robust linear discrimination problem');
+% print -deps linsep.eps
+##### SOURCE END #####
+-->
+   </body>
+</html>

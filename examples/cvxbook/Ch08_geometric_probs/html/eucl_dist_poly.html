@@ -1,0 +1,184 @@
+<html xmlns:mwsh="http://www.mathworks.com/namespace/mcode/v1/syntaxhighlight.dtd">
+   <head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   
+      <!--
+This HTML is auto-generated from an M-file.
+To make changes, update the M-file and republish this document.
+      -->
+      <title>Euclidean distance between polyhedra</title>
+      <meta name="generator" content="MATLAB 7.1">
+      <meta name="date" content="2006-02-15">
+      <meta name="m-file" content="eucl_dist_poly"><style>
+
+body {
+  background-color: white;
+  margin:10px;
+}
+
+h1 {
+  color: #990000; 
+  font-size: x-large;
+}
+
+h2 {
+  color: #990000;
+  font-size: medium;
+}
+
+/* Make the text shrink to fit narrow windows, but not stretch too far in 
+wide windows.  On Gecko-based browsers, the shrink-to-fit doesn't work. */ 
+p,h1,h2,div.content div {
+  /* for MATLAB's browser */
+  width: 600px;
+  /* for Mozilla, but the "width" tag overrides it anyway */
+  max-width: 600px;
+  /* for IE */
+  width:expression(document.body.clientWidth > 620 ? "600px": "auto" );
+}
+
+pre.codeinput {
+  background: #EEEEEE;
+  padding: 10px;
+}
+
+span.keyword {color: #0000FF}
+span.comment {color: #228B22}
+span.string {color: #A020F0}
+span.untermstring {color: #B20000}
+span.syscmd {color: #B28C00}
+
+pre.codeoutput {
+  color: #666666;
+  padding: 10px;
+}
+
+pre.error {
+  color: red;
+}
+
+p.footer {
+  text-align: right;
+  font-size: xx-small;
+  font-weight: lighter;
+  font-style: italic;
+  color: gray;
+}
+
+  </style></head>
+   <body>
+      <div class="content">
+         <h1>Euclidean distance between polyhedra</h1><pre class="codeinput"><span class="comment">% Section 8.2.1, Boyd &amp; Vandenberghe "Convex Optimization"</span>
+<span class="comment">% Joelle Skaf - 10/09/05</span>
+<span class="comment">%</span>
+<span class="comment">% Given two polyhedra C = {x | A1*x &lt;= b1} and D = {x | A2*x &lt;= b2}, the</span>
+<span class="comment">% distance between them is the optimal value of the problem:</span>
+<span class="comment">%           minimize    || x - y ||_2</span>
+<span class="comment">%               s.t.    A1*x &lt;= b1</span>
+<span class="comment">%                       A2*y &lt;= b2</span>
+
+<span class="comment">% Input data</span>
+randn(<span class="string">'state'</span>,0);
+rand(<span class="string">'state'</span>,0);
+
+n  = 5;
+m1 = 2*n;
+m2 = 3*n;
+A1 = randn(m1,n);
+A2 = randn(m2,n);
+b1 = rand(m1,1);
+b2 = rand(m2,1) + A2*randn(n,1);
+
+<span class="comment">% Solution via CVX</span>
+cvx_begin
+    variables <span class="string">x(n)</span> <span class="string">y(n)</span>
+    minimize (norm(x - y))
+    A1*x &lt;= b1;
+    A2*y &lt;= b2;
+cvx_end
+
+<span class="comment">% Displaying results</span>
+disp(<span class="string">'------------------------------------------------------------------'</span>);
+disp(<span class="string">'The distance between the 2 polyhedra C and D is: '</span> );
+disp([<span class="string">'dist(C,D) = '</span> num2str(cvx_optval)]);
+</pre><pre class="codeoutput"> 
+Calling SeDuMi: 41 variables (10 free), 30 equality constraints
+------------------------------------------------------------------------
+SeDuMi 1.1 by AdvOL, 2005 and Jos F. Sturm, 1998, 2001-2003.
+Alg = 2: xz-corrector, Adaptive Step-Differentiation, theta = 0.250, beta = 0.500
+Split 10 free variables
+eqs m = 30, order n = 48, dim = 52, blocks = 2
+nnz(A) = 300 + 0, nnz(ADA) = 600, nnz(L) = 315
+ it :     b*y       gap    delta  rate   t/tP*  t/tD*   feas cg cg  prec
+  0 :            9.10E-001 0.000
+  1 :  1.46E-001 4.20E-001 0.000 0.4609 0.9000 0.9000   3.17  1  1  1.5E+000
+  2 :  6.39E-001 1.14E-001 0.000 0.2726 0.9000 0.9000   1.85  1  1  2.9E-001
+  3 :  4.83E-001 3.04E-002 0.000 0.2656 0.9000 0.9000   1.31  1  1  7.7E-002
+  4 :  5.06E-001 2.68E-003 0.000 0.0884 0.9900 0.9900   1.09  1  1  6.8E-003
+  5 :  5.07E-001 1.00E-003 0.000 0.3737 0.9000 0.9000   1.02  1  1  2.7E-003
+  6 :  5.09E-001 2.51E-005 0.000 0.0250 0.9902 0.9900   1.01  1  1  7.5E-005
+  7 :  5.09E-001 4.24E-007 0.000 0.0169 0.9901 0.9900   1.00  1  1  1.4E-006
+  8 :  5.09E-001 3.72E-008 0.407 0.0877 0.9900 0.9900   1.00  1  1  1.3E-007
+  9 :  5.09E-001 1.15E-009 0.000 0.0310 0.9900 0.9737   1.00  1  1  4.0E-009
+
+iter seconds digits       c*x               b*y
+  9      0.2   8.0  5.0856706332e-001  5.0856705866e-001
+|Ax-b| =  1.6e-009, [Ay-c]_+ =  5.1E-010, |x|= 6.6e+000, |y|= 1.5e+000
+
+Detailed timing (sec)
+   Pre          IPM          Post
+3.004E-002    2.003E-001    0.000E+000    
+Max-norms: ||b||=2.829728e+000, ||c|| = 1,
+Cholesky |add|=0, |skip| = 0, ||L.L|| = 2.11833.
+------------------------------------------------------------------------
+Status (cvx_status): Solved
+ 
+Optimal value (cvx_optval): 0.508567
+------------------------------------------------------------------
+The distance between the 2 polyhedra C and D is: 
+dist(C,D) = 0.50857
+</pre><p class="footer"><br>
+            Published with MATLAB&reg; 7.1<br></p>
+      </div>
+      <!--
+##### SOURCE BEGIN #####
+%% Euclidean distance between polyhedra
+
+% Section 8.2.1, Boyd & Vandenberghe "Convex Optimization"
+% Joelle Skaf - 10/09/05
+%
+% Given two polyhedra C = {x | A1*x <= b1} and D = {x | A2*x <= b2}, the
+% distance between them is the optimal value of the problem:
+%           minimize    || x - y ||_2
+%               s.t.    A1*x <= b1
+%                       A2*y <= b2
+
+% Input data
+randn('state',0);
+rand('state',0);
+
+n  = 5;
+m1 = 2*n;
+m2 = 3*n;
+A1 = randn(m1,n);
+A2 = randn(m2,n);
+b1 = rand(m1,1);
+b2 = rand(m2,1) + A2*randn(n,1);
+
+% Solution via CVX
+cvx_begin
+    variables x(n) y(n)
+    minimize (norm(x - y))
+    A1*x <= b1;
+    A2*y <= b2;
+cvx_end
+
+% Displaying results
+disp('REPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASH');
+disp('The distance between the 2 polyhedra C and D is: ' );
+disp(['dist(C,D) = ' num2str(cvx_optval)]);
+
+##### SOURCE END #####
+-->
+   </body>
+</html>

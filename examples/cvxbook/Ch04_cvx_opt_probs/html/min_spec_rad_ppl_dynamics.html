@@ -1,0 +1,265 @@
+<html xmlns:mwsh="http://www.mathworks.com/namespace/mcode/v1/syntaxhighlight.dtd">
+   <head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   
+      <!--
+This HTML is auto-generated from an M-file.
+To make changes, update the M-file and republish this document.
+      -->
+      <title>Section 4.5.4 example: Minimum spectral radius via Perron-Frobenius theory</title>
+      <meta name="generator" content="MATLAB 7.1">
+      <meta name="date" content="2006-02-15">
+      <meta name="m-file" content="min_spec_rad_ppl_dynamics"><style>
+
+body {
+  background-color: white;
+  margin:10px;
+}
+
+h1 {
+  color: #990000; 
+  font-size: x-large;
+}
+
+h2 {
+  color: #990000;
+  font-size: medium;
+}
+
+/* Make the text shrink to fit narrow windows, but not stretch too far in 
+wide windows.  On Gecko-based browsers, the shrink-to-fit doesn't work. */ 
+p,h1,h2,div.content div {
+  /* for MATLAB's browser */
+  width: 600px;
+  /* for Mozilla, but the "width" tag overrides it anyway */
+  max-width: 600px;
+  /* for IE */
+  width:expression(document.body.clientWidth > 620 ? "600px": "auto" );
+}
+
+pre.codeinput {
+  background: #EEEEEE;
+  padding: 10px;
+}
+
+span.keyword {color: #0000FF}
+span.comment {color: #228B22}
+span.string {color: #A020F0}
+span.untermstring {color: #B20000}
+span.syscmd {color: #B28C00}
+
+pre.codeoutput {
+  color: #666666;
+  padding: 10px;
+}
+
+pre.error {
+  color: red;
+}
+
+p.footer {
+  text-align: right;
+  font-size: xx-small;
+  font-weight: lighter;
+  font-style: italic;
+  color: gray;
+}
+
+  </style></head>
+   <body>
+      <div class="content">
+         <h1>Section 4.5.4 example: Minimum spectral radius via Perron-Frobenius theory</h1><pre class="codeinput"><span class="comment">% Boyd &amp; Vandenberghe "Convex Optimization"</span>
+<span class="comment">% Joelle Skaf - 01/29/06</span>
+<span class="comment">%</span>
+<span class="comment">% Check pp. 165 - 167 for the detailed explanation of the population</span>
+<span class="comment">% dynamics model p(t+1) = Ap(t), the underlying assumptions and the model</span>
+<span class="comment">% of the birth and survival rates as monomial functions of the</span>
+<span class="comment">% concentrations of 2 chemicals c1 and c2 in the environments.</span>
+<span class="comment">% The goal is minimize, over c1 and c2, the spectral radius of A which is</span>
+<span class="comment">% the Perron-Frobenius eigenvalue lambda of A and which corresponds to finding the</span>
+<span class="comment">% fastest decay rate, or slowest growth rate, for the population.</span>
+<span class="comment">% The problem can be posed as a geometric program</span>
+<span class="comment">%           minimize    lambda</span>
+<span class="comment">%               s.t.    b1v1 + b2v2 + b3v3 + b4v4 &lt;= lambda*v1</span>
+<span class="comment">%                       s1v1 &lt;= lambda*v2</span>
+<span class="comment">%                       s2v2 &lt;= lambda*v3</span>
+<span class="comment">%                       s3v3 &lt;= lambda*v4</span>
+<span class="comment">%                       1/2 &lt;= ci &lt;= 2 ,                        i = 1,2</span>
+<span class="comment">%                       bi = bi^{nom}(c1/c1^{nom})^alpha_i*...</span>
+<span class="comment">%                               (c2/c2^{nom})^beta_i ,          i = 1,...,4</span>
+<span class="comment">%                       si = si^{nom}(c1/c1^{nom})^gamma_i*...</span>
+<span class="comment">%                               (c2/c2^{nom})^delta_i ,         i = 1,...,3</span>
+<span class="comment">% with variables bi, si, ci, vi, lambda</span>
+
+<span class="comment">% input data</span>
+n = 4;
+alphas = [-0.3 -0.4 -0.2 -0.1];
+betas = [0.9 0.8 -0.2 0.1];
+gammas = [0.1 0.15 0.2];
+deltas = [-0.5 -0.2 0.1];
+b_nom = [0.5 1.8 1.2 0.2];
+s_nom = [0.5 0.3 0.2];
+c_nom = [1 1];
+
+<span class="comment">% GP formulation</span>
+cvx_begin
+    variables <span class="string">x(n)</span> <span class="string">y(n-1)</span> <span class="string">z(2)</span> <span class="string">t(n)</span> <span class="string">u</span>
+    minimize (u)
+    logsumexp_sdp(x+t)&lt;= u+t(1);
+    y(1:3) + t(1:3) &lt;= u + t(2:4);
+    z &lt;= log(2);
+    z &gt;= log(1/2);
+    <span class="keyword">for</span> i=1:n
+        x(i) == log(b_nom(i))+alphas(i)*(z(1)-log(c_nom(1)))+ <span class="keyword">...</span>
+                        betas(i)*(z(2) - log(c_nom(2)));
+    <span class="keyword">end</span>
+    <span class="keyword">for</span> j=1:n-1
+        y(j) == log(s_nom(j))+gammas(j)*(z(1)-log(c_nom(1)))+ <span class="keyword">...</span>
+                        deltas(j)*(z(2) - log(c_nom(2)));
+    <span class="keyword">end</span>
+cvx_end
+
+<span class="comment">% recovering original variables</span>
+b = exp(x);
+s = exp(y);
+c = exp(z);
+v = exp(t);
+lambda = exp(u);
+
+<span class="comment">% displaying results</span>
+<span class="keyword">if</span> lambda &lt; 1
+    disp(<span class="string">'The fastest decay rate of the bacteria population is: '</span>);
+    disp(lambda);
+<span class="keyword">else</span>
+    disp(<span class="string">'The slowest growth rate of the bacteria population is: '</span>);
+    disp(lambda);
+<span class="keyword">end</span>
+disp(<span class="string">'The concentration of chemical 1 achieving this result is: '</span>);
+disp(c(1));
+disp(<span class="string">'The concentration of chemical 2 achieving this result is: '</span>);
+disp(c(2));
+</pre><pre class="codeoutput"> 
+Calling SeDuMi: 45 variables (8 free), 24 equality constraints
+------------------------------------------------------------------------
+SeDuMi 1.1 by AdvOL, 2005 and Jos F. Sturm, 1998, 2001-2003.
+Alg = 2: xz-corrector, Adaptive Step-Differentiation, theta = 0.250, beta = 0.500
+Split 8 free variables
+eqs m = 24, order n = 45, dim = 63, blocks = 4
+nnz(A) = 148 + 0, nnz(ADA) = 194, nnz(L) = 109
+ it :     b*y       gap    delta  rate   t/tP*  t/tD*   feas cg cg  prec
+  0 :            7.36E-001 0.000
+  1 :  6.69E-001 2.15E-001 0.000 0.2922 0.9000 0.9000   2.59  1  1  1.3E+000
+  2 :  4.96E-001 6.65E-002 0.000 0.3091 0.9000 0.9000   1.99  1  1  2.8E-001
+  3 :  1.75E-001 2.03E-002 0.000 0.3059 0.9000 0.9000   1.35  1  1  9.8E-002
+  4 :  1.01E-001 4.48E-003 0.000 0.2204 0.9000 0.9000   1.17  1  1  2.8E-002
+  5 :  8.27E-002 1.11E-003 0.000 0.2476 0.9000 0.9000   1.08  1  1  7.7E-003
+  6 :  7.82E-002 2.92E-004 0.000 0.2635 0.9000 0.9000   1.03  1  1  2.2E-003
+  7 :  7.66E-002 1.60E-005 0.072 0.0548 0.9901 0.9900   1.01  1  1  1.2E-004
+  8 :  7.64E-002 1.77E-007 0.000 0.0110 0.9900 0.9585   1.00  1  1  2.3E-006
+  9 :  7.64E-002 5.42E-009 0.000 0.0306 0.9900 0.9809   1.00  1  1  6.4E-008
+ 10 :  7.64E-002 1.42E-010 0.000 0.0262 0.9900 0.9900   1.00  2  2  1.7E-009
+
+iter seconds digits       c*x               b*y
+ 10      0.4   Inf  7.6418728228e-002  7.6418728816e-002
+|Ax-b| =  4.0e-009, [Ay-c]_+ =  3.9E-010, |x|= 7.3e+000, |y|= 1.2e+000
+
+Detailed timing (sec)
+   Pre          IPM          Post
+6.009E-002    3.505E-001    0.000E+000    
+Max-norms: ||b||=3.016052e+000, ||c|| = 1,
+Cholesky |add|=0, |skip| = 0, ||L.L|| = 5.58969.
+------------------------------------------------------------------------
+Status (cvx_status): Solved
+ 
+Optimal value (cvx_optval): 0.0764187
+The slowest growth rate of the bacteria population is: 
+    1.0794
+
+The concentration of chemical 1 achieving this result is: 
+    2.0000
+
+The concentration of chemical 2 achieving this result is: 
+    0.5000
+
+</pre><p class="footer"><br>
+            Published with MATLAB&reg; 7.1<br></p>
+      </div>
+      <!--
+##### SOURCE BEGIN #####
+%% Section 4.5.4 example: Minimum spectral radius via Perron-Frobenius theory
+
+% Boyd & Vandenberghe "Convex Optimization"
+% Joelle Skaf - 01/29/06
+% 
+% Check pp. 165 - 167 for the detailed explanation of the population
+% dynamics model p(t+1) = Ap(t), the underlying assumptions and the model 
+% of the birth and survival rates as monomial functions of the 
+% concentrations of 2 chemicals c1 and c2 in the environments. 
+% The goal is minimize, over c1 and c2, the spectral radius of A which is 
+% the Perron-Frobenius eigenvalue lambda of A and which corresponds to finding the
+% fastest decay rate, or slowest growth rate, for the population. 
+% The problem can be posed as a geometric program 
+%           minimize    lambda
+%               s.t.    b1v1 + b2v2 + b3v3 + b4v4 <= lambda*v1
+%                       s1v1 <= lambda*v2
+%                       s2v2 <= lambda*v3
+%                       s3v3 <= lambda*v4
+%                       1/2 <= ci <= 2 ,                        i = 1,2
+%                       bi = bi^{nom}(c1/c1^{nom})^alpha_i*...
+%                               (c2/c2^{nom})^beta_i ,          i = 1,...,4 
+%                       si = si^{nom}(c1/c1^{nom})^gamma_i*...
+%                               (c2/c2^{nom})^delta_i ,         i = 1,...,3
+% with variables bi, si, ci, vi, lambda
+
+% input data
+n = 4;
+alphas = [-0.3 -0.4 -0.2 -0.1];
+betas = [0.9 0.8 -0.2 0.1];
+gammas = [0.1 0.15 0.2];
+deltas = [-0.5 -0.2 0.1];
+b_nom = [0.5 1.8 1.2 0.2];
+s_nom = [0.5 0.3 0.2];
+c_nom = [1 1];
+
+% GP formulation
+cvx_begin 
+    variables x(n) y(n-1) z(2) t(n) u
+    minimize (u)
+    logsumexp_sdp(x+t)<= u+t(1);
+    y(1:3) + t(1:3) <= u + t(2:4);
+    z <= log(2);
+    z >= log(1/2);
+    for i=1:n
+        x(i) == log(b_nom(i))+alphas(i)*(z(1)-log(c_nom(1)))+ ...
+                        betas(i)*(z(2) - log(c_nom(2)));
+    end
+    for j=1:n-1
+        y(j) == log(s_nom(j))+gammas(j)*(z(1)-log(c_nom(1)))+ ...
+                        deltas(j)*(z(2) - log(c_nom(2)));
+    end
+cvx_end
+
+% recovering original variables
+b = exp(x); 
+s = exp(y);
+c = exp(z);
+v = exp(t);
+lambda = exp(u);
+
+% displaying results
+if lambda < 1 
+    disp('The fastest decay rate of the bacteria population is: ');
+    disp(lambda);
+else 
+    disp('The slowest growth rate of the bacteria population is: ');
+    disp(lambda);
+end
+disp('The concentration of chemical 1 achieving this result is: ');
+disp(c(1));
+disp('The concentration of chemical 2 achieving this result is: ');
+disp(c(2));
+
+##### SOURCE END #####
+-->
+   </body>
+</html>

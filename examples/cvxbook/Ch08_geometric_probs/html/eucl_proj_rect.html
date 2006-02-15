@@ -1,0 +1,184 @@
+<html xmlns:mwsh="http://www.mathworks.com/namespace/mcode/v1/syntaxhighlight.dtd">
+   <head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   
+      <!--
+This HTML is auto-generated from an M-file.
+To make changes, update the M-file and republish this document.
+      -->
+      <title>Euclidean projection on a rectangle</title>
+      <meta name="generator" content="MATLAB 7.1">
+      <meta name="date" content="2006-02-15">
+      <meta name="m-file" content="eucl_proj_rect"><style>
+
+body {
+  background-color: white;
+  margin:10px;
+}
+
+h1 {
+  color: #990000; 
+  font-size: x-large;
+}
+
+h2 {
+  color: #990000;
+  font-size: medium;
+}
+
+/* Make the text shrink to fit narrow windows, but not stretch too far in 
+wide windows.  On Gecko-based browsers, the shrink-to-fit doesn't work. */ 
+p,h1,h2,div.content div {
+  /* for MATLAB's browser */
+  width: 600px;
+  /* for Mozilla, but the "width" tag overrides it anyway */
+  max-width: 600px;
+  /* for IE */
+  width:expression(document.body.clientWidth > 620 ? "600px": "auto" );
+}
+
+pre.codeinput {
+  background: #EEEEEE;
+  padding: 10px;
+}
+
+span.keyword {color: #0000FF}
+span.comment {color: #228B22}
+span.string {color: #A020F0}
+span.untermstring {color: #B20000}
+span.syscmd {color: #B28C00}
+
+pre.codeoutput {
+  color: #666666;
+  padding: 10px;
+}
+
+pre.error {
+  color: red;
+}
+
+p.footer {
+  text-align: right;
+  font-size: xx-small;
+  font-weight: lighter;
+  font-style: italic;
+  color: gray;
+}
+
+  </style></head>
+   <body>
+      <div class="content">
+         <h1>Euclidean projection on a rectangle</h1><pre class="codeinput"><span class="comment">% Section 8.1.1, Boyd &amp; Vandenberghe "Convex Optimization"</span>
+<span class="comment">% Joelle Skaf - 10/07/05</span>
+<span class="comment">%</span>
+<span class="comment">% The projection of x0 on a rectangle C = {x | l &lt;= x &lt;= u} is given by</span>
+<span class="comment">%           minimize || x - x0 ||^2</span>
+<span class="comment">%               s.t.    l &lt;= x &lt;= u</span>
+<span class="comment">% It is also given by P_C(x0)_k = l_k       if  x0_k &lt;= l_k</span>
+<span class="comment">%                                 x0_k      if  l_k &lt;= x0_k &lt;= u_k</span>
+<span class="comment">%                                 u_k       if  x0_k &gt;= u_k</span>
+
+cvx_quiet(true);
+<span class="comment">% Input data</span>
+randn(<span class="string">'seed'</span>,0);
+n  = 10;
+<span class="comment">% generating vector l and u such that l &lt; u</span>
+l  = -rand(n,1);
+u  = rand(n,1);
+x0 = randn(n,1);
+
+<span class="comment">% Analytical solution</span>
+fprintf(1,<span class="string">'Computing the analytical solution ...'</span>);
+pc_x0 = x0;
+pc_x0(find(x0&lt;=l)) = l(find(x0&lt;=l));
+pc_x0(find(x0&gt;=u)) = u(find(x0&gt;=u));
+fprintf(1,<span class="string">'Done! \n'</span>);
+
+<span class="comment">% Solution via QP</span>
+fprintf(1,<span class="string">'Computing the optimal solution by solving a QP ...'</span>);
+
+cvx_begin
+    variable <span class="string">x(n)</span>
+    minimize ( norm(x-x0) )
+    x &lt;= u;
+    x &gt;= l;
+cvx_end
+
+fprintf(1,<span class="string">'Done! \n'</span>);
+
+<span class="comment">% Verification</span>
+disp(<span class="string">'-----------------------------------------------------------------'</span>);
+disp(<span class="string">'Verifying that the analytical solution and the solution obtained via QP are equal: '</span>);
+[pc_x0 x]
+</pre><pre class="codeoutput">Computing the analytical solution ...Done! 
+Computing the optimal solution by solving a QP ...Done! 
+-----------------------------------------------------------------
+Verifying that the analytical solution and the solution obtained via QP are equal: 
+
+ans =
+
+    0.4186    0.4186
+    0.6268    0.6268
+    0.0751    0.0751
+    0.2026    0.2026
+   -0.1988   -0.1988
+    0.8381    0.8381
+    0.0196    0.0196
+    0.6813    0.6813
+    0.2641    0.2640
+    0.8318    0.8318
+
+</pre><p class="footer"><br>
+            Published with MATLAB&reg; 7.1<br></p>
+      </div>
+      <!--
+##### SOURCE BEGIN #####
+%% Euclidean projection on a rectangle
+
+% Section 8.1.1, Boyd & Vandenberghe "Convex Optimization"
+% Joelle Skaf - 10/07/05
+%
+% The projection of x0 on a rectangle C = {x | l <= x <= u} is given by
+%           minimize || x - x0 ||^2
+%               s.t.    l <= x <= u
+% It is also given by P_C(x0)_k = l_k       if  x0_k <= l_k
+%                                 x0_k      if  l_k <= x0_k <= u_k
+%                                 u_k       if  x0_k >= u_k
+
+cvx_quiet(true);
+% Input data
+randn('seed',0);
+n  = 10;
+% generating vector l and u such that l < u
+l  = -rand(n,1);
+u  = rand(n,1);
+x0 = randn(n,1);
+
+% Analytical solution
+fprintf(1,'Computing the analytical solution ...');
+pc_x0 = x0;
+pc_x0(find(x0<=l)) = l(find(x0<=l));
+pc_x0(find(x0>=u)) = u(find(x0>=u));
+fprintf(1,'Done! \n');
+
+% Solution via QP
+fprintf(1,'Computing the optimal solution by solving a QP ...');
+
+cvx_begin
+    variable x(n)
+    minimize ( norm(x-x0) )
+    x <= u;
+    x >= l;
+cvx_end
+
+fprintf(1,'Done! \n');
+
+% Verification
+disp('REPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASH-');
+disp('Verifying that the analytical solution and the solution obtained via QP are equal: ');
+[pc_x0 x]
+
+##### SOURCE END #####
+-->
+   </body>
+</html>

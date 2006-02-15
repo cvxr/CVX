@@ -1,0 +1,194 @@
+<html xmlns:mwsh="http://www.mathworks.com/namespace/mcode/v1/syntaxhighlight.dtd">
+   <head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   
+      <!--
+This HTML is auto-generated from an M-file.
+To make changes, update the M-file and republish this document.
+      -->
+      <title>Floor planning</title>
+      <meta name="generator" content="MATLAB 7.1">
+      <meta name="date" content="2006-02-15">
+      <meta name="m-file" content="floor_plan"><style>
+
+body {
+  background-color: white;
+  margin:10px;
+}
+
+h1 {
+  color: #990000; 
+  font-size: x-large;
+}
+
+h2 {
+  color: #990000;
+  font-size: medium;
+}
+
+/* Make the text shrink to fit narrow windows, but not stretch too far in 
+wide windows.  On Gecko-based browsers, the shrink-to-fit doesn't work. */ 
+p,h1,h2,div.content div {
+  /* for MATLAB's browser */
+  width: 600px;
+  /* for Mozilla, but the "width" tag overrides it anyway */
+  max-width: 600px;
+  /* for IE */
+  width:expression(document.body.clientWidth > 620 ? "600px": "auto" );
+}
+
+pre.codeinput {
+  background: #EEEEEE;
+  padding: 10px;
+}
+
+span.keyword {color: #0000FF}
+span.comment {color: #228B22}
+span.string {color: #A020F0}
+span.untermstring {color: #B20000}
+span.syscmd {color: #B28C00}
+
+pre.codeoutput {
+  color: #666666;
+  padding: 10px;
+}
+
+pre.error {
+  color: red;
+}
+
+p.footer {
+  text-align: right;
+  font-size: xx-small;
+  font-weight: lighter;
+  font-style: italic;
+  color: gray;
+}
+
+  </style></head>
+   <body>
+      <div class="content">
+         <h1>Floor planning</h1><pre class="codeinput"><span class="comment">% Section 8.8.1/2, Example 8.7, Boyd &amp; Vandenberghe "Convex Optimization"</span>
+<span class="comment">% Original by Lieven Vandenberghe</span>
+<span class="comment">% Adapted for CVX by Joelle Skaf - 11/13/05</span>
+<span class="comment">% (a figure is generated)</span>
+<span class="comment">%</span>
+<span class="comment">% Rectangles aligned with the axies need to be place in the smallest</span>
+<span class="comment">% possible bounding box. No overlap is allowed. Each rectangle to be placed</span>
+<span class="comment">% can be reconfigured, within some limits. We are given relative</span>
+<span class="comment">% positioning contrainsts on those rectangles, and minimal required areas.</span>
+<span class="comment">% In the current problem, 5 rectangles are given</span>
+
+cvx_quiet(1);
+<span class="comment">% input data</span>
+n = 5;
+Amin = [100 100 100 100 100; <span class="keyword">...</span>
+         20  50  80 150 200; <span class="keyword">...</span>
+        180  80  80  80  80; <span class="keyword">...</span>
+         20 150  20 200 110];
+r = 1;          <span class="comment">% minimum spacing constraints</span>
+
+<span class="keyword">for</span> iter = 1:4
+    A = Amin(iter,:);
+    cvx_begin
+        variables <span class="string">x(n)</span> <span class="string">y(n)</span> <span class="string">w(n)</span> <span class="string">h(n)</span> <span class="string">W</span> <span class="string">H</span>
+        minimize ( W + H )
+        x &gt;= r;
+        y &gt;= r;
+        w &gt;= 0;
+        h &gt;= 0;
+        x(5) + w(5) + r &lt;= W;    <span class="comment">% No rectangles at the right of Rectangle 5</span>
+        x(1) + w(1) + r &lt;= x(3); <span class="comment">% Rectangle 1 is at the left of Rectangle 3</span>
+        x(2) + w(2) + r &lt;= x(3); <span class="comment">% Rectangle 2 is at the left of Rectangle 3</span>
+        x(3) + w(3) + r &lt;= x(5); <span class="comment">% Rectangle 3 is at the left of Rectangle 5</span>
+        x(4) + w(4) + r &lt;= x(5); <span class="comment">% Rectangle 4 is at the left of Rectangle 5</span>
+        y(4) + h(4) + r &lt;= H;    <span class="comment">% No rectangles on top of Rectangle 4</span>
+        y(5) + h(5) + r &lt;= H;    <span class="comment">% No rectangles on top of Rectangle 5</span>
+        y(2) + h(2) + r &lt;= y(1); <span class="comment">% Rectangle 2 is below Rectangle 1</span>
+        y(1) + h(1) + r &lt;= y(4); <span class="comment">% Rectangle 1 is below Rectangle 4</span>
+        y(3) + h(3) + r &lt;= y(4); <span class="comment">% Rectangle 3 is below Rectangle 4</span>
+        w &lt;= 5*h;                <span class="comment">% Aspect ratio constraints</span>
+        h &lt;= 5*w;
+        w' &gt;= quad_over_lin([A.^.5;zeros(1,n)],h');
+    cvx_end
+    <span class="comment">% Plotting</span>
+    subplot(2,2,iter)
+    <span class="keyword">for</span> i=1:n
+        fill([x(i); x(i)+w(i); x(i)+w(i); x(i)],[y(i);y(i);y(i)+h(i);y(i)+h(i)],0.90*[1 1 1]);
+        hold <span class="string">on</span>;
+        text(x(i)+w(i)/2, y(i)+h(i)/2,[<span class="string">'B'</span>,int2str(i)]);
+    <span class="keyword">end</span>
+    axis([0 W 0 H]);
+    axis <span class="string">equal</span>; axis <span class="string">off</span>;
+<span class="keyword">end</span>
+
+<span class="comment">% print -deps floorplan-opt.eps</span>
+</pre><img vspace="5" hspace="5" src="floor_plan_01.png"> <p class="footer"><br>
+            Published with MATLAB&reg; 7.1<br></p>
+      </div>
+      <!--
+##### SOURCE BEGIN #####
+%% Floor planning
+
+% Section 8.8.1/2, Example 8.7, Boyd & Vandenberghe "Convex Optimization"
+% Original by Lieven Vandenberghe
+% Adapted for CVX by Joelle Skaf - 11/13/05
+% (a figure is generated)
+%
+% Rectangles aligned with the axies need to be place in the smallest
+% possible bounding box. No overlap is allowed. Each rectangle to be placed
+% can be reconfigured, within some limits. We are given relative
+% positioning contrainsts on those rectangles, and minimal required areas.
+% In the current problem, 5 rectangles are given
+
+cvx_quiet(1);
+% input data
+n = 5;
+Amin = [100 100 100 100 100; ...
+         20  50  80 150 200; ...
+        180  80  80  80  80; ...
+         20 150  20 200 110];
+r = 1;          % minimum spacing constraints
+
+for iter = 1:4
+    A = Amin(iter,:);
+    cvx_begin
+        variables x(n) y(n) w(n) h(n) W H
+        minimize ( W + H )
+        x >= r;
+        y >= r;
+        w >= 0;
+        h >= 0;
+        x(5) + w(5) + r <= W;    % No rectangles at the right of Rectangle 5
+        x(1) + w(1) + r <= x(3); % Rectangle 1 is at the left of Rectangle 3
+        x(2) + w(2) + r <= x(3); % Rectangle 2 is at the left of Rectangle 3
+        x(3) + w(3) + r <= x(5); % Rectangle 3 is at the left of Rectangle 5
+        x(4) + w(4) + r <= x(5); % Rectangle 4 is at the left of Rectangle 5
+        y(4) + h(4) + r <= H;    % No rectangles on top of Rectangle 4
+        y(5) + h(5) + r <= H;    % No rectangles on top of Rectangle 5
+        y(2) + h(2) + r <= y(1); % Rectangle 2 is below Rectangle 1
+        y(1) + h(1) + r <= y(4); % Rectangle 1 is below Rectangle 4
+        y(3) + h(3) + r <= y(4); % Rectangle 3 is below Rectangle 4
+        w <= 5*h;                % Aspect ratio constraints
+        h <= 5*w;
+        w' >= quad_over_lin([A.^.5;zeros(1,n)],h');
+    cvx_end
+    % Plotting
+    subplot(2,2,iter)
+    for i=1:n
+        fill([x(i); x(i)+w(i); x(i)+w(i); x(i)],[y(i);y(i);y(i)+h(i);y(i)+h(i)],0.90*[1 1 1]);
+        hold on;
+        text(x(i)+w(i)/2, y(i)+h(i)/2,['B',int2str(i)]);
+    end
+    axis([0 W 0 H]);
+    axis equal; axis off;
+end
+
+% print -deps floorplan-opt.eps
+
+
+
+##### SOURCE END #####
+-->
+   </body>
+</html>

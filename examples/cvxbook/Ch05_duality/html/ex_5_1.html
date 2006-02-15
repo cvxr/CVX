@@ -1,0 +1,203 @@
+<html xmlns:mwsh="http://www.mathworks.com/namespace/mcode/v1/syntaxhighlight.dtd">
+   <head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   
+      <!--
+This HTML is auto-generated from an M-file.
+To make changes, update the M-file and republish this document.
+      -->
+      <title>Sensitivity analysis for a simple QCQP</title>
+      <meta name="generator" content="MATLAB 7.1">
+      <meta name="date" content="2006-02-15">
+      <meta name="m-file" content="ex_5_1"><style>
+
+body {
+  background-color: white;
+  margin:10px;
+}
+
+h1 {
+  color: #990000; 
+  font-size: x-large;
+}
+
+h2 {
+  color: #990000;
+  font-size: medium;
+}
+
+/* Make the text shrink to fit narrow windows, but not stretch too far in 
+wide windows.  On Gecko-based browsers, the shrink-to-fit doesn't work. */ 
+p,h1,h2,div.content div {
+  /* for MATLAB's browser */
+  width: 600px;
+  /* for Mozilla, but the "width" tag overrides it anyway */
+  max-width: 600px;
+  /* for IE */
+  width:expression(document.body.clientWidth > 620 ? "600px": "auto" );
+}
+
+pre.codeinput {
+  background: #EEEEEE;
+  padding: 10px;
+}
+
+span.keyword {color: #0000FF}
+span.comment {color: #228B22}
+span.string {color: #A020F0}
+span.untermstring {color: #B20000}
+span.syscmd {color: #B28C00}
+
+pre.codeoutput {
+  color: #666666;
+  padding: 10px;
+}
+
+pre.error {
+  color: red;
+}
+
+p.footer {
+  text-align: right;
+  font-size: xx-small;
+  font-weight: lighter;
+  font-style: italic;
+  color: gray;
+}
+
+  </style></head>
+   <body>
+      <div class="content">
+         <h1>Sensitivity analysis for a simple QCQP</h1><pre class="codeinput"><span class="comment">% Exercise 5.1 d), Boyd &amp; Vandenberghe "Convex Optimization"</span>
+<span class="comment">% Jo&euml;lle Skaf - 08/29/05</span>
+<span class="comment">% (a figure is generated)</span>
+<span class="comment">%</span>
+<span class="comment">% Let p_star(u) denote the optimal value of:</span>
+<span class="comment">%           minimize    x^2 + 1</span>
+<span class="comment">%               s.t.    (x-2)(x-2)&lt;=u</span>
+<span class="comment">% Finds p_star(u) and plots it versus u.</span>
+
+cvx_quiet(true);
+
+fprintf(1,<span class="string">'Computing p_star(u)...\n '</span>);
+
+u = linspace(-0.9,10,50);
+p_star = zeros(1,length(u));
+<span class="keyword">for</span> i = 1:length(u)
+    disp([<span class="string">'for u = '</span> num2str(u(i))]);
+    <span class="comment">% perturbed problem</span>
+    cvx_begin
+        variable <span class="string">x(1)</span>
+        minimize ( quad_form(x,1) + 1 )
+        quad_form(x,1) - 6*x + 8 &lt;= u(i);
+    cvx_end
+    <span class="comment">% optimal value</span>
+    p_star(i) = cvx_optval;
+<span class="keyword">end</span>
+
+fprintf(1,<span class="string">'Done! \n'</span>);
+
+<span class="comment">% Plots</span>
+plot(u,p_star)
+axis([-2 10 -2 10])
+xlabel(<span class="string">'u'</span>);
+ylabel(<span class="string">'p^*(u)'</span>)
+title(<span class="string">'Sensitivity analysis: p^*(u) vs u'</span>);
+</pre><pre class="codeoutput">Computing p_star(u)...
+ for u = -0.9
+for u = -0.67755
+for u = -0.4551
+for u = -0.23265
+for u = -0.010204
+for u = 0.21224
+for u = 0.43469
+for u = 0.65714
+for u = 0.87959
+for u = 1.102
+for u = 1.3245
+for u = 1.5469
+for u = 1.7694
+for u = 1.9918
+for u = 2.2143
+for u = 2.4367
+for u = 2.6592
+for u = 2.8816
+for u = 3.1041
+for u = 3.3265
+for u = 3.549
+for u = 3.7714
+for u = 3.9939
+for u = 4.2163
+for u = 4.4388
+for u = 4.6612
+for u = 4.8837
+for u = 5.1061
+for u = 5.3286
+for u = 5.551
+for u = 5.7735
+for u = 5.9959
+for u = 6.2184
+for u = 6.4408
+for u = 6.6633
+for u = 6.8857
+for u = 7.1082
+for u = 7.3306
+for u = 7.5531
+for u = 7.7755
+for u = 7.998
+for u = 8.2204
+for u = 8.4429
+for u = 8.6653
+for u = 8.8878
+for u = 9.1102
+for u = 9.3327
+for u = 9.5551
+for u = 9.7776
+for u = 10
+Done! 
+</pre><img vspace="5" hspace="5" src="ex_5_1_01.png"> <p class="footer"><br>
+            Published with MATLAB&reg; 7.1<br></p>
+      </div>
+      <!--
+##### SOURCE BEGIN #####
+%% Sensitivity analysis for a simple QCQP
+
+% Exercise 5.1 d), Boyd & Vandenberghe "Convex Optimization"
+% Joëlle Skaf - 08/29/05
+% (a figure is generated)
+% 
+% Let p_star(u) denote the optimal value of:
+%           minimize    x^2 + 1
+%               s.t.    (x-2)(x-2)<=u
+% Finds p_star(u) and plots it versus u. 
+
+cvx_quiet(true);
+
+fprintf(1,'Computing p_star(u)...\n ');
+
+u = linspace(-0.9,10,50);
+p_star = zeros(1,length(u));
+for i = 1:length(u)
+    disp(['for u = ' num2str(u(i))]);
+    % perturbed problem
+    cvx_begin
+        variable x(1)
+        minimize ( quad_form(x,1) + 1 )
+        quad_form(x,1) - 6*x + 8 <= u(i);
+    cvx_end
+    % optimal value
+    p_star(i) = cvx_optval;
+end
+
+fprintf(1,'Done! \n');
+
+% Plots 
+plot(u,p_star)
+axis([-2 10 -2 10])
+xlabel('u');
+ylabel('p^*(u)')
+title('Sensitivity analysis: p^*(u) vs u');
+##### SOURCE END #####
+-->
+   </body>
+</html>

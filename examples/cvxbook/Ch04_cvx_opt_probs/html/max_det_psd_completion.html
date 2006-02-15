@@ -1,0 +1,211 @@
+<html xmlns:mwsh="http://www.mathworks.com/namespace/mcode/v1/syntaxhighlight.dtd">
+   <head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   
+      <!--
+This HTML is auto-generated from an M-file.
+To make changes, update the M-file and republish this document.
+      -->
+      <title>Maximum determinant PSD matrix completion</title>
+      <meta name="generator" content="MATLAB 7.1">
+      <meta name="date" content="2006-02-15">
+      <meta name="m-file" content="max_det_psd_completion"><style>
+
+body {
+  background-color: white;
+  margin:10px;
+}
+
+h1 {
+  color: #990000; 
+  font-size: x-large;
+}
+
+h2 {
+  color: #990000;
+  font-size: medium;
+}
+
+/* Make the text shrink to fit narrow windows, but not stretch too far in 
+wide windows.  On Gecko-based browsers, the shrink-to-fit doesn't work. */ 
+p,h1,h2,div.content div {
+  /* for MATLAB's browser */
+  width: 600px;
+  /* for Mozilla, but the "width" tag overrides it anyway */
+  max-width: 600px;
+  /* for IE */
+  width:expression(document.body.clientWidth > 620 ? "600px": "auto" );
+}
+
+pre.codeinput {
+  background: #EEEEEE;
+  padding: 10px;
+}
+
+span.keyword {color: #0000FF}
+span.comment {color: #228B22}
+span.string {color: #A020F0}
+span.untermstring {color: #B20000}
+span.syscmd {color: #B28C00}
+
+pre.codeoutput {
+  color: #666666;
+  padding: 10px;
+}
+
+pre.error {
+  color: red;
+}
+
+p.footer {
+  text-align: right;
+  font-size: xx-small;
+  font-weight: lighter;
+  font-style: italic;
+  color: gray;
+}
+
+  </style></head>
+   <body>
+      <div class="content">
+         <h1>Maximum determinant PSD matrix completion</h1><pre class="codeinput"><span class="comment">% Problem 4.47, Boyd &amp; Vandenberghe "Convex Optimization"</span>
+<span class="comment">% Almir Mutapcic - Jan 2006</span>
+<span class="comment">%</span>
+<span class="comment">% Given a symmetric matrix A in R^(n-by-n) with some entries unspecified</span>
+<span class="comment">% we find its completion such that A is positive semidefinite and</span>
+<span class="comment">% it has a maximum determinant out of all possible completions.</span>
+<span class="comment">% This problem can be formulated as a log det (and det_rootn) problem.</span>
+<span class="comment">%</span>
+<span class="comment">% This is a numerical instance of the specified book exercise.</span>
+
+<span class="comment">% problem size</span>
+n = 4;
+
+<span class="comment">% create and solve the problem</span>
+cvx_begin <span class="string">sdp</span>
+  <span class="comment">% A is a PSD symmetric matrix (n-by-n)</span>
+  variable <span class="string">A(n,n)</span> <span class="string">symmetric</span>;
+  A &gt;= 0;
+
+  <span class="comment">% constrained matrix entries.</span>
+  A(1,1) == 3;
+  A(2,2) == 2;
+  A(3,3) == 1;
+  A(4,4) == 5;
+  <span class="comment">% Note that because A is symmetric, these off-diagonal</span>
+  <span class="comment">% constraints affect the corresponding element on the</span>
+  <span class="comment">% opposite side of the diagonal.</span>
+  A(1,2) == .5;
+  A(1,4) == .25;
+  A(2,3) == .75;
+
+  <span class="comment">% find the solution to the problem</span>
+  maximize( det_rootn( A ) )
+cvx_end
+
+<span class="comment">% display solution</span>
+disp([<span class="string">'Matrix A with maximum determinant ('</span> num2str(det(A)) <span class="string">') is:'</span>])
+A
+disp([<span class="string">'Its eigenvalues are:'</span>])
+eigs = eig(A)
+</pre><pre class="codeoutput"> 
+Calling SeDuMi: 55 variables (0 free), 39 equality constraints
+------------------------------------------------------------------------
+SeDuMi 1.1 by AdvOL, 2005 and Jos F. Sturm, 1998, 2001-2003.
+Alg = 2: xz-corrector, Adaptive Step-Differentiation, theta = 0.250, beta = 0.500
+eqs m = 39, order n = 19, dim = 93, blocks = 6
+nnz(A) = 59 + 0, nnz(ADA) = 1109, nnz(L) = 578
+ it :     b*y       gap    delta  rate   t/tP*  t/tD*   feas cg cg  prec
+  0 :            1.12E+000 0.000
+  1 : -1.69E+000 2.85E-001 0.000 0.2534 0.9000 0.9000   1.75  1  1  1.0E+000
+  2 : -1.31E+000 7.50E-002 0.000 0.2637 0.9000 0.9000   1.66  1  1  1.9E-001
+  3 : -1.95E+000 1.55E-002 0.000 0.2066 0.9000 0.9000   0.88  1  1  3.6E-002
+  4 : -2.13E+000 5.60E-004 0.000 0.0361 0.9900 0.9900   0.94  1  1  1.3E-003
+  5 : -2.13E+000 1.69E-005 0.000 0.0301 0.9900 0.9900   1.00  1  1  4.0E-005
+  6 : -2.13E+000 4.66E-007 0.000 0.0276 0.9900 0.9480   1.00  1  1  1.5E-006
+  7 : -2.13E+000 9.80E-009 0.104 0.0211 0.9900 0.9900   1.00  1  1  3.3E-008
+  8 : -2.13E+000 1.48E-010 0.000 0.0151 0.9906 0.9900   1.00  2  2  1.5E-009
+
+iter seconds digits       c*x               b*y
+  8      0.2   Inf -2.1298576989e+000 -2.1298576958e+000
+|Ax-b| =  8.9e-010, [Ay-c]_+ =  1.2E-009, |x|= 1.7e+001, |y|= 2.5e+000
+
+Detailed timing (sec)
+   Pre          IPM          Post
+4.006E-002    2.003E-001    1.001E-002    
+Max-norms: ||b||=5, ||c|| = 1,
+Cholesky |add|=0, |skip| = 0, ||L.L|| = 788.836.
+------------------------------------------------------------------------
+Status (cvx_status): Solved
+ 
+Optimal value (cvx_optval): 2.12986
+Matrix A with maximum determinant (20.578) is:
+
+A =
+
+    3.0000    0.5000    0.1874    0.2500
+    0.5000    2.0000    0.7500    0.0417
+    0.1874    0.7500    1.0000    0.0156
+    0.2500    0.0417    0.0156    5.0000
+
+Its eigenvalues are:
+
+eigs =
+
+    0.5964
+    2.0908
+    3.2773
+    5.0355
+
+</pre><p class="footer"><br>
+            Published with MATLAB&reg; 7.1<br></p>
+      </div>
+      <!--
+##### SOURCE BEGIN #####
+%% Maximum determinant PSD matrix completion
+
+% Problem 4.47, Boyd & Vandenberghe "Convex Optimization"
+% Almir Mutapcic - Jan 2006
+%
+% Given a symmetric matrix A in R^(n-by-n) with some entries unspecified
+% we find its completion such that A is positive semidefinite and
+% it has a maximum determinant out of all possible completions.
+% This problem can be formulated as a log det (and det_rootn) problem.
+%
+% This is a numerical instance of the specified book exercise.
+
+% problem size
+n = 4;
+
+% create and solve the problem
+cvx_begin sdp
+  % A is a PSD symmetric matrix (n-by-n)
+  variable A(n,n) symmetric;
+  A >= 0;
+
+  % constrained matrix entries.
+  A(1,1) == 3;
+  A(2,2) == 2;
+  A(3,3) == 1;
+  A(4,4) == 5;
+  % Note that because A is symmetric, these off-diagonal
+  % constraints affect the corresponding element on the
+  % opposite side of the diagonal.
+  A(1,2) == .5;
+  A(1,4) == .25;
+  A(2,3) == .75;
+
+  % find the solution to the problem
+  maximize( det_rootn( A ) )
+cvx_end
+
+% display solution
+disp(['Matrix A with maximum determinant (' num2str(det(A)) ') is:'])
+A
+disp(['Its eigenvalues are:'])
+eigs = eig(A)
+
+##### SOURCE END #####
+-->
+   </body>
+</html>

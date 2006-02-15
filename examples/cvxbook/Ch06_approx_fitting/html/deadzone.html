@@ -1,0 +1,187 @@
+<html xmlns:mwsh="http://www.mathworks.com/namespace/mcode/v1/syntaxhighlight.dtd">
+   <head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   
+      <!--
+This HTML is auto-generated from an M-file.
+To make changes, update the M-file and republish this document.
+      -->
+      <title>Residual minimization with deadzone penalty</title>
+      <meta name="generator" content="MATLAB 7.1">
+      <meta name="date" content="2006-02-15">
+      <meta name="m-file" content="deadzone"><style>
+
+body {
+  background-color: white;
+  margin:10px;
+}
+
+h1 {
+  color: #990000; 
+  font-size: x-large;
+}
+
+h2 {
+  color: #990000;
+  font-size: medium;
+}
+
+/* Make the text shrink to fit narrow windows, but not stretch too far in 
+wide windows.  On Gecko-based browsers, the shrink-to-fit doesn't work. */ 
+p,h1,h2,div.content div {
+  /* for MATLAB's browser */
+  width: 600px;
+  /* for Mozilla, but the "width" tag overrides it anyway */
+  max-width: 600px;
+  /* for IE */
+  width:expression(document.body.clientWidth > 620 ? "600px": "auto" );
+}
+
+pre.codeinput {
+  background: #EEEEEE;
+  padding: 10px;
+}
+
+span.keyword {color: #0000FF}
+span.comment {color: #228B22}
+span.string {color: #A020F0}
+span.untermstring {color: #B20000}
+span.syscmd {color: #B28C00}
+
+pre.codeoutput {
+  color: #666666;
+  padding: 10px;
+}
+
+pre.error {
+  color: red;
+}
+
+p.footer {
+  text-align: right;
+  font-size: xx-small;
+  font-weight: lighter;
+  font-style: italic;
+  color: gray;
+}
+
+  </style></head>
+   <body>
+      <div class="content">
+         <h1>Residual minimization with deadzone penalty</h1><pre class="codeinput"><span class="comment">% Sec. 6.1.2, Boyd &amp; Vandenberghe "Convex Optimization"</span>
+<span class="comment">% Joelle Skaf - 08/17/05</span>
+<span class="comment">%</span>
+<span class="comment">% The penalty function approximation problem has the form:</span>
+<span class="comment">%               minimize    sum(deadzone(Ax - b))</span>
+<span class="comment">% where 'deadzone' is the deadzone penalty function</span>
+<span class="comment">%               deadzone(y) = max(abs(y)-1,0)</span>
+
+<span class="comment">% Input data</span>
+randn(<span class="string">'state'</span>,0);
+m = 16; n = 8;
+A = randn(m,n);
+b = randn(m,1);
+
+<span class="comment">% deadzone penalty</span>
+<span class="comment">% original formulation</span>
+fprintf(1,<span class="string">'Computing the optimal solution of the deadzone approximation problem: \n'</span>);
+
+cvx_begin
+    variable <span class="string">x(n)</span>
+    minimize( sum(max(abs(A*x-b)-1,0)) )
+cvx_end
+
+fprintf(1,<span class="string">'Done! \n'</span>);
+
+<span class="comment">% Compare</span>
+disp( sprintf( <span class="string">'\nResults:\n--------\nsum(max(abs(A*x-b)-1,0)): %6.4f\ncvx_optval: %6.4f\ncvx_status: %s\n'</span>, sum(max(abs(A*x-b)-1,0)), cvx_optval, cvx_status ) );
+disp( <span class="string">'Optimal vector:'</span> );
+disp( [ <span class="string">'   x     = [ '</span>, sprintf( <span class="string">'%7.4f '</span>, x ), <span class="string">']'</span> ] );
+disp( <span class="string">'Residual vector:'</span> );
+disp( [ <span class="string">'   A*x-b = [ '</span>, sprintf( <span class="string">'%7.4f '</span>, A*x-b ), <span class="string">']'</span> ] );
+disp( <span class="string">' '</span> );
+</pre><pre class="codeoutput">Computing the optimal solution of the deadzone approximation problem: 
+ 
+Calling SeDuMi: 56 variables (8 free), 32 equality constraints
+------------------------------------------------------------------------
+SeDuMi 1.1 by AdvOL, 2005 and Jos F. Sturm, 1998, 2001-2003.
+Alg = 2: xz-corrector, Adaptive Step-Differentiation, theta = 0.250, beta = 0.500
+Split 8 free variables
+eqs m = 32, order n = 65, dim = 65, blocks = 1
+nnz(A) = 336 + 0, nnz(ADA) = 304, nnz(L) = 168
+ it :     b*y       gap    delta  rate   t/tP*  t/tD*   feas cg cg  prec
+  0 :            2.38E+001 0.000
+  1 :  1.22E+001 9.04E+000 0.000 0.3794 0.9000 0.9000   4.55  1  1  6.5E-001
+  2 :  1.52E+001 1.98E+000 0.000 0.2186 0.9000 0.9000   1.37  1  1  1.3E-001
+  3 :  1.60E+001 1.66E-002 0.000 0.0084 0.9990 0.9990   1.10  1  1  1.1E-003
+  4 :  1.60E+001 4.85E-008 0.000 0.0000 1.0000 1.0000   1.00  1  1  
+iter seconds digits       c*x               b*y
+  4      0.1   Inf  1.6000000000e+001  1.6000000000e+001
+|Ax-b| =  1.6e-015, [Ay-c]_+ =  1.4E-016, |x|= 4.8e+000, |y|= 4.0e+000
+
+Detailed timing (sec)
+   Pre          IPM          Post
+3.004E-002    7.010E-002    0.000E+000    
+Max-norms: ||b||=1.488490e+000, ||c|| = 1,
+Cholesky |add|=0, |skip| = 0, ||L.L|| = 1.30797.
+------------------------------------------------------------------------
+Status (cvx_status): Solved
+ 
+Optimal value (cvx_optval): 0
+Done! 
+
+Results:
+--------
+sum(max(abs(A*x-b)-1,0)): 0.0000
+cvx_optval: 0.0000
+cvx_status: Solved
+
+Optimal vector:
+   x     = [  0.2921  0.1200 -0.3514  0.0522  0.6037  0.3546 -0.6392  0.6843 ]
+Residual vector:
+   A*x-b = [  0.5785  0.4111 -0.8196 -0.3117  0.3849  0.3361 -0.6416 -0.7070 -0.5074  0.7695  0.1929 -0.1898  0.5407  0.7482  0.2783 -0.3828 ]
+ 
+</pre><p class="footer"><br>
+            Published with MATLAB&reg; 7.1<br></p>
+      </div>
+      <!--
+##### SOURCE BEGIN #####
+%% Residual minimization with deadzone penalty
+
+% Sec. 6.1.2, Boyd & Vandenberghe "Convex Optimization"
+% Joelle Skaf - 08/17/05
+%
+% The penalty function approximation problem has the form:
+%               minimize    sum(deadzone(Ax - b))
+% where 'deadzone' is the deadzone penalty function
+%               deadzone(y) = max(abs(y)-1,0)
+
+% Input data
+randn('state',0);
+m = 16; n = 8;
+A = randn(m,n);
+b = randn(m,1);
+
+% deadzone penalty
+% original formulation
+fprintf(1,'Computing the optimal solution of the deadzone approximation problem: \n');
+
+cvx_begin
+    variable x(n)
+    minimize( sum(max(abs(A*x-b)-1,0)) )
+cvx_end
+
+fprintf(1,'Done! \n');
+
+% Compare
+disp( sprintf( '\nResults:\nREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASH\nsum(max(abs(A*x-b)-1,0)): %6.4f\ncvx_optval: %6.4f\ncvx_status: %s\n', sum(max(abs(A*x-b)-1,0)), cvx_optval, cvx_status ) );
+disp( 'Optimal vector:' );
+disp( [ '   x     = [ ', sprintf( '%7.4f ', x ), ']' ] );
+disp( 'Residual vector:' );
+disp( [ '   A*x-b = [ ', sprintf( '%7.4f ', A*x-b ), ']' ] );
+disp( ' ' );
+
+##### SOURCE END #####
+-->
+   </body>
+</html>

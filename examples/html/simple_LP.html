@@ -1,0 +1,145 @@
+<html xmlns:mwsh="http://www.mathworks.com/namespace/mcode/v1/syntaxhighlight.dtd">
+   <head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   
+      <!--
+This HTML is auto-generated from an M-file.
+To make changes, update the M-file and republish this document.
+      -->
+      <title>Builds and solves a simple linear program</title>
+      <meta name="generator" content="MATLAB 7.1">
+      <meta name="date" content="2006-02-15">
+      <meta name="m-file" content="simple_LP"><style>
+
+body {
+  background-color: white;
+  margin:10px;
+}
+
+h1 {
+  color: #990000; 
+  font-size: x-large;
+}
+
+h2 {
+  color: #990000;
+  font-size: medium;
+}
+
+/* Make the text shrink to fit narrow windows, but not stretch too far in 
+wide windows.  On Gecko-based browsers, the shrink-to-fit doesn't work. */ 
+p,h1,h2,div.content div {
+  /* for MATLAB's browser */
+  width: 600px;
+  /* for Mozilla, but the "width" tag overrides it anyway */
+  max-width: 600px;
+  /* for IE */
+  width:expression(document.body.clientWidth > 620 ? "600px": "auto" );
+}
+
+pre.codeinput {
+  background: #EEEEEE;
+  padding: 10px;
+}
+
+span.keyword {color: #0000FF}
+span.comment {color: #228B22}
+span.string {color: #A020F0}
+span.untermstring {color: #B20000}
+span.syscmd {color: #B28C00}
+
+pre.codeoutput {
+  color: #666666;
+  padding: 10px;
+}
+
+pre.error {
+  color: red;
+}
+
+p.footer {
+  text-align: right;
+  font-size: xx-small;
+  font-weight: lighter;
+  font-style: italic;
+  color: gray;
+}
+
+  </style></head>
+   <body>
+      <div class="content">
+         <h1>Builds and solves a simple linear program</h1><pre class="codeinput">echo <span class="string">on</span>
+
+n = 100;
+A = randn(0.5*n,n);
+b = randn(0.5*n,1);
+c = randn(n,1);
+d = randn;
+cvx_begin
+   variable <span class="string">x(n)</span>
+   dual <span class="string">variables</span> <span class="string">y</span> <span class="string">z</span>
+   minimize( c' * x + d )
+   subject <span class="string">to</span>
+      y : A * x == b;
+      z : x &gt;= 0;
+cvx_end
+
+echo <span class="string">off</span>
+</pre><pre class="codeoutput"> 
+Calling SeDuMi: 100 variables (0 free), 50 equality constraints
+------------------------------------------------------------------------
+SeDuMi 1.1 by AdvOL, 2005 and Jos F. Sturm, 1998, 2001-2003.
+Alg = 2: xz-corrector, Adaptive Step-Differentiation, theta = 0.250, beta = 0.500
+eqs m = 50, order n = 101, dim = 101, blocks = 1
+nnz(A) = 5000 + 0, nnz(ADA) = 2500, nnz(L) = 1275
+ it :     b*y       gap    delta  rate   t/tP*  t/tD*   feas cg cg  prec
+  0 :            8.73E+000 0.000
+  1 :  4.35E+000 3.00E+000 0.000 0.3435 0.9000 0.9000   0.04  1  1  4.1E+001
+  2 :  1.10E+001 9.94E-001 0.000 0.3314 0.9000 0.9000   0.29  1  1  1.7E+001
+  3 :  3.31E+001 2.90E-001 0.000 0.2912 0.9000 0.9000   0.28  1  1  1.0E+001
+  4 :  3.42E+002 1.40E-001 0.000 0.4833 0.9000 0.9000  -2.70  1  1  5.0E+001
+  5 :  1.16E+003 4.82E-003 0.000 0.0344 0.9900 0.9900  -2.16  1  1  5.5E+000
+  6 :  1.16E+007 1.00E-006 0.000 0.0002 0.9999 0.9999  -1.01  1  1  
+Primal infeasible, dual improving direction found.
+iter seconds  |Ax|    [Ay]_+     |x|       |y|
+  6      0.2  0.0e+000  0.0e+000  0.0e+000  9.6e-001
+
+Detailed timing (sec)
+   Pre          IPM          Post
+5.007E-002    1.502E-001    1.001E-002    
+Max-norms: ||b||=2.579840e+000, ||c|| = 2.533362e+000,
+Cholesky |add|=0, |skip| = 0, ||L.L|| = 1.
+------------------------------------------------------------------------
+Status (cvx_status): Infeasible
+ 
+Optimal value (cvx_optval): Inf
+</pre><p class="footer"><br>
+            Published with MATLAB&reg; 7.1<br></p>
+      </div>
+      <!--
+##### SOURCE BEGIN #####
+%% Builds and solves a simple linear program
+
+echo on
+
+n = 100;
+A = randn(0.5*n,n);
+b = randn(0.5*n,1);
+c = randn(n,1);
+d = randn;
+cvx_begin
+   variable x(n)
+   dual variables y z
+   minimize( c' * x + d )
+   subject to
+      y : A * x == b;
+      z : x >= 0;
+cvx_end
+
+echo off
+
+
+##### SOURCE END #####
+-->
+   </body>
+</html>

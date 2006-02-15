@@ -1,0 +1,229 @@
+<html xmlns:mwsh="http://www.mathworks.com/namespace/mcode/v1/syntaxhighlight.dtd">
+   <head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   
+      <!--
+This HTML is auto-generated from an M-file.
+To make changes, update the M-file and republish this document.
+      -->
+      <title>Example 7.4: Binary hypothesis testing</title>
+      <meta name="generator" content="MATLAB 7.1">
+      <meta name="date" content="2006-02-15">
+      <meta name="m-file" content="detector2"><style>
+
+body {
+  background-color: white;
+  margin:10px;
+}
+
+h1 {
+  color: #990000; 
+  font-size: x-large;
+}
+
+h2 {
+  color: #990000;
+  font-size: medium;
+}
+
+/* Make the text shrink to fit narrow windows, but not stretch too far in 
+wide windows.  On Gecko-based browsers, the shrink-to-fit doesn't work. */ 
+p,h1,h2,div.content div {
+  /* for MATLAB's browser */
+  width: 600px;
+  /* for Mozilla, but the "width" tag overrides it anyway */
+  max-width: 600px;
+  /* for IE */
+  width:expression(document.body.clientWidth > 620 ? "600px": "auto" );
+}
+
+pre.codeinput {
+  background: #EEEEEE;
+  padding: 10px;
+}
+
+span.keyword {color: #0000FF}
+span.comment {color: #228B22}
+span.string {color: #A020F0}
+span.untermstring {color: #B20000}
+span.syscmd {color: #B28C00}
+
+pre.codeoutput {
+  color: #666666;
+  padding: 10px;
+}
+
+pre.error {
+  color: red;
+}
+
+p.footer {
+  text-align: right;
+  font-size: xx-small;
+  font-weight: lighter;
+  font-style: italic;
+  color: gray;
+}
+
+  </style></head>
+   <body>
+      <div class="content">
+         <h1>Example 7.4: Binary hypothesis testing</h1><pre class="codeinput"><span class="comment">% Boyd &amp; Vandenberghe "Convex Optimization"</span>
+<span class="comment">% Original version by Lieven Vandenberghe</span>
+<span class="comment">% Updated for CVX by Michael Grant, 2005-12-19</span>
+<span class="comment">% (generates Figure 7.4)</span>
+
+<span class="comment">% Generate the data</span>
+P = [0.70  0.10
+     0.20  0.10
+     0.05  0.70
+     0.05  0.10];
+[n,m] = size(P);
+
+<span class="comment">% Construct the tradeoff curve by finding the</span>
+<span class="comment">% the Pareto optimal deterministic detectors,</span>
+<span class="comment">% which are the curve's vertices</span>
+
+nopts   = 1000;
+weights = logspace(-5,5,nopts);
+obj     = [0;1];
+inds    = ones(n,1);
+
+<span class="comment">% minimize  -t1'*q1 - w*t2'*q2</span>
+<span class="comment">% s.t.      t1+t2 = 1,  t1,t2 \geq 0</span>
+
+next = 2;
+<span class="keyword">for</span> i = 1 : nopts,
+   PW = P * diag( [ 1 ; weights(i) ] );
+   [ maxvals, maxinds ] = max( PW' );  <span class="comment">% max elt in each row</span>
+   <span class="keyword">if</span> (~isequal(maxinds', inds(:,next-1)))
+       inds(:,next) = maxinds';
+       T = zeros(m,n);
+       <span class="keyword">for</span> j=1:n
+          T(maxinds(1,j),j) = 1;
+       <span class="keyword">end</span>;
+       obj(:,next) = 1-diag(T*P);
+       next = next+1;
+   <span class="keyword">end</span>;
+<span class="keyword">end</span>;
+plot(obj(1,:), obj(2,:),[0 1], [0 1],<span class="string">'--'</span>);
+grid <span class="string">on</span>
+<span class="keyword">for</span> i=2:size(obj,2)-1
+   text(obj(1,i),obj(2,i),[<span class="string">'a'</span>, num2str(i-1)]);
+<span class="keyword">end</span>;
+
+<span class="comment">% Minimax detector: not deterministic</span>
+
+cvx_begin
+    variables <span class="string">T( m, n )</span> <span class="string">D( m, m )</span>
+    minimize <span class="string">max( D(1,2), D(2,1) )</span>
+    subject <span class="string">to</span>
+        D == T * P;
+        sum( T, 1 ) == 1;
+        T &gt;= 0;
+cvx_end
+
+objmp = 1 - diag( D );
+text( objmp(1), objmp(2), <span class="string">'b'</span> );
+xlabel(<span class="string">'P_{fp}'</span>); ylabel(<span class="string">'P_{fn}'</span>);
+
+<span class="comment">%print -deps roc.eps</span>
+</pre><pre class="codeoutput"> 
+Calling SeDuMi: 11 variables (1 free), 6 equality constraints
+------------------------------------------------------------------------
+SeDuMi 1.1 by AdvOL, 2005 and Jos F. Sturm, 1998, 2001-2003.
+Alg = 2: xz-corrector, Adaptive Step-Differentiation, theta = 0.250, beta = 0.500
+Split 1 free variables
+eqs m = 6, order n = 13, dim = 13, blocks = 1
+nnz(A) = 18 + 0, nnz(ADA) = 24, nnz(L) = 15
+ it :     b*y       gap    delta  rate   t/tP*  t/tD*   feas cg cg  prec
+  0 :            2.33E+000 0.000
+  1 : -1.78E+000 8.76E-001 0.000 0.3766 0.9000 0.9000   1.45  1  1  2.8E+000
+  2 : -4.00E+001 1.66E-001 0.000 0.1891 0.9000 0.9000  -0.65  1  1  5.4E+000
+  3 : -6.55E+004 1.16E-004 0.000 0.0007 0.9999 0.9999  -0.85  1  1  5.6E+000
+  4 : -6.55E+011 1.16E-011 0.000 0.0000 1.0000 1.0000  -1.00  1  1  
+Dual infeasible, primal improving direction found.
+iter seconds  |Ax|    [Ay]_+     |x|       |y|
+  4      0.1  0.0e+000  0.0e+000  1.2e+000  4.4e+000
+
+Detailed timing (sec)
+   Pre          IPM          Post
+3.004E-002    8.012E-002    0.000E+000    
+Max-norms: ||b||=1, ||c|| = 1,
+Cholesky |add|=0, |skip| = 0, ||L.L|| = 1.
+------------------------------------------------------------------------
+Status (cvx_status): Unbounded
+ 
+Optimal value (cvx_optval): -Inf
+</pre><img vspace="5" hspace="5" src="detector2_01.png"> <p class="footer"><br>
+            Published with MATLAB&reg; 7.1<br></p>
+      </div>
+      <!--
+##### SOURCE BEGIN #####
+%% Example 7.4: Binary hypothesis testing
+
+% Boyd & Vandenberghe "Convex Optimization"
+% Original version by Lieven Vandenberghe
+% Updated for CVX by Michael Grant, 2005-12-19
+% (generates Figure 7.4)
+
+% Generate the data
+P = [0.70  0.10
+     0.20  0.10
+     0.05  0.70
+     0.05  0.10];
+[n,m] = size(P);
+
+% Construct the tradeoff curve by finding the
+% the Pareto optimal deterministic detectors,
+% which are the curve's vertices
+
+nopts   = 1000;
+weights = logspace(-5,5,nopts);
+obj     = [0;1];
+inds    = ones(n,1);
+
+% minimize  -t1'*q1 - w*t2'*q2
+% s.t.      t1+t2 = 1,  t1,t2 \geq 0
+
+next = 2;
+for i = 1 : nopts,
+   PW = P * diag( [ 1 ; weights(i) ] );
+   [ maxvals, maxinds ] = max( PW' );  % max elt in each row
+   if (~isequal(maxinds', inds(:,next-1)))
+       inds(:,next) = maxinds';
+       T = zeros(m,n);
+       for j=1:n
+          T(maxinds(1,j),j) = 1;
+       end;
+       obj(:,next) = 1-diag(T*P);
+       next = next+1;
+   end;
+end;
+plot(obj(1,:), obj(2,:),[0 1], [0 1],'REPLACE_WITH_DASH_DASH');
+grid on
+for i=2:size(obj,2)-1
+   text(obj(1,i),obj(2,i),['a', num2str(i-1)]);
+end;
+
+% Minimax detector: not deterministic
+    
+cvx_begin
+    variables T( m, n ) D( m, m )
+    minimize max( D(1,2), D(2,1) )
+    subject to
+        D == T * P;
+        sum( T, 1 ) == 1;
+        T >= 0;
+cvx_end
+
+objmp = 1 - diag( D );
+text( objmp(1), objmp(2), 'b' );
+xlabel('P_{fp}'); ylabel('P_{fn}');
+
+%print -deps roc.eps
+
+##### SOURCE END #####
+-->
+   </body>
+</html>
