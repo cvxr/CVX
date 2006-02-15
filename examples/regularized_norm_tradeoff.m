@@ -22,7 +22,7 @@ for k = 1 : length( gamma ),
       variable x(n)
       minimize( norm( A * x - b, 1 ) + gamma( k ) * norm( x, Inf ) )
    cvx_end
-   nvals( k ) = norm( A * x - b, 1 );
+   nrms( k ) = norm( A * x - b, 1 );
    xnrms( k ) = norm( x, Inf );
 end
 fprintf( 1, 'done.\n' );

@@ -30,7 +30,7 @@ fprintf(1,'Computing the solution of the QP for the case where a^T*x0 <=b...');
 cvx_begin
     variable xs0(n)
     minimize ( square_pos(norm(xs0 - x0)) )
-    a'*xs0 <= b
+    a'*xs0 <= b;
 cvx_end
 fprintf(1,'Done! \n');
 
@@ -38,7 +38,7 @@ fprintf(1,'Computing the solution of the QP for the case where a^T*x0 > b...');
 cvx_begin
     variable xs1(n)
     minimize ( square_pos(norm(xs1 - x1)) )
-    a'*xs1 <= b
+    a'*xs1 <= b;
 cvx_end
 fprintf(1,'Done! \n');
 

@@ -26,7 +26,7 @@ fprintf(1,'Computing the solution via a QP...');
 cvx_begin
     variable x(n)
     minimize ( norm(x - x0) )
-    x >= 0
+    x >= 0;
 cvx_end
 
 fprintf(1,'Done! \n');

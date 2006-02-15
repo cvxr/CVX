@@ -26,7 +26,7 @@ fprintf(1,'Computing the optimal solution by solving a QP ...');
 cvx_begin
     variable x(n)
     minimize ( square_pos(norm(x - x0)) )
-    a'*x == b
+    a'*x == b;
 cvx_end
 
 fprintf(1,'Done! \n');

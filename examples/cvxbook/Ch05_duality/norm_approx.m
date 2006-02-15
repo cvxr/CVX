@@ -42,7 +42,7 @@ fprintf(1,'Computing the optimal solution of problem 2... ');
 cvx_begin
     variables x(n) y(m)
     minimize ( norm ( y , p ) )
-    A*x - b == y
+    A*x - b == y;
 cvx_end
 
 fprintf(1,'Done! \n');
@@ -54,8 +54,8 @@ fprintf(1,'Computing the optimal solution of problem 3... ');
 cvx_begin
     variable nu(m)
     maximize ( b'*nu )
-    norm( nu , q ) <= 1
-    A'*nu == 0
+    norm( nu , q ) <= 1;
+    A'*nu == 0;
 cvx_end
 
 fprintf(1,'Done! \n');
@@ -67,7 +67,7 @@ fprintf(1,'Computing the optimal solution of problem 4... ');
 cvx_begin
     variables x(n) y(m)
     minimize ( 0.5 * square_pos ( norm ( y , p ) ) )
-    A*x - b == y
+    A*x - b == y;
 cvx_end
 
 fprintf(1,'Done! \n');
@@ -79,7 +79,7 @@ fprintf(1,'Computing the optimal solution of problem 5... ');
 cvx_begin
     variable nu(m)
     maximize ( -0.5 * square_pos ( norm ( nu , q ) ) + b'*nu )
-    A'*nu == 0
+    A'*nu == 0;
 cvx_end
 
 fprintf(1,'Done! \n');

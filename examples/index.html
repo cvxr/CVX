@@ -40,7 +40,7 @@ Jo&euml;lle Skaf, Argyris Zymnis, <a href=
 dynamic. Clicking on the <img src="plus.gif" alt="plus" /><img src=
 "minus.gif" alt="minus" /> icons will expand/collapse directories
 to reveal/hide their contents.</p>
-<!-- BEGIN TOC --><h3>Last updated: 27-Jan-2006</h3>
+<!-- BEGIN TOC --><h3>Last updated: 15-Feb-2006</h3>
 <p><a href="#" onclick="expandTree('tree1'); return false;">Expand all</a>&nbsp;&nbsp;
 <a href="#" onclick="collapseTree('tree1'); return false;">Collapse all</a></p>
 <ul class="mktree" id="tree1">
@@ -48,91 +48,101 @@ to reveal/hide their contents.</p>
 <ul>
 <li class="liClosed"><b>Chapter 4: Convex optimization problems</b>
 <ul>
-<li><a href="cvxbook/Ch04_cvx_opt_probs/html/chebyshev_center.html">Compute the Chebyshev center of a polyhedron</a> (<a href="cvxbook/Ch04_cvx_opt_probs/chebyshev_center.m">chebyshev_center.m</a>)</li>
+<li><a href="cvxbook/Ch04_cvx_opt_probs/html/frob_norm_diag_scaling.html">Section 4.5.4 example: Frobenius norm diagonal scaling</a> (<a href="cvxbook/Ch04_cvx_opt_probs/frob_norm_diag_scaling.m">frob_norm_diag_scaling.m</a>)</li>
+<li><a href="cvxbook/Ch04_cvx_opt_probs/html/min_spec_rad_ppl_dynamics.html">Section 4.5.4 example: Minimum spectral radius via Perron-Frobenius theory</a> (<a href="cvxbook/Ch04_cvx_opt_probs/min_spec_rad_ppl_dynamics.m">min_spec_rad_ppl_dynamics.m</a>)</li>
 <li><a href="cvxbook/Ch04_cvx_opt_probs/html/chebyshev_center_2D.html">Compute and display the Chebyshev center of a 2D polyhedron</a> (<a href="cvxbook/Ch04_cvx_opt_probs/chebyshev_center_2D.m">chebyshev_center_2D.m</a>)</li>
-<li><a href="cvxbook/Ch04_cvx_opt_probs/html/ex_4_27.html">Exercise 4.27: Matrix fractional minimization using second-order cone programming</a> (<a href="cvxbook/Ch04_cvx_opt_probs/ex_4_27.m">ex_4_27.m</a>)</li>
-<li><a href="cvxbook/Ch04_cvx_opt_probs/html/ex_4_3.html">Exercise 4.3: Solve a simple QP with inequality constraints</a> (<a href="cvxbook/Ch04_cvx_opt_probs/ex_4_3.m">ex_4_3.m</a>)</li>
-<li><a href="cvxbook/Ch04_cvx_opt_probs/html/ex_4_38.html">Exercise 4.38(b): Linear matrix inequalities with one variable</a> (<a href="cvxbook/Ch04_cvx_opt_probs/ex_4_38.m">ex_4_38.m</a>)</li>
-<li><a href="cvxbook/Ch04_cvx_opt_probs/html/ex_4_5.html">Exercise 4.5: Show the equivalence of 3 convex problem formations</a> (<a href="cvxbook/Ch04_cvx_opt_probs/ex_4_5.m">ex_4_5.m</a>)</li>
+<li><a href="cvxbook/Ch04_cvx_opt_probs/html/chebyshev_center.html">Compute the Chebyshev center of a polyhedron</a> (<a href="cvxbook/Ch04_cvx_opt_probs/chebyshev_center.m">chebyshev_center.m</a>)</li>
 <li><a href="cvxbook/Ch04_cvx_opt_probs/html/fastest_mixing_MC.html">Find the fastest mixing Markov chain on a graph</a> (<a href="cvxbook/Ch04_cvx_opt_probs/fastest_mixing_MC.m">fastest_mixing_MC.m</a>)</li>
 <li><a href="cvxbook/Ch04_cvx_opt_probs/html/max_det_psd_completion.html">Maximum determinant PSD matrix completion</a> (<a href="cvxbook/Ch04_cvx_opt_probs/max_det_psd_completion.m">max_det_psd_completion.m</a>)</li>
+<li><a href="cvxbook/Ch04_cvx_opt_probs/html/ex_4_27.html">Exercise 4.27: Matrix fractional minimization using second-order cone programming</a> (<a href="cvxbook/Ch04_cvx_opt_probs/ex_4_27.m">ex_4_27.m</a>)</li>
+<li><a href="cvxbook/Ch04_cvx_opt_probs/html/cantilever_beam.html">Exercise 4.31: Design of a cantilever beam (non-recursive convex GP formulation)</a> (<a href="cvxbook/Ch04_cvx_opt_probs/cantilever_beam.m">cantilever_beam.m</a>)</li>
+<li><a href="cvxbook/Ch04_cvx_opt_probs/html/ex_4_38.html">Exercise 4.38(b): Linear matrix inequalities with one variable</a> (<a href="cvxbook/Ch04_cvx_opt_probs/ex_4_38.m">ex_4_38.m</a>)</li>
+<li><a href="cvxbook/Ch04_cvx_opt_probs/html/ex_4_3.html">Exercise 4.3: Solve a simple QP with inequality constraints</a> (<a href="cvxbook/Ch04_cvx_opt_probs/ex_4_3.m">ex_4_3.m</a>)</li>
+<li><a href="cvxbook/Ch04_cvx_opt_probs/html/ex_4_5.html">Exercise 4.5: Show the equivalence of 3 convex problem formations</a> (<a href="cvxbook/Ch04_cvx_opt_probs/ex_4_5.m">ex_4_5.m</a>)</li>
+<li class="liOpen">Functions called by these scripts:<ul>
+<li><a href="cvxbook/Ch04_cvx_opt_probs/cantilever_beam_plot.m">Plots a cantilever beam as a 3D figure. (cantilever_beam_plot.m)</a></li>
+</ul></li>
 </ul>
 </li>
 <li class="liClosed"><b>Chapter 5: Duality</b>
 <ul>
-<li><a href="cvxbook/Ch05_duality/html/ex_5_1.html">Sensitivity analysis for a simple QCQP</a> (<a href="cvxbook/Ch05_duality/ex_5_1.m">ex_5_1.m</a>)</li>
+<li><a href="cvxbook/Ch05_duality/html/norm_approx.html">An l_p norm approximation problem</a> (<a href="cvxbook/Ch05_duality/norm_approx.m">norm_approx.m</a>)</li>
 <li><a href="cvxbook/Ch05_duality/html/ex_5_19.html">Markovitz portfolio optimization w/ diversification constraint</a> (<a href="cvxbook/Ch05_duality/ex_5_19.m">ex_5_19.m</a>)</li>
-<li><a href="cvxbook/Ch05_duality/html/ex_5_33.html">Parametrized l1-norm approximation</a> (<a href="cvxbook/Ch05_duality/ex_5_33.m">ex_5_33.m</a>)</li>
-<li><a href="cvxbook/Ch05_duality/html/ex_5_39.html">SDP relaxations of the two-way partitioning problem</a> (<a href="cvxbook/Ch05_duality/ex_5_39.m">ex_5_39.m</a>)</li>
 <li><a href="cvxbook/Ch05_duality/html/matrix_games.html">Mixed strategies for matrix games</a> (<a href="cvxbook/Ch05_duality/matrix_games.m">matrix_games.m</a>)</li>
 <li><a href="cvxbook/Ch05_duality/html/matrix_games_LP.html">Mixed strategies for matrix games (LP formulation)</a> (<a href="cvxbook/Ch05_duality/matrix_games_LP.m">matrix_games_LP.m</a>)</li>
-<li><a href="cvxbook/Ch05_duality/html/norm_approx.html">An l_p norm approximation problem</a> (<a href="cvxbook/Ch05_duality/norm_approx.m">norm_approx.m</a>)</li>
+<li><a href="cvxbook/Ch05_duality/html/ex_5_33.html">Parametrized l1-norm approximation</a> (<a href="cvxbook/Ch05_duality/ex_5_33.m">ex_5_33.m</a>)</li>
+<li><a href="cvxbook/Ch05_duality/html/ex_5_39.html">SDP relaxations of the two-way partitioning problem</a> (<a href="cvxbook/Ch05_duality/ex_5_39.m">ex_5_39.m</a>)</li>
+<li><a href="cvxbook/Ch05_duality/html/ex_5_1.html">Sensitivity analysis for a simple QCQP</a> (<a href="cvxbook/Ch05_duality/ex_5_1.m">ex_5_1.m</a>)</li>
 <li><a href="cvxbook/Ch05_duality/html/qcqp.html">Solves a simple QCQP</a> (<a href="cvxbook/Ch05_duality/qcqp.m">qcqp.m</a>)</li>
 </ul>
 </li>
 <li class="liClosed"><b>Chapter 6: Approximation and fitting</b>
 <ul>
-<li><a href="cvxbook/Ch06_approx_fitting/html/basispursuit.html">Basis pursuit using Gabor functions</a> (<a href="cvxbook/Ch06_approx_fitting/basispursuit.m">basispursuit.m</a>)</li>
-<li><a href="cvxbook/Ch06_approx_fitting/html/convex_interpolation.html">Fitting a convex function to given data</a> (<a href="cvxbook/Ch06_approx_fitting/convex_interpolation.m">convex_interpolation.m</a>)</li>
-<li><a href="cvxbook/Ch06_approx_fitting/html/deadzone.html">Residual minimization with deadzone penalty</a> (<a href="cvxbook/Ch06_approx_fitting/deadzone.m">deadzone.m</a>)</li>
 <li><a href="cvxbook/Ch06_approx_fitting/html/fig6_15.html">A comparison of stochastic and worst-case robust approximation</a> (<a href="cvxbook/Ch06_approx_fitting/fig6_15.m">fig6_15.m</a>)</li>
-<li><a href="cvxbook/Ch06_approx_fitting/html/fig6_19.html">Polynomial fitting</a> (<a href="cvxbook/Ch06_approx_fitting/fig6_19.m">fig6_19.m</a>)</li>
-<li><a href="cvxbook/Ch06_approx_fitting/html/fig6_20.html">Spline fitting</a> (<a href="cvxbook/Ch06_approx_fitting/fig6_20.m">fig6_20.m</a>)</li>
-<li><a href="cvxbook/Ch06_approx_fitting/html/fig6_5.html">Robust regression using the Huber penalty</a> (<a href="cvxbook/Ch06_approx_fitting/fig6_5.m">fig6_5.m</a>)</li>
-<li><a href="cvxbook/Ch06_approx_fitting/html/fig6_6.html">Optimal input design</a> (<a href="cvxbook/Ch06_approx_fitting/fig6_6.m">fig6_6.m</a>)</li>
 <li><a href="cvxbook/Ch06_approx_fitting/html/fig6_9.html">An optimal tradeoff curve</a> (<a href="cvxbook/Ch06_approx_fitting/fig6_9.m">fig6_9.m</a>)</li>
-<li><a href="cvxbook/Ch06_approx_fitting/html/penalty_comp_cvx.html">Penalty function approximation</a> (<a href="cvxbook/Ch06_approx_fitting/penalty_comp_cvx.m">penalty_comp_cvx.m</a>)</li>
+<li><a href="cvxbook/Ch06_approx_fitting/html/basispursuit.html">Basis pursuit using Gabor functions</a> (<a href="cvxbook/Ch06_approx_fitting/basispursuit.m">basispursuit.m</a>)</li>
 <li><a href="cvxbook/Ch06_approx_fitting/html/preference_regions.html">Bounding consumer preference</a> (<a href="cvxbook/Ch06_approx_fitting/preference_regions.m">preference_regions.m</a>)</li>
-<li><a href="cvxbook/Ch06_approx_fitting/html/regressor_cvx.html">Regressor selection problem</a> (<a href="cvxbook/Ch06_approx_fitting/regressor_cvx.m">regressor_cvx.m</a>)</li>
-<li><a href="cvxbook/Ch06_approx_fitting/html/smoothrec_cvx.html">Quadratic smoothing example</a> (<a href="cvxbook/Ch06_approx_fitting/smoothrec_cvx.m">smoothrec_cvx.m</a>)</li>
-<li><a href="cvxbook/Ch06_approx_fitting/html/tv_cvx.html">Total variation reconstruction</a> (<a href="cvxbook/Ch06_approx_fitting/tv_cvx.m">tv_cvx.m</a>)</li>
 <li><a href="cvxbook/Ch06_approx_fitting/html/wcrobls.html">Comparison of worst-case robust, Tickhonov and nominal least squares</a> (<a href="cvxbook/Ch06_approx_fitting/wcrobls.m">wcrobls.m</a>)</li>
+<li><a href="cvxbook/Ch06_approx_fitting/html/convex_interpolation.html">Fitting a convex function to given data</a> (<a href="cvxbook/Ch06_approx_fitting/convex_interpolation.m">convex_interpolation.m</a>)</li>
+<li><a href="cvxbook/Ch06_approx_fitting/html/fig6_6.html">Optimal input design</a> (<a href="cvxbook/Ch06_approx_fitting/fig6_6.m">fig6_6.m</a>)</li>
+<li><a href="cvxbook/Ch06_approx_fitting/html/penalty_comp_cvx.html">Penalty function approximation</a> (<a href="cvxbook/Ch06_approx_fitting/penalty_comp_cvx.m">penalty_comp_cvx.m</a>)</li>
+<li><a href="cvxbook/Ch06_approx_fitting/html/fig6_19.html">Polynomial fitting</a> (<a href="cvxbook/Ch06_approx_fitting/fig6_19.m">fig6_19.m</a>)</li>
+<li><a href="cvxbook/Ch06_approx_fitting/html/smoothrec_cvx.html">Quadratic smoothing example</a> (<a href="cvxbook/Ch06_approx_fitting/smoothrec_cvx.m">smoothrec_cvx.m</a>)</li>
+<li><a href="cvxbook/Ch06_approx_fitting/html/regressor_cvx.html">Regressor selection problem</a> (<a href="cvxbook/Ch06_approx_fitting/regressor_cvx.m">regressor_cvx.m</a>)</li>
+<li><a href="cvxbook/Ch06_approx_fitting/html/deadzone.html">Residual minimization with deadzone penalty</a> (<a href="cvxbook/Ch06_approx_fitting/deadzone.m">deadzone.m</a>)</li>
+<li><a href="cvxbook/Ch06_approx_fitting/html/fig6_5.html">Robust regression using the Huber penalty</a> (<a href="cvxbook/Ch06_approx_fitting/fig6_5.m">fig6_5.m</a>)</li>
+<li><a href="cvxbook/Ch06_approx_fitting/html/fig6_20.html">Spline fitting</a> (<a href="cvxbook/Ch06_approx_fitting/fig6_20.m">fig6_20.m</a>)</li>
+<li><a href="cvxbook/Ch06_approx_fitting/html/tv_cvx.html">Total variation reconstruction</a> (<a href="cvxbook/Ch06_approx_fitting/tv_cvx.m">tv_cvx.m</a>)</li>
 </ul>
 </li>
 <li class="liClosed"><b>Chapter 7: Statistical estimation</b>
 <ul>
-<li><a href="cvxbook/Ch07_statistical_estim/html/cheb.html">Computes Chebyshev lower bounds on probability vectors</a> (<a href="cvxbook/Ch07_statistical_estim/cheb.m">cheb.m</a>)</li>
-<li><a href="cvxbook/Ch07_statistical_estim/html/cher.html">Computes Chernoff upper bounds on probability</a> (<a href="cvxbook/Ch07_statistical_estim/cher.m">cher.m</a>)</li>
+<li><a href="cvxbook/Ch07_statistical_estim/html/probbounds.html">Section 7.4.3: Probability bounds example with Voronoi diagram</a> (<a href="cvxbook/Ch07_statistical_estim/probbounds.m">probbounds.m</a>)</li>
 <li><a href="cvxbook/Ch07_statistical_estim/html/detector2.html">Example 7.4: Binary hypothesis testing</a> (<a href="cvxbook/Ch07_statistical_estim/detector2.m">detector2.m</a>)</li>
 <li><a href="cvxbook/Ch07_statistical_estim/html/expdesign.html">Experiment design examples</a> (<a href="cvxbook/Ch07_statistical_estim/expdesign.m">expdesign.m</a>)</li>
-<li><a href="cvxbook/Ch07_statistical_estim/html/logistics.html">Logistic regresssion example</a> (<a href="cvxbook/Ch07_statistical_estim/logistics.m">logistics.m</a>)</li>
+<li><a href="cvxbook/Ch07_statistical_estim/html/logistics.html">Logistic Regression Example</a> (<a href="cvxbook/Ch07_statistical_estim/logistics.m">logistics.m</a>)</li>
 <li><a href="cvxbook/Ch07_statistical_estim/html/maxent.html">Maximum entropy reconstruction example</a> (<a href="cvxbook/Ch07_statistical_estim/maxent.m">maxent.m</a>)</li>
-<li><a href="cvxbook/Ch07_statistical_estim/html/montecarlo.html">estimates probability than random vector x in R2</a> (<a href="cvxbook/Ch07_statistical_estim/montecarlo.m">montecarlo.m</a>)</li>
-<li><a href="cvxbook/Ch07_statistical_estim/html/probbounds.html">Section 7.4.3: Probability bounds example with Voronoi diagram</a> (<a href="cvxbook/Ch07_statistical_estim/probbounds.m">probbounds.m</a>)</li>
+<li class="liOpen">Functions called by these scripts:<ul>
+<li><a href="cvxbook/Ch07_statistical_estim/cheb.m">Computes Chebyshev lower bounds on probability vectors (cheb.m)</a></li>
+<li><a href="cvxbook/Ch07_statistical_estim/cher.m">Computes Chernoff upper bounds on probability (cher.m)</a></li>
+<li><a href="cvxbook/Ch07_statistical_estim/montecarlo.m">estimates probability than random vector x in R2 (montecarlo.m)</a></li>
+</ul></li>
 </ul>
 </li>
 <li class="liClosed"><b>Chapter 8: Geometric problems</b>
 <ul>
-<li><a href="cvxbook/Ch08_geometric_probs/html/eucl_dist_poly.html">Euclidean distance between polyhedra</a> (<a href="cvxbook/Ch08_geometric_probs/eucl_dist_poly.m">eucl_dist_poly.m</a>)</li>
-<li><a href="cvxbook/Ch08_geometric_probs/html/eucl_dist_poly_2D.html">Euclidean distance between polyhedra in 2D</a> (<a href="cvxbook/Ch08_geometric_probs/eucl_dist_poly_2D.m">eucl_dist_poly_2D.m</a>)</li>
-<li><a href="cvxbook/Ch08_geometric_probs/html/eucl_proj_cone1.html">Euclidean projection on the nonnegative orthant</a> (<a href="cvxbook/Ch08_geometric_probs/eucl_proj_cone1.m">eucl_proj_cone1.m</a>)</li>
-<li><a href="cvxbook/Ch08_geometric_probs/html/eucl_proj_cone2.html">Euclidean projection on the semidefinite cone</a> (<a href="cvxbook/Ch08_geometric_probs/eucl_proj_cone2.m">eucl_proj_cone2.m</a>)</li>
-<li><a href="cvxbook/Ch08_geometric_probs/html/eucl_proj_hlf.html">Euclidean projection on a halfspace</a> (<a href="cvxbook/Ch08_geometric_probs/eucl_proj_hlf.m">eucl_proj_hlf.m</a>)</li>
-<li><a href="cvxbook/Ch08_geometric_probs/html/eucl_proj_hyp.html">Euclidean projection on a hyperplane</a> (<a href="cvxbook/Ch08_geometric_probs/eucl_proj_hyp.m">eucl_proj_hyp.m</a>)</li>
-<li><a href="cvxbook/Ch08_geometric_probs/html/eucl_proj_rect.html">Euclidean projection on a rectangle</a> (<a href="cvxbook/Ch08_geometric_probs/eucl_proj_rect.m">eucl_proj_rect.m</a>)</li>
+<li><a href="cvxbook/Ch08_geometric_probs/html/separate_pt_poly.html">Section 8.1.1: Separating a point from a polyhedron</a> (<a href="cvxbook/Ch08_geometric_probs/separate_pt_poly.m">separate_pt_poly.m</a>)</li>
+<li><a href="cvxbook/Ch08_geometric_probs/html/separate_poly_2D.html">Section 8.2.2: Separating polyhedra in 2D</a> (<a href="cvxbook/Ch08_geometric_probs/separate_poly_2D.m">separate_poly_2D.m</a>)</li>
 <li><a href="cvxbook/Ch08_geometric_probs/html/ex_8_3.html">Example 8.3: Bounding correlation coefficients</a> (<a href="cvxbook/Ch08_geometric_probs/ex_8_3.m">ex_8_3.m</a>)</li>
 <li><a href="cvxbook/Ch08_geometric_probs/html/ex_8_4.html">Example 8.4: One free point localization</a> (<a href="cvxbook/Ch08_geometric_probs/ex_8_4.m">ex_8_4.m</a>)</li>
-<li><a href="cvxbook/Ch08_geometric_probs/html/ex_8_5.html">One free point localization</a> (<a href="cvxbook/Ch08_geometric_probs/ex_8_5.m">ex_8_5.m</a>)</li>
-<li><a href="cvxbook/Ch08_geometric_probs/html/floor_plan.html">Floor planning</a> (<a href="cvxbook/Ch08_geometric_probs/floor_plan.m">floor_plan.m</a>)</li>
-<li><a href="cvxbook/Ch08_geometric_probs/html/floor_plan_graphs.html">Solve a floor planning problem given graphs H &amp; V</a> (<a href="cvxbook/Ch08_geometric_probs/floor_plan_graphs.m">floor_plan_graphs.m</a>)</li>
-<li><a href="cvxbook/Ch08_geometric_probs/html/floorplan.html">Computes a minimum-perimeter bounding box subject to positioning constraints</a> (<a href="cvxbook/Ch08_geometric_probs/floorplan.m">floorplan.m</a>)</li>
-<li><a href="cvxbook/Ch08_geometric_probs/html/linear_discr.html">Figure 8.8: Simplest linear discrimination</a> (<a href="cvxbook/Ch08_geometric_probs/linear_discr.m">linear_discr.m</a>)</li>
-<li><a href="cvxbook/Ch08_geometric_probs/html/max_vol_ellip_in_polyhedra.html">Maximum volume inscribed ellipsoid in a polyhedron</a> (<a href="cvxbook/Ch08_geometric_probs/max_vol_ellip_in_polyhedra.m">max_vol_ellip_in_polyhedra.m</a>)</li>
-<li><a href="cvxbook/Ch08_geometric_probs/html/min_vol_elp_finite_set.html">Minimum volume ellipsoid covering a finite set</a> (<a href="cvxbook/Ch08_geometric_probs/min_vol_elp_finite_set.m">min_vol_elp_finite_set.m</a>)</li>
-<li><a href="cvxbook/Ch08_geometric_probs/html/min_vol_union_ellip.html">Minimum volume ellipsoid covering union of ellipsoids</a> (<a href="cvxbook/Ch08_geometric_probs/min_vol_union_ellip.m">min_vol_union_ellip.m</a>)</li>
+<li><a href="cvxbook/Ch08_geometric_probs/html/test_floorplan.html">Example 8.7: Floorplan generation test script</a> (<a href="cvxbook/Ch08_geometric_probs/test_floorplan.m">test_floorplan.m</a>)</li>
+<li><a href="cvxbook/Ch08_geometric_probs/html/svm_1.html">Figure 8.10: Approximate linear discrimination via linear programming</a> (<a href="cvxbook/Ch08_geometric_probs/svm_1.m">svm_1.m</a>)</li>
+<li><a href="cvxbook/Ch08_geometric_probs/html/svm_2.html">Figure 8.11: Approximate linear discrimination via support vector classifier</a> (<a href="cvxbook/Ch08_geometric_probs/svm_2.m">svm_2.m</a>)</li>
 <li><a href="cvxbook/Ch08_geometric_probs/html/placement_lin.html">Figure 8.15: Linear placement problem</a> (<a href="cvxbook/Ch08_geometric_probs/placement_lin.m">placement_lin.m</a>)</li>
 <li><a href="cvxbook/Ch08_geometric_probs/html/placement_quad.html">Figure 8.16: Quadratic placement problem</a> (<a href="cvxbook/Ch08_geometric_probs/placement_quad.m">placement_quad.m</a>)</li>
 <li><a href="cvxbook/Ch08_geometric_probs/html/placement_quar.html">Figure 8.17: Fourth-order placement problem</a> (<a href="cvxbook/Ch08_geometric_probs/placement_quar.m">placement_quar.m</a>)</li>
+<li><a href="cvxbook/Ch08_geometric_probs/html/linear_discr.html">Figure 8.8: Simplest linear discrimination</a> (<a href="cvxbook/Ch08_geometric_probs/linear_discr.m">linear_discr.m</a>)</li>
+<li><a href="cvxbook/Ch08_geometric_probs/html/robust_lin_discr.html">Figure 8.9: Robust linear discrimination problem</a> (<a href="cvxbook/Ch08_geometric_probs/robust_lin_discr.m">robust_lin_discr.m</a>)</li>
+<li><a href="cvxbook/Ch08_geometric_probs/html/eucl_dist_poly.html">Euclidean distance between polyhedra</a> (<a href="cvxbook/Ch08_geometric_probs/eucl_dist_poly.m">eucl_dist_poly.m</a>)</li>
+<li><a href="cvxbook/Ch08_geometric_probs/html/eucl_dist_poly_2D.html">Euclidean distance between polyhedra in 2D</a> (<a href="cvxbook/Ch08_geometric_probs/eucl_dist_poly_2D.m">eucl_dist_poly_2D.m</a>)</li>
+<li><a href="cvxbook/Ch08_geometric_probs/html/eucl_proj_hlf.html">Euclidean projection on a halfspace</a> (<a href="cvxbook/Ch08_geometric_probs/eucl_proj_hlf.m">eucl_proj_hlf.m</a>)</li>
+<li><a href="cvxbook/Ch08_geometric_probs/html/eucl_proj_hyp.html">Euclidean projection on a hyperplane</a> (<a href="cvxbook/Ch08_geometric_probs/eucl_proj_hyp.m">eucl_proj_hyp.m</a>)</li>
+<li><a href="cvxbook/Ch08_geometric_probs/html/eucl_proj_rect.html">Euclidean projection on a rectangle</a> (<a href="cvxbook/Ch08_geometric_probs/eucl_proj_rect.m">eucl_proj_rect.m</a>)</li>
+<li><a href="cvxbook/Ch08_geometric_probs/html/eucl_proj_cone1.html">Euclidean projection on the nonnegative orthant</a> (<a href="cvxbook/Ch08_geometric_probs/eucl_proj_cone1.m">eucl_proj_cone1.m</a>)</li>
+<li><a href="cvxbook/Ch08_geometric_probs/html/eucl_proj_cone2.html">Euclidean projection on the semidefinite cone</a> (<a href="cvxbook/Ch08_geometric_probs/eucl_proj_cone2.m">eucl_proj_cone2.m</a>)</li>
+<li><a href="cvxbook/Ch08_geometric_probs/html/floor_plan.html">Floor planning</a> (<a href="cvxbook/Ch08_geometric_probs/floor_plan.m">floor_plan.m</a>)</li>
+<li><a href="cvxbook/Ch08_geometric_probs/html/max_vol_ellip_in_polyhedra.html">Maximum volume inscribed ellipsoid in a polyhedron</a> (<a href="cvxbook/Ch08_geometric_probs/max_vol_ellip_in_polyhedra.m">max_vol_ellip_in_polyhedra.m</a>)</li>
+<li><a href="cvxbook/Ch08_geometric_probs/html/min_vol_elp_finite_set.html">Minimum volume ellipsoid covering a finite set</a> (<a href="cvxbook/Ch08_geometric_probs/min_vol_elp_finite_set.m">min_vol_elp_finite_set.m</a>)</li>
+<li><a href="cvxbook/Ch08_geometric_probs/html/min_vol_union_ellip.html">Minimum volume ellipsoid covering union of ellipsoids</a> (<a href="cvxbook/Ch08_geometric_probs/min_vol_union_ellip.m">min_vol_union_ellip.m</a>)</li>
+<li><a href="cvxbook/Ch08_geometric_probs/html/ex_8_5.html">One free point localization</a> (<a href="cvxbook/Ch08_geometric_probs/ex_8_5.m">ex_8_5.m</a>)</li>
 <li><a href="cvxbook/Ch08_geometric_probs/html/poly3_discr.html">Polynomial discrimination</a> (<a href="cvxbook/Ch08_geometric_probs/poly3_discr.m">poly3_discr.m</a>)</li>
 <li><a href="cvxbook/Ch08_geometric_probs/html/poly4_discr.html">Polynomial discrimination</a> (<a href="cvxbook/Ch08_geometric_probs/poly4_discr.m">poly4_discr.m</a>)</li>
 <li><a href="cvxbook/Ch08_geometric_probs/html/quad_discr.html">Quadratic discrimination (separating ellipsoid)</a> (<a href="cvxbook/Ch08_geometric_probs/quad_discr.m">quad_discr.m</a>)</li>
-<li><a href="cvxbook/Ch08_geometric_probs/html/robust_lin_discr.html">Figure 8.9: Robust linear discrimination problem</a> (<a href="cvxbook/Ch08_geometric_probs/robust_lin_discr.m">robust_lin_discr.m</a>)</li>
 <li><a href="cvxbook/Ch08_geometric_probs/html/separate_ell_2D.html">Separating ellipsoids in 2D</a> (<a href="cvxbook/Ch08_geometric_probs/separate_ell_2D.m">separate_ell_2D.m</a>)</li>
-<li><a href="cvxbook/Ch08_geometric_probs/html/separate_poly_2D.html">Section 8.2.2: Separating polyhedra in 2D</a> (<a href="cvxbook/Ch08_geometric_probs/separate_poly_2D.m">separate_poly_2D.m</a>)</li>
-<li><a href="cvxbook/Ch08_geometric_probs/html/separate_pt_poly.html">Section 8.1.1: Separating a point from a polyhedron</a> (<a href="cvxbook/Ch08_geometric_probs/separate_pt_poly.m">separate_pt_poly.m</a>)</li>
-<li><a href="cvxbook/Ch08_geometric_probs/html/svm_1.html">Figure 8.10: Approximate linear discrimination via linear programming</a> (<a href="cvxbook/Ch08_geometric_probs/svm_1.m">svm_1.m</a>)</li>
-<li><a href="cvxbook/Ch08_geometric_probs/html/svm_2.html">Figure 8.11: Approximate linear discrimination via support vector classifier</a> (<a href="cvxbook/Ch08_geometric_probs/svm_2.m">svm_2.m</a>)</li>
-<li><a href="cvxbook/Ch08_geometric_probs/html/test_floorplan.html">Example 8.7: Floorplan generation test script</a> (<a href="cvxbook/Ch08_geometric_probs/test_floorplan.m">test_floorplan.m</a>)</li>
+<li><a href="cvxbook/Ch08_geometric_probs/html/floor_plan_graphs.html">Solve a floor planning problem given graphs H &amp; V</a> (<a href="cvxbook/Ch08_geometric_probs/floor_plan_graphs.m">floor_plan_graphs.m</a>)</li>
+<li class="liOpen">Functions called by these scripts:<ul>
+<li><a href="cvxbook/Ch08_geometric_probs/floorplan.m">Computes a minimum-perimeter bounding box subject to positioning constraints (floorplan.m)</a></li>
+</ul></li>
 </ul>
 </li>
 <li class="liClosed"><b>Chapter 9: Unconstrained minimization</b>
@@ -153,14 +163,16 @@ to reveal/hide their contents.</p>
 </ul>
 </li>
 <li><b>Uncategorized files</b><ul>
+<li><a href="html/regularized_norm_tradeoff.html">Builds a norm minimization tradeoff curve</a> (<a href="regularized_norm_tradeoff.m">regularized_norm_tradeoff.m</a>)</li>
+<li><a href="html/simple_LS.html">Builds and solves a simple least-squares problem using cvx</a> (<a href="simple_LS.m">simple_LS.m</a>)</li>
+<li><a href="html/simple_LP.html">Builds and solves a simple linear program</a> (<a href="simple_LP.m">simple_LP.m</a>)</li>
 <li><a href="html/closest_toeplitz_psd.html">Closest Toeplitz SDP search.</a> (<a href="closest_toeplitz_psd.m">closest_toeplitz_psd.m</a>)</li>
 <li><a href="html/equality_constr_norm_min.html">Equality constrained norm minimization.</a> (<a href="equality_constr_norm_min.m">equality_constr_norm_min.m</a>)</li>
-<li><a href="html/lp_opt_val.html">An example of an incomplete problem specification.</a> (<a href="lp_opt_val.m">lp_opt_val.m</a>)</li>
-<li><a href="html/min_phase_spectral_fact.html">Minimal phase spectral factorization</a> (<a href="min_phase_spectral_fact.m">min_phase_spectral_fact.m</a>)</li>
 <li><a href="html/quickstart.html">Examples from the CVX User's guide</a> (<a href="quickstart.m">quickstart.m</a>)</li>
-<li><a href="html/regularized_norm_tradeoff.html">Builds a norm minimization tradeoff curve</a> (<a href="regularized_norm_tradeoff.m">regularized_norm_tradeoff.m</a>)</li>
-<li><a href="html/simple_LP.html">Builds and solves a simple linear program</a> (<a href="simple_LP.m">simple_LP.m</a>)</li>
-<li><a href="html/simple_LS.html">Builds and solves a simple least-squares problem using cvx</a> (<a href="simple_LS.m">simple_LS.m</a>)</li>
+<li><a href="html/min_phase_spectral_fact.html">Minimal phase spectral factorization</a> (<a href="min_phase_spectral_fact.m">min_phase_spectral_fact.m</a>)</li>
+<li class="liOpen">Functions called by these scripts:<ul>
+<li><a href="lp_opt_val.m">An example of an incomplete problem specification. (lp_opt_val.m)</a></li>
+</ul></li>
 </ul></li>
 </ul>
 <!-- END TOC -->

@@ -1,4 +1,4 @@
-% Sec. 4.5.4 example: Frobenius norm diagonal scaling
+% Section 4.5.4 example: Frobenius norm diagonal scaling
 % Boyd & Vandenberghe "Convex Optimization"
 % Joelle Skaf - 01/29/06
 %

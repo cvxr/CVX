@@ -1,4 +1,4 @@
-% Sec. 4.5.4 example: Minimum spectral radius via Perron-Frobenius theory
+% Section 4.5.4 example: Minimum spectral radius via Perron-Frobenius theory
 % Boyd & Vandenberghe "Convex Optimization"
 % Joelle Skaf - 01/29/06
 % 

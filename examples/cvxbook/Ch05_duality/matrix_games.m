@@ -19,8 +19,8 @@ fprintf(1,'Computing the optimal strategy for player 1 ... ');
 cvx_begin
     variable u(n)
     minimize ( max ( P'*u) )
-    u >= 0
-    ones(1,n)*u == 1
+    u >= 0;
+    ones(1,n)*u == 1;
 cvx_end
 
 fprintf(1,'Done! \n');
@@ -32,8 +32,8 @@ fprintf(1,'Computing the optimal strategy for player 2 ... ');
 cvx_begin 
     variable v(m)
     maximize ( min (P*v) )
-    v >= 0
-    ones(1,m)*v == 1
+    v >= 0;
+    ones(1,m)*v == 1;
 cvx_end
 
 fprintf(1,'Done! \n');

@@ -1,16 +1,16 @@
 % Quadratic smoothing example
-% Sec. 6.3.3, fig 6.8, 6.9 and 6.10 
+% Sec. 6.3.3, fig 6.8, 6.9 and 6.10
 % Boyd & Vandenberghe "Convex Optimization"
-% Original by Lieven Vandenberghe 
+% Original by Lieven Vandenberghe
 % Adapted for CVX Argyris Zymnis - 10/2005
 % (figures are generated)
-% 
+%
 % Suppose we have a signal x, which does not vary too rapidly
 % and that x is corrupted by some small, rapidly varying noise v,
 % ie. x_cor = x + v. Then if we want to reconstruct x from x_cor
 % we should solve (with x_hat as the parameter)
-%        minimize ||x_hat - x_cor||_2 + lambda*phi_quad(x_hat) 
-% 
+%        minimize ||x_hat - x_cor||_2 + lambda*phi_quad(x_hat)
+%
 % where phi_quad(x) = sum(x_(i+1)-x_i)^2 , for i = 1 to n-1.
 % The parameter lambda controls the ''smoothness'' of x_hat.
 %
@@ -46,7 +46,7 @@ ylabel('yb');
 title('corrupted signal');
 %print -deps smoothrec_signals.eps % figure 6.8, page 313
 
-A = sparse(n-1,n);  
+A = sparse(n-1,n);
 A(:,1:n-1) = -speye(n-1,n-1);  A(:,2:n) = A(:,2:n)+speye(n-1,n-1);
 
 % tradeoff curve, figure 6.9, page 313
@@ -91,7 +91,7 @@ for i=1:3
     variable x(n)
     minimize(norm(x(2:n)-x(1:n-1)))
     subject to
-        norm(x-corrupt) <= alpha
+        norm(x-corrupt) <= alpha;
    cvx_end
    xrecon = [xrecon, x];
 

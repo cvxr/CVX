@@ -31,8 +31,8 @@ fprintf(1,'Computing the optimal solution by solving a QP ...');
 cvx_begin
     variable x(n)
     minimize ( norm(x-x0) )
-    x <= u
-    x >= l
+    x <= u;
+    x >= l;
 cvx_end
 
 fprintf(1,'Done! \n');

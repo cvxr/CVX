@@ -30,8 +30,8 @@ cvx_begin
   variable lambda(p)
   maximize ( det_rootn( V*diag(lambda)*V' ) )
   subject to
-    sum(lambda) == 1
-    lambda >= 0
+    sum(lambda) == 1;
+    lambda >= 0;
 cvx_end
 lambdaD = lambda; % save the solution for confidence ellipsoids
 
@@ -81,8 +81,8 @@ cvx_begin sdp
       [ V*diag(lambda)*V'  e(:,k);
         e(k,:)             u(k)   ] >= 0;
     end
-    sum(lambda) == 1
-    lambda >= 0
+    sum(lambda) == 1;
+    lambda >= 0;
 cvx_end
 lambdaA = lambda; % save the solution for confidence ellipsoids
 

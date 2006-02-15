@@ -1,10 +1,10 @@
 % Fitting a convex function to given data
-% Sec. 6.5.5, fig 6.24 
+% Sec. 6.5.5, fig 6.24
 % Boyd & Vandenberghe "Convex Optimization"
-% Original by Lieven Vandenberghe 
+% Original by Lieven Vandenberghe
 % Adapted for CVX by Argyris Zymnis - 11/27/2005
 % (a figure is generated)
-% 
+%
 % Here we find the convex function f that best fits
 % some given data in the least squares sense.
 % To do this we solve
@@ -39,7 +39,7 @@ cvx_begin
     variables yhat(m) g(m)
     minimize(norm(yns-yhat))
     subject to
-        yhat*ones(1,m) >= ones(m,1)*yhat' + (ones(m,1)*g').*(u*ones(1,m)-ones(m,1)*u')
+        yhat*ones(1,m) >= ones(m,1)*yhat' + (ones(m,1)*g').*(u*ones(1,m)-ones(m,1)*u');
 cvx_end
 
 nopts =1000;

@@ -44,21 +44,21 @@ cvx_begin
   subject to
 
   % constraints on the rectangular profile variables
-  wlog >= log(wmin)
-  wlog <= log(wmax)
-  hlog >= log(hmin)
-  hlog <= log(hmax)
-  hlog - wlog >= log(Smin)
-  hlog - wlog <= log(Smax)
+  wlog >= log(wmin);
+  wlog <= log(wmax);
+  hlog >= log(hmin);
+  hlog <= log(hmax);
+  hlog - wlog >= log(Smin);
+  hlog - wlog <= log(Smax);
 
   % maximum stress constraint
-  log(6*F*[1:N]') - (wlog + 2*hlog) <= log(sigma_max)
+  log(6*F*[1:N]') - (wlog + 2*hlog) <= log(sigma_max);
 
   % force and deflection constraints
-  log(6*F) - (log(E) + wlog + 3*hlog) == dlog
+  log(6*F) - (log(E) + wlog + 3*hlog) == dlog;
   for i = 1:N
-    logsumexp_sdp( [log(2*i-1)+dlog(i) vlog(i+1)] ) <= vlog(i)
-    logsumexp_sdp( [log(i-1/3)+dlog(i) vlog(i+1) ylog(i+1)] ) <= ylog(i)
+    logsumexp_sdp( [log(2*i-1)+dlog(i) vlog(i+1)] ) <= vlog(i);
+    logsumexp_sdp( [log(i-1/3)+dlog(i) vlog(i+1) ylog(i+1)] ) <= ylog(i);
   end
   ylog(1) <= log(ymax);
 cvx_end

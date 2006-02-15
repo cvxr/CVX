@@ -1,7 +1,7 @@
 % Bounding consumer preference
-% Sec. 6.5.5, Ex. 6.9/fig 6.25 and 6.26, 
+% Sec. 6.5.5, Ex. 6.9/fig 6.25 and 6.26,
 % Boyd & Vandenberghe "Convex Optimization"
-% Original by Lieven Vandenberghe 
+% Original by Lieven Vandenberghe
 % Adapted for CVX Argyris Zymnis - 11/30/2005
 % (figures are generated)
 %
@@ -11,8 +11,8 @@
 % utility function: u(x_1,x_2) = (1.1*sqrt(x_1)+0.8*sqrt(x_2))/1.9
 % Then, if we have u(i) >= u(j) we say that (i,j) is in Pweak.
 %
-% Given this, we wish to compare the point (0.5,0.5) to each 
-% of the bundles in the given dataset. I.e. for each point k in the 
+% Given this, we wish to compare the point (0.5,0.5) to each
+% of the bundles in the given dataset. I.e. for each point k in the
 % dataset, we wish to decide wether u(k) >= u(0) or u(k) <= u(0),
 % or both, in which case we cannot make any conclusions about
 % consumer preferences.
@@ -82,7 +82,7 @@ data= [...
    3.6e-01   9.5e-01
    8.2e-01   6.7e-01 ];
 
-% objective point 
+% objective point
 obj=[0.5,0.5];
 
 figure(1);
@@ -107,7 +107,7 @@ m = size(data,1);  % number of baskets, including 0,1
 Pweak = zeros(m+1,m+1);
 for i=1:m,
    for j=1:m
-      if (i~=j) & (1.1*data(i,1).^(1/2)+0.8*data(i,2).^(1/2))/1.9 >= ...  
+      if (i~=j) & (1.1*data(i,1).^(1/2)+0.8*data(i,2).^(1/2))/1.9 >= ...
              (1.1*data(j,1).^(1/2)+0.8*data(j,2).^(1/2))/1.9,
          Pweak(i,j) = 1;
       end;
@@ -119,35 +119,35 @@ data = [data; 0.5 0.5];
 bounds = zeros(m,2);
 for k = 1:m
     fprintf(1,'Deciding on bundle %d of %d\n',k,m);
-    
+
     % Check for u(k) >= u(0.5,0.5)
     cvx_begin
         variables u(m+1) g_x(m+1) g_y(m+1)
         minimize(u(k)-u(m+1))
         subject to
-            g_x >= 0
-            g_y >= 0
+            g_x >= 0;
+            g_y >= 0;
             ones(m+1,1)*u' <= u*ones(1,m+1)+(g_x*ones(1,m+1)).*...
               (ones(m+1,1)*data(:,1)'-data(:,1)*ones(1,m+1))+...
-              (g_y*ones(1,m+1)).*(ones(m+1,1)*data(:,2)'-data(:,2)*ones(1,m+1))
-            (u*ones(1,m+1)).*Pweak >= (ones(m+1,1)*u').*Pweak
+              (g_y*ones(1,m+1)).*(ones(m+1,1)*data(:,2)'-data(:,2)*ones(1,m+1));
+            (u*ones(1,m+1)).*Pweak >= (ones(m+1,1)*u').*Pweak;
     cvx_end
     bounds(k,1) = cvx_optval;
-    
+
     % Check for u(0.5,0.5) >= u(k)
     cvx_begin
         variables u(m+1) g_x(m+1) g_y(m+1)
         maximize(u(k)-u(m+1))
         subject to
-            g_x >= 0
-            g_y >= 0
+            g_x >= 0;
+            g_y >= 0;
             ones(m+1,1)*u' <= u*ones(1,m+1) + (g_x*ones(1,m+1)).*...
               (ones(m+1,1)*data(:,1)'-data(:,1)*ones(1,m+1))+...
-              (g_y*ones(1,m+1)).*(ones(m+1,1)*data(:,2)'-data(:,2)*ones(1,m+1))
-            (u*ones(1,m+1)).*Pweak >= (ones(m+1,1)*u').*Pweak
+              (g_y*ones(1,m+1)).*(ones(m+1,1)*data(:,2)'-data(:,2)*ones(1,m+1));
+            (u*ones(1,m+1)).*Pweak >= (ones(m+1,1)*u').*Pweak;
     cvx_end
     bounds(k,2) = cvx_optval;
-        
+
 end
 
 figure(2);
