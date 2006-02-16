@@ -4,8 +4,6 @@ function make( varargin )
 % Determine the base path
 %
 
-fclose all;
-close all;
 odir = cd;
 try,
     base = dbstack( '-completenames' );
@@ -17,6 +15,8 @@ catch,
     base = base.name;
 end
 base = fileparts( base );
+fclose all;
+close all;
 
 %
 % Check the force flag
