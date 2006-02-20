@@ -18,7 +18,9 @@ if ~cvx_isconcave( x ),
     error( sprintf( 'Disciplined convex programming error:\n    The left-hand side of a ">=" inequality must be concave.' ) );
 elseif ~cvx_isconvex( y ),
     error( sprintf( 'Disciplined convex programming error:\n    The right-hand side of a ">=" inequality must be convex.' ) );
-end
+elseif ~isreal( x ) | ~isreal( y ),
+    error( sprintf( 'Disciplined convex programming error:\n    Both sides of an inequality constraint must be real.' ) );
+end    
 
 %
 % Process constraint
