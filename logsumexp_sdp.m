@@ -125,18 +125,13 @@ if isempty( offsets ),
 end
 
 %
-% Determine the computation method. Note that convex inputs cannot use the lse2()
-% method, because it uses an intermediate computation that is nonmonotonic.
+% Determine the computation method.
 %
 
 nlevs  = ceil(log2(nx));
 dectol = - nlevs * log( 1 - 2 * tolerances );
 lintol = - log( 1 - nx * tolerances );
-if isnumeric( x ) | cvx_isaffine( x ),
-    ls2tol = + nlevs * tols_lse2;
-else,
-    ls2tol = Inf;
-end
+ls2tol = + nlevs * tols_lse2;
 degs = [ min([find(ls2tol<=tol),Inf]), min([find(dectol<=tol),Inf]), min([find(lintol<=tol),Inf]) ];
 if all( isinf( degs ) ),
     tmax = min( [ lintol(end), ls2tol(end), dectol(end) ] );
@@ -205,6 +200,7 @@ cvx_begin sdp separable
         yq = y;
     end
     if use_lse2,
+        xq = cvx_accept_convex( xq );
         variables w( 1, npairs * nv ) v( 1, npairs * nv )
         abs( [0.5,-0.5]*xq ) <= w + v;
         w <= xoff;
@@ -212,10 +208,9 @@ cvx_begin sdp separable
         polyval_sdp( p, w / ( 0.5 * xoff ) - 1 ) + v + [0.5,0.5]*xq <= yq;
     else,
         xy = xq - ones(size(xq,1),1) * yq;
-        xy = xy / ( 0.5 * xoff ) + 1;
-        xy = max( xy, -1 );
+        xy = max( xy, - xoff );
         xy = cvx_accept_convex( xy );
-        sum( polyval_sdp( p, xy ), 1 ) <= 1;
+        sum( polyval_sdp( p, xy / ( 0.5 * xoff ) + 1 ), 1 ) <= 1;
     end
 cvx_end
 
