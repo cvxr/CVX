@@ -8,11 +8,13 @@ if p.locked, return; end
 rsv = int32( p.reserved( : )' );
 nn  = length( p.reserved );
 A   = cvx_basis( p.equalities );
+if ~issparse( A ), A = sparse( A ); end
 if size( A, 2 ) < nn, A( :, nn ) = 0; end
 nobj = prod( size( p.objective ) );
 preserve_dual = nobj <= 1 & ~isempty( p.duals );
 if nobj > 0,
     c = cvx_basis( p.objective );
+    if ~issparse( c ), c = sparse( c ); end
     if size( c, 2 ) < nn, c( :, nn ) = 0; end
     if isequal( p.direction, 'minimize' ), c = -c; end
     if ~p.complete,
