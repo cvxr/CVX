@@ -121,91 +121,42 @@ if ~xc & ~yc,
     
 else,
     
-    %
-    % Eliminate any zero rows from the left-hand matrix
-    %
-    
     if xc,
         bx = cvx_constant( x );
+        if sy(2) ~= 1, bx = kron( speye(sy(2)), bx ); end
         by = cvx_basis( y );
     else,
-        bx = cvx_constant( y ).';
+        bx = cvx_constant(y).';
+        if sx(1) ~= 1, bx = kron( bx, speye(sx(1)) ); end
         by = cvx_basis( x );
-        sy = sx;
     end
-    tx = any( bx, 2 );
-    if nnz( tx ) ~= numel( tx ),
-        bx = bx( tx, : );
-        tx = full( find( tx ) );
+    nc = 8 * ( 1 + ~( isreal( bx ) & isreal( by ) ) );
+    nc = max( floor( 128 * 1024 * 1024 / nc / size(by,1) ), 1 );
+    if nc >= size(by,2),
+        bz = bx * by;
     else,
-        tx = [];
+        bz = {};
+        tt = any( by, 1 );
+        if nnz( tt ) > 0.5 * nnz( tt ), 
+            tt( : ) = true; 
+        end
+        tv = find( tt );
+        nt = length( tv );
+        for k = rem( nt, nc ) : nc : nt,
+            ttv = tv(max(k-nc,0)+1:k);
+            bz{end+1} = bx * by( :, ttv );
+        end
+        bz = horzcat( bz{:} );
+        if ~all( tt ),
+            if issparse( bz ),
+                [ zi, zj, zv ] = find( bz );
+                bz = sparse( zi, tv(zj), zv, size(bz,1), size(by,2) ); 
+            else,
+                bz = cvx_subasgn( zeros( size(bz,1), size(by,2) ), ':', tt, bz );
+            end
+        end
     end
-    
-    %
-    % Determine the 3-D indices for the right-hand basis,
-    % and reshape to sy( 1 ) x ( sy( 2 ) * nv )
-    %
-
-    nv = size( by, 2 );
-    [ yi, yb, by ] = find( by );
-    yj = floor( ( yi - 1 ) / sy( 1 ) );
-    yi = yi - sy( 1 ) * yj;
-    yj = yj + 1;
-    if xc,
-        yj = yj + ( yb - 1 ) * sy( 2 );
-    else,
-        yb = yi + ( yb - 1 ) * sy( 1 );
-        yi = yj; yj = yb;
-        sy = [ sy( 2 ), sy( 1 ) ];
-    end
-    clear yij yb
-    
-    %
-    % Eliminate any zero columns from this reshaped right-hand matrix
-    %
-    
-    ty  = sparse( yj, 1, 1, nv * sy( 2 ), 1 );
-    nv2 = nnz( ty );
-    if nv2 ~= numel( ty ),
-        ty  = find( ty );
-        sv  = sparse( ty, 1, 1 : nv2 );
-        yj  = full( sv( yj ) );
-        clear sv
-    else,
-        ty = [];
-    end
-    
-    %
-    % Perform the multiplication and re-expand
-    %
-    
-    by = sparse( yi, yj, by, sy( 1 ), nv2 );
-    clear yi yj
-    z = bx * by;
-    clear bx by
-    [ zi, zj, z ] = find( z );
-    if ~isempty( tx ), zi = tx( zi ); end; clear tx
-    if ~isempty( ty ), zj = ty( zj ); end; clear ty
-    
-    %
-    % Reshape back to ( sz( 1 ) * sz( 2 ) ) x nv
-    %
-    
-    zb = floor( ( zj - 1 ) / sy( 2 ) );
-    zj = zj - zb * sy( 2 );
-    zb = zb + 1;
-    if xc,
-        zi = zi( : ) + sz( 1 ) * ( zj( : ) - 1 );
-    else,
-        zi = zj( : ) + sz( 1 ) * ( zi( : ) - 1 );
-    end
-    
-    %
-    % Construct the result
-    %
-    
-    z = sparse( zi, zb, z, prod( sz ), nv );
-    z = cvx( prob, sz, z );
+    z = cvx( prob, sz, bz );
     
     %
     % Check that the sums are legal
