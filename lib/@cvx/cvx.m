@@ -17,12 +17,12 @@ switch nargin,
     case 2,
         if ~isa( p, 'cvxprob' ) | length( p ) ~= 1,
             error( 'First argument must be a scalar cvx problem object.' );
-        elseif ~isa( s, 'double' ),
+        elseif ~isa( s, 'double' ) & ~isa( s, 'sparse' ),
             error( 'Second argument must be numeric.' );
         elseif any( isinf( s( : ) ) ) | any( isnan( s( : ) ) ),
             error( 'Infs and NaNs are not permitted.' );
         end
-        v = class( struct( 'size_', size( s ), 'basis_', sparse( s( : ) ), 'dual_', '', 'dof_', [] ), 'cvx', cvxobj( p ) );
+        v = class( struct( 'size_', size( s ), 'basis_', s( : ), 'dual_', '', 'dof_', [] ), 'cvx', cvxobj( p ) );
     case { 3, 4 },
         if ~isa( p, 'cvxprob' ),
             error( 'First argument must be a scalar cvx problem object.' );
@@ -39,8 +39,10 @@ switch nargin,
         end
         if isempty( b ),
             b = sparse( [], [], [], prod( s ), 1 );
+        elseif ~issparse( b ) & nnz( b ) * 4 < prod( size( b ) ),
+            b = sparse( b );
         end
-        v = class( struct( 'size_', s, 'basis_', sparse( b ), 'dual_', '', 'dof_', d ), 'cvx', cvxobj( p ) );
+        v = class( struct( 'size_', s, 'basis_', b, 'dual_', '', 'dof_', d ), 'cvx', cvxobj( p ) );
 end
 
 % Copyright 2005 Michael C. Grant and Stephen P. Boyd.
