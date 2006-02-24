@@ -121,9 +121,18 @@ elseif isempty( b ),
         status = [ 'Inaccurate/', status ];
     end
 else,
+    degen = false;
+    if K.f == size(A,2),
+        degen = true;
+        A( :, end + 1 ) = 0;
+        K.l = 1;
+    end
     [ x, y, info ] = sedumi( A, b, sign * c, K, pars );
     x = full( x );
     y = full( y );
+    if degen,
+        x(end) = [];
+    end
     if info.numerr == 2,
         status = 'Failed';
         x = NaN * ones( nn, 1 );
