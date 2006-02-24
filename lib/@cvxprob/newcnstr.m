@@ -155,6 +155,7 @@ end
 % Add the equalities
 %
 
+if ~issparse( zR ), zR = sparse( zR ); end
 oeqs = length( cvx___.problems( p ).equalities ) + 1;
 neqs = oeqs + nZ - 1;
 if oeqs == 1,
