@@ -15,3 +15,4 @@
 %  fig6_5.m               - Robust regression using the Huber penalty
 %  fig6_20.m              - Spline fitting
 %  tv_cvx.m               - Total variation reconstruction
+help Contents

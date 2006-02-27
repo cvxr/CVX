@@ -12,7 +12,6 @@
 %  placement_quar.m             - Figure 8.17: Fourth-order placement problem
 %  linear_discr.m               - Figure 8.8: Simplest linear discrimination
 %  robust_lin_discr.m           - Figure 8.9: Robust linear discrimination problem
-%  floorplan.m                  - Computes a minimum-perimeter bounding box subject to positioning constraints
 %  eucl_dist_poly.m             - Euclidean distance between polyhedra
 %  eucl_dist_poly_2D.m          - Euclidean distance between polyhedra in 2D
 %  eucl_proj_hlf.m              - Euclidean projection on a halfspace
@@ -30,3 +29,5 @@
 %  quad_discr.m                 - Quadratic discrimination (separating ellipsoid)
 %  separate_ell_2D.m            - Separating ellipsoids in 2D
 %  floor_plan_graphs.m          - Solve a floor planning problem given graphs H & V
+%  floorplan.m                  - Computes a minimum-perimeter bounding box subject to positioning constraints
+help Contents

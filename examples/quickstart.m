@@ -4,10 +4,10 @@ has_quadprog = exist( 'quadprog' );
 has_quadprog = has_quadprog == 2 | has_quadprog == 3;
 has_linprog  = exist( 'linprog' );
 has_linprog  = has_linprog == 2 | has_linprog == 3;
-cvx_clear;
+rnstate = randn( 'state' );
 s_quiet = cvx_quiet(true);
 s_pause = cvx_pause(false);
-clc; echo on
+cvx_clear; echo on
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % SECTION 2.1: LEAST SQUARES %
@@ -38,8 +38,8 @@ disp( 'Residual vector:' );
 disp( [ '   A*x-b = [ ', sprintf( '%7.4f ', A*x-b ), ']' ] );
 disp( ' ' );
 
-input( 'Press Enter/Return for the next example...' );
-clc; echo on
+try, input( 'Press Enter/Return for the next example...' ); clc; catch, end
+echo on
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % SECTION 2.2: BOUND-CONSTRAINED LEAST SQUARES %
@@ -87,8 +87,8 @@ disp( 'Residual vector:' );
 disp( [ '   A*x-b = [ ', sprintf( '%7.4f ', A*x-b ), ']' ] );
 disp( ' ' );
 
-input( 'Press Enter/Return for the next example...' );
-clc; echo on
+try, input( 'Press Enter/Return for the next example...' ); clc; catch, end
+echo on
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % SECTION 2.3: OTHER NORMS AND FUNCTIONS: INFINITY NORM %
@@ -129,8 +129,8 @@ disp( sprintf( 'Residual vector; verify that the peaks match the objective (%6.4
 disp( [ '   A*x-b = [ ', sprintf( '%7.4f ', A*x-b ), ']' ] );
 disp( ' ' );
 
-input( 'Press Enter/Return for the next example...' );
-clc; echo on
+try, input( 'Press Enter/Return for the next example...' ); clc; catch, end
+echo on
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % SECTION 2.3: OTHER NORMS AND FUNCTIONS: ONE NORM %
@@ -170,8 +170,8 @@ disp( 'Residual vector; verify the presence of several zero residuals:' );
 disp( [ '   A*x-b = [ ', sprintf( '%7.4f ', A*x-b ), ']' ] );
 disp( ' ' );
 
-input( 'Press Enter/Return for the next example...' );
-clc; echo on
+try, input( 'Press Enter/Return for the next example...' ); clc; catch, end
+echo on
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % SECTION 2.3: OTHER NORMS AND FUNCTIONS: LARGEST-K NORM %
@@ -195,8 +195,8 @@ disp( sprintf( 'Residual vector; verify a tie for %d-th place (%7.4f):', k, temp
 disp( [ '   A*x-b = [ ', sprintf( '%7.4f ', A*x-b ), ']' ] );
 disp( ' ' );
 
-input( 'Press Enter/Return for the next example...' );
-clc; echo on
+try, input( 'Press Enter/Return for the next example...' ); clc; catch, end
+echo on
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % SECTION 2.3: OTHER NORMS AND FUNCTIONS: HUBER PENALTY %
@@ -218,8 +218,8 @@ disp( 'Residual vector:' );
 disp( [ '   A*x-b = [ ', sprintf( '%7.4f ', A*x-b ), ']' ] );
 disp( ' ' );
 
-input( 'Press Enter/Return for the next example...' );
-clc; echo on
+try, input( 'Press Enter/Return for the next example...' ); clc; catch, end
+echo on
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % SECTION 2.4: OTHER CONSTRAINTS %
@@ -251,8 +251,8 @@ disp( 'Equality constraints:' );
 disp( [ '   C*x   = [ ', sprintf( '%7.4f ', C*x ), ']' ] );
 disp( [ '   d     = [ ', sprintf( '%7.4f ', d   ), ']' ] );
 
-input( 'Press Enter/Return for the next example...' );
-clc; echo on
+try, input( 'Press Enter/Return for the next example...' ); clc; catch, end
+echo on
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % SECTION 2.5: AN OPTIMAL TRADEOFF CURVE %
@@ -265,6 +265,7 @@ clc; echo on
 % cvx_end
 
 echo off
+disp( ' ' );
 disp( 'Generating tradeoff curve...' );
 cvx_pause(false);
 gamma = logspace( -2, 2, 20 );
@@ -287,5 +288,6 @@ xlabel( 'norm(x,1)' );
 ylabel( 'norm(A*x-b)' );
 grid
 disp( 'Done. (Check out the graph!)' );
+randn( 'state', rnstate );
 cvx_quiet(s_quiet);
 cvx_pause(s_pause);

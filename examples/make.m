@@ -127,8 +127,8 @@ function [ title, files ] = generate_directory( mpath, prefix, force, fidc, base
 
 persistent htmlsrc htmldst
 if isempty( htmlsrc ),
-    htmlsrc = { '&', '<', '>' };
-    htmldst = { '&amp;', '&lt;', '&gt;' };
+    htmlsrc = { '&', '<', '>', 'http://www.stanford.edu/(\S*)' };
+    htmldst = { '&amp;', '&lt;', '&gt;', '<a href="http://www.stanford.edu/$1">$1</a>' };
 end
 
 disp( sprintf( '%sDirectory: %s', prefix, mpath ) );
@@ -159,7 +159,177 @@ elseif ~isempty( dir( 'Contents.m' ) ),
 end
 
 %
-% Open Comments.m.new and deposit title and comments
+% Read the entries, and process the scripts and functions
+%
+
+dd = dir;
+mlen = 0;
+files = struct( 'name', {}, 'title', {}, 'type', {} );
+for k = 1 : length( dd ),
+    name = dd(k).name;
+    if dd(k).isdir,
+        if name(1) == '.' | strcmp( name, 'html' ), continue; end
+        name(end+1) = '/';
+        files( end + 1 ) = struct( 'name', name, 'title', '', 'type', 'dir' );
+    elseif length( name ) > 2,
+        ndx = max(find(name=='.'));
+        if isempty( ndx ), continue; end
+        switch name(ndx+1:end),
+            case 'm',
+                if strcmp( name, 'Contents.m' )| strcmp( name, 'make.m' ), continue; end
+                [ temp, isfunc ] = generate_file( name, prefix, force );
+                if isfunc, type = 'func'; else, type = 'script'; end
+                files( end + 1 ) = struct( 'name', name, 'title', temp, 'type', type );
+            case 'tex',
+                name2 = name(1:ndx-1);
+                temp = generate_doc( name, prefix, force );
+                files( end + 1 ) = struct( 'name', name, 'title', temp, 'type', 'tex' );
+            case { 'pdf', 'ps' },
+                if any( strcmp( { dd.name }, [name(1:ndx+1),'tex'] ) ), continue; end
+                files( end + 1 ) = struct( 'name', name, 'title', '', 'type', 'doc' );
+            otherwise,
+                continue;
+        end
+    end
+    mlen = max( mlen, length(name) );
+end
+
+%
+% Sort the files
+% 
+
+if ~isempty( files ),
+    [ fnames, ndxs ] = sort( { files.title } );
+    files = files(ndxs);
+    ftypes = { files.type };
+    tdir  = strcmp( ftypes, 'dir' );
+    tfun  = strcmp( ftypes, 'func' );
+    tdoc  = strcmp( ftypes, 'doc' ) | strcmp( ftypes, 'tex' );
+    tscr  = ~( tdir | tfun | tdoc );
+    t1    = strncmp( fnames, 'Exercise ', 9 ) & tscr;
+    t2    = strncmp( fnames, 'Example ',  8 ) & tscr; 
+    t3    = strncmp( fnames, 'Section ',  8 ) & tscr;
+    t4    = strncmp( fnames, 'Figure ',   7 ) & tscr;
+    t5    = ~( t1 | t2 | t3 | t4 ) & tscr;
+    ndxs  = [ find(tdir(:)); find(t3(:)); find(t2(:)); find(t4(:)); find(t5(:)); find(t1(:)) ; find(tfun(:)) ; find(tdoc(:)) ];
+    files = files(ndxs);
+end
+
+%
+% Fill out the index.html file
+%
+
+if fidc >= 0,
+    
+    dpath = mpath( length(base) + 2 : end );
+    dpath(dpath=='\') = '/';
+    if ~isempty( dpath ),
+        dpath(end+1) = '/';
+        [ dpath2, dname ] = fileparts( mpath );
+        if ~isempty( files ) & any( tdir ),
+            mclass = 'liOpen';
+        else,
+            mclass = 'liClosed';
+        end
+        if isempty( title ),
+            fprintf( fidc, '<li class="%s"><a href="%s">%s/</a>\n', mclass, dpath, dname ),
+        else,
+            fprintf( fidc, '<li class="%s"><b>%s</b>\n', mclass, regexprep( title, htmlsrc, htmldst ) );
+        end
+        if ~isempty( comments ),
+            fprintf( fidc, '<blockquote>\n' );
+            for k = 1 : length( comments ),
+                fprintf( fidc, '%s\n', regexprep( comments{k}, htmlsrc, htmldst ) );
+            end
+            fprintf( fidc, '</blockquote>\n' );
+        end
+        fprintf( fidc, '<ul>\n' );
+    else,
+        fprintf( fidc, '<ul class="mktree" id="tree1">\n' );
+    end
+    
+    if isempty( files ),
+        
+        fprintf( fidc, '<li>(no files)</li>\n' );
+        
+    else,
+    
+        if any( tdir ),
+            for k = 1 : length( files ),
+                if strcmp( files(k).type, 'dir' ),
+                    files(k).title = generate_directory( files(k).name(1:end-1), prefix, force, fidc, base );
+                    cd(mpath);
+                end
+            end
+        end
+
+        if any( tscr ),
+            need_misc = isempty( dpath ) & any( tdir );
+            if need_misc,
+                fprintf( fidc, '<li><b>Miscellaneous examples</b><ul>\n' );
+            end
+            for k = 1 : length( files ),
+                if strcmp( files(k).type, 'script' ),
+                    name = files( k ).name;
+                    temp = files( k ).title;
+                    if isempty( temp ),
+                        fprintf( fidc, '<li><a href="%s%s">%s</a></li>\n', dpath, name, name );
+                    else,
+                        fprintf( fidc, '<li><a href="%shtml/%shtml">%s</a> (<a href="%s%s">%s</a>)</li>\n', dpath, name(1:end-1), regexprep( temp, htmlsrc, htmldst ), dpath, name, name );
+                    end
+                end
+            end
+            if need_misc,
+                fprintf( fidc, '</ul></li>\n' );
+            end
+        end
+
+        if any( tfun ),
+            fprintf( fidc, '<li class="liOpen">Utility functions:<ul>\n' );
+            for k = 1 : length( files ),
+                if strcmp( files(k).type, 'func' ),
+                    name = files( k ).name;
+                    temp = files( k ).title;
+                    if isempty( temp ),
+                        fprintf( fidc, '<li><a href="%s%s">%s</a></li>\n', dpath, name, name );
+                    else,
+                        fprintf( fidc, '<li><a href="%s%s">%s (%s)</a></li>\n', dpath, name, regexprep( temp, htmlsrc, htmldst ), name );
+                    end
+                end
+            end
+            fprintf( fidc, '</ul>\n' );
+        end
+
+        if any( tdoc ),
+            fprintf( fidc, '<li class="liOpen">Documentation:<ul>\n' );
+            for k = 1 : length( files ),
+                if strcmp( files(k).type, 'doc' ) | strcmp( files(k).type, 'tex' ),
+                    name = files( k ).name;
+                    if strcmp( files(k).type, 'tex' ),
+                        name = [ name(1:end-4), 'pdf' ];
+                    end
+                    temp = files( k ).title;
+                    if isempty( temp ),
+                        fprintf( fidc, '<li><a href="%s%s">%s</a></li>\n', dpath, name, name );
+                    else,
+                        fprintf( fidc, '<li><a href="%s%s">%s (%s)</a></li>\n', dpath, name, regexprep( temp, htmlsrc, htmldst ), name );
+                    end
+                end
+            end
+            fprintf( fidc, '</ul>\n' );
+        end
+        
+    end
+    
+    fprintf( fidc, '</ul>\n' );
+    if ~isempty( dpath ),
+        fprintf( fidc, '</li>\n' );
+    end
+    
+end
+
+%
+% Create Contents.m.new
 %
 
 [ fidw, message ] = fopen( 'Contents.m.new', 'w+' );
@@ -173,178 +343,6 @@ elseif ~isempty( title ),
     end
     fprintf( fidw, '%%\n' );
 end
-
-%
-% Determine the names of the files and subdirectories to process
-%
-
-dd = dir;
-dnames = {};
-fnames = {};
-files = struct( 'name', {}, 'title', {}, 'isfunc', {} );
-mlen = 0;
-for k = 1 : length( dd ),
-    name = dd(k).name;
-    if dd(k).isdir,
-        if name(1) == '.' | strcmp( name, 'html' ), continue; end
-        dnames{end+1} = name;
-    else,
-        if length( name ) < 2 | ~strcmp( name(end-1:end), '.m' ), continue; end
-        if strcmp( name, 'Contents.m' ), continue; end
-        fnames{end+1} = name;
-    end
-end
-
-%
-% If needed, deposit directory name, title, and comments into index.html
-%
-
-if fidc >= 0,
-    dpath = mpath( length(base) + 2 : end );
-    dpath(dpath=='\') = '/';
-    if ~isempty( dpath ),
-        dpath(end+1) = '/';
-        [ dpath2, dname ] = fileparts( mpath );
-        if isempty( dnames ),
-            mclass = 'liClosed';
-        else,
-            mclass = 'liOpen';
-        end
-        if isempty( title ),
-            fprintf( fidc, '<li class="%s"><a href="%s">%s/</a>\n', mclass, dpath, dname ),
-        else,
-            fprintf( fidc, '<li class="%s"><b>%s</b>\n', mclass, regexprep( title, htmlsrc, htmldst ) );
-%            fprintf( fidc, '<li class="%s"><b>%s</b> (<a href="%s">%s/</a>)\n', mclass, title, dpath, dname );
-        end
-        if false,
-            if ~isempty( comments ),
-                fprintf( fidc, '<br />' );
-                for k = 1 : length( comments ),
-                    fprintf( fidc, '%s\n', comments{k} );
-                end
-            end
-        end
-        fprintf( fidc, '<ul>\n' );
-    else,
-        fprintf( fidc, '<ul class="mktree" id="tree1">\n' );
-    end
-end
-
-%
-% Process the subdirectories
-%
-
-for k = 1 : length( dnames ),
-    name = dnames{k};
-    if name(1) == '.' | strcmp( name, 'html' ), continue; end
-    [ temp, contents ] = generate_directory( name, prefix, force, fidc, base );
-    if isempty( temp ), temp = '(no title)'; end
-    name( end + 1 ) = '/';
-    files( end + 1 ) = struct( 'name', name, 'title', temp, 'isfunc', false );
-    mlen = max( mlen, length( name ) );
-    cd( mpath );
-end
-ndirs = length( files );
-
-%
-% Generate and retrieve the files
-%
-
-for k = 1 : length( fnames ),
-    name = fnames{k};
-    if length( name ) >= 2 & strcmp( name(end-1:end), '.m' ) & ~strcmp( name, 'Contents.m' ) & ~strcmp( name, 'make.m' ),
-        [ temp, isfunc ] = generate_file( name, prefix, force );
-        files( end + 1 ) = struct( 'name', name, 'title', temp, 'isfunc', isfunc );
-        mlen = max( mlen, length( name ) );
-    end
-end
-
-%
-% Sort the files
-% 
-
-if length( files ) > ndirs,
-    [ fnames, ndxs ] = sort( { files(ndirs+1:end).title } );
-    files( ndirs + 1 : end ) = files( ndxs + ndirs );
-    t1 = strncmp( fnames, 'Exercise ', 9 );
-    t2 = strncmp( fnames, 'Example ', 8 ); 
-    t3 = strncmp( fnames, 'Section ', 8 );
-    t4 = strncmp( fnames, 'Figure ', 7 );
-    t5 = ~( t1 | t2 | t3 | t4 );
-    ndxs = [ find(t3(:)); find(t2(:)); find(t4(:)); find(t5(:)); find(t1(:)) ];
-    files( ndirs + 1 : end ) = files( ndxs + ndirs );
-end
-
-%
-% Process the scripts
-%
-
-if fidc >= 0,
-    need_misc = isempty( dpath ) & ~isempty( fnames ) & ~isempty( dnames );
-    if need_misc,
-        fprintf( fidc, '<li><b>Uncategorized files</b><ul>\n' );
-    end
-    for k = ndirs + 1 : length( files ),
-        if files( k ).isfunc,
-            continue;
-        end
-        name = files( k ).name;
-        temp = files( k ).title;
-        if isempty( temp ),
-            fprintf( fidc, '<li><a href="%s%s">%s</a></li>\n', dpath, name, name );
-        else,
-            fprintf( fidc, '<li><a href="%shtml/%shtml">%s</a> (<a href="%s%s">%s</a>)</li>\n', dpath, name(1:end-1), regexprep( temp, htmlsrc, htmldst ), dpath, name, name );
-        end
-    end
-end
-
-%
-% Process the functions
-%
-
-if fidc >= 0,
-    firstfunc = true;
-    for k = ndirs + 1 : length( files ),
-        if ~files( k ).isfunc,
-            continue;
-        end
-        if firstfunc,
-            fprintf( fidc, '<li class="liOpen">Functions called by these scripts:<ul>\n' );
-            firstfunc = false;
-        end
-        name = files( k ).name;
-        temp = files( k ).title;
-        if isempty( temp ),
-            fprintf( fidc, '<li><a href="%s%s">%s</a></li>\n', dpath, name, name );
-        else,
-            fprintf( fidc, '<li><a href="%s%s">%s (%s)</a></li>\n', dpath, name, regexprep( temp, htmlsrc, htmldst ), name );
-        end
-    end
-    if ~firstfunc,
-        fprintf( fidc, '</ul></li>\n' );
-    end
-end
-
-%
-% Finish index.html entry
-%
-
-if fidc >= 0,
-    if need_misc,
-        fprintf( fidc, '</ul></li>\n' );
-    elseif isempty( fnames ) & isempty( dnames ),
-        fprintf( fidc, '<li>(no files)</li>\n' );
-    end
-    fprintf( fidc, '</ul>\n' );
-    if ~isempty( dpath ),
-        fprintf( fidc, '</li>\n' );
-    end
-end
-
-%
-% Finish Contents.m.new
-%
-
 for k = 1 : length( files ),
     tfile = files(k);
     tfile.name(end+1:mlen) = ' ';
@@ -354,6 +352,7 @@ for k = 1 : length( files ),
         fprintf( fidw, '%%  %s - %s\n', tfile.name, tfile.title );
     end
 end
+fprintf( fidw, 'help Contents\n' );
 fclose( fidw );
 
 %
@@ -466,6 +465,53 @@ if force | hdate <= ndate,
     close all
 else,
     fprintf( 1, 'up to date.\n' );
+end
+
+function title = generate_doc( name, prefix, force )
+
+if length( name ) < 5 | ~strcmp( name(end-3:end), '.tex' ),
+    error( 'Not an valid TeX file.' );
+else,
+    fprintf( 1, '%s%s: ', prefix, name );
+end
+
+dd = dir( name );
+ndate = date_convert( dd.date );
+[ fidr, message ] = fopen( name, 'r' );
+if fidr < 0,
+    error( 'Cannot open the source file\n   %s', message );
+end
+title = '';
+while ~feof( fidr ),
+    temp = strtrim( fgetl( fidr ) );
+    kndx = strfind( temp, '\title{' );
+    if isempty( kndx ), continue; end
+    knd2 = strfind( temp(kndx(1):end), '}' );
+    if isempty( knd2 ), continue; end
+    title = strtrim(temp(kndx(1)+7:kndx(1)+kndx(2)-2));
+    break;
+end
+pdffile = [ name(1:end-3), 'pdf' ];
+hdate = 0;
+df = dir( hfile );
+if length( df ) == 1,
+    hdate = date_convert( df.date );
+end
+if force | hdate < ndate,
+    if hdate == 0,
+        fprintf( 1, 'creating %s:', hfile );
+    else,
+        fprintf( 1, 'updating %s:', hfile );
+    end
+    name2 = name(1:end-4);
+    eval( sprintf( '!latex %s', name ) );
+    eval( sprintf( '!latex %s', name ) );
+    eval( sprintf( '!bibtex %s', name ) );
+    eval( sprintf( '!latex %s', name ) );
+    eval( sprintf( '!latex %s', name ) );
+    eval( sprintf( '!latex %s', name ) );
+    eval( sprintf( '!dvips %s', name ) );
+    eval( sprintf( '!ps2pdf %s.ps', name ) );
 end
 
 function dnum = date_convert( dstr )

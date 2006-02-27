@@ -6,9 +6,10 @@
 %  chebyshev_center.m          - Compute the Chebyshev center of a polyhedron
 %  fastest_mixing_MC.m         - Find the fastest mixing Markov chain on a graph
 %  max_det_psd_completion.m    - Maximum determinant PSD matrix completion
-%  cantilever_beam_plot.m      - Plots a cantilever beam as a 3D figure.
 %  ex_4_27.m                   - Exercise 4.27: Matrix fractional minimization using second-order cone programming
 %  cantilever_beam.m           - Exercise 4.31: Design of a cantilever beam (non-recursive convex GP formulation)
 %  ex_4_38.m                   - Exercise 4.38(b): Linear matrix inequalities with one variable
 %  ex_4_3.m                    - Exercise 4.3: Solve a simple QP with inequality constraints
 %  ex_4_5.m                    - Exercise 4.5: Show the equivalence of 3 convex problem formations
+%  cantilever_beam_plot.m      - Plots a cantilever beam as a 3D figure.
+help Contents

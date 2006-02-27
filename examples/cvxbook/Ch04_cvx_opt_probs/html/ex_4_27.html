@@ -8,7 +8,7 @@ To make changes, update the M-file and republish this document.
       -->
       <title>Exercise 4.27: Matrix fractional minimization using second-order cone programming</title>
       <meta name="generator" content="MATLAB 7.1">
-      <meta name="date" content="2006-02-15">
+      <meta name="date" content="2006-02-25">
       <meta name="m-file" content="ex_4_27"><style>
 
 body {
@@ -163,12 +163,12 @@ nnz(A) = 1368 + 0, nnz(ADA) = 23104, nnz(L) = 11628
  12 :  5.18E+000 1.71E-009 0.000 0.1697 0.9000 0.9068   1.00  2  2  4.6E-009
 
 iter seconds digits       c*x               b*y
- 12      0.7   Inf  5.1824774137e+000  5.1824774140e+000
+ 12      0.5   Inf  5.1824774137e+000  5.1824774140e+000
 |Ax-b| =  1.5e-008, [Ay-c]_+ =  1.7E-010, |x|= 1.4e+001, |y|= 7.2e+000
 
 Detailed timing (sec)
    Pre          IPM          Post
-6.009E-002    7.110E-001    1.001E-002    
+6.009E-002    5.007E-001    1.001E-002    
 Max-norms: ||b||=1.488490e+000, ||c|| = 1,
 Cholesky |add|=0, |skip| = 0, ||L.L|| = 2.64158.
 ------------------------------------------------------------------------
@@ -199,12 +199,12 @@ nnz(A) = 1368 + 0, nnz(ADA) = 23104, nnz(L) = 11628
  12 :  5.18E+000 1.71E-009 0.000 0.1697 0.9000 0.9068   1.00  2  2  4.6E-009
 
 iter seconds digits       c*x               b*y
- 12      0.7   Inf  5.1824774137e+000  5.1824774140e+000
+ 12      0.4   Inf  5.1824774137e+000  5.1824774140e+000
 |Ax-b| =  1.5e-008, [Ay-c]_+ =  1.7E-010, |x|= 1.4e+001, |y|= 7.2e+000
 
 Detailed timing (sec)
    Pre          IPM          Post
-2.003E-002    6.710E-001    1.001E-002    
+1.001E-002    4.006E-001    0.000E+000    
 Max-norms: ||b||=1.488490e+000, ||c|| = 1,
 Cholesky |add|=0, |skip| = 0, ||L.L|| = 2.64158.
 ------------------------------------------------------------------------
@@ -241,7 +241,7 @@ iter seconds digits       c*x               b*y
 
 Detailed timing (sec)
    Pre          IPM          Post
-1.001E-002    3.004E-001    1.001E-002    
+1.001E-002    3.104E-001    0.000E+000    
 Max-norms: ||b||=1.488490e+000, ||c|| = 1,
 Cholesky |add|=1, |skip| = 0, ||L.L|| = 500000.
 ------------------------------------------------------------------------
@@ -273,12 +273,12 @@ nnz(A) = 319 + 0, nnz(ADA) = 2740, nnz(L) = 1397
  13 :  5.18E+000 1.05E-009 0.155 0.1848 0.9000 0.9000   1.00  3  3  7.0E-009
 
 iter seconds digits       c*x               b*y
- 13      0.3   Inf  5.1824773967e+000  5.1824773987e+000
+ 13      0.2   Inf  5.1824773967e+000  5.1824773987e+000
 |Ax-b| =  1.2e-008, [Ay-c]_+ =  7.6E-010, |x|= 6.2e+000, |y|= 1.2e+001
 
 Detailed timing (sec)
    Pre          IPM          Post
-2.003E-002    2.904E-001    0.000E+000    
+1.001E-002    2.003E-001    0.000E+000    
 Max-norms: ||b||=1.488490e+000, ||c|| = 1,
 Cholesky |add|=1, |skip| = 0, ||L.L|| = 500000.
 ------------------------------------------------------------------------
