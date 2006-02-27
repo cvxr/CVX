@@ -4,12 +4,16 @@
 SRCBASE=/home/boyd/src
 CPYDIR=$SRCBASE/cvx.dist
 ARCHIVE=file://$SRCBASE/svn/cvx/trunk
+EXAMPLES=file://$SRCBASE/svn/cvx/examples
+DOCDIR=file://$SRCBASE/svn/cvx/doc
 DSTDIR=/home/boyd/WWW/cvx
 
 # Grab a clean copy of the current version
 rm -rf $CPYDIR
 mkdir $CPYDIR
 svn export $ARCHIVE $CPYDIR/cvx
+svn export $EXAMPLES $CPYDIR/cvx/examples
+svn export $DOCDIR $CPYDIR/cvx/doc
 
 # Compile the documentation
 cd $CPYDIR/cvx/doc
