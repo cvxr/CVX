@@ -1,0 +1,232 @@
+<html xmlns:mwsh="http://www.mathworks.com/namespace/mcode/v1/syntaxhighlight.dtd">
+   <head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   
+      <!--
+This HTML is auto-generated from an M-file.
+To make changes, update the M-file and republish this document.
+      -->
+      <title>Computes Chebyshev lower bounds on probability vectors (function)</title>
+      <meta name="generator" content="MATLAB 7.1">
+      <meta name="date" content="2006-02-25">
+      <meta name="m-file" content="cheb"><style>
+
+body {
+  background-color: white;
+  margin:10px;
+}
+
+h1 {
+  color: #990000; 
+  font-size: x-large;
+}
+
+h2 {
+  color: #990000;
+  font-size: medium;
+}
+
+/* Make the text shrink to fit narrow windows, but not stretch too far in 
+wide windows.  On Gecko-based browsers, the shrink-to-fit doesn't work. */ 
+p,h1,h2,div.content div {
+  /* for MATLAB's browser */
+  width: 600px;
+  /* for Mozilla, but the "width" tag overrides it anyway */
+  max-width: 600px;
+  /* for IE */
+  width:expression(document.body.clientWidth > 620 ? "600px": "auto" );
+}
+
+pre.codeinput {
+  background: #EEEEEE;
+  padding: 10px;
+}
+
+span.keyword {color: #0000FF}
+span.comment {color: #228B22}
+span.string {color: #A020F0}
+span.untermstring {color: #B20000}
+span.syscmd {color: #B28C00}
+
+pre.codeoutput {
+  color: #666666;
+  padding: 10px;
+}
+
+pre.error {
+  color: red;
+}
+
+p.footer {
+  text-align: right;
+  font-size: xx-small;
+  font-weight: lighter;
+  font-style: italic;
+  color: gray;
+}
+
+  </style></head>
+   <body>
+      <div class="content">
+         <h1>Computes Chebyshev lower bounds on probability vectors (function)</h1><pre class="codeinput"><span class="keyword">function</span> [cvx_optval,P,q,r,X,lambda] = cheb(A,b,Sigma);
+
+<span class="comment">% Calculates a lower bound on the probability that a random vector</span>
+<span class="comment">% x with mean zero and covariance Sigma satisfies A x &lt;= b</span>
+<span class="comment">%</span>
+<span class="comment">% Sigma must be positive definite</span>
+<span class="comment">%</span>
+<span class="comment">% output arguments:</span>
+<span class="comment">% - prob: lower bound on probability</span>
+<span class="comment">% - P,q,r: x'*P*x + 2*q'*x + r is a quadratic function</span>
+<span class="comment">%   that majorizes the 0-1 indicator function of the complement</span>
+<span class="comment">%   of the polyhedron,</span>
+<span class="comment">% - X, lambda:  a discrete distribution with mean zero, covariance</span>
+<span class="comment">%   Sigma and Prob(X not in C)  &gt;= 1-prob</span>
+
+<span class="comment">%</span>
+<span class="comment">% maximize  1 - Tr Sigma*P - r</span>
+<span class="comment">% s.t.      [ P  q     ]             [ 0      a_i/2 ]</span>
+<span class="comment">%           [ q' r - 1 ] &gt;= tau(i) * [ a_i'/2  -b_i ], i=1,...,m</span>
+<span class="comment">%           taui &gt;= 0</span>
+<span class="comment">%           [ P q  ]</span>
+<span class="comment">%           [ q' r ] &gt;= 0</span>
+<span class="comment">%</span>
+<span class="comment">% variables P in Sn, q in Rn, r in R</span>
+<span class="comment">%</span>
+
+[ m, n ] = size( A );
+cvx_begin <span class="string">sdp</span>
+    variable <span class="string">P(n,n)</span> <span class="string">symmetric</span>
+    variables <span class="string">q(n)</span> <span class="string">r</span> <span class="string">tau(m)</span>
+    dual <span class="string">variables</span> <span class="string">Z{m}</span>
+    maximize( 1 - trace( Sigma * P ) - r )
+    subject <span class="string">to</span>
+        <span class="keyword">for</span> i = 1 : m,
+            qadj = q - 0.5 * tau(i) * A(i,:)';
+            radj = r - 1 + tau(i) * b(i);
+            [ P, qadj ; qadj', radj ] &gt;= 0 : Z{i};
+        <span class="keyword">end</span>
+        [ P, q ; q', r ] &gt;= 0;
+        tau &gt;= 0;
+cvx_end
+
+<span class="keyword">if</span> nargout &lt; 4,
+    <span class="keyword">return</span>
+<span class="keyword">end</span>
+
+X = [];
+lambda = [];
+<span class="keyword">for</span> i=1:m
+   Zi = Z{i};
+   <span class="keyword">if</span> (abs(Zi(3,3)) &gt; 1e-4)
+      lambda = [lambda; Zi(3,3)];
+      X = [X Zi(1:2,3)/Zi(3,3)];
+   <span class="keyword">end</span>;
+<span class="keyword">end</span>;
+mu = 1-sum(lambda);
+<span class="keyword">if</span> (mu&gt;1e-5)
+   w = (-X*lambda)/mu;
+   W = (Sigma - X*diag(lambda)*X')/mu;
+   [v,d] = eig(W-w*w');
+   d = diag(d);
+   s = sum(d&gt;1e-5);
+   <span class="keyword">if</span> (d(1) &gt; 1e-5)
+      X = [X w+sqrt(s)*sqrt(d(1))*v(:,1) <span class="keyword">...</span>
+            w-sqrt(s)*sqrt(d(1))*v(:,1)];
+      lambda = [lambda; mu/(2*s); mu/(2*s)];
+   <span class="keyword">elseif</span> (d(2) &gt; 1e-5)
+      X = [X w+sqrt(s)*sqrt(d(2))*v(:,2) <span class="keyword">...</span>
+            w-sqrt(s)*sqrt(d(2))*v(:,2)];
+      lambda = [lambda; mu/(2*s); mu/(2*s)];
+   <span class="keyword">else</span>
+      X = [X w];
+      lambda = [lambda; mu];
+   <span class="keyword">end</span>;
+<span class="keyword">end</span>;
+</pre><p class="footer"><br>
+            Published with MATLAB&reg; 7.1<br></p>
+      </div>
+      <!--
+##### SOURCE BEGIN #####
+%% Computes Chebyshev lower bounds on probability vectors (function)
+
+function [cvx_optval,P,q,r,X,lambda] = cheb(A,b,Sigma);
+
+% Calculates a lower bound on the probability that a random vector
+% x with mean zero and covariance Sigma satisfies A x <= b
+%
+% Sigma must be positive definite
+%
+% output arguments:
+% - prob: lower bound on probability
+% - P,q,r: x'*P*x + 2*q'*x + r is a quadratic function
+%   that majorizes the 0-1 indicator function of the complement
+%   of the polyhedron,
+% - X, lambda:  a discrete distribution with mean zero, covariance
+%   Sigma and Prob(X not in C)  >= 1-prob
+
+%
+% maximize  1 - Tr Sigma*P - r
+% s.t.      [ P  q     ]             [ 0      a_i/2 ]
+%           [ q' r - 1 ] >= tau(i) * [ a_i'/2  -b_i ], i=1,...,m
+%           taui >= 0
+%           [ P q  ]
+%           [ q' r ] >= 0
+%
+% variables P in Sn, q in Rn, r in R
+%
+
+[ m, n ] = size( A );
+cvx_begin sdp
+    variable P(n,n) symmetric
+    variables q(n) r tau(m)
+    dual variables Z{m}
+    maximize( 1 - trace( Sigma * P ) - r )
+    subject to
+        for i = 1 : m,
+            qadj = q - 0.5 * tau(i) * A(i,:)';
+            radj = r - 1 + tau(i) * b(i);
+            [ P, qadj ; qadj', radj ] >= 0 : Z{i};
+        end
+        [ P, q ; q', r ] >= 0;
+        tau >= 0;
+cvx_end
+
+if nargout < 4,
+    return
+end
+
+X = [];
+lambda = [];
+for i=1:m
+   Zi = Z{i};
+   if (abs(Zi(3,3)) > 1e-4)
+      lambda = [lambda; Zi(3,3)];
+      X = [X Zi(1:2,3)/Zi(3,3)];
+   end;
+end;
+mu = 1-sum(lambda);
+if (mu>1e-5)
+   w = (-X*lambda)/mu;
+   W = (Sigma - X*diag(lambda)*X')/mu;
+   [v,d] = eig(W-w*w');
+   d = diag(d);
+   s = sum(d>1e-5);
+   if (d(1) > 1e-5)
+      X = [X w+sqrt(s)*sqrt(d(1))*v(:,1) ...
+            w-sqrt(s)*sqrt(d(1))*v(:,1)];
+      lambda = [lambda; mu/(2*s); mu/(2*s)];
+   elseif (d(2) > 1e-5)
+      X = [X w+sqrt(s)*sqrt(d(2))*v(:,2) ...
+            w-sqrt(s)*sqrt(d(2))*v(:,2)];
+      lambda = [lambda; mu/(2*s); mu/(2*s)];
+   else
+      X = [X w];
+      lambda = [lambda; mu];
+   end;
+end;
+
+##### SOURCE END #####
+-->
+   </body>
+</html>

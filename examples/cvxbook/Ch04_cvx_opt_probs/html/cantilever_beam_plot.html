@@ -1,0 +1,158 @@
+<html xmlns:mwsh="http://www.mathworks.com/namespace/mcode/v1/syntaxhighlight.dtd">
+   <head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   
+      <!--
+This HTML is auto-generated from an M-file.
+To make changes, update the M-file and republish this document.
+      -->
+      <title>Plots a cantilever beam as a 3D figure. (function)</title>
+      <meta name="generator" content="MATLAB 7.1">
+      <meta name="date" content="2006-02-25">
+      <meta name="m-file" content="cantilever_beam_plot"><style>
+
+body {
+  background-color: white;
+  margin:10px;
+}
+
+h1 {
+  color: #990000; 
+  font-size: x-large;
+}
+
+h2 {
+  color: #990000;
+  font-size: medium;
+}
+
+/* Make the text shrink to fit narrow windows, but not stretch too far in 
+wide windows.  On Gecko-based browsers, the shrink-to-fit doesn't work. */ 
+p,h1,h2,div.content div {
+  /* for MATLAB's browser */
+  width: 600px;
+  /* for Mozilla, but the "width" tag overrides it anyway */
+  max-width: 600px;
+  /* for IE */
+  width:expression(document.body.clientWidth > 620 ? "600px": "auto" );
+}
+
+pre.codeinput {
+  background: #EEEEEE;
+  padding: 10px;
+}
+
+span.keyword {color: #0000FF}
+span.comment {color: #228B22}
+span.string {color: #A020F0}
+span.untermstring {color: #B20000}
+span.syscmd {color: #B28C00}
+
+pre.codeoutput {
+  color: #666666;
+  padding: 10px;
+}
+
+pre.error {
+  color: red;
+}
+
+p.footer {
+  text-align: right;
+  font-size: xx-small;
+  font-weight: lighter;
+  font-style: italic;
+  color: gray;
+}
+
+  </style></head>
+   <body>
+      <div class="content">
+         <h1>Plots a cantilever beam as a 3D figure. (function)</h1><pre class="codeinput"><span class="keyword">function</span> cantilever_beam_plot(values)
+<span class="comment">% This is a helper function for the optimal cantilever beam example.</span>
+<span class="comment">%</span>
+<span class="comment">% Inputs:</span>
+<span class="comment">%    values: an array of heights and widths of each segment</span>
+<span class="comment">%            [h1 h2 ... hN w1 w2 ... wN]</span>
+<span class="comment">%</span>
+<span class="comment">% Almir Mutapcic 01/25/06</span>
+
+N = length(values)/2;
+<span class="keyword">for</span> k = 0:N-1
+  [X Y Z] = data_rect3(values(2*N-k),values(N-k),k);
+  plot3(X,Y,Z); hold <span class="string">on</span>;
+<span class="keyword">end</span>
+hold <span class="string">off</span>;
+
+xlabel(<span class="string">'width'</span>)
+ylabel(<span class="string">'height'</span>)
+zlabel(<span class="string">'length'</span>)
+<span class="keyword">return</span>;
+
+<span class="keyword">function</span> [X, Y, Z] = data_rect3(w,h,d)
+<span class="comment">% back face</span>
+X = [-w/2 w/2 w/2 -w/2 -w/2];
+Y = [-h/2 -h/2 h/2 h/2 -h/2];
+Z = [d d d d d];
+<span class="comment">% side face</span>
+X = [X -w/2 -w/2 -w/2 -w/2 -w/2];
+Y = [Y -h/2 -h/2 h/2 h/2 -h/2];
+Z = [Z d d+1 d+1 d d];
+<span class="comment">% front face</span>
+X = [X -w/2 w/2 w/2 -w/2 -w/2];
+Y = [Y -h/2 -h/2 h/2 h/2 -h/2];
+Z = [Z d+1 d+1 d+1 d+1 d+1];
+<span class="comment">% back side face</span>
+X = [X w/2 w/2 w/2 w/2 w/2];
+Y = [Y -h/2 h/2 h/2 -h/2 -h/2];
+Z = [Z d+1 d+1 d d d+1];
+</pre><p class="footer"><br>
+            Published with MATLAB&reg; 7.1<br></p>
+      </div>
+      <!--
+##### SOURCE BEGIN #####
+%% Plots a cantilever beam as a 3D figure. (function)
+
+function cantilever_beam_plot(values)
+% This is a helper function for the optimal cantilever beam example.
+%
+% Inputs:
+%    values: an array of heights and widths of each segment 
+%            [h1 h2 ... hN w1 w2 ... wN]
+%
+% Almir Mutapcic 01/25/06
+
+N = length(values)/2;
+for k = 0:N-1
+  [X Y Z] = data_rect3(values(2*N-k),values(N-k),k);
+  plot3(X,Y,Z); hold on;
+end
+hold off;
+
+xlabel('width')
+ylabel('height')
+zlabel('length')
+return;
+
+function [X, Y, Z] = data_rect3(w,h,d)
+% back face
+X = [-w/2 w/2 w/2 -w/2 -w/2];
+Y = [-h/2 -h/2 h/2 h/2 -h/2];
+Z = [d d d d d];
+% side face
+X = [X -w/2 -w/2 -w/2 -w/2 -w/2];
+Y = [Y -h/2 -h/2 h/2 h/2 -h/2];
+Z = [Z d d+1 d+1 d d];
+% front face 
+X = [X -w/2 w/2 w/2 -w/2 -w/2];
+Y = [Y -h/2 -h/2 h/2 h/2 -h/2];
+Z = [Z d+1 d+1 d+1 d+1 d+1];
+% back side face 
+X = [X w/2 w/2 w/2 w/2 w/2];
+Y = [Y -h/2 h/2 h/2 -h/2 -h/2];
+Z = [Z d+1 d+1 d d d+1];
+
+##### SOURCE END #####
+-->
+   </body>
+</html>

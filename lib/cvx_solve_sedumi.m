@@ -133,7 +133,7 @@ else,
     if degen,
         x(end) = [];
     end
-    if info.numerr == 2,
+    if info.numerr == 2 | abs( info.feasratio ) <= 0.98,
         status = 'Failed';
         x = NaN * ones( nn, 1 );
         y = NaN * ones( m, 1 );
@@ -141,6 +141,11 @@ else,
     elseif info.pinf ~= 0,
         status = 'Infeasible';
         x = NaN * ones( nn, 1 );
+        value = +Inf * sign;
+    elseif info.feasratio < 0,
+        status = 'Infeasible';
+        x = NaN * ones( nn, 1 );
+        y = NaN * ones( m, 1 );
         value = +Inf * sign;
     elseif info.dinf ~= 0,
         status = 'Unbounded';
