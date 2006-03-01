@@ -45,7 +45,7 @@ else,
     cvx_begin
         variable Z(n,n) lower_triangular complex
         D = diag( Z );
-        maximize geomean( D )
+        maximize geomean( real( D ) )
         subject to
             [ diag( D ), Z' ; Z, X ] == hermitian_semidefinite(2*n);
     cvx_end
