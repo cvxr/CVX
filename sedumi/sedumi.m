@@ -132,7 +132,7 @@ function [x,y,info] = sedumi(A,b,c,K,pars)
 %      0 < theta <= 1 and 0 < beta < 1. Setting theta=1 restricts the iterates
 %      to follow the central path in an N_2(beta)-neighborhood.
 %
-%    (4) pars.stepdif, pars.w. By default, stepdif = 2 and w=[1 1]. 
+%    (4) pars.stepdif, pars.w. By default, stepdif = 2 and w=[1 1].
 %       This implements an adaptive heuristic to control ste-differentiation.
 %       You can enable primal/dual step length differentiation by setting stepdif=1 or 0.
 %      If so, it weights the rel. primal, dual and gap residuals as
@@ -171,7 +171,7 @@ function [x,y,info] = sedumi(A,b,c,K,pars)
 %
 %    (11) pars.vplot  If this field is 1, then SeDuMi produces a fancy
 %      v-plot, for research purposes. Default: vplot = 0.
-% 
+%
 %    (12) pars.errors  If this field is 1 then SeDuMi outputs some error
 %    measures as defined in the Seventh DIMACS Challenge. For more details
 %    see the User Guide.
@@ -383,7 +383,7 @@ while STOP == 0
     if any(iter == pars.stopat)
         keyboard
     end
-    
+
     if pars.stepdif==2 & ...
             (iter>20 | (iter>1 & (err.kcg + Lsd.kcg>3)) | ...
             (iter>5 & abs(1-feasratio)<0.05) )
@@ -479,7 +479,7 @@ while STOP == 0
             break
         end
     elseif (by > 0) & (abs(1+feasratio) < 0.05) & (R.b0*y0 < 0.5)
-        if max(eigK(full(Amul(A,dense,y,1)),K)) <= pars.eps * by
+        if max(eigK(full(qreshape(Amul(A,dense,y,1),1,K)),K)) <= pars.eps * by
             STOP = 3;                   % Means Farkas solution found !
             break
         end
@@ -514,7 +514,7 @@ while STOP == 0
     end
 end % while STOP == 0.
 fprintf(pars.fid,'\n');
-clear ADA 
+clear ADA
 nnzLadd=nnz(L.add);
 nnzLskip=nnz(L.skip);
 normLL=full(max(max(abs(L.L))));
@@ -542,7 +542,7 @@ end
 % Compute cx, Ax, etc.
 % --------------------------------------------------
 x0 = x(1);
-cx = full(sum(c.*x)); 
+cx = full(sum(c.*x));
 abscx = sum(abs(c).*abs(x));
 by = full(sum(b.*y));
 Ax = Amul(A,dense,x,0);
@@ -563,7 +563,7 @@ if x0 > 0
     % ------------------------------------------------------------
     if relinf > pars.eps
         pdirinf = norm(Ax);
-        ddirinf = max(eigK(Ay,K));
+        ddirinf = max(eigK(qreshape(Ay,1,K),K));
         if cx < 0.0
             reldirinf = pdirinf / (-cx);
         else
