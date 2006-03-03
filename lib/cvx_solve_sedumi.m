@@ -133,7 +133,7 @@ else,
     if degen,
         x(end) = [];
     end
-    if info.numerr == 2 | abs( info.feasratio ) <= 0.98,
+    if info.numerr == 2,
         status = 'Failed';
         x = NaN * ones( nn, 1 );
         y = NaN * ones( m, 1 );
