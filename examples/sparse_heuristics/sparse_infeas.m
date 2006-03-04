@@ -1,4 +1,4 @@
-% Finding a point that satisfies as many linear inequalities
+% Finding a point that satisfies many linear inequalities
 % Section 11.4.1, Boyd & Vandenberghe "Convex Optimization"
 % Written for CVX by Almir Mutapcic - 02/18/06
 %
