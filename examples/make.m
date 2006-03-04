@@ -127,7 +127,7 @@ function [ title, files ] = generate_directory( mpath, prefix, force, fidc, base
 
 persistent htmlsrc htmldst
 if isempty( htmlsrc ),
-    htmlsrc = { '&', '<', '>', 'http://www.stanford.edu/(\S*)' };
+    htmlsrc = { '&', '<', '>', 'http://www.stanford.edu/([^\s\),]*)' };
     htmldst = { '&amp;', '&lt;', '&gt;', '<a href="http://www.stanford.edu/$1">$1</a>' };
 end
 
@@ -297,7 +297,7 @@ if fidc >= 0,
                     end
                 end
             end
-            fprintf( fidc, '</ul>\n' );
+            fprintf( fidc, '</ul></li>\n' );
         end
 
         if any( tdoc ),
@@ -316,7 +316,7 @@ if fidc >= 0,
                     end
                 end
             end
-            fprintf( fidc, '</ul>\n' );
+            fprintf( fidc, '</ul></li>\n' );
         end
         
     end

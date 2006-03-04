@@ -1,0 +1,496 @@
+<html xmlns:mwsh="http://www.mathworks.com/namespace/mcode/v1/syntaxhighlight.dtd">
+   <head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   
+      <!--
+This HTML is auto-generated from an M-file.
+To make changes, update the M-file and republish this document.
+      -->
+      <title>Equalizer design example</title>
+      <meta name="generator" content="MATLAB 7.1">
+      <meta name="date" content="2006-03-03">
+      <meta name="m-file" content="equalizer_design"><style>
+
+body {
+  background-color: white;
+  margin:10px;
+}
+
+h1 {
+  color: #990000; 
+  font-size: x-large;
+}
+
+h2 {
+  color: #990000;
+  font-size: medium;
+}
+
+/* Make the text shrink to fit narrow windows, but not stretch too far in 
+wide windows.  On Gecko-based browsers, the shrink-to-fit doesn't work. */ 
+p,h1,h2,div.content div {
+  /* for MATLAB's browser */
+  width: 600px;
+  /* for Mozilla, but the "width" tag overrides it anyway */
+  max-width: 600px;
+  /* for IE */
+  width:expression(document.body.clientWidth > 620 ? "600px": "auto" );
+}
+
+pre.codeinput {
+  background: #EEEEEE;
+  padding: 10px;
+}
+
+span.keyword {color: #0000FF}
+span.comment {color: #228B22}
+span.string {color: #A020F0}
+span.untermstring {color: #B20000}
+span.syscmd {color: #B28C00}
+
+pre.codeoutput {
+  color: #666666;
+  padding: 10px;
+}
+
+pre.error {
+  color: red;
+}
+
+p.footer {
+  text-align: right;
+  font-size: xx-small;
+  font-weight: lighter;
+  font-style: italic;
+  color: gray;
+}
+
+  </style></head>
+   <body>
+      <div class="content">
+         <h1>Equalizer design example</h1><pre class="codeinput"><span class="comment">% "Filter design" lecture notes (EE364) by S. Boyd</span>
+<span class="comment">% (figures are generated)</span>
+<span class="comment">%</span>
+<span class="comment">% Designs a frequency-domain and time-domain FIR equalizer for</span>
+<span class="comment">% a single-input single-output (SISO) channel.</span>
+<span class="comment">%</span>
+<span class="comment">% Frequency-domain equalization uses a Chebychev criteria and</span>
+<span class="comment">% is specified in terms of frequency response functions.</span>
+<span class="comment">% It is a convex problem (which can be formulated as an SOCP):</span>
+<span class="comment">%</span>
+<span class="comment">%   minimize   max |G(w)H(w) - G_des(w)|     for w in [0,pi]</span>
+<span class="comment">%</span>
+<span class="comment">% where H is the frequency response function and our variable</span>
+<span class="comment">% is the filter impulse response h. Function G is the unequalized</span>
+<span class="comment">% frequency response and G_des is the desired freq response.</span>
+<span class="comment">%</span>
+<span class="comment">% Time-domain equalization immediately designs the impulse</span>
+<span class="comment">% response function by specifying the problem in time (it's an LP):</span>
+<span class="comment">%</span>
+<span class="comment">%   minimize   max_{t neq D} |g_tilde(t)|</span>
+<span class="comment">%       s.t.   g_tilde(D) = 1</span>
+<span class="comment">%</span>
+<span class="comment">% where g_tilde is the impulse response of equalized system,</span>
+<span class="comment">% and D is the delay of the system.</span>
+<span class="comment">%</span>
+<span class="comment">% Written for CVX by Almir Mutapcic 02/02/06</span>
+
+<span class="comment">%********************************************************************</span>
+<span class="comment">% problem specs</span>
+<span class="comment">%********************************************************************</span>
+<span class="comment">% sample channel with impulse response g</span>
+g =.5*[ 0.6526;  0.2157; -0.2639;  1.8024; -0.6430; <span class="keyword">...</span>
+        0.1096; -0.7190;  0.4206; -0.0193;  0.6603;];
+
+<span class="comment">% problem parameters</span>
+n  = 30;              <span class="comment">% filter order</span>
+D  = 10;              <span class="comment">% overall delay</span>
+
+<span class="comment">%********************************************************************</span>
+<span class="comment">% frequency domain equalization</span>
+<span class="comment">%********************************************************************</span>
+<span class="comment">% number of freq samples (rule-of-thumb)</span>
+m  = 15*(length(g) + n);
+
+w = linspace(0,pi,m)';
+G = exp( -j*kron(w,[0:length(g)-1]) )*g;
+A = exp( -j*kron(w,[0:n-1]) );
+
+<span class="comment">% desired frequency response is a pure delay (equalized channel)</span>
+Gdes = exp(-j*D*w);
+
+<span class="comment">% formulate and solve the Chebyshev design problem</span>
+cvx_begin
+  variable <span class="string">hf(n,1)</span>
+  minimize( max( abs( G.*(A*hf) - Gdes ) ) )
+cvx_end
+
+<span class="comment">% check if problem was successfully solved</span>
+disp([<span class="string">'Frequency equalization problem is '</span> cvx_status])
+<span class="keyword">if</span> ~strcmp(cvx_status,<span class="string">'Solved'</span>)
+  <span class="keyword">return</span>
+<span class="keyword">end</span>
+
+<span class="comment">%********************************************************************</span>
+<span class="comment">% time-domain equalization</span>
+<span class="comment">%********************************************************************</span>
+<span class="comment">% define the convolution matrix</span>
+Tconv = toeplitz([g; zeros(n-1,1)],[g(1) zeros(1,n-1)]);
+
+<span class="comment">% create array of all times without t=D</span>
+times_not_D = [1:D D+2:size(Tconv,1)];
+
+<span class="comment">% formulate and solve the time equalization problem</span>
+cvx_begin
+  variable <span class="string">t</span>
+  variable <span class="string">ht(n,1)</span>
+
+  minimize( max( abs( Tconv(times_not_D,:)*ht ) ) )
+  subject <span class="string">to</span>
+    Tconv(D+1,:)*ht == 1;
+cvx_end
+
+<span class="comment">% check if problem was successfully solved</span>
+<span class="keyword">if</span> ~strcmp(cvx_status,<span class="string">'Solved'</span>)
+  disp([<span class="string">'Frequency equalization problem is '</span> cvx_status])
+  <span class="keyword">return</span>
+<span class="keyword">end</span>
+
+<span class="comment">%********************************************************************</span>
+<span class="comment">% equalizer plots</span>
+<span class="comment">%********************************************************************</span>
+<span class="comment">% plot g</span>
+figure(1)
+plot([0:length(g)-1],g,<span class="string">'o'</span>,[0:length(g)-1],g,<span class="string">'b:'</span>)
+xlabel(<span class="string">'t'</span>)
+ylabel(<span class="string">'g(t)'</span>)
+
+figure(2)
+H = exp(-j*kron(w,[0:length(g)-1]))*g;
+<span class="comment">% magnitude</span>
+subplot(2,1,1);
+plot(w,20*log10(abs(H)))
+axis([0,pi,-20,20])
+xlabel(<span class="string">'w'</span>)
+ylabel(<span class="string">'mag G(w) in dB'</span>)
+<span class="comment">% phase</span>
+subplot(2,1,2)
+plot(w,angle(H))
+axis([0,pi,-pi,pi])
+xlabel(<span class="string">'w'</span>)
+ylabel(<span class="string">'phase G(w)'</span>)
+
+<span class="comment">% freq equalizer</span>
+figure(3)
+plot([0:n-1],hf,<span class="string">'o'</span>,[0:n-1],hf,<span class="string">'b:'</span>)
+xlabel(<span class="string">'t'</span>)
+ylabel(<span class="string">'h(t)'</span>)
+
+<span class="comment">% plot g_tilde</span>
+figure(4)
+gt=conv(g,hf);
+plot([1:length(gt)]-1,gt,<span class="string">'o'</span>,[1:length(gt)]-1,gt,<span class="string">'b:'</span>)
+xlabel(<span class="string">'t'</span>)
+ylabel(<span class="string">'g tilde(t)'</span>)
+axis([0,length(gt)-1,-.2 1.2])
+
+figure(5)
+H = exp(-j*kron(w,[0:length(gt)-1]))*gt;
+<span class="comment">% amplitude</span>
+subplot(2,1,1)
+plot(w,20*log10(abs(H)))
+axis([0,pi,-20,20])
+xlabel(<span class="string">'w'</span>)
+ylabel(<span class="string">'mag G tilde(w) in dB'</span>)
+<span class="comment">% phase</span>
+subplot(2,1,2)
+plot(w,angle(H))
+axis([0,pi,-pi,pi])
+xlabel(<span class="string">'w'</span>)
+ylabel(<span class="string">'phase G tilde(w)'</span>)
+
+<span class="comment">% time equalizer</span>
+figure(6)
+plot([0:n-1],ht,<span class="string">'o'</span>,[0:n-1],ht,<span class="string">'b:'</span>)
+xlabel(<span class="string">'t'</span>)
+ylabel(<span class="string">'h(t)'</span>)
+
+<span class="comment">% plot g_tilde</span>
+figure(7)
+gt=conv(g,ht);
+plot([1:length(gt)]-1,gt,<span class="string">'o'</span>,[1:length(gt)]-1,gt,<span class="string">'b:'</span>)
+xlabel(<span class="string">'t'</span>)
+ylabel(<span class="string">'g tilde(t)'</span>)
+
+figure(8)
+H = exp(-j*kron(w,[0:length(gt)-1]))*gt;
+<span class="comment">% magnitude</span>
+subplot(2,1,1)
+plot(w,20*log10(abs(H)))
+axis([0,pi,-20,20])
+xlabel(<span class="string">'w'</span>)
+ylabel(<span class="string">'mag G tilde(w) in dB'</span>)
+<span class="comment">% phase</span>
+subplot(2,1,2)
+plot(w,angle(H))
+axis([0,pi,-pi,pi])
+xlabel(<span class="string">'w'</span>)
+ylabel(<span class="string">'phase G tilde(w)'</span>)
+</pre><pre class="codeoutput"> 
+Calling SeDuMi: 1829 variables (30 free), 1798 equality constraints
+------------------------------------------------------------------------
+SeDuMi 1.1 by AdvOL, 2005 and Jos F. Sturm, 1998, 2001-2003.
+Alg = 2: xz-corrector, Adaptive Step-Differentiation, theta = 0.250, beta = 0.500
+Split 30 free variables
+eqs m = 1798, order n = 1261, dim = 1860, blocks = 600
+nnz(A) = 1797 + 73140, nnz(ADA) = 5391, nnz(L) = 3595
+Handling 62 + 0 dense columns.
+ it :     b*y       gap    delta  rate   t/tP*  t/tD*   feas cg cg  prec
+  0 :            2.85E-002 0.000
+  1 :  7.67E-001 9.72E-003 0.000 0.3404 0.9000 0.9000   0.79  1  1  1.8E+000
+  2 :  6.00E-001 3.65E-003 0.000 0.3755 0.9000 0.9000   3.58  1  1  2.3E-001
+  3 :  2.36E-001 1.22E-003 0.000 0.3351 0.9000 0.9000   4.10  1  1  2.3E-002
+  4 :  1.30E-001 4.61E-004 0.000 0.3769 0.9000 0.9000   2.81  1  1  4.5E-003
+  5 :  1.06E-001 1.59E-004 0.000 0.3451 0.9000 0.9000   1.56  1  1  1.4E-003
+  6 :  9.85E-002 5.01E-005 0.000 0.3152 0.9000 0.9000   1.21  1  1  4.2E-004
+  7 :  9.68E-002 1.93E-005 0.000 0.3850 0.9000 0.9000   1.07  1  1  1.6E-004
+  8 :  9.65E-002 6.54E-006 0.000 0.3387 0.9000 0.9000   1.02  1  1  5.6E-005
+  9 :  9.64E-002 1.67E-006 0.000 0.2553 0.9074 0.9000   1.00  1  1  2.0E-005
+ 10 :  9.64E-002 2.77E-007 0.000 0.1658 0.9240 0.9000   1.00  1  1  7.4E-006
+ 11 :  9.64E-002 7.78E-008 0.000 0.2811 0.9000 0.5102   1.00  1  1  4.1E-006
+ 12 :  9.64E-002 2.53E-008 0.000 0.3252 0.9221 0.9000   1.00  1  1  1.4E-006
+ 13 :  9.64E-002 7.08E-009 0.000 0.2796 0.9000 0.8808   1.00  1  2  3.9E-007
+ 14 :  9.64E-002 1.57E-009 0.000 0.2223 0.9000 0.8896   1.00  2  2  8.6E-008
+ 15 :  9.64E-002 3.09E-010 0.000 0.1962 0.9000 0.8679   1.00  5  5  1.7E-008
+ 16 :  9.64E-002 6.62E-011 0.000 0.2146 0.9000 0.9000   1.00  9 10  3.6E-009
+
+iter seconds digits       c*x               b*y
+ 16      9.4   Inf  9.6426287448e-002  9.6426287723e-002
+|Ax-b| =  1.4e-008, [Ay-c]_+ =  2.1E-009, |x|= 3.4e+000, |y|= 3.6e-001
+
+Detailed timing (sec)
+   Pre          IPM          Post
+3.605E-001    9.394E+000    3.004E-002    
+Max-norms: ||b||=1, ||c|| = 1,
+Cholesky |add|=0, |skip| = 10, ||L.L|| = 23.3993.
+------------------------------------------------------------------------
+Status (cvx_status): Solved
+ 
+Optimal value (cvx_optval): 0.0964263
+Frequency equalization problem is Solved
+ 
+Calling SeDuMi: 104 variables (28 free), 74 equality constraints
+------------------------------------------------------------------------
+SeDuMi 1.1 by AdvOL, 2005 and Jos F. Sturm, 1998, 2001-2003.
+Alg = 2: xz-corrector, Adaptive Step-Differentiation, theta = 0.250, beta = 0.500
+Split 28 free variables
+eqs m = 74, order n = 133, dim = 133, blocks = 1
+nnz(A) = 816 + 0, nnz(ADA) = 2720, nnz(L) = 1786
+ it :     b*y       gap    delta  rate   t/tP*  t/tD*   feas cg cg  prec
+  0 :            2.27E-001 0.000
+  1 :  1.60E-001 1.12E-001 0.000 0.4924 0.9000 0.9000   2.53  1  1  1.2E+000
+  2 :  1.18E-001 7.85E-002 0.000 0.7006 0.9000 0.9000   7.85  1  1  2.3E-001
+  3 :  2.94E-002 3.29E-002 0.000 0.4191 0.9000 0.9000   3.92  1  1  5.2E-002
+  4 :  2.29E-002 2.03E-002 0.000 0.6176 0.9000 0.9000   1.48  1  1  3.7E-002
+  5 :  2.83E-002 9.81E-003 0.000 0.4828 0.9000 0.9000   1.23  1  1  2.0E-002
+  6 :  3.10E-002 3.37E-003 0.000 0.3439 0.9000 0.9000   1.09  1  1  7.4E-003
+  7 :  3.15E-002 9.89E-004 0.000 0.2932 0.9000 0.9000   1.02  1  1  2.3E-003
+  8 :  3.16E-002 2.73E-004 0.000 0.2760 0.9000 0.9075   1.00  1  1  6.4E-004
+  9 :  3.16E-002 7.82E-005 0.000 0.2864 0.9000 0.8122   1.00  1  1  1.9E-004
+ 10 :  3.16E-002 9.35E-006 0.000 0.1196 0.9132 0.9000   1.00  1  1  2.7E-005
+ 11 :  3.16E-002 5.45E-007 0.000 0.0583 0.9902 0.9900   1.00  1  1  1.8E-006
+ 12 :  3.16E-002 7.65E-008 0.000 0.1403 0.9090 0.9000   1.00  1  1  2.9E-007
+ 13 :  3.16E-002 2.71E-010 0.000 0.0035 0.9990 0.9981   1.00  1  1  
+iter seconds digits       c*x               b*y
+ 13      0.2   Inf  3.1625048704e-002  3.1625048704e-002
+|Ax-b| =  2.4e-016, [Ay-c]_+ =  3.0E-017, |x|= 1.4e+000, |y|= 7.7e-001
+
+Detailed timing (sec)
+   Pre          IPM          Post
+2.003E-002    1.702E-001    1.001E-002    
+Max-norms: ||b||=1, ||c|| = 1,
+Cholesky |add|=0, |skip| = 0, ||L.L|| = 2.00653.
+------------------------------------------------------------------------
+Status (cvx_status): Solved
+ 
+Optimal value (cvx_optval): 0.031625
+</pre><img vspace="5" hspace="5" src="equalizer_design_01.png"> <img vspace="5" hspace="5" src="equalizer_design_02.png"> <img vspace="5" hspace="5" src="equalizer_design_03.png"> <img vspace="5" hspace="5" src="equalizer_design_04.png"> <img vspace="5" hspace="5" src="equalizer_design_05.png"> <img vspace="5" hspace="5" src="equalizer_design_06.png"> <img vspace="5" hspace="5" src="equalizer_design_07.png"> <img vspace="5" hspace="5" src="equalizer_design_08.png"> <p class="footer"><br>
+            Published with MATLAB&reg; 7.1<br></p>
+      </div>
+      <!--
+##### SOURCE BEGIN #####
+%% Equalizer design example
+
+% "Filter design" lecture notes (EE364) by S. Boyd
+% (figures are generated)
+%
+% Designs a frequency-domain and time-domain FIR equalizer for
+% a single-input single-output (SISO) channel.
+%
+% Frequency-domain equalization uses a Chebychev criteria and
+% is specified in terms of frequency response functions.
+% It is a convex problem (which can be formulated as an SOCP):
+%
+%   minimize   max |G(w)H(w) - G_des(w)|     for w in [0,pi] 
+%
+% where H is the frequency response function and our variable
+% is the filter impulse response h. Function G is the unequalized
+% frequency response and G_des is the desired freq response.
+%
+% Time-domain equalization immediately designs the impulse
+% response function by specifying the problem in time (it's an LP):
+%
+%   minimize   max_{t neq D} |g_tilde(t)|
+%       s.t.   g_tilde(D) = 1
+%
+% where g_tilde is the impulse response of equalized system,
+% and D is the delay of the system.
+%
+% Written for CVX by Almir Mutapcic 02/02/06
+
+%********************************************************************
+% problem specs
+%********************************************************************
+% sample channel with impulse response g
+g =.5*[ 0.6526;  0.2157; -0.2639;  1.8024; -0.6430; ...
+        0.1096; -0.7190;  0.4206; -0.0193;  0.6603;];
+
+% problem parameters
+n  = 30;              % filter order
+D  = 10;              % overall delay
+
+%********************************************************************
+% frequency domain equalization
+%********************************************************************
+% number of freq samples (rule-of-thumb)
+m  = 15*(length(g) + n);
+
+w = linspace(0,pi,m)';
+G = exp( -j*kron(w,[0:length(g)-1]) )*g;
+A = exp( -j*kron(w,[0:n-1]) );
+
+% desired frequency response is a pure delay (equalized channel)
+Gdes = exp(-j*D*w);
+
+% formulate and solve the Chebyshev design problem
+cvx_begin
+  variable hf(n,1)
+  minimize( max( abs( G.*(A*hf) - Gdes ) ) ) 
+cvx_end
+
+% check if problem was successfully solved
+disp(['Frequency equalization problem is ' cvx_status])
+if ~strcmp(cvx_status,'Solved')
+  return
+end
+
+%********************************************************************
+% time-domain equalization
+%********************************************************************
+% define the convolution matrix
+Tconv = toeplitz([g; zeros(n-1,1)],[g(1) zeros(1,n-1)]);
+
+% create array of all times without t=D
+times_not_D = [1:D D+2:size(Tconv,1)];
+
+% formulate and solve the time equalization problem
+cvx_begin
+  variable t
+  variable ht(n,1)
+
+  minimize( max( abs( Tconv(times_not_D,:)*ht ) ) )
+  subject to
+    Tconv(D+1,:)*ht == 1;
+cvx_end
+
+% check if problem was successfully solved
+if ~strcmp(cvx_status,'Solved')
+  disp(['Frequency equalization problem is ' cvx_status])
+  return
+end
+
+%********************************************************************
+% equalizer plots
+%********************************************************************
+% plot g
+figure(1)
+plot([0:length(g)-1],g,'o',[0:length(g)-1],g,'b:')
+xlabel('t')
+ylabel('g(t)')
+
+figure(2)
+H = exp(-j*kron(w,[0:length(g)-1]))*g;
+% magnitude
+subplot(2,1,1);
+plot(w,20*log10(abs(H)))
+axis([0,pi,-20,20])
+xlabel('w')
+ylabel('mag G(w) in dB')
+% phase
+subplot(2,1,2)
+plot(w,angle(H))
+axis([0,pi,-pi,pi])
+xlabel('w')
+ylabel('phase G(w)')
+
+% freq equalizer
+figure(3)
+plot([0:n-1],hf,'o',[0:n-1],hf,'b:')
+xlabel('t')
+ylabel('h(t)')
+
+% plot g_tilde
+figure(4)
+gt=conv(g,hf);
+plot([1:length(gt)]-1,gt,'o',[1:length(gt)]-1,gt,'b:')
+xlabel('t')
+ylabel('g tilde(t)')
+axis([0,length(gt)-1,-.2 1.2])
+
+figure(5)
+H = exp(-j*kron(w,[0:length(gt)-1]))*gt;
+% amplitude
+subplot(2,1,1)
+plot(w,20*log10(abs(H)))
+axis([0,pi,-20,20])
+xlabel('w')
+ylabel('mag G tilde(w) in dB')
+% phase
+subplot(2,1,2)
+plot(w,angle(H))
+axis([0,pi,-pi,pi])
+xlabel('w')
+ylabel('phase G tilde(w)')
+
+% time equalizer
+figure(6)
+plot([0:n-1],ht,'o',[0:n-1],ht,'b:')
+xlabel('t')
+ylabel('h(t)')
+
+% plot g_tilde
+figure(7)
+gt=conv(g,ht);
+plot([1:length(gt)]-1,gt,'o',[1:length(gt)]-1,gt,'b:')
+xlabel('t')
+ylabel('g tilde(t)')
+
+figure(8)
+H = exp(-j*kron(w,[0:length(gt)-1]))*gt;
+% magnitude
+subplot(2,1,1)
+plot(w,20*log10(abs(H)))
+axis([0,pi,-20,20])
+xlabel('w')
+ylabel('mag G tilde(w) in dB')
+% phase
+subplot(2,1,2)
+plot(w,angle(H))
+axis([0,pi,-pi,pi])
+xlabel('w')
+ylabel('phase G tilde(w)')
+
+##### SOURCE END #####
+-->
+   </body>
+</html>

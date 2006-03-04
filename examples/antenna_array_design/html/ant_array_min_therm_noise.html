@@ -1,0 +1,428 @@
+<html xmlns:mwsh="http://www.mathworks.com/namespace/mcode/v1/syntaxhighlight.dtd">
+   <head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   
+      <!--
+This HTML is auto-generated from an M-file.
+To make changes, update the M-file and republish this document.
+      -->
+      <title>Minimize thermal noise power of an array with arbitrary 2-D geometry</title>
+      <meta name="generator" content="MATLAB 7.1">
+      <meta name="date" content="2006-03-03">
+      <meta name="m-file" content="ant_array_min_therm_noise"><style>
+
+body {
+  background-color: white;
+  margin:10px;
+}
+
+h1 {
+  color: #990000; 
+  font-size: x-large;
+}
+
+h2 {
+  color: #990000;
+  font-size: medium;
+}
+
+/* Make the text shrink to fit narrow windows, but not stretch too far in 
+wide windows.  On Gecko-based browsers, the shrink-to-fit doesn't work. */ 
+p,h1,h2,div.content div {
+  /* for MATLAB's browser */
+  width: 600px;
+  /* for Mozilla, but the "width" tag overrides it anyway */
+  max-width: 600px;
+  /* for IE */
+  width:expression(document.body.clientWidth > 620 ? "600px": "auto" );
+}
+
+pre.codeinput {
+  background: #EEEEEE;
+  padding: 10px;
+}
+
+span.keyword {color: #0000FF}
+span.comment {color: #228B22}
+span.string {color: #A020F0}
+span.untermstring {color: #B20000}
+span.syscmd {color: #B28C00}
+
+pre.codeoutput {
+  color: #666666;
+  padding: 10px;
+}
+
+pre.error {
+  color: red;
+}
+
+p.footer {
+  text-align: right;
+  font-size: xx-small;
+  font-weight: lighter;
+  font-style: italic;
+  color: gray;
+}
+
+  </style></head>
+   <body>
+      <div class="content">
+         <h1>Minimize thermal noise power of an array with arbitrary 2-D geometry</h1><pre class="codeinput"><span class="comment">% "Convex optimization examples" lecture notes (EE364) by S. Boyd</span>
+<span class="comment">% "Antenna array pattern synthesis via convex optimization"</span>
+<span class="comment">% by H. Lebret and S. Boyd</span>
+<span class="comment">% (figures are generated)</span>
+<span class="comment">%</span>
+<span class="comment">% Designs an antenna array such that:</span>
+<span class="comment">% - it has unit a sensitivity at some target direction</span>
+<span class="comment">% - obeys constraint for minimum sidelobe level outside the beamwidth</span>
+<span class="comment">% - minimizes thermal noise power in y (sigma*||w||_2^2)</span>
+<span class="comment">%</span>
+<span class="comment">% This is a convex problem described as:</span>
+<span class="comment">%</span>
+<span class="comment">%   minimize   norm(w)</span>
+<span class="comment">%       s.t.   y(theta_tar) = 1</span>
+<span class="comment">%              |y(theta)| &lt;= min_sidelobe   for theta outside the beam</span>
+<span class="comment">%</span>
+<span class="comment">% where y is the antenna array gain pattern (complex function) and</span>
+<span class="comment">% variables are w (antenna array weights or shading coefficients).</span>
+<span class="comment">% Gain pattern is a linear function of w: y(theta) = w'*a(theta)</span>
+<span class="comment">% for some a(theta) describing antenna array configuration and specs.</span>
+<span class="comment">%</span>
+<span class="comment">% Written for CVX by Almir Mutapcic 02/02/06</span>
+
+<span class="comment">% select array geometry</span>
+ARRAY_GEOMETRY = <span class="string">'2D_RANDOM'</span>;
+<span class="comment">% ARRAY_GEOMETRY = '1D_UNIFORM_LINE';</span>
+<span class="comment">% ARRAY_GEOMETRY = '2D_UNIFORM_LATTICE';</span>
+
+<span class="comment">%********************************************************************</span>
+<span class="comment">% problem specs</span>
+<span class="comment">%********************************************************************</span>
+lambda = 1;           <span class="comment">% wavelength</span>
+theta_tar = 60;       <span class="comment">% target direction</span>
+half_beamwidth = 10;  <span class="comment">% half beamwidth around the target direction</span>
+min_sidelobe = -20;   <span class="comment">% maximum sidelobe level in dB</span>
+
+<span class="comment">%********************************************************************</span>
+<span class="comment">% random array of n antenna elements</span>
+<span class="comment">%********************************************************************</span>
+<span class="keyword">if</span> strcmp( ARRAY_GEOMETRY, <span class="string">'2D_RANDOM'</span> )
+  <span class="comment">% set random seed to repeat experiments</span>
+  rand(<span class="string">'state'</span>,0);
+
+  <span class="comment">% (uniformly distributed on [0,L]-by-[0,L] square)</span>
+  n = 36;
+  L = 5;
+  loc = L*rand(n,2);
+
+<span class="comment">%********************************************************************</span>
+<span class="comment">% uniform 1D array with n elements with inter-element spacing d</span>
+<span class="comment">%********************************************************************</span>
+<span class="keyword">elseif</span> strcmp( ARRAY_GEOMETRY, <span class="string">'1D_UNIFORM_LINE'</span> )
+  <span class="comment">% (unifrom array on a line)</span>
+  n = 30;
+  d = 0.45*lambda;
+  loc = [d*[0:n-1]' zeros(n,1)];
+
+<span class="comment">%********************************************************************</span>
+<span class="comment">% uniform 2D array with m-by-m element with d spacing</span>
+<span class="comment">%********************************************************************</span>
+<span class="keyword">elseif</span> strcmp( ARRAY_GEOMETRY, <span class="string">'2D_UNIFORM_LATTICE'</span> )
+  m = 6; n = m^2;
+  d = 0.45*lambda;
+
+  loc = zeros(n,2);
+  <span class="keyword">for</span> x = 0:m-1
+    <span class="keyword">for</span> y = 0:m-1
+      loc(m*y+x+1,:) = [x y];
+    <span class="keyword">end</span>
+  <span class="keyword">end</span>
+  loc = loc*d;
+
+<span class="keyword">else</span>
+  error(<span class="string">'Undefined array geometry'</span>)
+<span class="keyword">end</span>
+
+<span class="comment">%********************************************************************</span>
+<span class="comment">% construct optimization data</span>
+<span class="comment">%********************************************************************</span>
+<span class="comment">% build matrix A that relates w and y(theta), ie, y = A*w</span>
+theta = [1:360]';
+A = kron(cos(pi*theta/180), loc(:,1)') + kron(sin(pi*theta/180), loc(:,2)');
+A = exp(2*pi*i/lambda*A);
+
+<span class="comment">% target constraint matrix</span>
+[diff_closest, ind_closest] = min( abs(theta - theta_tar) );
+Atar = A(ind_closest,:);
+
+<span class="comment">% stopband constraint matrix</span>
+ind = find(theta &lt;= (theta_tar-half_beamwidth) | <span class="keyword">...</span>
+           theta &gt;= (theta_tar+half_beamwidth) );
+As = A(ind,:);
+
+<span class="comment">%********************************************************************</span>
+<span class="comment">% optimization problem</span>
+<span class="comment">%********************************************************************</span>
+cvx_begin
+  variable <span class="string">w(n)</span> <span class="string">complex</span>
+  minimize( norm( w ) )
+  subject <span class="string">to</span>
+    Atar*w == 1;
+    abs(As*w) &lt;= 10^(min_sidelobe/20);
+cvx_end
+
+<span class="comment">% check if problem was successfully solved</span>
+disp([<span class="string">'Problem is '</span> cvx_status])
+<span class="keyword">if</span> ~strcmp(cvx_status,<span class="string">'Solved'</span>)
+  <span class="keyword">return</span>
+<span class="keyword">end</span>
+
+fprintf(1,<span class="string">'The minimum norm of w is %3.2f.\n\n'</span>,norm(w));
+
+<span class="comment">%********************************************************************</span>
+<span class="comment">% plots</span>
+<span class="comment">%********************************************************************</span>
+figure(1), clf
+plot(loc(:,1),loc(:,2),<span class="string">'o'</span>)
+title(<span class="string">'Antenna locations'</span>)
+
+<span class="comment">% plot array pattern</span>
+y = A*w;
+
+figure(2), clf
+ymin = -30; ymax = 0;
+plot([1:360], 20*log10(abs(y)), <span class="keyword">...</span>
+     [theta_tar theta_tar],[ymin ymax],<span class="string">'r--'</span>,<span class="keyword">...</span>
+     [theta_tar+half_beamwidth theta_tar+half_beamwidth],[ymin ymax],<span class="string">'g--'</span>,<span class="keyword">...</span>
+     [theta_tar-half_beamwidth theta_tar-half_beamwidth],[ymin ymax],<span class="string">'g--'</span>,<span class="keyword">...</span>
+     [0 theta_tar-half_beamwidth],[min_sidelobe min_sidelobe],<span class="string">'r--'</span>,<span class="keyword">...</span>
+     [theta_tar+half_beamwidth 360],[min_sidelobe min_sidelobe],<span class="string">'r--'</span>);
+xlabel(<span class="string">'look angle'</span>), ylabel(<span class="string">'mag y(theta) in dB'</span>);
+axis([0 360 ymin ymax]);
+
+<span class="comment">% polar plot</span>
+figure(3), clf
+zerodB = 50;
+dBY = 20*log10(abs(y)) + zerodB;
+plot(dBY.*cos(pi*theta/180), dBY.*sin(pi*theta/180), <span class="string">'-'</span>);
+axis([-zerodB zerodB -zerodB zerodB]), axis(<span class="string">'off'</span>), axis(<span class="string">'square'</span>)
+hold <span class="string">on</span>
+plot(zerodB*cos(pi*theta/180),zerodB*sin(pi*theta/180),<span class="string">'k:'</span>) <span class="comment">% 0 dB</span>
+plot( (min_sidelobe + zerodB)*cos(pi*theta/180), <span class="keyword">...</span>
+      (min_sidelobe + zerodB)*sin(pi*theta/180),<span class="string">'k:'</span>)  <span class="comment">% min level</span>
+text(-zerodB,0,<span class="string">'0 dB'</span>)
+text(-(min_sidelobe + zerodB),0,sprintf(<span class="string">'%0.1f dB'</span>,min_sidelobe));
+theta_1 = theta_tar+half_beamwidth;
+theta_2 = theta_tar-half_beamwidth;
+plot([0 55*cos(theta_tar*pi/180)], [0 55*sin(theta_tar*pi/180)], <span class="string">'k:'</span>)
+plot([0 55*cos(theta_1*pi/180)], [0 55*sin(theta_1*pi/180)], <span class="string">'k:'</span>)
+plot([0 55*cos(theta_2*pi/180)], [0 55*sin(theta_2*pi/180)], <span class="string">'k:'</span>)
+hold <span class="string">off</span>
+</pre><pre class="codeoutput"> 
+Calling SeDuMi: 1096 variables (0 free), 1025 equality constraints
+------------------------------------------------------------------------
+SeDuMi 1.1 by AdvOL, 2005 and Jos F. Sturm, 1998, 2001-2003.
+Alg = 2: xz-corrector, Adaptive Step-Differentiation, theta = 0.250, beta = 0.500
+eqs m = 1025, order n = 685, dim = 1097, blocks = 343
+nnz(A) = 1023 + 49248, nnz(ADA) = 3069, nnz(L) = 2048
+Handling 73 + 1 dense columns.
+ it :     b*y       gap    delta  rate   t/tP*  t/tD*   feas cg cg  prec
+  0 :            5.60E-002 0.000
+  1 :  9.75E-001 4.91E-002 0.000 0.8763 0.9000 0.9000  20.60  1  1  1.2E+000
+  2 :  1.12E+000 3.45E-002 0.000 0.7041 0.9000 0.9000   6.56  1  1  3.5E-001
+  3 :  7.39E-001 2.24E-002 0.000 0.6471 0.9000 0.9000   2.56  1  1  1.7E-001
+  4 :  5.76E-001 1.17E-002 0.000 0.5214 0.9000 0.9000   1.90  1  1  7.5E-002
+  5 :  5.36E-001 6.59E-003 0.000 0.5658 0.9000 0.9000   1.33  1  1  4.1E-002
+  6 :  5.59E-001 4.03E-003 0.000 0.6109 0.9000 0.9000   1.11  1  1  2.5E-002
+  7 :  5.94E-001 1.80E-003 0.000 0.4474 0.9000 0.9000   1.06  1  1  1.1E-002
+  8 :  6.21E-001 7.92E-004 0.000 0.4394 0.9000 0.9000   1.02  1  1  4.8E-003
+  9 :  6.39E-001 6.38E-005 0.000 0.0805 0.7901 0.9000   1.01  1  1  1.8E-003
+ 10 :  6.48E-001 2.00E-005 0.000 0.3135 0.9000 0.8928   1.00  1  1  5.1E-004
+ 11 :  6.50E-001 5.76E-006 0.000 0.2882 0.9000 0.8173   1.00  1  1  1.5E-004
+ 12 :  6.51E-001 1.22E-006 0.000 0.2113 0.9000 0.8706   1.00  1  1  3.4E-005
+ 13 :  6.52E-001 2.37E-007 0.000 0.1948 0.8897 0.9000   1.00  1  1  6.7E-006
+ 14 :  6.52E-001 4.43E-008 0.000 0.1867 0.8923 0.9000   1.00  1  1  1.2E-006
+ 15 :  6.52E-001 3.70E-009 0.078 0.0835 0.9900 0.9900   1.00  1  1  1.0E-007
+ 16 :  6.52E-001 8.68E-010 0.000 0.2347 0.9000 0.9000   1.00  3  3  2.4E-008
+ 17 :  6.52E-001 1.92E-010 0.000 0.2216 0.9000 0.9000   1.00  2  2  5.4E-009
+
+iter seconds digits       c*x               b*y
+ 17      4.4   Inf  6.5160745780e-001  6.5160745907e-001
+|Ax-b| =  5.5e-008, [Ay-c]_+ =  1.1E-009, |x|= 2.5e+000, |y|= 9.1e+000
+
+Detailed timing (sec)
+   Pre          IPM          Post
+1.402E-001    4.446E+000    2.003E-002    
+Max-norms: ||b||=1, ||c|| = 1,
+Cholesky |add|=0, |skip| = 37, ||L.L|| = 23.2871.
+------------------------------------------------------------------------
+Status (cvx_status): Solved
+ 
+Optimal value (cvx_optval): 0.651607
+Problem is Solved
+The minimum norm of w is 0.65.
+
+</pre><img vspace="5" hspace="5" src="ant_array_min_therm_noise_01.png"> <img vspace="5" hspace="5" src="ant_array_min_therm_noise_02.png"> <img vspace="5" hspace="5" src="ant_array_min_therm_noise_03.png"> <p class="footer"><br>
+            Published with MATLAB&reg; 7.1<br></p>
+      </div>
+      <!--
+##### SOURCE BEGIN #####
+%% Minimize thermal noise power of an array with arbitrary 2-D geometry
+
+% "Convex optimization examples" lecture notes (EE364) by S. Boyd
+% "Antenna array pattern synthesis via convex optimization"
+% by H. Lebret and S. Boyd
+% (figures are generated)
+%
+% Designs an antenna array such that:
+% - it has unit a sensitivity at some target direction
+% - obeys constraint for minimum sidelobe level outside the beamwidth
+% - minimizes thermal noise power in y (sigma*||w||_2^2)
+%
+% This is a convex problem described as:
+%
+%   minimize   norm(w)
+%       s.t.   y(theta_tar) = 1
+%              |y(theta)| <= min_sidelobe   for theta outside the beam
+%
+% where y is the antenna array gain pattern (complex function) and
+% variables are w (antenna array weights or shading coefficients).
+% Gain pattern is a linear function of w: y(theta) = w'*a(theta)
+% for some a(theta) describing antenna array configuration and specs.
+%
+% Written for CVX by Almir Mutapcic 02/02/06
+
+% select array geometry
+ARRAY_GEOMETRY = '2D_RANDOM';
+% ARRAY_GEOMETRY = '1D_UNIFORM_LINE';
+% ARRAY_GEOMETRY = '2D_UNIFORM_LATTICE';
+
+%********************************************************************
+% problem specs
+%********************************************************************
+lambda = 1;           % wavelength
+theta_tar = 60;       % target direction
+half_beamwidth = 10;  % half beamwidth around the target direction
+min_sidelobe = -20;   % maximum sidelobe level in dB
+
+%********************************************************************
+% random array of n antenna elements
+%********************************************************************
+if strcmp( ARRAY_GEOMETRY, '2D_RANDOM' )
+  % set random seed to repeat experiments
+  rand('state',0);
+
+  % (uniformly distributed on [0,L]-by-[0,L] square)
+  n = 36;
+  L = 5;
+  loc = L*rand(n,2);
+
+%********************************************************************
+% uniform 1D array with n elements with inter-element spacing d
+%********************************************************************
+elseif strcmp( ARRAY_GEOMETRY, '1D_UNIFORM_LINE' )
+  % (unifrom array on a line)
+  n = 30;
+  d = 0.45*lambda;
+  loc = [d*[0:n-1]' zeros(n,1)];
+
+%********************************************************************
+% uniform 2D array with m-by-m element with d spacing
+%********************************************************************
+elseif strcmp( ARRAY_GEOMETRY, '2D_UNIFORM_LATTICE' )
+  m = 6; n = m^2;
+  d = 0.45*lambda;
+
+  loc = zeros(n,2);
+  for x = 0:m-1
+    for y = 0:m-1
+      loc(m*y+x+1,:) = [x y];
+    end
+  end
+  loc = loc*d;
+
+else
+  error('Undefined array geometry')
+end
+
+%********************************************************************
+% construct optimization data
+%********************************************************************
+% build matrix A that relates w and y(theta), ie, y = A*w
+theta = [1:360]';
+A = kron(cos(pi*theta/180), loc(:,1)') + kron(sin(pi*theta/180), loc(:,2)');
+A = exp(2*pi*i/lambda*A);
+
+% target constraint matrix
+[diff_closest, ind_closest] = min( abs(theta - theta_tar) );
+Atar = A(ind_closest,:);
+
+% stopband constraint matrix
+ind = find(theta <= (theta_tar-half_beamwidth) | ...
+           theta >= (theta_tar+half_beamwidth) );
+As = A(ind,:);
+
+%********************************************************************
+% optimization problem
+%********************************************************************
+cvx_begin
+  variable w(n) complex
+  minimize( norm( w ) )
+  subject to
+    Atar*w == 1;
+    abs(As*w) <= 10^(min_sidelobe/20);
+cvx_end
+
+% check if problem was successfully solved
+disp(['Problem is ' cvx_status])
+if ~strcmp(cvx_status,'Solved')
+  return
+end
+
+fprintf(1,'The minimum norm of w is %3.2f.\n\n',norm(w));
+
+%********************************************************************
+% plots
+%********************************************************************
+figure(1), clf
+plot(loc(:,1),loc(:,2),'o')
+title('Antenna locations')
+
+% plot array pattern
+y = A*w;
+
+figure(2), clf
+ymin = -30; ymax = 0;
+plot([1:360], 20*log10(abs(y)), ...
+     [theta_tar theta_tar],[ymin ymax],'rREPLACE_WITH_DASH_DASH',...
+     [theta_tar+half_beamwidth theta_tar+half_beamwidth],[ymin ymax],'gREPLACE_WITH_DASH_DASH',...
+     [theta_tar-half_beamwidth theta_tar-half_beamwidth],[ymin ymax],'gREPLACE_WITH_DASH_DASH',...
+     [0 theta_tar-half_beamwidth],[min_sidelobe min_sidelobe],'rREPLACE_WITH_DASH_DASH',...
+     [theta_tar+half_beamwidth 360],[min_sidelobe min_sidelobe],'rREPLACE_WITH_DASH_DASH');
+xlabel('look angle'), ylabel('mag y(theta) in dB');
+axis([0 360 ymin ymax]);
+
+% polar plot
+figure(3), clf
+zerodB = 50;
+dBY = 20*log10(abs(y)) + zerodB;
+plot(dBY.*cos(pi*theta/180), dBY.*sin(pi*theta/180), '-');
+axis([-zerodB zerodB -zerodB zerodB]), axis('off'), axis('square')
+hold on
+plot(zerodB*cos(pi*theta/180),zerodB*sin(pi*theta/180),'k:') % 0 dB
+plot( (min_sidelobe + zerodB)*cos(pi*theta/180), ...
+      (min_sidelobe + zerodB)*sin(pi*theta/180),'k:')  % min level
+text(-zerodB,0,'0 dB')
+text(-(min_sidelobe + zerodB),0,sprintf('%0.1f dB',min_sidelobe));
+theta_1 = theta_tar+half_beamwidth;
+theta_2 = theta_tar-half_beamwidth;
+plot([0 55*cos(theta_tar*pi/180)], [0 55*sin(theta_tar*pi/180)], 'k:')
+plot([0 55*cos(theta_1*pi/180)], [0 55*sin(theta_1*pi/180)], 'k:')
+plot([0 55*cos(theta_2*pi/180)], [0 55*sin(theta_2*pi/180)], 'k:')
+hold off
+
+##### SOURCE END #####
+-->
+   </body>
+</html>

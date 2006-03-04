@@ -1,0 +1,263 @@
+<html xmlns:mwsh="http://www.mathworks.com/namespace/mcode/v1/syntaxhighlight.dtd">
+   <head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   
+      <!--
+This HTML is auto-generated from an M-file.
+To make changes, update the M-file and republish this document.
+      -->
+      <title>Detecting a small subset of infeasible linear inequalities</title>
+      <meta name="generator" content="MATLAB 7.1">
+      <meta name="date" content="2006-03-03">
+      <meta name="m-file" content="sparse_infeas_dual"><style>
+
+body {
+  background-color: white;
+  margin:10px;
+}
+
+h1 {
+  color: #990000; 
+  font-size: x-large;
+}
+
+h2 {
+  color: #990000;
+  font-size: medium;
+}
+
+/* Make the text shrink to fit narrow windows, but not stretch too far in 
+wide windows.  On Gecko-based browsers, the shrink-to-fit doesn't work. */ 
+p,h1,h2,div.content div {
+  /* for MATLAB's browser */
+  width: 600px;
+  /* for Mozilla, but the "width" tag overrides it anyway */
+  max-width: 600px;
+  /* for IE */
+  width:expression(document.body.clientWidth > 620 ? "600px": "auto" );
+}
+
+pre.codeinput {
+  background: #EEEEEE;
+  padding: 10px;
+}
+
+span.keyword {color: #0000FF}
+span.comment {color: #228B22}
+span.string {color: #A020F0}
+span.untermstring {color: #B20000}
+span.syscmd {color: #B28C00}
+
+pre.codeoutput {
+  color: #666666;
+  padding: 10px;
+}
+
+pre.error {
+  color: red;
+}
+
+p.footer {
+  text-align: right;
+  font-size: xx-small;
+  font-weight: lighter;
+  font-style: italic;
+  color: gray;
+}
+
+  </style></head>
+   <body>
+      <div class="content">
+         <h1>Detecting a small subset of infeasible linear inequalities</h1><pre class="codeinput"><span class="comment">% Section 5.8, Boyd &amp; Vandenberghe "Convex Optimization"</span>
+<span class="comment">% Written for CVX by Almir Mutapcic - 02/18/06</span>
+<span class="comment">%</span>
+<span class="comment">% We consider a set of linear inequalities A*x &lt;= b which are</span>
+<span class="comment">% infeasible. Here A is a matrix in R^(m-by-n) and b belongs</span>
+<span class="comment">% to R^m. We apply a l1-norm heuristic to find a small subset</span>
+<span class="comment">% of mutually infeasible inequalities from a larger set of</span>
+<span class="comment">% infeasible inequalities. The heuristic finds a sparse solution</span>
+<span class="comment">% to the alternative inequality system.</span>
+<span class="comment">%</span>
+<span class="comment">% Original system is A*x &lt;= b and it alternative ineq. system is:</span>
+<span class="comment">%</span>
+<span class="comment">%   lambda &gt;= 0,   A'*lambda == 0.   b'*lambda &lt; 0</span>
+<span class="comment">%</span>
+<span class="comment">% where lambda in R^m. We apply the l1-norm heuristic:</span>
+<span class="comment">%</span>
+<span class="comment">%   minimize   sum( lambda )</span>
+<span class="comment">%       s.t.   A'*lambda == 0</span>
+<span class="comment">%              b'*lambda == -1</span>
+<span class="comment">%              lambda &gt;= 0</span>
+<span class="comment">%</span>
+<span class="comment">% Positive lambdas gives us a small subset of inequalities from</span>
+<span class="comment">% the original set which are mutually inconsistent.</span>
+
+<span class="comment">% problem dimensions (m inequalities in n-dimensional space)</span>
+m = 150;
+n = 10;
+
+<span class="comment">% fix random number generator so we can repeat the experiment</span>
+seed = 0;
+randn(<span class="string">'state'</span>,seed);
+
+<span class="comment">% construct infeasible inequalities</span>
+A = randn(m,n);
+b = randn(m,1);
+
+fprintf(1, [<span class="string">'Starting with an infeasible set of %d inequalities '</span> <span class="keyword">...</span>
+            <span class="string">'in %d variables.\n'</span>],m,n);
+
+<span class="comment">% you can verify that the set is infeasible</span>
+<span class="comment">% cvx_begin</span>
+<span class="comment">%   variable x(n)</span>
+<span class="comment">%   A*x &lt;= b;</span>
+<span class="comment">% cvx_end</span>
+
+<span class="comment">% solve the l1-norm heuristic problem applied to the alternative system</span>
+cvx_begin
+   variables <span class="string">lambda(m)</span>
+   minimize( sum( lambda ) )
+   subject <span class="string">to</span>
+     A'*lambda == 0;
+     b'*lambda == -1;
+     lambda &gt;= 0;
+cvx_end
+
+<span class="comment">% report the smaller set of mutually inconsistent inequalities</span>
+infeas_set = find( lambda &gt; 0 );
+disp(<span class="string">' '</span>);
+fprintf(1,<span class="string">'Found a smaller set of %d mutually inconsistent inequalities.\n'</span>,<span class="keyword">...</span>
+        length(infeas_set));
+disp(<span class="string">' '</span>);
+disp(<span class="string">'A smaller set of mutually inconsistent inequalities are the ones'</span>);
+disp(<span class="string">'with row indices:'</span>), infeas_set'
+
+<span class="comment">% check that this set is infeasible</span>
+<span class="comment">% cvx_begin</span>
+<span class="comment">%    variable x_infeas(n)</span>
+<span class="comment">%    A(infeas_set,:)*x_infeas &lt;= b(infeas_set);</span>
+<span class="comment">% cvx_end</span>
+</pre><pre class="codeoutput">Starting with an infeasible set of 150 inequalities in 10 variables.
+ 
+Calling SeDuMi: 150 variables (0 free), 11 equality constraints
+------------------------------------------------------------------------
+SeDuMi 1.1 by AdvOL, 2005 and Jos F. Sturm, 1998, 2001-2003.
+Alg = 2: xz-corrector, Adaptive Step-Differentiation, theta = 0.250, beta = 0.500
+eqs m = 11, order n = 151, dim = 151, blocks = 1
+nnz(A) = 1650 + 0, nnz(ADA) = 121, nnz(L) = 66
+ it :     b*y       gap    delta  rate   t/tP*  t/tD*   feas cg cg  prec
+  0 :            2.27E+002 0.000
+  1 :  1.27E-002 7.71E+000 0.000 0.0339 0.9900 0.9900   2.93  1  1  1.7E+000
+  2 :  4.31E-001 2.34E+000 0.000 0.3028 0.9000 0.9000   0.88  1  1  8.0E-001
+  3 :  5.11E-001 1.16E+000 0.000 0.4971 0.9000 0.9000   0.88  1  1  5.3E-001
+  4 :  5.53E-001 4.79E-001 0.000 0.4126 0.9000 0.9000   0.95  1  1  2.9E-001
+  5 :  5.86E-001 1.85E-001 0.000 0.3860 0.9000 0.9000   0.95  1  1  1.4E-001
+  6 :  5.96E-001 7.30E-002 0.000 0.3946 0.9000 0.9125   0.99  1  1  6.2E-002
+  7 :  5.99E-001 2.74E-002 0.000 0.3748 0.9000 0.9202   1.00  1  1  2.6E-002
+  8 :  6.01E-001 7.80E-003 0.000 0.2850 0.9105 0.9000   1.00  1  1  7.4E-003
+  9 :  6.01E-001 4.39E-004 0.000 0.0563 0.9902 0.9900   1.00  1  1  4.2E-004
+ 10 :  6.01E-001 5.09E-007 0.000 0.0012 0.9990 0.9990   1.00  1  1  
+iter seconds digits       c*x               b*y
+ 10      0.1   Inf  6.0131198034e-001  6.0131198034e-001
+|Ax-b| =  1.7e-016, [Ay-c]_+ =  1.3E-016, |x|= 2.8e-001, |y|= 8.1e-001
+
+Detailed timing (sec)
+   Pre          IPM          Post
+3.004E-002    1.302E-001    0.000E+000    
+Max-norms: ||b||=1, ||c|| = 1,
+Cholesky |add|=0, |skip| = 0, ||L.L|| = 9.91492.
+------------------------------------------------------------------------
+Status (cvx_status): Solved
+ 
+Optimal value (cvx_optval): 0.601312
+ 
+Found a smaller set of 11 mutually inconsistent inequalities.
+ 
+A smaller set of mutually inconsistent inequalities are the ones
+with row indices:
+
+ans =
+
+     1    22    33    54    59    73    79    94   115   136   149
+
+</pre><p class="footer"><br>
+            Published with MATLAB&reg; 7.1<br></p>
+      </div>
+      <!--
+##### SOURCE BEGIN #####
+%% Detecting a small subset of infeasible linear inequalities
+
+% Section 5.8, Boyd & Vandenberghe "Convex Optimization"
+% Written for CVX by Almir Mutapcic - 02/18/06
+%
+% We consider a set of linear inequalities A*x <= b which are
+% infeasible. Here A is a matrix in R^(m-by-n) and b belongs
+% to R^m. We apply a l1-norm heuristic to find a small subset
+% of mutually infeasible inequalities from a larger set of
+% infeasible inequalities. The heuristic finds a sparse solution
+% to the alternative inequality system.
+%
+% Original system is A*x <= b and it alternative ineq. system is:
+%
+%   lambda >= 0,   A'*lambda == 0.   b'*lambda < 0
+%
+% where lambda in R^m. We apply the l1-norm heuristic:
+%
+%   minimize   sum( lambda )
+%       s.t.   A'*lambda == 0
+%              b'*lambda == -1
+%              lambda >= 0
+%
+% Positive lambdas gives us a small subset of inequalities from
+% the original set which are mutually inconsistent.
+
+% problem dimensions (m inequalities in n-dimensional space)
+m = 150;
+n = 10;
+
+% fix random number generator so we can repeat the experiment
+seed = 0;
+randn('state',seed);
+
+% construct infeasible inequalities
+A = randn(m,n);
+b = randn(m,1);
+
+fprintf(1, ['Starting with an infeasible set of %d inequalities ' ...
+            'in %d variables.\n'],m,n);
+
+% you can verify that the set is infeasible
+% cvx_begin
+%   variable x(n)
+%   A*x <= b;
+% cvx_end
+
+% solve the l1-norm heuristic problem applied to the alternative system
+cvx_begin
+   variables lambda(m)
+   minimize( sum( lambda ) )
+   subject to
+     A'*lambda == 0;
+     b'*lambda == -1; 
+     lambda >= 0;
+cvx_end
+
+% report the smaller set of mutually inconsistent inequalities
+infeas_set = find( lambda > 0 );
+disp(' ');
+fprintf(1,'Found a smaller set of %d mutually inconsistent inequalities.\n',...
+        length(infeas_set));
+disp(' ');
+disp('A smaller set of mutually inconsistent inequalities are the ones');
+disp('with row indices:'), infeas_set'
+
+% check that this set is infeasible
+% cvx_begin
+%    variable x_infeas(n)
+%    A(infeas_set,:)*x_infeas <= b(infeas_set);
+% cvx_end
+
+##### SOURCE END #####
+-->
+   </body>
+</html>

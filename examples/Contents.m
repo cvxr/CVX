@@ -1,4 +1,7 @@
+%  antenna_array_design/       - Antenna array design 
 %  cvxbook/                    - Figures, examples, and exercises from Boyd & Vandenberghe, "Convex Optimization"
+%  filter_design/              - Filter design
+%  sparse_heuristics/          - Sparse solution heuristics
 %  regularized_norm_tradeoff.m - Builds a norm minimization tradeoff curve
 %  simple_LS.m                 - Builds and solves a simple least-squares problem using cvx
 %  simple_LP.m                 - Builds and solves a simple linear program

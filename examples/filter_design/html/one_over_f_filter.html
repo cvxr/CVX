@@ -1,0 +1,260 @@
+<html xmlns:mwsh="http://www.mathworks.com/namespace/mcode/v1/syntaxhighlight.dtd">
+   <head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   
+      <!--
+This HTML is auto-generated from an M-file.
+To make changes, update the M-file and republish this document.
+      -->
+      <title>Design a 1/f spectrum shaping (pink-noise) filter</title>
+      <meta name="generator" content="MATLAB 7.1">
+      <meta name="date" content="2006-03-03">
+      <meta name="m-file" content="one_over_f_filter"><style>
+
+body {
+  background-color: white;
+  margin:10px;
+}
+
+h1 {
+  color: #990000; 
+  font-size: x-large;
+}
+
+h2 {
+  color: #990000;
+  font-size: medium;
+}
+
+/* Make the text shrink to fit narrow windows, but not stretch too far in 
+wide windows.  On Gecko-based browsers, the shrink-to-fit doesn't work. */ 
+p,h1,h2,div.content div {
+  /* for MATLAB's browser */
+  width: 600px;
+  /* for Mozilla, but the "width" tag overrides it anyway */
+  max-width: 600px;
+  /* for IE */
+  width:expression(document.body.clientWidth > 620 ? "600px": "auto" );
+}
+
+pre.codeinput {
+  background: #EEEEEE;
+  padding: 10px;
+}
+
+span.keyword {color: #0000FF}
+span.comment {color: #228B22}
+span.string {color: #A020F0}
+span.untermstring {color: #B20000}
+span.syscmd {color: #B28C00}
+
+pre.codeoutput {
+  color: #666666;
+  padding: 10px;
+}
+
+pre.error {
+  color: red;
+}
+
+p.footer {
+  text-align: right;
+  font-size: xx-small;
+  font-weight: lighter;
+  font-style: italic;
+  color: gray;
+}
+
+  </style></head>
+   <body>
+      <div class="content">
+         <h1>Design a 1/f spectrum shaping (pink-noise) filter</h1><pre class="codeinput"><span class="comment">% "Filter design" lecture notes (EE364) by S. Boyd</span>
+<span class="comment">% "FIR filter design via spectral factorization and convex optimization"</span>
+<span class="comment">% by S.-P. Wu, S. Boyd, and L. Vandenberghe</span>
+<span class="comment">% (a figure is generated)</span>
+<span class="comment">%</span>
+<span class="comment">% Designs a log-Chebychev filter magnitude design given as:</span>
+<span class="comment">%</span>
+<span class="comment">%   minimize   max| log|H(w)| - log D(w) |   for w in [0,pi]</span>
+<span class="comment">%</span>
+<span class="comment">% where variables are impulse response coefficients h, and data</span>
+<span class="comment">% is the desired frequency response magnitude D(w).</span>
+<span class="comment">%</span>
+<span class="comment">% We can express and solve the log-Chebychev problem above as</span>
+<span class="comment">%</span>
+<span class="comment">%   minimize   max( R(w)/D(w)^2, D(w)^2/R(w) )</span>
+<span class="comment">%       s.t.   R(w) = |H(w)|^2   for w in [0,pi]</span>
+<span class="comment">%</span>
+<span class="comment">% where we now use the auto-correlation coeffients r as variables.</span>
+<span class="comment">%</span>
+<span class="comment">% As an example we consider the 1/sqrt(w) spectrum shaping filter</span>
+<span class="comment">% (the so-called pink-noise filter) where D(w) = 1/sqrt(w).</span>
+<span class="comment">% Here we use a logarithmically sampled freq range w = [0.01*pi,pi].</span>
+<span class="comment">%</span>
+<span class="comment">% Written for CVX by Almir Mutapcic 02/02/06</span>
+
+<span class="comment">% parameters</span>
+n = 40;      <span class="comment">% filter order</span>
+m = 15*n;    <span class="comment">% frequency discretization (rule-of-thumb)</span>
+
+<span class="comment">% log-space frequency specification</span>
+wa = 0.01*pi; wb = pi;
+wl = logspace(log10(wa),log10(wb),m)';
+
+<span class="comment">% desired frequency response (pink-noise filter)</span>
+D = 1./sqrt(wl);
+
+<span class="comment">% matrix of cosines to compute the power spectrum</span>
+Al = [ones(m,1) 2*cos(kron(wl,[1:n-1]))];
+
+<span class="comment">% solve the problem using cvx</span>
+cvx_begin
+  variable <span class="string">r(n,1)</span>   <span class="comment">% auto-correlation coefficients</span>
+  variable <span class="string">R(m,1)</span>   <span class="comment">% power spectrum</span>
+
+  <span class="comment">% log-chebychev minimax design</span>
+  minimize( max( max( [R./(D.^2)  (D.^2).*inv_pos(R)]' ) ) )
+  subject <span class="string">to</span>
+     <span class="comment">% power spectrum constraint</span>
+     R == Al*r;
+cvx_end
+
+<span class="comment">% check if problem was successfully solved</span>
+disp([<span class="string">'Problem is '</span> cvx_status])
+<span class="keyword">if</span> ~strcmp(cvx_status,<span class="string">'Solved'</span>)
+  <span class="keyword">return</span>
+<span class="keyword">end</span>
+
+<span class="comment">% spectral factorization</span>
+h = spectral_fact(r);
+
+<span class="comment">% figures</span>
+figure(1)
+H = exp(-j*kron(wl,[0:n-1]))*h;
+loglog(wl,abs(H),wl,D,<span class="string">'r--'</span>)
+set(gca,<span class="string">'XLim'</span>,[wa pi])
+xlabel(<span class="string">'freq w'</span>)
+ylabel(<span class="string">'mag H(w) and D(w)'</span>)
+legend(<span class="string">'optimized'</span>,<span class="string">'desired'</span>)
+</pre><pre class="codeoutput"> 
+Calling SeDuMi: 2440 variables (40 free), 2399 equality constraints
+------------------------------------------------------------------------
+SeDuMi 1.1 by AdvOL, 2005 and Jos F. Sturm, 1998, 2001-2003.
+Alg = 2: xz-corrector, Adaptive Step-Differentiation, theta = 0.250, beta = 0.500
+Split 40 free variables
+eqs m = 2399, order n = 1881, dim = 3081, blocks = 601
+nnz(A) = 52797 + 0, nnz(ADA) = 730789, nnz(L) = 545695
+ it :     b*y       gap    delta  rate   t/tP*  t/tD*   feas cg cg  prec
+  0 :            3.01E-001 0.000
+  1 :  1.04E+002 1.19E-001 0.000 0.3938 0.9000 0.9000  -0.99  1  1  6.3E+001
+  2 :  7.68E+002 2.16E-002 0.000 0.1820 0.9000 0.9000  -0.97  1  1  5.7E+001
+  3 :  1.78E+003 7.55E-004 0.000 0.0350 0.9900 0.9900  -0.60  1  1  7.0E+000
+  4 :  1.36E+002 5.31E-005 0.000 0.0703 0.9900 0.9900   1.08  1  1  4.5E-001
+  5 :  2.15E+001 2.05E-005 0.000 0.3864 0.9000 0.9000   6.70  1  1  2.9E-002
+  6 :  5.76E+000 9.22E-006 0.000 0.4497 0.9000 0.9000   4.66  1  1  4.0E-003
+  7 :  2.00E+000 3.01E-006 0.000 0.3269 0.9000 0.9000   2.35  1  1  8.2E-004
+  8 :  1.52E+000 1.42E-006 0.000 0.4721 0.9000 0.9000   1.08  1  1  3.9E-004
+  9 :  1.31E+000 6.61E-007 0.000 0.4648 0.9000 0.9000   0.93  1  1  1.9E-004
+ 10 :  1.22E+000 3.22E-007 0.000 0.4873 0.9000 0.9000   0.93  1  1  9.2E-005
+ 11 :  1.21E+000 1.60E-007 0.000 0.4975 0.9000 0.9000   1.01  1  1  4.5E-005
+ 12 :  1.21E+000 2.09E-009 0.000 0.0131 0.9000 0.0000   1.00  1  1  1.5E-005
+ 13 :  1.20E+000 7.99E-011 0.000 0.0382 0.9257 0.9000   1.00  1  1  1.7E-006
+ 14 :  1.19E+000 1.86E-011 0.000 0.2329 0.9166 0.9000   1.00  1  1  5.0E-007
+ 15 :  1.19E+000 4.69E-012 0.000 0.2522 0.9000 0.6412   1.00  2  2  1.6E-007
+ 16 :  1.19E+000 5.99E-013 0.000 0.1276 0.9123 0.9000   1.00  2  2  2.7E-008
+ 17 :  1.19E+000 3.87E-014 0.000 0.0647 0.9900 0.9721   1.00  2  2  1.3E-009
+
+iter seconds digits       c*x               b*y
+ 17     64.7   Inf  1.1873326627e+000  1.1873409062e+000
+|Ax-b| =  1.7e-008, [Ay-c]_+ =  9.3E-009, |x|= 2.7e+002, |y|= 9.8e-001
+
+Detailed timing (sec)
+   Pre          IPM          Post
+4.446E+000    6.465E+001    1.001E-002    
+Max-norms: ||b||=1, ||c|| = 3.183099e+001,
+Cholesky |add|=0, |skip| = 0, ||L.L|| = 141.49.
+------------------------------------------------------------------------
+Status (cvx_status): Solved
+ 
+Optimal value (cvx_optval): 1.18733
+Problem is Solved
+</pre><img vspace="5" hspace="5" src="one_over_f_filter_01.png"> <p class="footer"><br>
+            Published with MATLAB&reg; 7.1<br></p>
+      </div>
+      <!--
+##### SOURCE BEGIN #####
+%% Design a 1/f spectrum shaping (pink-noise) filter
+
+% "Filter design" lecture notes (EE364) by S. Boyd
+% "FIR filter design via spectral factorization and convex optimization"
+% by S.-P. Wu, S. Boyd, and L. Vandenberghe
+% (a figure is generated)
+%
+% Designs a log-Chebychev filter magnitude design given as:
+%
+%   minimize   max| log|H(w)| - log D(w) |   for w in [0,pi]
+%
+% where variables are impulse response coefficients h, and data
+% is the desired frequency response magnitude D(w).
+%
+% We can express and solve the log-Chebychev problem above as
+%
+%   minimize   max( R(w)/D(w)^2, D(w)^2/R(w) )
+%       s.t.   R(w) = |H(w)|^2   for w in [0,pi]
+%
+% where we now use the auto-correlation coeffients r as variables. 
+%
+% As an example we consider the 1/sqrt(w) spectrum shaping filter
+% (the so-called pink-noise filter) where D(w) = 1/sqrt(w).
+% Here we use a logarithmically sampled freq range w = [0.01*pi,pi].
+%
+% Written for CVX by Almir Mutapcic 02/02/06
+
+% parameters
+n = 40;      % filter order
+m = 15*n;    % frequency discretization (rule-of-thumb)
+
+% log-space frequency specification
+wa = 0.01*pi; wb = pi;
+wl = logspace(log10(wa),log10(wb),m)';
+
+% desired frequency response (pink-noise filter)
+D = 1./sqrt(wl);
+
+% matrix of cosines to compute the power spectrum
+Al = [ones(m,1) 2*cos(kron(wl,[1:n-1]))];
+
+% solve the problem using cvx
+cvx_begin
+  variable r(n,1)   % auto-correlation coefficients
+  variable R(m,1)   % power spectrum
+
+  % log-chebychev minimax design
+  minimize( max( max( [R./(D.^2)  (D.^2).*inv_pos(R)]' ) ) )
+  subject to
+     % power spectrum constraint
+     R == Al*r;
+cvx_end
+
+% check if problem was successfully solved
+disp(['Problem is ' cvx_status])
+if ~strcmp(cvx_status,'Solved')
+  return
+end
+
+% spectral factorization
+h = spectral_fact(r);
+
+% figures
+figure(1)
+H = exp(-j*kron(wl,[0:n-1]))*h;
+loglog(wl,abs(H),wl,D,'rREPLACE_WITH_DASH_DASH')
+set(gca,'XLim',[wa pi])
+xlabel('freq w')
+ylabel('mag H(w) and D(w)')
+legend('optimized','desired')
+
+##### SOURCE END #####
+-->
+   </body>
+</html>

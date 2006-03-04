@@ -1,0 +1,450 @@
+<html xmlns:mwsh="http://www.mathworks.com/namespace/mcode/v1/syntaxhighlight.dtd">
+   <head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   
+      <!--
+This HTML is auto-generated from an M-file.
+To make changes, update the M-file and republish this document.
+      -->
+      <title>Minimize sidelobe level of an FIR broadband far-field antenna array</title>
+      <meta name="generator" content="MATLAB 7.1">
+      <meta name="date" content="2006-03-03">
+      <meta name="m-file" content="broadband_array_min_sidelobe"><style>
+
+body {
+  background-color: white;
+  margin:10px;
+}
+
+h1 {
+  color: #990000; 
+  font-size: x-large;
+}
+
+h2 {
+  color: #990000;
+  font-size: medium;
+}
+
+/* Make the text shrink to fit narrow windows, but not stretch too far in 
+wide windows.  On Gecko-based browsers, the shrink-to-fit doesn't work. */ 
+p,h1,h2,div.content div {
+  /* for MATLAB's browser */
+  width: 600px;
+  /* for Mozilla, but the "width" tag overrides it anyway */
+  max-width: 600px;
+  /* for IE */
+  width:expression(document.body.clientWidth > 620 ? "600px": "auto" );
+}
+
+pre.codeinput {
+  background: #EEEEEE;
+  padding: 10px;
+}
+
+span.keyword {color: #0000FF}
+span.comment {color: #228B22}
+span.string {color: #A020F0}
+span.untermstring {color: #B20000}
+span.syscmd {color: #B28C00}
+
+pre.codeoutput {
+  color: #666666;
+  padding: 10px;
+}
+
+pre.error {
+  color: red;
+}
+
+p.footer {
+  text-align: right;
+  font-size: xx-small;
+  font-weight: lighter;
+  font-style: italic;
+  color: gray;
+}
+
+  </style></head>
+   <body>
+      <div class="content">
+         <h1>Minimize sidelobe level of an FIR broadband far-field antenna array</h1><pre class="codeinput"><span class="comment">% "Antenna array pattern synthesis via convex optimization"</span>
+<span class="comment">% by H. Lebret and S. Boyd</span>
+<span class="comment">% (figures are generated)</span>
+<span class="comment">%</span>
+<span class="comment">% Designs a broadband antenna array with the far-field wave model such that:</span>
+<span class="comment">% - it minimizes sidelobe level outside the beamwidth of the pattern</span>
+<span class="comment">% - it has a unit sensitivity at some target direction and for some frequencies</span>
+<span class="comment">%</span>
+<span class="comment">% This is a convex problem (after sampling it can be formulated as an SOCP).</span>
+<span class="comment">%</span>
+<span class="comment">%   minimize   max |y(theta,f)|        for theta,f outside the desired region</span>
+<span class="comment">%       s.t.   y(theta_tar,f_tar) = 1</span>
+<span class="comment">%</span>
+<span class="comment">% where y is the antenna array gain pattern (complex function) and</span>
+<span class="comment">% variables are w (antenna array weights or shading coefficients).</span>
+<span class="comment">% Gain pattern is a linear function of w: y(theta,f) = w'*a(theta,f)</span>
+<span class="comment">% for some a(theta,f) describing antenna array configuration and specs.</span>
+<span class="comment">%</span>
+<span class="comment">% Written for CVX by Almir Mutapcic 02/02/06</span>
+
+<span class="comment">% select array geometry</span>
+ARRAY_GEOMETRY = <span class="string">'2D_UNIFORM_LATTICE'</span>;
+<span class="comment">% ARRAY_GEOMETRY = '2D_RANDOM';</span>
+
+<span class="comment">%********************************************************************</span>
+<span class="comment">% problem specs</span>
+<span class="comment">%********************************************************************</span>
+P = 2;                <span class="comment">% number of filter taps at each antenna element</span>
+fs = 8000;            <span class="comment">% sampling rate = 8000 Hz</span>
+T = 1/fs;             <span class="comment">% sampling spacing</span>
+c = 2000;             <span class="comment">% wave speed</span>
+
+theta_tar = 70;       <span class="comment">% target direction</span>
+half_beamwidth = 10;  <span class="comment">% half beamwidth around the target direction</span>
+f_low  = 1500;        <span class="comment">% low frequency bound for the desired band</span>
+f_high = 2000;        <span class="comment">% high frequency bound for the desired band</span>
+
+<span class="comment">%********************************************************************</span>
+<span class="comment">% random array of n antenna elements</span>
+<span class="comment">%********************************************************************</span>
+<span class="keyword">if</span> strcmp( ARRAY_GEOMETRY, <span class="string">'2D_RANDOM'</span> )
+  <span class="comment">% set random seed to repeat experiments</span>
+  rand(<span class="string">'state'</span>,0);
+
+  <span class="comment">% uniformly distributed on [0,L]-by-[0,L] square</span>
+  n = 20;
+  L = 0.45*(c/f_high)*sqrt(n);
+  <span class="comment">% loc is a column vector of x and y coordinates</span>
+  loc = L*rand(n,2);
+
+<span class="comment">%********************************************************************</span>
+<span class="comment">% uniform 2D array with m-by-m element with d spacing</span>
+<span class="comment">%********************************************************************</span>
+<span class="keyword">elseif</span> strcmp( ARRAY_GEOMETRY, <span class="string">'2D_UNIFORM_LATTICE'</span> )
+  m = 6; n = m^2;
+  d = 0.45*(c/f_high);
+
+  loc = zeros(n,2);
+  <span class="keyword">for</span> x = 0:m-1
+    <span class="keyword">for</span> y = 0:m-1
+      loc(m*y+x+1,:) = [x y];
+    <span class="keyword">end</span>
+  <span class="keyword">end</span>
+  loc = loc*d;
+
+<span class="keyword">else</span>
+  error(<span class="string">'Undefined array geometry'</span>)
+<span class="keyword">end</span>
+
+<span class="comment">%********************************************************************</span>
+<span class="comment">% construct optimization data</span>
+<span class="comment">%********************************************************************</span>
+<span class="comment">% discretized grid sampling parameters</span>
+numtheta = 180;
+numfreqs = 6;
+
+theta = linspace(1,360,numtheta)';
+freqs = linspace(500,3000,numfreqs)';
+
+clear <span class="string">Atotal</span>;
+<span class="keyword">for</span> k = 1:numfreqs
+  <span class="comment">% FIR portion of the main matrix</span>
+  Afir = kron( ones(numtheta,n), -[0:P-1]/fs );
+
+  <span class="comment">% cos/sine part of the main matrix</span>
+  Alocx = kron( loc(:,1)', ones(1,P) );
+  Alocy = kron( loc(:,2)', ones(1,P) );
+  Aloc = kron( cos(pi*theta/180)/c, Alocx ) + kron( sin(pi*theta/180)/c, Alocy );
+
+  <span class="comment">% create the main matrix for each frequency sample</span>
+  Atotal(:,:,k) = exp(2*pi*i*freqs(k)*(Afir+Aloc));
+<span class="keyword">end</span>
+
+<span class="comment">% single out indices so we can make equalities and inequalities</span>
+inbandInd    = find( freqs &gt;= f_low &amp; freqs &lt;= f_high );
+outbandInd   = find( freqs &lt; f_low | freqs &gt; f_high );
+thetaStopInd = find( theta &gt; (theta_tar+half_beamwidth) | <span class="keyword">...</span>
+                     theta &lt; (theta_tar-half_beamwidth) );
+[diffClosest, thetaTarInd] = min( abs(theta - theta_tar) );
+
+<span class="comment">% create target and stopband constraint matrices</span>
+Atar = []; As = [];
+<span class="comment">% inband frequencies constraints</span>
+<span class="keyword">for</span> k = [inbandInd]'
+  Atar = [Atar; Atotal(thetaTarInd,:,k)];
+  As = [As; Atotal(thetaStopInd,:,k)];
+<span class="keyword">end</span>
+<span class="comment">% outband frequencies constraints</span>
+<span class="keyword">for</span> k = [outbandInd]'
+  As = [As; Atotal(:,:,k)];
+<span class="keyword">end</span>
+
+<span class="comment">%********************************************************************</span>
+<span class="comment">% optimization problem</span>
+<span class="comment">%********************************************************************</span>
+cvx_begin
+  variable <span class="string">w(n*P)</span> <span class="string">complex</span>
+  minimize( max( abs( As*w ) ) )
+  subject <span class="string">to</span>
+    <span class="comment">% target direction equality constraint</span>
+    Atar*w == 1;
+cvx_end
+
+<span class="comment">% check if problem was successfully solved</span>
+disp([<span class="string">'Problem is '</span> cvx_status])
+<span class="keyword">if</span> ~strcmp(cvx_status,<span class="string">'Solved'</span>)
+  <span class="keyword">return</span>
+<span class="keyword">end</span>
+
+fprintf(1,<span class="string">'The minimum sidelobe level is %3.2f dB.\n\n'</span>,<span class="keyword">...</span>
+          20*log10(cvx_optval) );
+
+<span class="comment">%********************************************************************</span>
+<span class="comment">% plots</span>
+<span class="comment">%********************************************************************</span>
+figure(1); clf;
+plot(loc(:,1),loc(:,2),<span class="string">'o'</span>)
+title(<span class="string">'Antenna locations'</span>)
+axis(<span class="string">'square'</span>)
+
+<span class="comment">% plots of array patterns (cross sections for different frequencies)</span>
+figure(2); clf;
+clr = { <span class="string">'r'</span> <span class="string">'r'</span> <span class="string">'b'</span> <span class="string">'b'</span> <span class="string">'r'</span> <span class="string">'r'</span> };
+linetype = {<span class="string">'--'</span> <span class="string">'--'</span> <span class="string">'-'</span> <span class="string">'-'</span> <span class="string">'--'</span> <span class="string">'--'</span>};
+<span class="keyword">for</span> k = 1:numfreqs
+  plot(theta, 20*log10(abs(Atotal(:,:,k)*w)), [clr{k} linetype{k}]);
+  hold <span class="string">on</span>;
+<span class="keyword">end</span>
+axis([1 360 -15 0])
+title(<span class="string">'Passband (blue solid curves) and stopband (red dashed curves)'</span>)
+xlabel(<span class="string">'look angle'</span>), ylabel(<span class="string">'abs(y) in dB'</span>);
+hold <span class="string">off</span>;
+
+<span class="comment">% cross section polar plots</span>
+figure(3); clf;
+bw = 2*half_beamwidth;
+subplot(2,2,1); polar_plot_ant(abs( Atotal(:,:,2)*w ),theta_tar,bw,<span class="string">'f = 1000 (stop)'</span>);
+subplot(2,2,2); polar_plot_ant(abs( Atotal(:,:,3)*w ),theta_tar,bw,<span class="string">'f = 1500 (pass)'</span>);
+subplot(2,2,3); polar_plot_ant(abs( Atotal(:,:,4)*w ),theta_tar,bw,<span class="string">'f = 2000 (pass)'</span>);
+subplot(2,2,4); polar_plot_ant(abs( Atotal(:,:,5)*w ),theta_tar,bw,<span class="string">'f = 2500 (stop)'</span>);
+</pre><pre class="codeoutput"> 
+Calling SeDuMi: 3324 variables (144 free), 3183 equality constraints
+------------------------------------------------------------------------
+SeDuMi 1.1 by AdvOL, 2005 and Jos F. Sturm, 1998, 2001-2003.
+Alg = 2: xz-corrector, Adaptive Step-Differentiation, theta = 0.250, beta = 0.500
+Split 144 free variables
+eqs m = 3183, order n = 2409, dim = 3469, blocks = 1061
+nnz(A) = 3179 + 608523, nnz(ADA) = 9533, nnz(L) = 6360
+Handling 289 + 1 dense columns.
+ it :     b*y       gap    delta  rate   t/tP*  t/tD*   feas cg cg  prec
+  0 :            1.18E-002 0.000
+  1 :  7.34E+000 7.00E-004 0.000 0.0594 0.9900 0.9900  -0.43  1  1  4.4E-001
+  2 :  1.95E+000 4.01E-004 0.000 0.5733 0.9000 0.9000   3.68  1  1  1.2E-001
+  3 :  8.39E-001 2.45E-004 0.000 0.6114 0.9000 0.9000   4.90  1  1  2.4E-002
+  4 :  7.57E-001 1.40E-004 0.000 0.5723 0.9000 0.9000   1.77  1  1  1.2E-002
+  5 :  6.44E-001 7.36E-005 0.000 0.5242 0.9000 0.9000   1.52  1  1  5.7E-003
+  6 :  5.69E-001 3.26E-005 0.000 0.4422 0.9000 0.9000   1.34  1  1  2.5E-003
+  7 :  5.45E-001 2.04E-005 0.000 0.6267 0.9000 0.9000   1.20  1  1  1.6E-003
+  8 :  5.19E-001 9.85E-006 0.000 0.4825 0.9000 0.9000   1.15  1  1  7.8E-004
+  9 :  5.06E-001 4.85E-006 0.000 0.4929 0.9000 0.9000   1.08  1  1  3.9E-004
+ 10 :  4.98E-001 2.01E-006 0.000 0.4136 0.9000 0.9000   1.04  1  1  1.7E-004
+ 11 :  4.98E-001 2.01E-007 0.000 0.1002 0.9000 0.0000   1.01  1  1  1.0E-004
+ 12 :  4.95E-001 8.44E-008 0.000 0.4199 0.9299 0.9000   1.00  1  1  4.5E-005
+ 13 :  4.93E-001 2.56E-008 0.000 0.3028 0.9000 0.9013   1.00  1  1  1.3E-005
+ 14 :  4.92E-001 9.16E-009 0.000 0.3583 0.9000 0.9074   1.00  1  1  4.9E-006
+ 15 :  4.92E-001 3.75E-009 0.000 0.4097 0.9046 0.9000   1.00  1  1  2.0E-006
+ 16 :  4.92E-001 1.40E-009 0.000 0.3728 0.9037 0.9000   1.00  1  2  7.4E-007
+ 17 :  4.92E-001 6.46E-010 0.000 0.4614 0.9217 0.9000   1.00  2  2  3.4E-007
+ 18 :  4.92E-001 2.13E-010 0.000 0.3306 0.9198 0.9000   1.00  2  2  1.1E-007
+ 19 :  4.92E-001 6.22E-011 0.000 0.2913 0.9000 0.9000   1.00  2  2  3.3E-008
+ 20 :  4.92E-001 1.68E-011 0.000 0.2702 0.9076 0.9000   1.00  2  2  9.0E-009
+
+iter seconds digits       c*x               b*y
+ 20    144.8   Inf  4.9187941824e-001  4.9188003068e-001
+|Ax-b| =  2.2e-010, [Ay-c]_+ =  5.2E-009, |x|= 2.3e+001, |y|= 6.7e-001
+
+Detailed timing (sec)
+   Pre          IPM          Post
+3.755E+000    1.448E+002    2.604E-001    
+Max-norms: ||b||=1, ||c|| = 1,
+Cholesky |add|=0, |skip| = 10, ||L.L|| = 246.679.
+------------------------------------------------------------------------
+Status (cvx_status): Solved
+ 
+Optimal value (cvx_optval): 0.491879
+Problem is Solved
+The minimum sidelobe level is -6.16 dB.
+
+</pre><img vspace="5" hspace="5" src="broadband_array_min_sidelobe_01.png"> <img vspace="5" hspace="5" src="broadband_array_min_sidelobe_02.png"> <img vspace="5" hspace="5" src="broadband_array_min_sidelobe_03.png"> <p class="footer"><br>
+            Published with MATLAB&reg; 7.1<br></p>
+      </div>
+      <!--
+##### SOURCE BEGIN #####
+%% Minimize sidelobe level of an FIR broadband far-field antenna array
+
+% "Antenna array pattern synthesis via convex optimization"
+% by H. Lebret and S. Boyd
+% (figures are generated)
+%
+% Designs a broadband antenna array with the far-field wave model such that:
+% - it minimizes sidelobe level outside the beamwidth of the pattern
+% - it has a unit sensitivity at some target direction and for some frequencies
+%
+% This is a convex problem (after sampling it can be formulated as an SOCP).
+%
+%   minimize   max |y(theta,f)|        for theta,f outside the desired region
+%       s.t.   y(theta_tar,f_tar) = 1
+%
+% where y is the antenna array gain pattern (complex function) and
+% variables are w (antenna array weights or shading coefficients).
+% Gain pattern is a linear function of w: y(theta,f) = w'*a(theta,f)
+% for some a(theta,f) describing antenna array configuration and specs.
+%
+% Written for CVX by Almir Mutapcic 02/02/06
+
+% select array geometry
+ARRAY_GEOMETRY = '2D_UNIFORM_LATTICE';
+% ARRAY_GEOMETRY = '2D_RANDOM';
+
+%********************************************************************
+% problem specs
+%********************************************************************
+P = 2;                % number of filter taps at each antenna element
+fs = 8000;            % sampling rate = 8000 Hz
+T = 1/fs;             % sampling spacing
+c = 2000;             % wave speed
+
+theta_tar = 70;       % target direction
+half_beamwidth = 10;  % half beamwidth around the target direction
+f_low  = 1500;        % low frequency bound for the desired band
+f_high = 2000;        % high frequency bound for the desired band
+
+%********************************************************************
+% random array of n antenna elements
+%********************************************************************
+if strcmp( ARRAY_GEOMETRY, '2D_RANDOM' )
+  % set random seed to repeat experiments
+  rand('state',0);
+
+  % uniformly distributed on [0,L]-by-[0,L] square
+  n = 20;
+  L = 0.45*(c/f_high)*sqrt(n);
+  % loc is a column vector of x and y coordinates
+  loc = L*rand(n,2);
+
+%********************************************************************
+% uniform 2D array with m-by-m element with d spacing
+%********************************************************************
+elseif strcmp( ARRAY_GEOMETRY, '2D_UNIFORM_LATTICE' )
+  m = 6; n = m^2;
+  d = 0.45*(c/f_high);
+
+  loc = zeros(n,2);
+  for x = 0:m-1
+    for y = 0:m-1
+      loc(m*y+x+1,:) = [x y];
+    end
+  end
+  loc = loc*d;
+
+else
+  error('Undefined array geometry')
+end
+
+%********************************************************************
+% construct optimization data
+%********************************************************************
+% discretized grid sampling parameters
+numtheta = 180;
+numfreqs = 6;
+
+theta = linspace(1,360,numtheta)';
+freqs = linspace(500,3000,numfreqs)';
+
+clear Atotal;
+for k = 1:numfreqs
+  % FIR portion of the main matrix
+  Afir = kron( ones(numtheta,n), -[0:P-1]/fs );
+
+  % cos/sine part of the main matrix
+  Alocx = kron( loc(:,1)', ones(1,P) );
+  Alocy = kron( loc(:,2)', ones(1,P) );
+  Aloc = kron( cos(pi*theta/180)/c, Alocx ) + kron( sin(pi*theta/180)/c, Alocy );
+
+  % create the main matrix for each frequency sample
+  Atotal(:,:,k) = exp(2*pi*i*freqs(k)*(Afir+Aloc));
+end
+
+% single out indices so we can make equalities and inequalities
+inbandInd    = find( freqs >= f_low & freqs <= f_high );
+outbandInd   = find( freqs < f_low | freqs > f_high );
+thetaStopInd = find( theta > (theta_tar+half_beamwidth) | ...
+                     theta < (theta_tar-half_beamwidth) );
+[diffClosest, thetaTarInd] = min( abs(theta - theta_tar) );
+
+% create target and stopband constraint matrices
+Atar = []; As = [];
+% inband frequencies constraints
+for k = [inbandInd]'
+  Atar = [Atar; Atotal(thetaTarInd,:,k)];
+  As = [As; Atotal(thetaStopInd,:,k)];
+end
+% outband frequencies constraints
+for k = [outbandInd]'
+  As = [As; Atotal(:,:,k)];
+end
+
+%********************************************************************
+% optimization problem
+%********************************************************************
+cvx_begin
+  variable w(n*P) complex
+  minimize( max( abs( As*w ) ) )
+  subject to
+    % target direction equality constraint
+    Atar*w == 1;
+cvx_end
+
+% check if problem was successfully solved
+disp(['Problem is ' cvx_status])
+if ~strcmp(cvx_status,'Solved')
+  return
+end
+
+fprintf(1,'The minimum sidelobe level is %3.2f dB.\n\n',...
+          20*log10(cvx_optval) );
+
+%********************************************************************
+% plots
+%********************************************************************
+figure(1); clf;
+plot(loc(:,1),loc(:,2),'o')
+title('Antenna locations')
+axis('square')
+
+% plots of array patterns (cross sections for different frequencies)
+figure(2); clf;
+clr = { 'r' 'r' 'b' 'b' 'r' 'r' };
+linetype = {'REPLACE_WITH_DASH_DASH' 'REPLACE_WITH_DASH_DASH' '-' '-' 'REPLACE_WITH_DASH_DASH' 'REPLACE_WITH_DASH_DASH'};
+for k = 1:numfreqs
+  plot(theta, 20*log10(abs(Atotal(:,:,k)*w)), [clr{k} linetype{k}]);
+  hold on;
+end
+axis([1 360 -15 0])
+title('Passband (blue solid curves) and stopband (red dashed curves)')
+xlabel('look angle'), ylabel('abs(y) in dB');
+hold off;
+
+% cross section polar plots
+figure(3); clf;
+bw = 2*half_beamwidth;
+subplot(2,2,1); polar_plot_ant(abs( Atotal(:,:,2)*w ),theta_tar,bw,'f = 1000 (stop)');
+subplot(2,2,2); polar_plot_ant(abs( Atotal(:,:,3)*w ),theta_tar,bw,'f = 1500 (pass)');
+subplot(2,2,3); polar_plot_ant(abs( Atotal(:,:,4)*w ),theta_tar,bw,'f = 2000 (pass)');
+subplot(2,2,4); polar_plot_ant(abs( Atotal(:,:,5)*w ),theta_tar,bw,'f = 2500 (stop)');
+
+##### SOURCE END #####
+-->
+   </body>
+</html>

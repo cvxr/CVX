@@ -40,10 +40,28 @@ Jo&euml;lle Skaf, Argyris Zymnis, <a href=
 dynamic. Clicking on the <img src="plus.gif" alt="plus" /><img src=
 "minus.gif" alt="minus" /> icons will expand/collapse directories
 to reveal/hide their contents.</p>
-<!-- BEGIN TOC --><h3>Last updated: 27-Feb-2006</h3>
+<!-- BEGIN TOC --><h3>Last updated: 03-Mar-2006</h3>
 <p><a href="#" onclick="expandTree('tree1'); return false;">Expand all</a>&nbsp;&nbsp;
 <a href="#" onclick="collapseTree('tree1'); return false;">Collapse all</a></p>
 <ul class="mktree" id="tree1">
+<li class="liClosed"><b>Antenna array design </b>
+<blockquote>
+Relevant links:
+<a href="http://www.stanford.edu/~boyd/ant-pat.html">~boyd/ant-pat.html</a>
+<a href="http://www.stanford.edu/~boyd/magdes.html">~boyd/magdes.html</a>
+</blockquote>
+<ul>
+<li><a href="antenna_array_design/html/ant_array_min_beamwidth.html">Minimize beamwidth of an array with arbitrary 2-D geometry</a> (<a href="antenna_array_design/ant_array_min_beamwidth.m">ant_array_min_beamwidth.m</a>)</li>
+<li><a href="antenna_array_design/html/line_array_spec_fact.html">Minimize sidelobe level of a uniform linear array via spectral factorization</a> (<a href="antenna_array_design/line_array_spec_fact.m">line_array_spec_fact.m</a>)</li>
+<li><a href="antenna_array_design/html/broadband_array_min_sidelobe.html">Minimize sidelobe level of an FIR broadband far-field antenna array</a> (<a href="antenna_array_design/broadband_array_min_sidelobe.m">broadband_array_min_sidelobe.m</a>)</li>
+<li><a href="antenna_array_design/html/ant_array_min_sidelobe.html">Minimize sidelobe level of an array with arbitrary 2-D geometry</a> (<a href="antenna_array_design/ant_array_min_sidelobe.m">ant_array_min_sidelobe.m</a>)</li>
+<li><a href="antenna_array_design/html/ant_array_min_therm_noise.html">Minimize thermal noise power of an array with arbitrary 2-D geometry</a> (<a href="antenna_array_design/ant_array_min_therm_noise.m">ant_array_min_therm_noise.m</a>)</li>
+<li class="liOpen">Utility functions:<ul>
+<li><a href="antenna_array_design/polar_plot_ant.m">Plot a polar plot of an antenna array sensitivity (polar_plot_ant.m)</a></li>
+<li><a href="antenna_array_design/spectral_fact.m">Spectral factorization using Kolmogorov 1939 approach (spectral_fact.m)</a></li>
+</ul></li>
+</ul>
+</li>
 <li class="liOpen"><b>Figures, examples, and exercises from Boyd &amp; Vandenberghe, "Convex Optimization"</b>
 <blockquote>
 Visit the book's web site for more info: <a href="http://www.stanford.edu/~boyd/cvxbook">~boyd/cvxbook</a>
@@ -64,7 +82,7 @@ Visit the book's web site for more info: <a href="http://www.stanford.edu/~boyd/
 <li><a href="cvxbook/Ch04_cvx_opt_probs/html/ex_4_5.html">Exercise 4.5: Show the equivalence of 3 convex problem formations</a> (<a href="cvxbook/Ch04_cvx_opt_probs/ex_4_5.m">ex_4_5.m</a>)</li>
 <li class="liOpen">Utility functions:<ul>
 <li><a href="cvxbook/Ch04_cvx_opt_probs/cantilever_beam_plot.m">Plots a cantilever beam as a 3D figure. (cantilever_beam_plot.m)</a></li>
-</ul>
+</ul></li>
 </ul>
 </li>
 <li class="liClosed"><b>Chapter 5: Duality</b>
@@ -109,7 +127,7 @@ Visit the book's web site for more info: <a href="http://www.stanford.edu/~boyd/
 <li><a href="cvxbook/Ch07_statistical_estim/cheb.m">Computes Chebyshev lower bounds on probability vectors (cheb.m)</a></li>
 <li><a href="cvxbook/Ch07_statistical_estim/cher.m">Computes Chernoff upper bounds on probability (cher.m)</a></li>
 <li><a href="cvxbook/Ch07_statistical_estim/montecarlo.m">estimates probability than random vector x in R2 (montecarlo.m)</a></li>
-</ul>
+</ul></li>
 </ul>
 </li>
 <li class="liClosed"><b>Chapter 8: Geometric problems</b>
@@ -145,9 +163,39 @@ Visit the book's web site for more info: <a href="http://www.stanford.edu/~boyd/
 <li><a href="cvxbook/Ch08_geometric_probs/html/floor_plan_graphs.html">Solve a floor planning problem given graphs H &amp; V</a> (<a href="cvxbook/Ch08_geometric_probs/floor_plan_graphs.m">floor_plan_graphs.m</a>)</li>
 <li class="liOpen">Utility functions:<ul>
 <li><a href="cvxbook/Ch08_geometric_probs/floorplan.m">Computes a minimum-perimeter bounding box subject to positioning constraints (floorplan.m)</a></li>
-</ul>
+</ul></li>
 </ul>
 </li>
+</ul>
+</li>
+<li class="liClosed"><b>Filter design</b>
+<blockquote>
+Relevant links:
+<a href="http://www.stanford.edu/~boyd/magdes.html">~boyd/magdes.html</a>
+<a href="http://www.stanford.edu/class/ee364/lectures/filters.pdf">class/ee364/lectures/filters.pdf</a>
+</blockquote>
+<ul>
+<li><a href="filter_design/html/fir_chebychev_design.html">Chebychev design of an FIR filter given a desired H(w)</a> (<a href="filter_design/fir_chebychev_design.m">fir_chebychev_design.m</a>)</li>
+<li><a href="filter_design/html/one_over_f_filter.html">Design a 1/f spectrum shaping (pink-noise) filter</a> (<a href="filter_design/one_over_f_filter.m">one_over_f_filter.m</a>)</li>
+<li><a href="filter_design/html/equalizer_design.html">Equalizer design example</a> (<a href="filter_design/equalizer_design.m">equalizer_design.m</a>)</li>
+<li><a href="filter_design/html/iir_mag_design_bandpass_max_atten.html">Maximize stopband attenuation of a bandpass IIR filter</a> (<a href="filter_design/iir_mag_design_bandpass_max_atten.m">iir_mag_design_bandpass_max_atten.m</a>)</li>
+<li><a href="filter_design/html/fir_lin_phase_lowpass_max_atten.html">Maximize stopband attenuation of a linear phase lowpass FIR filter</a> (<a href="filter_design/fir_lin_phase_lowpass_max_atten.m">fir_lin_phase_lowpass_max_atten.m</a>)</li>
+<li><a href="filter_design/html/fir_mag_design_lowpass_max_atten.html">Maximize stopband attenuation of a lowpass FIR filter (magnitude design)</a> (<a href="filter_design/fir_mag_design_lowpass_max_atten.m">fir_mag_design_lowpass_max_atten.m</a>)</li>
+<li><a href="filter_design/html/iir_mag_design_lowpass_max_atten.html">Maximize stopband attenuation of a lowpass IIR filter</a> (<a href="filter_design/iir_mag_design_lowpass_max_atten.m">iir_mag_design_lowpass_max_atten.m</a>)</li>
+<li><a href="filter_design/html/fir_lin_phase_lowpass_min_order.html">Minimize order of a linear phase lowpass FIR filter</a> (<a href="filter_design/fir_lin_phase_lowpass_min_order.m">fir_lin_phase_lowpass_min_order.m</a>)</li>
+<li><a href="filter_design/html/fir_mag_design_lowpass_min_order.html">Minimize order of a lowpass FIR filter (magnitude design)</a> (<a href="filter_design/fir_mag_design_lowpass_min_order.m">fir_mag_design_lowpass_min_order.m</a>)</li>
+<li><a href="filter_design/html/fir_lin_phase_lowpass_min_ripple.html">Minimize stopband ripple of a linear phase lowpass FIR filter</a> (<a href="filter_design/fir_lin_phase_lowpass_min_ripple.m">fir_lin_phase_lowpass_min_ripple.m</a>)</li>
+<li><a href="filter_design/html/fir_lin_phase_lowpass_min_trans.html">Minimize transition bandwidth of a linear phase lowpass FIR filter</a> (<a href="filter_design/fir_lin_phase_lowpass_min_trans.m">fir_lin_phase_lowpass_min_trans.m</a>)</li>
+<li class="liOpen">Utility functions:<ul>
+<li><a href="filter_design/spectral_fact.m">Spectral factorization using Kolmogorov 1939 approach. (spectral_fact.m)</a></li>
+</ul></li>
+</ul>
+</li>
+<li class="liClosed"><b>Sparse solution heuristics</b>
+<ul>
+<li><a href="sparse_heuristics/html/sparse_solution.html">Computing a sparse solution of a set of linear inequalities</a> (<a href="sparse_heuristics/sparse_solution.m">sparse_solution.m</a>)</li>
+<li><a href="sparse_heuristics/html/sparse_infeas_dual.html">Detecting a small subset of infeasible linear inequalities</a> (<a href="sparse_heuristics/sparse_infeas_dual.m">sparse_infeas_dual.m</a>)</li>
+<li><a href="sparse_heuristics/html/sparse_infeas.html">Finding a point that satisfies as many linear inequalities</a> (<a href="sparse_heuristics/sparse_infeas.m">sparse_infeas.m</a>)</li>
 </ul>
 </li>
 <li><b>Miscellaneous examples</b><ul>
@@ -169,12 +217,12 @@ Boyd's research group page.</a></p>
 <p>
  <a href="http://validator.w3.org/check?uri=referer">
    <img style="border:0;width:88px;height:31px"
-     src="http://www.w3.org/Icons/valid-xhtml10"
+     src="valid-xhtml10.png"
      alt="Valid XHTML 1.0 Transitional" />
  </a>
  <a href="http://jigsaw.w3.org/css-validator/check/referer">
   <img style="border:0;width:88px;height:31px"
-       src="http://jigsaw.w3.org/css-validator/images/vcss"
+       src="vcss.png"
        alt="Valid CSS!" />
  </a></p>
 </body>

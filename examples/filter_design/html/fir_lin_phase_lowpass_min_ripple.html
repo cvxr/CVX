@@ -1,0 +1,316 @@
+<html xmlns:mwsh="http://www.mathworks.com/namespace/mcode/v1/syntaxhighlight.dtd">
+   <head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   
+      <!--
+This HTML is auto-generated from an M-file.
+To make changes, update the M-file and republish this document.
+      -->
+      <title>Minimize stopband ripple of a linear phase lowpass FIR filter</title>
+      <meta name="generator" content="MATLAB 7.1">
+      <meta name="date" content="2006-03-03">
+      <meta name="m-file" content="fir_lin_phase_lowpass_min_ripple"><style>
+
+body {
+  background-color: white;
+  margin:10px;
+}
+
+h1 {
+  color: #990000; 
+  font-size: x-large;
+}
+
+h2 {
+  color: #990000;
+  font-size: medium;
+}
+
+/* Make the text shrink to fit narrow windows, but not stretch too far in 
+wide windows.  On Gecko-based browsers, the shrink-to-fit doesn't work. */ 
+p,h1,h2,div.content div {
+  /* for MATLAB's browser */
+  width: 600px;
+  /* for Mozilla, but the "width" tag overrides it anyway */
+  max-width: 600px;
+  /* for IE */
+  width:expression(document.body.clientWidth > 620 ? "600px": "auto" );
+}
+
+pre.codeinput {
+  background: #EEEEEE;
+  padding: 10px;
+}
+
+span.keyword {color: #0000FF}
+span.comment {color: #228B22}
+span.string {color: #A020F0}
+span.untermstring {color: #B20000}
+span.syscmd {color: #B28C00}
+
+pre.codeoutput {
+  color: #666666;
+  padding: 10px;
+}
+
+pre.error {
+  color: red;
+}
+
+p.footer {
+  text-align: right;
+  font-size: xx-small;
+  font-weight: lighter;
+  font-style: italic;
+  color: gray;
+}
+
+  </style></head>
+   <body>
+      <div class="content">
+         <h1>Minimize stopband ripple of a linear phase lowpass FIR filter</h1><pre class="codeinput"><span class="comment">% "Filter design" lecture notes (EE364) by S. Boyd</span>
+<span class="comment">% (figures are generated)</span>
+<span class="comment">%</span>
+<span class="comment">% Designs a linear phase FIR lowpass filter such that it:</span>
+<span class="comment">% - minimizes the maximum passband ripple</span>
+<span class="comment">% - has a constraint on the maximum stopband attenuation</span>
+<span class="comment">%</span>
+<span class="comment">% This is a convex problem.</span>
+<span class="comment">%</span>
+<span class="comment">%   minimize   delta</span>
+<span class="comment">%       s.t.   1/delta &lt;= H(w) &lt;= delta     for w in the passband</span>
+<span class="comment">%              |H(w)| &lt;= atten_level        for w in the stopband</span>
+<span class="comment">%</span>
+<span class="comment">% where H is the frequency response function and variables are</span>
+<span class="comment">% delta and h (the filter impulse response).</span>
+<span class="comment">%</span>
+<span class="comment">% Written for CVX by Almir Mutapcic 02/02/06</span>
+
+<span class="comment">%********************************************************************</span>
+<span class="comment">% user's filter specifications</span>
+<span class="comment">%********************************************************************</span>
+<span class="comment">% filter order is 2n+1 (symmetric around the half-point)</span>
+n = 10;
+
+wpass = 0.12*pi;        <span class="comment">% passband cutoff freq (in radians)</span>
+wstop = 0.24*pi;        <span class="comment">% stopband start freq (in radians)</span>
+atten_level = -30;      <span class="comment">% stopband attenuation level in dB</span>
+
+<span class="comment">%********************************************************************</span>
+<span class="comment">% create optimization parameters</span>
+<span class="comment">%********************************************************************</span>
+N = 30*n+1;                            <span class="comment">% freq samples (rule-of-thumb)</span>
+w = linspace(0,pi,N);
+A = [ones(N,1) 2*cos(kron(w',[1:n]))]; <span class="comment">% matrix of cosines</span>
+
+<span class="comment">% passband 0 &lt;= w &lt;= w_pass</span>
+ind = find((0 &lt;= w) &amp; (w &lt;= wpass));   <span class="comment">% passband</span>
+Ap  = A(ind,:);
+
+<span class="comment">% transition band is not constrained (w_pass &lt;= w &lt;= w_stop)</span>
+
+<span class="comment">% stopband (w_stop &lt;= w)</span>
+ind = find((wstop &lt;= w) &amp; (w &lt;= pi));  <span class="comment">% stopband</span>
+Us  = 10^(atten_level/20)*ones(length(ind),1);
+As  = A(ind,:);
+
+<span class="comment">%********************************************************************</span>
+<span class="comment">% optimization</span>
+<span class="comment">%********************************************************************</span>
+<span class="comment">% formulate and solve the linear-phase lowpass filter design</span>
+cvx_begin
+  variable <span class="string">delta</span>
+  variable <span class="string">h(n+1,1)</span>;
+
+  minimize( delta )
+  subject <span class="string">to</span>
+    <span class="comment">% passband bounds</span>
+    Ap*h &lt;= delta;
+    inv_pos(Ap*h) &lt;= delta;
+
+    <span class="comment">% stopband bounds</span>
+    abs( As*h ) &lt;= Us;
+cvx_end
+
+<span class="comment">% check if problem was successfully solved</span>
+disp([<span class="string">'Problem is '</span> cvx_status])
+<span class="keyword">if</span> ~strcmp(cvx_status,<span class="string">'Solved'</span>)
+  <span class="keyword">return</span>
+<span class="keyword">else</span>
+  <span class="comment">% construct the full impulse response</span>
+  h = [flipud(h(2:end)); h];
+  fprintf(1,<span class="string">'The optimal minimum passband ripple is %4.3f dB.\n\n'</span>,<span class="keyword">...</span>
+            20*log10(delta));
+<span class="keyword">end</span>
+
+<span class="comment">%********************************************************************</span>
+<span class="comment">% plots</span>
+<span class="comment">%********************************************************************</span>
+figure(1)
+<span class="comment">% FIR impulse response</span>
+plot([0:2*n],h',<span class="string">'o'</span>,[0:2*n],h',<span class="string">'b:'</span>)
+xlabel(<span class="string">'t'</span>), ylabel(<span class="string">'h(t)'</span>)
+
+figure(2)
+<span class="comment">% frequency response</span>
+H = exp(-j*kron(w',[0:2*n]))*h;
+<span class="comment">% magnitude</span>
+subplot(2,1,1)
+plot(w,20*log10(abs(H)),[wstop pi],[atten_level atten_level],<span class="string">'r--'</span>);
+axis([0,pi,-40,10])
+xlabel(<span class="string">'w'</span>), ylabel(<span class="string">'mag H(w) in dB'</span>)
+<span class="comment">% phase</span>
+subplot(2,1,2)
+plot(w,angle(H))
+axis([0,pi,-pi,pi])
+xlabel(<span class="string">'w'</span>), ylabel(<span class="string">'phase H(w)'</span>)
+</pre><pre class="codeoutput"> 
+Calling SeDuMi: 617 variables (11 free), 605 equality constraints
+------------------------------------------------------------------------
+SeDuMi 1.1 by AdvOL, 2005 and Jos F. Sturm, 1998, 2001-2003.
+Alg = 2: xz-corrector, Adaptive Step-Differentiation, theta = 0.250, beta = 0.500
+Split 11 free variables
+eqs m = 605, order n = 592, dim = 666, blocks = 38
+nnz(A) = 7802 + 0, nnz(ADA) = 96929, nnz(L) = 49397
+ it :     b*y       gap    delta  rate   t/tP*  t/tD*   feas cg cg  prec
+  0 :            6.05E-002 0.000
+  1 :  5.31E+000 1.24E-002 0.000 0.2042 0.9000 0.9000  -0.46  1  1  2.0E+000
+  2 :  1.67E+000 6.01E-003 0.000 0.4868 0.9000 0.9000   4.53  1  1  3.0E-001
+  3 :  1.14E+000 3.43E-003 0.000 0.5697 0.9000 0.9000   6.94  1  1  4.2E-002
+  4 :  1.06E+000 1.22E-003 0.000 0.3569 0.9000 0.9000   1.89  1  1  1.2E-002
+  5 :  1.05E+000 5.34E-004 0.000 0.4367 0.9000 0.9000   1.35  1  1  4.6E-003
+  6 :  1.05E+000 1.37E-004 0.000 0.2568 0.9000 0.9000   1.16  1  1  1.1E-003
+  7 :  1.05E+000 5.08E-005 0.000 0.3703 0.9000 0.9000   1.04  1  1  4.2E-004
+  8 :  1.05E+000 6.01E-006 0.000 0.1183 0.9000 0.0000   1.01  1  1  2.4E-004
+  9 :  1.05E+000 7.56E-007 0.000 0.1258 0.9252 0.9000   1.01  1  1  5.5E-005
+ 10 :  1.05E+000 2.10E-007 0.000 0.2781 0.9000 0.8845   1.00  1  1  1.5E-005
+ 11 :  1.05E+000 7.82E-008 0.000 0.3718 0.9067 0.9000   1.00  1  1  5.7E-006
+ 12 :  1.05E+000 2.13E-008 0.000 0.2727 0.9000 0.9063   1.00  1  1  1.5E-006
+ 13 :  1.05E+000 5.08E-009 0.000 0.2382 0.9000 0.8283   1.00  2  2  3.6E-007
+ 14 :  1.05E+000 9.99E-010 0.000 0.1966 0.9000 0.8678   1.00  2  2  7.2E-008
+ 15 :  1.05E+000 2.53E-011 0.000 0.0254 0.9901 0.9900   1.00  2  2  1.9E-009
+
+iter seconds digits       c*x               b*y
+ 15      2.6   Inf  1.0515780094e+000  1.0515780105e+000
+|Ax-b| =  4.5e-009, [Ay-c]_+ =  1.5E-009, |x|= 1.2e+001, |y|= 1.2e+000
+
+Detailed timing (sec)
+   Pre          IPM          Post
+2.003E-001    2.564E+000    1.001E-002    
+Max-norms: ||b||=1, ||c|| = 1,
+Cholesky |add|=0, |skip| = 0, ||L.L|| = 1348.39.
+------------------------------------------------------------------------
+Status (cvx_status): Solved
+ 
+Optimal value (cvx_optval): 1.05158
+Problem is Solved
+The optimal minimum passband ripple is 0.437 dB.
+
+</pre><img vspace="5" hspace="5" src="fir_lin_phase_lowpass_min_ripple_01.png"> <img vspace="5" hspace="5" src="fir_lin_phase_lowpass_min_ripple_02.png"> <p class="footer"><br>
+            Published with MATLAB&reg; 7.1<br></p>
+      </div>
+      <!--
+##### SOURCE BEGIN #####
+%% Minimize stopband ripple of a linear phase lowpass FIR filter
+
+% "Filter design" lecture notes (EE364) by S. Boyd
+% (figures are generated)
+%
+% Designs a linear phase FIR lowpass filter such that it:
+% - minimizes the maximum passband ripple
+% - has a constraint on the maximum stopband attenuation
+%
+% This is a convex problem.
+%
+%   minimize   delta
+%       s.t.   1/delta <= H(w) <= delta     for w in the passband
+%              |H(w)| <= atten_level        for w in the stopband
+%
+% where H is the frequency response function and variables are
+% delta and h (the filter impulse response).
+%
+% Written for CVX by Almir Mutapcic 02/02/06
+
+%********************************************************************
+% user's filter specifications
+%********************************************************************
+% filter order is 2n+1 (symmetric around the half-point)
+n = 10;
+
+wpass = 0.12*pi;        % passband cutoff freq (in radians)
+wstop = 0.24*pi;        % stopband start freq (in radians)
+atten_level = -30;      % stopband attenuation level in dB
+
+%********************************************************************
+% create optimization parameters
+%********************************************************************
+N = 30*n+1;                            % freq samples (rule-of-thumb)
+w = linspace(0,pi,N);
+A = [ones(N,1) 2*cos(kron(w',[1:n]))]; % matrix of cosines
+
+% passband 0 <= w <= w_pass
+ind = find((0 <= w) & (w <= wpass));   % passband
+Ap  = A(ind,:);
+
+% transition band is not constrained (w_pass <= w <= w_stop)
+
+% stopband (w_stop <= w)
+ind = find((wstop <= w) & (w <= pi));  % stopband
+Us  = 10^(atten_level/20)*ones(length(ind),1);
+As  = A(ind,:);
+
+%********************************************************************
+% optimization
+%********************************************************************
+% formulate and solve the linear-phase lowpass filter design
+cvx_begin
+  variable delta
+  variable h(n+1,1);
+
+  minimize( delta )
+  subject to
+    % passband bounds
+    Ap*h <= delta;
+    inv_pos(Ap*h) <= delta;
+
+    % stopband bounds
+    abs( As*h ) <= Us;
+cvx_end
+
+% check if problem was successfully solved
+disp(['Problem is ' cvx_status])
+if ~strcmp(cvx_status,'Solved')
+  return
+else
+  % construct the full impulse response
+  h = [flipud(h(2:end)); h];
+  fprintf(1,'The optimal minimum passband ripple is %4.3f dB.\n\n',...
+            20*log10(delta));
+end
+
+%********************************************************************
+% plots
+%********************************************************************
+figure(1)
+% FIR impulse response
+plot([0:2*n],h','o',[0:2*n],h','b:')
+xlabel('t'), ylabel('h(t)')
+
+figure(2)
+% frequency response
+H = exp(-j*kron(w',[0:2*n]))*h;
+% magnitude
+subplot(2,1,1)
+plot(w,20*log10(abs(H)),[wstop pi],[atten_level atten_level],'rREPLACE_WITH_DASH_DASH');
+axis([0,pi,-40,10])
+xlabel('w'), ylabel('mag H(w) in dB')
+% phase
+subplot(2,1,2)
+plot(w,angle(H))
+axis([0,pi,-pi,pi])
+xlabel('w'), ylabel('phase H(w)')
+
+##### SOURCE END #####
+-->
+   </body>
+</html>
