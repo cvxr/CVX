@@ -55,8 +55,13 @@ end
 needupd = 0;
 missing = 0;
 newpath = [ ps, matlabpath, ps ]; 
-newpath2 = lower(newpath);
-mpath2 = lower(mpath);
+if ispc,
+    newpath2 = lower(newpath);
+    mpath2 = lower(mpath);
+else,
+    newpath2 = newpath;
+    mpath2 = mpath;
+end
 for k = 1 : length(rmpaths),
     temp = [ ps, mpath2, fs, rmpaths{k}, ps ];
     ndxs = strfind( newpath2, temp );
@@ -71,7 +76,10 @@ for k = 1 : length(rmpaths),
     end
 end
 for k = 1 : length(addpaths),
-    temp = [ ps, lower( addpaths{k} ), ps ];
+    temp = [ ps, addpaths{k}, ps ];
+    if ispc,
+        temp = lower( temp );
+    end
     ndxs = strfind( newpath2, temp );
     if isempty( ndxs ),
         needupd = 1;
