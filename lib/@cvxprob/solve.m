@@ -67,7 +67,7 @@ elseif n == 0,
         status = 'Infeasible';
         y = - P * sign( b );
         value = sign * Inf * ones( objsize );
-        pval = 1;
+        pval = NaN;
         dval = 0;
 
     else,
@@ -89,12 +89,12 @@ else,
         dval = 1;
     case { 'Infeasible', 'Inaccurate/Infeasible' },
         if nobj > 1, value = sign * Inf * ones( objsize ); end
-        pval = 1;
+        pval = NaN;
         dval = 0;
     case { 'Unbounded', 'Inaccurate/Unbounded' },
         if nobj > 1, value = -sign * Inf * ones( objsize ); end
         pval = 0;
-        dval = 1;
+        dval = NaN;
     otherwise,
         if nobj > 1, value = NaN * ones( objsize ); end
         pval = NaN;

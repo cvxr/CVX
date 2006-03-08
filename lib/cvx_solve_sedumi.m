@@ -1,4 +1,4 @@
-function [ value, x, y, status ] = cvx_solve_sedumi( A, b, c, d, sign, nonls, quiet )
+function [ value, x, y, status ] = cvx_solve_sedumi( A, b, c, d, sgn, nonls, quiet )
 if nargin < 6, quiet = false; end
 
 [ m, n ] = size( A );
@@ -95,13 +95,22 @@ if all( b == 0 ) & all( c == 0 ),
     x = zeros( nn, 1 );
     y = zeros( m, 1 );
     value = d;
+elseif any( ~any( A, 2 ) ),
+    if ~quiet,
+        disp( 'Degenerate infeasible problem encountered; solution determined analytically.' );
+    end
+    status = 'Infeasible';
+    value = -sgn * Inf;
+    x = NaN * ones( nn, 1 );
+    y = sgn * b .* ~any( A, 2 );
+    y = y / abs( b' * y );
 elseif isempty( b ),
     if ~quiet,
         disp( 'Degenerate problem encountered; an unbounded direction search will be' );
         disp( 'performed. The SeDuMi status messages will not coincide with cvx_status.' );
         disp( '------------------------------------------------------------------------' );
     end
-    [ x, y, info ] = sedumi( sign * c, -1, [], K, pars );
+    [ x, y, info ] = sedumi( sgn * c, -1, [], K, pars );
     x = full( x );
     y = zeros( 0, 1 );
     if info.numerr == 2 | info.dinf ~= 0,
@@ -115,7 +124,7 @@ elseif isempty( b ),
         value = d;
     else,
         status = 'Unbounded';
-        value = -Inf * sign;
+        value = -Inf * sgn;
     end
     if info.numerr == 1 & pars.eps > 0,
         status = [ 'Inaccurate/', status ];
@@ -127,7 +136,7 @@ else,
         A( :, end + 1 ) = 0;
         K.l = 1;
     end
-    [ x, y, info ] = sedumi( A, b, sign * c, K, pars );
+    [ x, y, info ] = sedumi( A, b, sgn * c, K, pars );
     x = full( x );
     y = full( y );
     if degen,
@@ -141,16 +150,16 @@ else,
     elseif info.pinf ~= 0,
         status = 'Infeasible';
         x = NaN * ones( nn, 1 );
-        value = +Inf * sign;
+        value = +Inf * sgn;
+    elseif info.dinf ~= 0,
+        status = 'Unbounded';
+        y = NaN * ones( m, 1 );
+        value = -Inf * sgn;
     elseif info.feasratio < 0,
         status = 'Infeasible';
         x = NaN * ones( nn, 1 );
         y = NaN * ones( m, 1 );
-        value = +Inf * sign;
-    elseif info.dinf ~= 0,
-        status = 'Unbounded';
-        y = NaN * ones( m, 1 );
-        value = -Inf * sign;
+        value = +Inf * sgn;
     else,
         status = 'Solved';
         value = c' * x + d;
