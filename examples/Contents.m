@@ -1,4 +1,5 @@
 %  antenna_array_design/       - Antenna array design 
+%  circuit_design/             - Circuit design
 %  cvxbook/                    - Figures, examples, and exercises from Boyd & Vandenberghe, "Convex Optimization"
 %  filter_design/              - Filter design
 %  sparse_heuristics/          - Sparse solution heuristics

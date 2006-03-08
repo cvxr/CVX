@@ -1,0 +1,544 @@
+<html xmlns:mwsh="http://www.mathworks.com/namespace/mcode/v1/syntaxhighlight.dtd">
+   <head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   
+      <!--
+This HTML is auto-generated from an M-file.
+To make changes, update the M-file and republish this document.
+      -->
+      <title>Sizing of clock meshes</title>
+      <meta name="generator" content="MATLAB 7.1">
+      <meta name="date" content="2006-03-08">
+      <meta name="m-file" content="clock_mesh"><style>
+
+body {
+  background-color: white;
+  margin:10px;
+}
+
+h1 {
+  color: #990000; 
+  font-size: x-large;
+}
+
+h2 {
+  color: #990000;
+  font-size: medium;
+}
+
+/* Make the text shrink to fit narrow windows, but not stretch too far in 
+wide windows.  On Gecko-based browsers, the shrink-to-fit doesn't work. */ 
+p,h1,h2,div.content div {
+  /* for MATLAB's browser */
+  width: 600px;
+  /* for Mozilla, but the "width" tag overrides it anyway */
+  max-width: 600px;
+  /* for IE */
+  width:expression(document.body.clientWidth > 620 ? "600px": "auto" );
+}
+
+pre.codeinput {
+  background: #EEEEEE;
+  padding: 10px;
+}
+
+span.keyword {color: #0000FF}
+span.comment {color: #228B22}
+span.string {color: #A020F0}
+span.untermstring {color: #B20000}
+span.syscmd {color: #B28C00}
+
+pre.codeoutput {
+  color: #666666;
+  padding: 10px;
+}
+
+pre.error {
+  color: red;
+}
+
+p.footer {
+  text-align: right;
+  font-size: xx-small;
+  font-weight: lighter;
+  font-style: italic;
+  color: gray;
+}
+
+  </style></head>
+   <body>
+      <div class="content">
+         <h1>Sizing of clock meshes</h1><pre class="codeinput"><span class="comment">% Section 4, L. Vandenberghe, S. Boyd, and A. El Gamal</span>
+<span class="comment">% "Optimal Wire and Transistor Sizing for Circuits with Non-Tree Topology"</span>
+<span class="comment">% Original by Lieven Vanderberghe</span>
+<span class="comment">% Adapted to CVX by Argyris Zymnis - 12/04/05</span>
+<span class="comment">% Modified by Michael Grant - 3/8/06</span>
+<span class="comment">%</span>
+<span class="comment">% We consider the problem of sizing a clock mesh, so as to minimize the</span>
+<span class="comment">% total dissipated power under a constraint on the dominant time constant.</span>
+<span class="comment">% The numbers of nodes in the mesh is N per row or column (thus n=(N+1)^2</span>
+<span class="comment">% in total). We divide the wire into m segments of width xi, i = 1,...,m</span>
+<span class="comment">% which is constrained as 0 &lt;= xi &lt;= Wmax. We use a pi-model of each wire</span>
+<span class="comment">% segment, with capacitance beta_i*xi and conductance alpha_i*xi.</span>
+<span class="comment">% Defining C(x) = C0+x1*C1+x2*C2+...+xm*Cm we have that the dissipated</span>
+<span class="comment">% power is equal to ones(1,n)*C(x)*ones(n,1). Thus to minimize the</span>
+<span class="comment">% dissipated power subject to a constraint in the widths and a constraint</span>
+<span class="comment">% in the dominant time constant, we solve the SDP</span>
+<span class="comment">%               minimize        ones(1,m)*C(x)*ones(m,1)</span>
+<span class="comment">%                   s.t.        Tmax*G(x) - C(x) &gt;= 0</span>
+<span class="comment">%                               0 &lt;= xi &lt;= Wmax</span>
+
+cvxq = cvx_quiet(true);
+
+<span class="comment">%</span>
+<span class="comment">% Circuit parameters</span>
+<span class="comment">%</span>
+
+dim=4;           <span class="comment">% grid is dimxdim (assume dim is even)</span>
+n=(dim+1)^2;     <span class="comment">% number of nodes</span>
+m=2*dim*(dim+1); <span class="comment">% number of wires</span>
+                 <span class="comment">% 1...dim(dim+1) are horizontal segments</span>
+                 <span class="comment">% (numbered rowwise);</span>
+                 <span class="comment">% dim(dim+1)+1 ... 2*dim(dim+1) are vertical</span>
+                 <span class="comment">% (numbered columnwise)</span>
+beta = 0.5;      <span class="comment">% capacitance per segment is twice beta times xi</span>
+alpha = 1;       <span class="comment">% conductance per segment is alpha times xi</span>
+G0 = 1;          <span class="comment">% source conductance</span>
+C0 = [ 10     2     7     5     3;
+        8     3     9     5     5;
+        1     8     4     9     3;
+        7     3     6     8     2;
+        5     2     1     9    10 ];
+wmax = 1;       <span class="comment">% upper bound on x</span>
+
+<span class="comment">%</span>
+<span class="comment">% Build capacitance and conductance matrices</span>
+<span class="comment">%</span>
+
+CC = zeros(dim+1,dim+1,dim+1,dim+1,m+1);
+GG = zeros(dim+1,dim+1,dim+1,dim+1,m+1);
+
+<span class="comment">% constant term</span>
+CC(:,:,:,:,1) = reshape( diag(C0(:)), dim+1, dim+1, dim+1, dim+1 );
+zo13 = reshape( [1,0;0,1],   2, 1, 2, 1 );
+zo24 = reshape( zo13,        1, 2, 1, 2 );
+pn13 = reshape( [1,-1;-1,1], 2, 1, 2, 1 );
+pn24 = reshape( pn13,        1, 2, 1, 2 );
+<span class="keyword">for</span> i = 1 : dim+1,
+    <span class="comment">% source conductance</span>
+    <span class="comment">% first driver in the middle of row 1</span>
+    GG(dim/2+1,i,dim/2+1,i,1) = G0;
+    <span class="keyword">for</span> j = 1 : dim,
+        <span class="comment">% horizontal segments</span>
+        node = 1 + j + ( i - 1 ) * dim;
+        CC([j,j+1],i,[j,j+1],i,node) = beta * zo13;
+        GG([j,j+1],i,[j,j+1],i,node) = alpha * pn13;
+        <span class="comment">% vertical segments</span>
+        node = node + dim * ( dim + 1 );
+        CC(i,[j,j+1],i,[j,j+1],node) = beta * zo24;
+        GG(i,[j,j+1],i,[j,j+1],node) = alpha * pn24;
+    <span class="keyword">end</span>
+<span class="keyword">end</span>
+<span class="comment">% reshape for ease of use in Matlab</span>
+CC = reshape( CC, n*n, m+1 );
+GG = reshape( GG, n*n, m+1 );
+
+<span class="comment">%</span>
+<span class="comment">% Compute points the tradeoff curve, and the three sample points</span>
+<span class="comment">%</span>
+
+npts    = 50;
+delays  = linspace( 50, 150, npts );
+xdelays = [ 50, 100 ];
+xnpts   = length( xdelays );
+areas   = zeros(1,npts);
+<span class="keyword">for</span> i = 1 : npts  + xnpts,
+
+    <span class="keyword">if</span> i &gt; npts,
+        xi = i - npts;
+        delay = xdelays(xi);
+        disp( sprintf( <span class="string">'Particular solution %d of %d (Tmax = %g)'</span>, xi, xnpts, delay ) );
+    <span class="keyword">else</span>,
+        delay = delays(i);
+        disp( sprintf( <span class="string">'Point %d of %d on the tradeoff curve (Tmax = %g)'</span>, i, npts, delay ) );
+    <span class="keyword">end</span>
+
+    <span class="comment">%</span>
+    <span class="comment">% Construct and solve the convex model</span>
+    <span class="comment">%</span>
+
+    cvx_begin <span class="string">sdp</span>
+        variable <span class="string">x(m)</span>
+        variable <span class="string">G(n,n)</span> <span class="string">symmetric</span>
+        variable <span class="string">C(n,n)</span> <span class="string">symmetric</span>
+        dual <span class="string">variables</span> <span class="string">Y1</span> <span class="string">Y2</span> <span class="string">Y3</span> <span class="string">Y4</span> <span class="string">Y5</span>
+        minimize( sum( C(:) ) )
+        subject <span class="string">to</span>
+            G == reshape( GG * [ 1 ; x ], n, n );
+            C == reshape( CC * [ 1 ; x ], n, n );
+            delay * G - C &gt;= 0;
+            x &gt;= 0;
+            x &lt;= wmax;
+    cvx_end
+
+    <span class="keyword">if</span> i &lt;= npts,
+        areas(i) = sum(x);
+    <span class="keyword">else</span>,
+        xareas(xi) = sum(x);
+
+        <span class="comment">%</span>
+        <span class="comment">% Display sizes</span>
+        <span class="comment">%</span>
+
+        disp( sprintf( <span class="string">'Solution %d:'</span>, xi ) );
+        disp( <span class="string">'Vertical segments:'</span> );
+        reshape( x(1:dim*(dim+1),1), dim, dim+1 )
+        disp( <span class="string">'Horizontal segments:'</span> );
+        reshape( x(dim*(dim+1)+1:end), dim, dim+1 )
+
+        <span class="comment">%</span>
+        <span class="comment">% Determine the step responses</span>
+        <span class="comment">%</span>
+
+        figure(xi+1);
+        A = -inv(C)*G;
+        B = -A*ones(n,1);
+        T = linspace(0,500,2000);
+        Y = simple_step(A,B,T(2),length(T));
+        indmax = 0;
+        indmin = Inf;
+        <span class="keyword">for</span> j = 1 : size(Y,1),
+           inds = min(find(Y(j,:) &gt;= 0.5));
+           <span class="keyword">if</span> ( inds &gt; indmax )
+              indmax = inds;
+              jmax = j;
+           <span class="keyword">end</span>;
+           <span class="keyword">if</span> ( inds &lt; indmin )
+              indmin = inds;
+              jmin = j;
+           <span class="keyword">end</span>;
+        <span class="keyword">end</span>;
+        tthres = T(indmax);
+        tdom   = max(eig(inv(G)*C));
+        elmore = max(sum((inv(G)*C)'));
+        hold <span class="string">off</span>; plot(T,Y(jmax,:),<span class="string">'-'</span>,T,Y(jmin,:));  hold <span class="string">on</span>;
+        plot( tdom   * [1;1], [0;1], <span class="string">'--'</span>, <span class="keyword">...</span>
+              elmore * [1;1], [0;1], <span class="string">'--'</span>, <span class="keyword">...</span>
+              tthres * [1;1], [0;1], <span class="string">'--'</span>);
+        axis([0 500 0 1])
+        text(tdom,1,<span class="string">'d'</span>);
+        text(elmore,1,<span class="string">'e'</span>);
+        text(tthres,1,<span class="string">'t'</span>);
+        text( T(600), Y(jmax,600), sprintf( <span class="string">'v%d'</span>, jmax ) );
+        text( T(600), Y(jmin,600), sprintf( <span class="string">'v%d'</span>, jmin ) );
+        title( sprintf( <span class="string">'Solution %d (Tmax=%g), fastest and slowest step responses'</span>, xi, delay ) );
+
+    <span class="keyword">end</span>
+
+<span class="keyword">end</span>;
+
+<span class="comment">%</span>
+<span class="comment">% Plot the tradeoff curve</span>
+<span class="comment">%</span>
+
+figure(1)
+ind = finite(areas);
+plot(areas(ind), delays(ind));
+xlabel(<span class="string">'Area'</span>);
+ylabel(<span class="string">'Tdom'</span>);
+title(<span class="string">'Area-delay tradeoff curve'</span>);
+hold <span class="string">on</span>
+<span class="keyword">for</span> k = 1 : xnpts,
+    text( xareas(k), xdelays(k), sprintf( <span class="string">'(%d)'</span>, k ) );
+<span class="keyword">end</span>
+
+cvx_quiet(cvxq);
+</pre><pre class="codeoutput">Point 1 of 50 on the tradeoff curve (Tmax = 50)
+Point 2 of 50 on the tradeoff curve (Tmax = 52.0408)
+Point 3 of 50 on the tradeoff curve (Tmax = 54.0816)
+Point 4 of 50 on the tradeoff curve (Tmax = 56.1224)
+Point 5 of 50 on the tradeoff curve (Tmax = 58.1633)
+Point 6 of 50 on the tradeoff curve (Tmax = 60.2041)
+Point 7 of 50 on the tradeoff curve (Tmax = 62.2449)
+Point 8 of 50 on the tradeoff curve (Tmax = 64.2857)
+Point 9 of 50 on the tradeoff curve (Tmax = 66.3265)
+Point 10 of 50 on the tradeoff curve (Tmax = 68.3673)
+Point 11 of 50 on the tradeoff curve (Tmax = 70.4082)
+Point 12 of 50 on the tradeoff curve (Tmax = 72.449)
+Point 13 of 50 on the tradeoff curve (Tmax = 74.4898)
+Point 14 of 50 on the tradeoff curve (Tmax = 76.5306)
+Point 15 of 50 on the tradeoff curve (Tmax = 78.5714)
+Point 16 of 50 on the tradeoff curve (Tmax = 80.6122)
+Point 17 of 50 on the tradeoff curve (Tmax = 82.6531)
+Point 18 of 50 on the tradeoff curve (Tmax = 84.6939)
+Point 19 of 50 on the tradeoff curve (Tmax = 86.7347)
+Point 20 of 50 on the tradeoff curve (Tmax = 88.7755)
+Point 21 of 50 on the tradeoff curve (Tmax = 90.8163)
+Point 22 of 50 on the tradeoff curve (Tmax = 92.8571)
+Point 23 of 50 on the tradeoff curve (Tmax = 94.898)
+Point 24 of 50 on the tradeoff curve (Tmax = 96.9388)
+Point 25 of 50 on the tradeoff curve (Tmax = 98.9796)
+Point 26 of 50 on the tradeoff curve (Tmax = 101.02)
+Point 27 of 50 on the tradeoff curve (Tmax = 103.061)
+Point 28 of 50 on the tradeoff curve (Tmax = 105.102)
+Point 29 of 50 on the tradeoff curve (Tmax = 107.143)
+Point 30 of 50 on the tradeoff curve (Tmax = 109.184)
+Point 31 of 50 on the tradeoff curve (Tmax = 111.224)
+Point 32 of 50 on the tradeoff curve (Tmax = 113.265)
+Point 33 of 50 on the tradeoff curve (Tmax = 115.306)
+Point 34 of 50 on the tradeoff curve (Tmax = 117.347)
+Point 35 of 50 on the tradeoff curve (Tmax = 119.388)
+Point 36 of 50 on the tradeoff curve (Tmax = 121.429)
+Point 37 of 50 on the tradeoff curve (Tmax = 123.469)
+Point 38 of 50 on the tradeoff curve (Tmax = 125.51)
+Point 39 of 50 on the tradeoff curve (Tmax = 127.551)
+Point 40 of 50 on the tradeoff curve (Tmax = 129.592)
+Point 41 of 50 on the tradeoff curve (Tmax = 131.633)
+Point 42 of 50 on the tradeoff curve (Tmax = 133.673)
+Point 43 of 50 on the tradeoff curve (Tmax = 135.714)
+Point 44 of 50 on the tradeoff curve (Tmax = 137.755)
+Point 45 of 50 on the tradeoff curve (Tmax = 139.796)
+Point 46 of 50 on the tradeoff curve (Tmax = 141.837)
+Point 47 of 50 on the tradeoff curve (Tmax = 143.878)
+Point 48 of 50 on the tradeoff curve (Tmax = 145.918)
+Point 49 of 50 on the tradeoff curve (Tmax = 147.959)
+Point 50 of 50 on the tradeoff curve (Tmax = 150)
+Particular solution 1 of 2 (Tmax = 50)
+Solution 1:
+Vertical segments:
+
+ans =
+
+    0.6524    0.4415    0.5222    0.4709    0.2364
+    1.0000    0.8534    1.0000    0.9358    0.5700
+    0.9232    0.2956    0.8003    1.0000    1.0000
+    0.4131    0.1355    0.2669    0.6713    0.8882
+
+Horizontal segments:
+
+ans =
+
+    0.1970    0.1401    0.0000    0.0000    0.0000
+    0.0723    0.0621    0.0000    0.0000    0.0000
+    0.0000    0.0000    0.0000    0.0950    0.1580
+    0.0000    0.0000    0.0000    0.0849    0.0532
+
+Particular solution 2 of 2 (Tmax = 100)
+Solution 2:
+Vertical segments:
+
+ans =
+
+    0.2688    0.0436    0.1711    0.1337    0.0735
+    0.4137    0.0802    0.3067    0.2224    0.1485
+    0.2575    0.0802    0.1120    0.3837    0.2818
+    0.1343    0.0436    0.0244    0.2408    0.2452
+
+Horizontal segments:
+
+ans =
+
+  1.0e-005 *
+
+    0.1029    0.0870    0.0801    0.0864    0.1019
+    0.0834    0.0698    0.0649    0.0695    0.0824
+    0.0814    0.0695    0.0648    0.0696    0.0812
+    0.0808    0.0689    0.0634    0.0694    0.0812
+
+</pre><img vspace="5" hspace="5" src="clock_mesh_01.png"> <img vspace="5" hspace="5" src="clock_mesh_02.png"> <img vspace="5" hspace="5" src="clock_mesh_03.png"> <p class="footer"><br>
+            Published with MATLAB&reg; 7.1<br></p>
+      </div>
+      <!--
+##### SOURCE BEGIN #####
+%% Sizing of clock meshes
+
+% Section 4, L. Vandenberghe, S. Boyd, and A. El Gamal
+% "Optimal Wire and Transistor Sizing for Circuits with Non-Tree Topology"
+% Original by Lieven Vanderberghe
+% Adapted to CVX by Argyris Zymnis - 12/04/05
+% Modified by Michael Grant - 3/8/06
+%
+% We consider the problem of sizing a clock mesh, so as to minimize the
+% total dissipated power under a constraint on the dominant time constant.
+% The numbers of nodes in the mesh is N per row or column (thus n=(N+1)^2
+% in total). We divide the wire into m segments of width xi, i = 1,...,m
+% which is constrained as 0 <= xi <= Wmax. We use a pi-model of each wire
+% segment, with capacitance beta_i*xi and conductance alpha_i*xi.
+% Defining C(x) = C0+x1*C1+x2*C2+...+xm*Cm we have that the dissipated
+% power is equal to ones(1,n)*C(x)*ones(n,1). Thus to minimize the
+% dissipated power subject to a constraint in the widths and a constraint
+% in the dominant time constant, we solve the SDP
+%               minimize        ones(1,m)*C(x)*ones(m,1)
+%                   s.t.        Tmax*G(x) - C(x) >= 0
+%                               0 <= xi <= Wmax
+
+cvxq = cvx_quiet(true);
+
+%
+% Circuit parameters
+%
+
+dim=4;           % grid is dimxdim (assume dim is even)
+n=(dim+1)^2;     % number of nodes
+m=2*dim*(dim+1); % number of wires
+                 % 1...dim(dim+1) are horizontal segments
+                 % (numbered rowwise);
+                 % dim(dim+1)+1 ... 2*dim(dim+1) are vertical
+                 % (numbered columnwise)
+beta = 0.5;      % capacitance per segment is twice beta times xi
+alpha = 1;       % conductance per segment is alpha times xi
+G0 = 1;          % source conductance
+C0 = [ 10     2     7     5     3;
+        8     3     9     5     5;
+        1     8     4     9     3;
+        7     3     6     8     2;
+        5     2     1     9    10 ];
+wmax = 1;       % upper bound on x
+
+%
+% Build capacitance and conductance matrices
+%
+
+CC = zeros(dim+1,dim+1,dim+1,dim+1,m+1);
+GG = zeros(dim+1,dim+1,dim+1,dim+1,m+1);
+
+% constant term
+CC(:,:,:,:,1) = reshape( diag(C0(:)), dim+1, dim+1, dim+1, dim+1 );
+zo13 = reshape( [1,0;0,1],   2, 1, 2, 1 );
+zo24 = reshape( zo13,        1, 2, 1, 2 );
+pn13 = reshape( [1,-1;-1,1], 2, 1, 2, 1 );
+pn24 = reshape( pn13,        1, 2, 1, 2 );
+for i = 1 : dim+1,
+    % source conductance
+    % first driver in the middle of row 1
+    GG(dim/2+1,i,dim/2+1,i,1) = G0;
+    for j = 1 : dim,
+        % horizontal segments
+        node = 1 + j + ( i - 1 ) * dim;
+        CC([j,j+1],i,[j,j+1],i,node) = beta * zo13;
+        GG([j,j+1],i,[j,j+1],i,node) = alpha * pn13;
+        % vertical segments
+        node = node + dim * ( dim + 1 );
+        CC(i,[j,j+1],i,[j,j+1],node) = beta * zo24;
+        GG(i,[j,j+1],i,[j,j+1],node) = alpha * pn24;
+    end
+end
+% reshape for ease of use in Matlab
+CC = reshape( CC, n*n, m+1 );
+GG = reshape( GG, n*n, m+1 );
+
+%
+% Compute points the tradeoff curve, and the three sample points
+%
+
+npts    = 50;
+delays  = linspace( 50, 150, npts );
+xdelays = [ 50, 100 ];
+xnpts   = length( xdelays );
+areas   = zeros(1,npts);
+for i = 1 : npts  + xnpts,
+
+    if i > npts,
+        xi = i - npts;
+        delay = xdelays(xi);
+        disp( sprintf( 'Particular solution %d of %d (Tmax = %g)', xi, xnpts, delay ) );
+    else,
+        delay = delays(i);
+        disp( sprintf( 'Point %d of %d on the tradeoff curve (Tmax = %g)', i, npts, delay ) );
+    end
+
+    %
+    % Construct and solve the convex model
+    %
+
+    cvx_begin sdp
+        variable x(m)
+        variable G(n,n) symmetric
+        variable C(n,n) symmetric
+        dual variables Y1 Y2 Y3 Y4 Y5
+        minimize( sum( C(:) ) )
+        subject to
+            G == reshape( GG * [ 1 ; x ], n, n );
+            C == reshape( CC * [ 1 ; x ], n, n );
+            delay * G - C >= 0;
+            x >= 0;
+            x <= wmax;
+    cvx_end
+
+    if i <= npts,
+        areas(i) = sum(x);
+    else,
+        xareas(xi) = sum(x);
+
+        %
+        % Display sizes
+        %
+
+        disp( sprintf( 'Solution %d:', xi ) );
+        disp( 'Vertical segments:' );
+        reshape( x(1:dim*(dim+1),1), dim, dim+1 )
+        disp( 'Horizontal segments:' );
+        reshape( x(dim*(dim+1)+1:end), dim, dim+1 )
+
+        %
+        % Determine the step responses
+        %
+
+        figure(xi+1);
+        A = -inv(C)*G;
+        B = -A*ones(n,1);
+        T = linspace(0,500,2000);
+        Y = simple_step(A,B,T(2),length(T));
+        indmax = 0;
+        indmin = Inf;
+        for j = 1 : size(Y,1),
+           inds = min(find(Y(j,:) >= 0.5));
+           if ( inds > indmax )
+              indmax = inds;
+              jmax = j;
+           end;
+           if ( inds < indmin )
+              indmin = inds;
+              jmin = j;
+           end;
+        end;
+        tthres = T(indmax);
+        tdom   = max(eig(inv(G)*C));
+        elmore = max(sum((inv(G)*C)'));
+        hold off; plot(T,Y(jmax,:),'-',T,Y(jmin,:));  hold on;
+        plot( tdom   * [1;1], [0;1], 'REPLACE_WITH_DASH_DASH', ...
+              elmore * [1;1], [0;1], 'REPLACE_WITH_DASH_DASH', ...
+              tthres * [1;1], [0;1], 'REPLACE_WITH_DASH_DASH');
+        axis([0 500 0 1])
+        text(tdom,1,'d');
+        text(elmore,1,'e');
+        text(tthres,1,'t');
+        text( T(600), Y(jmax,600), sprintf( 'v%d', jmax ) );
+        text( T(600), Y(jmin,600), sprintf( 'v%d', jmin ) );
+        title( sprintf( 'Solution %d (Tmax=%g), fastest and slowest step responses', xi, delay ) );
+
+    end
+
+end;
+
+%
+% Plot the tradeoff curve
+%
+
+figure(1)
+ind = finite(areas);
+plot(areas(ind), delays(ind));
+xlabel('Area');
+ylabel('Tdom');
+title('Area-delay tradeoff curve');
+hold on
+for k = 1 : xnpts,
+    text( xareas(k), xdelays(k), sprintf( '(%d)', k ) );
+end
+
+cvx_quiet(cvxq);
+
+##### SOURCE END #####
+-->
+   </body>
+</html>
