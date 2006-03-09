@@ -14,8 +14,14 @@ function cvx_setpath( arg )
 % Create the global cvx data structure
 global cvx___
 if isempty( cvx___ ),
+    ver = version;
+    temp = find( ver == '.' );
+    if length( temp ) > 1,
+        ver( temp( 2 ) : end ) = [];
+    end
+    ver = eval( ver, 'NaN' );
     pstr   = struct( 'string', '', 'formed', false, 'active', false, 'hold', false );
-    cvx___ = struct( 'path', pstr, 'problems', [], 'stack', {{}}, 'id', 0, 'has_mex', false, 'pause', false, 'quiet', false );
+    cvx___ = struct( 'path', pstr, 'problems', [], 'stack', {{}}, 'id', 0, 'has_mex', false, 'pause', false, 'quiet', false, 'mversion', ver );
 end
 
 % Set the hold flag
@@ -39,7 +45,7 @@ if ~cvx___.path.formed,
     end
     s( max( strfind( s, 'cvx_begin' ) ) : end ) = [];
     subs = { 'lib', 'functions', 'sets', 'structures', 'sedumi' };
-    if str2num(version('-release')) > 13,
+    if cvx___.mversion >= 7,
         subs{end+1} = 'keywords';
     end
     npath = '';

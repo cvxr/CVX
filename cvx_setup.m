@@ -12,15 +12,15 @@ dd = cd;
 global cvx___
 cvx___ = [];
 
-ver = version( '-release' );
+ver = version;
 temp = find( ver == '.' );
-if ~isempty( temp ), 
-    ver( min( temp ) : end ) = []; 
+if length( temp ) > 1,
+    ver( temp( 2 ) : end ) = [];
 end
 ver = eval( ver, 'NaN' );
-if isnan( ver ),
-    error( sprintf( 'cvx has not yet been configured to handle your MATLAB version (%s).\nPlease contact the authors to inquire about future support plans.', version( '-release' ) ) ) 
-elseif ver < 14,
+if isnan( ver ) | ver < 6.1,
+    error( sprintf( 'cvx has not yet been configured to handle your MATLAB version (%s).\nPlease contact the authors to inquire about future support plans.', version ) ) 
+elseif ver < 7,
     mpath = dbstack;
     mpath = mpath(1);
     mpath = mpath.name;
@@ -42,12 +42,12 @@ mpath( temp(end) : end ) = [];
 rmpaths = { 'lib', 'functions', 'sets', 'structures', 'sedumi', 'doc' };
 addpaths = { mpath };
 needpaths = {};
-if ver < 14,
+if ver < 7,
     addpaths{end+1} = [ mpath, fs, 'keywords' ];
 else,
     rmpaths{end+1} = 'keywords';
 end
-if ver < 13,
+if ver < 6.5,
     addpaths{end+1} = [ mpath, fs, 'matlab6' ];
 else,
     rmpaths{end+1} = 'matlab6';
@@ -220,7 +220,7 @@ if needupd,
     disp( 'In order to use cvx regularly, you must save this new path definition.' );
     if ispc,
         disp( 'To accomplish this, type the command' );
-        if ver < 14,
+        if ver < 7,
             disp( '    pathtool' );
             disp( 'at the MATLAB prompt, which brings up the ''Set Path'' dialog. Press' );
             disp( 'the ''Save'' button, and then the ''Close'' button.' );
