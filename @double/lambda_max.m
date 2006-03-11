@@ -21,8 +21,7 @@ elseif any( any( x ~= x' ) ),
     
 else,
     
-    z = eig( x );
-    z = z( 1 );
+    z = max( eig( x ) );
     
 end
 
