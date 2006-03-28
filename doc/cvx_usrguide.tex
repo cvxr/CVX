@@ -1,5 +1,6 @@
 \documentclass[12pt]{article}
-\usepackage{fullpage,islsymb,graphicx}
+\usepackage{fullpage,islsymb,graphicx,makeidx}
+\makeindex
 
 \DefineVerbatimEnvironment{code2}{Verbatim}{tabsize=0,xleftmargin=0.5in,numbers=left,firstnumber=last,commandchars=\!\{\}}
 
@@ -22,20 +23,42 @@
 \section{Introduction}
 
 \subsection{What is \cvx?}
+\index{cvx@\texttt{cvx}}
+\index{disciplined convex programming}
+\index{disciplined geometric programming}
+\index{DCP}
+\index{Linear programs|see{LP}}
+\index{LP}
+\index{Quadratic programs|see{QP}}
+\index{QP}
+\index{Second-order cone programs|see{SOCP}}
+\index{SOCP}
+\index{Geometric programs|see{GP}}
+\index{GP}
+\index{Semidefinite programs|see{SDP}}
+\index{SDP}
+\index{MATLAB}
 
-\cvx is a modeling system that supports \emph{disciplined convex 
-programming}. Disciplined convex programs (DCPs) are convex optimization
-problems that adhere to a limited set of construction rules that enable
-them to be analyzed and solved efficiently. The set of DCPs
-includes most well-known classes of convex programs, including
-linear programs (LPs), (convex) quadratic programs (QPs), second-order
-cone programs (SOCPs), and semidefinite programs (SDPs).
-In fact, almost any convex optimization problem
-that one is likely to encounter in practice, even 
-nondifferentiable problems, can be represented relatively
-easily as a DCP. For background on convex optimization, see the book 
-\emph{Convex Optimization} \cite{BV:04}; for more discussion 
-of disciplined convex programming, see \cite{GBY,Gra:04}.
+\cvx is a modeling system for \emph{disciplined convex programming}. 
+Disciplined convex programs, or DCPs, are convex optimization problems 
+that adhere to a limited set of construction rules that 
+enable them to be analyzed and solved efficiently. The set of 
+DCPs includes most well-known classes of convex programs, including
+linear programs (LPs), quadratic programs (QPs), second-order
+cone programs (SOCPs), and semidefinite programs (SDPs). 
+\cvx can solve problems from all of these problem classes and others as well.
+For background on convex optimization,
+see the book \emph{Convex Optimization} \cite{BV:04}.
+
+\cvx also provides special modes to simplify the construction of problems
+from two specific problem classes. In \emph{SDP mode}, \cvx applies
+a matrix interpretation to the inequality operator, so that
+\emph{linear matrix inequalities} (LMIs) and SDPs may be expressed
+in a more natural form. In \emph{GP mode}, \cvx accepts all of the
+special functions and combination rules of geometric programming,
+including monomials, posynomials, and generalized posynomials \cite{BKVH:05},
+and transforms such problems into convex form
+so that they can be solved efficiently.
 
 \cvx is implemented in Matlab \cite{MATLAB}, effectively
 turning Matlab into an optimization modeling language.
@@ -52,41 +75,11 @@ be used as a component of a larger system that uses convex
 optimization, such as a branch and bound method,
 or an engineering design framework.
 
-\cvx converts problems into a canonical form that is compatible
-with interior-point algorithms. Problems involving nondifferentiable 
-functions can be automatically transformed into equivalent smooth forms,
-enabling them to be solved without the loss in performance typically
-associated with nondifferentiability.
-A significant amount of problem sparsity and block
-structure is revealed to the underlying solver, which can be
-exploited to improve performance.
-
-\cvx comes with a base library of convex
-and concave functions and convex sets that can be used
-directly in the construction of DCPs. New functions can
-be added in three ways:
-\begin{itemize}
-\item Existing functions 
-can be combined according to the disciplined convex programming 
-composition rules.
-\item A function can be described as the optimal value 
-of an partially specified convex optimization problem, expressed
-in the \cvx modeling language.
-\item A smooth convex or concave function can be described by
-specifying its convexity and monotonicity properties and supplying
-code to compute its value, gradient, and Hessian.
-\end{itemize}
-This last option is not available in this alpha version (see \S\ref{sec:version} below).
-The base library also includes several useful convex sets, such as the
-positive semidefinite matrix cone. In the future, \cvx will also allow
-new sets to be added in two ways:
-\begin{itemize}
-\item The set can be described using the \cvx modeling language in the
-form of a convex feasibility problem.
-\item Code to compute the value, gradient, and Hessian
-of a barrier function for the set may be provided.
-\end{itemize}
-
+\index{YALMIP}
+\index{CVXOPT}
+\index{AMPL}
+\index{GAMS}
+\index{Python}
 \cvx was designed and implemented by Michael Grant, with input
 from Stephen Boyd and Yinyu Ye \cite{GBY}. It
 incorporates ideas from earlier work by 
@@ -104,19 +97,24 @@ We hope to implement a version of \cvx in Python,
 as part of the CVXOPT system \cite{CVXOPT}, in the near future.
 
 \subsection{What is disciplined convex programming?}
+\label{sec:what-is-dcp}
+\index{disciplined convex programming}
+\index{DCP}
 
-\cvx is designed to support \emph{disciplined convex programming},
+The term \emph{disciplined convex programming} refers to
 a methodology for constructing convex optimization problems
-proposed by Michael Grant, Stephen Boyd, and Yinyu Ye \cite{GBY}.
-This name was chosen to indicate that the treatment of convex
+proposed by Michael Grant, Stephen Boyd, and Yinyu Ye \cite{GBY,Gra:04}.
+The name was chosen to communicate the treatment of convex
 programming as a distinct discipline, one in which convexity is an
-advance requirement. In other words, \cvx is designed to support the formulation and
+advance requirement. In other words, it is designed to support the formulation and
 construction of optimization problems that the user 
 intends \emph{from the outset} to be convex.
-To that end, \cvx imposes a limited
-set of conventions or rules, which we call the \emph{DCP ruleset},
-that enable it to verify convexity
-and convert problems to solvable form reliably and efficiently.
+
+\index{DCP ruleset}
+To that end, disciplined convex programming imposes a limited
+set of conventions or rules, which we call the \emph{DCP ruleset}.
+Problems which adhere to the ruleset can be rapidly and automatically
+verified as convex and converted to solvable form.
 Problems that violate the ruleset are rejected, even when
 convexity of the problem is obvious to the user.
 That is not to say that such problems cannot be solved; they
@@ -124,7 +122,9 @@ just need to be rewritten in a conforming manner.
 
 A detailed description of the DCP ruleset is given in \S\ref{sec:rules},
 and it is important for anyone who wishes to actively use
-\cvx to understand it. The ruleset is simple 
+\cvx to understand it.
+\index{convex analysis}
+The ruleset is simple 
 to learn, drawn from basic principles of convex analysis,
 and resembles the practices of those who study and use
 convex optimization. In addition, the ruleset actually \emph{enables}
@@ -137,15 +137,22 @@ their natural mathematical forms.
 
 \subsection{About this version}
 \label{sec:version}
+\index{version information}
 
-In this first version of \cvx,
+\index{SeDuMi}
+\index{MOSEK}
+\index{LP}
+\index{SDP}
+\index{SOCP}
+In this version of \cvx,
 SeDuMi \cite{Stu:99} is the only core solver supported.
 SeDuMi is an interior-point solver written in Matlab for 
-LPs, SOCPs, and SDPs.
+LPs, SOCPs, SDPs, and combinatiuos thereof.
 Future versions of \cvx will support other solvers, such as
-MOSEK \cite{MOSEK}, and a general purpose solver we are developing.
+MOSEK \cite{MOSEK}, CVXOPT \cite{CVXOPT}, 
+and a general purpose solver we are developing.
 
-Because SeDuMi only solves LPs, SOCPs, and SDPs, this
+Because SeDuMi supports only LPs, SOCPs, and SDPs, this
 version of \cvx can only handle functions that can be represented
 using these problem types, and problems that can be reduced to 
 these problem forms. Thus the current version includes such
@@ -155,34 +162,61 @@ quadratic forms, square root,
 and maximum and minimum eigenvalue of a symmetric matrix,
 as well as a few obscure functions such as the 
 sum of the largest $k$ entries of a vector.
+Geometric programs are handled through a novel approximation
+method that is described briefly in Appendix \ref{sec:gp-approx}.
+
 Some useful functions that are \emph{not} supported in
 the current version include
-exponential and log, powers other than 2 and $0.5$,
-entropy, log-sum-exp, and the log-determinant of a matrix.
+exponential and log, powers other than 2 and $0.5$, and
+so forth. Support for such functions will require the use
+of a new solver, which is being planned.
 
-Several other features planned for
-\cvx are \emph{not} supported in this 
-release, including user-defined smooth functions, user-defined sets,
-and geometric programming.
-We hope to extend \cvx to handle these fairly soon.
+\subsection{Feedback}
+\label{sec:feedback}
+\index{feedback}
+\index{bug reports}
 
 Any feedback and criticism you might
-have about this software, particularly at this early stage,
-would be greatly appreciated.
-Please contact Michael Grant (\texttt{mcgrant@stanford.edu}) or
-Stephen Boyd (\texttt{boyd@stanford.edu}) with your comments. If
-you discover a bug, please notify us at the above addresses; and
-if at all possible, please include:
+have about this software, would be greatly appreciated.
+Please contact Michael Grant or Stephen Boyd 
+(\texttt{mcgrant@stanford.edu}, \texttt{boyd@stanford.edu}) with your comments. If
+you discover a bug, please try to include the following in your communication:
 \begin{itemize}
-\item the code and data that caused the error;
+\item the \cvx model and supporting data that caused the error;
 \item a copy of any error messages that it produced;
 \item the version number of Matlab that you are running; and
 \item the name and version of the operating system you are using.
 \end{itemize}
+Doing so will greatly increase our chances of being able to reproduce and fix the problem.
+
+\subsection{What \cvx is \emph{not}}
+
+Our goal in the design of \cvx is to greatly simplify the specification and
+solution of convex optimization problems. One indication of the progress we have made
+towards this goal is the ease with which some users have encountered the limits
+of the software's performance, by creating models that are too large for \cvx to solve.
+
+To some degree, such limits are unavoidable due to a number of factors: the finite
+resources of a typical PC, the modest overhead imposed by the MATLAB environment;
+the general-purpose design of the underlying numerical solver.
+Thus while \cvx should perform
+well for medium scale problems and many structured large-scale problems, it may
+encounter difficulties when scaling to large problem sets.
+
+Despite this advance warning, we would still greatly appreciate if you would send
+us feedback if you do encounter limits like these.
+In some cases, such reports have led to genuine improvements in the
+implementation of \cvx that have
+increased its capacity or performance. In others, we have been able to suggest
+ways to find equivalent formulations to problems that \cvx is able to process
+more efficiently.
 
 \section{A quick start}
 \label{sec:quickstart}
 
+\index{cvx_begin@\texttt{cvx\_begin}}
+\index{cvx_end@\texttt{cvx\_end}}
+\index{examples}
 Once you have installed \cvx (see \S\ref{s-installing}), you can
 start using \cvx by entering a \cvx \emph{specification} into a
 Matlab script or function, or directly from the command prompt.
@@ -241,6 +275,7 @@ document correspond to the line numbers in the file \verb@quickstart.m@.
 
 \subsection{Least-squares}
 \label{sec:leastsquares}
+\index{least squares}
 
 We first consider the most basic convex optimization problem,
 least-squares.
@@ -259,6 +294,11 @@ computed using the backslash operator:
 \begin{code2}[firstnumber=20]
 	x_ls = A \ b;
 \end{code2}
+\index{variables}
+\index{variable@\texttt{variable}}
+\index{minimize@\texttt{minimize}}
+\index{norm@\texttt{norm}}
+\index{objective functions}
 Using \cvx, the same problem can be solved as follows:
 \begin{code2}[firstnumber=23]
 	cvx_begin			!label{code:beg}
@@ -271,11 +311,11 @@ Let us examine this specification line by line:
 \begin{itemize}
 \item Line~\ref{code:beg} creates a placeholder for the
 new \cvx specification, and prepares Matlab to accept 
-variable declarations, constraints, objective function, and so forth. 
+variable declarations, constraints, an objective function, and so forth. 
 \item Line~\ref{code:var} declares \verb@x@
 to be an optimization variable of dimension $n$. \cvx
 requires that all problem variables be declared before they are used in
-objective functions or constraints. 
+an objective function or constraints. 
 \item Line~\ref{code:obj}
 specifies an objective function to be minimized; in this case,
 the Euclidean or $\ell_2$-norm
@@ -330,6 +370,8 @@ reserved for internal use by \cvx itself, and should not be changed.}
 There is not much room for error in specifying a simple least-squares
 problem, but if you make one, you will get an error or warning message.
 For example, if you replace line~\ref{code:obj} with
+\index{maximize@\texttt{maximize}}
+\index{objective functions!non-convex}
 \begin{code}
 	maximize( norm(A*x-b) );
 \end{code}
@@ -344,6 +386,8 @@ Objective function in a maximization must be concave.
 
 \subsection{Bound-constrained least-squares}
 \label{sec:bcls}
+\label{Least squares!Bound-constrained}
+\label{Bound-constrained least squares}
 
 Suppose we wish to add some simple upper and
 lower bounds to the least-squares problem above: \ie, we wish to solve 
@@ -366,7 +410,7 @@ of QP software available.
 Let us provide some numeric values for \verb@l@ and \verb@u@:
 \begin{code2}[firstnumber=47]
 	bnds = randn(n,2);
-	l = min( bnds, [] ,2 );
+	l = min( bnds, [], 2 );
 	u = max( bnds, [], 2 );
 \end{code2}
 Then if you have the Matlab
@@ -377,6 +421,8 @@ to solve the problem as follows:
 \end{code2}
 This actually minimizes the square of the norm, which is the same as
 minimizing the norm itself. In contrast, the \cvx specification is given by
+\index{constraints}
+\index{constraints!bounds}
 \begin{code2}[firstnumber=59]
 	cvx_begin
 	    variable x(n);
@@ -426,15 +472,17 @@ because these norms are part of \cvx's base library of functions,
 For example, to find the value of $x$ that minimizes
 the Chebyshev norm $\|Ax-b\|_\infty$, we can employ the \verb@linprog@
 command from the Matlab Optimization Toolbox:
+\index{linprog@\texttt{linprog}}
 \begin{code2}[firstnumber=97]
 	f    = [ zeros(n,1); 1          ];
 	Ane  = [ +A,         -ones(m,1)  ; ...
 	         -A,         -ones(m,1) ];
 	bne  = [ +b;         -b         ];
 	xt   = linprog(f,Ane,bne);
-	x_ls = xt(1:n,:);
+	x_cheb = xt(1:n,:);
 \end{code2}
 With \cvx, the same problem is specified as follows:
+\index{norm@\texttt{norm}!infinity norm@\texttt{norm($\cdot$,Inf)}}
 \begin{code2}[firstnumber=108]
 	cvx_begin
 	    variable x(n);
@@ -457,9 +505,10 @@ use \verb@linprog@ as follows:
 	Aeq  = [ A,          eye(m),     +eye(m)    ];
 	lb   = [ -Inf(n,1);  zeros(m,1); zeros(m,1) ];
 	xzz  = linprog(f,[],[],Aeq,b,lb,[]);
-	x_ls = xzz(1:n,:);
+	x_l1 = xzz(1:n,:);
 \end{code2}
 The \cvx version is, not surprisingly,
+\index{norm@\texttt{norm}!infinity norm@\texttt{norm($\cdot$,1)}}
 \begin{code2}[firstnumber=149]
 	cvx_begin
 	    variable x(n);
@@ -484,10 +533,10 @@ This is indeed a norm, albeit a fairly esoteric one.
 when $k=m$, the dimension of $Ax-b$, it reduces to the $\ell_1$ norm.)
 The problem of minimizing $\| Ax-b\|_{\mathrm{lgst},k}$, over $x$,
 can be cast as an LP, but the transformation is by no means obvious
-so will will omit it here.
+so we will omit it here.
 But this norm is provided in the base \cvx library, and has been
 called \verb@norm_largest@, so to specify and solve
-the problem using \cvx is easy; \eg,
+the problem using \cvx is easy:
 \begin{code2}[firstnumber=179]
 	k = 5;
 	cvx_begin
@@ -511,10 +560,10 @@ vector \verb@x@ as determined by \cvx.
 
 The list of supported nonlinear functions in \cvx 
 goes beyond the \verb@norm@ command.
-For example, consider the Huber penalty function minimization
+For example, consider the Huber penalty function minimization problem
 \begin{equation}
 	\begin{array}{ll}
-		\text{minimize} & \sum_{i=1}^m \phi( (Ax-b)_i )
+		\text{minimize} & \sum_{i=1}^m \phi( (Ax-b)_i ),
 	\end{array} \qquad
 	\phi(z) =\Cases{ |z|^2 & |z|\leq 1 \\ 2|z|-1 & |z|\geq 1 }
 \end{equation}
@@ -531,11 +580,13 @@ function library. So solving the above problem in \cvx is simple:
 
 \subsection{Other constraints}
 \label{sec:constraints}
+\index{constraints}
 
 We hope that, by now, it is not surprising that adding the simple bounds 
 $l\preceq x\preceq u$ to the problems in \S\ref{sec:othernorms} above
 is as simple as inserting
 lines
+\index{constraints!bounds}
 \begin{code}
 	x >= l;
 	x <= u;
@@ -552,6 +603,9 @@ as follows,
 \end{code2}
 Now let us add an equality constraint and a nonlinear inequality
 constraint to the original least-squares problem:
+\index{norm@\texttt{norm}!infinity norm@\texttt{norm($\cdot$,Inf)}}
+\index{constraints!inequality}
+\index{constraints!equality}
 \begin{code2}[firstnumber=232]
 	cvx_begin
 	    variable x(n);
@@ -591,6 +645,7 @@ able to verify that problems are convex. To that end,
 that govern how constraint and objective expressions are constructed.
 For example, \cvx requires that the left- and right- hand sides of an
 equality constraint be affine. So a constraint such as
+\index{constraints!non-convex}
 \begin{code}
 	norm(x,Inf) == 1;
 \end{code}
@@ -619,11 +674,12 @@ say that the rules are relatively intuitive and are unlikely
 to significantly hinder the construction of problems in practice.
 
 \subsection{An optimal trade-off curve}
+\index{tradeoff curves}
 
 For our final example in this section, let us show how traditional
 Matlab code and \cvx specifications can be mixed to form and solve
 multiple optimization problems. The following code solves the problem
-solves the problem of minimizing $\|Ax-b\|_2 +\gamma \|x\|_1$,
+of minimizing $\|Ax-b\|_2 +\gamma \|x\|_1$,
 for a logarithmically spaced vector
 of (positive) values of $\gamma$. This gives us points on the optimal
 tradeoff curve between $\|Ax-b\|_2$ and $\|x\|_1$. An example of this
@@ -676,6 +732,7 @@ is positive or zero. If \verb@gamma(k)@ were negative, then
 this expression becomes the sum of a convex term and a concave
 term, which causes \cvx
 to generate the following error:
+\index{constraints!non-convex}
 \begin{code}
 ??? Error using ==> cvx.plus
 Disciplined convex programming error:
@@ -685,11 +742,14 @@ Addition of convex and concave terms is forbidden.
 \section{The basics}
 
 \subsection{Data types for variables}
+\index{variables!declaring}
+\index{variable@\texttt{variable}}
 
 As mentioned above, all variables must be declared using the \verb@variable@
 command (or the \verb@variables@ command; see below) before they can be
-used in constraints or objective functions. 
+used in constraints or an objective function. 
 
+\index{variables!structure}
 Variables can be real or complex; and scalar, vector,
 matrix, or $n$-dimensional arrays. In addition, matrices can have \emph{structure}
 as well, such as symmetry or bandedness. The structure of a variable
@@ -703,9 +763,9 @@ For example, the code segment
 	variable Z(100,100) hermitian toeplitz;
 \end{code}
 (inside a \cvx specification) declares that \verb@w@ is a complex
-$50$-element vector, \verb@X@ is
-a real $20 \times 10$ matrix optimization variable, \verb@Y@ is
-a real $50 \times 50$ symmetric matrix optimization variable,
+$50$-element vector variable, \verb@X@ is
+a real $20 \times 10$ matrix variable, \verb@Y@ is
+a real $50 \times 50$ symmetric matrix variable,
 and \verb@Z@ is a complex $100 \times 100$ Hermitian matrix variable.
 It is actually possible for the structure keywords to be applied to
 $n$-dimensional arrays as well:
@@ -732,6 +792,7 @@ the antidiagonal; a \verb@hankel@ matrix is not (necessarily).
 When multiple keywords are supplied, the resulting matrix structure is
 determined by intersection; if the keywords conflict, then an error will result.
 
+\index{variables@\texttt{variables}}
 A \verb@variable@ statement can be used to declare only a single
 variable, which can be a bit inconvenient if you have a lot of variables
 to declare. For this reason, the statement \verb@variables@ statement
@@ -745,6 +806,9 @@ declare complex or structured arrays (\eg, \verb@symmetric@,
 one at a time, using the singular \verb@variable@ command.
 
 \subsection{Objective functions}
+\index{objective functions}
+\index{minimize@\texttt{minimize}}
+\index{maximize@\texttt{maximize}}
 
 Declaring an objective function requires
 the use of the \verb@minimize@ or \verb@maximize@ function, as
@@ -755,6 +819,7 @@ given \cvx specification, and the objective function must have a
 scalar value. (For the only exception to this rule, see the 
 section on defining new functions in \S\ref{s-new-fcts}).
 
+\index{cvx_optval@\texttt{cvx\_optval}}
 If no objective function is specified, the problem is interpreted
 as a feasibility problem, which is the same as performing a minimization
 with the objective function set to zero. In this case, \verb@cvx_optval@
@@ -762,6 +827,10 @@ is either \verb@0@, if a feasible point is found, or
 \verb@+Inf@, if the constraints are not feasible.
 
 \subsection{Constraints}
+\index{constraints}
+\index{constraints!equality}
+\index{constraints!inequality}
+\index{constraints!bounds}
 
 The following constraint types are supported in \cvx:
 \begin{itemize}
@@ -794,13 +863,14 @@ Note also the important distinction between \verb@=@, which is an
 assignment, and \verb@==@, which imposes an equality constraint
 (inside a \cvx specification); more about this in \S\ref{sec:eqass}.
 Also note that the non-equality operator \verb@~=@ may \emph{not}
-be used in a constraint, because it is rarely convex.
+be used in a constraint, because such a constraint is rarely convex.
 Inequalities cannot be used if either side is complex.
 
 \cvx also supports a \emph{set membership} constraint; 
 see \S\ref{sec:sets}.
 
 \subsection{Functions}
+\index{functions}
 
 The base \cvx function library
 includes a variety of convex, concave, and affine functions
@@ -845,6 +915,7 @@ value, given (numerical) arguments.
 
 \subsection{Sets}
 \label{sec:sets}
+\index{sets}
 
 \cvx supports the definition and use of convex sets.
 The base library includes the cone of 
@@ -872,6 +943,9 @@ an $n \times n$ symmetric positive semidefinite matrix.
 This is, of course, equivalent to saying that \verb@X@ must be
 symmetric positive semidefinite.
 
+\index{linear matrix inequalities}
+\index{semidefinite@\texttt{semidefinite}}
+\index{SDP}
 As an example, consider the constraint
 that a (matrix) variable \verb@X@ is a correlation
 matrix, \ie, it is symmetric, has unit diagonal elements, and 
@@ -888,13 +962,13 @@ be positive semidefinite.
 read as `\verb@X@ is positive semidefinite'.)
 The lefthand side of the third line
 is a vector containing the diagonal elements of \verb@X@, whose 
-elements we require to be equal to one. Incidentally, Matlab
+elements we require to be equal to one. Incidentally, \cvx
 allows us to simplify the third line to
 \begin{code}
 	diag(X) == 1;
 \end{code}
-because Matlab accepts comparisons between arrays and scalars
-by comparing each element of the array independently with the scalar.
+because \cvx follows the MATLAB convention of handling array/scalar
+comparisons by comparing each element of the array independently with the scalar.
 
 Sets can be combined in affine expressions, and we can constrain
 an affine expression to be in a convex set.
@@ -907,6 +981,9 @@ and \verb@A@ and \verb@B@ are $n \times n$  constant matrices.
 This constraint requires that $AXA^T-X=BYB^T$, 
 for some $Y \in \symm^n_+$.
 
+\index{second-order cones}
+\index{Lorentz cones|see{second-order cones}}
+\index{SOCP}
 \cvx also supports sets whose elements are ordered
 lists of quantities.  As an example, consider the second-order or 
 Lorentz cone,
@@ -942,127 +1019,9 @@ So the constraint in this
 specification requires that the pair \verb@A*x-b@, \verb@y@, together, 
 lie in the appropriately-sized Lorentz cone.
 
-\cvx also provides a function \verb@in(x,S)@ as an alternative
-to the set membership constraint syntax \verb@x==S()@.
-For example, the lines
-\begin{code}
-	X == semidefinte(n);
-	{ x, y } == lorentz( n );
-\end{code}
-can be rewritten
-\begin{code}
-	in( X, semidefinite(n) );
-	in( { x, y }, lorentz( n ) );
-\end{code}
-
-\subsection{Semidefinite programming mode}
-
-Those who are familiar with the practice of \emph{semidefinite
-programming} (SDP) know that the constraints that utilize
-the set \verb@semidefinite(n)@ above are, in practice, typically
-expressed using \emph{linear matrix inequality} (LMI) notation. 
-For example, given $X=X^T\in\Rnn$, the
-constraint $X\succeq 0$ denotes that $X\in\symm^n_+$; that is, that
-$X$ is positive semidefinite.
-
-\cvx provides a special \emph{SDP mode} which allows this
-LMI convention to be employed inside \cvx models
-using MATLAB's standard inequality operators \verb@>=@, \verb@<=@, \etc.
-In order to use it, one must simply begin a model with the statement
-\verb@cvx_begin sdp@ instead of simply \verb@cvx_begin@. When SDP mode 
-is engaged, \cvx interprets certain inequality constraints in a
-different manner. To be specific:
-\begin{itemize}
-\item Equality constraints are interpreted the same (\ie, elementwise).
-\item Inequality constraints involving vectors and scalars are interpreted
-      the same; \ie, elementwise.
-\item Inequality constraints involving non-square matrices are \emph{disallowed};
-      attempting to use them causes an error.
-\item Inequality constraints involving real, square matrices are interpreted as follows:
-	\begin{center}
-	\begin{tabular}{ccccc}
-	\verb@X >= Y@ & and & \verb@X > Y@ & become & \verb@X - Y == semidefinite(n)@ \\
-	\verb@X <= Y@ & and & \verb@X > Y@  & become & \verb@Y - X == semidefinite(n)@
-	\end{tabular}
-	\end{center}
-      If either side is complex, then the inequalities are
-      interpreted as follows:
-	\begin{center}
-	\begin{tabular}{ccccc}
-	\verb@X >= Y@ & and & \verb@X > Y@ & become & \verb@X - Y == hermitian_semidefinite(n)@ \\
-	\verb@X <= Y@ & and & \verb@X > Y@  & become & \verb@Y - X == hermitian_semidefinite(n)@
-	\end{tabular}
-	\end{center}
-      In the above, \verb@n=max(size(X,1),size(Y,1))@.
-\item There is one additional restriction: both
-      \verb@X@ and \verb@Y@ must be the same size, or one must
-      be the scalar zero. For example, if \verb@X@ and \verb@Y@ are
-      matrices of size \verb@n@,
-      \begin{center}
-      \begin{tabular}{cccc}
-      	\verb@X >= 1@ & or & \verb@1 >= Y@ & \emph{illegal} \\
-      	\verb@X >= ones(n,n)@ & or & \verb@ones(n,n) >= Y@ & \emph{legal} \\
-      	\verb@X >= 0@ & or & \verb@0 >= Y@ & \emph{legal} \\
-      \end{tabular}
-      \end{center}
-      In effect, \cvx enforces a stricter interpretation of the inequality
-      operators for LMI constraints.
-\item Note that LMI constraints enforce symmetry (real or Hermitian, as
-      appropriate) on their inputs. Unlike SDPSOL \cite{SDPSOL}, \cvx 
-      does not extract the symmetric part for you: you must take
-      care to insure symmetry yourself. Since \cvx supports the declaration
-      of symmetric matrices, this is reasonably straightforward.
-\item A dual variable, if supplied, will be applied to the converted
-      equality constraint. It will be given a 
-      positive semidefinite value if an optimal point is found.
-\end{itemize}
-So, for example, the \cvx model found in the file
-\verb@examples/closest_toeplitz_sdp.m@,
-\begin{code}
-cvx_begin
-    variable Z(n,n) hermitian toeplitz
-    dual variable Q
-    minimize( norm( Z - P, 'fro' ) )
-    Z == hermitian_semidefinite( n ) : Q;
-cvx_end
-\end{code}
-can also be written as follows:
-\begin{code}
-cvx_begin sdp
-    variable Z(n,n) hermitian toeplitz
-    dual variable Q
-    minimize( norm( Z - P, 'fro' ) )
-    Z >= 0 : Q;
-cvx_end
-\end{code}
-Many other examples in the \cvx example library utilize semidefinite
-constraints; and all of them use SDP mode. To find them, simply 
-search for the text \verb@cvx_begin sdp@ in the \verb@examples/@
-subdirectory tree using your favorite file search tool. One
-of these examples is reproduced in \S\ref{sec:indexeddual}.
-
-Since semidefinite programming is popular, some
-may wonder why SDP mode is not the default behavior.
-The reason for this is that we place a
-strong emphasis on maintaining consistency between MATLAB's native
-behavior and that of \cvx; and 
-the use of the \verb@>=@,\verb@<=@,\verb@>@,\verb@<@
-operators to create LMIs
-represents a deviation from that ideal.
-For example, inside a \cvx model in SDP mode,
-the expression \verb@X >= 0@ above constrains \verb@X@
-to be positive semidefinite. But after the model has been solved
-and \verb@X@ has been replaced with a numeric value,
-the expression \verb@X >= 0@ will test for the \emph{elementwise}
-nonnegativity of \verb@X@.
-
-Therefore, we ask that
-users explicity request SDP mode when they intend to use it,
-so that they acknowledge and accept this inconsistency in advance.
-We hope that you will agree that this represents only a slight
-inconvenience even to those who use it most frequently.
-
 \subsection{Dual variables}
+\index{dual variables}
+
 When a disciplined convex program is solved, the associated 
 \emph{dual problem} is also solved.
 (In this context, the original problem is called the \emph{primal
@@ -1081,17 +1040,17 @@ Consider, for example, the LP
 \mbox{subject to} & Ax \preceq b
 \end{array}
 \]
-with variable $x$, and $m$ linear inequality constraints.
+with variable $x\in\Rn$, and $m$ inequality constraints.
 The dual of this problem is
 \[
 \begin{array}{llcll}
-\mbox{maximize} & b^T \lambda \\
-\mbox{subject to} & A^T \lambda = c \\ & \lambda \succeq 0
+\mbox{maximize} & b^T y \\
+\mbox{subject to} & A^T y = c \\ & y \succeq 0
 \end{array}
 \]
-The dual variable $\lambda$ is associated with the inequality
-constraint $Ax\preceq b$. To represent this association in \cvx,
-we use the following syntax:
+The dual variable $y$ is associated with the inequality
+constraint $Ax\preceq b$. To represent the primal problem and 
+this dual variable in \cvx, we use the following syntax:
 \begin{code}
 	n = size(A,2);
 	cvx_begin
@@ -1106,35 +1065,47 @@ The line
 \begin{code}
 	dual variable y
 \end{code}
-tells \cvx that \verb@y@ will
-represent a dual variable; and the line 
+tells \cvx that \verb@y@ will represent the dual variable, and the line
 \begin{code}
 	y : A * x <= b;
 \end{code}
-assigns \verb@y@ to the given inequality constraint. Notice how the
+associates it with the inequality constraint. Notice how the
 colon \verb@:@ operator is being used in a different manner than 
 Matlab usually intends, which is to construct numeric sequences
 like \verb@1:10@. This new behavior is in effect only
 when a dual variable is present, so there should be no confusion 
-or conflict.
-The dimensions of dual variables are not specified 
-when they are declared; they are
-automatically determined from the constraints to which they 
-are assigned.
-For example, if $m=20$, \verb@y@ at the Matlab command prompt 
-immediately before \verb@cvx_end@ yields
+or conflict. No dimensions are given
+for \verb@y@, because they are automatically determined from the constraint
+to which it is assigned. For example, if $m=20$, typing \verb@y@ at
+the Matlab command prompt immediately before \verb@cvx_end@ yields
 \begin{code}
 y =
     cvx dual variable (20x1 vector)
 \end{code}
+It is not necessary to place the dual variable on the left side of the
+constraint; for example, the line above can also be written in this way:
+\begin{code}
+	A * x <= b : y;
+\end{code}
+In addition, dual variables for inequality constraints
+will always be nonnegative, which means that the sense of the inequality 
+can be reversed without changing the dual variable's value; \ie,
+\begin{code}
+	b >= A * x : y;
+\end{code}
+yields an identical result. For \emph{equality} constraints, on the other
+hand, swapping the left- and right- hand sides of an equality constraint
+will \emph{negate} the optimal value of the dual variable.
+
 After the \verb@cvx_end@ statement is processed, and assuming the
 optimization was sucessful, \cvx assigns numerical values to
-\verb@x@ and \verb@y@ (optimal primal and dual variable values,
-respectively).
-
-If $x$ and $y$ are primal and dual optimal variables for this LP,
-they must satisfy $y_i(b-Ax)_i=0$, the so-called
-\emph{complementary slackness conditions}.
+\verb@x@ and \verb@y@---the optimal primal and dual variable values,
+respectively. Optimal primal and dual variables for this LP must
+satisfy the \emph{complementary slackness conditions}
+\begin{equation}
+	y^T(b-Ax) = 0 \quad\Longrightarrow\quad
+	y_i ( b - A x )_i = 0, \quad i=1,\dots,m
+\end{equation}
 You can check this in Matlab with the line
 \begin{code}
 	y .* (b-A*x)
@@ -1146,20 +1117,39 @@ This line must be executed \emph{after} the \verb@cvx_end@ command
 generate an error if it is executed inside the \cvx specification,
 where \verb@y@ and \verb@b-A*x@ are still just abstract expressions.
 
+If the optimization is \emph{not} successful, because either the problem
+is infeasible or unbounded, then \verb@x@ and \verb@y@ will have different
+values. In the unbounded case, \verb@x@ will contain an \emph{unbounded direction};
+\ie, a point $x$ satisfying
+\begin{equation}
+	c^T x = -1, \quad A x \leq 0,
+\end{equation}
+and \verb@y@ will be filled with \verb@NaN@ values, reflecting the fact
+that the dual problem is infeasible. In the infeasible case, it will be
+\verb@x@ that is filled with \verb@NaN@ values, while \verb@y@ will 
+contain an \emph{unbounded dual direction}; \ie, a point $y$ satisfying
+\begin{equation}
+	b^T y = 1, \quad A^T y = 0, \quad y \geq 0
+\end{equation}
+Of course, the precise interpretation of primal and dual points and/or
+directions depends on the structure of the problem. See references
+such as \cite{BV:04} for more on the interpretation of dual information.
+
 The \cvx language also supports the declaration of \emph{indexed} dual
 variables. These prove useful when the \emph{number} of constraints in
 a model (and, therefore, the number of dual variables) depends upon the
-parameters themselves. For more information on index dual variables,
+parameters themselves. For more information on indexed dual variables,
 see \S\ref{sec:indexeddual}.
 
 \section{The DCP ruleset}
 \label{sec:rules}
+\index{DCP ruleset}
 
 As mentioned previously, \cvx enforces the conventions dictated by the
 disciplined convex programming ruleset, or \emph{DCP ruleset} for short.
 \cvx will issue an error message whenever it encounters a violation of any
 one of the rules; hence it is important to understand
-them before beginning to build models. Thankfully, the rules are drawn
+them before beginning to build models. The rules are drawn
 from basic principles of convex analysis, and are easy to learn---especially
 if you already construct convex programs regularly.
 
@@ -1181,7 +1171,7 @@ using the entropy function,
 \end{code}
 which is in the base \cvx library, and thus recognized as 
 concave by \cvx.
-(The first version of \cvx, however, does not yet support the 
+(This version of \cvx, however, does not yet support the 
 entropy function.)
 If a convex (or concave) function is not recognized as
 convex or concave by \cvx, it can be added as a new atom;
@@ -1197,17 +1187,50 @@ for the considerable benefits they allow: automatic convexity
 verification, automatic
 conversion to solvable form, and full support for nonsmooth functions. 
 
-\subsection{Top-level rules}
+The rules for constructing geometric programs are not covered in this
+section. To simplify the discussion, those rules will be introduced
+later in \S\ref{sec:geometric}. The remainder
+of this section applies specifically to traditional
+convex programs with no geometric variables, objectives, or constraints.
 
-\cvx currently allows three different types of disciplined convex programs:
+\subsection{A taxonomy of curvature}
+\label{sec:taxonomy}
+
+In disciplined convex programming, a numeric expression is classified
+primarily by its \emph{curvature}. Four
+categories of curvature have been identified:
+\emph{constant}, \emph{affine}, \emph{convex}, and \emph{concave}.
+For functions $f:\Rn\rightarrow\R$ defined on all $\Rn$,
+the categories have the following interpretations:
+\begin{equation*}
+\begin{array}{lc@{\,}lc}
+\text{constant:}    & f(\alpha x + (1-\alpha)y) & = f(x) & \forall x,y\in\Rn,~\alpha\in[0,1]\\
+\text{affine:}      & \vdots & =    \alpha f(x) + (1-\alpha) f(y) &  \vdots \\
+\text{convex:}      & & \leq \alpha f(x) + (1-\alpha) f(y) \\
+\text{concave:}     \quad & & \leq \alpha f(x) + (1-\alpha) f(y) \\
+\end{array}
+\end{equation*}
+Of course, there are significant
+overlap in these categories. For example, constant expressions are also affine,
+and (real) affine expressions are both convex and concave.
+
+Convex and concave expressions are real by definition. Complex constant
+and affine expressions can be constructed, but their usage is more limited;
+for example, they cannot appear as the left- or right-hand side of an equality
+constraint.
+
+\subsection{Top-level rules}
+\label{sec:toplevel}
+
+\cvx supports three different types of disciplined convex programs:
 \begin{itemize}
 \item A \emph{minimization problem}, consisting of a convex objective function
-and zero or more convex constraints.
+and zero or more constraints.
 \item A \emph{maximization problem}, consisting of a concave objective function
-and zero or more concave constraints.
-\item A \emph{feasibility problem}, consisting of one or more convex constraints.
+and zero or more constraints.
+\item A \emph{feasibility problem}, consisting of one or more constraints.
 \end{itemize}
-Convexity is enforced for each constraint \emph{individually}, so it is not
+The validity of each constraint is determined \emph{individually}, so it is not
 sufficient for the intersection of the constraints to be convex. For example, the set
 \begin{equation*}
 	\Condset{ x\in \R }{ x^2 \geq 1, ~ x \geq 0 }
@@ -1219,7 +1242,7 @@ includes a nonconvex constraint $x^2 \geq 1$.
 
 Three types of constraints may be specified in disciplined convex programs:
 \begin{itemize}
-\item An \emph{equality constraint} \verb@==@ where both sides are affine expressions.
+\item An \emph{equality constraint} \verb@==@ where both sides are affine.
 \item A \emph{less-than inequality constraint} \verb@<=@, \verb@<@ 
 where the left side is convex and the right side is concave.
 \item A \emph{greater-than inequality constraint} \verb@>=@, \verb@>@ 
@@ -1229,20 +1252,27 @@ Deliberately omitted from this list are \emph{non}-equality constraints; \ie,
 constraints using the \verb@~=@ ($\neq$) operator. This is because, in general,
 such constraints are not convex.
 
+One or both sides of an equality constraint may be complex; inequality constraints,
+on the other hand, must be real. A complex equality
+constraint is equivalent to two real equality constraints, one for the real parts
+and one for the imaginary parts. A word of caution: an equality constraint with
+a real side and a complex side has the effect of constraining the imaginary
+part of the complex side to be zero.
+
 As discussed in \S\ref{sec:sets} above, \cvx enforces set 
 membership constraints (\eg, $x\in S$) using
 equality constraints. 
 The rule that both sides of an equality constraint
-must be affine applies to set membership constraints as well. 
+must be affine  applies to set membership constraints as well. 
 In fact, the returned value of set atoms like 
 \verb@semidefinite()@ and \verb@lorentz()@ is affine,
 so it is sufficient to simply verify the remaining portion
 of the set membership constraint. For composite values like
-\verb@{ x, y }@, each element must be affine.
+\verb@{ x, y }@, each element must be affine .
 
-In this alpha version, 
+In this version, 
 strict inequalities \verb@<@, \verb@>@ are interpreted
-identically to non-strict inequalities \verb@>=@, \verb@<=@. 
+identically to nonstrict inequalities \verb@>=@, \verb@<=@. 
 Eventually \cvx will flag strict inequalities so that they 
 can be verified after the optimization is carried out.
 
@@ -1251,89 +1281,86 @@ can be verified after the optimization is carried out.
 
 So far, the rules as stated are not particularly restrictive, 
 in that all convex programs (disciplined or otherwise) 
-must adhere to them.
+typically adhere to them.
 What distinguishes disciplined convex programming from more general
 convex programming are the rules governing
 the construction of the expressions used in objective functions and
 constraints.
 
-In disciplined convex programming, an expression is categorized by
-its \emph{curvature}, which is either 
-\emph{constant}, \emph{affine}, \emph{convex}, or \emph{concave}.
-Disciplined convex programming determines curvature by recursively
-applying the following rules:
+Disciplined convex programming determines the curvature of numeric
+expressions by recursively applying the following rules.
+While this list may seem long, it is for the most part an enumeration of basic
+rules of convex analysis for combining convex, concave, and affine forms: sums,
+multiplication by scalars, and so forth.
 \begin{itemize}
-\item A valid constant is a MATLAB expression that evaluates
-to a finite numeric value.
+\item A valid constant expression 
+is any well-formed MATLAB expression that 
+evaluates to a finite numeric value.
 \item A valid affine expression is
 \begin{itemize}
-\item a constant expression;
-\item a declared variable;
-\item the sum of two or more affine expressions;
-\item the difference between two affine expressions; or
+\item a valid constant expression;
+\item a declared (non-geometric) variable;
+\item a valid call to a function in the atom library with an affine result;
+\item the sums or difference of affine expressions;
 \item the product of an affine expression and a constant.
 \end{itemize}
 \item A valid convex expression is
 \begin{itemize}
-\item a constant or affine expression;
-\item a valid call to a convex function in the atom library;
+\item a valid constant, affine, or log-convex expression;
+\item a valid call to a function in the atom library with a convex result;
 \item a convex scalar quadratic form (\S\ref{sec:quadforms});
 \item the sum of two or more convex expressions;
 \item the difference between a convex expression and a concave expression;
 \item the product of a convex expression and a nonnegative constant;
-\item the product of a concave expression and a nonpositive constant; or
-\item the negation of a concave expression.
+\item the product of a concave expression and a nonpositive constant;
+\item the negation of a concave expression;
 \end{itemize}
 \item A valid concave expression is
 \begin{itemize}
-\item a constant or affine expression;
-\item a valid call to a concave function in the atom library;
+\item a valid constant or affine expression;
+\item a valid call to a function in the atom library with a concave result;
 \item a concave scalar quadratic form (\S\ref{sec:quadforms});
 \item the sum of two or more concave expressions;
 \item the difference between a concave expression and a convex expression;
 \item the product of a concave expression and a nonnegative constant; 
-\item the product of a convex expression and a nonpositive constant; or
+\item the product of a convex expression and a nonpositive constant;
 \item the negation of a convex expression.
 \end{itemize}
 \end{itemize}
-%In all of the above rules, it is assumed that the expressions are
-%well-posed, in both a mathematical sense and according to MATLAB's
-%own syntax rules. 
-If an expression cannot be categorized by this ruleset, then it is 
-rejected by \cvx (even if the expression is, in fact, convex).
+If an expression cannot be categorized by this ruleset (or their
+geometric counterparts in \S\ref{sec:gp-expressions}), then it is 
+rejected by \cvx.
 For matrix and array expressions, these rules
 are applied on an elementwise basis.
-We also note that the set of rules listed above is redundant;
+We note that the set of rules listed above is redundant;
 there are much smaller, equivalent sets of rules.
 
-%While this list may seem long, it is for the most part an enumeration of basic
-%rules of convex analysis for combining convex, concave, and affine forms: sums,
-%multiplication by scalars, and so forth. 
-These expression rules forbid \emph{products}
-between nonconstant expressions, 
-with the exception of scalar quadratic forms 
-(see \S\ref{sec:quadforms} below).
-We call this the \emph{no-product rule}.
-These expression rules also forbid the use of 
-nonconstant expressions as either the argument or exponent of a 
-power expression (\verb@x ^ y@).
+Of particular note is that these expression rules forbid \emph{products}
+between nonconstant expressions,  with the exception of scalar quadratic forms 
+(see \S\ref{sec:quadforms} below). For example, the expression \verb@x * log(x)@ is convex, but violates
+the no-product rule, so it is rejected by \cvx. We call this the \emph{no-product rule},
+and paying close attention to it will go a long way to insuring that the
+expressions you construct are valid.
 
 \subsection{Functions}
+\label{sec:functions}
 
 Because functions in the \cvx atom library are created in the 
 Matlab language,
 they differ in certain ways from functions described in a 
 formal mathematical sense,
-so let us address these differences here.
+so let us address these differences here.  We continue
+to set aside geometric programming for now, and
+consider only the traditional convex programming case.
 
-In disciplined convex programming, functions are categorized by their
-curvature (\emph{constant}, \emph{affine},
-\emph{convex}, or \emph{concave}) as well as their
+Functions are categorized in
+two ``dimensions'': \emph{curvature}
+(\emph{constant}, \emph{affine},
+\emph{convex}, or \emph{concave}) and
 \emph{monotonicity}
-%\footnote{Strict monotonicity is not relevant to the DCP ruleset.}
 (\emph{nondecreasing}, \emph{nonincreasing}, or \emph{nonmonotonic}).
 Curvature determines the conditions
-under which they can appear as in expressions according to the
+under which they can appear in expressions according to the
 expression rules given in \S\ref{sec:noproduct} above.
 Monotonicity determines
 how they can be used in function  compositions, 
@@ -1351,8 +1378,8 @@ straightforward.  As examples, we have:
 Convexity and monotonicity are always determined in an 
 extended-valued sense.
 For example, when its argument is a nonconstant
-\cvx expression, Matlab's square root function \verb@sqrt( x )@ is
-interpreted as follows:
+\cvx expression, the square root function \verb@sqrt( x )@ is
+interpreted by \cvx as follows:
 \begin{center}
 \begin{tabular}{lll}
 	\verb@sqrt( x )@ & $\Cases{\sqrt{x}&x\geq 0\\-\infty&x<0}$ & concave, nondecreasing \\
@@ -1384,11 +1411,11 @@ so it can be used freely in constraints
 and objective functions.
 
 For functions that have multiple arguments, additional considerations must
-be made. First of all, curvature is always considered \emph{jointly}, but montonicity
+be made. First of all, curvature is always considered \emph{jointly}, but monotonicity
 can be considered on an argument-by-argument basis. For example,
 \begin{center}
 \begin{tabular}{lll}
-	\verb@quad_over_lin( x, y )@ & $\Cases{|x|^2/y&y> 0\\+\infty&y\leq 0}$ & concave, nonincreasing in \verb@y@
+	\verb@quad_over_lin( x, y )@ & $\Cases{|x|^2/y&y> 0\\+\infty&y\leq 0}$ & convex, nonincreasing in \verb@y@
 \end{tabular}
 \end{center}
 is jointly convex in both arguments, but it is monotonic 
@@ -1398,13 +1425,13 @@ In addition, some functions are convex, concave, or affine only for
 a \emph{subset} of its arguments. For example, the function
 \begin{center}
 \begin{tabular}{lll}
-	\verb@norm( x, p )@ & $\|x\|_p~~(1<p<+\infty)$ & convex, nonmonotonic
+	\verb@norm( x, p )@ & $\|x\|_p~~(1<p<+\infty)$ & convex in \verb@x@, nonmonotonic
 \end{tabular}
 \end{center}
 is convex only in its first argument. Whenever this function is used
 in a \cvx specification, then, the remaining
 arguments must be constant, or \cvx will issue an error message. Such arguments
-correspond to a function's parameters in a mathematical terminology; \eg,
+correspond to a function's parameters in mathematical terminology; \eg,
 \begin{equation*}
 	f_p(x):\R^n\rightarrow\R, \quad f_p(x) \triangleq \|x\|
 \end{equation*}
@@ -1421,7 +1448,7 @@ composition with an affine mapping.
 This is part of the DCP ruleset as well:
 \begin{itemize}
 \item A convex, concave, or affine function may accept as an argument
-any affine expression (assuming it is of compatible size).
+an affine expression (assuming it is of compatible size).
 \end{itemize}
 (The result is convex, concave, or affine, respectively.)
 For example, consider the function \verb@square( x )@, which is provided
@@ -1479,8 +1506,6 @@ the expressions
 \end{code}
 are both valid nonlinear compositions in \cvx, according to the 
 convex/nondecreasing and concave/nondecreasing rules, respectively.
-(The first is recognized as convex and nondecreasing, and the second
-is recognized as concave and nondecreasing.)
 
 Let us consider a more complex example in depth. Suppose
 \verb@x@ is a vector variable, and
@@ -1513,7 +1538,7 @@ expression
 \end{code}
 is rejected by \cvx, because there is no rule governing the composition
 of a concave nondecreasing function with a convex function.
-Of course, the workaround is simple in this case: use \verb@norm( x )@ function instead,
+Of course, the workaround is simple in this case: use \verb@norm( x )@ instead,
 since \verb@norm@ is in the atom library and known by \cvx to be convex.
 
 \subsection{Monotonicity in nonlinear compositions}
@@ -1555,7 +1580,7 @@ is equivalent to
 	square( a * x + b ) <= z
 	square( z ) <= 1
 \end{code}
-where \verb@z@ is a new variable. The equivalency of this decomposition
+where \verb@z@ is a new variable. The equivalence of this decomposition
 is a direct consequence of the monotonicity of 
 \verb@square@ when \verb@z@
 is nonnegative. In fact, \cvx performs this decomposition itself for
@@ -1643,11 +1668,11 @@ it can be freely
 used in any way that a normal convex or concave expression can be,
 as described in \S\ref{sec:noproduct}.
 
-The use of quadratic forms should actually be
-of \emph{less} use in disciplined convex programming
+Quadratic forms should actually be used less
+frequently in disciplined convex programming
 than in a more traditional mathematical programming framework,
-where a quadratic form is often a smooth subsitute 
-for a non-smooth form that one truly wishes to use. In
+where a quadratic form is often a smooth substitute 
+for a nonsmooth form that one truly wishes to use. In
 \cvx, such substitutions are rarely necessary, because of its support
 for nonsmooth functions. For example,
 the constraint
@@ -1663,11 +1688,262 @@ constraint---so the second form may actually be more efficient. So we encourage
 you to re-evaluate the use of quadratic forms in your models, in light of the
 new capabilities afforded by disciplined convex programming.
 
+\section{Semidefinite programming using \cvx}
+\label{sec:sdpmode}
+\index{SDP mode}
+\index{Semidefinite programming mode}
+\index{SDP}
+\index{linear matrix inequalities}
+
+Those who are familiar with the practice of \emph{semidefinite
+programming} (SDP) know that the constraints that utilize
+the set \verb@semidefinite(n)@ in \S\ref{sec:sets} above are, in practice, typically
+expressed using \emph{linear matrix inequality} (LMI) notation. 
+For example, given $X=X^T\in\Rnn$, the
+constraint $X\succeq 0$ denotes that $X\in\symm^n_+$; that is, that
+$X$ is positive semidefinite.
+
+\cvx provides a special \emph{SDP mode} which allows this
+LMI convention to be employed inside \cvx models
+using MATLAB's standard inequality operators \verb@>=@, \verb@<=@, \etc.
+In order to use it, one must simply begin a model with the statement
+\verb@cvx_begin sdp@ instead of simply \verb@cvx_begin@. When SDP mode 
+is engaged, \cvx interprets certain inequality constraints in a
+different manner. To be specific:
+\begin{itemize}
+\item Equality constraints are interpreted the same (\ie, elementwise).
+\item Inequality constraints involving vectors and scalars are interpreted
+      the same; \ie, elementwise.
+\item Inequality constraints involving non-square matrices are \emph{disallowed};
+      attempting to use them causes an error. If you wish to do true elementwise
+      comparison of matrices \verb@X@ and \verb@Y@, use a vectorization
+      operation \verb@X(:) <= Y(:)@ or \verb@vec( X ) <= vec( Y )@. (\verb@vec@
+      is a function provided by \cvx that is equivalent to the colon operation.)
+\item Inequality constraints involving real, square matrices are interpreted as follows:
+	\begin{center}
+	\begin{tabular}{ccccc}
+	\verb@X >= Y@ & and & \verb@X > Y@ & become & \verb@X - Y == semidefinite(n)@ \\
+	\verb@X <= Y@ & and & \verb@X > Y@  & become & \verb@Y - X == semidefinite(n)@
+	\end{tabular}
+	\end{center}
+      If either side is complex, then the inequalities are
+      interpreted as follows:
+	\begin{center}
+	\begin{tabular}{ccccc}
+	\verb@X >= Y@ & and & \verb@X > Y@ & become & \verb@X - Y == hermitian_semidefinite(n)@ \\
+	\verb@X <= Y@ & and & \verb@X > Y@  & become & \verb@Y - X == hermitian_semidefinite(n)@
+	\end{tabular}
+	\end{center}
+      In the above, \verb@n=max(size(X,1),size(Y,1))@.
+\item There is one additional restriction: both
+      \verb@X@ and \verb@Y@ must be the same size, or one must
+      be the scalar zero. For example, if \verb@X@ and \verb@Y@ are
+      matrices of size \verb@n@,
+      \begin{center}
+      \begin{tabular}{cccc}
+      	\verb@X >= 1@ & or & \verb@1 >= Y@ & \emph{illegal} \\
+      	\verb@X >= ones(n,n)@ & or & \verb@ones(n,n) >= Y@ & \emph{legal} \\
+      	\verb@X >= 0@ & or & \verb@0 >= Y@ & \emph{legal} \\
+      \end{tabular}
+      \end{center}
+      In effect, \cvx enforces a stricter interpretation of the inequality
+      operators for LMI constraints.
+\item Note that LMI constraints enforce symmetry (real or Hermitian, as
+      appropriate) on their inputs. Unlike SDPSOL \cite{SDPSOL}, \cvx 
+      does not extract the symmetric part for you: you must take
+      care to insure symmetry yourself. Since \cvx supports the declaration
+      of symmetric matrices, this is reasonably straightforward. If \cvx cannot
+      determine that an LMI is symmetric, a warning will be issued.
+\item A dual variable, if supplied, will be applied to the converted
+      equality constraint. It will be given a 
+      positive semidefinite value if an optimal point is found.
+\end{itemize}
+So, for example, the \cvx model found in the file
+\verb@examples/closest_toeplitz_sdp.m@,
+\begin{code}
+cvx_begin
+    variable Z(n,n) hermitian toeplitz
+    dual variable Q
+    minimize( norm( Z - P, 'fro' ) )
+    Z == hermitian_semidefinite( n ) : Q;
+cvx_end
+\end{code}
+can also be written as follows:
+\begin{code}
+cvx_begin sdp
+    variable Z(n,n) hermitian toeplitz
+    dual variable Q
+    minimize( norm( Z - P, 'fro' ) )
+    Z >= 0 : Q;
+cvx_end
+\end{code}
+Many other examples in the \cvx example library utilize semidefinite
+constraints; and all of them use SDP mode. To find them, simply 
+search for the text \verb@cvx_begin sdp@ in the \verb@examples/@
+subdirectory tree using your favorite file search tool. One
+of these examples is reproduced in \S\ref{sec:indexeddual}.
+
+Since semidefinite programming is popular, some
+may wonder why SDP mode is not the default behavior.
+The reason for this is that we place a
+strong emphasis on maintaining consistency between MATLAB's native
+behavior and that of \cvx; and 
+the use of the \verb@>=@, \verb@<=@, \verb@>@, \verb@<@
+operators to create LMIs
+represents a deviation from that ideal.
+For example, the expression \verb@Z >= 0@ in the example above constrains
+the variable \verb@Z@ to be positive semidefinite. But after the model has been solved
+and \verb@Z@ has been replaced with a numeric value,
+the expression \verb@Z >= 0@ will test for the \emph{elementwise}
+nonnegativity of \verb@Z@. To verify that the numeric value
+of \verb@Z@ is, in fact, positive semidefinite, you must perform
+a test like \verb@min(eig(Z)) >= 0@.
+
+\section{Geometric programming using \cvx}
+\label{sec:gpmode}
+\index{GP}
+\index{GP mode}
+\index{Geometric programming mode}
+\index{generalized geometric programming}
+\index{GGP}
+
+Geometric programs (GPs) are a special class mathematical programs 
+that can be converted to convex form using a change of variables.
+The convex form of GPs can be expressed as DCPs, but \cvx also 
+provides a special mode that allows a GP to be specified in 
+its native form. \cvx will automatically perform the necessary
+conversion, compute a numerical solution, and translate the results
+back to the original problem.
+A tutorial on geometric programming is beyond the scope of this document, so we
+refer the reader to \cite{BKVH:05}.
+
+To use utilize this GP mode, you must begin your \cvx specification
+with the command \verb@cvx_begin gp@ or \verb@cvx_begin GP@. For example,
+the following code, found in the example library at \verb@gp/max_volume_box.m@,
+determines the maximum volume box subject to
+various area and ratio constraints:
+\begin{code}
+	cvx_begin gp
+	    variables w h d
+	    maximize( w * h * d )
+	    subject to
+	        2*(h*w+h*d) <= Awall;
+	        w*d <= Afloor;
+	        h/w >= alpha;
+	        h/w <= beta;
+	        d/w >= gamma;
+	        d/w <= delta;
+	cvx_end
+\end{code}
+As the example illustrates, \cvx supports the construction of monomials and
+posynomials using addition, multiplication, division (when appropriate),
+and powers. 
+
+\cvx also supports the practice of \emph{generalized geometric programming}. 
+Generalized geometric programs (GGPs)
+permit the use of \emph{generalized posynomials} wherever a
+posynomial is permissible in standard GP. Generalized posynomials include
+posynomials, and are closed under the operations of addition,
+multiplication, positive powers, and maximums \cite{BKVH:05}. A number of
+\cvx functions can easily be seen as simple compositions of the above
+operations, and are therefore permitted for use in GGPs as well:
+\verb@max@, \verb@sum@, \verb@cumsum@, \verb@mean@,
+\verb@prod@, \verb@cumprod@, \verb@geomean@, 
+\verb@sqrt@, \verb@norm@,
+\verb@sum_largest@, \verb@norm_largest@.
+
+The solver used in this version of \cvx does not,
+in fact, support geometric programming. For now, one of the authors has developed a novel
+approximation method which allows \cvx to use SeDuMi to solve GPs and related
+problems. The method converts GPs to SDPs, and the approximation error can be bounded in advance.
+Details of the method are outside of the scope of this document,
+but Appendix \S\ref{sec:gp-approx} provides a brief introduction  and describes
+how to control its accuracy. While this approach
+is ultimately \emph{not} suited for very large GPs, it has proven
+in practice to perform respectably on small- and medium-scale
+problems.
+
 \section{Advanced topics}
 
 In this section we describe a number of the more advanced capabilities of \cvx.
 We recommend that you \emph{skip} this section at first, until you are comfortable
 with the basic capabilities described above.
+
+\subsection{Indexed dual variables}
+\label{sec:indexeddual}
+
+In some models, the \emph{number} of constraints depends on the model
+parameters---not just their sizes. It is
+straightforward to build such models in \cvx using, say, a
+MATLAB \verb@for@ loop. In order to assign each of these constraints
+a separate dual variable, we must find a way to adjust the number of
+dual variables as well. For this reason, \cvx supports
+\emph{indexed dual variables}. In reality, they are simply standard
+MATLAB cell arrays whose entries are \cvx dual variable objects.
+
+Let us illustrate by example how to declare and use indexed dual
+variables. Consider the following semidefinite program:
+\begin{equation}
+	\begin{array}{ll}
+		\text{minimize}   & \sum_{i=1}^n (n-i) X_{ii} \\
+		\text{subject to} & \sum_{i=1}^n X_{i,i+k} = b_k, ~ k = 1,2,\dots,n \\
+				  & X \succeq 0
+	\end{array}
+\end{equation}
+(\cite{Stu:99}). This problem minimizes a weighted sum of the main diagonal
+of a positive semidefinite matrix, while holding the sums along each diagonal
+constant. The parameters of the problem are
+the elements of the vector $b\in\Rn$, and the optimization variable is a
+symmetric matrix $X\in\Rnn$. The \cvx version of this model is
+\begin{code}
+	cvx_begin
+	    variable X( n, n ) symmetric
+	    minimize( ( n - 1 : -1 : 0 ) * diag( X ) );
+	    for k = 0 : n-1,
+	        sum( diag( X, k ) ) == b( k+1 );
+	    end
+	    X == semidefinite(n);
+	cvx_end
+\end{code}
+If we wish to obtain dual information for the $n$ simple equality constraints,
+we need a way to assign each constraint in the \verb@for@ loop a separate dual variable.
+This is accomplished as follows:
+\begin{code}
+	cvx_begin
+	    variable X( n, n ) symmetric
+	    dual variables y{n}
+	    minimize( ( n - 1 : -1 : 0 ) * diag( X ) );
+	    for k = 0 : n-1,
+	        sum( diag( X, k ) ) == b( k+1 ) : y{k+1};
+	    end
+	    X == semidefinite(n);
+	cvx_end
+\end{code}
+The statement
+\begin{code}
+	dual variables y{n}
+\end{code}
+allocates a cell array $n$ dual variables, and stores the result in the MATLAB
+variable \verb@Z@. The equality constraint in the \verb@for@ loop has been augmented
+with a reference to \verb@y{k+1}@, so that each constraint is assigned a separate
+dual variable.
+When the \verb@cvx_end@ command is issued, \cvx will compute the optimal values
+of these dual variables, and deposit them into an $n$-element cell array \verb@y@.
+
+This example admittedly is a bit simplistic. With a bit of careful arrangement,
+it is possible to rewrite this model so that the $n$ equality constraints can be
+combined into a single vector constraint, which in turn would require only a single
+vector dual variable.\footnote{Indeed, a future version of \cvx will support the
+use of the MATLAB function \texttt{spdiags}, which will reduce the entire for loop
+to the single constraint \texttt{spdiags(X,0:n-1)==b.}} For a more complex example
+that is not amenable to such a simplification, see the file
+\begin{code}
+	examples/cvxbook/Ch07_statistical_estim/cheb.m
+\end{code}
+in the \cvx distribution.
+In that problem, each constraint in the \verb@for@ loop is a linear matrix
+inequality, not a scalar linear equation;
+so the indexed dual variables are symmetric matrices, not scalars.
 
 \subsection{Expanding the \cvx atom library}
 
@@ -1682,7 +1958,7 @@ that can be used in \cvx specifications.
 This can be accomplished in a number of
 ways, which we describe in this section.
 
-\subsection{Defining new functions via overloading}
+\subsubsection{Defining new functions via overloading}
 \label{s-new-fcts}
 
 The simplest method of constructing a new function is to use the 
@@ -1735,11 +2011,11 @@ since we haven't followed the DCP composition rules.
 
 This method of defining an ordinary function, and relying on
 overloading of operators inside a \cvx specification,
-works provided you make sure that that all the 
+works provided you make sure that all the 
 calculations carried out inside
 the function satisfy the DCP composition rules.
 
-\subsection{Defining new functions via incomplete specifications}
+\subsubsection{Defining new functions via incomplete specifications}
 
 Suppose that $S\subset\R^n\times\R^m$ is a convex set and 
 $g:(\R^n\times\R^m)\rightarrow(\R\cup+\infty)$ is a convex function.
@@ -1926,12 +2202,12 @@ a bit difficult to read because of diagnostic or error-checking code,
 but these are relatively simple.
 
 \iffalse
-\subsection{New differentiable atoms}
+\subsubsection{New differentiable atoms}
 Future versions of \cvx will support smooth functions as well.
 mention new atoms possible (see \S XXX). must provide fct value,
 gradient, and hessian.
 
-\subsection{Defining new sets}
+\subsubsection{Defining new sets}
 This version of \cvx does not support user-defined sets,
 since we haven't yet settled on the best syntax.
 This support will be added soon.
@@ -1988,81 +2264,177 @@ second derivatives) for the set.
 This is not supported in the current version.
 \fi
 
-\subsection{Indexed dual variables}
-\label{sec:indexeddual}
+\subsection{More on generalized geometric programming}
 
-In some models, the \emph{number} of constraints depends on the model
-parameters---not just their sizes. It is
-straightforward to build such models in \cvx using, say, a
-MATLAB \verb@for@ loop. In order to assign each of these constraints
-a separate dual variable, we must find a way to adjust the number of
-dual variables as well. For this reason, \cvx supports
-\emph{indexed dual variables}. In reality, they are simply standard
-MATLAB cell arrays whose entries are \cvx dual variable objects.
+It is, in fact, possible to extend geometric programming beyond what is
+described in \cite{BKVH:05} and in \S\ref{sec:gpmode}. 
 
-Let us illustrate by example how to declare and use indexed dual
-variables. Consider the following semidefinite program:
+GPs and GGPs are what we might call \emph{log-log-convex} optimization problems.
+That is, in the same way that DCPs employ affine, convex, and concave functions
+as building blocks, GPs and GGPs employ \emph{log-log-affine},
+\emph{log-log-convex}, and \emph{log-log-concave} functions.
+In short, a function $f:\Rn\rightarrow\R$
+is log-log-affine (log-log-convex, log-log-concave) if
 \begin{equation}
-	\begin{array}{rl}
-		\text{minimize}   & \sum_{i=1}^n (n-i) * X_{ii} \\
-		\text{subject to} & \sum_{i=1}^n X_{i,i+k} = b_k, ~ k = 1,2,\dots,n \\
-				  & X \succeq 0
-	\end{array}
+	\label{eq:log-log-affine}
+	\tilde{f}:\Rn\rightarrow\R, \quad \tilde{f}(y) \eqbydef \log(f(\exp(y)))
 \end{equation}
-(\cite{Stu:99}). This problem minimizes a weighted sum of the main diagonal
-of a positive semidefinite matrix, while holding the sums along each diagonal
-constant. The parameters of the problem are
-the elements of the vector $b\in\Rn$, and the optimization variable is a
-symmetric matrix $X\in\Rnn$. The \cvx version of this model is
-\begin{code}
-	cvx_begin sdp
-	    variable X( n, n ) symmetric
-	    minimize( ( n - 1 : -1 : 0 ) * diag( X ) );
-	    for k = 0 : n-1,
-	        sum( diag( X, k ) ) == b( k+1 );
-	    end
-	    X >= 0;
-	cvx_end
-\end{code}
-If we wish to obtain dual information for the $n$ simple equality constraints,
-we need a way to assign each constraint in the \verb@for@ loop a separate dual variable.
-This is accomplished as follows:
-\begin{code}
-	cvx_begin sdp
-	    variable X( n, n ) symmetric
-	    dual variables y{n}
-	    minimize( ( n - 1 : -1 : 0 ) * diag( X ) );
-	    for k = 0 : n-1,
-	        sum( diag( X, k ) ) == b( k+1 ) : y{k+1};
-	    end
-	    X >= 0;
-	cvx_end
-\end{code}
-The statement
-\begin{code}
-	dual variables y{n}
-\end{code}
-allocates a cell array $n$ dual variables, and stores the result in the MATLAB
-variable \verb@Z@. The equality constraint in the \verb@for@ loop has been augmented
-with a reference to \verb@y{k+1}@, so that each constraint is assigned a separate
-dual variable.
-When the \verb@cvx_end@ command is issued, \cvx will compute the optimal values
-of these dual variables, and deposit them into an $n$-element cell array \verb@y@.
+is affine (convex, concave), where
+$\exp$ is an elementwise exponential function; \ie,
+\begin{equation}
+	\exp:\Rn\rightarrow\Rn_{++}, \quad 
+	\exp(y) \eqbydef \bmat{e^{y_1} & \dots & e^{y_n}}^T.
+\end{equation}
+Monomials are log-log-affine and posynomials are log-log-convex, so
+GPs are a protypical class of log-log-convex optimization problems.
 
-This example admittedly is a bit simplistic. With a bit of careful arrangement,
-it is possible to rewrite this model so that the $n$ equality constraints can be
-combined into a single vector constraint, which in turn would require only a single
-vector dual variable.\footnote{Indeed, a future version of \cvx will support the
-use of the MATLAB function \texttt{spdiags}, which will reduce the entire for loop
-to the single constraint \texttt{spdiags(X,0:n-1)==b.}} For a more complex example
-that is not amenable to such a simplification, see the file
+The mapping $f\rightarrow\log\circ f\circ \exp$, which we will henceforth
+call the \emph{log-log mapping}, can be used to create a nearly direct
+translation of the rules in the DCP ruleset into a new set of rules in 
+the log-log-convex ``domain.'' All standard GPs and GGPs satisfy these
+rules; but so do many other problems as well.
+
+It is not entirely clear that there are any \emph{useful}
+log-log-convex problems which cannot be expressed in terms of a GP or GGP.
+Until such examples are found, the ruleset will primarily be of academic
+interest at best. But because the ruleset forms the basis for the 
+verification of GPs and GGPs in \cvx, we list the ruleset here.
+
+\subsubsection{The log-curvature taxonomy}
+\label{sec:gp-taxonomy}
+
+For geometric programming, three new categories of curvature are needed:
+\emph{log-log-affine}, \emph{log-log-convex}, or \emph{log-log-concave}.
+The categories contain those functions which are affine, convex,
+and concave, respectively, after application of the log-log-mapping;
+for example, $f$ is log-log-affine if $\log\circ f\circ\exp$ is affine.
+The categories can, in fact, be described without the log-log transformation:
+\begin{equation*}
+\begin{array}{lc@{\,}lc}
+\text{log-log-affine:}  & f(x^\alpha y^{1-\alpha}) & = f(x)^\alpha f(y)^{1-\alpha}& \forall x,y\in\Rn_+,~\alpha\in(0,1) \\
+\text{log-log-convex:}  & \vdots & \leq        f(x)^\alpha f(y)^{1-\alpha} & \vdots \\
+\text{log-log-concave:} &        & \geq        f(x)^\alpha f(y)^{1-\alpha} &
+\end{array}
+\end{equation*}
+All expressions in these categories are real and nonnegative. As in the DCP case,
+there is overlap between these categories; log-log-affine expressions are also
+log-log-convex and log-log-concave. A log-log-affine
+expression is always equivalent to a single monomial.
+A posynomial is a log-log-convex expression, but posynomials cannot
+represent the entire class. The class of log-log-concave expressions
+(that are not also log-log-affine) is actually somewhat small, and is of limited usefulness;
+nevertheless, the category is necessary for completeness.
+
+\subsubsection{Constraints}
+\label{sec:gp-constraints}
+
+Three additional types of constraints may be specified in geometric problems:
+\begin{itemize}
+\item An \emph{equality constraint} \verb@==@ where both sides are log-log-affine expressions.
+\item A \emph{less-than inequality constraint} \verb@<=@, \verb@<@ 
+where the left side is log-log-convex and the right side is log-log-concave.
+\item A \emph{greater-than inequality constraint} \verb@>=@, \verb@>@ 
+where the left side is log-log-concave and the right side is log-log-convex.
+\end{itemize}
+Set membership constraints with log-log-affine arguments are acceptable as well.
+
+\subsubsection{Expression rules}
+\label{sec:gp-expressions}
+
+The following are the rules for combining expressions from these new categories:
+\begin{itemize}
+\item A valid log-log-affine expression is
+\begin{itemize}
+\item a \emph{positive} (and, therefore, real) constant expression;
+\item a declared geometric variable;
+\item a valid call to a function in the atom library with a log-log-affine result;
+\item the product of two or more log-log-affine expressions  (including cases where one or more are nonnegative constants);
+\item the ratio of two log-log-affine expressions (including cases where either is a positive constant);
+\item a log-log-affine expression raised to a real power;
+\end{itemize}
+\item A valid log-log-convex expression is
+\begin{itemize}
+\item a valid log-log-affine expression;
+\item a valid call to a function in the atom library with a log-log-convex result;
+\item the sum of two or more log-log-convex expressions;
+\item the product of two or more log-log-convex expressions  (including cases where one or more are nonnegative constants);
+\item the ratio of a log-log-convex expression and a log-log-concave expression (including cases where either is a positive constant);
+\item a log-log-convex expression raised to a nonnegative real power;
+\item a log-log-concave expression raised to a nonpositive real power.
+\end{itemize}
+\item A valid log-log-concave expression is
+\begin{itemize}
+\item a valid log-log-affine expression;
+\item a valid call to a function in the atom library with a log-log-concave result;
+\item the product of two or more log-log-concave expressions  (including cases where one or more are nonnegative constants);
+\item the ratio of a log-log-concave expression and a log-log-convex expression (including cases where either is a positive constant);
+\item a log-log-concave expression raised to a nonnegative real power;
+\item a log-log-convex expression raised to a nonpositive real power.
+\end{itemize}
+\end{itemize}
+It should not be difficult to see how each of these rules maps directly to a corresponding
+rule in the DCP ruleset. For example, the rule permitting the sum of log-log-affine expressions
+is the geometric counterpart to the rule permitting the \emph{sum} of affine expressions.
+The sole omission from this ruleset, in fact, is the geometric equivalent of the scalar
+quadratic form. On the other hand, the rules permitting sums of log-log-affine and
+log-log-convex expressions do \emph{not} have counterparts in the DCP ruleset. They are
+instead specific instances of the function composition rules; because in fact, 
+summation is \emph{log-log-convex} in the geometric context.
+
+\subsubsection{Functions and compositions}
+\label{sec:gp-functions}
+
+Disciplined geometric programming introduces three new categories 
+for the curvature of functions: \emph{log-log-affine},
+\emph{log-log-convex}, and \emph{log-log-concave}. Likewise,
+three new categories of montonicity are introduced: \emph{p-nondecreasing},
+\emph{p-nonincreasing}, and \emph{p-nonmonotonic}. The ``p-'' denotes
+that the determination of monotonicity is made only over the nonnegative
+orthant, instead of over the entire input space.
+For example, a function $f:\Rn\rightarrow\R$ is p-nondecreasing if
+\begin{equation}
+	x \geq y \geq 0 \quad\Longrightarrow\quad f(x) \geq f(y)
+\end{equation}
+whereas the criteria for nondecreasing functions omits the nonnegativity test $\geq 0$.
+
+The composition rules map over from DCP as you might expect:
+\begin{itemize}
+\item A log-log-convex, log-log-concave, or log-log-affine function may accept as an argument
+a log-log-affine expression (assuming it is of compatible size).
+\item If a function is log-log-convex and p-nondecreasing in a given argument,
+then that argument may be log-log-convex.
+\item If a function is log-log-convex and p-nonincreasing in a given argument,
+then that argument may be log-log-concave.
+\item If a function is log-log-concave and p-nondecreasing in a given argument,
+then that argument may be log-log-concave.
+\item If a function is log-log-concave and p-nonincreasing in a given argument,
+then that argument may be log-log-convex.
+\end{itemize}
+(In each case, we assume that the argument is of compatible size.)
+
+Here are some examples of DGP-compatible functions and their categorizations:
+\begin{center}
+\begin{tabular}{lll}
+	\verb@prod( x )@    & $\prod_i x_i$& log-log-affine,  p-nondecreasing \\
+	\verb@sum( x )@     & $\sum_i x_i$ & log-log-convex,  p-nondecreasing \\
+	\verb@max( x, y )@  & $\max\{x,y\}$ & log-log-convex, p-nondecreasing \\
+	\verb@min( x, y )@  & $\min\{x,y\}$ & log-log-concave, p-nondecreasing \\
+	\verb@norm( x, p )@ & $\|x\|_p~(p\geq 1)$ & log-log-convex,  p-nondecreasing \\ 
+	\verb@sqrt( x )@    & $x^{1/2}$    & log-log-affine, p-nondecreasing \\
+	\verb@1/x@          & $x^{-1}$     & log-log-affine, p-nonincreasing
+\end{tabular}
+\end{center}
+For instance, if \verb@x@, \verb@y@, and \verb@z@ are scalar geometric variables, then
 \begin{code}
-	examples/cvxbook/Ch07_statistical_estim/cheb.m
+	max( x + y, y + z ^ 2 )
 \end{code}
-in the \cvx distribution.
-In that problem, each constraint in the \verb@for@ loop is a linear matrix
-inequality, not a scalar linear equation;
-so the indexed dual variables are symmetric matrices, not scalars.
+is log-log-convex, because the posynomial arguments are log-log-convex, and \verb@max@ is log-log-convex
+and p-nondecreasing. 
+
+Clearly, a function that is monotonic is also p-monotonic in the same sense;
+for example, \verb@sum@ is both nondecreasing and p-nondecreasing. The
+reverse implication is \emph{not} true; for example,
+\verb@norm( x, q )@ is p-nondecreasing in x, but nonmonotonic.
 
 \newpage
 \appendix
@@ -2407,32 +2779,6 @@ integer constant:
 \end{equation*}
 \end{itemize}
 
-\section{\cvx commands}
-
-\begin{itemize}
-\item \verb+cvx_problem+: typing this within a \cvx specification provides a summary
-of the current problem. Note that this will contain a \emph{lot} of information
-that you may not recognize---\cvx performs its conversion to canonical form
-\emph{as the problem is entered}, generating extra temporary variables and
-constraints in the process.
-\item \verb+cvx_clear+: typing this resets the \cvx system, clearing any and all problems
-from memory, but without erasing any of your numeric data.
-This is useful if you make a mistake and need to start over.
-\item \verb@cvx_quiet@: typing \verb@cvx_quiet(true)@ suppresses screen
-output from the solver. Typing \verb@cvx_quiet(false)@ restores the screen
-output. In each case, it returns a logical value representing the \emph{previous}
-state of the quiet flag, so you can restore that state later if you wish.
-\item \verb@cvx_pause@: typing \verb@cvx_pause(true)@ causes \cvx to pause and
-wait for keyboard input before \emph{and} after the solver is called. Useful
-primarily for demo purposes. Typing \verb@cvx_pause(false)@ resets the behavior.
-In each case, it returns a logical value representing the \emph{previous} state
-of the pause flag, so you can restore that state later if you wish.
-\item \verb@cvx_where@: returns the directory where the \cvx distribution
-has been installed---assuming that the Matlab path has been set to include
-that distribution. Useful if you want to find certain helpful subdirectories,
-such as \verb@doc@, \verb@examples@, \emph{etc.}
-\end{itemize}
-
 \section{\cvx status messages}
 \label{sec:status}
 
@@ -2490,6 +2836,170 @@ identically to the ``accurate'' cases. Two final results are also possible:
 The situations that most commonly produce an \verb@Overdetermined@ result are discussed
 in \S\ref{sec:overdetermined} below.
 
+\section{Controlling solver precision}
+
+Numerical methods for convex optimization are not exact; they compute their results
+to within a predefined numerical precision or tolerance. The precision chosen by default in \cvx,
+which in turn is inherited from the defaults chosen by its solver SeDuMi, should
+be entirely acceptable for most applications. Nevertheless, you may wish to tighten
+or relax that precision in some applications.
+
+There are several ways to call the \verb@cvx_precision@ command. If you call it with no arguments,
+it simply returns a two-element vector of the current precision settings. The first element
+in that vector is the standard precision; the precision the solver must obtain to return
+\verb@Solved@, \verb@Unbounded@, or \verb@Infeasible@. The second element in the vector is
+the ``reduced'' precision, the precision that the solver must achieve in order to
+return \verb@Solved/Inaccurate@, \verb@Unbounded/Inaccurate@, \verb@Infeasible/Inaccurate@.
+
+Calling \verb@cvx_precision@ with an argument allows you to actually \emph{change} the
+precision level. One way is to supply a string as an argument, either in command mode
+or function mode, chosen from one of five values:
+\begin{itemize}
+	\item \verb@cvx_precision low@:      $\text{standard} = \text{reduced} = \epsilon^{1/4} \approx 1.2\times10^{-4}$.
+	\item \verb@cvx_precision medium@:   $\text{standard} = \epsilon^{3/8} \approx 1.3\times10^{-6}$, $\text{reduced} = \epsilon^{1/4}$.
+	\item \verb@cvx_precision default@:  $\text{standard} = \epsilon^{1/2} \approx 1.5\times10^{-8}$, $\text{reduced} = \epsilon^{1/4}$.
+	\item \verb@cvx_precision high@:     $\text{standard} = \epsilon^{3/4} \approx 1.1\times10^{-11}$, $\text{reduced} = \epsilon^{3/8}$.
+	\item \verb@cvx_precision best@:     $\text{standard} = 0$, $\text{``reduced''} = \epsilon^{1/2}$  (see below).
+\end{itemize}
+In function mode, these calls look like \verb@cvx_precision('low')@, etc.
+The \verb@best@ precision setting is special: it instructs the solver to continue until it is
+completely unable to make progress. Then, as long as it reaches at least the ``reduced'' precision
+of $\epsilon^{1/2}$, it may claim a successful solution; otherwise,
+it returns a \verb@cvx_status@ value of \verb@Failed@. An \verb@Inaccurate@ status value is 
+not possible in \verb@best@ mode (nor, for that matter, in \verb@low@ mode, which
+sets the standard and reduced precisions to be identical).
+
+The \verb@cvx_precision@ command can also be called with either a scalar or a
+two-vector. If you pass it a scalar, it will assume that as the standard
+precision, and it will compute a default reduced precision value for you.
+Roughly speaking, that reduced precision will be the square root of the standard
+precision, with some bounds imposed to make sure that it stays reasonable. If
+you supply a two-vector of values, then the smallest value will be chosen as
+the standard precision, and the larger value as the reduced precision.
+
+The \verb@cvx_precision@ command can be used either \emph{within} a \cvx model or
+\emph{outside} of it; and its behavior differs in each case. If you call it from
+within a model; for example, as follows,
+\begin{code}
+	cvx_begin
+	    cvx_precision high
+\end{code}
+then the setting you choose will apply only to that model. If you call it outside
+a model, then the setting you choose will apply \emph{globally}; that is, to any
+subsequent models that are created and solved.
+
+If you call \verb@cvx_precision@ in function mode, either with a string or a numeric
+value, it will return as its output the \emph{previous} precision vector---the same
+result you would obtain if you called it with no arguments. This may
+seem confusing at first, but this is done so that you can save the previous value
+in a variable, and restore it at the end of your calcuations; e.g.,
+\begin{code}
+	cvxp = cvx_precision( 'high' );
+	cvx_begin
+		...
+	cvx_end
+	cvx_precision( cvxp );
+\end{code}
+This is considered good coding etiquette in a larger application where multiple 
+\cvx models at multiple precision levels may be employed.
+
+\section{The GP/SDP approximation}
+\label{sec:gp-approx}
+
+The solver currently employed by \cvx does not support geometric programs natively.
+Instead, \cvx \emph{approximates} the convex form of a DGP in an SDP-representable
+manner. Details of the approximation method will be published separately; but in short,
+it replaces each posynomial constraint with a series of polynomial
+approximations. (Equalities and monomial inequalities do not require approximation.)
+
+A key feature of this approximation method is that the error introduced at
+each posynomial can be bounded in advance. Specifically,
+given a constraint of the form
+\begin{equation}
+	\label{eq:constr-gp}
+	f_i(x) \leq h_i(x) \quad f_i(x)\text{ posynomial, }h_i(x)\text{ monomial}
+\end{equation}
+the approximation produced by \cvx satisfies
+\begin{equation}
+	\label{eq:constr-approx}
+	f_i(x) \cdot ( 1 + \delta_i ) \leq g_i(x), \quad \delta\in[0,\epsilon_{GP}]
+\end{equation}
+where $\delta_i$ is unknown but bounded as indicated.
+The approximation is applied to posynomial objective functions as well. Thus
+if the objective function is a posynomial $f_0(x)$, it will be perturbed to
+$f_0(x)(1+\delta_0)$, where $\delta_0\in[0,\epsilon_{GP}]$. 
+
+The approximations are \emph{conservative}, in that any value of $x$ that
+satisfies an approximated constraint (\ref{eq:constr-approx})
+will, in fact, satisfy the original (\ref{eq:constr-gp}) as well.
+Applied to an entire DGP, this means that if \cvx locates a feasible point for
+the approximated problem, that point is guaranteed to be feasible as well.
+Furthermore, if \cvx successfully obtains an optimal value for the approximate
+problem, that value will serve as an upper bound on the optimal value of
+the original problem (for a minimization; for a maximization, it will serve
+as a lower bound). 
+
+In its default setting, \cvx uses a tolerance value of $\epsilon_{GP}=0.001$.
+For most engineering applications, this is likely to be quite sufficient. However,
+if you wish to change it, you may do so using the command \verb@cvx_gp_precision(@\emph{tol}\verb@)@,
+where \emph{tol} is the new value of $\epsilon_{GP}$. Consistent with many
+of \cvx's other control commands, \verb@cvx_gp_precision@ returns the \emph{previous}
+value of the $\epsilon_{GP}$, so you can save it and restore it upon completion
+of your model, if you wish. You can query the value of $\epsilon_{GP}$ at any
+time by calling \verb@cvx_gp_precision@ with no arguments.
+
+It is important to understand that the complexity of the approximation---the order of
+the polynomials used, as well as the number of them---increases as the
+number of terms in the posynomial increases, and as the value of $\epsilon_{GP}$
+decreases. Therefore, seeking high accuracies or solving problems involving 
+posynomials with a vary large number terms can easily produce very large, slow
+approximations.
+
+This approximation can actually be used in DCPs as well.
+Specifically, the function \verb@logsumexp_sdp@ uses this approximation
+method to implement the function
+\begin{equation}
+	f:\Rn\rightarrow\R, \quad f(x) \eqbydef \log(\TS\sum_{i=1}^n e^{x_i}) + [0,\delta(x)], \quad \delta(x)\in[0,\epsilon]
+\end{equation}
+If you call this function directly, it uses a default tolerance of $\epsilon=0.001$, regardless
+of the value set in \verb@cvx_gp_precision@. You can supply a different tolerance as a second
+argument; \ie, \verb@logsumexp_sdp( x, tol )@. However, it turns out that \cvx admits a 
+particular exception to the DCP nonlinear composition rules: it allows the construction
+of expressions of the form \verb@log(sum(exp(x)))@. (This is not an exception so much
+as it is a byproduct of the unified approach to verifying DCPs and DGPs; \verb@exp(x)@
+is log-affine, \verb@sum(exp(x))@ is log-convex, therefore \verb@log(sum(exp(x))@ is convex.) 
+Such constructions are automatically recognized by \cvx, which utilizes the
+precision value $\epsilon_{GP}$ in determining the accuracy of their approximation.
+
+\section{Miscellaneous \cvx commands}
+
+\begin{itemize}
+\item \verb+cvx_problem+: typing this within a \cvx specification provides a summary
+of the current problem. Note that this will contain a \emph{lot} of information
+that you may not recognize---\cvx performs its conversion to canonical form
+\emph{as the problem is entered}, generating extra temporary variables and
+constraints in the process.
+\item \verb+cvx_clear+: typing this resets the \cvx system, clearing any and all problems
+from memory, but without erasing any of your numeric data.
+This is useful if you make a mistake and need to start over. But note that in current
+versions of \cvx, you can simply start another model with \verb@cvx_begin@, and
+the previous model will be erased (with a warning).
+\item \verb@cvx_quiet@: typing \verb@cvx_quiet(true)@ suppresses screen
+output from the solver. Typing \verb@cvx_quiet(false)@ restores the screen
+output. In each case, it returns a logical value representing the \emph{previous}
+state of the quiet flag, so you can restore that state later if you wish---which
+is good practice if you wish to share your code with others.
+\item \verb@cvx_pause@: typing \verb@cvx_pause(true)@ causes \cvx to pause and
+wait for keyboard input before \emph{and} after the solver is called. Useful
+primarily for demo purposes. Typing \verb@cvx_pause(false)@ resets the behavior.
+In each case, it returns a logical value representing the \emph{previous} state
+of the pause flag, so you can restore that state later if you wish.
+\item \verb@cvx_where@: returns the directory where the \cvx distribution
+has been installed---assuming that the Matlab path has been set to include
+that distribution. Useful if you want to find certain helpful subdirectories,
+such as \verb@doc@, \verb@examples@, \emph{etc.}
+\end{itemize}
+
 \section{Caveats}
 
 \subsection{Assignments versus equality constraints}
@@ -2507,7 +3017,7 @@ instances, \cvx takes steps to prevent you from doing anything dangerous.
 For example, suppose $A,C\in\Rnn$ and $b\in\R$ are given, and
 consider the simple SDP
 \begin{equation}
-	\begin{array}{rl}
+	\begin{array}{ll}
 		\text{minimize} & \Tr{CX} \\
 		\text{subject to} & \Tr{AX} = b \\
 		& X \succeq 0
@@ -2550,7 +3060,9 @@ We hope that this check will prevent at least some typographical errors from
 having frustrating consequences in your models.
 
 Of course, this single check does not prevent you from using \emph{all} assignments 
-inside your \cvx specifications. For example, consider the following \cvx excerpt:
+inside your \cvx specifications, only those that overwrite formally declared variables.
+Other kinds of assignments are still permitted; and in some cases, they may be genuinely
+useful. For example, consider the following \cvx excerpt:
 \begin{code}
 	variables x y
 	z = 2 * x - y;
@@ -2559,16 +3071,22 @@ inside your \cvx specifications. For example, consider the following \cvx excerp
 \end{code}
 This excerpt uses a MATLAB variable \verb@z@ to hold an
 intermediate calculation \verb@2 * x - y@ so that it can be used in two different constraints.
-It is technically correct, and \cvx cannot prevent you from using it. But it is numerically
-equivalent to the following code, which adds \verb@z@ to the formal variable list:
+It is technically correct, and \cvx will do the right thing with it. In fact, if the value
+of \verb@z@ is not altered for the remainder of the problem, \cvx will actually replace it
+with its proper \emph{numerical} value (\ie, \verb@2 * x - y@) after solving the problem.
+
+Having said that, the following alternative formulation, which declares \verb@z@
+as a formal variable, is numerically equivalent:
 \begin{code}
 	variables x y z
 	z == 2 * x - y;
 	square( z ) <= 3;
 	quad_over_lin( x, z ) <= 1;
 \end{code}
-This is the approach we would recommend that you adopt instead. You need not worry that
-these ``extra'' variables will make your models slower. In fact, in many cases, this
+This is the approach we would recommend that you adopt instead. Declaring intermediate
+calculations as variables provides an extra measure of clarity in your models, in our
+opinion. You need not worry that these ``extra'' variables will make your models slower. 
+In fact, in many cases, this
 practice may \emph{improve} performance by exposing more of your problem's structure.
 Even when this is not the case, \cvx's presolve routine insures that it will perform
 no \emph{worse} than the first form.
@@ -2577,11 +3095,6 @@ What about assignments involving purely constant expressions, such as \verb@a=2@
 We would simply recommend that for style reasons they be placed \emph{before}
 the \verb@cvx_begin@ command, as we do in the examples presented in this document.
 
-So while we cannot prevent you from using assignments in your \cvx specifications,
-we strongly discourage you from doing so, both as an issue of style and
-as a means to reduce the likelihood of unintended consequences.
-
-
 \subsection{Overdetermined problems}
 \label{sec:overdetermined}
 
@@ -2589,7 +3102,7 @@ This status message \verb@Overdetermined@ commonly occurs when structure
 in a variable or set is not properly recognized. For example, consider the problem
 of finding the smallest diagonal addition to a matrix $W\in\Rnn$ to make it positive semidefinite:
 \begin{equation}
-	\begin{array}{rl}
+	\begin{array}{ll}
 		\text{minimize} & \mathop{\text{Trace}} D \\
 		\text{subject to} & W + D \succeq 0 \\
 		                  & D \text{~diagonal}
@@ -2628,12 +3141,6 @@ version of the specification corrects this problem by extracting the symmetric p
 	cvx_end
 \end{code}
 
-\subsection{Solver control}
-
-At this time, we have not provided the facility to adjust SeDuMi's internal 
-stopping criteria or other control parameters from within \cvx. This will be provided
-in a future release.
-
 \section{Acknowledgements}
 
 We wish to thank the following people for their contributions to
@@ -2642,7 +3149,8 @@ software and its documentation:  Laurent El Ghaoui, Arpita Ghosh,
 Siddharth Joshi, Johan L\"{o}fberg, Almir Mutapcic, Michael Overton
 and his students, Rahul Panicker, Jo\"{e}lle Skaf, Argyris Zymnis.
 
-
 \newpage
 \bibliography{cvxrefs}
+\newpage
+\printindex
 \end{document}
