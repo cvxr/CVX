@@ -1951,12 +1951,12 @@ As with DCPs, non-equality constraints are not permitted.
 \subsection{Expressions}
 
 The basic building blocks of generalized geometric programming are
-monomials, posynomials, and generalized posynomials. A valid monomial expression is
+monomials, posynomials, and generalized posynomials. A valid monomial is
 \begin{itemize}
 \item a declared variable;
 \item the product of two or more monomials;
 \item the ratio of two monomials;
-\item a monomial raised to a real power;
+\item a monomial raised to a real power; or
 \item a call to one of the following functions with monomial arguments:
       \verb@prod@, \verb@cumprod@, \verb@geomean@, \verb@sqrt@.
 \end{itemize}
@@ -1966,14 +1966,17 @@ A valid posynomial expression is
 \item the sum of two or more posynomials;
 \item the product of two or more posynomials;
 \item the ratio of a posynomial and a monomial;
-\item a posynomial raised to a positive integer power;
+\item a posynomial raised to a positive integral power; or
 \item a call to one of the following functions with posynomial arguments:
       \verb@sum@, \verb@cumsum@, \verb@mean@, \verb@prod@, \verb@cumprod@.
 \end{itemize}
 A valid generalized posynomial expression is
 \begin{itemize}
 \item a valid posynomial;
-\item a generalized posynomial raised to a positive real power;
+\item the sum of two or more generalized posynomials;
+\item the product of two or more generalized posynomials;
+\item the ratio of a generalized posynomial and a monomial;
+\item a generalized posynomial raised to a positive real power; or
 \item a call to one of the following functions with arguments
       that are generalized posynomials: \verb@sum@, \verb@cumsum@,
       \verb@mean@, \verb@prod@, \verb@cumprod@, \verb@geomean@,
