@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta name="generator" content=
+  "HTML Tidy for Windows (vers 12 April 2005), see www.w3.org" />
+
+  <title>CVX version history</title>
+</head>
+
+<body>
+  <h1><tt>CVX</tt> version history</h1>
+
+  <dl>
+    <dt>Version 0.80, July 2005:</dt>
+
+    <dd>initial release.</dd>
+
+    <dt>Version 0.85, August 2005:</dt>
+
+    <dd>Support for Matlab 6.1 and 6.5; previous versions required
+    Matlab 7.0 or later.<br />
+    Added precompiled binaries for Solaris.<br />
+    Support for scalar quadratic forms (see Section 4.7 of the
+    <a href="cvx_usrguide.pdf">user guide</a>).<br />
+    Added the <tt>norms</tt> function to facilitate sum-of-norms
+    and max-of-norms problems.<br />
+    Various bug fixes incorporated.</dd>
+
+    <dt>Version 0.86, September 2005:</dt>
+
+    <dd>Fixes for Matlab 6.1 compatability.</dd>
+
+    <dd>Improved support for quadratic forms.</dd>
+
+    <dd>A bug that prevented some Euclidean norm constraints from
+    being declared was fixed.</dd>
+
+    <dt>Version 0.87/0.87.1, October 2005:</dt>
+
+    <dd>Improved the setup routine (<tt>cvx_setup</tt>).</dd>
+
+    <dd>Updated the documentation with a table of contents and a
+    new section explaining the status messages returned by
+    <tt>CVX</tt>.</dd>
+
+    <dd>Implemented workarounds for bugs in SeDuMi's handling of
+    certain degenerate problems.</dd>
+
+    <dd>Created a MEX file to improve presolve performance.</dd>
+
+    <dd>Miscellaneous bug fixes, performance improvements, and
+    documentation updates.</dd>
+
+    <dt>Version 0.88, December 2005:</dt>
+
+    <dd>Further improvements to the setup routine
+    (<tt>cvx_setup</tt>).</dd>
+
+    <dd>A bug with the potential to cause invalid numerical results
+    has been fixed. It is unlikely that this bug has caused anyone
+    problems, except for the person who reported it, because: 1) it
+    required a unique set of circumstances to exercise it; and 2)
+    even if it were exercised, it would likely produce
+    <i>obviously</i> invalid results.</dd>
+
+    <dd>Improvements have been made to prevent <tt>OUT OF
+    MEMORY</tt> errors for certain large problems.</dd>
+
+    <dt>Version 0.89, December 2005:</dt>
+
+    <dd>Official release of the expanded example library.</dd>
+
+    <dd>Added support for indexed dual variables; see the
+    documentation for details.</dd>
+
+    <dt>Version 0.90, January 2006:</dt>
+
+    <dd>Added support for the geometric mean function
+    <tt>geomean</tt> and the determinant function
+    <tt>det_root2n</tt>, enabling the solution of determinant
+    maximization problems. (Previous versions of <tt>cvx</tt>
+    provided the <tt>geomean</tt> function, but it was not
+    documented or supported because of its unreliability in
+    infeasible problems. This shortcoming has been addressed, so
+    now we have made it "official.")</dd>
+
+    <dt>Version 0.91, January 2006:</dt>
+
+    <dd>Added support for the determinant function
+    <tt>det_rootn</tt>.</dd>
+
+    <dd>Added a new semidefinite programming mode, which is
+    activated with the command <tt>cvx_begin sdp</tt>; see the user
+    guide for details.</dd>
+
+    <dd>Miscellaneous bug fixes related to the solution of complex
+    norm minimization problems, convex quadratic forms, and a
+    workaround for a SeDuMi bug.</dd>
+
+    <dt>Version 0.92, February 2006:</dt>
+
+    <dd>Fixes for feasibility problems and large matrix
+    multiplications</dd>
+
+    <dd>Added support for the approximate <tt>log(sum(exp()))</tt>
+    function <tt>logsumexp_sdp</tt>. This function allows geometric
+    programs, already transformed into convex form, to be solved
+    without the need for a dedicated solver: that is, SeDuMi will
+    solve them! Type <tt>help logsumexp_sdp</tt> from the MATLAB
+    command line for details.</dd>
+
+    <dt>Version 0.93, March 2006:</dt>
+
+    <dd>Final release of the ``pre-GP'' version of the code.</dd>
+
+    <dt>Version 1.0 beta, March 2006:</dt>
+
+    <dd>Major revision. Much of the internal structure has been
+    reworked in order to improve performance and facilitate
+    geometric programming support.</dd>
+  </dl>
+
+  <p><a href="index.html">Back to the <tt>CVX</tt> main
+  page.</a></p>
+
+  <p><a href="http://www.stanford.edu/~boyd/research.html">Back to
+  Boyd's research group page.</a></p>
+
+  <p><a href="http://validator.w3.org/check?uri=referer"><img src=
+  "valid-xhtml10.png" alt="Valid XHTML 1.0 Transitional" border="0"
+  height="31" width="88" /></a> <a href=
+  "http://tidy.sourceforge.net"><img src="checked_by_tidy.gif" alt=
+  "Checked by Tidy!" border="0" height="32" width="32" /></a></p>
+
+  <p>Last updated: ___DATE___</p>
+</body>
+</html>

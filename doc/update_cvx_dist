@@ -46,11 +46,12 @@ rm -rf examples
 tar xvf cvx-examples.tar
 rm -rf cvx-examples.tar
 
-# Update the index file
+# Update the index file and history file
 MYDATE=`date`
 MYZIP=`du --si $DSTDIR/cvx.zip | sed 's@\s.*@@'`
 MYTAR=`du --si $DSTDIR/cvx.tar.gz | sed 's@\s.*@@'`
 sed "s@___DATE___@$MYDATE@;s@___ZIP___@$MYZIP@;s@___TAR___@$MYTAR@" $CPYDIR/cvx/doc/index.html > $DSTDIR/index.html
+sed "s@___DATE___@$MYDATE@" $CPYDIR/cvx/doc/history.html > $DSTDIR/history.html
 
 # Set the permissons at the destination
 chgrp -fR research $DSTDIR

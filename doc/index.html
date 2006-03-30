@@ -15,7 +15,7 @@
   <h1><tt>CVX</tt>: Matlab Software for Disciplined Convex
   Programming</h1>
 
-  <h2>Version 0.92 alpha (February 2006)</h2>
+  <h2>Version 1.0 beta (March 2006)</h2>
 
   <h3><a href="http://www.stanford.edu/~mcgrant">Michael Grant</a>,
   <a href="http://www.stanford.edu/~boyd">Stephen Boyd</a>, and
@@ -73,8 +73,8 @@
     </tr>
   </table>
 
-  <p>To be precise, <tt>CVX</tt> supports a particular approach to
-  convex optimization that we call <a href=
+  <p>In its default mode, <tt>CVX</tt> supports a particular
+  approach to convex optimization that we call <a href=
   "http://www.stanford.edu/~boyd/disc_cvx_prog.html"><i>disciplined
   convex programming</i></a>. Under this approach, convex functions
   and sets are built up from a small set of rules from convex
@@ -89,13 +89,17 @@
   "http://www.stanford.edu/~boyd/cvxbook">Convex
   Optimization</a>.</cite></p>
 
-  <p>This version of <tt>CVX</tt> relies on <a href=
-  "http://sedumi.mcmaster.ca/">SeDuMi</a> as the core solver, and
-  so is restricted in the functions, sets, and problems it can
-  handle. Still, it can handle a wide variety of problems involving
-  various norms, matrix inequalities, and other constraints. More
-  information can be found in the <cite><a href=
-  "cvx_usrguide.pdf"><tt>CVX</tt> Users' Guide</a>.</cite></p>
+  <p><tt>CVX</tt> also supports <i>geometric programming</i> (GP)
+  through the use of a special GP mode. Geometric programs are not
+  convex, but can be made so by applying a certain transformation.
+  In this mode, <tt>CVX</tt> allows GPs to be constructed in their
+  native, nonconvex form, transforms them automatically to a
+  solvable convex form, and translates the numerical results back
+  to the original problem.</p>
+
+  <p>More information about <tt>CVX</tt> can be found in the
+  <cite><a href="cvx_usrguide.pdf"><tt>CVX</tt> Users'
+  Guide</a>.</cite></p>
 
   <h3><a id="examples" name="examples">The example library</a></h3>
 
@@ -109,29 +113,33 @@
 
   <p>You can browse through this library now&mdash;without having
   to download and install <tt>CVX</tt>&mdash;by <a href=
-  "http://www.stanford.edu/~boyd/cvx/examples/">clicking here</a>.
-  Of course, if you wish to run any of the examples, please proceed
-  to the <a href="#down">download section</a> below.</p>
+  "examples/">clicking here</a>. Of course, if you wish to run any
+  of the examples, please proceed to the <a href="#down">download
+  section</a> below.</p>
 
   <h3><a id="system" name="system">System requirements</a></h3>
 
   <p>The <tt>CVX</tt> modeling system is built using <a href=
   "http://www.mathworks.com/products/matlab/">Matlab</a>, and
   requires version 6.1 or later of Matlab to run. It is built using
-  both native Matlab code and C MEX files (as is SeDuMi).
-  Precompiled binaries for Windows, Linux, and Solaris are supplied
-  with the distribution, but it should work fine on other platforms
-  as well, as long as they support both Matlab and SeDuMi. See
-  Appendix A of the <a href="cvx_usrguide.pdf">user guide</a> for
-  more detials, and for installation instructions.</p>
+  both native Matlab code and C MEX files. It currently employs
+  <a href="http://sedumi.mcmaster.ca">SeDuMi</a> as its solver,
+  which is also built using a combination of Matlab and C MEX
+  files. Precompiled binaries for Windows, Linux, and Solaris are
+  supplied with the distribution, but it should work fine on other
+  platforms as well, as long as they support both Matlab and
+  SeDuMi. See Appendix A of the <a href="cvx_usrguide.pdf">user
+  guide</a> for more detials, and for installation
+  instructions.</p>
 
   <h3><a id="mail" name="mail">The <tt>CVX</tt> mailing
   list</a></h3>
 
-  <p>During this alpha period, we will be releasing updates
-  incorporating bug fixes, improvements, and new features. The date
-  at the bottom of this web page indicates when this distribution
-  was last updated. If you would like to be notified when an update
+  <p>This software is actively updated with bug fixes,
+  improvements, and new features. In addition, we will continue to
+  expand the <a href="examples/">example library</a>. The date at
+  the bottom of this web page indicates when this distribution was
+  last updated. If you would like to be notified when an update
   occurs, we invite you to subscribe to the <tt>cvx-announce</tt>
   mailing list. To do so, simply send a plain-text email to</p>
 
@@ -154,8 +162,7 @@
 
   <h3><a id="feed" name="feed">Feedback</a></h3>
 
-  <p>We welcome your feedback on <tt>CVX</tt>, particularly in this
-  early stage of development. Please contact <a href=
+  <p>We welcome your feedback. Please contact <a href=
   "mailto:mcgrant@stanford.edu">Michael Grant</a> or <a href=
   "mailto:boyd@stanford.edu">Stephen Boyd</a> with your bug reports
   and feature suggestions.</p>
@@ -178,127 +185,38 @@
 
   <h3><a id="hist" name="hist">Version history</a></h3>
 
-  <dl>
-    <dt>Version 0.80, July 2005:</dt>
+  <p>The first public release of <tt>CVX</tt> was in July of 2005
+  with version 0.80 alpha. Between July 2005 and March 2006, a
+  number of incremental improvements and bug fixes were made,
+  culminating in the release of 0.93 alpha in March 2006.</p>
 
-    <dd>initial release.</dd>
+  <p>Version 1.0 (beta) represents a major revision of the
+  software. Much of the system's internals have been reworked in
+  order to improve efficiency and performance, and to support the
+  addition of geometric programming support.</p>
 
-    <dt>Version 0.85, August 2005:</dt>
-
-    <dd>Support for Matlab 6.1 and 6.5; previous versions required
-    Matlab 7.0 or later.<br />
-    Added precompiled binaries for Solaris.<br />
-    Support for scalar quadratic forms (see Section 4.7 of the
-    <a href="cvx_usrguide.pdf">user guide</a>).<br />
-    Added the <tt>norms</tt> function to facilitate sum-of-norms
-    and max-of-norms problems.<br />
-    Various bug fixes incorporated.</dd>
-
-    <dt>Version 0.86, September 2005:</dt>
-
-    <dd>Fixes for Matlab 6.1 compatability.</dd>
-
-    <dd>Improved support for quadratic forms.</dd>
-
-    <dd>A bug that prevented some Euclidean norm constraints from
-    being declared was fixed.</dd>
-    <dt>Version 0.87/0.87.1, October 2005:</dt>
-
-    <dd>Improved the setup routine (<tt>cvx_setup</tt>).</dd>
-
-    <dd>Updated the documentation with a table of contents and a
-    new section explaining the status messages returned by
-    <tt>CVX</tt>.</dd>
-
-    <dd>Implemented workarounds for bugs in SeDuMi's handling of
-    certain degenerate problems.</dd>
-
-    <dd>Created a MEX file to improve presolve performance.</dd>
-
-    <dd>Miscellaneous bug fixes, performance improvements, and
-    documentation updates.</dd>
-
-    <dt>Version 0.88, December 2005:</dt>
-
-    <dd>Further improvements to the setup routine
-    (<tt>cvx_setup</tt>).</dd>
-
-    <dd>A bug with the potential to cause invalid numerical results
-    has been fixed. It is unlikely that this bug has caused anyone
-    problems, except for the person who reported it, because: 1) it
-    required a unique set of circumstances to exercise it; and 2)
-    even if it were exercised, it would likely produce
-    <i>obviously</i> invalid results.</dd>
-
-    <dd>Improvements have been made to prevent <tt>OUT OF
-    MEMORY</tt> errors for certain large problems.</dd>
-
-    <dt>Version 0.89, December 2005:</dt>
-
-    <dd>Official release of the expanded example library.</dd>
-
-    <dd>Added support for indexed dual variables; see the
-    documentation for details.</dd>
-
-    <dt>Version 0.90, January 2006:</dt>
-
-    <dd>Added support for the geometric mean function
-    <tt>geomean</tt> and the determinant function <tt>det_root2n</tt>,
-    enabling the solution of determinant maximization problems. (Previous
-    versions of <tt>cvx</tt> provided the <tt>geomean</tt> function,
-    but it was not documented or supported because of its unreliability in infeasible
-    problems. This shortcoming has been addressed, so now we have made it
-    "official.")</dd>
-
-    <dt>Version 0.91, January 2006:</dt>
-
-    <dd>Added support for the determinant function <tt>det_rootn</tt>.</dd>
-    <dd>Added a new semidefinite programming mode, which is activated
-    with the command <tt>cvx_begin sdp</tt>; see the user guide
-    for details.</dd>
-    <dd>Miscellaneous bug fixes related to the solution of complex
-    norm minimization problems, convex quadratic forms,
-    and a workaround for a SeDuMi bug.</dd>
-
-    <dt>Version 0.92, February 2006:</dt>
-
-	<dd>Fixes for feasibility problems and large matrix multiplications
-    <dd>Added support for the approximate <tt>log(sum(exp()))</tt> function
-    <tt>logsumexp_sdp</tt>. This function allows geometric programs, already
-    transformed into convex form, to be solved without the need for a
-    dedicated solver: that is, SeDuMi will solve them! Type
-    <tt>help logsumexp_sdp</tt> from the MATLAB command line for details.</dd>
-
-  </dl>
+  <p>For a more detailed version history, <a href=
+  "history.html">click here.</a></p>
 
   <h3><a id="plans" name="plans">Future plans</a></h3>
 
-  <p>A major revision to <tt>cvx</tt> is in progress.
-  This revision adds native support
-  for generalized geometric programming and mixed convex/geometric
-  programming. We had hoped to
-  have it ready in January, but it has been delayed. However, it is now
-  working well and we anticipate its release iminently; <i>i.e.</i>,
-  in early March 2006.
-
-  <p>The next major revision will add support for smooth nonlinearities.
-  The current plan is
-  to include <tt>log()</tt> and <tt>logdet()</tt>, <tt>exp()</tt>,
-  <tt>entropy()</tt>, and convex and
-  concave branches of <tt>pow(x,p)</tt>. Others may be added upon
-  request. This revision will require the development of a new solver,
-  however, so its release date cannot be predicted at this point.</p>
+  <p>The next major revision will add support for smooth
+  nonlinearities. The current plan is to include <tt>log()</tt>,
+  <tt>exp()</tt>, <tt>entropy()</tt>, and convex and concave
+  branches of <tt>pow(x,p)</tt>. Others may be added upon request.
+  This revision will require the development of a new solver,
+  however, so its release date cannot be predicted at this
+  point.</p>
 
   <h3><a id="copy" name="copy">Copyright information</a></h3>
 
-  <p>This version of <tt>CVX</tt> is distributed under the <a href=
+  <p>Our intention is to make this software available for use
+  without encumbrance in both academic and commercial settings.
+  This version of <tt>CVX</tt> is distributed under the <a href=
   "http://www.gnu.org/copyleft/gpl.html">GNU General Public License
-  2.0</a>. Our intention is for this software to always be usable
-  without encumbrance in academic and commercial applications. To
-  that end, the license may change in future versions, and we
-  welcome feedback on this topic. In particular, we do not intend
-  to force anyone to release their own applications of <tt>CVX</tt>
-  under the GNU license.</p>
+  2.0</a>. For commercial applications that may be incompatible
+  with this license, please do not hesitate to contact us to
+  discuss alternatives.</p>
 
   <p>The example library (found in the <tt>examples/</tt>
   subdirectory of the distribution) is public domain. You are free
@@ -327,10 +245,9 @@
   Boyd's research group page.</a></p>
 
   <p><a href="http://validator.w3.org/check?uri=referer"><img src=
-  "http://www.w3.org/Icons/valid-xhtml10" alt=
-  "Valid XHTML 1.0 Transitional" border="0" height="31" width=
-  "88" /></a> <a href="http://tidy.sourceforge.net"><img src=
-  "http://tidy.sourceforge.net/checked_by_tidy.gif" alt=
+  "valid-xhtml10.png" alt="Valid XHTML 1.0 Transitional" border="0"
+  height="31" width="88" /></a> <a href=
+  "http://tidy.sourceforge.net"><img src="checked_by_tidy.gif" alt=
   "Checked by Tidy!" border="0" height="32" width="32" /></a></p>
 
   <p>Last updated: ___DATE___</p>
