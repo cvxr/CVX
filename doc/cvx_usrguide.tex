@@ -1,6 +1,6 @@
 \documentclass[12pt]{article}
 \usepackage{fullpage,islsymb,graphicx,makeidx}
-\makeindex
+%\makeindex
 
 \DefineVerbatimEnvironment{code2}{Verbatim}{tabsize=0,xleftmargin=0.5in,numbers=left,firstnumber=last,commandchars=\!\{\}}
 
@@ -170,7 +170,7 @@ Some useful functions that are \emph{not} supported in
 the current version include
 exponential and log, powers other than 2 and $0.5$, and
 so forth. Support for such functions will require the use
-of a new solver, which is being planned.
+of one of the new solvers mentioned above.
 
 \subsection{Feedback}
 \label{sec:feedback}
@@ -201,9 +201,10 @@ have encountered the limits
 of the software's performance, by creating models that are too 
 large for \cvx to solve.
 
-Such limits are unavoidable due to a number of factors: the finite
+Such limits are unavoidable due to a number of factors, including
+the finite
 resources of a typical PC, the overhead imposed by the Matlab 
-environment;
+environment,
 and the general-purpose design of the underlying numerical solver.
 Thus while \cvx should perform
 well for medium scale problems and many structured large-scale 
@@ -1264,7 +1265,7 @@ and (real) affine expressions are both convex and concave.
 
 Convex and concave expressions are real by definition. Complex constant
 and affine expressions can be constructed, but their usage is more limited;
-for example, they cannot appear as the left- or right-hand side of an equality
+for example, they cannot appear as the left- or right-hand side of an inequality
 constraint.
 
 \subsection{Top-level rules}
@@ -1317,7 +1318,7 @@ In fact, the returned value of set atoms like
 \verb@semidefinite()@ and \verb@lorentz()@ is affine,
 so it is sufficient to simply verify the remaining portion
 of the set membership constraint. For composite values like
-\verb@{ x, y }@, each element must be affine .
+\verb@{ x, y }@, each element must be affine.
 
 In this version, 
 strict inequalities \verb@<@, \verb@>@ are interpreted
@@ -1391,8 +1392,7 @@ forbid \emph{products}
 between nonconstant expressions,  
 with the exception of scalar quadratic forms 
 (see \S\ref{sec:quadforms} below). 
-%For example, the expression \verb@x * log(x)@ is convex, but violates
-For example, the expression \verb@x * sqrt(x)@ happens to be a 
+For example, the expression \verb@x*sqrt(x)@ happens to be a 
 convex function of \verb@x@, but its convexity cannot be verified
 using the \cvx ruleset, so it is rejected by \cvx.
 We call this the \emph{no-product rule},
@@ -1771,9 +1771,9 @@ $X$ is positive semidefinite.
 
 \cvx provides a special \emph{SDP mode} which allows this
 LMI convention to be employed inside \cvx models
-using Matlab's standard inequality operators \verb@>=@, \verb@<=@, \etc.
+using Matlab's standard inequality operators \verb@>=@, \verb@<=@, \etc
 In order to use it, one must simply begin a model with the statement
-\verb@cvx_begin sdp@ instead of simply \verb@cvx_begin@. When SDP mode 
+\verb@cvx_begin sdp@ or \verb@cvx_begin SDP@ instead of simply \verb@cvx_begin@. When SDP mode 
 is engaged, \cvx interprets certain inequality constraints in a
 different manner. To be specific:
 \begin{itemize}
@@ -1819,7 +1819,7 @@ different manner. To be specific:
       does not extract the symmetric part for you: you must take
       care to insure symmetry yourself. Since \cvx supports the declaration
       of symmetric matrices, this is reasonably straightforward. If \cvx cannot
-      determine that an LMI is symmetric, a warning will be issued.
+      determine that an LMI is symmetric, a warning will be issued.      
 \item A dual variable, if supplied, will be applied to the converted
       equality constraint. It will be given a 
       positive semidefinite value if an optimal point is found.
@@ -1884,7 +1884,8 @@ A tutorial on geometric programming is beyond the scope of this document, so we
 refer the reader to \cite{BKVH:05}.
 
 To use utilize this GP mode, you must begin your \cvx specification
-with the command \verb@cvx_begin gp@ or \verb@cvx_begin GP@. For example,
+with the command \verb@cvx_begin gp@ or \verb@cvx_begin GP@ instead of simply
+\verb@cvx_begin@. For example,
 the following code, found in the example library at \verb@gp/max_volume_box.m@,
 determines the maximum volume box subject to
 various area and ratio constraints:
@@ -1903,23 +1904,12 @@ various area and ratio constraints:
 \end{code}
 As the example illustrates, \cvx supports the construction of monomials and
 posynomials using addition, multiplication, division (when appropriate),
-and powers. 
+and powers. In addition, \cvx supports the construction of \emph{generalized
+geometric programs} (GGPs), by permitting the use of \emph{generalized
+posynomials} wherever posynomials are permitted in standard GP \cite{BKVH:05}.
 
-\cvx also supports the practice of \emph{generalized geometric programming}. 
-Generalized geometric programs (GGPs)
-permit the use of \emph{generalized posynomials} wherever a
-posynomial is permissible in standard GP. Generalized posynomials include
-posynomials, and are closed under the operations of addition,
-multiplication, positive powers, and maximums \cite{BKVH:05}. A number of
-\cvx functions can easily be seen as simple compositions of the above
-operations, and are therefore permitted for use in GGPs as well:
-\verb@max@, \verb@sum@, \verb@cumsum@, \verb@mean@,
-\verb@prod@, \verb@cumprod@, \verb@geomean@, 
-\verb@sqrt@, \verb@norm@,
-\verb@sum_largest@, \verb@norm_largest@.
-
-The solver used in this version of \cvx does not,
-in fact, support geometric programming. For now, one of the authors has developed an
+The solver used in this version of \cvx, SeDuMi, does
+not support geometric programming natively. Therefore, we have developed an
 approximation method which allows \cvx to use SeDuMi to solve GPs and related
 problems. The method converts GPs to SDPs, and the approximation error can be bounded in advance.
 Details of the method are outside of the scope of this document,
@@ -1928,6 +1918,72 @@ how to control its accuracy. While this approach
 is ultimately \emph{not} suited for very large GPs, it has proven
 in practice to perform respectably on small- and medium-scale
 problems.
+
+In the remainder of this section, we will describe specific rules
+that apply when constructing models in GP mode.
+
+\subsection{Top-level rules}
+
+\cvx supports three types of geometric programs:
+\begin{itemize}
+\item A \emph{minimization problem}, consisting of a generalized posynomial objective and
+zero or more constraints.
+\item A \emph{maximization problem}, consisting of a \emph{monomial} objective and
+zero or more constraints.
+\item A \emph{feasibility problem}, consisting of one or more constraints.
+\end{itemize}
+The asymmetry between minimizations and maximizations---specifically, that only monomial
+objectives are allowed in the latter---is an unavoidable artifact of
+the geometry of GPs and GGPs.
+
+\subsection{Constraints}
+
+Three types of constraints may be specified in geometric programs:
+\begin{itemize}
+\item An \emph{equality constraint} \verb@==@ where both sides are monomials.
+\item A \emph{less-than inequality constraint} \verb@<=@, \verb@<@ 
+where the left side is a generalized posynomial and the right side is a monomial.
+\item A \emph{greater-than inequality constraint} \verb@>=@, \verb@>@ 
+where the left side is a monomial and the right side is a generalized posynomial.
+\end{itemize}
+As with DCPs, non-equality constraints are not permitted.
+
+\subsection{Expressions}
+
+The basic building blocks of generalized geometric programming are
+monomials, posynomials, and generalized posynomials. A valid monomial expression is
+\begin{itemize}
+\item a declared variable;
+\item the product of two or more monomials;
+\item the ratio of two monomials;
+\item a monomial raised to a real power;
+\item a call to one of the following functions with monomial arguments:
+      \verb@prod@, \verb@cumprod@, \verb@geomean@, \verb@sqrt@.
+\end{itemize}
+A valid posynomial expression is
+\begin{itemize}
+\item a valid monomial;
+\item the sum of two or more posynomials;
+\item the product of two or more posynomials;
+\item the ratio of a posynomial and a monomial;
+\item a posynomial raised to a positive integer power;
+\item a call to one of the following functions with posynomial arguments:
+      \verb@sum@, \verb@cumsum@, \verb@mean@, \verb@prod@, \verb@cumprod@.
+\end{itemize}
+A valid generalized posynomial expression is
+\begin{itemize}
+\item a valid posynomial;
+\item a generalized posynomial raised to a positive real power;
+\item a call to one of the following functions with arguments
+      that are generalized posynomials: \verb@sum@, \verb@cumsum@,
+      \verb@mean@, \verb@prod@, \verb@cumprod@, \verb@geomean@,
+      \verb@sqrt@, \verb@norm@, \\ \verb@sum_largest@, \verb@norm_largest@.
+\end{itemize}
+It is entirely possible to create and manipulate arrays of monomials,
+posynomials, and/or generalized posynomials in \cvx, in which case these
+rules extend in an obvious manner. For example, the product of two
+monomial matrices produces either a posynomial matrix or a monomial 
+matrix, depending upon the structure of said matrices.
 
 \section{Advanced topics}
 
@@ -2330,7 +2386,8 @@ second derivatives) for the set.
 This is not supported in the current version.
 \fi
 
-\subsection{More on generalized geometric programming}
+\iffalse
+\subsection{Log-log-convex programming}
 
 It is, in fact, possible to extend geometric programming beyond what is
 described in \cite{BKVH:05} and in \S\ref{sec:gpmode}. 
@@ -2363,13 +2420,13 @@ rules; but so do many other problems as well.
 It is not entirely clear that there are any \emph{useful}
 log-log-convex problems which cannot be expressed in terms of a GP or GGP.
 Until such examples are found, the ruleset will primarily be of academic
-interest at best. But because the ruleset forms the basis for the 
-verification of GPs and GGPs in \cvx, we list the ruleset here.
+interest at best. But as a natural consequence of the implementation of GP mode,
+\cvx supports log-log-convex programming. So we list the ruleset here.
 
 \subsubsection{The log-curvature taxonomy}
 \label{sec:gp-taxonomy}
 
-For geometric programming, three new categories of curvature are needed:
+For log-log-convex programming, three new categories of curvature are needed:
 \emph{log-log-affine}, \emph{log-log-convex}, or \emph{log-log-concave}.
 The categories contain those functions which are affine, convex,
 and concave, respectively, after application of the log-log-mapping;
@@ -2501,6 +2558,7 @@ Clearly, a function that is monotonic is also p-monotonic in the same sense;
 for example, \verb@sum@ is both nondecreasing and p-nondecreasing. The
 reverse implication is \emph{not} true; for example,
 \verb@norm( x, q )@ is p-nondecreasing in x, but nonmonotonic.
+\fi
 
 \newpage
 \appendix
@@ -2508,45 +2566,33 @@ reverse implication is \emph{not} true; for example,
 \section{Installing \cvx}
 \label{s-installing}
 
-The basic system requirements for running \cvx are Matlab 6.0 or later,
-on any platform that supports SeDuMi 1.1R2 \cite{SeDuMi}. A copy of SeDuMi
-has been included with \cvx.
-The SeDuMi MEX files, and the lone \cvx MEX file, have been precompiled
-for Windows, Linux, and Solaris 8, and we are able
-to test them on the following specific platform combinations:
+\cvx requires Matlab 6.0 or later. 
+We are able to precompile and test the SeDuMi
+and \cvx MEX files on the following platform combinations:
 \begin{itemize}
-\item Windows: Matlab 6.1, 6.5.2, and 7.0.4.
-\item Linux: Matlab 6.5.1, 7.0.0, and 7.0.4.
-\item Solaris 8: Matlab 6.5.1 and 7.0.0.
+\item Windows (32-bit): Matlab 6.1, 6.5, 7.1, and 7.2
+\item Linux (32-bit): Matlab 6.5, 7.0, 7.1
+\item Solaris 8: Matlab 6.5, 7.1
+\item Mac OS X (PowerPC only): Matlab 7.1
 \end{itemize}
-If any of these combinations matches your own, then simply follow the directions in
-\S\ref{sec:winlin} below to install \cvx, and you should be able to
-proceed without difficulty.
-For other platforms, please see the instructions in \S\ref{sec:othersys}.
-
 If your platform combination differs only slightly from these---say,
-for example, you are running Matlab 7.0.0 
-on Windows---then the instructions in \S\ref{sec:winlin} \emph{should}
-work, but we cannot be sure. We encourage
+for example, you are running Matlab 7.0
+on Windows---then the instructions in \S\ref{sec:winlin} below should still work.
+Nevertheless, we encourage
 you to upgrade to at least upgrade to the latest minor version of
-Matlab if at all possible; your license likely allows it.
+Matlab if at all possible. For other platforms besides those listed above, see
+see \S\ref{sec:othersys} before proceeding.
 
-If you have been running a previous version of \cvx, and you are installing
-a new version, please do not simply unpack it on top of the old version. Instead,
-remove the old version entirely, or move it out of the way---say, by renaming
-the directory \verb@cvx@ to \verb@cvx.old@. Then follow the
-directions as if you were installing \cvx for the first time.
-
-\subsection{Precompiled platforms}
+\subsection{Basic instructions}
 \label{sec:winlin}
 
-Installing \cvx is simplest on Windows and Linux systems. If you are running Matlab
-R13 (6.5), please note the additional instructions below:
 \begin{enumerate}
 \item Retrieve the latest version of cvx from \url{http://www.stanford.edu/~boyd/cvx}.
 You can download the package as either a \verb@.zip@ file or a \verb@.tar.gz@ 
 file.
 \item Unpack the file anywhere you like; a directory called \verb@cvx@ will be created.
+However, if you have been running a previous version of \cvx, \emph{remove the old 
+version}, or move it out of the way, before proceeding.
 \item Start Matlab.
 \item Change the current directory to the location of \cvx.
 For example, if you unpacked \verb@cvx.zip@ on your Windows machine into the
@@ -2579,22 +2625,21 @@ Matlab path for subsequent Matlab sessions. Follow the instructions provided
 by \verb@cvx_setup@ to accomplish that.
 \end{enumerate}
 
-\subsection{Other platforms}
+\subsection{Unsupported platforms}
 \label{sec:othersys}
 
-According to the SeDuMi web site, SeDuMi 1.1R2 will also run on MacOS X, AIX, and 
-Solaris. \cvx's MEX files should compile properly on those platforms as well. However,
-neither package has been precompiled for these platforms, so you will have to compile
-them yourself. If you wish to do so, you must first
+It may be possible to run \cvx on other platforms that run MATLAB 6.0, 
+but the MEX files must be successfully compiled to do so. Therefore, before
+following the instructions in \S\ref{sec:winlin} above, you must
 confirm that your MEX system has been set up properly. If you have compiled
-MEX files before, this is likely the case. Otherwise, you may have to run 
-the command
+MEX files before, this is likely the case; otherwise, run the command
 \begin{code}
 	mex -setup
 \end{code}
 and answer the prompted questions. If necessary, consult the Matlab documentation for details.
 
-With the MEX system properly configured, typing \verb@cvx_setup@ should automatically
+With the MEX system properly configured, following the instructions in
+\S\ref{sec:winlin} should work. The \verb@cvx_setup@ script will automatically
 compile the MEX files for both SeDuMi and \cvx. Unfortuntaely, the authors do not have ready access to these platforms, so if you
 are unable to compile the MEX files for your platform, we may not be able to help.
 Nevertheless, we have tried to make the installation process simple, and 
@@ -2609,15 +2654,12 @@ If you remove them inadvertently, just reinstall them from the distribution.
 
 \subsection{About SeDuMi}
 
-As stated above, 
-the \cvx distribution includes a full copy of the SeDuMi package
-in the directory \verb@cvx/sedumi@.
-If you wish to use SeDuMi independently of \cvx, 
-add that subdirectory to your Matlab path as well. 
-If you already have SeDuMi installed on your system, you are free to remove
-\verb@cvx/sedumi@ to save space; \cvx will detect the presence of your other
-copy and use it instead. If you do this, it is important that
-your version of SeDuMi coincides with the version used by \cvx (1.1R2).
+The \cvx distribution includes a full copy of the SeDuMi package
+in the directory \verb@cvx/sedumi@. This version incorporates 
+some bug fixes that are \emph{not} currently found in the versions fo SeDuMi
+available from the web. Therefore, we \emph{strongly} recommend that
+you use our version of SeDuMi, and remove any other versions that 
+you may have from your Matlab path.
 
 \section{Operators, functions, and sets}
 \label{s-functions}
@@ -3218,5 +3260,5 @@ and his students, Rahul Panicker, Jo\"{e}lle Skaf, Argyris Zymnis.
 \newpage
 \bibliography{cvxrefs}
 \newpage
-\printindex
+%\printindex
 \end{document}
