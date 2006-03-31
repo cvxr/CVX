@@ -1,6 +1,6 @@
 \documentclass[12pt]{article}
 \usepackage{fullpage,islsymb,graphicx,makeidx}
-%\makeindex
+\makeindex
 
 \DefineVerbatimEnvironment{code2}{Verbatim}{tabsize=0,xleftmargin=0.5in,numbers=left,firstnumber=last,commandchars=\!\{\}}
 
@@ -18,24 +18,26 @@
 
 \begin{document}
 \maketitle
+\clearpage
 \tableofcontents
+\clearpage
 
 \section{Introduction}
 
 \subsection{What is \cvx?}
 \index{cvx@\texttt{cvx}}
-\index{disciplined convex programming}
+\index{disciplined convex programming|see{DCP}}
 \index{disciplined geometric programming}
 \index{DCP}
-\index{Linear programs|see{LP}}
+\index{linear!program|see{LP}}
 \index{LP}
-\index{Quadratic programs|see{QP}}
+\index{quadratic program|see{QP}}
 \index{QP}
-\index{Second-order cone programs|see{SOCP}}
+\index{second-order cone program|see{SOCP}}
 \index{SOCP}
-\index{Geometric programs|see{GP}}
+\index{geometric program|see{GP}}
 \index{GP}
-\index{Semidefinite programs|see{SDP}}
+\index{semidefinite program|see{SDP}}
 \index{SDP}
 \index{Matlab}
 
@@ -59,6 +61,8 @@ special functions and combination rules of geometric programming,
 including monomials, posynomials, and generalized posynomials \cite{BKVH:05},
 and transforms such problems into convex form
 so that they can be solved efficiently.
+\index{SDP!mode}
+\index{GP!mode}
 
 \cvx is implemented in Matlab \cite{MATLAB}, effectively
 turning Matlab into an optimization modeling language.
@@ -76,10 +80,9 @@ optimization, such as a branch and bound method,
 or an engineering design framework.
 
 \index{YALMIP}
-\index{CVXOPT}
 \index{AMPL}
 \index{GAMS}
-\index{Python}
+\index{python}
 \cvx was designed and implemented by Michael Grant, with input
 from Stephen Boyd and Yinyu Ye \cite{GBY}. It
 incorporates ideas from earlier work by 
@@ -98,7 +101,7 @@ as part of the CVXOPT system \cite{CVXOPT}, in the near future.
 
 \subsection{What is disciplined convex programming?}
 \label{sec:what-is-dcp}
-\index{disciplined convex programming}
+\index{disciplined convex programming|see{DCP}}
 \index{DCP}
 
 The term \emph{disciplined convex programming} refers to
@@ -111,7 +114,7 @@ In other words, it is designed to support the formulation and
 construction of optimization problems that the user 
 intends \emph{from the outset} to be convex.
 
-\index{DCP ruleset}
+\index{DCP!ruleset}
 Disciplined convex programming imposes a limited
 set of conventions or rules, which we call the \emph{DCP ruleset}.
 Problems which adhere to the ruleset can be rapidly and automatically
@@ -124,7 +127,6 @@ just need to be rewritten in a conforming manner.
 A detailed description of the DCP ruleset is given in \S\ref{sec:rules},
 and it is important for anyone who wishes to actively use
 \cvx to understand it.
-\index{convex analysis}
 The ruleset is simple 
 to learn, drawn from basic principles of convex analysis,
 and resembles the practices of those who study and use
@@ -139,16 +141,16 @@ their natural mathematical forms.
 \subsection{About this version}
 \label{sec:version}
 \index{version information}
-
 \index{SeDuMi}
 \index{MOSEK}
 \index{LP}
 \index{SDP}
 \index{SOCP}
+\index{CVXOPT}
 In this version of \cvx,
 SeDuMi \cite{Stu:99} is the only core solver supported.
-SeDuMi is an interior-point solver written in Matlab for 
-LPs, SOCPs, SDPs, and combinatiuos thereof.
+SeDuMi is an open-source interior-point solver written in Matlab for 
+LPs, SOCPs, SDPs, and combinations thereof.
 Future versions of \cvx will support other solvers, such as
 MOSEK \cite{MOSEK}, CVXOPT \cite{CVXOPT}, 
 and a general purpose solver we are developing.
@@ -175,7 +177,7 @@ of one of the new solvers mentioned above.
 \subsection{Feedback}
 \label{sec:feedback}
 \index{feedback}
-\index{bug reports}
+\index{bug report}
 
 Any feedback and criticism you might
 have about this software, would be greatly appreciated.
@@ -304,11 +306,11 @@ computed using the backslash operator:
 \begin{code2}[firstnumber=20]
 	x_ls = A \ b;
 \end{code2}
-\index{variables}
 \index{variable@\texttt{variable}}
 \index{minimize@\texttt{minimize}}
 \index{norm@\texttt{norm}}
-\index{objective functions}
+\index{objective function}
+\index{function!objective}
 Using \cvx, the same problem can be solved as follows:
 \begin{code2}[firstnumber=23]
 	cvx_begin			!label{code:beg}
@@ -370,6 +372,8 @@ status of the calculation. In this case, \verb@cvx_status@
 would contain the string \verb@Solved@. See Appendix \ref{sec:status}
 for a list of the possible values of \verb@cvx_status@ and their meaning.
 \end{itemize}
+\index{cvx_optval@\texttt{cvx\_optval}}
+\index{cvx_status@\texttt{cvx\_status}}
 All three of these quantities, \verb@x@, \verb@cvx_optval@, and
 \verb@cvx_status@, may now be freely used in other Matlab
 statements, just like any other numeric or string values.\footnote{If you type
@@ -381,7 +385,7 @@ There is not much room for error in specifying a simple least-squares
 problem, but if you make one, you will get an error or warning message.
 For example, if you replace line~\ref{code:obj} with
 \index{maximize@\texttt{maximize}}
-\index{objective functions!non-convex}
+\index{objective function!nonconvex}
 \begin{code}
 	maximize( norm(A*x-b) );
 \end{code}
@@ -431,8 +435,8 @@ to solve the problem as follows:
 \end{code2}
 This actually minimizes the square of the norm, which is the same as
 minimizing the norm itself. In contrast, the \cvx specification is given by
-\index{constraints}
-\index{constraints!bounds}
+\index{constraint}
+\index{constraint!bounds}
 \begin{code2}[firstnumber=59]
 	cvx_begin
 	    variable x(n);
@@ -590,12 +594,12 @@ function library. So solving the above problem in \cvx is simple:
 
 \subsection{Other constraints}
 \label{sec:constraints}
-\index{constraints}
+\index{constraint}
 
 We hope that, by now, it is not surprising that adding the simple bounds 
 $l\preceq x\preceq u$ to the problems in \S\ref{sec:othernorms} above
 is as simple as inserting the lines
-\index{constraints!bounds}
+\index{constraint!bounds}
 \begin{code}
 	x >= l;
 	x <= u;
@@ -613,8 +617,8 @@ as follows,
 Now let us add an equality constraint and a nonlinear inequality
 constraint to the original least-squares problem:
 \index{norm@\texttt{norm}!infinity norm@\texttt{norm($\cdot$,Inf)}}
-\index{constraints!inequality}
-\index{constraints!equality}
+\index{constraint!inequality}
+\index{constraint!equality}
 \begin{code2}[firstnumber=232]
 	cvx_begin
 	    variable x(n);
@@ -656,7 +660,7 @@ able to verify that problems are convex. To that end,
 that govern how constraint and objective expressions are constructed.
 For example, \cvx requires that the left- and right- hand sides of an
 equality constraint be affine. So a constraint such as
-\index{constraints!non-convex}
+\index{constraint!nonconvex}
 \begin{code}
 	norm(x,Inf) == 1;
 \end{code}
@@ -688,7 +692,7 @@ convex analysis and convex optimization.
 %to significantly hinder the construction of problems in practice.
 
 \subsection{An optimal trade-off curve}
-\index{tradeoff curves}
+\index{tradeoff curve}
 
 For our final example in this section, let us show how traditional
 Matlab code and \cvx specifications can be mixed to form and solve
@@ -747,7 +751,7 @@ is positive or zero. If \verb@gamma(k)@ were negative, then
 this expression becomes the sum of a convex term and a concave
 term, which causes \cvx
 to generate the following error:
-\index{constraints!non-convex}
+\index{constraint!nonconvex}
 \begin{code}
 ??? Error using ==> cvx.plus
 Disciplined convex programming error:
@@ -757,14 +761,29 @@ Addition of convex and concave terms is forbidden.
 \section{The basics}
 
 \subsection{Data types for variables}
-\index{variables!declaring}
+\index{variable!declaring}
 \index{variable@\texttt{variable}}
+\index{variables@\texttt{variables}}
 
 As mentioned above, all variables must be declared using the \verb@variable@
 command (or the \verb@variables@ command; see below) before they can be
 used in constraints or an objective function. 
 
-\index{variables!structure}
+\index{variable!structure}
+\index{variable!array}
+\index{array variable}
+\index{variable!complex}
+\index{complex variable}
+\index{variable!banded matrix}
+\index{banded matrix variable}
+\index{symmetric matrix variable}
+\index{variable!symmetric matrix}
+\index{diagonal matrix variable}
+\index{variable!diagonal matrix}
+\index{Hermitian matrix variable}
+\index{variable!Hermitian matrix}
+\index{Toeplitz matrix variable}
+\index{variable!Toeplitz matrix}
 Variables can be real or complex; and scalar, vector,
 matrix, or $n$-dimensional arrays. In addition, matrices can have \emph{structure}
 as well, such as symmetry or bandedness. The structure of a variable
@@ -822,7 +841,7 @@ declare complex or structured arrays (\eg, \verb@symmetric@,
 one at a time, using the singular \verb@variable@ command.
 
 \subsection{Objective functions}
-\index{objective functions}
+\index{objective function}
 \index{minimize@\texttt{minimize}}
 \index{maximize@\texttt{maximize}}
 
@@ -835,6 +854,8 @@ given \cvx specification, and the objective function must have a
 scalar value. (For the only exception to this rule, see the 
 section on defining new functions in \S\ref{s-new-fcts}).
 
+\index{feasibility}
+\index{problem!feasibility}
 \index{cvx_optval@\texttt{cvx\_optval}}
 If no objective function is specified, the problem is interpreted
 as a feasibility problem, which is the same as performing a minimization
@@ -843,10 +864,11 @@ is either \verb@0@, if a feasible point is found, or
 \verb@+Inf@, if the constraints are not feasible.
 
 \subsection{Constraints}
-\index{constraints}
-\index{constraints!equality}
-\index{constraints!inequality}
-\index{constraints!bounds}
+\index{constraint}
+\index{constraint!equality}
+\index{constraint!inequality}
+\index{inequality!constraint}
+\index{constraint!bounds}
 
 The following constraint types are supported in \cvx:
 \begin{itemize}
@@ -886,7 +908,7 @@ Inequalities cannot be used if either side is complex.
 see \S\ref{sec:sets}.
 
 \subsection{Functions}
-\index{functions}
+\index{function}
 
 The base \cvx function library
 includes a variety of convex, concave, and affine functions
@@ -931,7 +953,8 @@ value, given (numerical) arguments.
 
 \subsection{Sets}
 \label{sec:sets}
-\index{sets}
+\index{set}
+\index{constraint!set}
 
 \cvx supports the definition and use of convex sets.
 The base library includes the cone of 
@@ -959,7 +982,7 @@ an $n \times n$ symmetric positive semidefinite matrix.
 This is, of course, equivalent to saying that \verb@X@ must be
 symmetric positive semidefinite.
 
-\index{linear matrix inequalities}
+\index{linear!matrix inequality|see{LMI}}
 \index{semidefinite@\texttt{semidefinite}}
 \index{SDP}
 As an example, consider the constraint
@@ -997,8 +1020,8 @@ and \verb@A@ and \verb@B@ are $n \times n$  constant matrices.
 This constraint requires that $AXA^T-X=BYB^T$, 
 for some $Y \in \symm^n_+$.
 
-\index{second-order cones}
-\index{Lorentz cones|see{second-order cones}}
+\index{second-order cone}
+\index{Lorentz cone|see{second-order cone}}
 \index{SOCP}
 \cvx also supports sets whose elements are ordered
 lists of quantities.  As an example, consider the second-order or 
@@ -1036,7 +1059,9 @@ specification requires that the pair \verb@A*x-b@, \verb@y@
 lies in the appropriately-sized Lorentz cone.
 
 \subsection{Dual variables}
-\index{dual variables}
+\index{dual variable}
+\index{problem!dual}
+\index{Lagrange multipler}
 
 When a disciplined convex program is solved, the associated 
 \emph{dual problem} is also solved.
@@ -1132,6 +1157,8 @@ This line must be executed \emph{after} the \verb@cvx_end@ command
 generate an error if it is executed inside the \cvx specification,
 where \verb@y@ and \verb@b-A*x@ are still just abstract expressions.
 
+\index{problem!infeasible}
+\index{infeasible problem}
 If the optimization is \emph{not} successful, because either the problem
 is infeasible or unbounded, then \verb@x@ and \verb@y@ will have different
 values. In the unbounded case, \verb@x@ will contain an \emph{unbounded direction};
@@ -1158,7 +1185,7 @@ see \S\ref{sec:indexeddual}.
 
 \section{The DCP ruleset}
 \label{sec:rules}
-\index{DCP ruleset}
+\index{DCP!ruleset}
 
 \cvx enforces the conventions dictated by the
 disciplined convex programming ruleset, or \emph{DCP ruleset} for short.
@@ -1271,6 +1298,8 @@ constraint.
 \subsection{Top-level rules}
 \label{sec:toplevel}
 
+\index{feasibility}
+\index{problem!feasibility}
 \cvx supports three different types of disciplined convex programs:
 \begin{itemize}
 \item A \emph{minimization problem}, consisting of a convex objective function
@@ -1419,6 +1448,16 @@ so let us address these differences here.
 %to set aside geometric programming for now, and
 %consider only the traditional convex programming case.
 
+\index{convex!function}
+\index{concave!function}
+\index{function!concave}
+\index{function!convex}
+\index{nonincreasing}
+\index{nondecreasing}
+\index{monotonicity}
+\index{function!monotonicity}
+\index{function!affine}
+\index{affine function}
 Functions are categorized in
 two ``dimensions'': \emph{curvature}
 (\emph{constant}, \emph{affine},
@@ -1508,6 +1547,8 @@ known and have been given appropriate, constant values.
 
 \subsection{Compositions}
 \label{sec:compositions}
+\index{composition}
+\index{function!composition}
 
 A basic rule of convex analysis is that convexity is closed under 
 composition with an affine mapping. 
@@ -1687,6 +1728,9 @@ In \S\ref{s-new-fcts}, we show how to accomplish this.
 \subsection{Scalar quadratic forms}
 \label{sec:quadforms}
 
+\index{function!quadratic}
+\index{quadratic form}
+
 In its original form described in \cite{Gra:04,GBY},
 the DCP ruleset forbids even the use of simple
 quadratic expressions such as \verb@x * x@ (assuming \verb@x@ is a variable).
@@ -1756,10 +1800,13 @@ new capabilities afforded by disciplined convex programming.
 
 \section{Semidefinite programming using \cvx}
 \label{sec:sdpmode}
-\index{SDP mode}
-\index{Semidefinite programming mode}
+\index{SDP!mode}
+\index{mode!SDP}
+\index{semidefinite programming mode}
 \index{SDP}
-\index{linear matrix inequalities}
+\index{linear!matrix inequality|see{LMI}}
+\index{inequality!matrix}
+\index{LMI}
 
 Those who are familiar with \emph{semidefinite
 programming} (SDP) know that the constraints that utilize
@@ -1849,6 +1896,7 @@ search for the text \verb@cvx_begin sdp@ in the \verb@examples/@
 subdirectory tree using your favorite file search tool. One
 of these examples is reproduced in \S\ref{sec:indexeddual}.
 
+\index{inequality!matrix}
 Since semidefinite programming is popular, some
 may wonder why SDP mode is not the default behavior.
 The reason for this is that we place a
@@ -1868,9 +1916,14 @@ a test like \verb@min(eig(Z)) >= 0@.
 \section{Geometric programming using \cvx}
 \label{sec:gpmode}
 \index{GP}
-\index{GP mode}
-\index{Geometric programming mode}
-\index{generalized geometric programming}
+\index{GP!mode}
+\index{mode!GP}
+\index{geometric programming mode}
+\index{generalized geometric programming|see{GGP}}
+\index{posynomial}
+\index{function!posynomial}
+\index{function!monomial}
+\index{function!generalized posynomial}
 \index{GGP}
 
 Geometric programs (GPs) are a special class mathematical programs 
@@ -2086,11 +2139,15 @@ ways, which we describe in this section.
 \subsubsection{Defining new functions via overloading}
 \label{s-new-fcts}
 
+\index{function!defining new}
+\index{defining new function}
 The simplest method of constructing a new function is to use the 
 standard function definition mechanism in Matlab, and to rely on
 the overloaded operators to do the right thing when the function is
 invoked inside a \cvx specification.
 
+\index{deadzone function}
+\index{function!deadzone}
 To illustrate this, we consider the \emph{deadzone} function,
 defined as
 \[
@@ -2159,6 +2216,8 @@ $g(x,y)\triangleq y$, then
 	f(x) \triangleq \inf\Condset{y}{(x,y)\in S}
 \end{equation}
 gives the classic \emph{epigraph} representation of $f$; that is, $S=\epi f$.
+\index{function!epigraph}
+\index{epigraph}
 
 A key feature of \cvx is the ability to define a convex
 function in this very manner: that is, in terms of a 
@@ -2173,6 +2232,8 @@ but it is quite powerful, allowing
 \cvx to support a variety of functions that cannot be
 employed in a traditional, derivative-based optimization framework.
 
+\index{Huber function}
+\index{function!Huber}
 Let us look at an example to see how this works.
 Consider the unit-halfwidth Huber penalty function $h(x)$:
 \begin{equation}
@@ -2219,6 +2280,8 @@ Thus \verb@huber@ can be used anywhere a traditional convex
 function can be used, in constraints or objective functions,
 in accordance with the DCP ruleset.
 
+\index{hypograph}
+\index{function!hypograph}
 There is a corresponding development for concave functions as well.
 Given the set
 $S$ above and a concave function
@@ -2569,6 +2632,9 @@ reverse implication is \emph{not} true; for example,
 \section{Installing \cvx}
 \label{s-installing}
 
+\index{installing \cvx}
+\index{platforms}
+\index{cvx@{\tt cvx}!installing}
 \cvx requires Matlab 6.0 or later. 
 We are able to precompile and test the SeDuMi
 and \cvx MEX files on the following platform combinations:
@@ -2666,6 +2732,10 @@ you may have from your Matlab path.
 
 \section{Operators, functions, and sets}
 \label{s-functions}
+\index{operators}
+\index{cvx@{\cvx}!operators}
+\index{cvx@{\cvx}!functions}
+\index{function!\cvx libary}
 
 \subsection{Basic operators and linear functions}
 
@@ -2892,6 +2962,10 @@ integer constant:
 
 \section{\cvx status messages}
 \label{sec:status}
+\index{status messages}
+\index{cvx@{\cvx}!status messages}
+\index{cvx@{\cvx}!precision}
+\index{precision}
 
 After a complete \cvx specification has been entered and the \verb@cvx_end@ command 
 issued, the solver is called to generate a numerical result. The solver can produce
@@ -3115,6 +3189,9 @@ such as \verb@doc@, \verb@examples@, \emph{etc.}
 
 \subsection{Assignments versus equality constraints}
 \label{sec:eqass}
+\index{assignment}
+\index{equality constraint}
+\index{constraint!equality} 
 
 Anyone who has used the C or Matlab languages for a sufficiently long time
 understands the differences between \emph{assignments}, which employ a single
@@ -3209,6 +3286,8 @@ the \verb@cvx_begin@ command, as we do in the examples presented in this documen
 \subsection{Overdetermined problems}
 \label{sec:overdetermined}
 
+\index{overdetermined problem}
+\index{problem!overdetermined}
 This status message \verb@Overdetermined@ commonly occurs when structure
 in a variable or set is not properly recognized. For example, consider the problem
 of finding the smallest diagonal addition to a matrix $W\in\Rnn$ to make it positive semidefinite:
@@ -3263,5 +3342,5 @@ and his students, Rahul Panicker, Jo\"{e}lle Skaf, Argyris Zymnis.
 \newpage
 \bibliography{cvxrefs}
 \newpage
-%\printindex
+\printindex
 \end{document}
