@@ -3,7 +3,7 @@
 # Key directories
 SRCBASE=/home/boyd/src
 CPYDIR=$SRCBASE/cvx.dist
-ARCHIVE=file://$SRCBASE/svn/cvx/trunk
+ARCHIVE=file://$SRCBASE/svn/cvx/branches/transpose
 EXAMPLES=file://$SRCBASE/svn/cvx/examples
 DOCDIR=file://$SRCBASE/svn/cvx/doc
 DSTDIR=/home/boyd/WWW/cvx
