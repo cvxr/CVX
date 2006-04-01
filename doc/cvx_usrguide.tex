@@ -10,7 +10,7 @@
 \newcommand{\lorentz}{{\mbox{\bf Q}}}  % lorentz cone
 \newcommand{\ones}{\mathbf 1}
 
-\title{\cvx Users' Guide\\\large version 0.85 (alpha)}
+\title{\cvx Users' Guide\\\large version 1.0 (beta)}
 \author{Michael Grant\\\texttt{mcgrant@stanford.edu} 
 \and Stephen Boyd\\\texttt{boyd@stanford.edu}
 \and Yinyu Ye\\\texttt{yyye@stanford.edu}}
@@ -25,9 +25,8 @@
 \section{Introduction}
 
 \subsection{What is \cvx?}
-\index{cvx@\texttt{cvx}}
+\index{cvx@{\cvx}}
 \index{disciplined convex programming|see{DCP}}
-\index{disciplined geometric programming}
 \index{DCP}
 \index{linear!program|see{LP}}
 \index{LP}
@@ -1804,7 +1803,7 @@ new capabilities afforded by disciplined convex programming.
 \index{mode!SDP}
 \index{semidefinite programming mode}
 \index{SDP}
-\index{linear!matrix inequality|see{LMI}}
+%\index{linear!matrix inequality|see{LMI}}
 \index{inequality!matrix}
 \index{LMI}
 
@@ -2634,7 +2633,7 @@ reverse implication is \emph{not} true; for example,
 
 \index{installing \cvx}
 \index{platforms}
-\index{cvx@{\tt cvx}!installing}
+\index{cvx@{\cvx}!installing}
 \cvx requires Matlab 6.0 or later. 
 We are able to precompile and test the SeDuMi
 and \cvx MEX files on the following platform combinations:
@@ -2854,6 +2853,12 @@ or complex Hermitian matrix.
 Inside \cvx, imposes constraint that its argument 
 is symmetric (if real) or Hermitian (if complex).
 Concave.
+\item \verb@log(sum(exp(x)))@: the
+logarithm of the sum of the elementwise exponentials of \verb@x@.
+Concave and nondecreasing.
+This is used internally in GP mode, but can also be used in standard
+DCPs. This function is actually \emph{approximated} in the
+current version of \cvx; see \S\ref{sec:gp-approx} for details.
 \item \verb@matrix_frac(x,Y)@: matrix fractional function,
 $x^TY^{-1}x$.  In \cvx, imposes constraint that $Y$ is 
 symmetric (or Hermitian) and positive definite; outside \cvx,
@@ -3022,6 +3027,9 @@ The situations that most commonly produce an \verb@Overdetermined@ result are di
 in \S\ref{sec:overdetermined} below.
 
 \section{Controlling solver precision}
+\label{sec:precision}
+\index{precision!changing}
+\index{cvx_precision@\texttt{cvx\_precision}}
 
 Numerical methods for convex optimization are not exact; they compute their results
 to within a predefined numerical precision or tolerance. The precision chosen by default in \cvx,
@@ -3055,23 +3063,35 @@ not possible in \verb@best@ mode (nor, for that matter, in \verb@low@ mode, whic
 sets the standard and reduced precisions to be identical).
 
 The \verb@cvx_precision@ command can also be called with either a scalar or a
-two-vector. If you pass it a scalar, it will assume that as the standard
+length-two vector. If you pass it a scalar, it will assume that as the standard
 precision, and it will compute a default reduced precision value for you.
 Roughly speaking, that reduced precision will be the square root of the standard
 precision, with some bounds imposed to make sure that it stays reasonable. If
-you supply a two-vector of values, then the smallest value will be chosen as
+you supply a vector of values, then the smallest value will be chosen as
 the standard precision, and the larger value as the reduced precision.
 
 The \verb@cvx_precision@ command can be used either \emph{within} a \cvx model or
 \emph{outside} of it; and its behavior differs in each case. If you call it from
-within a model; for example, as follows,
+within a model, for example,
 \begin{code}
 	cvx_begin
 	    cvx_precision high
+	    ...
+	cvx_end
 \end{code}
-then the setting you choose will apply only to that model. If you call it outside
-a model, then the setting you choose will apply \emph{globally}; that is, to any
-subsequent models that are created and solved.
+then the setting you choose will apply only until \verb@cvx_end@ is reached. If you call it outside
+a model, for example,
+\begin{code}
+	cvx_precision high
+	cvx_begin
+	    ...
+	cvx_end
+\end{code}
+then the setting you choose will apply \emph{globally}; that is, to any
+subsequent models that are created and solved. The local approach should be
+preferred in an application where multiple models are constructed and solved
+at different levels of precision.
+with multiple precision
 
 If you call \verb@cvx_precision@ in function mode, either with a string or a numeric
 value, it will return as its output the \emph{previous} precision vector---the same
@@ -3086,10 +3106,14 @@ in a variable, and restore it at the end of your calcuations; e.g.,
 	cvx_precision( cvxp );
 \end{code}
 This is considered good coding etiquette in a larger application where multiple 
-\cvx models at multiple precision levels may be employed.
+\cvx models at multiple precision levels may be employed. Of course, a simpler but
+equally courteous approach is to call \verb@cvx_precision@ within the \cvx
+model, as described above, so that its effect lasts only for that model.
 
 \section{The GP/SDP approximation}
 \label{sec:gp-approx}
+\index{precision!for GPs}
+\index{cvx_gp_precision@\texttt{cvx\_gp\_precision}}
 
 The solver currently employed by \cvx does not support geometric programs natively.
 Instead, \cvx \emph{approximates} the convex form of a DGP in an SDP-representable
@@ -3126,12 +3150,28 @@ as a lower bound).
 
 In its default setting, \cvx uses a tolerance value of $\epsilon_{GP}=0.001$.
 For most engineering applications, this is likely to be quite sufficient. However,
-if you wish to change it, you may do so using the command \verb@cvx_gp_precision(@\emph{tol}\verb@)@,
-where \emph{tol} is the new value of $\epsilon_{GP}$. Consistent with many
-of \cvx's other control commands, \verb@cvx_gp_precision@ returns the \emph{previous}
+if you wish to change it, you may do so using the command
+\verb@cvx_gp_precision(@\emph{tol}\verb@)@,
+where \emph{tol} is the new value of $\epsilon_{GP}$. As with the command
+\verb@cvx_precision@, you can place the call either within a model,
+\begin{code}[commandchars=\!\{\}]
+	cvx_begin gp
+	    cvx_gp_precision(!textrm{!emph{tol}});
+	    ...
+	cvx_end
+\end{code}
+to change the approximation quality for a single model; or outside of a model,
+\begin{code}[commandchars=\!\{\}]
+	cvx_gp_precision(!textrm{!emph{tol}});
+	cvx_begin gp
+	    ...
+	cvx_end
+\end{code}
+to make a global change. Consistent with
+\cvx's other control commands, the command returns the \emph{previous}
 value of the $\epsilon_{GP}$, so you can save it and restore it upon completion
 of your model, if you wish. You can query the value of $\epsilon_{GP}$ at any
-time by calling \verb@cvx_gp_precision@ with no arguments.
+time by calling \verb@cvx_gp_precision@ with no arguments. 
 
 It is important to understand that the complexity of the approximation---the order of
 the polynomials used, as well as the number of them---increases as the
@@ -3151,12 +3191,17 @@ of the value set in \verb@cvx_gp_precision@. You can supply a different toleranc
 argument; \ie, \verb@logsumexp_sdp( x, tol )@. However, it turns out that \cvx admits a 
 particular exception to the DCP nonlinear composition rules: it allows the construction
 of expressions of the form \verb@log(sum(exp(x)))@. (This is not an exception so much
-as it is a byproduct of the unified approach to verifying DCPs and DGPs; \verb@exp(x)@
-is log-affine, \verb@sum(exp(x))@ is log-convex, therefore \verb@log(sum(exp(x))@ is convex.) 
+as it is a byproduct of the unified approach to verifying DCPs and GPs.) 
 Such constructions are automatically recognized by \cvx, which utilizes the
 precision value $\epsilon_{GP}$ in determining the accuracy of their approximation.
 
 \section{Miscellaneous \cvx commands}
+\index{cvx_problem@\texttt{cvx\_problem}}
+\index{cvx_clear@\texttt{cvx\_clear}}
+\index{cvx_quiet@\texttt{cvx\_quiet}}
+\index{cvx_pause@\texttt{cvx\_pause}}
+\index{cvx_where@\texttt{cvx\_where}}
+\index{output!suppressing}
 
 \begin{itemize}
 \item \verb+cvx_problem+: typing this within a \cvx specification provides a summary
@@ -3334,10 +3379,12 @@ version of the specification corrects this problem by extracting the symmetric p
 \section{Acknowledgements}
 
 We wish to thank the following people for their contributions to
-\cvx, including helpful feedback that has helped to shape the 
-software and its documentation:  Laurent El Ghaoui, Arpita Ghosh, 
+the development of \cvx:  Laurent El Ghaoui, Arpita Ghosh, 
 Siddharth Joshi, Johan L\"{o}fberg, Almir Mutapcic, Michael Overton
-and his students, Rahul Panicker, Jo\"{e}lle Skaf, Argyris Zymnis.
+and his students, Rahul Panicker, Jo\"{e}lle Skaf, 
+Lieven Vandenberghe, Argyris Zymnis. We are also grateful to the many
+students in several universities who have (perhaps unwittingly)
+served as beta testers by using \cvx in their classwork.
 
 \newpage
 \bibliography{cvxrefs}
