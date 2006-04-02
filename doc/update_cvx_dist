@@ -54,8 +54,7 @@ MYTAR=`du --si $DSTDIR/cvx.tar.gz | sed 's@\s.*@@'`
 MYPDF=`du --si $DSTDIR/cvx_usrguide.pdf | sed 's@\s.*@@'`
 sed "s@___DATE___@$MYDATE@;s@___ZIP___@$MYZIP@;s@___TAR___@$MYTAR@;s@___PDF___@$MYPDF@" $CPYDIR/cvx/doc/index.html > $DSTDIR/index.html
 sed "s@___DATE___@$MYDATE@" $CPYDIR/cvx/doc/history.html > $DSTDIR/history.html
-cp -f $CPYDIR/cvx/doc/checked_by_tidy.gif $DSTDIR
-cp -f $CPYDIR/cvx/doc/valid-xhtml10.png $DSTDIR
+cp -f $CPYDIR/cvx/doc/*.{gif,png} $DSTDIR
 
 # Set the permissons at the destination
 chgrp -fR research $DSTDIR
