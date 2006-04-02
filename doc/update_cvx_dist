@@ -20,6 +20,7 @@ cd $CPYDIR/cvx/doc
 latex  cvx_usrguide
 latex  cvx_usrguide
 bibtex cvx_usrguide
+makeindex cvx_usrguide
 latex  cvx_usrguide
 latex  cvx_usrguide
 latex  cvx_usrguide
