@@ -7,8 +7,8 @@ This HTML is auto-generated from an M-file.
 To make changes, update the M-file and republish this document.
       -->
       <title>Example 7.4: Binary hypothesis testing</title>
-      <meta name="generator" content="MATLAB 7.1">
-      <meta name="date" content="2006-02-25">
+      <meta name="generator" content="MATLAB 7.2">
+      <meta name="date" content="2006-04-01">
       <meta name="m-file" content="detector2"><style>
 
 body {
@@ -41,6 +41,9 @@ pre.codeinput {
   background: #EEEEEE;
   padding: 10px;
 }
+@media print {
+  pre.codeinput {word-wrap:break-word; width:100%;}
+} 
 
 span.keyword {color: #0000FF}
 span.comment {color: #228B22}
@@ -144,20 +147,19 @@ nnz(A) = 22 + 0, nnz(ADA) = 24, nnz(L) = 15
   4 :  1.68E-001 2.25E-003 0.000 0.0835 0.9900 0.9900   1.01  1  1  2.5E-003
   5 :  1.67E-001 8.62E-007 0.000 0.0004 0.9999 0.9999   1.00  1  1  
 iter seconds digits       c*x               b*y
-  5      0.1  15.3  1.6666666667e-001  1.6666666667e-001
-|Ax-b| =  2.5e-016, [Ay-c]_+ =  9.8E-018, |x|= 2.2e+000, |y|= 8.7e-001
+  5      0.0  14.8  1.6666666667e-001  1.6666666667e-001
+|Ax-b| =  4.1e-016, [Ay-c]_+ =  7.8E-017, |x|= 2.2e+000, |y|= 8.7e-001
 
 Detailed timing (sec)
    Pre          IPM          Post
-3.004E-002    7.010E-002    0.000E+000    
+1.001E-002    3.004E-002    0.000E+000    
 Max-norms: ||b||=1, ||c|| = 1,
 Cholesky |add|=0, |skip| = 0, ||L.L|| = 1.
 ------------------------------------------------------------------------
-Status (cvx_status): Solved
- 
-Optimal value (cvx_optval): 0.166667
+Status: Solved
+Optimal value (cvx_optval): +0.166667
 </pre><img vspace="5" hspace="5" src="detector2_01.png"> <p class="footer"><br>
-            Published with MATLAB&reg; 7.1<br></p>
+            Published with MATLAB&reg; 7.2<br></p>
       </div>
       <!--
 ##### SOURCE BEGIN #####

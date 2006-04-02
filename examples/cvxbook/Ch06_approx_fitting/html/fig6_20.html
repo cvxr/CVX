@@ -7,8 +7,8 @@ This HTML is auto-generated from an M-file.
 To make changes, update the M-file and republish this document.
       -->
       <title>Spline fitting</title>
-      <meta name="generator" content="MATLAB 7.1">
-      <meta name="date" content="2006-02-25">
+      <meta name="generator" content="MATLAB 7.2">
+      <meta name="date" content="2006-04-01">
       <meta name="m-file" content="fig6_20"><style>
 
 body {
@@ -41,6 +41,9 @@ pre.codeinput {
   background: #EEEEEE;
   padding: 10px;
 }
+@media print {
+  pre.codeinput {word-wrap:break-word; width:100%;}
+} 
 
 span.keyword {color: #0000FF}
 span.comment {color: #228B22}
@@ -187,13 +190,12 @@ iter seconds digits       c*x               b*y
 
 Detailed timing (sec)
    Pre          IPM          Post
-3.004E-002    1.202E-001    0.000E+000    
+1.001E-002    1.102E-001    1.001E-002    
 Max-norms: ||b||=2.018994e-001, ||c|| = 1,
 Cholesky |add|=0, |skip| = 0, ||L.L|| = 853.331.
 ------------------------------------------------------------------------
-Status (cvx_status): Solved
- 
-Optimal value (cvx_optval): 0.116603
+Status: Solved
+Optimal value (cvx_optval): +0.116603
 Done! 
 Computing splines in the case of Linfty-norm... 
 Calling SeDuMi: 92 variables (12 free), 85 equality constraints
@@ -216,21 +218,20 @@ nnz(A) = 628 + 0, nnz(ADA) = 2565, nnz(L) = 1754
   9 :  3.21E-002 8.44E-005 0.000 0.1573 0.9104 0.9000   0.95  1  1  6.0E-004
  10 :  3.20E-002 1.49E-007 0.000 0.0018 0.9990 0.9990   0.99  1  1  
 iter seconds digits       c*x               b*y
- 10      0.1  15.2  3.2038334523e-002  3.2038334523e-002
-|Ax-b| =  6.7e-016, [Ay-c]_+ =  6.0E-017, |x|= 2.5e+000, |y|= 6.8e-001
+ 10      0.1  15.4  3.2038334523e-002  3.2038334523e-002
+|Ax-b| =  6.9e-016, [Ay-c]_+ =  4.6E-017, |x|= 2.5e+000, |y|= 6.8e-001
 
 Detailed timing (sec)
    Pre          IPM          Post
-1.001E-002    1.102E-001    0.000E+000    
+1.001E-002    1.001E-001    0.000E+000    
 Max-norms: ||b||=2.018994e-001, ||c|| = 1,
 Cholesky |add|=0, |skip| = 0, ||L.L|| = 10.0407.
 ------------------------------------------------------------------------
-Status (cvx_status): Solved
- 
-Optimal value (cvx_optval): 0.0320383
+Status: Solved
+Optimal value (cvx_optval): +0.0320383
 Done! 
 </pre><img vspace="5" hspace="5" src="fig6_20_01.png"> <p class="footer"><br>
-            Published with MATLAB&reg; 7.1<br></p>
+            Published with MATLAB&reg; 7.2<br></p>
       </div>
       <!--
 ##### SOURCE BEGIN #####

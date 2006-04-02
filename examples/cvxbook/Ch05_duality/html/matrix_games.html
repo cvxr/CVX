@@ -7,8 +7,8 @@ This HTML is auto-generated from an M-file.
 To make changes, update the M-file and republish this document.
       -->
       <title>Mixed strategies for matrix games</title>
-      <meta name="generator" content="MATLAB 7.1">
-      <meta name="date" content="2006-02-25">
+      <meta name="generator" content="MATLAB 7.2">
+      <meta name="date" content="2006-04-01">
       <meta name="m-file" content="matrix_games"><style>
 
 body {
@@ -41,6 +41,9 @@ pre.codeinput {
   background: #EEEEEE;
   padding: 10px;
 }
+@media print {
+  pre.codeinput {word-wrap:break-word; width:100%;}
+} 
 
 span.keyword {color: #0000FF}
 span.comment {color: #228B22}
@@ -133,18 +136,17 @@ nnz(A) = 140 + 0, nnz(ADA) = 121, nnz(L) = 66
   6 :  2.77E-002 4.39E-003 0.000 0.1906 0.9000 0.9000   1.01  1  1  2.9E-003
   7 :  2.79E-002 1.24E-005 0.000 0.0028 0.9990 0.9990   1.00  1  1  
 iter seconds digits       c*x               b*y
-  7      0.1  14.5  2.7855878954e-002  2.7855878954e-002
-|Ax-b| =  3.1e-016, [Ay-c]_+ =  2.7E-016, |x|= 9.0e-001, |y|= 5.4e-001
+  7      0.1  14.8  2.7855878954e-002  2.7855878954e-002
+|Ax-b| =  2.0e-016, [Ay-c]_+ =  1.4E-016, |x|= 9.0e-001, |y|= 5.4e-001
 
 Detailed timing (sec)
    Pre          IPM          Post
-3.004E-002    9.013E-002    0.000E+000    
+1.001E-002    6.009E-002    0.000E+000    
 Max-norms: ||b||=1, ||c|| = 1,
 Cholesky |add|=0, |skip| = 0, ||L.L|| = 8.83398.
 ------------------------------------------------------------------------
-Status (cvx_status): Solved
- 
-Optimal value (cvx_optval): 0.0278559
+Status: Solved
+Optimal value (cvx_optval): +0.0278559
 Done! 
 Computing the optimal strategy for player 2 ...  
 Calling SeDuMi: 21 variables (1 free), 11 equality constraints
@@ -165,17 +167,16 @@ nnz(A) = 140 + 0, nnz(ADA) = 121, nnz(L) = 66
   7 : -2.79E-002 3.05E-005 0.000 0.0066 0.9990 0.9820   1.00  1  1  
 iter seconds digits       c*x               b*y
   7      0.1  14.7 -2.7855878954e-002 -2.7855878954e-002
-|Ax-b| =  2.9e-016, [Ay-c]_+ =  4.7E-017, |x|= 1.1e+000, |y|= 4.4e-001
+|Ax-b| =  3.6e-016, [Ay-c]_+ =  7.2E-017, |x|= 1.1e+000, |y|= 4.4e-001
 
 Detailed timing (sec)
    Pre          IPM          Post
-0.000E+000    5.007E-002    0.000E+000    
+1.001E-002    5.007E-002    1.001E-002    
 Max-norms: ||b||=1, ||c|| = 1,
 Cholesky |add|=0, |skip| = 0, ||L.L|| = 2.54059.
 ------------------------------------------------------------------------
-Status (cvx_status): Solved
- 
-Optimal value (cvx_optval): 0.0278559
+Status: Solved
+Optimal value (cvx_optval): +0.0278559
 Done! 
 ------------------------------------------------------------------------
 The optimal strategies for players 1 and 2 are respectively: 
@@ -198,7 +199,7 @@ ans =
 
 They are equal as expected!
 </pre><p class="footer"><br>
-            Published with MATLAB&reg; 7.1<br></p>
+            Published with MATLAB&reg; 7.2<br></p>
       </div>
       <!--
 ##### SOURCE BEGIN #####

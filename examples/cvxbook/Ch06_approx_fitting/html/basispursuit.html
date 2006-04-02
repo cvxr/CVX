@@ -7,8 +7,8 @@ This HTML is auto-generated from an M-file.
 To make changes, update the M-file and republish this document.
       -->
       <title>Basis pursuit using Gabor functions</title>
-      <meta name="generator" content="MATLAB 7.1">
-      <meta name="date" content="2006-02-25">
+      <meta name="generator" content="MATLAB 7.2">
+      <meta name="date" content="2006-04-01">
       <meta name="m-file" content="basispursuit"><style>
 
 body {
@@ -41,6 +41,9 @@ pre.codeinput {
   background: #EEEEEE;
   padding: 10px;
 }
+@media print {
+  pre.codeinput {word-wrap:break-word; width:100%;}
+} 
 
 span.keyword {color: #0000FF}
 span.comment {color: #228B22}
@@ -217,25 +220,23 @@ nnz(A) = 7480146 + 0, nnz(ADA) = 252007, nnz(L) = 126255
  23 :  1.28E+001 4.34E-006 0.000 0.2065 0.9029 0.9000   1.00  3  3  1.7E-007
  24 :  1.28E+001 1.03E-006 0.000 0.2373 0.9087 0.9000   1.00  3  3  4.0E-008
  25 :  1.28E+001 3.41E-007 0.000 0.3310 0.9069 0.9000   1.00  3  3  1.3E-008
- 26 :  1.28E+001 1.27E-007 0.000 0.3736 0.9000 0.9173   1.00  3  3  5.0E-009
 
 iter seconds digits       c*x               b*y
- 26   1012.7   8.0  1.2845155814e+001  1.2845155686e+001
-|Ax-b| =  1.5e-011, [Ay-c]_+ =  0.0E+000, |x|= 2.8e+000, |y|= 1.4e+000
+ 25    998.3   7.6  1.2845156027e+001  1.2845155686e+001
+|Ax-b| =  4.2e-011, [Ay-c]_+ =  0.0E+000, |x|= 2.8e+000, |y|= 1.4e+000
 
 Detailed timing (sec)
    Pre          IPM          Post
-2.977E+001    1.013E+003    7.110E-001    
+2.917E+001    9.983E+002    2.684E+000    
 Max-norms: ||b||=1.497811e+000, ||c|| = 1,
-Cholesky |add|=0, |skip| = 0, ||L.L|| = 3307.89.
+Cholesky |add|=0, |skip| = 0, ||L.L|| = 3303.62.
 ------------------------------------------------------------------------
-Status (cvx_status): Solved
- 
-Optimal value (cvx_optval): 12.8452
+Status: Solved
+Optimal value (cvx_optval): +12.8452
 done
-Elapsed time is 1317.091971 seconds.
+Elapsed time is 1406.991884 seconds.
 </pre><img vspace="5" hspace="5" src="basispursuit_01.png"> <img vspace="5" hspace="5" src="basispursuit_02.png"> <img vspace="5" hspace="5" src="basispursuit_03.png"> <p class="footer"><br>
-            Published with MATLAB&reg; 7.1<br></p>
+            Published with MATLAB&reg; 7.2<br></p>
       </div>
       <!--
 ##### SOURCE BEGIN #####

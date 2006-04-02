@@ -7,8 +7,8 @@ This HTML is auto-generated from an M-file.
 To make changes, update the M-file and republish this document.
       -->
       <title>Builds and solves a simple least-squares problem using cvx</title>
-      <meta name="generator" content="MATLAB 7.1">
-      <meta name="date" content="2006-02-25">
+      <meta name="generator" content="MATLAB 7.2">
+      <meta name="date" content="2006-04-01">
       <meta name="m-file" content="simple_LS"><style>
 
 body {
@@ -41,6 +41,9 @@ pre.codeinput {
   background: #EEEEEE;
   padding: 10px;
 }
+@media print {
+  pre.codeinput {word-wrap:break-word; width:100%;}
+} 
 
 span.keyword {color: #0000FF}
 span.comment {color: #228B22}
@@ -88,28 +91,26 @@ Split 100 free variables
 eqs m = 200, order n = 203, dim = 402, blocks = 2
 nnz(A) = 40200 + 0, nnz(ADA) = 40000, nnz(L) = 20100
  it :     b*y       gap    delta  rate   t/tP*  t/tD*   feas cg cg  prec
-  0 :            1.90E-001 0.000
-  1 :  1.38E+001 4.58E-002 0.000 0.2415 0.9000 0.9000  -0.54  1  1  1.6E+000
-  2 :  1.06E+001 4.58E-003 0.000 0.0998 0.9900 0.9900   0.96  1  1  2.4E-001
-  3 :  1.06E+001 2.96E-006 0.415 0.0006 0.9999 0.9999   1.04  1  1  1.6E-004
-  4 :  1.06E+001 1.78E-008 0.000 0.0060 0.9990 0.9990   1.70  1  1  5.8E-007
-  5 :  1.06E+001 5.77E-012 0.224 0.0003 0.9999 0.9999   1.00  1  1  1.9E-010
+  0 :            1.92E-001 0.000
+  1 :  1.08E+001 4.37E-002 0.000 0.2275 0.9000 0.9000  -0.36  1  1  1.3E+000
+  2 :  8.81E+000 3.24E-003 0.000 0.0741 0.9900 0.9900   1.03  1  1  1.5E-001
+  3 :  8.81E+000 6.81E-007 0.000 0.0002 0.9999 0.9999   1.03  1  1  3.2E-005
+  4 :  8.81E+000 1.94E-012 0.000 0.0000 1.0000 1.0000   1.00  1  1  9.1E-011
 
 iter seconds digits       c*x               b*y
-  5      0.8   Inf  1.0577252581e+001  1.0577252583e+001
-|Ax-b| =  7.5e-010, [Ay-c]_+ =  6.4E-011, |x|= 1.1e+002, |y|= 1.0e+000
+  4      0.7  10.6  8.8137166883e+000  8.8137166881e+000
+|Ax-b| =  2.1e-010, [Ay-c]_+ =  1.1E-011, |x|= 9.5e+001, |y|= 1.0e+000
 
 Detailed timing (sec)
    Pre          IPM          Post
-1.402E-001    8.412E-001    1.001E-002    
-Max-norms: ||b||=3.290585e+000, ||c|| = 1,
-Cholesky |add|=0, |skip| = 0, ||L.L|| = 8.99377.
+8.012E-002    7.311E-001    0.000E+000    
+Max-norms: ||b||=3.374227e+000, ||c|| = 1,
+Cholesky |add|=0, |skip| = 0, ||L.L|| = 27.8211.
 ------------------------------------------------------------------------
-Status (cvx_status): Solved
- 
-Optimal value (cvx_optval): 10.5773
+Status: Solved
+Optimal value (cvx_optval): +8.81372
 </pre><p class="footer"><br>
-            Published with MATLAB&reg; 7.1<br></p>
+            Published with MATLAB&reg; 7.2<br></p>
       </div>
       <!--
 ##### SOURCE BEGIN #####

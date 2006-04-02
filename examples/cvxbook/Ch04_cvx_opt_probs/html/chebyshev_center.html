@@ -7,8 +7,8 @@ This HTML is auto-generated from an M-file.
 To make changes, update the M-file and republish this document.
       -->
       <title>Compute the Chebyshev center of a polyhedron</title>
-      <meta name="generator" content="MATLAB 7.1">
-      <meta name="date" content="2006-02-25">
+      <meta name="generator" content="MATLAB 7.2">
+      <meta name="date" content="2006-04-01">
       <meta name="m-file" content="chebyshev_center"><style>
 
 body {
@@ -41,6 +41,9 @@ pre.codeinput {
   background: #EEEEEE;
   padding: 10px;
 }
+@media print {
+  pre.codeinput {word-wrap:break-word; width:100%;}
+} 
 
 span.keyword {color: #0000FF}
 span.comment {color: #228B22}
@@ -107,46 +110,44 @@ Split 11 free variables
 eqs m = 20, order n = 43, dim = 43, blocks = 1
 nnz(A) = 460 + 0, nnz(ADA) = 400, nnz(L) = 210
  it :     b*y       gap    delta  rate   t/tP*  t/tD*   feas cg cg  prec
-  0 :            5.62E-001 0.000
-  1 :  1.03E-001 1.09E-001 0.000 0.1939 0.9000 0.9000   0.74  1  1  2.0E+000
-  2 : -4.39E-002 3.61E-002 0.000 0.3313 0.9000 0.9000   2.57  1  1  7.3E-001
-  3 : -1.80E-001 1.10E-002 0.000 0.3045 0.9000 0.9000   2.24  1  1  9.4E-002
-  4 : -2.10E-001 2.32E-003 0.000 0.2113 0.9000 0.9000   1.42  1  1  1.3E-002
-  5 : -2.17E-001 7.74E-004 0.000 0.3333 0.9000 0.9000   0.87  1  1  5.2E-003
-  6 : -2.23E-001 3.13E-004 0.000 0.4039 0.9000 0.9000   0.49  1  1  2.7E-003
-  7 : -2.27E-001 1.57E-005 0.000 0.0503 0.9900 0.9900   1.01  1  1  1.6E-004
-  8 : -2.27E-001 1.10E-008 0.000 0.0007 0.9990 0.9990   1.04  1  1  
+  0 :            6.02E-001 0.000
+  1 : -1.10E-002 1.22E-001 0.000 0.2022 0.9000 0.9000   1.00  1  1  2.0E+000
+  2 : -1.15E-001 3.91E-002 0.000 0.3218 0.9000 0.9000   2.70  1  1  9.1E-001
+  3 : -2.45E-001 1.07E-002 0.000 0.2739 0.9000 0.9000   1.93  1  1  8.2E-002
+  4 : -2.96E-001 2.98E-003 0.000 0.2776 0.9000 0.9000   1.03  1  1  2.0E-002
+  5 : -3.16E-001 8.64E-004 0.000 0.2903 0.9000 0.9000   1.08  1  1  5.1E-003
+  6 : -3.22E-001 4.31E-005 0.000 0.0499 0.9900 0.9900   1.21  1  1  2.3E-004
+  7 : -3.23E-001 1.67E-007 0.000 0.0039 0.9990 0.9990   1.06  1  1  
 iter seconds digits       c*x               b*y
-  8      0.1   Inf -2.2716335626e-001 -2.2716335626e-001
-|Ax-b| =  6.3e-015, [Ay-c]_+ =  2.8E-017, |x|= 1.1e+001, |y|= 1.6e-001
+  7      0.1   Inf -3.2276133170e-001 -3.2276133170e-001
+|Ax-b| =  5.7e-015, [Ay-c]_+ =  2.1E-016, |x|= 8.9e+000, |y|= 1.5e-001
 
 Detailed timing (sec)
    Pre          IPM          Post
-3.004E-002    1.202E-001    1.001E-002    
-Max-norms: ||b||=3.438635e+000, ||c|| = 1,
-Cholesky |add|=0, |skip| = 0, ||L.L|| = 2.22501.
+1.001E-002    6.009E-002    0.000E+000    
+Max-norms: ||b||=4.197234e+000, ||c|| = 1,
+Cholesky |add|=0, |skip| = 0, ||L.L|| = 1.51389.
 ------------------------------------------------------------------------
-Status (cvx_status): Solved
- 
-Optimal value (cvx_optval): 0.227163
+Status: Solved
+Optimal value (cvx_optval): +0.322761
 Done! 
 The Chebyshev center coordinates are: 
-    1.3099
-   -0.2098
-    0.9695
-   -0.3175
-    2.1909
-    1.5115
-    0.1185
-    0.7041
-    1.6461
-    0.5200
+    0.8511
+   -0.6874
+    1.1205
+    0.3555
+    0.2573
+    0.3947
+    1.1970
+    1.4711
+    1.7486
+    1.0573
 
 The radius of the largest Euclidean ball is: 
-    0.2272
+    0.3228
 
 </pre><p class="footer"><br>
-            Published with MATLAB&reg; 7.1<br></p>
+            Published with MATLAB&reg; 7.2<br></p>
       </div>
       <!--
 ##### SOURCE BEGIN #####

@@ -7,8 +7,8 @@ This HTML is auto-generated from an M-file.
 To make changes, update the M-file and republish this document.
       -->
       <title>Example 8.4: One free point localization</title>
-      <meta name="generator" content="MATLAB 7.1">
-      <meta name="date" content="2006-02-25">
+      <meta name="generator" content="MATLAB 7.2">
+      <meta name="date" content="2006-04-01">
       <meta name="m-file" content="ex_8_4"><style>
 
 body {
@@ -41,6 +41,9 @@ pre.codeinput {
   background: #EEEEEE;
   padding: 10px;
 }
+@media print {
+  pre.codeinput {word-wrap:break-word; width:100%;}
+} 
 
 span.keyword {color: #0000FF}
 span.comment {color: #228B22}
@@ -129,18 +132,17 @@ nnz(A) = 88 + 0, nnz(ADA) = 242, nnz(L) = 132
   5 :  1.39E+001 1.55E-002 0.000 0.0611 0.9900 0.9900   1.00  1  1  1.2E-003
   6 :  1.39E+001 8.05E-007 0.209 0.0001 1.0000 1.0000   1.00  1  1  
 iter seconds digits       c*x               b*y
-  6      0.1   Inf  1.3868099974e+001  1.3868099974e+001
-|Ax-b| =  5.3e-016, [Ay-c]_+ =  2.7E-016, |x|= 5.6e+000, |y|= 4.5e+000
+  6      0.1  15.9  1.3868099974e+001  1.3868099974e+001
+|Ax-b| =  1.3e-015, [Ay-c]_+ =  5.4E-016, |x|= 5.6e+000, |y|= 4.5e+000
 
 Detailed timing (sec)
    Pre          IPM          Post
-3.004E-002    7.010E-002    0.000E+000    
+1.001E-002    5.007E-002    0.000E+000    
 Max-norms: ||b||=2.183186e+000, ||c|| = 1,
 Cholesky |add|=0, |skip| = 0, ||L.L|| = 1.
 ------------------------------------------------------------------------
-Status (cvx_status): Solved
- 
-Optimal value (cvx_optval): 13.8681
+Status: Solved
+Optimal value (cvx_optval): +13.8681
 Done! 
 Minimizing the L2-norm of the sum of the distances to fixed points... 
 Calling SeDuMi: 35 variables (2 free), 22 equality constraints
@@ -159,9 +161,9 @@ nnz(A) = 66 + 0, nnz(ADA) = 264, nnz(L) = 208
   5 :  1.15E+001 3.90E-004 0.000 0.0529 0.9900 0.9900   1.00  1  1  6.7E-005
   6 :  1.15E+001 6.24E-005 0.000 0.1598 0.9073 0.9000   1.00  1  1  1.1E-005
   7 :  1.15E+001 7.13E-006 0.212 0.1144 0.9455 0.9450   1.00  1  1  1.3E-006
-  8 :  1.15E+001 1.58E-006 0.000 0.2221 0.9036 0.9000   1.00  1  1  2.9E-007
-  9 :  1.15E+001 2.60E-007 0.000 0.1644 0.9058 0.9000   1.00  2  2  5.1E-008
- 10 :  1.15E+001 4.13E-008 0.000 0.1586 0.9056 0.9000   1.00  2  2  9.1E-009
+  8 :  1.15E+001 1.58E-006 0.000 0.2222 0.9036 0.9000   1.00  1  1  2.9E-007
+  9 :  1.15E+001 2.61E-007 0.000 0.1645 0.9058 0.9000   1.00  2  2  5.1E-008
+ 10 :  1.15E+001 4.13E-008 0.000 0.1587 0.9056 0.9000   1.00  2  2  9.1E-009
 
 iter seconds digits       c*x               b*y
  10      0.1   8.3  1.1483929305e+001  1.1483929241e+001
@@ -171,11 +173,10 @@ Detailed timing (sec)
    Pre          IPM          Post
 1.001E-002    1.302E-001    0.000E+000    
 Max-norms: ||b||=2.183186e+000, ||c|| = 1,
-Cholesky |add|=0, |skip| = 0, ||L.L|| = 83.9991.
+Cholesky |add|=0, |skip| = 0, ||L.L|| = 83.9901.
 ------------------------------------------------------------------------
-Status (cvx_status): Solved
- 
-Optimal value (cvx_optval): 11.4839
+Status: Solved
+Optimal value (cvx_optval): +11.4839
 Done! 
 ------------------------------------------------------------------
 The optimal point location for the L1-norm case is: 
@@ -187,7 +188,7 @@ The optimal point location for the L2-norm case is:
     0.1716
 
 </pre><p class="footer"><br>
-            Published with MATLAB&reg; 7.1<br></p>
+            Published with MATLAB&reg; 7.2<br></p>
       </div>
       <!--
 ##### SOURCE BEGIN #####

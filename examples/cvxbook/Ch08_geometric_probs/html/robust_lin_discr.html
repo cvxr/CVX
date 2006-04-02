@@ -7,8 +7,8 @@ This HTML is auto-generated from an M-file.
 To make changes, update the M-file and republish this document.
       -->
       <title>Figure 8.9: Robust linear discrimination problem</title>
-      <meta name="generator" content="MATLAB 7.1">
-      <meta name="date" content="2006-02-25">
+      <meta name="generator" content="MATLAB 7.2">
+      <meta name="date" content="2006-04-01">
       <meta name="m-file" content="robust_lin_discr"><style>
 
 body {
@@ -41,6 +41,9 @@ pre.codeinput {
   background: #EEEEEE;
   padding: 10px;
 }
+@media print {
+  pre.codeinput {word-wrap:break-word; width:100%;}
+} 
 
 span.keyword {color: #0000FF}
 span.comment {color: #228B22}
@@ -134,23 +137,21 @@ nnz(A) = 113 + 0, nnz(ADA) = 289, nnz(L) = 153
   5 : -5.06E-001 6.41E-004 0.000 0.0734 0.9900 0.9900   0.89  1  1  4.4E-003
   6 : -5.11E-001 2.89E-006 0.000 0.0045 0.9990 0.9990   0.99  1  1  1.9E-005
   7 : -5.11E-001 9.07E-010 0.000 0.0003 0.9999 0.9986   1.00  1  1  1.5E-008
-  8 : -5.11E-001 3.44E-011 0.000 0.0379 0.9905 0.9900   1.00  2  2  6.9E-010
 
 iter seconds digits       c*x               b*y
-  8      0.1   Inf -5.1122989593e-001 -5.1122989530e-001
-|Ax-b| =  1.4e-010, [Ay-c]_+ =  3.3E-010, |x|= 9.2e+000, |y|= 8.1e-001
+  7      0.1   Inf -5.1122989496e-001 -5.1122988683e-001
+|Ax-b| =  1.5e-008, [Ay-c]_+ =  6.0E-009, |x|= 9.2e+000, |y|= 8.1e-001
 
 Detailed timing (sec)
    Pre          IPM          Post
-3.004E-002    1.302E-001    0.000E+000    
+1.001E-002    1.001E-001    0.000E+000    
 Max-norms: ||b||=1, ||c|| = 1,
-Cholesky |add|=0, |skip| = 0, ||L.L|| = 1185.25.
+Cholesky |add|=0, |skip| = 0, ||L.L|| = 1.92116.
 ------------------------------------------------------------------------
-Status (cvx_status): Solved
- 
-Optimal value (cvx_optval): 0.51123
+Status: Solved
+Optimal value (cvx_optval): +0.51123
 </pre><img vspace="5" hspace="5" src="robust_lin_discr_01.png"> <p class="footer"><br>
-            Published with MATLAB&reg; 7.1<br></p>
+            Published with MATLAB&reg; 7.2<br></p>
       </div>
       <!--
 ##### SOURCE BEGIN #####

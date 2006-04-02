@@ -7,8 +7,8 @@ This HTML is auto-generated from an M-file.
 To make changes, update the M-file and republish this document.
       -->
       <title>Maximum volume inscribed ellipsoid in a polyhedron</title>
-      <meta name="generator" content="MATLAB 7.1">
-      <meta name="date" content="2006-02-25">
+      <meta name="generator" content="MATLAB 7.2">
+      <meta name="date" content="2006-04-01">
       <meta name="m-file" content="max_vol_ellip_in_polyhedra"><style>
 
 body {
@@ -41,6 +41,9 @@ pre.codeinput {
   background: #EEEEEE;
   padding: 10px;
 }
+@media print {
+  pre.codeinput {word-wrap:break-word; width:100%;}
+} 
 
 span.keyword {color: #0000FF}
 span.comment {color: #228B22}
@@ -145,25 +148,23 @@ nnz(A) = 65 + 0, nnz(ADA) = 301, nnz(L) = 181
   4 : -9.52E-001 1.90E-004 0.000 0.0371 0.9900 0.9900   1.01  1  1  4.4E-004
   5 : -9.52E-001 4.50E-006 0.151 0.0237 0.9900 0.9900   1.00  1  1  1.1E-005
   6 : -9.52E-001 3.41E-007 0.273 0.0757 0.9900 0.9166   1.00  1  1  8.9E-007
-  7 : -9.52E-001 1.73E-008 0.383 0.0508 0.9900 0.9906   1.00  1  1  5.1E-008
-  8 : -9.52E-001 4.32E-009 0.000 0.2496 0.9028 0.9000   1.00  2  2  1.2E-008
-  9 : -9.52E-001 1.08E-010 0.386 0.0251 0.9900 0.9894   1.00  2  2  6.8E-010
+  7 : -9.52E-001 1.73E-008 0.383 0.0507 0.9900 0.9906   1.00  1  1  5.1E-008
+  8 : -9.52E-001 4.32E-009 0.000 0.2498 0.9028 0.9000   1.00  2  2  1.2E-008
 
 iter seconds digits       c*x               b*y
-  9      0.2   Inf -9.5230750989e-001 -9.5230750977e-001
-|Ax-b| =  2.8e-009, [Ay-c]_+ =  2.3E-011, |x|= 5.8e+000, |y|= 1.8e+000
+  8      0.1   8.3 -9.5230751342e-001 -9.5230751815e-001
+|Ax-b| =  3.3e-008, [Ay-c]_+ =  9.9E-010, |x|= 5.8e+000, |y|= 1.8e+000
 
 Detailed timing (sec)
    Pre          IPM          Post
-2.003E-002    1.602E-001    1.001E-002    
+0.000E+000    1.402E-001    0.000E+000    
 Max-norms: ||b||=2.474874e+000, ||c|| = 1,
-Cholesky |add|=0, |skip| = 0, ||L.L|| = 1136.81.
+Cholesky |add|=0, |skip| = 0, ||L.L|| = 759.824.
 ------------------------------------------------------------------------
-Status (cvx_status): Solved
- 
-Optimal value (cvx_optval): 0.952308
+Status: Solved
+Optimal value (cvx_optval): +0.952308
 </pre><img vspace="5" hspace="5" src="max_vol_ellip_in_polyhedra_01.png"> <p class="footer"><br>
-            Published with MATLAB&reg; 7.1<br></p>
+            Published with MATLAB&reg; 7.2<br></p>
       </div>
       <!--
 ##### SOURCE BEGIN #####

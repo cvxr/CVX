@@ -7,8 +7,8 @@ This HTML is auto-generated from an M-file.
 To make changes, update the M-file and republish this document.
       -->
       <title>Residual minimization with deadzone penalty</title>
-      <meta name="generator" content="MATLAB 7.1">
-      <meta name="date" content="2006-02-25">
+      <meta name="generator" content="MATLAB 7.2">
+      <meta name="date" content="2006-04-01">
       <meta name="m-file" content="deadzone"><style>
 
 body {
@@ -41,6 +41,9 @@ pre.codeinput {
   background: #EEEEEE;
   padding: 10px;
 }
+@media print {
+  pre.codeinput {word-wrap:break-word; width:100%;}
+} 
 
 span.keyword {color: #0000FF}
 span.comment {color: #228B22}
@@ -116,18 +119,17 @@ nnz(A) = 336 + 0, nnz(ADA) = 304, nnz(L) = 168
   3 :  1.60E+001 1.66E-002 0.000 0.0084 0.9990 0.9990   1.10  1  1  1.1E-003
   4 :  1.60E+001 4.85E-008 0.000 0.0000 1.0000 1.0000   1.00  1  1  
 iter seconds digits       c*x               b*y
-  4      0.1   Inf  1.6000000000e+001  1.6000000000e+001
-|Ax-b| =  1.6e-015, [Ay-c]_+ =  1.4E-016, |x|= 4.8e+000, |y|= 4.0e+000
+  4      0.0  16.0  1.6000000000e+001  1.6000000000e+001
+|Ax-b| =  2.3e-015, [Ay-c]_+ =  4.0E-018, |x|= 4.8e+000, |y|= 4.0e+000
 
 Detailed timing (sec)
    Pre          IPM          Post
-3.004E-002    9.013E-002    0.000E+000    
+1.001E-002    3.004E-002    0.000E+000    
 Max-norms: ||b||=1.488490e+000, ||c|| = 1,
 Cholesky |add|=0, |skip| = 0, ||L.L|| = 1.30797.
 ------------------------------------------------------------------------
-Status (cvx_status): Solved
- 
-Optimal value (cvx_optval): 0
+Status: Solved
+Optimal value (cvx_optval): +0
 Done! 
 
 Results:
@@ -142,7 +144,7 @@ Residual vector:
    A*x-b = [  0.5785  0.4111 -0.8196 -0.3117  0.3849  0.3361 -0.6416 -0.7070 -0.5074  0.7695  0.1929 -0.1898  0.5407  0.7482  0.2783 -0.3828 ]
  
 </pre><p class="footer"><br>
-            Published with MATLAB&reg; 7.1<br></p>
+            Published with MATLAB&reg; 7.2<br></p>
       </div>
       <!--
 ##### SOURCE BEGIN #####

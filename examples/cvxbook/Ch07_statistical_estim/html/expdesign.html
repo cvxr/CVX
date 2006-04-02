@@ -7,8 +7,8 @@ This HTML is auto-generated from an M-file.
 To make changes, update the M-file and republish this document.
       -->
       <title>Experiment design examples</title>
-      <meta name="generator" content="MATLAB 7.1">
-      <meta name="date" content="2006-02-25">
+      <meta name="generator" content="MATLAB 7.2">
+      <meta name="date" content="2006-04-01">
       <meta name="m-file" content="expdesign"><style>
 
 body {
@@ -41,6 +41,9 @@ pre.codeinput {
   background: #EEEEEE;
   padding: 10px;
 }
+@media print {
+  pre.codeinput {word-wrap:break-word; width:100%;}
+} 
 
 span.keyword {color: #0000FF}
 span.comment {color: #228B22}
@@ -293,28 +296,26 @@ nnz(A) = 91 + 0, nnz(ADA) = 88, nnz(L) = 49
   6 : -3.18E+000 3.50E-002 0.000 0.0446 0.9900 0.9900   0.98  1  1  2.4E-002
   7 : -3.18E+000 8.11E-004 0.000 0.0232 0.9900 0.9900   1.00  1  1  5.6E-004
   8 : -3.18E+000 2.94E-005 0.000 0.0362 0.9900 0.9900   1.00  1  1  2.0E-005
-  9 : -3.18E+000 3.00E-006 0.000 0.1021 0.9064 0.9000   1.00  1  1  2.4E-006
- 10 : -3.18E+000 3.33E-007 0.050 0.1109 0.9129 0.9000   1.00  2  2  3.4E-007
- 11 : -3.18E+000 4.32E-008 0.000 0.1300 0.9072 0.9000   1.00  2  2  5.2E-008
- 12 : -3.18E+000 4.34E-009 0.000 0.1003 0.9000 0.0000   1.00  2  2  1.2E-008
- 13 : -3.18E+000 3.57E-010 0.304 0.0822 0.9900 0.9900   1.00  2  2  9.8E-010
+  9 : -3.18E+000 3.00E-006 0.000 0.1023 0.9064 0.9000   1.00  1  1  2.4E-006
+ 10 : -3.18E+000 3.32E-007 0.046 0.1105 0.9129 0.9000   1.00  2  2  3.4E-007
+ 11 : -3.18E+000 4.14E-008 0.000 0.1247 0.9071 0.9000   1.00  2  2  5.1E-008
+ 12 : -3.18E+000 4.17E-009 0.000 0.1008 0.9000 0.0000   1.00  2  2  1.2E-008
 
 iter seconds digits       c*x               b*y
- 13      0.1   Inf -3.1819805148e+000 -3.1819805112e+000
-|Ax-b| =  8.9e-010, [Ay-c]_+ =  2.2E-010, |x|= 1.7e+001, |y|= 4.3e+000
+ 12      0.2   Inf -3.1819805111e+000 -3.1819804667e+000
+|Ax-b| =  1.1e-008, [Ay-c]_+ =  2.7E-009, |x|= 1.7e+001, |y|= 4.3e+000
 
 Detailed timing (sec)
    Pre          IPM          Post
-4.006E-002    1.402E-001    0.000E+000    
+1.001E-002    1.502E-001    0.000E+000    
 Max-norms: ||b||=1, ||c|| = 1,
-Cholesky |add|=0, |skip| = 0, ||L.L|| = 6141.27.
+Cholesky |add|=0, |skip| = 0, ||L.L|| = 4317.98.
 ------------------------------------------------------------------------
-Status (cvx_status): Solved
- 
-Optimal value (cvx_optval): 3.18198
+Status: Solved
+Optimal value (cvx_optval): +3.18198
 Nonzero lambda values for D design:
-lambda(1) = 0.5
-lambda(10) = 0.5
+lambda(1) = 0.50001
+lambda(10) = 0.49999
  
 Calling SeDuMi: 32 variables (0 free), 11 equality constraints
 ------------------------------------------------------------------------
@@ -336,26 +337,24 @@ nnz(A) = 146 + 0, nnz(ADA) = 81, nnz(L) = 46
  10 :  8.50E-001 6.37E-007 0.099 0.1754 0.9194 0.9000   1.00  1  1  3.4E-006
  11 :  8.50E-001 1.32E-007 0.000 0.2081 0.9057 0.9000   1.00  1  1  7.3E-007
  12 :  8.50E-001 2.56E-008 0.000 0.1931 0.7981 0.9000   1.00  1  1  1.4E-007
- 13 :  8.50E-001 2.03E-009 0.030 0.0794 0.9217 0.9900   1.00  1  1  1.3E-008
- 14 :  8.50E-001 2.26E-010 0.000 0.1112 0.9000 0.9078   1.00  2  2  1.8E-009
+ 13 :  8.50E-001 2.05E-009 0.030 0.0803 0.9217 0.9900   1.00  1  2  1.3E-008
 
 iter seconds digits       c*x               b*y
- 14      0.1   Inf  8.4952793376e-001  8.4952793591e-001
-|Ax-b| =  1.2e-009, [Ay-c]_+ =  9.5E-010, |x|= 8.1e+000, |y|= 1.7e+000
+ 13      0.1   Inf  8.4952798035e-001  8.4952803827e-001
+|Ax-b| =  6.3e-009, [Ay-c]_+ =  8.9E-009, |x|= 8.1e+000, |y|= 1.7e+000
 
 Detailed timing (sec)
    Pre          IPM          Post
-0.000E+000    1.202E-001    1.001E-002    
+1.001E-002    1.202E-001    0.000E+000    
 Max-norms: ||b||=1, ||c|| = 1,
-Cholesky |add|=0, |skip| = 0, ||L.L|| = 19.0574.
+Cholesky |add|=0, |skip| = 0, ||L.L|| = 19.0554.
 ------------------------------------------------------------------------
-Status (cvx_status): Solved
- 
-Optimal value (cvx_optval): 0.849528
+Status: Solved
+Optimal value (cvx_optval): +0.849528
 Nonzero lambda values for A design:
-lambda(1) = 0.2966
-lambda(10) = 0.37797
-lambda(20) = 0.32543
+lambda(1) = 0.29654
+lambda(10) = 0.37799
+lambda(20) = 0.32548
  
 Calling SeDuMi: 24 variables (1 free), 4 equality constraints
 ------------------------------------------------------------------------
@@ -371,7 +370,7 @@ nnz(A) = 85 + 0, nnz(ADA) = 16, nnz(L) = 10
   3 : -1.77E+000 6.82E+000 0.000 0.3143 0.9000 0.9000   1.48  1  1  2.3E+000
   4 : -1.80E+000 3.36E-001 0.000 0.0493 0.9900 0.9900   1.15  1  1  1.0E-001
   5 : -1.80E+000 7.85E-005 0.000 0.0002 0.9999 0.9999   1.01  1  1  2.4E-005
-  6 : -1.80E+000 3.33E-012 0.286 0.0000 1.0000 1.0000   1.00  1  1  3.8E-012
+  6 : -1.80E+000 3.34E-012 0.286 0.0000 1.0000 1.0000   1.00  1  1  3.8E-012
 
 iter seconds digits       c*x               b*y
   6      0.1   Inf -1.8000000000e+000 -1.8000000000e+000
@@ -379,18 +378,17 @@ iter seconds digits       c*x               b*y
 
 Detailed timing (sec)
    Pre          IPM          Post
-1.001E-002    5.007E-002    1.001E-002    
+1.001E-002    8.012E-002    0.000E+000    
 Max-norms: ||b||=1, ||c|| = 1,
 Cholesky |add|=0, |skip| = 0, ||L.L|| = 1.
 ------------------------------------------------------------------------
-Status (cvx_status): Solved
- 
-Optimal value (cvx_optval): 1.8
+Status: Solved
+Optimal value (cvx_optval): +1.8
 Nonzero lambda values for E design:
 lambda(10) = 0.2
 lambda(20) = 0.8
 </pre><img vspace="5" hspace="5" src="expdesign_01.png"> <img vspace="5" hspace="5" src="expdesign_02.png"> <img vspace="5" hspace="5" src="expdesign_03.png"> <img vspace="5" hspace="5" src="expdesign_04.png"> <p class="footer"><br>
-            Published with MATLAB&reg; 7.1<br></p>
+            Published with MATLAB&reg; 7.2<br></p>
       </div>
       <!--
 ##### SOURCE BEGIN #####

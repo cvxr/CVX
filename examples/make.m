@@ -1,15 +1,47 @@
 function make( varargin )
 
 %
+% Quick wrapper to save base workspace
+%
+
+evalin( 'base', 'global cvx___ws___' );
+vars = evalin( 'base', 'who' );
+varg = evalin( 'base', 'who( ''global'' )' );
+varg = intersect( varg, vars );
+vars = setdiff( vars, varg );
+temp = sprintf( '%s,', vars{:} );
+evalin( 'base', [ 'cvx___ws___ = {', temp(1:end-1), '};' ] );
+evalin( 'base', 'clear' );
+try
+    make2( varargin{:} );
+    lerr = [];
+catch
+    lerr = lasterror;
+end
+evalin( 'base', 'clear' );
+if ~isempty( varg ),
+    evalin( 'base', sprintf( '%s ', 'global', varg{:} ) );
+end
+if ~isempty( vars ),
+    evalin( 'base', [ '[', temp(1:end-1), '] = deal( cvx___ws___{:} );' ] );
+end
+clear global cvx___ws___
+if ~isempty( lerr ),
+    rethrow( lerr );
+end
+
+function make2( varargin )
+
+%
 % Determine the base path
 %
 
 odir = cd;
-try,
+try
     base = dbstack( '-completenames' );
     base = base(1);
     base = base.file;
-catch,
+catch
     base = dbstack;
     base = base(1);
     base = base.name;
@@ -37,7 +69,7 @@ for k = 1 : length( args ),
     if any( file == '*' ),
         files = dir( file );
         files = { files.name };
-    else,
+    else
         files = { file };
     end
     for j = 1 : length( files );
@@ -47,17 +79,17 @@ for k = 1 : length( args ),
         %
 
         file = files{j};
-        switch exist( file ),
+        switch exist( file, 'file' ),
             case 0,
-                error( sprintf( 'Cannot find file or directory: %s', file ) );
+                error( 'Cannot find file or directory: %s', file );
             case 2,
                 [ mpath, file, ext, versn ] = fileparts( which( file ) );
                 file = [ file, ext, versn ];
                 if ~strcmp( ext, '.m' ),
-                    error( sprintf( 'Must be an m-file: %s', file ) );
-                elseif strcmp( file, 'Contents.m' ) & length( files ) > 1,
+                    error( 'Must be an m-file: %s', file );
+                elseif strcmp( file, 'Contents.m' ) && length( files ) > 1,
                     continue;
-                elseif strcmp( file, 'make.m' ) & strcmp( mpath, base ),
+                elseif strcmp( file, 'make.m' ) && strcmp( mpath, base ),
                     continue;
                 end
             case 7,
@@ -66,17 +98,17 @@ for k = 1 : length( args ),
                 cd( odir );
                 file = '';
             otherwise,
-                error( sprintf( 'Invalid file: %s', file ) );
+                error( 'Invalid file: %s', file );
         end
-        if length( mpath ) < length( base ) | strncmpi( mpath, base, length( base ) ) == 0,
-            error( sprintf( 'Not a valid a subdirectory of cvx/examples/: %s', mpath ) );
+        if length( mpath ) < length( base ) || strncmpi( mpath, base, length( base ) ) == 0,
+            error( 'Not a valid a subdirectory of cvx/examples/: %s', mpath );
         end
 
         %
         % Process the file or directory
         %   
 
-        if isempty( file ) & strcmp( mpath, base ),
+        if isempty( file ) && strcmp( mpath, base ),
             cd( base );
             [ fidr, message ] = fopen( 'index.html', 'r' );
             if fidr < 0,
@@ -102,13 +134,13 @@ for k = 1 : length( args ),
             fprintf( fidw, '<h3>Last updated: %s</h3>\n', date );
             fprintf( fidw, '<p><a href="#" onclick="expandTree(''tree1''); return false;">Expand all</a>&nbsp;&nbsp;\n' );
             fprintf( fidw, '<a href="#" onclick="collapseTree(''tree1''); return false;">Collapse all</a></p>\n' );
-        else,
+        else
             fidw = -1;
         end
 
         if isempty( file ),
             generate_directory( mpath, '', force, fidw, base );
-        else,
+        else
             cd( mpath );
             generate_file( file, '', force );
         end
@@ -145,11 +177,11 @@ comments = {};
 [ fidr, message ] = fopen( 'Contents.m', 'r' );
 if fidr >= 0,
     temp = fgetl( fidr );
-    if length( temp ) > 2 & temp( 1 ) == '%' & temp( 2 ) == ' ' & temp( 3 ) ~= ' ',
+    if length( temp ) > 2 && temp( 1 ) == '%' && temp( 2 ) == ' ' && temp( 3 ) ~= ' ',
         title = temp( min( find( temp ~= '%' & temp ~= ' ' ) ) : end );
         while ~feof( fidr ),
             temp = fgetl( fidr );
-            if temp( 1 ) ~= '%' | ~any( temp ~= '%' & temp ~= ' ' ), break; end
+            if temp( 1 ) ~= '%' || ~any( temp ~= '%' & temp ~= ' ' ), break; end
             comments{end+1} = temp( min( find( temp ~= '%' & temp ~= ' ' ) ) : end );
         end
     end
@@ -168,7 +200,7 @@ files = struct( 'name', {}, 'title', {}, 'type', {} );
 for k = 1 : length( dd ),
     name = dd(k).name;
     if dd(k).isdir,
-        if name(1) == '.' | strcmp( name, 'html' ), continue; end
+        if name(1) == '.' || strcmp( name, 'html' ), continue; end
         name(end+1) = '/';
         files( end + 1 ) = struct( 'name', name, 'title', '', 'type', 'dir' );
     elseif length( name ) > 2,
@@ -176,12 +208,11 @@ for k = 1 : length( dd ),
         if isempty( ndx ), continue; end
         switch name(ndx+1:end),
             case 'm',
-                if strcmp( name, 'Contents.m' )| strcmp( name, 'make.m' ), continue; end
+                if strcmp( name, 'Contents.m' ) || strcmp( name, 'make.m' ), continue; end
                 [ temp, isfunc ] = generate_file( name, prefix, force );
-                if isfunc, type = 'func'; else, type = 'script'; end
+                if isfunc, type = 'func'; else type = 'script'; end
                 files( end + 1 ) = struct( 'name', name, 'title', temp, 'type', type );
             case 'tex',
-                name2 = name(1:ndx-1);
                 temp = generate_doc( name, prefix, force );
                 files( end + 1 ) = struct( 'name', name, 'title', temp, 'type', 'tex' );
             case { 'pdf', 'ps' },
@@ -226,14 +257,14 @@ if fidc >= 0,
     if ~isempty( dpath ),
         dpath(end+1) = '/';
         [ dpath2, dname ] = fileparts( mpath );
-        if ~isempty( files ) & any( tdir ),
+        if ~isempty( files ) && any( tdir ),
             mclass = 'liOpen';
-        else,
+        else
             mclass = 'liClosed';
         end
         if isempty( title ),
             fprintf( fidc, '<li class="%s"><a href="%s">%s/</a>\n', mclass, dpath, dname ),
-        else,
+        else
             fprintf( fidc, '<li class="%s"><b>%s</b>\n', mclass, regexprep( title, htmlsrc, htmldst ) );
         end
         if ~isempty( comments ),
@@ -244,7 +275,7 @@ if fidc >= 0,
             fprintf( fidc, '</blockquote>\n' );
         end
         fprintf( fidc, '<ul>\n' );
-    else,
+    else
         fprintf( fidc, '<ul class="mktree" id="tree1">\n' );
     end
     
@@ -252,7 +283,7 @@ if fidc >= 0,
         
         fprintf( fidc, '<li>(no files)</li>\n' );
         
-    else,
+    else
     
         if any( tdir ),
             for k = 1 : length( files ),
@@ -274,7 +305,7 @@ if fidc >= 0,
                     temp = files( k ).title;
                     if isempty( temp ),
                         fprintf( fidc, '<li><a href="%s%s">%s</a></li>\n', dpath, name, name );
-                    else,
+                    else
                         fprintf( fidc, '<li><a href="%shtml/%shtml">%s</a> (<a href="%s%s">%s</a>)</li>\n', dpath, name(1:end-1), regexprep( temp, htmlsrc, htmldst ), dpath, name, name );
                     end
                 end
@@ -292,7 +323,7 @@ if fidc >= 0,
                     temp = files( k ).title;
                     if isempty( temp ),
                         fprintf( fidc, '<li><a href="%s%s">%s</a></li>\n', dpath, name, name );
-                    else,
+                    else
                         fprintf( fidc, '<li><a href="%s%s">%s (%s)</a></li>\n', dpath, name, regexprep( temp, htmlsrc, htmldst ), name );
                     end
                 end
@@ -303,7 +334,7 @@ if fidc >= 0,
         if any( tdoc ),
             fprintf( fidc, '<li class="liOpen">Documentation:<ul>\n' );
             for k = 1 : length( files ),
-                if strcmp( files(k).type, 'doc' ) | strcmp( files(k).type, 'tex' ),
+                if strcmp( files(k).type, 'doc' ) || strcmp( files(k).type, 'tex' ),
                     name = files( k ).name;
                     if strcmp( files(k).type, 'tex' ),
                         name = [ name(1:end-4), 'pdf' ];
@@ -311,7 +342,7 @@ if fidc >= 0,
                     temp = files( k ).title;
                     if isempty( temp ),
                         fprintf( fidc, '<li><a href="%s%s">%s</a></li>\n', dpath, name, name );
-                    else,
+                    else
                         fprintf( fidc, '<li><a href="%s%s">%s (%s)</a></li>\n', dpath, name, regexprep( temp, htmlsrc, htmldst ), name );
                     end
                 end
@@ -348,7 +379,7 @@ for k = 1 : length( files ),
     tfile.name(end+1:mlen) = ' ';
     if isempty( tfile.title ),
         fprintf( fidw, '%%  %s - (no title)\n', tfile.name );
-    else,
+    else
         fprintf( fidw, '%%  %s - %s\n', tfile.name, tfile.title );
     end
 end
@@ -364,11 +395,11 @@ compare_and_replace( prefix, 'Contents.m' );
 
 function [ title, isfunc ] = generate_file( name, prefix, force )
 
-if length( name ) < 2 | ~strcmp( name(end-1:end), '.m' ),
+if length( name ) < 2 || ~strcmp( name(end-1:end), '.m' ),
     error( 'Not an m-file.' );
 elseif strcmp( name, 'Contents.m' ),
     error( 'To generate the Contents.m file, you must run this function on the entire directory.' );
-else,
+else
     fprintf( 1, '%s%s: ', prefix, name );
 end
 
@@ -396,10 +427,10 @@ while ~feof( fidr ) && ( ~founddata || isempty( title ) || lasttitle ),
             title = temp3;
             lasttitle = true;
             continue;
-        else,
+        else
             lasttitle = false;
         end
-    else,
+    else
         lasttitle = false;
         founddata = true;
         if strncmp( temp2, 'function', 8 ) && ( length( temp2 ) == 8 || ~isvarname( temp2( 1 : 9 ) ) ),
@@ -408,11 +439,16 @@ while ~feof( fidr ) && ( ~founddata || isempty( title ) || lasttitle ),
     end
     prefixes{end+1} = temp1;
 end
+if isfunc,
+    fprintf( 1, 'function.\n' );
+    fclose( fidr );
+    return
+end
 hfile = [ name(1:end-1), 'html' ];
 odir = cd;
 hdir = 'html';
 hdate = 0;
-if exist( hdir ) ==  7,
+if exist( hdir, 'dir' ),
     cd( hdir );
     df = dir( hfile );
     if length( df ) == 1,
@@ -420,10 +456,10 @@ if exist( hdir ) ==  7,
     end
     cd( odir );
 end
-if force | hdate <= ndate,
+if force || hdate <= ndate,
     if hdate == 0,
         fprintf( 1, 'creating %s ...', hfile );
-    else,
+    else
         fprintf( 1, 'updating %s ...', hfile );
     end
     name2 = [ name, '__' ];
@@ -431,24 +467,20 @@ if force | hdate <= ndate,
     if fidw < 0,
         error( 'Cannot open the temporary file\n   %s', message );
     end
-    if isfunc,
-        fstr = ' (function)';
-    else,
-        fstr = '';
-    end
     if isempty( title ),
-        fprintf( fidw, '%%%% %s%s\n\n', name, fstr );
-    else,
-        fprintf( fidw, '%%%% %s%s\n\n', title, fstr );
+        fprintf( fidw, '%%%% %s\n\n', name );
+    else
+        fprintf( fidw, '%%%% %s\n\n', title );
     end
     fprintf( fidw, '%s\n', prefixes{:} );
     fwrite( fidw, fread( fidr, Inf, 'uint8' ), 'uint8' );
     fclose( fidw );
-    cvx_clear
+    evalin( 'base', 'clear' );
     cvx_quiet( false );
-    try,
-        publish( name2, struct( 'evalCode', ~isfunc, 'format', 'html', 'useNewFigure', 0, 'stopOnError', 1, 'createThumbnail', 0 ) );
-    catch,
+    cvx_precision default;
+    try
+        publish( name2, struct( 'format', 'html', 'useNewFigure', 0, 'createThumbnail', 0 ) );
+    catch
         err = lasterror;
         fprintf( 1, ' aborted.\n' );
         fclose( fidr );
@@ -463,15 +495,15 @@ if force | hdate <= ndate,
     cd( odir );
     fprintf( 1, ' done.\n' );
     close all
-else,
+else
     fprintf( 1, 'up to date.\n' );
 end
 
 function title = generate_doc( name, prefix, force )
 
-if length( name ) < 5 | ~strcmp( name(end-3:end), '.tex' ),
+if length( name ) < 5 || ~strcmp( name(end-3:end), '.tex' ),
     error( 'Not an valid TeX file.' );
-else,
+else
     fprintf( 1, '%s%s: ', prefix, name );
 end
 
@@ -493,25 +525,25 @@ while ~feof( fidr ),
 end
 pdffile = [ name(1:end-3), 'pdf' ];
 hdate = 0;
-df = dir( hfile );
+df = dir( pdffile );
 if length( df ) == 1,
     hdate = date_convert( df.date );
 end
-if force | hdate < ndate,
+if force || hdate < ndate,
     if hdate == 0,
         fprintf( 1, 'creating %s:', hfile );
-    else,
+    else
         fprintf( 1, 'updating %s:', hfile );
     end
     name2 = name(1:end-4);
-    eval( sprintf( '!latex %s', name ) );
-    eval( sprintf( '!latex %s', name ) );
-    eval( sprintf( '!bibtex %s', name ) );
-    eval( sprintf( '!latex %s', name ) );
-    eval( sprintf( '!latex %s', name ) );
-    eval( sprintf( '!latex %s', name ) );
-    eval( sprintf( '!dvips %s', name ) );
-    eval( sprintf( '!ps2pdf %s.ps', name ) );
+    eval( sprintf( '!latex %s', name2 ) );
+    eval( sprintf( '!latex %s', name2 ) );
+    eval( sprintf( '!bibtex %s', name2 ) );
+    eval( sprintf( '!latex %s', name2 ) );
+    eval( sprintf( '!latex %s', name2 ) );
+    eval( sprintf( '!latex %s', name2 ) );
+    eval( sprintf( '!dvips %s', name2 ) );
+    eval( sprintf( '!ps2pdf %s.ps', name2 ) );
 end
 
 function dnum = date_convert( dstr )
@@ -532,19 +564,19 @@ fids = [];
 c = {};
 for k = 1 : 2,
     [ fids(k), message ] = fopen( names{k}, 'r' );
-    if fids(k) < 0 & ~isempty( dir( names{k} ) ),
+    if fids(k) < 0 && ~isempty( dir( names{k} ) ),
         error( 'Cannot open file %s for reading:\n   %s', names{k}, message );
     end
     c{k} = fread( fids(k), Inf, 'uint8' );
     fclose( fids(k) );
 end
-if length( c{2} ) == 0,
+if isempty( c{2} ),
     if fids(k) >= 0,
         fprintf( 1, ' removed.\n' );
         delete( oldname );
     end
     delete( names{2} );
-elseif length( c{1} ) ~= length( c{2} ) | any( c{1} ~= c{2} ),
+elseif length( c{1} ) ~= length( c{2} ) || any( c{1} ~= c{2} ),
     [ success, message ] = movefile( names{2}, names{1}, 'f' );
     if ~success,
         error( 'Cannot move %s into place\n   %s', names{2}, message );
@@ -552,10 +584,10 @@ elseif length( c{1} ) ~= length( c{2} ) | any( c{1} ~= c{2} ),
     end
     if ~isempty( c{1} ),
         fprintf( 1, ' updated.\n' );
-    else,
+    else
         fprintf( 1, ' created.\n' );
     end
-else,
+else
     delete( names{2} )
     fprintf( 1, ' up to date.\n' );
 end

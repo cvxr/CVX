@@ -7,8 +7,8 @@ This HTML is auto-generated from an M-file.
 To make changes, update the M-file and republish this document.
       -->
       <title>Compute and display the Chebyshev center of a 2D polyhedron</title>
-      <meta name="generator" content="MATLAB 7.1">
-      <meta name="date" content="2006-02-25">
+      <meta name="generator" content="MATLAB 7.2">
+      <meta name="date" content="2006-04-01">
       <meta name="m-file" content="chebyshev_center_2D"><style>
 
 body {
@@ -41,6 +41,9 @@ pre.codeinput {
   background: #EEEEEE;
   padding: 10px;
 }
+@media print {
+  pre.codeinput {word-wrap:break-word; width:100%;}
+} 
 
 span.keyword {color: #0000FF}
 span.comment {color: #228B22}
@@ -124,20 +127,19 @@ nnz(A) = 28 + 0, nnz(ADA) = 16, nnz(L) = 10
   3 : -4.47E-001 3.24E-003 0.000 0.0362 0.9900 0.9900   1.42  1  1  3.0E-003
   4 : -4.47E-001 1.44E-007 0.204 0.0000 1.0000 1.0000   1.01  1  1  
 iter seconds digits       c*x               b*y
-  4      0.1  15.9 -4.4721359550e-001 -4.4721359550e-001
-|Ax-b| =  8.0e-016, [Ay-c]_+ =  1.2E-016, |x|= 1.4e+000, |y|= 2.4e-001
+  4      0.0   Inf -4.4721359550e-001 -4.4721359550e-001
+|Ax-b| =  1.5e-015, [Ay-c]_+ =  1.2E-016, |x|= 1.4e+000, |y|= 2.4e-001
 
 Detailed timing (sec)
    Pre          IPM          Post
-3.004E-002    6.009E-002    0.000E+000    
+1.001E-002    3.004E-002    0.000E+000    
 Max-norms: ||b||=1, ||c|| = 1,
 Cholesky |add|=0, |skip| = 0, ||L.L|| = 1.30805.
 ------------------------------------------------------------------------
-Status (cvx_status): Solved
- 
-Optimal value (cvx_optval): 0.447214
+Status: Solved
+Optimal value (cvx_optval): +0.447214
 </pre><img vspace="5" hspace="5" src="chebyshev_center_2D_01.png"> <p class="footer"><br>
-            Published with MATLAB&reg; 7.1<br></p>
+            Published with MATLAB&reg; 7.2<br></p>
       </div>
       <!--
 ##### SOURCE BEGIN #####

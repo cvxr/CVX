@@ -7,8 +7,8 @@ This HTML is auto-generated from an M-file.
 To make changes, update the M-file and republish this document.
       -->
       <title>Builds and solves a simple linear program</title>
-      <meta name="generator" content="MATLAB 7.1">
-      <meta name="date" content="2006-02-25">
+      <meta name="generator" content="MATLAB 7.2">
+      <meta name="date" content="2006-04-01">
       <meta name="m-file" content="simple_LP"><style>
 
 body {
@@ -41,6 +41,9 @@ pre.codeinput {
   background: #EEEEEE;
   padding: 10px;
 }
+@media print {
+  pre.codeinput {word-wrap:break-word; width:100%;}
+} 
 
 span.keyword {color: #0000FF}
 span.comment {color: #228B22}
@@ -93,28 +96,27 @@ Alg = 2: xz-corrector, Adaptive Step-Differentiation, theta = 0.250, beta = 0.50
 eqs m = 50, order n = 101, dim = 101, blocks = 1
 nnz(A) = 5000 + 0, nnz(ADA) = 2500, nnz(L) = 1275
  it :     b*y       gap    delta  rate   t/tP*  t/tD*   feas cg cg  prec
-  0 :            8.73E+000 0.000
-  1 :  4.35E+000 3.00E+000 0.000 0.3435 0.9000 0.9000   0.04  1  1  4.1E+001
-  2 :  1.10E+001 9.94E-001 0.000 0.3314 0.9000 0.9000   0.29  1  1  1.7E+001
-  3 :  3.31E+001 2.90E-001 0.000 0.2912 0.9000 0.9000   0.28  1  1  1.0E+001
-  4 :  3.42E+002 1.40E-001 0.000 0.4833 0.9000 0.9000  -2.70  1  1  5.0E+001
-  5 :  1.16E+003 4.82E-003 0.000 0.0344 0.9900 0.9900  -2.16  1  1  5.5E+000
-  6 :  1.16E+007 1.00E-006 0.000 0.0002 0.9999 0.9999  -1.01  1  1  
-Primal infeasible, dual improving direction found.
+  0 :            2.45E+000 0.000
+  1 :  1.84E+001 9.36E-001 0.000 0.3817 0.9000 0.9000  -1.36  1  1  1.0E+002
+  2 :  8.50E+001 3.33E-001 0.000 0.3554 0.9000 0.9000  -1.86  1  1  1.1E+002
+  3 :  2.20E+002 1.30E-001 0.000 0.3916 0.9000 0.9000  -1.57  1  1  1.3E+002
+  4 :  4.73E+002 3.66E-002 0.000 0.2811 0.9000 0.9000  -1.72  1  1  1.8E+002
+  5 :  4.88E+002 2.00E-003 0.000 0.0547 0.9900 0.9900  -1.37  1  1  1.8E+002
+  6 :  3.42E+002 1.64E-007 0.457 0.0001 1.0000 1.0000  -1.02  1  1  
+Dual infeasible, primal improving direction found.
 iter seconds  |Ax|    [Ay]_+     |x|       |y|
-  6      0.1  0.0e+000  0.0e+000  0.0e+000  9.6e-001
+  6      0.1  1.7e-015  1.3e-019  9.7e-001  4.9e-019
 
 Detailed timing (sec)
    Pre          IPM          Post
-5.007E-002    1.102E-001    1.001E-002    
-Max-norms: ||b||=2.579840e+000, ||c|| = 2.533362e+000,
-Cholesky |add|=0, |skip| = 0, ||L.L|| = 1.
+2.003E-002    1.001E-001    1.001E-002    
+Max-norms: ||b||=3.275859e+000, ||c|| = 2.756671e+000,
+Cholesky |add|=0, |skip| = 0, ||L.L|| = 1.05474.
 ------------------------------------------------------------------------
-Status (cvx_status): Infeasible
- 
-Optimal value (cvx_optval): Inf
+Status: Unbounded
+Optimal value (cvx_optval): -Inf
 </pre><p class="footer"><br>
-            Published with MATLAB&reg; 7.1<br></p>
+            Published with MATLAB&reg; 7.2<br></p>
       </div>
       <!--
 ##### SOURCE BEGIN #####

@@ -7,8 +7,8 @@ This HTML is auto-generated from an M-file.
 To make changes, update the M-file and republish this document.
       -->
       <title>Section 4.5.4 example: Frobenius norm diagonal scaling</title>
-      <meta name="generator" content="MATLAB 7.1">
-      <meta name="date" content="2006-02-25">
+      <meta name="generator" content="MATLAB 7.2">
+      <meta name="date" content="2006-04-01">
       <meta name="m-file" content="frob_norm_diag_scaling"><style>
 
 body {
@@ -41,6 +41,9 @@ pre.codeinput {
   background: #EEEEEE;
   padding: 10px;
 }
+@media print {
+  pre.codeinput {word-wrap:break-word; width:100%;}
+} 
 
 span.keyword {color: #0000FF}
 span.comment {color: #228B22}
@@ -130,23 +133,21 @@ nnz(A) = 250 + 0, nnz(ADA) = 421, nnz(L) = 243
  10 :  3.34E+000 8.71E-008 0.136 0.0886 0.9902 0.9900   1.01  1  1  3.8E-006
  11 :  3.34E+000 1.94E-008 0.000 0.2232 0.9000 0.9203   1.05  1  1  8.4E-007
  12 :  3.34E+000 4.63E-009 0.000 0.2383 0.8406 0.9000   1.07  1  1  1.9E-007
- 13 :  3.34E+000 1.25E-009 0.000 0.2704 0.7510 0.9000   1.06  1  1  5.3E-008
+ 13 :  3.34E+000 1.25E-009 0.000 0.2704 0.7511 0.9000   1.06  1  1  5.3E-008
  14 :  3.34E+000 3.38E-010 0.000 0.2696 0.9000 0.7328   1.04  1  1  1.4E-008
- 15 :  3.34E+000 7.21E-011 0.000 0.2134 0.9022 0.9000   1.02  2  2  2.9E-009
 
 iter seconds digits       c*x               b*y
- 15      0.2   Inf  3.3424724333e+000  3.3424724404e+000
-|Ax-b| =  5.4e-009, [Ay-c]_+ =  1.8E-009, |x|= 1.2e+001, |y|= 2.2e+000
+ 14      0.2   Inf  3.3424726773e+000  3.3424726829e+000
+|Ax-b| =  2.8e-008, [Ay-c]_+ =  8.1E-009, |x|= 1.2e+001, |y|= 2.2e+000
 
 Detailed timing (sec)
    Pre          IPM          Post
-3.004E-002    2.003E-001    1.001E-002    
+1.001E-002    1.502E-001    1.001E-002    
 Max-norms: ||b||=3.453117e+000, ||c|| = 1.615948e+000,
-Cholesky |add|=0, |skip| = 0, ||L.L|| = 15.6113.
+Cholesky |add|=0, |skip| = 0, ||L.L|| = 15.6133.
 ------------------------------------------------------------------------
-Status (cvx_status): Solved
- 
-Optimal value (cvx_optval): 3.34247
+Status: Solved
+Optimal value (cvx_optval): +3.34247
 The matrix that minimizes ||DMD^{-1}||_F is: 
     1.1045         0         0
          0    0.9074         0
@@ -159,7 +160,7 @@ while the Frobunius norm of the original matrix M is:
     5.4093
 
 </pre><p class="footer"><br>
-            Published with MATLAB&reg; 7.1<br></p>
+            Published with MATLAB&reg; 7.2<br></p>
       </div>
       <!--
 ##### SOURCE BEGIN #####

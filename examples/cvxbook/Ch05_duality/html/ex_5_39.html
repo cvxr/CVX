@@ -7,8 +7,8 @@ This HTML is auto-generated from an M-file.
 To make changes, update the M-file and republish this document.
       -->
       <title>SDP relaxations of the two-way partitioning problem</title>
-      <meta name="generator" content="MATLAB 7.1">
-      <meta name="date" content="2006-02-25">
+      <meta name="generator" content="MATLAB 7.2">
+      <meta name="date" content="2006-04-01">
       <meta name="m-file" content="ex_5_39"><style>
 
 body {
@@ -41,6 +41,9 @@ pre.codeinput {
   background: #EEEEEE;
   padding: 10px;
 }
+@media print {
+  pre.codeinput {word-wrap:break-word; width:100%;}
+} 
 
 span.keyword {color: #0000FF}
 span.comment {color: #228B22}
@@ -134,22 +137,21 @@ nnz(A) = 45 + 0, nnz(ADA) = 2025, nnz(L) = 1035
   6 :  2.88E+001 2.87E-004 0.410 0.0852 0.9900 0.9900   1.00  1  1  8.6E-005
   7 :  2.88E+001 1.31E-006 0.000 0.0046 0.9900 0.9904   1.00  1  1  2.5E-006
   8 :  2.88E+001 1.96E-008 0.000 0.0150 0.8452 0.9000   1.00  1  1  5.0E-007
-  9 :  2.88E+001 3.80E-009 0.000 0.1939 0.9000 0.9000   1.00  1  1  9.6E-008
- 10 :  2.88E+001 7.86E-010 0.000 0.2070 0.9000 0.9000   1.00  2  2  2.0E-008
- 11 :  2.88E+001 6.44E-011 0.374 0.0820 0.9900 0.9900   1.00  2  2  1.6E-009
+  9 :  2.88E+001 3.76E-009 0.000 0.1917 0.9000 0.9000   1.00  1  1  9.6E-008
+ 10 :  2.88E+001 7.66E-010 0.000 0.2040 0.9000 0.9000   1.00  1  1  2.0E-008
+ 11 :  2.88E+001 6.28E-011 0.374 0.0820 0.9900 0.9900   1.00  2  2  1.6E-009
 
 iter seconds digits       c*x               b*y
- 11      0.1   Inf  2.8825674962e+001  2.8825674966e+001
+ 11      0.1   Inf  2.8825674962e+001  2.8825674965e+001
 |Ax-b| =  5.0e-009, [Ay-c]_+ =  0.0E+000, |x|= 1.2e+001, |y|= 1.1e+001
 
 Detailed timing (sec)
    Pre          IPM          Post
-2.003E-002    1.402E-001    1.001E-002    
+0.000E+000    1.202E-001    0.000E+000    
 Max-norms: ||b||=1.436592e+000, ||c|| = 1,
 Cholesky |add|=0, |skip| = 0, ||L.L|| = 1.23054.
 ------------------------------------------------------------------------
-Status (cvx_status): Solved
- 
+Status: Solved
 Optimal value (cvx_optval): -26.6924
 Done! 
 Solving the SDP relaxation of the two-way partitioning problem... 
@@ -169,21 +171,20 @@ nnz(A) = 10 + 0, nnz(ADA) = 100, nnz(L) = 55
   6 : -2.88E+001 1.25E-006 0.212 0.0046 0.9900 0.9784   1.00  1  1  4.0E-005
   7 : -2.88E+001 1.14E-007 0.000 0.0914 0.9900 0.9900   1.00  1  1  3.7E-006
   8 : -2.88E+001 1.02E-008 0.457 0.0887 0.9900 0.9900   1.00  1  1  3.3E-007
-  9 : -2.88E+001 9.47E-010 0.310 0.0933 0.9900 0.9900   1.00  1  1  3.1E-008
- 10 : -2.88E+001 2.84E-010 0.058 0.2998 0.9000 0.9000   1.00  2  2  9.2E-009
+  9 : -2.88E+001 9.45E-010 0.310 0.0931 0.9900 0.9900   1.00  1  1  3.1E-008
+ 10 : -2.88E+001 2.84E-010 0.058 0.3000 0.9000 0.9000   1.00  2  2  9.2E-009
 
 iter seconds digits       c*x               b*y
  10      0.1   Inf -2.8825674845e+001 -2.8825674817e+001
-|Ax-b| =  8.5e-009, [Ay-c]_+ =  2.1E-008, |x|= 8.6e+000, |y|= 1.0e+001
+|Ax-b| =  8.6e-009, [Ay-c]_+ =  2.1E-008, |x|= 8.6e+000, |y|= 1.0e+001
 
 Detailed timing (sec)
    Pre          IPM          Post
-0.000E+000    9.013E-002    1.001E-002    
+0.000E+000    1.202E-001    0.000E+000    
 Max-norms: ||b||=1, ||c|| = 2.873183e+000,
-Cholesky |add|=0, |skip| = 0, ||L.L|| = 604.222.
+Cholesky |add|=0, |skip| = 0, ||L.L|| = 604.225.
 ------------------------------------------------------------------------
-Status (cvx_status): Solved
- 
+Status: Solved
 Optimal value (cvx_optval): -26.6924
 Done! 
 ------------------------------------------------------------------------
@@ -193,7 +194,7 @@ two-way partitioning problem are, respectively,
 
 They are equal as expected!
 </pre><p class="footer"><br>
-            Published with MATLAB&reg; 7.1<br></p>
+            Published with MATLAB&reg; 7.2<br></p>
       </div>
       <!--
 ##### SOURCE BEGIN #####

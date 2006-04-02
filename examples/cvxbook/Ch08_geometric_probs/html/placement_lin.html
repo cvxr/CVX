@@ -7,8 +7,8 @@ This HTML is auto-generated from an M-file.
 To make changes, update the M-file and republish this document.
       -->
       <title>Figure 8.15: Linear placement problem</title>
-      <meta name="generator" content="MATLAB 7.1">
-      <meta name="date" content="2006-02-25">
+      <meta name="generator" content="MATLAB 7.2">
+      <meta name="date" content="2006-04-01">
       <meta name="m-file" content="placement_lin"><style>
 
 body {
@@ -41,6 +41,9 @@ pre.codeinput {
   background: #EEEEEE;
   padding: 10px;
 }
+@media print {
+  pre.codeinput {word-wrap:break-word; width:100%;}
+} 
 
 span.keyword {color: #0000FF}
 span.comment {color: #228B22}
@@ -180,26 +183,24 @@ nnz(A) = 254 + 0, nnz(ADA) = 804, nnz(L) = 811
   6 :  2.19E+001 1.13E-004 0.000 0.0288 0.9902 0.9900   1.00  1  1  2.0E-005
   7 :  2.19E+001 7.27E-006 0.365 0.0646 0.9900 0.9900   1.00  1  1  1.3E-006
   8 :  2.19E+001 1.49E-006 0.000 0.2045 0.9046 0.9000   1.00  1  1  2.8E-007
-  9 :  2.19E+001 1.47E-007 0.379 0.0991 0.9900 0.9900   1.00  2  2  2.8E-008
- 10 :  2.19E+001 3.74E-008 0.000 0.2539 0.9000 0.6125   1.00  2  2  1.0E-008
- 11 :  2.19E+001 6.67E-009 0.000 0.1781 0.9171 0.9000   1.00  2  2  2.8E-009
+  9 :  2.19E+001 1.47E-007 0.379 0.0991 0.9900 0.9900   1.00  1  1  2.8E-008
+ 10 :  2.19E+001 3.74E-008 0.000 0.2539 0.9000 0.6120   1.00  2  2  1.0E-008
 
 iter seconds digits       c*x               b*y
- 11      0.2   9.0  2.1908263779e+001  2.1908263755e+001
-|Ax-b| =  3.7e-010, [Ay-c]_+ =  9.7E-010, |x|= 9.2e+000, |y|= 7.9e+000
+ 10      0.2   8.3  2.1908263842e+001  2.1908263730e+001
+|Ax-b| =  2.4e-009, [Ay-c]_+ =  2.9E-009, |x|= 9.4e+000, |y|= 7.9e+000
 
 Detailed timing (sec)
    Pre          IPM          Post
-3.004E-002    2.003E-001    0.000E+000    
+1.001E-002    1.602E-001    0.000E+000    
 Max-norms: ||b||=1, ||c|| = 1,
-Cholesky |add|=0, |skip| = 0, ||L.L|| = 7.1352.
+Cholesky |add|=0, |skip| = 0, ||L.L|| = 7.13504.
 ------------------------------------------------------------------------
-Status (cvx_status): Solved
- 
-Optimal value (cvx_optval): 21.9083
+Status: Solved
+Optimal value (cvx_optval): +21.9083
 Done! 
 </pre><img vspace="5" hspace="5" src="placement_lin_01.png"> <img vspace="5" hspace="5" src="placement_lin_02.png"> <p class="footer"><br>
-            Published with MATLAB&reg; 7.1<br></p>
+            Published with MATLAB&reg; 7.2<br></p>
       </div>
       <!--
 ##### SOURCE BEGIN #####

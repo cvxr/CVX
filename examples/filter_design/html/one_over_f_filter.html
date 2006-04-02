@@ -7,8 +7,8 @@ This HTML is auto-generated from an M-file.
 To make changes, update the M-file and republish this document.
       -->
       <title>Design a 1/f spectrum shaping (pink-noise) filter</title>
-      <meta name="generator" content="MATLAB 7.1">
-      <meta name="date" content="2006-03-03">
+      <meta name="generator" content="MATLAB 7.2">
+      <meta name="date" content="2006-04-01">
       <meta name="m-file" content="one_over_f_filter"><style>
 
 body {
@@ -41,6 +41,9 @@ pre.codeinput {
   background: #EEEEEE;
   padding: 10px;
 }
+@media print {
+  pre.codeinput {word-wrap:break-word; width:100%;}
+} 
 
 span.keyword {color: #0000FF}
 span.comment {color: #228B22}
@@ -162,24 +165,23 @@ nnz(A) = 52797 + 0, nnz(ADA) = 730789, nnz(L) = 545695
  14 :  1.19E+000 1.86E-011 0.000 0.2329 0.9166 0.9000   1.00  1  1  5.0E-007
  15 :  1.19E+000 4.69E-012 0.000 0.2522 0.9000 0.6412   1.00  2  2  1.6E-007
  16 :  1.19E+000 5.99E-013 0.000 0.1276 0.9123 0.9000   1.00  2  2  2.7E-008
- 17 :  1.19E+000 3.87E-014 0.000 0.0647 0.9900 0.9721   1.00  2  2  1.3E-009
+ 17 :  1.19E+000 3.88E-014 0.000 0.0647 0.9900 0.9721   1.00  2  2  1.3E-009
 
 iter seconds digits       c*x               b*y
- 17     64.7   Inf  1.1873326627e+000  1.1873409062e+000
+ 17     61.2   Inf  1.1873326627e+000  1.1873409079e+000
 |Ax-b| =  1.7e-008, [Ay-c]_+ =  9.3E-009, |x|= 2.7e+002, |y|= 9.8e-001
 
 Detailed timing (sec)
    Pre          IPM          Post
-4.446E+000    6.465E+001    1.001E-002    
+4.006E+000    6.122E+001    2.003E-002    
 Max-norms: ||b||=1, ||c|| = 3.183099e+001,
-Cholesky |add|=0, |skip| = 0, ||L.L|| = 141.49.
+Cholesky |add|=0, |skip| = 0, ||L.L|| = 141.492.
 ------------------------------------------------------------------------
-Status (cvx_status): Solved
- 
-Optimal value (cvx_optval): 1.18733
+Status: Solved
+Optimal value (cvx_optval): +1.18733
 Problem is Solved
 </pre><img vspace="5" hspace="5" src="one_over_f_filter_01.png"> <p class="footer"><br>
-            Published with MATLAB&reg; 7.1<br></p>
+            Published with MATLAB&reg; 7.2<br></p>
       </div>
       <!--
 ##### SOURCE BEGIN #####

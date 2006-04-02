@@ -7,8 +7,8 @@ This HTML is auto-generated from an M-file.
 To make changes, update the M-file and republish this document.
       -->
       <title>Section 4.5.4 example: Minimum spectral radius via Perron-Frobenius theory</title>
-      <meta name="generator" content="MATLAB 7.1">
-      <meta name="date" content="2006-02-25">
+      <meta name="generator" content="MATLAB 7.2">
+      <meta name="date" content="2006-04-01">
       <meta name="m-file" content="min_spec_rad_ppl_dynamics"><style>
 
 body {
@@ -41,6 +41,9 @@ pre.codeinput {
   background: #EEEEEE;
   padding: 10px;
 }
+@media print {
+  pre.codeinput {word-wrap:break-word; width:100%;}
+} 
 
 span.keyword {color: #0000FF}
 span.comment {color: #228B22}
@@ -165,13 +168,12 @@ iter seconds digits       c*x               b*y
 
 Detailed timing (sec)
    Pre          IPM          Post
-3.004E-002    1.102E-001    0.000E+000    
+1.001E-002    9.013E-002    1.001E-002    
 Max-norms: ||b||=3.016052e+000, ||c|| = 1,
 Cholesky |add|=0, |skip| = 0, ||L.L|| = 5.58969.
 ------------------------------------------------------------------------
-Status (cvx_status): Solved
- 
-Optimal value (cvx_optval): 0.0764187
+Status: Solved
+Optimal value (cvx_optval): +0.0764187
 The slowest growth rate of the bacteria population is: 
     1.0794
 
@@ -182,7 +184,7 @@ The concentration of chemical 2 achieving this result is:
     0.5000
 
 </pre><p class="footer"><br>
-            Published with MATLAB&reg; 7.1<br></p>
+            Published with MATLAB&reg; 7.2<br></p>
       </div>
       <!--
 ##### SOURCE BEGIN #####

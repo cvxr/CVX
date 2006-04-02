@@ -7,8 +7,8 @@ This HTML is auto-generated from an M-file.
 To make changes, update the M-file and republish this document.
       -->
       <title>Solves a simple QCQP</title>
-      <meta name="generator" content="MATLAB 7.1">
-      <meta name="date" content="2006-02-25">
+      <meta name="generator" content="MATLAB 7.2">
+      <meta name="date" content="2006-04-01">
       <meta name="m-file" content="qcqp"><style>
 
 body {
@@ -41,6 +41,9 @@ pre.codeinput {
   background: #EEEEEE;
   padding: 10px;
 }
+@media print {
+  pre.codeinput {word-wrap:break-word; width:100%;}
+} 
 
 span.keyword {color: #0000FF}
 span.comment {color: #228B22}
@@ -125,31 +128,29 @@ nnz(A) = 362 + 0, nnz(ADA) = 787, nnz(L) = 409
   3 : -8.59E-002 9.92E-004 0.106 0.0733 0.9900 0.9900   1.00  1  1  1.7E-002
   4 : -7.98E-002 3.79E-005 0.000 0.0383 0.9900 0.9900   1.00  1  1  7.2E-004
   5 : -7.98E-002 9.52E-007 0.000 0.0251 0.9900 0.9900   1.00  1  1  1.8E-005
-  6 : -7.98E-002 8.33E-008 0.000 0.0875 0.9450 0.9464   1.00  1  1  1.2E-006
-  7 : -7.98E-002 3.61E-009 0.370 0.0433 0.8862 0.9900   1.00  2  2  4.0E-008
-  8 : -7.98E-002 9.25E-010 0.000 0.2563 0.9000 0.9000   1.00  2  2  1.0E-008
-  9 : -7.98E-002 2.03E-010 0.000 0.2189 0.9000 0.9000   1.00  3  3  2.3E-009
+  6 : -7.98E-002 8.16E-008 0.000 0.0857 0.9450 0.9464   1.00  1  1  1.2E-006
+  7 : -7.98E-002 3.42E-009 0.371 0.0419 0.8872 0.9900   1.00  2  2  3.9E-008
+  8 : -7.98E-002 8.75E-010 0.000 0.2560 0.9000 0.9000   1.00  2  2  1.0E-008
 
 iter seconds digits       c*x               b*y
-  9      0.1   Inf -7.9757725544e-002 -7.9757724379e-002
-|Ax-b| =  3.5e-009, [Ay-c]_+ =  3.6E-010, |x|= 8.4e+000, |y|= 3.3e+000
+  8      0.2   Inf -7.9757737749e-002 -7.9757732501e-002
+|Ax-b| =  1.6e-008, [Ay-c]_+ =  1.6E-009, |x|= 8.4e+000, |y|= 3.3e+000
 
 Detailed timing (sec)
    Pre          IPM          Post
-3.004E-002    1.402E-001    0.000E+000    
+1.001E-002    2.103E-001    0.000E+000    
 Max-norms: ||b||=1.316586e+000, ||c|| = 1.213838e+000,
-Cholesky |add|=0, |skip| = 0, ||L.L|| = 31.6123.
+Cholesky |add|=0, |skip| = 0, ||L.L|| = 31.6759.
 ------------------------------------------------------------------------
-Status (cvx_status): Solved
- 
+Status: Solved
 Optimal value (cvx_optval): -0.895296
 Done! 
 ------------------------------------------------------------------------
 The duality gap is equal to 
- -3.0373e-009
+    3.4934
 
 </pre><p class="footer"><br>
-            Published with MATLAB&reg; 7.1<br></p>
+            Published with MATLAB&reg; 7.2<br></p>
       </div>
       <!--
 ##### SOURCE BEGIN #####

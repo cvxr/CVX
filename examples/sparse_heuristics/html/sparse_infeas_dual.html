@@ -7,8 +7,8 @@ This HTML is auto-generated from an M-file.
 To make changes, update the M-file and republish this document.
       -->
       <title>Detecting a small subset of infeasible linear inequalities</title>
-      <meta name="generator" content="MATLAB 7.1">
-      <meta name="date" content="2006-03-03">
+      <meta name="generator" content="MATLAB 7.2">
+      <meta name="date" content="2006-04-01">
       <meta name="m-file" content="sparse_infeas_dual"><style>
 
 body {
@@ -41,6 +41,9 @@ pre.codeinput {
   background: #EEEEEE;
   padding: 10px;
 }
+@media print {
+  pre.codeinput {word-wrap:break-word; width:100%;}
+} 
 
 span.keyword {color: #0000FF}
 span.comment {color: #228B22}
@@ -159,17 +162,16 @@ nnz(A) = 1650 + 0, nnz(ADA) = 121, nnz(L) = 66
  10 :  6.01E-001 5.09E-007 0.000 0.0012 0.9990 0.9990   1.00  1  1  
 iter seconds digits       c*x               b*y
  10      0.1   Inf  6.0131198034e-001  6.0131198034e-001
-|Ax-b| =  1.7e-016, [Ay-c]_+ =  1.3E-016, |x|= 2.8e-001, |y|= 8.1e-001
+|Ax-b| =  1.5e-016, [Ay-c]_+ =  1.3E-016, |x|= 2.8e-001, |y|= 8.1e-001
 
 Detailed timing (sec)
    Pre          IPM          Post
-3.004E-002    1.302E-001    0.000E+000    
+2.003E-002    1.102E-001    1.001E-002    
 Max-norms: ||b||=1, ||c|| = 1,
 Cholesky |add|=0, |skip| = 0, ||L.L|| = 9.91492.
 ------------------------------------------------------------------------
-Status (cvx_status): Solved
- 
-Optimal value (cvx_optval): 0.601312
+Status: Solved
+Optimal value (cvx_optval): +0.601312
  
 Found a smaller set of 11 mutually inconsistent inequalities.
  
@@ -181,7 +183,7 @@ ans =
      1    22    33    54    59    73    79    94   115   136   149
 
 </pre><p class="footer"><br>
-            Published with MATLAB&reg; 7.1<br></p>
+            Published with MATLAB&reg; 7.2<br></p>
       </div>
       <!--
 ##### SOURCE BEGIN #####

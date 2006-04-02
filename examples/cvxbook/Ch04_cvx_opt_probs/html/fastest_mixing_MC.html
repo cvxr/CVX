@@ -7,8 +7,8 @@ This HTML is auto-generated from an M-file.
 To make changes, update the M-file and republish this document.
       -->
       <title>Find the fastest mixing Markov chain on a graph</title>
-      <meta name="generator" content="MATLAB 7.1">
-      <meta name="date" content="2006-02-25">
+      <meta name="generator" content="MATLAB 7.2">
+      <meta name="date" content="2006-04-01">
       <meta name="m-file" content="fastest_mixing_MC"><style>
 
 body {
@@ -41,6 +41,9 @@ pre.codeinput {
   background: #EEEEEE;
   padding: 10px;
 }
+@media print {
+  pre.codeinput {word-wrap:break-word; width:100%;}
+} 
 
 span.keyword {color: #0000FF}
 span.comment {color: #228B22}
@@ -121,13 +124,12 @@ iter seconds digits       c*x               b*y
 
 Detailed timing (sec)
    Pre          IPM          Post
-3.004E-002    7.010E-002    0.000E+000    
+1.001E-002    5.007E-002    0.000E+000    
 Max-norms: ||b||=8.000000e-001, ||c|| = 1,
 Cholesky |add|=0, |skip| = 0, ||L.L|| = 1.50211.
 ------------------------------------------------------------------------
-Status (cvx_status): Solved
- 
-Optimal value (cvx_optval): 0.75
+Status: Solved
+Optimal value (cvx_optval): +0.75
 ------------------------------------------------------------------------
 The transition probability matrix of the optimal Markov chain is: 
     0.0000    0.3750    0.0000    0.3750    0.2500
@@ -140,7 +142,7 @@ The optimal mixing rate is:
     0.7500
 
 </pre><p class="footer"><br>
-            Published with MATLAB&reg; 7.1<br></p>
+            Published with MATLAB&reg; 7.2<br></p>
       </div>
       <!--
 ##### SOURCE BEGIN #####

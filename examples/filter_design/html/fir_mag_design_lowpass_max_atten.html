@@ -7,8 +7,8 @@ This HTML is auto-generated from an M-file.
 To make changes, update the M-file and republish this document.
       -->
       <title>Maximize stopband attenuation of a lowpass FIR filter (magnitude design)</title>
-      <meta name="generator" content="MATLAB 7.1">
-      <meta name="date" content="2006-03-03">
+      <meta name="generator" content="MATLAB 7.2">
+      <meta name="date" content="2006-04-01">
       <meta name="m-file" content="fir_mag_design_lowpass_max_atten"><style>
 
 body {
@@ -41,6 +41,9 @@ pre.codeinput {
   background: #EEEEEE;
   padding: 10px;
 }
+@media print {
+  pre.codeinput {word-wrap:break-word; width:100%;}
+} 
 
 span.keyword {color: #0000FF}
 span.comment {color: #228B22}
@@ -202,32 +205,31 @@ Handling 42 + 0 dense columns.
   8 :  2.24E-003 3.48E-005 0.000 0.3721 0.9000 0.9000   1.06  1  1  2.0E-003
   9 :  1.07E-003 1.54E-005 0.000 0.4417 0.9000 0.9000   1.02  1  1  2.1E-003
  10 :  2.95E-004 5.04E-007 0.000 0.0327 0.9000 0.8329   0.98  1  1  1.4E-005
- 11 :  1.81E-004 2.83E-007 0.000 0.5627 0.9000 0.5289   1.00  1  1  8.1E-006
+ 11 :  1.81E-004 2.83E-007 0.000 0.5627 0.9000 0.9000   1.00  1  1  8.1E-006
  12 :  1.42E-004 1.80E-007 0.000 0.6365 0.9000 0.9000   1.00  1  1  5.2E-006
- 13 :  1.26E-004 7.20E-008 0.000 0.3990 0.9210 0.9000   0.99  1  1  2.3E-006
- 14 :  1.19E-004 3.12E-008 0.000 0.4334 0.9493 0.9000   0.94  1  1  1.2E-006
- 15 :  1.10E-004 1.42E-008 0.000 0.4563 0.9000 0.9239   0.93  1  2  5.0E-007
- 16 :  1.06E-004 3.48E-009 0.000 0.2444 0.9000 0.9096   0.97  2  2  1.1E-007
- 17 :  1.05E-004 8.13E-010 0.000 0.2336 0.9000 0.8860   0.99  2  2  2.2E-008
+ 13 :  1.26E-004 7.20E-008 0.000 0.3989 0.9210 0.9000   0.99  1  1  2.3E-006
+ 14 :  1.19E-004 3.12E-008 0.000 0.4338 0.9493 0.9000   0.94  1  1  1.2E-006
+ 15 :  1.10E-004 1.42E-008 0.000 0.4562 0.9000 0.9239   0.93  1  2  5.0E-007
+ 16 :  1.06E-004 3.48E-009 0.000 0.2445 0.9000 0.9096   0.97  2  2  1.1E-007
+ 17 :  1.05E-004 8.14E-010 0.000 0.2337 0.9000 0.8858   0.99  2  2  2.2E-008
  18 :  1.05E-004 2.23E-011 0.000 0.0275 0.9902 0.9900   1.00  2  2  
 iter seconds digits       c*x               b*y
- 18      3.4   Inf  1.0483675450e-004  1.0483675450e-004
-|Ax-b| =  5.2e-010, [Ay-c]_+ =  1.7E-015, |x|= 7.4e+000, |y|= 7.2e-001
+ 18      3.2  13.4  1.0483675450e-004  1.0483675450e-004
+|Ax-b| =  2.1e-010, [Ay-c]_+ =  1.1E-015, |x|= 7.4e+000, |y|= 7.2e-001
 
 Detailed timing (sec)
    Pre          IPM          Post
-1.402E-001    3.425E+000    1.001E-002    
+8.012E-002    3.225E+000    1.001E-002    
 Max-norms: ||b||=1.258925e+000, ||c|| = 1,
 Cholesky |add|=0, |skip| = 1, ||L.L|| = 1.
 ------------------------------------------------------------------------
-Status (cvx_status): Solved
- 
-Optimal value (cvx_optval): 0.000104837
+Status: Solved
+Optimal value (cvx_optval): +0.000104837
 Problem is Solved
 The max attenuation in the stopband is -39.79 dB.
 
 </pre><img vspace="5" hspace="5" src="fir_mag_design_lowpass_max_atten_01.png"> <img vspace="5" hspace="5" src="fir_mag_design_lowpass_max_atten_02.png"> <p class="footer"><br>
-            Published with MATLAB&reg; 7.1<br></p>
+            Published with MATLAB&reg; 7.2<br></p>
       </div>
       <!--
 ##### SOURCE BEGIN #####

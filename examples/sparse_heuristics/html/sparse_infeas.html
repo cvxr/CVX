@@ -7,8 +7,8 @@ This HTML is auto-generated from an M-file.
 To make changes, update the M-file and republish this document.
       -->
       <title>Finding a point that satisfies many linear inequalities</title>
-      <meta name="generator" content="MATLAB 7.1">
-      <meta name="date" content="2006-03-03">
+      <meta name="generator" content="MATLAB 7.2">
+      <meta name="date" content="2006-04-01">
       <meta name="m-file" content="sparse_infeas"><style>
 
 body {
@@ -41,6 +41,9 @@ pre.codeinput {
   background: #EEEEEE;
   padding: 10px;
 }
+@media print {
+  pre.codeinput {word-wrap:break-word; width:100%;}
+} 
 
 span.keyword {color: #0000FF}
 span.comment {color: #228B22}
@@ -145,22 +148,21 @@ Handling 20 + 0 dense columns.
  10 :  3.89E+001 8.74E-005 0.000 0.0547 0.9902 0.9900   1.00  1  1  2.3E-006
  11 :  3.89E+001 1.92E-008 0.000 0.0002 0.9999 0.9999   1.00  1  1  
 iter seconds digits       c*x               b*y
- 11      0.3   Inf  3.8916762959e+001  3.8916762959e+001
-|Ax-b| =  1.6e-014, [Ay-c]_+ =  2.2E-015, |x|= 1.5e+001, |y|= 7.4e+000
+ 11      0.2   Inf  3.8916762959e+001  3.8916762959e+001
+|Ax-b| =  1.8e-014, [Ay-c]_+ =  3.3E-015, |x|= 1.5e+001, |y|= 7.4e+000
 
 Detailed timing (sec)
    Pre          IPM          Post
-5.007E-002    3.004E-001    0.000E+000    
+2.003E-002    2.403E-001    0.000E+000    
 Max-norms: ||b||=3.073745e+000, ||c|| = 1,
 Cholesky |add|=0, |skip| = 0, ||L.L|| = 1.
 ------------------------------------------------------------------------
-Status (cvx_status): Solved
- 
-Optimal value (cvx_optval): 38.9168
+Status: Solved
+Optimal value (cvx_optval): +38.9168
 
-Found an x that violates 55 out of 150 inequalities.
+Found an x that violates 57 out of 150 inequalities.
 </pre><p class="footer"><br>
-            Published with MATLAB&reg; 7.1<br></p>
+            Published with MATLAB&reg; 7.2<br></p>
       </div>
       <!--
 ##### SOURCE BEGIN #####

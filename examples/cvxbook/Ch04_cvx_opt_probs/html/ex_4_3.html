@@ -7,8 +7,8 @@ This HTML is auto-generated from an M-file.
 To make changes, update the M-file and republish this document.
       -->
       <title>Exercise 4.3: Solve a simple QP with inequality constraints</title>
-      <meta name="generator" content="MATLAB 7.1">
-      <meta name="date" content="2006-02-25">
+      <meta name="generator" content="MATLAB 7.2">
+      <meta name="date" content="2006-04-01">
       <meta name="m-file" content="ex_4_3"><style>
 
 body {
@@ -41,6 +41,9 @@ pre.codeinput {
   background: #EEEEEE;
   padding: 10px;
 }
+@media print {
+  pre.codeinput {word-wrap:break-word; width:100%;}
+} 
 
 span.keyword {color: #0000FF}
 span.comment {color: #228B22}
@@ -120,7 +123,7 @@ nnz(A) = 41 + 0, nnz(ADA) = 64, nnz(L) = 37
   9 : -2.26E+001 4.00E-006 0.414 0.0529 0.9900 0.9900   0.99  1  1  1.2E-005
  10 : -2.26E+001 1.68E-009 0.000 0.0004 0.9815 0.9900   1.00  1  1  4.7E-007
  11 : -2.26E+001 3.53E-010 0.027 0.2105 0.9000 0.8380   1.00  2  2  9.9E-008
- 12 : -2.26E+001 7.34E-011 0.000 0.2077 0.9000 0.9000   1.00  2  2  2.1E-008
+ 12 : -2.26E+001 7.34E-011 0.000 0.2077 0.9000 0.8274   1.00  2  2  2.1E-008
  13 : -2.26E+001 4.21E-012 0.296 0.0573 0.9908 0.9900   1.00  2  2  1.4E-009
 
 iter seconds digits       c*x               b*y
@@ -129,12 +132,11 @@ iter seconds digits       c*x               b*y
 
 Detailed timing (sec)
    Pre          IPM          Post
-4.006E-002    1.903E-001    1.001E-002    
+1.001E-002    1.803E-001    0.000E+000    
 Max-norms: ||b||=1, ||c|| = 22,
 Cholesky |add|=0, |skip| = 0, ||L.L|| = 12.9047.
 ------------------------------------------------------------------------
-Status (cvx_status): Solved
- 
+Status: Solved
 Optimal value (cvx_optval): -21.625
 Done! 
 ------------------------------------------------------------------------
@@ -149,7 +151,7 @@ The given optimal solution is:
    -1.0000
 
 </pre><p class="footer"><br>
-            Published with MATLAB&reg; 7.1<br></p>
+            Published with MATLAB&reg; 7.2<br></p>
       </div>
       <!--
 ##### SOURCE BEGIN #####

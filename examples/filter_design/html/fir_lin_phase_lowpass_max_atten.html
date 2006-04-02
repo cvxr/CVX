@@ -7,8 +7,8 @@ This HTML is auto-generated from an M-file.
 To make changes, update the M-file and republish this document.
       -->
       <title>Maximize stopband attenuation of a linear phase lowpass FIR filter</title>
-      <meta name="generator" content="MATLAB 7.1">
-      <meta name="date" content="2006-03-03">
+      <meta name="generator" content="MATLAB 7.2">
+      <meta name="date" content="2006-04-01">
       <meta name="m-file" content="fir_lin_phase_lowpass_max_atten"><style>
 
 body {
@@ -41,6 +41,9 @@ pre.codeinput {
   background: #EEEEEE;
   padding: 10px;
 }
+@media print {
+  pre.codeinput {word-wrap:break-word; width:100%;}
+} 
 
 span.keyword {color: #0000FF}
 span.comment {color: #228B22}
@@ -186,23 +189,22 @@ Handling 24 + 0 dense columns.
  10 :  1.75E-002 5.92E-006 0.000 0.2292 0.9000 0.9063   1.00  1  1  1.3E-005
  11 :  1.75E-002 2.81E-007 0.000 0.0474 0.9900 0.9844   1.00  1  1  
 iter seconds digits       c*x               b*y
- 11      0.5  12.9  1.7476196636e-002  1.7476196636e-002
-|Ax-b| =  8.7e-012, [Ay-c]_+ =  3.0E-016, |x|= 1.3e+000, |y|= 5.6e-001
+ 11      0.6  12.9  1.7476196636e-002  1.7476196636e-002
+|Ax-b| =  5.4e-012, [Ay-c]_+ =  4.3E-016, |x|= 1.3e+000, |y|= 5.6e-001
 
 Detailed timing (sec)
    Pre          IPM          Post
-0.000E+000    5.207E-001    1.001E-002    
+5.007E-002    5.608E-001    0.000E+000    
 Max-norms: ||b||=1.122018e+000, ||c|| = 1,
 Cholesky |add|=0, |skip| = 1, ||L.L|| = 1.
 ------------------------------------------------------------------------
-Status (cvx_status): Solved
- 
-Optimal value (cvx_optval): 0.0174762
+Status: Solved
+Optimal value (cvx_optval): +0.0174762
 Problem is Solved
 The minimum attenuation in the stopband is -35.15 dB.
 
 </pre><img vspace="5" hspace="5" src="fir_lin_phase_lowpass_max_atten_01.png"> <img vspace="5" hspace="5" src="fir_lin_phase_lowpass_max_atten_02.png"> <p class="footer"><br>
-            Published with MATLAB&reg; 7.1<br></p>
+            Published with MATLAB&reg; 7.2<br></p>
       </div>
       <!--
 ##### SOURCE BEGIN #####
