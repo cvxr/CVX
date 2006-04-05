@@ -35,8 +35,8 @@ find $CPYDIR -type d -exec chmod g+s {} \;
 # Create the archives
 cd $CPYDIR
 rm $DSTDIR/cvx.{tar.gz,zip}
-tar cvfz $DSTDIR/cvx.tar.gz cvx/*.{m,txt} cvx/doc/*.pdf cvx/{@double,examples,functions,keywords,lib,matlab6,sedumi,sets,structures}
-zip -r -9 $DSTDIR/cvx.zip cvx/*.{m,txt} cvx/doc/*.pdf cvx/{@double,examples,functions,keywords,lib,matlab6,sedumi,sets,structures}
+tar cvfz $DSTDIR/cvx.tar.gz cvx/*.{m,txt} cvx/doc/*.pdf cvx/{@double,@sparse,examples,functions,keywords,lib,matlab6,sedumi,sets,structures}
+zip -r -9 $DSTDIR/cvx.zip cvx/*.{m,txt} cvx/doc/*.pdf cvx/{@double,@sparse,examples,functions,keywords,lib,matlab6,sedumi,sets,structures}
 cd cvx
 tar cvf $DSTDIR/cvx-examples.tar examples
 
