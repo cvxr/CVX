@@ -1,5 +1,5 @@
-% SDP relaxations of the two-way partitioning problem
-% Exercise 5.33, Boyd & Vandenberghe "Convex Optimization"
+% Exercise 5.39: SDP relaxations of the two-way partitioning problem
+% Boyd & Vandenberghe. "Convex Optimization"
 % Joëlle Skaf - 09/07/05
 % (a figure is generated)
 %

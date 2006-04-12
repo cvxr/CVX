@@ -73,7 +73,7 @@ for k = 1 : length( args ),
         files = { file };
     end
     for j = 1 : length( files );
-        
+
         %
         % Check the validity of the file or directory
         %
@@ -106,7 +106,7 @@ for k = 1 : length( args ),
 
         %
         % Process the file or directory
-        %   
+        %
 
         if isempty( file ) && strcmp( mpath, base ),
             cd( base );
@@ -227,7 +227,7 @@ end
 
 %
 % Sort the files
-% 
+%
 
 if ~isempty( files ),
     [ fnames, ndxs ] = sort( { files.title } );
@@ -237,10 +237,10 @@ if ~isempty( files ),
     tfun  = strcmp( ftypes, 'func' );
     tdoc  = strcmp( ftypes, 'doc' ) | strcmp( ftypes, 'tex' );
     tscr  = ~( tdir | tfun | tdoc );
-    t1    = strncmp( fnames, 'Exercise ', 9 ) & tscr;
-    t2    = strncmp( fnames, 'Example ',  8 ) & tscr; 
-    t3    = strncmp( fnames, 'Section ',  8 ) & tscr;
-    t4    = strncmp( fnames, 'Figure ',   7 ) & tscr;
+    t1    = strncmp( fnames, 'Exercise', 8 ) & tscr;
+    t2    = strncmp( fnames, 'Example',  7 ) & tscr;
+    t3    = strncmp( fnames, 'Section',  7 ) & tscr;
+    t4    = strncmp( fnames, 'Figure', 6 ) & tscr;
     t5    = ~( t1 | t2 | t3 | t4 ) & tscr;
     ndxs  = [ find(tdir(:)); find(t3(:)); find(t2(:)); find(t4(:)); find(t5(:)); find(t1(:)) ; find(tfun(:)) ; find(tdoc(:)) ];
     files = files(ndxs);
@@ -251,7 +251,7 @@ end
 %
 
 if fidc >= 0,
-    
+
     dpath = mpath( length(base) + 2 : end );
     dpath(dpath=='\') = '/';
     if ~isempty( dpath ),
@@ -278,13 +278,13 @@ if fidc >= 0,
     else
         fprintf( fidc, '<ul class="mktree" id="tree1">\n' );
     end
-    
+
     if isempty( files ),
-        
+
         fprintf( fidc, '<li>(no files)</li>\n' );
-        
+
     else
-    
+
         if any( tdir ),
             for k = 1 : length( files ),
                 if strcmp( files(k).type, 'dir' ),
@@ -349,14 +349,14 @@ if fidc >= 0,
             end
             fprintf( fidc, '</ul></li>\n' );
         end
-        
+
     end
-    
+
     fprintf( fidc, '</ul>\n' );
     if ~isempty( dpath ),
         fprintf( fidc, '</li>\n' );
     end
-    
+
 end
 
 %

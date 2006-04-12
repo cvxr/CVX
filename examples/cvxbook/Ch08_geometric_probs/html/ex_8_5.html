@@ -8,7 +8,7 @@ To make changes, update the M-file and republish this document.
       -->
       <title>One free point localization</title>
       <meta name="generator" content="MATLAB 7.2">
-      <meta name="date" content="2006-04-01">
+      <meta name="date" content="2006-04-11">
       <meta name="m-file" content="ex_8_5"><style>
 
 body {
@@ -104,34 +104,34 @@ disp(<span class="string">'The average location of the fixed points is'</span>);
 disp(sum(P,2)/K);
 disp(<span class="string">'They are the same as expected!'</span>);
 </pre><pre class="codeoutput">Minimizing the sum of the squares the distances to fixed points... 
-Calling SeDuMi: 68 variables (2 free), 44 equality constraints
+Calling SeDuMi: 79 variables (2 free), 44 equality constraints
 ------------------------------------------------------------------------
 SeDuMi 1.1 by AdvOL, 2005 and Jos F. Sturm, 1998, 2001-2003.
 Alg = 2: xz-corrector, Adaptive Step-Differentiation, theta = 0.250, beta = 0.500
 Split 2 free variables
-eqs m = 44, order n = 49, dim = 82, blocks = 23
+eqs m = 44, order n = 60, dim = 93, blocks = 23
 nnz(A) = 99 + 0, nnz(ADA) = 352, nnz(L) = 263
  it :     b*y       gap    delta  rate   t/tP*  t/tD*   feas cg cg  prec
-  0 :            7.09E+000 0.000
-  1 :  5.29E+000 2.45E+000 0.000 0.3455 0.9000 0.9000   2.07  1  1  1.9E+000
-  2 :  1.13E+001 8.70E-001 0.000 0.3549 0.9000 0.9000   0.71  1  1  8.1E-001
-  3 :  1.50E+001 2.10E-001 0.000 0.2411 0.9000 0.9000   0.83  1  1  2.1E-001
-  4 :  1.65E+001 1.88E-002 0.000 0.0895 0.9900 0.9900   0.93  1  1  2.0E-002
-  5 :  1.67E+001 1.39E-003 0.000 0.0738 0.9900 0.9900   1.00  1  1  1.5E-003
-  6 :  1.67E+001 2.37E-005 0.000 0.0171 0.9900 0.9900   1.00  1  1  3.0E-005
-  7 :  1.67E+001 2.32E-008 0.406 0.0010 0.9900 0.9776   1.00  1  1  1.2E-006
-  8 :  1.67E+001 1.24E-009 0.106 0.0533 0.9900 0.9903   1.00  1  1  6.0E-008
-  9 :  1.67E+001 2.61E-010 0.000 0.2117 0.9000 0.8027   1.00  2  2  1.3E-008
+  0 :            1.76E+001 0.000
+  1 :  6.00E+000 6.26E+000 0.000 0.3549 0.9000 0.9000   2.35  1  1  1.9E+000
+  2 :  1.21E+001 2.40E+000 0.000 0.3834 0.9000 0.9000   0.82  1  1  9.1E-001
+  3 :  1.53E+001 6.00E-001 0.000 0.2503 0.9000 0.9000   0.87  1  1  2.6E-001
+  4 :  1.64E+001 1.16E-001 0.000 0.1934 0.9000 0.9000   0.93  1  1  5.4E-002
+  5 :  1.67E+001 5.39E-003 0.000 0.0465 0.9900 0.9900   0.99  1  1  2.5E-003
+  6 :  1.67E+001 1.43E-004 0.000 0.0266 0.9900 0.9900   1.00  1  1  7.0E-005
+  7 :  1.67E+001 2.20E-006 0.000 0.0153 0.9900 0.9901   1.00  1  1  1.5E-006
+  8 :  1.67E+001 7.40E-008 0.106 0.0337 0.9900 0.9902   1.00  1  1  7.7E-008
+  9 :  1.67E+001 4.10E-009 0.000 0.0554 0.9000 0.9076   1.00  2  2  1.2E-008
 
 iter seconds digits       c*x               b*y
-  9      0.2   Inf  1.6683118539e+001  1.6683118617e+001
-|Ax-b| =  6.4e-008, [Ay-c]_+ =  1.1E-011, |x|= 1.3e+001, |y|= 1.4e+001
+  9      0.2   8.7  1.6683118760e+001  1.6683118726e+001
+|Ax-b| =  5.0e-008, [Ay-c]_+ =  5.4E-010, |x|= 1.3e+001, |y|= 1.4e+001
 
 Detailed timing (sec)
    Pre          IPM          Post
-1.001E-002    1.602E-001    0.000E+000    
+1.001E-002    2.003E-001    0.000E+000    
 Max-norms: ||b||=2.183186e+000, ||c|| = 1,
-Cholesky |add|=0, |skip| = 0, ||L.L|| = 2.19573.
+Cholesky |add|=0, |skip| = 0, ||L.L|| = 2.19575.
 ------------------------------------------------------------------------
 Status: Solved
 Optimal value (cvx_optval): +16.6831

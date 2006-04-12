@@ -8,7 +8,7 @@ To make changes, update the M-file and republish this document.
       -->
       <title>Builds and solves a simple least-squares problem using cvx</title>
       <meta name="generator" content="MATLAB 7.2">
-      <meta name="date" content="2006-04-01">
+      <meta name="date" content="2006-04-10">
       <meta name="m-file" content="simple_LS"><style>
 
 body {
@@ -91,24 +91,25 @@ Split 100 free variables
 eqs m = 200, order n = 203, dim = 402, blocks = 2
 nnz(A) = 40200 + 0, nnz(ADA) = 40000, nnz(L) = 20100
  it :     b*y       gap    delta  rate   t/tP*  t/tD*   feas cg cg  prec
-  0 :            1.92E-001 0.000
-  1 :  1.08E+001 4.37E-002 0.000 0.2275 0.9000 0.9000  -0.36  1  1  1.3E+000
-  2 :  8.81E+000 3.24E-003 0.000 0.0741 0.9900 0.9900   1.03  1  1  1.5E-001
-  3 :  8.81E+000 6.81E-007 0.000 0.0002 0.9999 0.9999   1.03  1  1  3.2E-005
-  4 :  8.81E+000 1.94E-012 0.000 0.0000 1.0000 1.0000   1.00  1  1  9.1E-011
+  0 :            1.87E-001 0.000
+  1 :  1.27E+001 4.46E-002 0.000 0.2386 0.9000 0.9000  -0.50  1  1  1.5E+000
+  2 :  9.82E+000 4.15E-003 0.000 0.0930 0.9900 0.9900   0.98  1  1  2.1E-001
+  3 :  9.82E+000 1.97E-006 0.296 0.0005 0.9999 0.9999   1.04  1  1  1.0E-004
+  4 :  9.82E+000 1.04E-008 0.000 0.0053 0.9990 0.9990   1.41  1  1  3.3E-007
+  5 :  9.82E+000 3.58E-012 0.197 0.0003 0.9999 0.9999   1.00  1  1  1.1E-010
 
 iter seconds digits       c*x               b*y
-  4      0.7  10.6  8.8137166883e+000  8.8137166881e+000
-|Ax-b| =  2.1e-010, [Ay-c]_+ =  1.1E-011, |x|= 9.5e+001, |y|= 1.0e+000
+  5      1.1   Inf  9.8229331964e+000  9.8229331971e+000
+|Ax-b| =  4.6e-010, [Ay-c]_+ =  3.9E-011, |x|= 1.0e+002, |y|= 1.0e+000
 
 Detailed timing (sec)
    Pre          IPM          Post
-8.012E-002    7.311E-001    0.000E+000    
-Max-norms: ||b||=3.374227e+000, ||c|| = 1,
-Cholesky |add|=0, |skip| = 0, ||L.L|| = 27.8211.
+1.102E-001    1.092E+000    0.000E+000    
+Max-norms: ||b||=3.191291e+000, ||c|| = 1,
+Cholesky |add|=0, |skip| = 0, ||L.L|| = 3.20452.
 ------------------------------------------------------------------------
 Status: Solved
-Optimal value (cvx_optval): +8.81372
+Optimal value (cvx_optval): +9.82293
 </pre><p class="footer"><br>
             Published with MATLAB&reg; 7.2<br></p>
       </div>

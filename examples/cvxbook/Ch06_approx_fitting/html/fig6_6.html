@@ -6,9 +6,9 @@
 This HTML is auto-generated from an M-file.
 To make changes, update the M-file and republish this document.
       -->
-      <title>Optimal input design</title>
+      <title>Example 6.3: Optimal input design</title>
       <meta name="generator" content="MATLAB 7.2">
-      <meta name="date" content="2006-04-01">
+      <meta name="date" content="2006-04-11">
       <meta name="m-file" content="fig6_6"><style>
 
 body {
@@ -71,10 +71,10 @@ p.footer {
   </style></head>
    <body>
       <div class="content">
-         <h1>Optimal input design</h1><pre class="codeinput"><span class="comment">% Sec. 6.3.2, Ex. 6.3/fig. 6.6, Boyd &amp; Vandenberghe "Convex Optimization"</span>
+         <h1>Example 6.3: Optimal input design</h1><pre class="codeinput"><span class="comment">% Section 6.3.2, Figure 6.6</span>
+<span class="comment">% Boyd &amp; Vandenberghe "Convex Optimization"</span>
 <span class="comment">% Original by Lieven Vandenberghe</span>
 <span class="comment">% Adapted for CVX by Joelle Skaf - 09/26/05</span>
-<span class="comment">% (figures are generated)</span>
 <span class="comment">%</span>
 <span class="comment">% Consider a dynamical system with scalar input sequence u(0),u(1),...,u(N)</span>
 <span class="comment">% and scalar output sequence y(0),y(1),...,y(N) related by the convolution</span>
@@ -143,28 +143,28 @@ disp(<span class="string">'Finding the optimal input for '</span>);
       </div>
       <!--
 ##### SOURCE BEGIN #####
-%% Optimal input design
+%% Example 6.3: Optimal input design
 
-% Sec. 6.3.2, Ex. 6.3/fig. 6.6, Boyd & Vandenberghe "Convex Optimization"
-% Original by Lieven Vandenberghe 
+% Section 6.3.2, Figure 6.6
+% Boyd & Vandenberghe "Convex Optimization"
+% Original by Lieven Vandenberghe
 % Adapted for CVX by Joelle Skaf - 09/26/05
-% (figures are generated)
 %
 % Consider a dynamical system with scalar input sequence u(0),u(1),...,u(N)
 % and scalar output sequence y(0),y(1),...,y(N) related by the convolution
-% y = h*u where h = [h(0),h(1),...,h(N)] is the impulse response. 
-% Our goal is to choose an input sequence to minimize the weighted sum: 
+% y = h*u where h = [h(0),h(1),...,h(N)] is the impulse response.
+% Our goal is to choose an input sequence to minimize the weighted sum:
 %           minimize J_track + delta*J_der + eta*J_mag
 % where J_track = 1/(N+1) sum_{t=0}^N (y(t) - y_des(t))^2
 %       J_mag   = 1/(N+1) sum_{t=0}^N u(t)^2
-%       J_der   = 1/N sum_{t=0}^{N-1} (u(t+1) - u(t))^2 
+%       J_der   = 1/N sum_{t=0}^{N-1} (u(t+1) - u(t))^2
 
 cvx_quiet(true);
 % Input data
 m = 201;  n = 201;  N=200;
-t = [0:m-1]';                                                                                                  
-h = (1/9)*((.9).^t) .* (1 - 0.4*cos(2*t));   % sum(h) is approx. 1                                             
-                                                                                                               
+t = [0:m-1]';
+h = (1/9)*((.9).^t) .* (1 - 0.4*cos(2*t));   % sum(h) is approx. 1
+
 H = toeplitz(h', [h(1) zeros(1,n-1)]);
 % m1 = round(m/6); m2 = round(m/5); m3 = round(m/5);  m4 = m-m1-m2-m3;
 m1 = round(m/5); m2 = round(m/4); m3 = round(m/4);  m4 = m-m1-m2-m3;
@@ -185,7 +185,7 @@ for i = 1:length(delta)
                delta(i)*square_pos(norm(D*u))/N )
     cvx_end
     switch(i)
-        case 1 
+        case 1
             figure(1); plot(t,u); xlabel('t'); ylabel('u(t)');
             title(['Input u(t) for \delta = ' num2str(delta(i)) ' and  \eta = ' num2str(eta(i))]);
             %         print -deps smoothreg1u.eps
@@ -198,14 +198,14 @@ for i = 1:length(delta)
             %         print -deps smoothreg2u.eps
             figure(4); plot(t,H*u); xlabel('t'); ylabel('y(t)');
             title(['Output y(t) for \delta = ' num2str(delta(i)) ' and  \eta = ' num2str(eta(i))]);
-            %         print -deps smoothreg2y.eps  
+            %         print -deps smoothreg2y.eps
         case 3
             figure(5); plot(t,u); xlabel('t'); ylabel('u(t)');
             title(['Input u(t) for \delta = ' num2str(delta(i)) ' and  \eta = ' num2str(eta(i))]);
             %         print -deps smoothreg3u.eps
             figure(6); plot(t,H*u); xlabel('t'); ylabel('y(t)');
             title(['Output y(t) for \delta = ' num2str(delta(i)) ' and  \eta = ' num2str(eta(i))]);
-            %         print -deps smoothreg3y.eps 
+            %         print -deps smoothreg3y.eps
     end
 end
 

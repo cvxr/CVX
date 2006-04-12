@@ -6,9 +6,9 @@
 This HTML is auto-generated from an M-file.
 To make changes, update the M-file and republish this document.
       -->
-      <title>Exercise 4.31: Design of a cantilever beam (non-recursive convex GP formulation)</title>
+      <title>Exercise 4.31: Design of a cantilever beam (GP)</title>
       <meta name="generator" content="MATLAB 7.2">
-      <meta name="date" content="2006-04-01">
+      <meta name="date" content="2006-04-10">
       <meta name="m-file" content="cantilever_beam"><style>
 
 body {
@@ -71,9 +71,9 @@ p.footer {
   </style></head>
    <body>
       <div class="content">
-         <h1>Exercise 4.31: Design of a cantilever beam (non-recursive convex GP formulation)</h1><pre class="codeinput"><span class="comment">% (For a detailed explanation see section 4.5.4, pp. 163-165)</span>
-<span class="comment">% Boyd &amp; Vandenberghe "Convex Optimization"</span>
+         <h1>Exercise 4.31: Design of a cantilever beam (GP)</h1><pre class="codeinput"><span class="comment">% Boyd &amp; Vandenberghe "Convex Optimization"</span>
 <span class="comment">% Almir Mutapcic - 01/30/06</span>
+<span class="comment">% Updated to use GP mode 02/08/06</span>
 <span class="comment">% (a figure is generated)</span>
 <span class="comment">%</span>
 <span class="comment">% We have a segmented cantilever beam with N segments. Each segment</span>
@@ -97,8 +97,8 @@ p.footer {
 <span class="comment">% (Consult the book for other definitions and a recursive formulation of</span>
 <span class="comment">% this problem.)</span>
 
-<span class="comment">% data generation</span>
-N = 4;
+<span class="comment">% optimization variables</span>
+N = 8;
 
 <span class="comment">% constants</span>
 wmin = .1; wmax = 100;
@@ -108,105 +108,115 @@ sigma_max = 1;
 ymax = 10;
 E = 1; F = 1;
 
-<span class="comment">% formulating the problem as a GP in the convex form</span>
-cvx_begin
-  variables <span class="string">wlog(N)</span> <span class="string">hlog(N)</span> <span class="string">vlog(N+1)</span> <span class="string">ylog(N+1)</span> <span class="string">dlog(N)</span>
+cvx_begin <span class="string">gp</span>
+  <span class="comment">% optimization variables</span>
+  variables <span class="string">w(N)</span> <span class="string">h(N)</span> <span class="string">v(N+1)</span> <span class="string">y(N+1)</span>;
 
-  minimize ( logsumexp_sdp(wlog + hlog) )
+  <span class="comment">% objective is the total volume of the beam</span>
+  <span class="comment">% obj = sum of (widths*heights*lengths) over each section</span>
+  <span class="comment">% (recall that the length of each segment is set to be 1)</span>
+  minimize( w'*h )
   subject <span class="string">to</span>
+    <span class="comment">% non-recursive formulation</span>
+    d = 6*F*ones(N,1)./(E*ones(N,1).*w.*h.^3);
+    <span class="keyword">for</span> i = 1:N
+      (2*i-1)*d(i) + v(i+1) &lt;= v(i);
+      (i-1/3)*d(i) + v(i+1) + y(i+1) &lt;= y(i);
+    <span class="keyword">end</span>
 
-  <span class="comment">% constraints on the rectangular profile variables</span>
-  wlog &gt;= log(wmin);
-  wlog &lt;= log(wmax);
-  hlog &gt;= log(hmin);
-  hlog &lt;= log(hmax);
-  hlog - wlog &gt;= log(Smin);
-  hlog - wlog &lt;= log(Smax);
-
-  <span class="comment">% maximum stress constraint</span>
-  log(6*F*[1:N]') - (wlog + 2*hlog) &lt;= log(sigma_max);
-
-  <span class="comment">% force and deflection constraints</span>
-  log(6*F) - (log(E) + wlog + 3*hlog) == dlog;
-  <span class="keyword">for</span> i = 1:N
-    logsumexp_sdp( [log(2*i-1)+dlog(i) vlog(i+1)] ) &lt;= vlog(i);
-    logsumexp_sdp( [log(i-1/3)+dlog(i) vlog(i+1) ylog(i+1)] ) &lt;= ylog(i);
-  <span class="keyword">end</span>
-  ylog(1) &lt;= log(ymax);
+    <span class="comment">% constraint set</span>
+    wmin &lt;= w; w &lt;= wmax;
+    hmin &lt;= h; h &lt;= hmax;
+    Smin &lt;= h./w; h./w &lt;= Smax;
+    6*F*[1:N]'./(w.*(h.^2)) &lt;= sigma_max;
+    y(1) &lt;= ymax;
 cvx_end
-
-w = exp(wlog);
-h = exp(hlog);
 
 <span class="comment">% display results</span>
 disp(<span class="string">'The optimal widths and heights are: '</span>);
 w, h
-fprintf(1,<span class="string">'The optimal minimum volume of the beam is %3.4f\n'</span>, sum(w.*h))
+fprintf(1,<span class="string">'The optimal minimum volume of the beam is %3.4f.\n'</span>, sum(w.*h))
 
 <span class="comment">% plot the 3D model of the optimal cantilever beam</span>
-close <span class="string">all</span>;
+figure, clf
 cantilever_beam_plot([h; w])
 </pre><pre class="codeoutput"> 
-Calling SeDuMi: 198 variables (19 free), 113 equality constraints
+Calling SeDuMi: 816 variables (32 free), 473 equality constraints
 ------------------------------------------------------------------------
 SeDuMi 1.1 by AdvOL, 2005 and Jos F. Sturm, 1998, 2001-2003.
 Alg = 2: xz-corrector, Adaptive Step-Differentiation, theta = 0.250, beta = 0.500
-Split 19 free variables
-eqs m = 113, order n = 173, dim = 263, blocks = 16
-nnz(A) = 526 + 0, nnz(ADA) = 831, nnz(L) = 500
+Split 32 free variables
+eqs m = 473, order n = 424, dim = 1274, blocks = 32
+nnz(A) = 1728 + 0, nnz(ADA) = 5697, nnz(L) = 3264
  it :     b*y       gap    delta  rate   t/tP*  t/tD*   feas cg cg  prec
-  0 :            7.35E-001 0.000
-  1 :  7.76E+000 2.47E-001 0.000 0.3367 0.9000 0.9000   3.01  1  1  2.3E+000
-  2 :  4.93E+000 7.29E-002 0.000 0.2946 0.9000 0.9000   1.96  1  1  4.6E-001
-  3 :  3.09E+000 2.38E-002 0.000 0.3266 0.9000 0.9000   1.45  1  1  1.3E-001
-  4 :  2.88E+000 1.47E-002 0.000 0.6178 0.9000 0.9000   1.22  1  1  7.7E-002
-  5 :  2.72E+000 8.15E-003 0.000 0.5543 0.9000 0.9000   1.16  1  1  4.1E-002
-  6 :  2.66E+000 1.61E-003 0.000 0.1976 0.9000 0.9000   1.08  1  1  8.3E-003
-  7 :  2.63E+000 1.73E-005 0.000 0.0108 0.9990 0.9990   1.02  1  1  8.9E-005
-  8 :  2.63E+000 6.71E-007 0.000 0.0387 0.9900 0.9900   1.00  1  1  3.4E-006
-  9 :  2.63E+000 2.42E-008 0.000 0.0361 0.9900 0.9900   1.00  1  1  1.3E-007
- 10 :  2.63E+000 1.79E-009 0.141 0.0738 0.9900 0.9900   1.00  1  1  9.3E-009
+  0 :            2.87E-001 0.000
+  1 :  1.04E+001 1.17E-001 0.000 0.4066 0.9000 0.9000   2.34  1  1  3.0E+000
+  2 :  9.26E+000 4.78E-002 0.000 0.4096 0.9000 0.9000   1.89  1  1  8.9E-001
+  3 :  7.52E+000 1.57E-002 0.000 0.3286 0.9000 0.9000   1.44  1  1  2.5E-001
+  4 :  6.00E+000 5.75E-003 0.000 0.3664 0.9000 0.9000   1.41  1  1  7.7E-002
+  5 :  4.49E+000 2.10E-003 0.000 0.3655 0.9000 0.9000   1.31  1  1  2.6E-002
+  6 :  4.12E+000 1.02E-003 0.000 0.4853 0.9000 0.9000   1.16  1  1  1.2E-002
+  7 :  3.93E+000 4.64E-004 0.000 0.4547 0.9000 0.9000   1.12  1  1  5.3E-003
+  8 :  3.82E+000 1.75E-004 0.000 0.3780 0.9000 0.9000   1.09  1  1  1.9E-003
+  9 :  3.78E+000 7.73E-005 0.000 0.4404 0.9000 0.9000   1.08  1  1  8.2E-004
+ 10 :  3.76E+000 2.27E-005 0.000 0.2934 0.9000 0.9000   1.06  1  1  2.3E-004
+ 11 :  3.75E+000 6.22E-006 0.000 0.2743 0.9000 0.9000   1.04  1  1  6.3E-005
+ 12 :  3.75E+000 7.79E-008 0.000 0.0125 0.8849 0.9000   1.03  1  1  1.3E-005
+ 13 :  3.75E+000 2.49E-008 0.000 0.3201 0.9000 0.7172   1.01  1  2  4.3E-006
+ 14 :  3.75E+000 5.41E-009 0.000 0.2171 0.9090 0.9000   1.01  1  2  1.0E-006
+ 15 :  3.75E+000 1.77E-009 0.000 0.3266 0.9210 0.9000   1.00  2  2  3.7E-007
+ 16 :  3.75E+000 6.80E-010 0.000 0.3849 0.9000 0.9261   0.99  2  3  1.2E-007
+ 17 :  3.75E+000 1.47E-010 0.000 0.2155 0.9000 0.8268   1.00  1  4  2.5E-008
+ 18 :  3.75E+000 2.80E-011 0.000 0.1912 0.9003 0.9000   1.00  2  8  4.8E-009
 
 iter seconds digits       c*x               b*y
- 10      0.1   8.3  2.6316953542e+000  2.6316953399e+000
-|Ax-b| =  4.5e-008, [Ay-c]_+ =  1.1E-009, |x|= 2.3e+001, |y|= 1.7e+000
+ 18      0.9   Inf  3.7485421792e+000  3.7485421862e+000
+|Ax-b| =  5.6e-008, [Ay-c]_+ =  1.5E-009, |x|= 4.0e+001, |y|= 4.7e+000
 
 Detailed timing (sec)
    Pre          IPM          Post
-1.001E-002    1.302E-001    0.000E+000    
-Max-norms: ||b||=4.605170e+000, ||c|| = 1.556102e+000,
-Cholesky |add|=0, |skip| = 0, ||L.L|| = 3.01605.
+4.006E-002    8.512E-001    0.000E+000    
+Max-norms: ||b||=4.605170e+000, ||c|| = 2.202759e+000,
+Cholesky |add|=0, |skip| = 0, ||L.L|| = 17.8341.
 ------------------------------------------------------------------------
 Status: Solved
-Optimal value (cvx_optval): +2.6317
+Optimal value (cvx_optval): +42.4591
 The optimal widths and heights are: 
 
 w =
 
     0.6214
     0.7830
-    0.8963
-    0.9865
+    0.9076
+    1.0142
+    1.1012
+    1.1773
+    1.2000
+    1.3333
 
 
 h =
 
     3.1072
     3.9149
-    4.4814
-    4.9324
+    4.5381
+    5.0708
+    5.5062
+    5.8865
+    6.0000
+    6.0000
 
-The optimal minimum volume of the beam is 13.8786
+The optimal minimum volume of the beam is 42.4514.
 </pre><img vspace="5" hspace="5" src="cantilever_beam_01.png"> <p class="footer"><br>
             Published with MATLAB&reg; 7.2<br></p>
       </div>
       <!--
 ##### SOURCE BEGIN #####
-%% Exercise 4.31: Design of a cantilever beam (non-recursive convex GP formulation)
+%% Exercise 4.31: Design of a cantilever beam (GP)
 
-% (For a detailed explanation see section 4.5.4, pp. 163-165)
 % Boyd & Vandenberghe "Convex Optimization"
 % Almir Mutapcic - 01/30/06
+% Updated to use GP mode 02/08/06
 % (a figure is generated)
 %
 % We have a segmented cantilever beam with N segments. Each segment
@@ -230,8 +240,8 @@ The optimal minimum volume of the beam is 13.8786
 % (Consult the book for other definitions and a recursive formulation of
 % this problem.)
 
-% data generation 
-N = 4;
+% optimization variables
+N = 8;
 
 % constants
 wmin = .1; wmax = 100;
@@ -241,43 +251,37 @@ sigma_max = 1;
 ymax = 10;
 E = 1; F = 1;
 
-% formulating the problem as a GP in the convex form
-cvx_begin
-  variables wlog(N) hlog(N) vlog(N+1) ylog(N+1) dlog(N)
+cvx_begin gp
+  % optimization variables
+  variables w(N) h(N) v(N+1) y(N+1);
 
-  minimize ( logsumexp_sdp(wlog + hlog) )
+  % objective is the total volume of the beam
+  % obj = sum of (widths*heights*lengths) over each section
+  % (recall that the length of each segment is set to be 1)
+  minimize( w'*h )
   subject to
+    % non-recursive formulation
+    d = 6*F*ones(N,1)./(E*ones(N,1).*w.*h.^3);
+    for i = 1:N
+      (2*i-1)*d(i) + v(i+1) <= v(i);
+      (i-1/3)*d(i) + v(i+1) + y(i+1) <= y(i);
+    end
 
-  % constraints on the rectangular profile variables
-  wlog >= log(wmin);
-  wlog <= log(wmax);
-  hlog >= log(hmin);
-  hlog <= log(hmax);
-  hlog - wlog >= log(Smin);
-  hlog - wlog <= log(Smax);
-
-  % maximum stress constraint
-  log(6*F*[1:N]') - (wlog + 2*hlog) <= log(sigma_max);
-
-  % force and deflection constraints
-  log(6*F) - (log(E) + wlog + 3*hlog) == dlog;
-  for i = 1:N
-    logsumexp_sdp( [log(2*i-1)+dlog(i) vlog(i+1)] ) <= vlog(i);
-    logsumexp_sdp( [log(i-1/3)+dlog(i) vlog(i+1) ylog(i+1)] ) <= ylog(i);
-  end
-  ylog(1) <= log(ymax);
+    % constraint set
+    wmin <= w; w <= wmax;
+    hmin <= h; h <= hmax;
+    Smin <= h./w; h./w <= Smax;
+    6*F*[1:N]'./(w.*(h.^2)) <= sigma_max;
+    y(1) <= ymax;
 cvx_end
 
-w = exp(wlog);
-h = exp(hlog);
-
-% display results 
+% display results
 disp('The optimal widths and heights are: ');
 w, h
-fprintf(1,'The optimal minimum volume of the beam is %3.4f\n', sum(w.*h))
+fprintf(1,'The optimal minimum volume of the beam is %3.4f.\n', sum(w.*h))
 
 % plot the 3D model of the optimal cantilever beam
-close all;
+figure, clf
 cantilever_beam_plot([h; w])
 
 ##### SOURCE END #####

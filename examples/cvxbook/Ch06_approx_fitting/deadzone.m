@@ -1,5 +1,5 @@
-% Residual minimization with deadzone penalty 
-% Sec. 6.1.2, Boyd & Vandenberghe "Convex Optimization"
+% Section 6.1.2: Residual minimization with deadzone penalty
+% Boyd & Vandenberghe "Convex Optimization"
 % Joelle Skaf - 08/17/05
 %
 % The penalty function approximation problem has the form:

@@ -1,5 +1,5 @@
-% Parametrized l1-norm approximation
-% Exercise 5.33, Boyd & Vandenberghe "Convex Optimization"
+% Exercise 5.33: Parametrized l1-norm approximation
+% Boyd & Vandenberghe "Convex Optimization"
 % Joëlle Skaf - 08/29/05
 % (a figure is generated)
 %

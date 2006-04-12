@@ -1,0 +1,444 @@
+<html xmlns:mwsh="http://www.mathworks.com/namespace/mcode/v1/syntaxhighlight.dtd">
+   <head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   
+      <!--
+This HTML is auto-generated from an M-file.
+To make changes, update the M-file and republish this document.
+      -->
+      <title>LC oscillator design (GP)</title>
+      <meta name="generator" content="MATLAB 7.2">
+      <meta name="date" content="2006-04-10">
+      <meta name="m-file" content="LC_osc_design"><style>
+
+body {
+  background-color: white;
+  margin:10px;
+}
+
+h1 {
+  color: #990000; 
+  font-size: x-large;
+}
+
+h2 {
+  color: #990000;
+  font-size: medium;
+}
+
+/* Make the text shrink to fit narrow windows, but not stretch too far in 
+wide windows.  On Gecko-based browsers, the shrink-to-fit doesn't work. */ 
+p,h1,h2,div.content div {
+  /* for MATLAB's browser */
+  width: 600px;
+  /* for Mozilla, but the "width" tag overrides it anyway */
+  max-width: 600px;
+  /* for IE */
+  width:expression(document.body.clientWidth > 620 ? "600px": "auto" );
+}
+
+pre.codeinput {
+  background: #EEEEEE;
+  padding: 10px;
+}
+@media print {
+  pre.codeinput {word-wrap:break-word; width:100%;}
+} 
+
+span.keyword {color: #0000FF}
+span.comment {color: #228B22}
+span.string {color: #A020F0}
+span.untermstring {color: #B20000}
+span.syscmd {color: #B28C00}
+
+pre.codeoutput {
+  color: #666666;
+  padding: 10px;
+}
+
+pre.error {
+  color: red;
+}
+
+p.footer {
+  text-align: right;
+  font-size: xx-small;
+  font-weight: lighter;
+  font-style: italic;
+  color: gray;
+}
+
+  </style></head>
+   <body>
+      <div class="content">
+         <h1>LC oscillator design (GP)</h1><pre class="codeinput"><span class="comment">% Boyd, Kim, and Mohan, "Geometric programming and its</span>
+<span class="comment">% applications to EDA Problems", (DATE Tutorial 2005), pp.102-113.</span>
+<span class="comment">% Original code by S. Mohan</span>
+<span class="comment">% Written for CVX by Almir Mutapcic 02/08/06</span>
+<span class="comment">%</span>
+<span class="comment">% Designs an LC oscillator consisting of a loop inductor, varactors</span>
+<span class="comment">% for fine tuning, binary weighted switching capacitors for coarse</span>
+<span class="comment">% tuning, cross coupled NMOS transistors, and tail current source.</span>
+<span class="comment">% The optimal LC oscillator design iwith minimum power consumption,</span>
+<span class="comment">% and limits on phase noise, area, etc... can be formulated as a GP:</span>
+<span class="comment">%</span>
+<span class="comment">%   minimize   P</span>
+<span class="comment">%       s.t.   N &lt;= Nmax, A &lt;= Amax, l &gt;= lmin, etc.</span>
+<span class="comment">%</span>
+<span class="comment">% where optimization variables are loop inductor dimensions D,W,</span>
+<span class="comment">% size of varactor Vc, size of switching caps Csw, width and length</span>
+<span class="comment">% of transistors Wnmos, Lnmos, bias current Ibias, etc.</span>
+
+<span class="comment">%********************************************************************</span>
+<span class="comment">% problem data</span>
+<span class="comment">%********************************************************************</span>
+Vdd   = 1.2;         <span class="comment">% voltage</span>
+CL    = 0.2e-12;     <span class="comment">% load capcitance</span>
+F     = 5e9;         <span class="comment">% operating frequency in Hz</span>
+omega = 2*pi*F;      <span class="comment">% operating freq. in radians</span>
+
+FOff   = 6e5;        <span class="comment">% offset frequency for phase noise calculation</span>
+LoopGainSpec = 2.0;  <span class="comment">% loop gain spec</span>
+Vbias  = 0.2;        <span class="comment">% non ideality of current mirror</span>
+
+<span class="comment">% tuning specs</span>
+T         = 0.1;     <span class="comment">% +/- tuning range as a normalized value</span>
+CvarRatio = 3;       <span class="comment">% maximum to minimum value of CVar</span>
+CswBits   = 3;
+CswSegs   = 2^(CswBits);
+CvarCswLSBOverlap = 2;
+
+<span class="comment">% set the quiet flag (no solver reporting)</span>
+cvxq = cvx_quiet(true);
+
+disp(<span class="string">'Generating the optimal tradeoff curve...'</span>)
+
+<span class="comment">%********************************************************************</span>
+<span class="comment">% optimization of LC oscillator circuit (with tradeoff curve)</span>
+<span class="comment">%********************************************************************</span>
+<span class="comment">% varying phase noise parameter for the tradeoff curve</span>
+powers = [];
+<span class="keyword">for</span> PNSpec=0.7e-12:0.2e-12:1e-11
+  cvx_begin <span class="string">gp</span>
+    <span class="comment">% optimization variables</span>
+    variable <span class="string">D</span>;        <span class="comment">% diameter of loop inductor</span>
+    variable <span class="string">W</span>;        <span class="comment">% width of loop inductor</span>
+    variable <span class="string">SRF</span>;      <span class="comment">% self resonance frequency</span>
+    variable <span class="string">l</span>;        <span class="comment">% length of CMOS transistor</span>
+    variable <span class="string">w</span>;        <span class="comment">% width of CMOS transistor</span>
+    variable <span class="string">I</span>;        <span class="comment">% maximum current through CMOS transistor</span>
+    variable <span class="string">VOsc</span>;     <span class="comment">% differential voltage amplitude</span>
+    variable <span class="string">CT</span>;       <span class="comment">% total capacitance of oscillator</span>
+    variable <span class="string">Csw</span>;      <span class="comment">% maximum switching capacitance</span>
+    variable <span class="string">Cvar</span>;     <span class="comment">% minimum variable capacitance</span>
+    variable <span class="string">IBias</span>;    <span class="comment">% bias current</span>
+    variable <span class="string">CMaxFreq</span>; <span class="comment">% capacitor max frequency</span>
+
+    <span class="comment">% minimize power = Vdd*IBias;</span>
+    minimize( Vdd*IBias )
+    subject <span class="string">to</span>
+      <span class="comment">%*******************************************%</span>
+      <span class="comment">% loop inductor definitions and constraints %</span>
+      <span class="comment">%*******************************************%</span>
+      SRFSpec  = 3*F;
+      omegaSRF = 2*pi*SRF;
+
+      <span class="comment">% inductance</span>
+      L = 2.1e-06*D^(1.28)*(W)^(-0.25)*(F)^(-0.01);
+      <span class="comment">% series resistance</span>
+      R = 0.1*D/W+3e-6*D*W^(-0.84)*F^(0.5)+5e-9*D*W^(-0.76)*F^(0.75)+0.02*D*W*F;
+      <span class="comment">% effective capacitance</span>
+      C = 1e-11*D+5e-6*D*W;
+
+      <span class="comment">% area, tank conductance, and inverse quality factor</span>
+      Area = (D+W)^2;
+      G    = R/(omega*L)^2;
+      invQ = R/(omega*L);
+
+      <span class="comment">% loop constraints</span>
+      Area &lt;= 0.25e-6;
+      W &lt;= 30e-6;
+      5e-6 &lt;= W;
+      10*W &lt;= D;
+      D &lt;= 100*W;
+      SRFSpec &lt;= SRF;
+      omegaSRF^2*L*C &lt;= 1;
+
+      <span class="comment">%****************************************%</span>
+      <span class="comment">% transistor definitions and constraints %</span>
+      <span class="comment">%****************************************%</span>
+      GM  = 6e-3*(w/l)^0.6*(I/2)^(0.4);
+      GD  = 4e-10*(w/l)^0.4*(I/2)^(0.6)*1/l;
+      Vgs = 0.34+1e-8/l+800*(I*l/(2*w))^0.7;
+      Cgs = 1e-2*w*l;
+      Cgd = 1e-9*w;
+      Cdb = 1e-9*w;
+
+      <span class="comment">% transistor constraints</span>
+      2e-6 &lt;= w;
+      0.13e-6 &lt;= l;
+      l &lt;= 1e-6;
+
+      <span class="comment">%***************************************************%</span>
+      <span class="comment">% overall LC oscillator definitions and constraints %</span>
+      <span class="comment">%***************************************************%</span>
+      invVOsc = (G+GD)/IBias;
+
+      <span class="comment">% phase noise</span>
+      kT4  = 4*1.38e-23*300;
+      kT4G = 2*kT4;
+      LoopCurrentNoise = kT4*G;
+      TransistorCurrentNoise = 0.5*kT4G*GM;
+      PN = 1/(160*(FOff*VOsc*CT)^2)*(LoopCurrentNoise+TransistorCurrentNoise);
+
+      <span class="comment">% capacitance</span>
+      Cfix = C+0.5*(CL+Cgs+Cdb+4*Cgd); <span class="comment">% fixed capacitance</span>
+      CDiffMaxFreq = Cfix+0.5*Cvar;
+
+      invLoopGain = (G+0.5*GD)/(0.5*GM);
+
+      <span class="comment">% LC oscillator constraints</span>
+      PN &lt;= PNSpec;
+      omega^2*L*CT == 1;
+      omega^2*(1+T)^2*L*CMaxFreq == 1;
+      4*T/((1-T^2)^2)*CT &lt;= Csw*(1+CvarCswLSBOverlap/CswSegs);
+      Csw*CvarCswLSBOverlap/CswSegs &lt;= 0.5*Cvar*(CvarRatio-1);
+      CDiffMaxFreq &lt;= CMaxFreq;
+      VOsc+2*Vbias &lt;= 2*Vdd;
+      VOsc*invVOsc &lt;= 1;
+      invLoopGain*LoopGainSpec &lt;= 1; <span class="comment">% loop gain spec</span>
+      Vbias+Vgs+IBias/2*R/2 &lt;= Vdd;  <span class="comment">% bias constraint spec</span>
+      I == IBias;
+  cvx_end
+
+  <span class="comment">% display and store computed values</span>
+  fprintf(1,<span class="string">'  PNSpec = %5.2f (dBc/Hz)   min_power = %3.2f (mW)\n'</span>, <span class="keyword">...</span>
+          10*log10(PNSpec),cvx_optval/1e-3);
+  powers = [powers cvx_optval];
+<span class="keyword">end</span>
+
+<span class="comment">% plot the tradeoff curve</span>
+PNSpec = [0.7e-12:0.2e-12:1e-11];
+plot(10*log10(PNSpec),powers/1e-3);
+xlabel(<span class="string">'Phase Noise (dBc/Hz)'</span>)
+ylabel(<span class="string">'Power (mW)'</span>)
+disp(<span class="string">'Optimal tradeoff curve plotted.'</span>)
+
+<span class="comment">% restore initial solver reporting state</span>
+cvx_quiet(cvxq);
+</pre><pre class="codeoutput">Generating the optimal tradeoff curve...
+  PNSpec = -121.55 (dBc/Hz)   min_power = 19.14 (mW)
+  PNSpec = -120.46 (dBc/Hz)   min_power = 11.45 (mW)
+  PNSpec = -119.59 (dBc/Hz)   min_power = 8.38 (mW)
+  PNSpec = -118.86 (dBc/Hz)   min_power = 6.47 (mW)
+  PNSpec = -118.24 (dBc/Hz)   min_power = 5.65 (mW)
+  PNSpec = -117.70 (dBc/Hz)   min_power = 5.31 (mW)
+  PNSpec = -117.21 (dBc/Hz)   min_power = 5.03 (mW)
+  PNSpec = -116.78 (dBc/Hz)   min_power = 4.78 (mW)
+  PNSpec = -116.38 (dBc/Hz)   min_power = 4.57 (mW)
+  PNSpec = -116.02 (dBc/Hz)   min_power = 4.39 (mW)
+  PNSpec = -115.69 (dBc/Hz)   min_power = 4.22 (mW)
+  PNSpec = -115.38 (dBc/Hz)   min_power = 4.07 (mW)
+  PNSpec = -115.09 (dBc/Hz)   min_power = 3.94 (mW)
+  PNSpec = -114.81 (dBc/Hz)   min_power = 3.82 (mW)
+  PNSpec = -114.56 (dBc/Hz)   min_power = 3.71 (mW)
+  PNSpec = -114.32 (dBc/Hz)   min_power = 3.61 (mW)
+  PNSpec = -114.09 (dBc/Hz)   min_power = 3.52 (mW)
+  PNSpec = -113.87 (dBc/Hz)   min_power = 3.43 (mW)
+  PNSpec = -113.67 (dBc/Hz)   min_power = 3.35 (mW)
+  PNSpec = -113.47 (dBc/Hz)   min_power = 3.27 (mW)
+  PNSpec = -113.28 (dBc/Hz)   min_power = 3.20 (mW)
+  PNSpec = -113.10 (dBc/Hz)   min_power = 3.14 (mW)
+  PNSpec = -112.92 (dBc/Hz)   min_power = 3.08 (mW)
+  PNSpec = -112.76 (dBc/Hz)   min_power = 3.02 (mW)
+  PNSpec = -112.60 (dBc/Hz)   min_power = 2.96 (mW)
+  PNSpec = -112.44 (dBc/Hz)   min_power = 2.91 (mW)
+  PNSpec = -112.29 (dBc/Hz)   min_power = 2.86 (mW)
+  PNSpec = -112.15 (dBc/Hz)   min_power = 2.82 (mW)
+  PNSpec = -112.01 (dBc/Hz)   min_power = 2.77 (mW)
+  PNSpec = -111.87 (dBc/Hz)   min_power = 2.73 (mW)
+  PNSpec = -111.74 (dBc/Hz)   min_power = 2.69 (mW)
+  PNSpec = -111.61 (dBc/Hz)   min_power = 2.65 (mW)
+  PNSpec = -111.49 (dBc/Hz)   min_power = 2.61 (mW)
+  PNSpec = -111.37 (dBc/Hz)   min_power = 2.58 (mW)
+  PNSpec = -111.25 (dBc/Hz)   min_power = 2.54 (mW)
+  PNSpec = -111.14 (dBc/Hz)   min_power = 2.51 (mW)
+  PNSpec = -111.02 (dBc/Hz)   min_power = 2.48 (mW)
+  PNSpec = -110.92 (dBc/Hz)   min_power = 2.45 (mW)
+  PNSpec = -110.81 (dBc/Hz)   min_power = 2.42 (mW)
+  PNSpec = -110.71 (dBc/Hz)   min_power = 2.39 (mW)
+  PNSpec = -110.60 (dBc/Hz)   min_power = 2.36 (mW)
+  PNSpec = -110.51 (dBc/Hz)   min_power = 2.33 (mW)
+  PNSpec = -110.41 (dBc/Hz)   min_power = 2.31 (mW)
+  PNSpec = -110.32 (dBc/Hz)   min_power = 2.28 (mW)
+  PNSpec = -110.22 (dBc/Hz)   min_power = 2.26 (mW)
+  PNSpec = -110.13 (dBc/Hz)   min_power = 2.24 (mW)
+  PNSpec = -110.04 (dBc/Hz)   min_power = 2.21 (mW)
+Optimal tradeoff curve plotted.
+</pre><img vspace="5" hspace="5" src="LC_osc_design_01.png"> <p class="footer"><br>
+            Published with MATLAB&reg; 7.2<br></p>
+      </div>
+      <!--
+##### SOURCE BEGIN #####
+%% LC oscillator design (GP)
+
+% Boyd, Kim, and Mohan, "Geometric programming and its
+% applications to EDA Problems", (DATE Tutorial 2005), pp.102-113.
+% Original code by S. Mohan
+% Written for CVX by Almir Mutapcic 02/08/06
+%
+% Designs an LC oscillator consisting of a loop inductor, varactors
+% for fine tuning, binary weighted switching capacitors for coarse
+% tuning, cross coupled NMOS transistors, and tail current source.
+% The optimal LC oscillator design iwith minimum power consumption,
+% and limits on phase noise, area, etc... can be formulated as a GP:
+%
+%   minimize   P
+%       s.t.   N <= Nmax, A <= Amax, l >= lmin, etc.
+%
+% where optimization variables are loop inductor dimensions D,W,
+% size of varactor Vc, size of switching caps Csw, width and length
+% of transistors Wnmos, Lnmos, bias current Ibias, etc.
+
+%********************************************************************
+% problem data
+%********************************************************************
+Vdd   = 1.2;         % voltage
+CL    = 0.2e-12;     % load capcitance
+F     = 5e9;         % operating frequency in Hz
+omega = 2*pi*F;      % operating freq. in radians
+
+FOff   = 6e5;        % offset frequency for phase noise calculation
+LoopGainSpec = 2.0;  % loop gain spec
+Vbias  = 0.2;        % non ideality of current mirror
+
+% tuning specs
+T         = 0.1;     % +/- tuning range as a normalized value
+CvarRatio = 3;       % maximum to minimum value of CVar
+CswBits   = 3;
+CswSegs   = 2^(CswBits);
+CvarCswLSBOverlap = 2;
+
+% set the quiet flag (no solver reporting)
+cvxq = cvx_quiet(true);
+
+disp('Generating the optimal tradeoff curve...')
+
+%********************************************************************
+% optimization of LC oscillator circuit (with tradeoff curve)
+%********************************************************************
+% varying phase noise parameter for the tradeoff curve
+powers = [];
+for PNSpec=0.7e-12:0.2e-12:1e-11
+  cvx_begin gp
+    % optimization variables
+    variable D;        % diameter of loop inductor
+    variable W;        % width of loop inductor
+    variable SRF;      % self resonance frequency
+    variable l;        % length of CMOS transistor
+    variable w;        % width of CMOS transistor
+    variable I;        % maximum current through CMOS transistor
+    variable VOsc;     % differential voltage amplitude
+    variable CT;       % total capacitance of oscillator
+    variable Csw;      % maximum switching capacitance
+    variable Cvar;     % minimum variable capacitance
+    variable IBias;    % bias current
+    variable CMaxFreq; % capacitor max frequency
+
+    % minimize power = Vdd*IBias;
+    minimize( Vdd*IBias )
+    subject to
+      %*******************************************%
+      % loop inductor definitions and constraints %
+      %*******************************************%
+      SRFSpec  = 3*F;
+      omegaSRF = 2*pi*SRF;
+
+      % inductance
+      L = 2.1e-06*D^(1.28)*(W)^(-0.25)*(F)^(-0.01);
+      % series resistance
+      R = 0.1*D/W+3e-6*D*W^(-0.84)*F^(0.5)+5e-9*D*W^(-0.76)*F^(0.75)+0.02*D*W*F;
+      % effective capacitance
+      C = 1e-11*D+5e-6*D*W;
+
+      % area, tank conductance, and inverse quality factor
+      Area = (D+W)^2;
+      G    = R/(omega*L)^2;
+      invQ = R/(omega*L);
+
+      % loop constraints
+      Area <= 0.25e-6;
+      W <= 30e-6;
+      5e-6 <= W;
+      10*W <= D;
+      D <= 100*W;
+      SRFSpec <= SRF;
+      omegaSRF^2*L*C <= 1;
+
+      %****************************************%
+      % transistor definitions and constraints %
+      %****************************************%
+      GM  = 6e-3*(w/l)^0.6*(I/2)^(0.4);
+      GD  = 4e-10*(w/l)^0.4*(I/2)^(0.6)*1/l;
+      Vgs = 0.34+1e-8/l+800*(I*l/(2*w))^0.7;
+      Cgs = 1e-2*w*l;
+      Cgd = 1e-9*w;
+      Cdb = 1e-9*w;
+
+      % transistor constraints
+      2e-6 <= w;
+      0.13e-6 <= l;
+      l <= 1e-6;
+
+      %***************************************************%
+      % overall LC oscillator definitions and constraints %
+      %***************************************************%
+      invVOsc = (G+GD)/IBias;
+
+      % phase noise
+      kT4  = 4*1.38e-23*300;
+      kT4G = 2*kT4;
+      LoopCurrentNoise = kT4*G;
+      TransistorCurrentNoise = 0.5*kT4G*GM;
+      PN = 1/(160*(FOff*VOsc*CT)^2)*(LoopCurrentNoise+TransistorCurrentNoise);
+
+      % capacitance
+      Cfix = C+0.5*(CL+Cgs+Cdb+4*Cgd); % fixed capacitance
+      CDiffMaxFreq = Cfix+0.5*Cvar;
+
+      invLoopGain = (G+0.5*GD)/(0.5*GM);
+
+      % LC oscillator constraints
+      PN <= PNSpec;
+      omega^2*L*CT == 1;
+      omega^2*(1+T)^2*L*CMaxFreq == 1;
+      4*T/((1-T^2)^2)*CT <= Csw*(1+CvarCswLSBOverlap/CswSegs);
+      Csw*CvarCswLSBOverlap/CswSegs <= 0.5*Cvar*(CvarRatio-1);
+      CDiffMaxFreq <= CMaxFreq;
+      VOsc+2*Vbias <= 2*Vdd;
+      VOsc*invVOsc <= 1;
+      invLoopGain*LoopGainSpec <= 1; % loop gain spec
+      Vbias+Vgs+IBias/2*R/2 <= Vdd;  % bias constraint spec
+      I == IBias;
+  cvx_end
+
+  % display and store computed values
+  fprintf(1,'  PNSpec = %5.2f (dBc/Hz)   min_power = %3.2f (mW)\n', ...
+          10*log10(PNSpec),cvx_optval/1e-3);
+  powers = [powers cvx_optval];
+end
+
+% plot the tradeoff curve
+PNSpec = [0.7e-12:0.2e-12:1e-11];
+plot(10*log10(PNSpec),powers/1e-3);
+xlabel('Phase Noise (dBc/Hz)')
+ylabel('Power (mW)')
+disp('Optimal tradeoff curve plotted.')
+
+% restore initial solver reporting state
+cvx_quiet(cvxq);
+
+##### SOURCE END #####
+-->
+   </body>
+</html>

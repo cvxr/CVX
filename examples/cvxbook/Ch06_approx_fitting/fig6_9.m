@@ -1,6 +1,7 @@
-% An optimal tradeoff curve
-% Sec. 6.3.3, fig 6.9, Boyd & Vandenberghe "Convex Optimization"
-% Original by Lieven Vandenberghe 
+% Figure 6.9: An optimal tradeoff curve
+% Section 6.3.3
+% Boyd & Vandenberghe "Convex Optimization"
+% Original by Lieven Vandenberghe
 % Adapted for CVX Joelle Skaf - 09/29/05
 % (a figure is generated)
 %
@@ -10,15 +11,15 @@
 % where x_cor is the a problem parameter, ||Dx|| is a measure of smoothness
 
 cvx_quiet(true);
-%Input data 
+%Input data
 randn('state',0);
-n = 4000;  t = (0:n-1)';                                                                                       
-exact = 0.5*sin((2*pi/n)*t).*sin(0.01*t);                                                                      
-corrupt = exact + 0.05*randn(size(exact));                                                                     
+n = 4000;  t = (0:n-1)';
+exact = 0.5*sin((2*pi/n)*t).*sin(0.01*t);
+corrupt = exact + 0.05*randn(size(exact));
 
 e = ones(n,1);
 D = spdiags([-e e], -1:0, n, n);
-        
+
 % tradeoff curve
 nopts = 50;
 lambdas = logspace(-10,10,nopts);

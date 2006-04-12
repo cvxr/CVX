@@ -1,20 +1,20 @@
-% A comparison of stochastic and worst-case robust approximation
-% Sec. 6.4.2, fig. 6.15, Boyd & Vandenberghe "Convex Optimization"
-% Original by Lieven Vandenberghe 
+% Figure 6.15: A comparison of stochastic and worst-case robust approximation
+% Section 6.4.2
+% Boyd & Vandenberghe "Convex Optimization"
+% Original by Lieven Vandenberghe
 % Adapted for CVX by Joelle Skaf - 10/03/05
-% (a figure is generated)
 %
 % Consider the least-squares problem:
-%       minimize ||(A + tB)x - b||_2 
+%       minimize ||(A + tB)x - b||_2
 % where t is an uncertain parameter in [-1,1]
 % Three approximate solutions are found:
 %   1- nominal optimal (i.e. letting t=0)
-%   2- stochastic robust approximation:     
-%           minimize E||(A+tB)x - b||_2 
+%   2- stochastic robust approximation:
+%           minimize E||(A+tB)x - b||_2
 %      assuming u is uniformly distributed on [-1,1] )
 %      (reduces to minimizing E ||(A+tB)x-b||^2 = ||A*x-b||^2  + x^TPx
 %        where P = E(t^2) B^TB = (1/3) B^TB )
-%   3- worst-case robust approximation: 
+%   3- worst-case robust approximation:
 %           minimize sup{-1<=u<=1} ||(A+tB)x - b||_2)
 %      (reduces to minimizing max{||(A-B)x - b||_2, ||(A+B)x - b||_2} )
 
@@ -28,7 +28,7 @@ A = randn(m,n);
 S = diag(logspace(-1,1,n));
 A = U(:,1:n)*S*V';
 
-B = randn(m,n); 
+B = randn(m,n);
 B = B/norm(B);
 
 b = randn(m,1);

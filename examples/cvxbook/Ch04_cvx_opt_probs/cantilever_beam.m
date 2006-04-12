@@ -1,7 +1,7 @@
-% Exercise 4.31: Design of a cantilever beam (non-recursive convex GP formulation)
-% (For a detailed explanation see section 4.5.4, pp. 163-165)
+% Exercise 4.31: Design of a cantilever beam (GP)
 % Boyd & Vandenberghe "Convex Optimization"
 % Almir Mutapcic - 01/30/06
+% Updated to use GP mode 02/08/06
 % (a figure is generated)
 %
 % We have a segmented cantilever beam with N segments. Each segment
@@ -25,8 +25,8 @@
 % (Consult the book for other definitions and a recursive formulation of
 % this problem.)
 
-% data generation 
-N = 4;
+% optimization variables
+N = 8;
 
 % constants
 wmin = .1; wmax = 100;
@@ -36,41 +36,35 @@ sigma_max = 1;
 ymax = 10;
 E = 1; F = 1;
 
-% formulating the problem as a GP in the convex form
-cvx_begin
-  variables wlog(N) hlog(N) vlog(N+1) ylog(N+1) dlog(N)
+cvx_begin gp
+  % optimization variables
+  variables w(N) h(N) v(N+1) y(N+1);
 
-  minimize ( logsumexp_sdp(wlog + hlog) )
+  % objective is the total volume of the beam
+  % obj = sum of (widths*heights*lengths) over each section
+  % (recall that the length of each segment is set to be 1)
+  minimize( w'*h )
   subject to
+    % non-recursive formulation
+    d = 6*F*ones(N,1)./(E*ones(N,1).*w.*h.^3);
+    for i = 1:N
+      (2*i-1)*d(i) + v(i+1) <= v(i);
+      (i-1/3)*d(i) + v(i+1) + y(i+1) <= y(i);
+    end
 
-  % constraints on the rectangular profile variables
-  wlog >= log(wmin);
-  wlog <= log(wmax);
-  hlog >= log(hmin);
-  hlog <= log(hmax);
-  hlog - wlog >= log(Smin);
-  hlog - wlog <= log(Smax);
-
-  % maximum stress constraint
-  log(6*F*[1:N]') - (wlog + 2*hlog) <= log(sigma_max);
-
-  % force and deflection constraints
-  log(6*F) - (log(E) + wlog + 3*hlog) == dlog;
-  for i = 1:N
-    logsumexp_sdp( [log(2*i-1)+dlog(i) vlog(i+1)] ) <= vlog(i);
-    logsumexp_sdp( [log(i-1/3)+dlog(i) vlog(i+1) ylog(i+1)] ) <= ylog(i);
-  end
-  ylog(1) <= log(ymax);
+    % constraint set
+    wmin <= w; w <= wmax;
+    hmin <= h; h <= hmax;
+    Smin <= h./w; h./w <= Smax;
+    6*F*[1:N]'./(w.*(h.^2)) <= sigma_max;
+    y(1) <= ymax;
 cvx_end
 
-w = exp(wlog);
-h = exp(hlog);
-
-% display results 
+% display results
 disp('The optimal widths and heights are: ');
 w, h
-fprintf(1,'The optimal minimum volume of the beam is %3.4f\n', sum(w.*h))
+fprintf(1,'The optimal minimum volume of the beam is %3.4f.\n', sum(w.*h))
 
 % plot the 3D model of the optimal cantilever beam
-close all;
+figure, clf
 cantilever_beam_plot([h; w])

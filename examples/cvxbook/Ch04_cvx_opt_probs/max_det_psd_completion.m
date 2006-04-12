@@ -1,5 +1,5 @@
-% Maximum determinant PSD matrix completion
-% Problem 4.47, Boyd & Vandenberghe "Convex Optimization"
+% Exercise 4.47: Maximum determinant PSD matrix completion
+% Boyd & Vandenberghe "Convex Optimization"
 % Almir Mutapcic - Jan 2006
 %
 % Given a symmetric matrix A in R^(n-by-n) with some entries unspecified

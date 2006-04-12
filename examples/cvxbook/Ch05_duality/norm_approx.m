@@ -1,5 +1,5 @@
-% An l_p norm approximation problem
-% Examples 5.6 & 5.8, Boyd & Vandenberghe "Convex Optimization"
+% Examples 5.6,5.8: An l_p norm approximation problem
+% Boyd & Vandenberghe "Convex Optimization"
 % Joëlle Skaf - 08/23/05
 %
 % The goal is to show the following problem formulations give all the same

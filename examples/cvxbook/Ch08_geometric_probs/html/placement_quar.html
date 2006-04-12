@@ -8,7 +8,7 @@ To make changes, update the M-file and republish this document.
       -->
       <title>Figure 8.17: Fourth-order placement problem</title>
       <meta name="generator" content="MATLAB 7.2">
-      <meta name="date" content="2006-04-01">
+      <meta name="date" content="2006-04-11">
       <meta name="m-file" content="placement_quar"><style>
 
 body {
@@ -165,36 +165,36 @@ plot([0 2], [0 0 ], <span class="string">'k-'</span>);
 title(<span class="string">'Distribution of the 27 link lengths'</span>);
 <span class="comment">% print -deps placement-quartic-hist.eps</span>
 </pre><pre class="codeoutput">Computing the optimal locations of the 6 free points... 
-Calling SeDuMi: 255 variables (12 free), 162 equality constraints
+Calling SeDuMi: 309 variables (12 free), 162 equality constraints
 ------------------------------------------------------------------------
 SeDuMi 1.1 by AdvOL, 2005 and Jos F. Sturm, 1998, 2001-2003.
 Alg = 2: xz-corrector, Adaptive Step-Differentiation, theta = 0.250, beta = 0.500
 Split 12 free variables
-eqs m = 162, order n = 187, dim = 322, blocks = 82
-nnz(A) = 416 + 0, nnz(ADA) = 1276, nnz(L) = 1101
+eqs m = 162, order n = 241, dim = 376, blocks = 82
+nnz(A) = 443 + 0, nnz(ADA) = 1276, nnz(L) = 1101
  it :     b*y       gap    delta  rate   t/tP*  t/tD*   feas cg cg  prec
-  0 :            5.42E+000 0.000
-  1 :  6.92E+000 1.47E+000 0.000 0.2713 0.9000 0.9000   2.13  1  1  1.6E+000
-  2 :  1.17E+001 4.55E-001 0.000 0.3097 0.9000 0.9000   0.84  1  1  6.2E-001
-  3 :  1.69E+001 1.40E-001 0.000 0.3086 0.9000 0.9000   0.67  1  1  2.3E-001
-  4 :  1.99E+001 2.59E-002 0.000 0.1841 0.9000 0.9000   0.83  1  1  4.5E-002
-  5 :  2.05E+001 5.68E-003 0.000 0.2197 0.9000 0.9000   0.97  1  1  1.0E-002
-  6 :  2.06E+001 2.99E-005 0.000 0.0053 0.0000 0.9000   0.99  1  1  4.2E-003
-  7 :  2.06E+001 5.07E-006 0.000 0.1695 0.9000 0.9089   1.00  1  1  7.2E-004
-  8 :  2.06E+001 2.33E-007 0.000 0.0460 0.9900 0.9403   1.00  1  1  3.7E-005
-  9 :  2.06E+001 7.76E-009 0.000 0.0333 0.9900 0.9900   1.00  1  1  1.2E-006
- 10 :  2.06E+001 3.42E-010 0.000 0.0440 0.9900 0.9900   1.00  1  1  5.4E-008
- 11 :  2.06E+001 1.91E-011 0.000 0.0559 0.9900 0.9900   1.00  2  2  3.0E-009
+  0 :            1.46E+001 0.000
+  1 :  8.39E+000 4.45E+000 0.000 0.3037 0.9000 0.9000   2.30  1  1  2.0E+000
+  2 :  1.30E+001 1.34E+000 0.000 0.3009 0.9000 0.9000   0.94  1  1  7.9E-001
+  3 :  1.76E+001 4.51E-001 0.000 0.3370 0.9000 0.9000   0.69  1  1  3.3E-001
+  4 :  2.00E+001 9.73E-002 0.000 0.2158 0.9000 0.9000   0.83  1  1  8.0E-002
+  5 :  2.05E+001 2.33E-002 0.000 0.2389 0.9000 0.9000   0.97  1  1  1.9E-002
+  6 :  2.06E+001 6.14E-003 0.000 0.2639 0.9000 0.9000   0.99  1  1  5.1E-003
+  7 :  2.06E+001 1.33E-003 0.000 0.2166 0.9000 0.9000   1.00  1  1  1.1E-003
+  8 :  2.06E+001 4.85E-005 0.000 0.0365 0.9900 0.9900   1.00  1  1  4.1E-005
+  9 :  2.06E+001 5.09E-007 0.000 0.0105 0.9900 0.9901   1.00  1  1  7.0E-007
+ 10 :  2.06E+001 3.91E-008 0.438 0.0768 0.9900 0.9900   1.00  2  1  5.4E-008
+ 11 :  2.06E+001 2.45E-010 0.161 0.0063 0.9900 0.9905   1.00  2  2  2.7E-009
 
 iter seconds digits       c*x               b*y
- 11      0.2   Inf  2.0646323412e+001  2.0646323414e+001
-|Ax-b| =  1.8e-008, [Ay-c]_+ =  1.5E-011, |x|= 2.1e+001, |y|= 3.8e+001
+ 11      0.4   9.6  2.0646323573e+001  2.0646323567e+001
+|Ax-b| =  1.4e-008, [Ay-c]_+ =  7.7E-011, |x|= 1.8e+001, |y|= 3.8e+001
 
 Detailed timing (sec)
    Pre          IPM          Post
-1.001E-002    2.403E-001    1.001E-002    
+2.003E-002    3.805E-001    0.000E+000    
 Max-norms: ||b||=1, ||c|| = 1,
-Cholesky |add|=0, |skip| = 0, ||L.L|| = 11.1528.
+Cholesky |add|=0, |skip| = 0, ||L.L|| = 11.1548.
 ------------------------------------------------------------------------
 Status: Solved
 Optimal value (cvx_optval): +20.6463

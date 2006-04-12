@@ -1,126 +1,99 @@
+% Example 7.2: Maximum entropy distribution
+% Section 7.2, Figures 7.2-7.3
+% Boyd & Vandenberghe, "Convex Optimization"
+% Originally by Lieven Vandenberghe
+% Adapted for CVX by Michael Grant 4/11/06
 %
-% Maximum entropy reconstruction example
+% We consider a probability distribution on 100 equidistant points in the
+% interval [-1,1]. We impose the following prior assumptions:
 %
-% distribution of n points, uniform between -1 and 1
+%    -0.1 <= E(X) <= +0.1
+%    +0.5 <= E(X^2) <= +0.6
+%    -0.3 <= E(3*X^3-2*X) <= -0.2
+%    +0.3 <= Pr(X<0) <= 0.4
+%
+% Along with the constraints sum(p) == 1, p >= 0, these constraints
+% describe a polyhedron of probability distrubtions. In the first figure,
+% the distribution that maximizes entropy is computed. In the second
+% figure, we compute upper and lower bounds for Prob(X<=a_i) for each
+% point -1 <= a_i <= +1 in the distribution, as well as the maximum
+% entropy CDF.
+
+%
+% Represent the polyhedron as follows:
+%     A * p <= b
+%     sum( p ) == 1
+%     p >= 0
 %
 
-n = 100;  a = linspace(-1,1,n)';
+n  = 100;
+a  = linspace(-1,1,n);
+a2 = a .^ 2;
+a3 = 3 * ( a.^ 3 ) - 2 * a;
+ap = +( a < 0 );
+A  = [ a   ; -a  ; a2 ; -a2  ; a3 ; -a3 ; ap ; -ap ];
+b  = [ 0.1 ; 0.1 ;0.5 ; -0.5 ; -0.2 ; 0.3 ; 0.4 ; -0.3 ];
 
-%moment constraints Ax <= b
-A = sparse([a'; -a';
-   (a.^2)';  -(a.^2)';
-   (3*a.^3-2*a)'; -(3*a.^3-2*a)';
-   (a<0)';  -(a<0)';
-   -eye(n)]);
-b = [0.1; 0.1;
-      0.6; -0.5;
-     -0.2; 0.3;
-     0.4; -0.3;
-     zeros(n,1)];
+%
+% Compute the maximum entropy distribution, which is the solution to
+%     maximize    - sum_i p_i * log( p_i )
+%     subject to  A * p <= b
+%                 sum( p ) == 1
+%                 p >= 0
+% But since CVX does not support maxent, we shall solve the dual problem,
+% which can be shown to be equivalent to
+%     minimize    b' * z + log(sum(exp(y)))
+%     subject to  A * y + z == 0
+%                 z >= 0
+% The Lagrange multipliers for the equality constraints give p.
+%
 
+cvx_begin
+    cvx_gp_precision( 0.001 )
+    variables z(8) y(100)
+    dual variable pent
+    minimize( b' * z + logsumexp_sdp( y ) )
+    pent : y + A' * z == 0;
+    z >= 0;
+cvx_end
 
-% eliminate last variable
-AA = A(:,1:n-1) - A(:,n)*ones(1,n-1);
-bb = b - A(:,n);
-bb(length(bb)) = 1;
+%
+% Compute the bounds on Prob(X<=a_i), i=1,...,n
+%
 
-
-% maximize and minimize cumsum  up to t, t=1,...,100
-Ubnds = zeros(1,n);  Ubnds(n) = 1;
-Lbnds = zeros(1,n);  Lbnds(n) = 1;
-
-
-for t=1:(n-1)
-
-   t
-
-   cc = [ones(t,1); zeros(n-t-1,1)];
-
-   %[z,x,status] = mpc(AA', cc, bb);
-   x = linprog(cc,AA,bb);
-   Lbnds(t) = cc'*x;
-
-   x = linprog(-cc,AA,bb);
-   Ubnds(t) = cc'*x;
-
+cvxq = cvx_quiet(true);
+Ubnds = zeros(1,n);
+Lbnds = zeros(1,n);
+for t = 1 : n,
+    cvx_begin
+        variable p( n )
+        minimize sum( p(1:t) )
+        p >= 0; sum( p ) == 1;
+        A * p <= b;
+    cvx_end
+    Lbnds(t) = cvx_optval;
+    cvx_begin
+        variable p( n )
+        maximize sum( p(1:t) )
+        p >= 0; sum( p ) == 1;
+        A * p <= b;
+    cvx_end
+    Ubnds(t) = cvx_optval;
+    disp( sprintf( '%g <= Prob(x<=%g) <= %g', Lbnds(t), a(t), Ubnds(t) ) );
 end
-
-
-
-%
-% max entropy distribution
-%
-% min  sum_i xi*log xi
-% s.t Ax <= b;
-%     1'*x = 1
-%     x >= 0
-%
+cvx_quiet(cvxq);
 
 %
-% feasibility problem for initial point
+% Generate the figures
 %
 
-cc = [zeros(n-1,1);1];
-AA = [AA -ones(size(AA,1),1)];
-%[z,x,status] = mpc(AA', -cc, bb);
-xx = linprog(cc,AA,bb);
-x = [xx(1:n-1); 1-sum(xx(1:n-1))];
+figure( 1 )
+stairs( a, pent );
+xlabel( 'x' );
+ylabel( 'PDF( x )' );
 
-slack = min(b-A*x);
-if (slack < 0) keyboard; end;
-
-
-MU = 5;
-ALPHA = 0.1;
-BETA = 0.5;
-TOL = 1e-4;
-MAXITERS = 50;
-
-m = size(A,1);
-
-t = 1;
-
-while ((size(A,1))/t > TOL)
-
-   for i=1:MAXITERS
-
-       d = b-A*x;
-       val = t*x'*log(x) - sum(log(d));
-       g = t*(1+log(x)) + A'*(1./d);
-       H = t*diag(1./x) + A'*diag(1./(d.^2))*A;
-
-       sol = [H ones(n,1); ones(1,n) 0] \ [-g; 0];
-       v = sol(1:n);
-       fprime = g'*v;
-       if (abs(fprime) < 1e-5) break; end;
-
-       ntdecr = sqrt(-fprime)
-
-       s = 1;
-       newx = x + s*v;
-       while ((min(newx) < 0)  | (min(b-A*newx) < 0))
-           s = s*BETA;
-           newx = x + s*v;
-       end;
-       newx = x + s*v;
-       newval = t*newx'*log(newx) - sum(log(b-A*newx));
-       while (newval > val + s*ALPHA*fprime)
-           s = s*BETA;
-           newx = x + s*v;
-           newval = t*newx'*log(newx) - sum(log(b-A*newx));
-        end;
-
-        x =  x + s*v;
-
-   end;
-
-   t = MU*t;
-
-end;
-
-figure(1)
-xent = x;
-stairs(a,cumsum(xent));
+figure( 2 )
+stairs( a, cumsum( pent ) );
 grid on;
 hold on
 d = stairs(a, Lbnds,'r-');  set(d,'Color',[0 0.5 0]);
@@ -128,19 +101,6 @@ d = stairs(a, Ubnds,'r-');  set(d,'Color',[0 0.5 0]);
 d = plot([-1,-1], [Lbnds(1), Ubnds(1)],'r-');
 set(d,'Color',[0 0.5 0]);
 axis([-1.1 1.1 -0.1 1.1]);
-%xlabel('x');
-ylabel('y');
+xlabel( 'x' );
+ylabel( 'CDF( x )' );
 hold off
-
-%axis([-1 1 0 1.1*max(xent)]);
-xlabel('x');
-ylabel('y');
-hold off
-% print -deps maxentcumsum.eps
-
-
-figure(2);
-stairs(a,xent);
-xlabel('x');
-ylabel('y');
-% print -deps maxentdistr.eps

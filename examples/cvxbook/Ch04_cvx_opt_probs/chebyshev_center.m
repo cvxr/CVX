@@ -1,5 +1,5 @@
-% Compute the Chebyshev center of a polyhedron
-% Sec. 4.3.1, Boyd & Vandenberghe "Convex Optimization"
+% Section 4.3.1: Compute the Chebyshev center of a polyhedron
+% Boyd & Vandenberghe "Convex Optimization"
 % Joëlle Skaf - 08/16/05
 %
 % The goal is to find the largest Euclidean ball (i.e. its center and

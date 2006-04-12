@@ -1,5 +1,5 @@
-% Compute and display the Chebyshev center of a 2D polyhedron
-% Sec. 4.3.1, Boyd & Vandenberghe, "Convex Optimization"
+% Section 4.3.1: Compute and display the Chebyshev center of a 2D polyhedron
+% Boyd & Vandenberghe, "Convex Optimization"
 % Joëlle Skaf - 08/16/05
 % (a figure is generated)
 %

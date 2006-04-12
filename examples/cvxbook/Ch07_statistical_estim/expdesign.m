@@ -1,5 +1,5 @@
-% Experiment design examples
-% Section 7.5.2, Boyd & Vandenberghe "Convex Optimization"
+% Section 7.5.2: Experiment design
+% Boyd & Vandenberghe, "Convex Optimization"
 % Original version by Lieven Vandenberghe
 % Updated for CVX by Almir Mutapcic - Jan 2006
 % (a figure is generated)

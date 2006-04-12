@@ -1,16 +1,16 @@
-% Mixed strategies for matrix games (LP formulation)
-% Sec. 5.2.5, Boyd & Vandenberghe "Convex Optimization"
+% Section 5.2.5: Mixed strategies for matrix games (LP formulation)
+% Boyd & Vandenberghe, "Convex Optimization"
 % Joëlle Skaf - 08/24/05
 %
-% Player 1 wishes to choose u to minimize his expected payoff u'Pv, while 
+% Player 1 wishes to choose u to minimize his expected payoff u'Pv, while
 % player 2 wishes to choose v to maximize u'Pv, where P is the payoff
-% matrix, u and v are the probability distributions of the choices of each 
+% matrix, u and v are the probability distributions of the choices of each
 % player (i.e. u>=0, v>=0, sum(u_i)=1, sum(v_i)=1)
-% LP formulation:   minimize    t 
+% LP formulation:   minimize    t
 %                       s.t.    u >=0 , sum(u) = 1, P'*u <= t*1
 %                   maximize    t
 %                       s.t.    v >=0 , sum(v) = 1, P*v >= t*1
-  
+
 % Input data
 randn('state',0);
 n = 12;
@@ -33,7 +33,7 @@ fprintf(1,'Done! \n');
 % Optimal strategy for Player 2
 fprintf(1,'Computing the optimal strategy for player 2 ... ');
 
-cvx_begin 
+cvx_begin
     variables v(m) t2
     maximize ( t2 )
     v >= 0;

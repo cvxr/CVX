@@ -1,10 +1,10 @@
-% Mixed strategies for matrix games 
-% Sec. 5.2.5, Boyd & Vandenberghe "Convex Optimization"
+% Section 5.2.5: Mixed strategies for matrix games
+% Boyd & Vandenberghe "Convex Optimization"
 % Joëlle Skaf - 08/24/05
 %
-% Player 1 wishes to choose u to minimize his expected payoff u'Pv, while 
+% Player 1 wishes to choose u to minimize his expected payoff u'Pv, while
 % player 2 wishes to choose v to maximize u'Pv, where P is the payoff
-% matrix, u and v are the probability distributions of the choices of each 
+% matrix, u and v are the probability distributions of the choices of each
 % player (i.e. u>=0, v>=0, sum(u_i)=1, sum(v_i)=1)
 
 % Input data
@@ -29,7 +29,7 @@ obj1 = cvx_optval;
 % Optimal strategy for Player 2
 fprintf(1,'Computing the optimal strategy for player 2 ... ');
 
-cvx_begin 
+cvx_begin
     variable v(m)
     maximize ( min (P*v) )
     v >= 0;

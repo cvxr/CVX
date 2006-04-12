@@ -1,0 +1,261 @@
+<html xmlns:mwsh="http://www.mathworks.com/namespace/mcode/v1/syntaxhighlight.dtd">
+   <head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   
+      <!--
+This HTML is auto-generated from an M-file.
+To make changes, update the M-file and republish this document.
+      -->
+      <title>Optimal doping profile optimization</title>
+      <meta name="generator" content="MATLAB 7.2">
+      <meta name="date" content="2006-04-11">
+      <meta name="m-file" content="basic_odp"><style>
+
+body {
+  background-color: white;
+  margin:10px;
+}
+
+h1 {
+  color: #990000; 
+  font-size: x-large;
+}
+
+h2 {
+  color: #990000;
+  font-size: medium;
+}
+
+/* Make the text shrink to fit narrow windows, but not stretch too far in 
+wide windows.  On Gecko-based browsers, the shrink-to-fit doesn't work. */ 
+p,h1,h2,div.content div {
+  /* for MATLAB's browser */
+  width: 600px;
+  /* for Mozilla, but the "width" tag overrides it anyway */
+  max-width: 600px;
+  /* for IE */
+  width:expression(document.body.clientWidth > 620 ? "600px": "auto" );
+}
+
+pre.codeinput {
+  background: #EEEEEE;
+  padding: 10px;
+}
+@media print {
+  pre.codeinput {word-wrap:break-word; width:100%;}
+} 
+
+span.keyword {color: #0000FF}
+span.comment {color: #228B22}
+span.string {color: #A020F0}
+span.untermstring {color: #B20000}
+span.syscmd {color: #B28C00}
+
+pre.codeoutput {
+  color: #666666;
+  padding: 10px;
+}
+
+pre.error {
+  color: red;
+}
+
+p.footer {
+  text-align: right;
+  font-size: xx-small;
+  font-weight: lighter;
+  font-style: italic;
+  color: gray;
+}
+
+  </style></head>
+   <body>
+      <div class="content">
+         <h1>Optimal doping profile optimization</h1><pre class="codeinput"><span class="comment">% Boyd, Kim, Vandenberghe, and Hassibi, "A tutorial on geometric programming"</span>
+<span class="comment">% Joshi, Boyd, and Dutton, "Optimal doping profiles via geometric programming"</span>
+<span class="comment">% Written for CVX by Almir Mutapcic 02/08/06</span>
+<span class="comment">% (a figure is generated)</span>
+<span class="comment">%</span>
+<span class="comment">% Determines the optimal doping profile that minimizes base transit</span>
+<span class="comment">% time in a (homojunction) bipolar junction transistor.</span>
+<span class="comment">% This problem can be posed as a GP:</span>
+<span class="comment">%</span>
+<span class="comment">%   minimize   tau_B</span>
+<span class="comment">%       s.t.   Nmin &lt;= v &lt;= Nmax</span>
+<span class="comment">%              y_(i+1) + v_i^const1 &lt;= y_i</span>
+<span class="comment">%              w_(i+1) + v_i^const2 &lt;= w_i, etc...</span>
+<span class="comment">%</span>
+<span class="comment">% where variables are v_i, y_i, and w_i.</span>
+
+<span class="comment">% discretization size</span>
+M = 50;
+<span class="comment">% M = 1000; % takes a few minutes to process constraints</span>
+
+<span class="comment">% problem constants</span>
+g1 = 0.42;
+g2 = 0.69;
+Nmax = 5*10^18;
+Nmin = 5*10^16;
+Nref = 10^17;
+Dn0 = 20.72;
+ni0 = 1.4*(10^10);
+WB = 10^(-5);
+C =  WB^2/((M^2)*(Nref^g1)*Dn0);
+
+<span class="comment">% exponent powers</span>
+pwi = g2 -1;
+pwj = 1+g1-g2;
+
+<span class="comment">% optimization variables</span>
+cvx_begin <span class="string">gp</span>
+  variables <span class="string">v(M)</span> <span class="string">y(M)</span> <span class="string">w(M)</span>
+
+  <span class="comment">% objective function is the base transmit time</span>
+  tau_B = C*w(1);
+
+  minimize( tau_B )
+  subject <span class="string">to</span>
+    <span class="comment">% problem constraints</span>
+    v &gt;= Nmin;
+    v &lt;= Nmax;
+
+    <span class="keyword">for</span> i = 1:M-1
+      <span class="keyword">if</span>( mod(i,100) == 0 ), fprintf(1,<span class="string">'progress counter: %d\n'</span>,i), <span class="keyword">end</span>;
+      y(i+1) + v(i)^pwj &lt;= y(i);
+      w(i+1) + y(i)*v(i)^pwi &lt;= w(i);
+    <span class="keyword">end</span>
+
+    y(M) == v(M)^pwj;
+    w(M) == y(M)*v(M)^pwi;
+cvx_end
+
+<span class="comment">% plot the basic optimal doping profile</span>
+figure, clf
+nbw = 0:1/M:1-1/M;
+semilogy(nbw,v,<span class="string">'LineWidth'</span>,2);
+axis([0 1 1e16 1e19]);
+xlabel(<span class="string">'base'</span>);
+ylabel(<span class="string">'doping'</span>);
+text(0,Nmin,<span class="string">'Nmin '</span>, <span class="string">'HorizontalAlignment'</span>,<span class="string">'right'</span>);
+text(0,Nmax,<span class="string">'Nmax '</span>, <span class="string">'HorizontalAlignment'</span>,<span class="string">'right'</span>);
+disp(<span class="string">'Optimal doping profile is plotted.'</span>)
+</pre><pre class="codeoutput"> 
+Calling SeDuMi: 2058 variables (96 free), 1126 equality constraints
+------------------------------------------------------------------------
+SeDuMi 1.1 by AdvOL, 2005 and Jos F. Sturm, 1998, 2001-2003.
+Alg = 2: xz-corrector, Adaptive Step-Differentiation, theta = 0.250, beta = 0.500
+Split 96 free variables
+eqs m = 1126, order n = 1175, dim = 3135, blocks = 99
+nnz(A) = 4292 + 0, nnz(ADA) = 10120, nnz(L) = 6009
+ it :     b*y       gap    delta  rate   t/tP*  t/tD*   feas cg cg  prec
+  0 :            3.24E-001 0.000
+  1 :  4.31E+002 1.21E-001 0.000 0.3741 0.9000 0.9000  -1.52  1  1  1.4E+001
+  2 :  8.78E+001 8.56E-002 0.000 0.7053 0.9000 0.9000   3.43  1  1  4.4E+000
+  3 :  4.33E+001 4.66E-002 0.000 0.5445 0.9000 0.9000   3.97  1  1  9.7E-001
+  4 :  3.45E+001 1.80E-002 0.000 0.3873 0.9000 0.9000   2.52  1  1  2.2E-001
+  5 :  3.04E+001 4.77E-003 0.000 0.2646 0.9000 0.9000   1.79  1  1  4.0E-002
+  6 :  2.55E+001 1.49E-003 0.000 0.3112 0.9000 0.9000   1.57  1  1  9.7E-003
+  7 :  2.39E+001 4.98E-004 0.000 0.3349 0.9000 0.9000   1.25  1  1  2.9E-003
+  8 :  2.33E+001 1.29E-004 0.000 0.2583 0.9000 0.9000   1.12  1  1  7.2E-004
+  9 :  2.32E+001 2.95E-005 0.000 0.2293 0.9000 0.9000   1.08  1  1  1.6E-004
+ 10 :  2.32E+001 7.73E-006 0.000 0.2623 0.9000 0.9000   1.06  1  1  4.0E-005
+ 11 :  2.32E+001 2.15E-006 0.000 0.2780 0.9000 0.9000   1.03  1  1  1.1E-005
+ 12 :  2.32E+001 2.45E-009 0.000 0.0011 0.8865 0.9000   1.01  1  1  2.7E-006
+ 13 :  2.32E+001 6.49E-010 0.000 0.2654 0.9000 0.8167   1.01  1  1  7.6E-007
+ 14 :  2.32E+001 1.42E-010 0.000 0.2187 0.9073 0.9000   1.00  1  1  1.8E-007
+ 15 :  2.32E+001 3.62E-011 0.000 0.2546 0.9030 0.9000   1.00  1  2  4.7E-008
+ 16 :  2.32E+001 9.40E-012 0.000 0.2599 0.9000 0.9118   1.00  2  2  1.1E-008
+
+iter seconds digits       c*x               b*y
+ 16      1.4   Inf  2.3157681459e+001  2.3157681472e+001
+|Ax-b| =  1.1e-006, [Ay-c]_+ =  2.5E-009, |x|= 2.8e+002, |y|= 1.1e+001
+
+Detailed timing (sec)
+   Pre          IPM          Post
+4.006E-002    1.382E+000    2.003E-002    
+Max-norms: ||b||=2.806908e+001, ||c|| = 1.849460e+000,
+Cholesky |add|=0, |skip| = 0, ||L.L|| = 18.1311.
+------------------------------------------------------------------------
+Status: Solved
+Optimal value (cvx_optval): +1.5956e-012
+Optimal doping profile is plotted.
+</pre><img vspace="5" hspace="5" src="basic_odp_01.png"> <p class="footer"><br>
+            Published with MATLAB&reg; 7.2<br></p>
+      </div>
+      <!--
+##### SOURCE BEGIN #####
+%% Optimal doping profile optimization
+
+% Boyd, Kim, Vandenberghe, and Hassibi, "A tutorial on geometric programming"
+% Joshi, Boyd, and Dutton, "Optimal doping profiles via geometric programming"
+% Written for CVX by Almir Mutapcic 02/08/06
+% (a figure is generated)
+%
+% Determines the optimal doping profile that minimizes base transit
+% time in a (homojunction) bipolar junction transistor.
+% This problem can be posed as a GP:
+%
+%   minimize   tau_B
+%       s.t.   Nmin <= v <= Nmax
+%              y_(i+1) + v_i^const1 <= y_i
+%              w_(i+1) + v_i^const2 <= w_i, etc...
+%
+% where variables are v_i, y_i, and w_i.
+
+% discretization size
+M = 50;
+% M = 1000; % takes a few minutes to process constraints
+
+% problem constants
+g1 = 0.42;
+g2 = 0.69;
+Nmax = 5*10^18;
+Nmin = 5*10^16;
+Nref = 10^17;
+Dn0 = 20.72;
+ni0 = 1.4*(10^10);
+WB = 10^(-5);
+C =  WB^2/((M^2)*(Nref^g1)*Dn0);
+
+% exponent powers
+pwi = g2 -1;
+pwj = 1+g1-g2;
+
+% optimization variables
+cvx_begin gp
+  variables v(M) y(M) w(M)
+
+  % objective function is the base transmit time
+  tau_B = C*w(1);
+
+  minimize( tau_B )
+  subject to
+    % problem constraints
+    v >= Nmin;
+    v <= Nmax;
+
+    for i = 1:M-1
+      if( mod(i,100) == 0 ), fprintf(1,'progress counter: %d\n',i), end;
+      y(i+1) + v(i)^pwj <= y(i);
+      w(i+1) + y(i)*v(i)^pwi <= w(i);
+    end
+
+    y(M) == v(M)^pwj;
+    w(M) == y(M)*v(M)^pwi;
+cvx_end
+
+% plot the basic optimal doping profile
+figure, clf
+nbw = 0:1/M:1-1/M;
+semilogy(nbw,v,'LineWidth',2);
+axis([0 1 1e16 1e19]);
+xlabel('base');
+ylabel('doping');
+text(0,Nmin,'Nmin ', 'HorizontalAlignment','right');
+text(0,Nmax,'Nmax ', 'HorizontalAlignment','right');
+disp('Optimal doping profile is plotted.')
+
+##### SOURCE END #####
+-->
+   </body>
+</html>

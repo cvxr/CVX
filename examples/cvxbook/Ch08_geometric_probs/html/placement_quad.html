@@ -8,7 +8,7 @@ To make changes, update the M-file and republish this document.
       -->
       <title>Figure 8.16: Quadratic placement problem</title>
       <meta name="generator" content="MATLAB 7.2">
-      <meta name="date" content="2006-04-01">
+      <meta name="date" content="2006-04-11">
       <meta name="m-file" content="placement_quad"><style>
 
 body {
@@ -166,32 +166,32 @@ plot([0 2], [0 0 ], <span class="string">'k-'</span>);
 title(<span class="string">'Distribution of the 27 link lengths'</span>);
 <span class="comment">% print -deps placement-quadr-hist.eps</span>
 </pre><pre class="codeoutput">Computing the optimal locations of the 6 free points... 
-Calling SeDuMi: 174 variables (12 free), 108 equality constraints
+Calling SeDuMi: 201 variables (12 free), 108 equality constraints
 ------------------------------------------------------------------------
 SeDuMi 1.1 by AdvOL, 2005 and Jos F. Sturm, 1998, 2001-2003.
 Alg = 2: xz-corrector, Adaptive Step-Differentiation, theta = 0.250, beta = 0.500
 Split 12 free variables
-eqs m = 108, order n = 133, dim = 214, blocks = 55
+eqs m = 108, order n = 160, dim = 241, blocks = 55
 nnz(A) = 335 + 0, nnz(ADA) = 1060, nnz(L) = 966
  it :     b*y       gap    delta  rate   t/tP*  t/tD*   feas cg cg  prec
-  0 :            7.62E+000 0.000
-  1 :  1.11E+001 2.07E+000 0.000 0.2722 0.9000 0.9000   1.83  1  1  1.6E+000
-  2 :  1.78E+001 5.03E-001 0.000 0.2426 0.9000 0.9000   0.88  1  1  4.4E-001
-  3 :  2.04E+001 2.17E-002 0.000 0.0432 0.9900 0.9900   0.96  1  1  2.0E-002
-  4 :  2.05E+001 5.56E-005 0.000 0.0026 0.9990 0.9990   1.00  1  1  5.1E-005
-  5 :  2.05E+001 2.16E-007 0.177 0.0039 0.9990 0.9990   1.00  1  1  2.0E-007
-  6 :  2.05E+001 4.32E-008 0.000 0.1997 0.9000 0.9000   1.00  2  2  3.9E-008
-  7 :  2.05E+001 8.88E-009 0.000 0.2055 0.9000 0.9000   1.00  2  2  8.1E-009
+  0 :            2.16E+001 0.000
+  1 :  1.28E+001 6.19E+000 0.000 0.2860 0.9000 0.9000   2.13  1  1  1.7E+000
+  2 :  1.87E+001 1.60E+000 0.000 0.2590 0.9000 0.9000   0.94  1  1  5.3E-001
+  3 :  2.05E+001 7.13E-002 0.000 0.0445 0.9900 0.9900   0.97  1  1  2.6E-002
+  4 :  2.05E+001 1.43E-004 0.000 0.0020 0.9990 0.9990   1.00  1  1  5.2E-005
+  5 :  2.05E+001 5.99E-007 0.246 0.0042 0.9990 0.9990   1.00  1  1  2.2E-007
+  6 :  2.05E+001 1.44E-007 0.000 0.2398 0.9000 0.9000   1.00  2  2  5.3E-008
+  7 :  2.05E+001 2.97E-008 0.000 0.2066 0.9000 0.9000   1.00  2  2  1.1E-008
 
 iter seconds digits       c*x               b*y
-  7      0.2   8.6  2.0547313604e+001  2.0547313551e+001
-|Ax-b| =  1.6e-008, [Ay-c]_+ =  1.3E-009, |x|= 1.4e+001, |y|= 1.8e+001
+  7      0.2   8.2  2.0547313688e+001  2.0547313570e+001
+|Ax-b| =  1.8e-008, [Ay-c]_+ =  1.4E-009, |x|= 1.4e+001, |y|= 1.8e+001
 
 Detailed timing (sec)
    Pre          IPM          Post
-0.000E+000    1.702E-001    0.000E+000    
+1.001E-002    2.103E-001    1.001E-002    
 Max-norms: ||b||=1, ||c|| = 1,
-Cholesky |add|=0, |skip| = 0, ||L.L|| = 1.33546.
+Cholesky |add|=0, |skip| = 0, ||L.L|| = 1.33547.
 ------------------------------------------------------------------------
 Status: Solved
 Optimal value (cvx_optval): +20.5473

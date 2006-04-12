@@ -6,9 +6,9 @@
 This HTML is auto-generated from an M-file.
 To make changes, update the M-file and republish this document.
       -->
-      <title>Solves a simple QCQP</title>
+      <title>Section 5.2.4: Solves a simple QCQP</title>
       <meta name="generator" content="MATLAB 7.2">
-      <meta name="date" content="2006-04-01">
+      <meta name="date" content="2006-04-11">
       <meta name="m-file" content="qcqp"><style>
 
 body {
@@ -71,7 +71,7 @@ p.footer {
   </style></head>
    <body>
       <div class="content">
-         <h1>Solves a simple QCQP</h1><pre class="codeinput"><span class="comment">% Sec. 5.2.4, Boyd &amp; Vandenberghe "Convex Optimization"</span>
+         <h1>Section 5.2.4: Solves a simple QCQP</h1><pre class="codeinput"><span class="comment">% Boyd &amp; Vandenberghe, "Convex Optimization"</span>
 <span class="comment">% Jo&euml;lle Skaf - 08/23/05</span>
 <span class="comment">%</span>
 <span class="comment">% Solved a QCQP with 3 inequalities:</span>
@@ -114,55 +114,59 @@ disp(<span class="string">'-----------------------------------------------------
 disp(<span class="string">'The duality gap is equal to '</span>);
 disp(obj1-obj2)
 </pre><pre class="codeoutput">Computing the optimal value of the QCQP and its dual...  
-Calling SeDuMi: 38 variables (6 free), 31 equality constraints
+Calling SeDuMi: 42 variables (6 free), 31 equality constraints
 ------------------------------------------------------------------------
 SeDuMi 1.1 by AdvOL, 2005 and Jos F. Sturm, 1998, 2001-2003.
 Alg = 2: xz-corrector, Adaptive Step-Differentiation, theta = 0.250, beta = 0.500
 Split 6 free variables
-eqs m = 31, order n = 21, dim = 45, blocks = 5
-nnz(A) = 362 + 0, nnz(ADA) = 787, nnz(L) = 409
+eqs m = 31, order n = 25, dim = 49, blocks = 5
+nnz(A) = 365 + 0, nnz(ADA) = 787, nnz(L) = 409
  it :     b*y       gap    delta  rate   t/tP*  t/tD*   feas cg cg  prec
-  0 :            1.41E+000 0.000
-  1 : -2.37E-001 2.58E-001 0.000 0.1833 0.9000 0.9000   1.22  1  1  2.5E+000
-  2 : -1.18E-001 1.35E-002 0.000 0.0524 0.9900 0.9900   1.08  1  1  1.8E-001
-  3 : -8.59E-002 9.92E-004 0.106 0.0733 0.9900 0.9900   1.00  1  1  1.7E-002
-  4 : -7.98E-002 3.79E-005 0.000 0.0383 0.9900 0.9900   1.00  1  1  7.2E-004
-  5 : -7.98E-002 9.52E-007 0.000 0.0251 0.9900 0.9900   1.00  1  1  1.8E-005
-  6 : -7.98E-002 8.16E-008 0.000 0.0857 0.9450 0.9464   1.00  1  1  1.2E-006
-  7 : -7.98E-002 3.42E-009 0.371 0.0419 0.8872 0.9900   1.00  2  2  3.9E-008
-  8 : -7.98E-002 8.75E-010 0.000 0.2560 0.9000 0.9000   1.00  2  2  1.0E-008
+  0 :            2.34E+000 0.000
+  1 : -7.83E-001 5.83E-001 0.000 0.2493 0.9000 0.9000   1.73  1  1  2.8E+000
+  2 : -1.71E-001 4.97E-002 0.000 0.0852 0.9900 0.9900   1.47  1  1  3.6E-001
+  3 : -1.02E-001 1.28E-002 0.000 0.2571 0.9000 0.9000   0.95  1  1  1.4E-001
+  4 : -8.19E-002 8.62E-004 0.000 0.0675 0.9900 0.9900   1.02  1  1  1.2E-002
+  5 : -7.99E-002 5.99E-005 0.036 0.0695 0.9900 0.9900   1.00  1  1  8.6E-004
+  6 : -7.98E-002 9.62E-006 0.000 0.1606 0.9036 0.9000   1.00  1  1  1.5E-004
+  7 : -7.98E-002 8.55E-007 0.443 0.0889 0.9900 0.9900   1.00  1  1  1.3E-005
+  8 : -7.98E-002 1.53E-007 0.000 0.1794 0.9000 0.9070   1.00  1  1  2.2E-006
+  9 : -7.98E-002 2.65E-008 0.000 0.1731 0.9012 0.9000   1.00  2  2  3.9E-007
+ 10 : -7.98E-002 4.98E-009 0.033 0.1876 0.9020 0.9000   1.00  2  2  7.6E-008
+ 11 : -7.98E-002 1.05E-009 0.000 0.2100 0.9036 0.9000   1.00  3  3  1.7E-008
+ 12 : -7.98E-002 2.12E-010 0.001 0.2032 0.9056 0.9000   1.00  3  3  3.5E-009
 
 iter seconds digits       c*x               b*y
-  8      0.2   Inf -7.9757737749e-002 -7.9757732501e-002
-|Ax-b| =  1.6e-008, [Ay-c]_+ =  1.6E-009, |x|= 8.4e+000, |y|= 3.3e+000
+ 12      0.3   8.2 -7.9757721561e-002 -7.9757722025e-002
+|Ax-b| =  6.1e-010, [Ay-c]_+ =  1.0E-010, |x|= 8.2e+000, |y|= 2.9e+000
 
 Detailed timing (sec)
    Pre          IPM          Post
-1.001E-002    2.103E-001    0.000E+000    
-Max-norms: ||b||=1.316586e+000, ||c|| = 1.213838e+000,
-Cholesky |add|=0, |skip| = 0, ||L.L|| = 31.6759.
+1.001E-002    2.704E-001    0.000E+000    
+Max-norms: ||b||=2.633172e+000, ||c|| = 1.213838e+000,
+Cholesky |add|=0, |skip| = 0, ||L.L|| = 32.8929.
 ------------------------------------------------------------------------
 Status: Solved
 Optimal value (cvx_optval): -0.895296
 Done! 
 ------------------------------------------------------------------------
 The duality gap is equal to 
-    3.4934
+    3.4931
 
 </pre><p class="footer"><br>
             Published with MATLAB&reg; 7.2<br></p>
       </div>
       <!--
 ##### SOURCE BEGIN #####
-%% Solves a simple QCQP
+%% Section 5.2.4: Solves a simple QCQP
 
-% Sec. 5.2.4, Boyd & Vandenberghe "Convex Optimization"
+% Boyd & Vandenberghe, "Convex Optimization"
 % Joëlle Skaf - 08/23/05
 %
 % Solved a QCQP with 3 inequalities:
 %           minimize    1/2 x'*P0*x + q0'*r + r0
 %               s.t.    1/2 x'*Pi*x + qi'*r + ri <= 0   for i=1,2,3
-% and verifies that strong duality holds. 
+% and verifies that strong duality holds.
 
 % Input data
 randn('state',13);

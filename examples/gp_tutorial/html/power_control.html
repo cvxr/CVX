@@ -1,0 +1,237 @@
+<html xmlns:mwsh="http://www.mathworks.com/namespace/mcode/v1/syntaxhighlight.dtd">
+   <head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   
+      <!--
+This HTML is auto-generated from an M-file.
+To make changes, update the M-file and republish this document.
+      -->
+      <title>Simple power control in communication systems via GP.</title>
+      <meta name="generator" content="MATLAB 7.2">
+      <meta name="date" content="2006-04-11">
+      <meta name="m-file" content="power_control"><style>
+
+body {
+  background-color: white;
+  margin:10px;
+}
+
+h1 {
+  color: #990000; 
+  font-size: x-large;
+}
+
+h2 {
+  color: #990000;
+  font-size: medium;
+}
+
+/* Make the text shrink to fit narrow windows, but not stretch too far in 
+wide windows.  On Gecko-based browsers, the shrink-to-fit doesn't work. */ 
+p,h1,h2,div.content div {
+  /* for MATLAB's browser */
+  width: 600px;
+  /* for Mozilla, but the "width" tag overrides it anyway */
+  max-width: 600px;
+  /* for IE */
+  width:expression(document.body.clientWidth > 620 ? "600px": "auto" );
+}
+
+pre.codeinput {
+  background: #EEEEEE;
+  padding: 10px;
+}
+@media print {
+  pre.codeinput {word-wrap:break-word; width:100%;}
+} 
+
+span.keyword {color: #0000FF}
+span.comment {color: #228B22}
+span.string {color: #A020F0}
+span.untermstring {color: #B20000}
+span.syscmd {color: #B28C00}
+
+pre.codeoutput {
+  color: #666666;
+  padding: 10px;
+}
+
+pre.error {
+  color: red;
+}
+
+p.footer {
+  text-align: right;
+  font-size: xx-small;
+  font-weight: lighter;
+  font-style: italic;
+  color: gray;
+}
+
+  </style></head>
+   <body>
+      <div class="content">
+         <h1>Simple power control in communication systems via GP.</h1><pre class="codeinput"><span class="comment">% Boyd, Kim, Vandenberghe, and Hassibi, "A Tutorial on Geometric Programming"</span>
+<span class="comment">% Written for CVX by Almir Mutapcic 02/08/06</span>
+<span class="comment">% (a figure is generated)</span>
+<span class="comment">%</span>
+<span class="comment">% Solves the power control problem in communication systems, where</span>
+<span class="comment">% we want to minimize the total transmitter power for n transmitters,</span>
+<span class="comment">% subject to minimum SINR level, and lower and upper bounds on powers.</span>
+<span class="comment">% This results in a GP:</span>
+<span class="comment">%</span>
+<span class="comment">%   minimize   sum(P)</span>
+<span class="comment">%       s.t.   Pmin &lt;= P &lt;= Pmax</span>
+<span class="comment">%              SINR &gt;= SINR_min</span>
+<span class="comment">%</span>
+<span class="comment">% where variables are transmitter powers P.</span>
+<span class="comment">% Numerical data for the specific examples was made up.</span>
+
+<span class="comment">% problem constants</span>
+n = 5;                 <span class="comment">% number of transmitters and receivers</span>
+sigma = 0.5*ones(n,1); <span class="comment">% noise power at the receiver i</span>
+Pmin = 0.1*ones(n,1);  <span class="comment">% minimum power at the transmitter i</span>
+Pmax = 5*ones(n,1);    <span class="comment">% maximum power at the transmitter i</span>
+SINR_min = 2;          <span class="comment">% threshold SINR for each receiver</span>
+
+<span class="comment">% path gain matrix</span>
+G = [1.0  0.1  0.2  0.1  0.0
+     0.1  1.0  0.1  0.1  0.0
+     0.2  0.1  2.0  0.2  0.2
+     0.1  0.1  0.2  1.0  0.1
+     0.0  0.0  0.2  0.1  1.0];
+
+<span class="comment">% variables are power levels</span>
+cvx_begin <span class="string">gp</span>
+  variable <span class="string">P(n)</span>
+
+  <span class="comment">% objective function is the total transmitter power</span>
+  minimize( sum(P) )
+  subject <span class="string">to</span>
+
+    <span class="comment">% formulate the inverse SINR at each receiver using vectorize features</span>
+    Gdiag = diag(G);          <span class="comment">% the main diagonal of G matrix</span>
+    Gtilde = G - diag(Gdiag); <span class="comment">% G matrix without the main diagonal</span>
+    <span class="comment">% inverse SINR</span>
+    inverseSINR = (sigma + Gtilde*P)./(Gdiag.*P);
+
+    <span class="comment">% constraints are power limits and minimum SINR level</span>
+    P &gt;= Pmin;
+    P &lt;= Pmax;
+    inverseSINR &lt;= (1/SINR_min);
+cvx_end
+
+fprintf(1,<span class="string">'\nThe minimum total transmitter power is %3.2f.\n'</span>,cvx_optval);
+disp(<span class="string">'Optimal power levels are: '</span>), P
+</pre><pre class="codeoutput"> 
+Calling SeDuMi: 520 variables (10 free), 300 equality constraints
+------------------------------------------------------------------------
+SeDuMi 1.1 by AdvOL, 2005 and Jos F. Sturm, 1998, 2001-2003.
+Alg = 2: xz-corrector, Adaptive Step-Differentiation, theta = 0.250, beta = 0.500
+Split 10 free variables
+eqs m = 300, order n = 231, dim = 831, blocks = 21
+nnz(A) = 1016 + 0, nnz(ADA) = 4130, nnz(L) = 2286
+ it :     b*y       gap    delta  rate   t/tP*  t/tD*   feas cg cg  prec
+  0 :            4.88E-001 0.000
+  1 :  5.70E+000 1.79E-001 0.000 0.3674 0.9000 0.9000   2.26  1  1  2.4E+000
+  2 :  5.14E+000 5.22E-002 0.000 0.2915 0.9000 0.9000   1.71  1  1  5.3E-001
+  3 :  3.82E+000 1.48E-002 0.000 0.2841 0.9000 0.9000   1.24  1  1  1.4E-001
+  4 :  3.18E+000 4.58E-003 0.000 0.3089 0.9000 0.9000   1.20  1  1  4.2E-002
+  5 :  3.04E+000 1.54E-003 0.000 0.3370 0.9000 0.9000   1.30  1  1  1.2E-002
+  6 :  2.96E+000 9.15E-004 0.000 0.5923 0.9000 0.9000   1.32  1  1  6.7E-003
+  7 :  2.87E+000 2.52E-004 0.000 0.2757 0.9000 0.9000   1.13  1  1  1.8E-003
+  8 :  2.84E+000 1.79E-005 0.000 0.0710 0.9900 0.9900   1.09  1  1  1.2E-004
+  9 :  2.83E+000 4.65E-007 0.000 0.0260 0.9900 0.9900   1.08  1  1  2.9E-006
+ 10 :  2.83E+000 8.86E-008 0.000 0.1906 0.9000 0.9000   1.01  1  2  5.5E-007
+ 11 :  2.83E+000 8.36E-009 0.189 0.0943 0.9900 0.9900   1.00  2  3  5.2E-008
+ 12 :  2.83E+000 1.40E-010 0.000 0.0168 0.9000 0.0000   1.00  5  7  1.8E-008
+ 13 :  2.83E+000 2.64E-011 0.000 0.1887 0.9089 0.9000   1.00 11 13  3.5E-009
+
+iter seconds digits       c*x               b*y
+ 13      0.6   Inf  2.8338047822e+000  2.8338050241e+000
+|Ax-b| =  1.3e-008, [Ay-c]_+ =  2.5E-009, |x|= 2.8e+001, |y|= 6.4e+000
+
+Detailed timing (sec)
+   Pre          IPM          Post
+3.004E-002    5.708E-001    1.001E-002    
+Max-norms: ||b||=4.380570e+000, ||c|| = 2.202759e+000,
+Cholesky |add|=0, |skip| = 0, ||L.L|| = 19.5545.
+------------------------------------------------------------------------
+Status: Solved
+Optimal value (cvx_optval): +17.0101
+
+The minimum total transmitter power is 17.01.
+Optimal power levels are: 
+
+P =
+
+    3.6613
+    3.1633
+    2.9882
+    4.1666
+    3.0291
+
+</pre><p class="footer"><br>
+            Published with MATLAB&reg; 7.2<br></p>
+      </div>
+      <!--
+##### SOURCE BEGIN #####
+%% Simple power control in communication systems via GP.
+
+% Boyd, Kim, Vandenberghe, and Hassibi, "A Tutorial on Geometric Programming"
+% Written for CVX by Almir Mutapcic 02/08/06
+% (a figure is generated)
+%
+% Solves the power control problem in communication systems, where
+% we want to minimize the total transmitter power for n transmitters,
+% subject to minimum SINR level, and lower and upper bounds on powers.
+% This results in a GP:
+%
+%   minimize   sum(P)
+%       s.t.   Pmin <= P <= Pmax
+%              SINR >= SINR_min
+%
+% where variables are transmitter powers P.
+% Numerical data for the specific examples was made up.
+
+% problem constants
+n = 5;                 % number of transmitters and receivers
+sigma = 0.5*ones(n,1); % noise power at the receiver i
+Pmin = 0.1*ones(n,1);  % minimum power at the transmitter i
+Pmax = 5*ones(n,1);    % maximum power at the transmitter i
+SINR_min = 2;          % threshold SINR for each receiver
+
+% path gain matrix
+G = [1.0  0.1  0.2  0.1  0.0
+     0.1  1.0  0.1  0.1  0.0
+     0.2  0.1  2.0  0.2  0.2
+     0.1  0.1  0.2  1.0  0.1
+     0.0  0.0  0.2  0.1  1.0];
+
+% variables are power levels
+cvx_begin gp
+  variable P(n)
+
+  % objective function is the total transmitter power
+  minimize( sum(P) )
+  subject to
+
+    % formulate the inverse SINR at each receiver using vectorize features
+    Gdiag = diag(G);          % the main diagonal of G matrix
+    Gtilde = G - diag(Gdiag); % G matrix without the main diagonal
+    % inverse SINR
+    inverseSINR = (sigma + Gtilde*P)./(Gdiag.*P);
+
+    % constraints are power limits and minimum SINR level
+    P >= Pmin;
+    P <= Pmax;
+    inverseSINR <= (1/SINR_min);
+cvx_end
+
+fprintf(1,'\nThe minimum total transmitter power is %3.2f.\n',cvx_optval);
+disp('Optimal power levels are: '), P
+
+##### SOURCE END #####
+-->
+   </body>
+</html>

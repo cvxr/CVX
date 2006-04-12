@@ -1,11 +1,10 @@
-% Basis pursuit using Gabor functions
-% Sec. 6.5.4, fig 6.21, 6.22 and 6.23 
+% Figures 6.21-6.23: Basis pursuit using Gabor functions
+% Section 6.5.4
 % Boyd & Vandenberghe "Convex Optimization"
-% Original by Lieven Vandenberghe 
+% Original by Lieven Vandenberghe
 % Adapted for CVX by Argyris Zymnis - 11/27/2005
-% (figures are generated)
-% 
-% Here we find a sparse basis for a signal y out of 
+%
+% Here we find a sparse basis for a signal y out of
 % a set of Gabor functions. We do this by solving
 %       minimize  ||A*x-y||_2 + ||x||_1
 %
@@ -45,7 +44,7 @@ end;
 disp('done.');
 
 % Construct example signal
-a = 0.5*sin(t*11)+1; 
+a = 0.5*sin(t*11)+1;
 theta = sin(5*t)*30;
 b = a.*sin(theta);
 
@@ -66,9 +65,9 @@ x2 = A2 \ b;
 
 % Constants
 M = 61; % Number of different Basis signals
-sk = 250; % Index of s = 0.5 
+sk = 250; % Index of s = 0.5
 
-% Plot example basis functions;  
+% Plot example basis functions;
 %if (0) % to do this, re-run basispursuit.m to create A
 figure(1); clf;
 subplot(3,1,1); plot(t,A(:,M*sk+1)); axis([0 1 -1 1]);
@@ -94,11 +93,11 @@ xlabel('t'); ylabel('y - y_{hat}');
 % Plot frequency plot
 figure(3); clf;
 
-subplot(2,1,1); 
+subplot(2,1,1);
 plot(t,b); xlabel('t'); ylabel('y'); axis([0 1 -1.5 1.5]);
 title('Original Signal')
-subplot(2,1,2); 
-plot(t,150*abs(cos(w0*t)),'--'); 
+subplot(2,1,2);
+plot(t,150*abs(cos(w0*t)),'--');
 hold on;
 for k = 1:length(t);
   if(abs(x((k-1)*M+1)) > 1e-5), plot(t(k),0,'o'); end;

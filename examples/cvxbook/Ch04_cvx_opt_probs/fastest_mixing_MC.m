@@ -1,5 +1,5 @@
-% Find the fastest mixing Markov chain on a graph
-% Sec. 4.6.3, Boyd & Vandenberghe "Convex Optimization"
+% Section 4.6.3: Find the fastest mixing Markov chain on a graph
+% Boyd & Vandenberghe "Convex Optimization"
 % Joëlle Skaf - 09/26/05
 %
 % The 'fastest mixing Markov chain problem' is to find a transition

@@ -1,15 +1,15 @@
-% Robust regression using the Huber penalty
-% Sec. 6.1.2, Ex. 6.2/fig 6.5, Boyd & Vandenberghe "Convex Optimization"
-% Original by Lieven Vandenberghe 
+% Example 6.2: Robust regression using the Huber penalty
+% Section 6.1.2, Figure 6.5
+% Boyd & Vandenberghe "Convex Optimization"
+% Original by Lieven Vandenberghe
 % Adapted for CVX by Joelle Skaf - 09/07/05
-% (a figure is generated)
 %
-% Compares the solution of regular Least-squares: 
-%           minimize    sum(y_i - alpha - beta*t_i)^2 
+% Compares the solution of regular Least-squares:
+%           minimize    sum(y_i - alpha - beta*t_i)^2
 % to the solution of the following:
 %           minimize    sum( phi_h (y_i - alpha - beta*t_i)^2 )
 % where phi_h is the Huber penalty function, (t_i,y_i) are data points in a
-% plane. 
+% plane.
 
 cvx_quiet(true);
 % Input data
@@ -21,8 +21,8 @@ xex = [5;1];
 pts = -10+20*rand(m,1);
 A = [ones(m,1) pts];
 b = A*xex + .5*randn(m,1);
-outliers = [-9.5; 9];  outvals = [20; -15]; 
-A = [A; ones(length(outliers),1), outliers];  
+outliers = [-9.5; 9];  outvals = [20; -15];
+A = [A; ones(length(outliers),1), outliers];
 b = [b; outvals];
 m = size(A,1);
 pts = [pts;outliers];
@@ -47,7 +47,7 @@ fprintf(1,'Done! \n');
 % Plots
 figure(1);  hold off
 plot(pts,b,'o', [-11; 11], [1 -11; 1 11]*xhub, '-', ...
-     [-11; 11], [1 -11; 1 11]*xls, '--'); 
+     [-11; 11], [1 -11; 1 11]*xls, '--');
 axis([-11 11 -20 25])
 title('Least-square fit vs robust least-squares fit (Huber-penalized)');
 xlabel('x');

@@ -4,7 +4,7 @@ has_quadprog = exist( 'quadprog' );
 has_quadprog = has_quadprog == 2 | has_quadprog == 3;
 has_linprog  = exist( 'linprog' );
 has_linprog  = has_linprog == 2 | has_linprog == 3;
-rnstate = randn( 'state' );
+rnstate = randn( 'state' ); randn( 'state', 1 );
 s_quiet = cvx_quiet(true);
 s_pause = cvx_pause(false);
 cvx_clear; echo on

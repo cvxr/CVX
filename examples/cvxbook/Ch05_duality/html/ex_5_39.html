@@ -6,9 +6,9 @@
 This HTML is auto-generated from an M-file.
 To make changes, update the M-file and republish this document.
       -->
-      <title>SDP relaxations of the two-way partitioning problem</title>
+      <title>Exercise 5.39: SDP relaxations of the two-way partitioning problem</title>
       <meta name="generator" content="MATLAB 7.2">
-      <meta name="date" content="2006-04-01">
+      <meta name="date" content="2006-04-11">
       <meta name="m-file" content="ex_5_39"><style>
 
 body {
@@ -71,7 +71,7 @@ p.footer {
   </style></head>
    <body>
       <div class="content">
-         <h1>SDP relaxations of the two-way partitioning problem</h1><pre class="codeinput"><span class="comment">% Exercise 5.33, Boyd &amp; Vandenberghe "Convex Optimization"</span>
+         <h1>Exercise 5.39: SDP relaxations of the two-way partitioning problem</h1><pre class="codeinput"><span class="comment">% Boyd &amp; Vandenberghe. "Convex Optimization"</span>
 <span class="comment">% Jo&euml;lle Skaf - 09/07/05</span>
 <span class="comment">% (a figure is generated)</span>
 <span class="comment">%</span>
@@ -142,12 +142,12 @@ nnz(A) = 45 + 0, nnz(ADA) = 2025, nnz(L) = 1035
  11 :  2.88E+001 6.28E-011 0.374 0.0820 0.9900 0.9900   1.00  2  2  1.6E-009
 
 iter seconds digits       c*x               b*y
- 11      0.1   Inf  2.8825674962e+001  2.8825674965e+001
+ 11      0.2   Inf  2.8825674962e+001  2.8825674965e+001
 |Ax-b| =  5.0e-009, [Ay-c]_+ =  0.0E+000, |x|= 1.2e+001, |y|= 1.1e+001
 
 Detailed timing (sec)
    Pre          IPM          Post
-0.000E+000    1.202E-001    0.000E+000    
+1.001E-002    1.502E-001    0.000E+000    
 Max-norms: ||b||=1.436592e+000, ||c|| = 1,
 Cholesky |add|=0, |skip| = 0, ||L.L|| = 1.23054.
 ------------------------------------------------------------------------
@@ -180,7 +180,7 @@ iter seconds digits       c*x               b*y
 
 Detailed timing (sec)
    Pre          IPM          Post
-0.000E+000    1.202E-001    0.000E+000    
+1.001E-002    1.402E-001    0.000E+000    
 Max-norms: ||b||=1, ||c|| = 2.873183e+000,
 Cholesky |add|=0, |skip| = 0, ||L.L|| = 604.225.
 ------------------------------------------------------------------------
@@ -198,9 +198,9 @@ They are equal as expected!
       </div>
       <!--
 ##### SOURCE BEGIN #####
-%% SDP relaxations of the two-way partitioning problem
+%% Exercise 5.39: SDP relaxations of the two-way partitioning problem
 
-% Exercise 5.33, Boyd & Vandenberghe "Convex Optimization"
+% Boyd & Vandenberghe. "Convex Optimization"
 % Joëlle Skaf - 09/07/05
 % (a figure is generated)
 %

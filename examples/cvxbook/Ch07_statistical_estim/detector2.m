@@ -1,8 +1,8 @@
 % Example 7.4: Binary hypothesis testing
+% Figure 7.4
 % Boyd & Vandenberghe "Convex Optimization"
 % Original version by Lieven Vandenberghe
 % Updated for CVX by Michael Grant, 2005-12-19
-% (generates Figure 7.4)
 
 % Generate the data
 P = [0.70  0.10
@@ -44,7 +44,7 @@ for i=2:size(obj,2)-1
 end;
 
 % Minimax detector: not deterministic
-    
+
 cvx_begin
     variables T( m, n ) D( m, m )
     minimize max( D(1,2), D(2,1) )

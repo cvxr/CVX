@@ -6,9 +6,9 @@
 This HTML is auto-generated from an M-file.
 To make changes, update the M-file and republish this document.
       -->
-      <title>Comparison of worst-case robust, Tickhonov and nominal least squares</title>
+      <title>Example 6.6: Comparison of worst-case robust, Tikhonov, and nominal least squares</title>
       <meta name="generator" content="MATLAB 7.2">
-      <meta name="date" content="2006-04-01">
+      <meta name="date" content="2006-04-11">
       <meta name="m-file" content="wcrobls"><style>
 
 body {
@@ -71,7 +71,7 @@ p.footer {
   </style></head>
    <body>
       <div class="content">
-         <h1>Comparison of worst-case robust, Tickhonov and nominal least squares</h1><pre class="codeinput"><span class="comment">% Sec. 6.4.2, EX. 6.6/fig. 6.16,</span>
+         <h1>Example 6.6: Comparison of worst-case robust, Tikhonov, and nominal least squares</h1><pre class="codeinput"><span class="comment">% Section 6.4.2, Figure 6.16</span>
 <span class="comment">% Boyd &amp; Vandenberghe "Convex Optimization"</span>
 <span class="comment">% Original by Lieven Vandenberghe</span>
 <span class="comment">% Adapted for CVX Argyris Zymnis - 11/27/05</span>
@@ -204,12 +204,12 @@ nnz(A) = 7430 + 0, nnz(ADA) = 2042041, nnz(L) = 1021735
  10 :  6.76E+000 2.19E-010 0.408 0.0637 0.9900 0.9882   1.00  2  2  1.4E-008
 
 iter seconds digits       c*x               b*y
- 10     86.1   Inf  6.7594994749e+000  6.7594994957e+000
+ 10    127.3   Inf  6.7594994749e+000  6.7594994957e+000
 |Ax-b| =  6.9e-008, [Ay-c]_+ =  6.1E-009, |x|= 1.4e+001, |y|= 8.7e+000
 
 Detailed timing (sec)
    Pre          IPM          Post
-8.612E-001    8.608E+001    1.001E-002    
+1.092E+000    1.273E+002    2.003E-002    
 Max-norms: ||b||=1.466545e+000, ||c|| = 1,
 Cholesky |add|=0, |skip| = 0, ||L.L|| = 8.39482.
 ------------------------------------------------------------------------
@@ -220,9 +220,9 @@ Optimal value (cvx_optval): +6.7595
       </div>
       <!--
 ##### SOURCE BEGIN #####
-%% Comparison of worst-case robust, Tickhonov and nominal least squares
+%% Example 6.6: Comparison of worst-case robust, Tikhonov, and nominal least squares
 
-% Sec. 6.4.2, EX. 6.6/fig. 6.16,
+% Section 6.4.2, Figure 6.16
 % Boyd & Vandenberghe "Convex Optimization"
 % Original by Lieven Vandenberghe
 % Adapted for CVX Argyris Zymnis - 11/27/05

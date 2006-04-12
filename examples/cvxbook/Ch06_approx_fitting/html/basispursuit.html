@@ -6,9 +6,9 @@
 This HTML is auto-generated from an M-file.
 To make changes, update the M-file and republish this document.
       -->
-      <title>Basis pursuit using Gabor functions</title>
+      <title>Figures 6.21-6.23: Basis pursuit using Gabor functions</title>
       <meta name="generator" content="MATLAB 7.2">
-      <meta name="date" content="2006-04-01">
+      <meta name="date" content="2006-04-11">
       <meta name="m-file" content="basispursuit"><style>
 
 body {
@@ -71,11 +71,10 @@ p.footer {
   </style></head>
    <body>
       <div class="content">
-         <h1>Basis pursuit using Gabor functions</h1><pre class="codeinput"><span class="comment">% Sec. 6.5.4, fig 6.21, 6.22 and 6.23</span>
+         <h1>Figures 6.21-6.23: Basis pursuit using Gabor functions</h1><pre class="codeinput"><span class="comment">% Section 6.5.4</span>
 <span class="comment">% Boyd &amp; Vandenberghe "Convex Optimization"</span>
 <span class="comment">% Original by Lieven Vandenberghe</span>
 <span class="comment">% Adapted for CVX by Argyris Zymnis - 11/27/2005</span>
-<span class="comment">% (figures are generated)</span>
 <span class="comment">%</span>
 <span class="comment">% Here we find a sparse basis for a signal y out of</span>
 <span class="comment">% a set of Gabor functions. We do this by solving</span>
@@ -187,11 +186,11 @@ hold <span class="string">off</span>;
 done.
 Solving Basis Pursuit problem...
  
-Calling SeDuMi: 61627 variables (0 free), 503 equality constraints
+Calling SeDuMi: 61628 variables (0 free), 503 equality constraints
 ------------------------------------------------------------------------
 SeDuMi 1.1 by AdvOL, 2005 and Jos F. Sturm, 1998, 2001-2003.
 Alg = 2: xz-corrector, Adaptive Step-Differentiation, theta = 0.250, beta = 0.500
-eqs m = 503, order n = 61127, dim = 61629, blocks = 3
+eqs m = 503, order n = 61128, dim = 61630, blocks = 3
 nnz(A) = 7480146 + 0, nnz(ADA) = 252007, nnz(L) = 126255
  it :     b*y       gap    delta  rate   t/tP*  t/tD*   feas cg cg  prec
   0 :            7.63E+004 0.000
@@ -219,36 +218,35 @@ nnz(A) = 7480146 + 0, nnz(ADA) = 252007, nnz(L) = 126255
  22 :  1.28E+001 2.10E-005 0.000 0.2075 0.9000 0.9023   1.00  3  3  8.2E-007
  23 :  1.28E+001 4.34E-006 0.000 0.2065 0.9029 0.9000   1.00  3  3  1.7E-007
  24 :  1.28E+001 1.03E-006 0.000 0.2373 0.9087 0.9000   1.00  3  3  4.0E-008
- 25 :  1.28E+001 3.41E-007 0.000 0.3310 0.9069 0.9000   1.00  3  3  1.3E-008
+ 25 :  1.28E+001 3.41E-007 0.000 0.3309 0.9069 0.9000   1.00  3  3  1.3E-008
 
 iter seconds digits       c*x               b*y
- 25    998.3   7.6  1.2845156027e+001  1.2845155686e+001
+ 25   1340.2   7.6  1.2845156027e+001  1.2845155686e+001
 |Ax-b| =  4.2e-011, [Ay-c]_+ =  0.0E+000, |x|= 2.8e+000, |y|= 1.4e+000
 
 Detailed timing (sec)
    Pre          IPM          Post
-2.917E+001    9.983E+002    2.684E+000    
+3.614E+001    1.340E+003    3.755E+000    
 Max-norms: ||b||=1.497811e+000, ||c|| = 1,
 Cholesky |add|=0, |skip| = 0, ||L.L|| = 3303.62.
 ------------------------------------------------------------------------
 Status: Solved
 Optimal value (cvx_optval): +12.8452
 done
-Elapsed time is 1406.991884 seconds.
+Elapsed time is 1969.236462 seconds.
 </pre><img vspace="5" hspace="5" src="basispursuit_01.png"> <img vspace="5" hspace="5" src="basispursuit_02.png"> <img vspace="5" hspace="5" src="basispursuit_03.png"> <p class="footer"><br>
             Published with MATLAB&reg; 7.2<br></p>
       </div>
       <!--
 ##### SOURCE BEGIN #####
-%% Basis pursuit using Gabor functions
+%% Figures 6.21-6.23: Basis pursuit using Gabor functions
 
-% Sec. 6.5.4, fig 6.21, 6.22 and 6.23 
+% Section 6.5.4
 % Boyd & Vandenberghe "Convex Optimization"
-% Original by Lieven Vandenberghe 
+% Original by Lieven Vandenberghe
 % Adapted for CVX by Argyris Zymnis - 11/27/2005
-% (figures are generated)
-% 
-% Here we find a sparse basis for a signal y out of 
+%
+% Here we find a sparse basis for a signal y out of
 % a set of Gabor functions. We do this by solving
 %       minimize  ||A*x-y||_2 + ||x||_1
 %
@@ -288,7 +286,7 @@ end;
 disp('done.');
 
 % Construct example signal
-a = 0.5*sin(t*11)+1; 
+a = 0.5*sin(t*11)+1;
 theta = sin(5*t)*30;
 b = a.*sin(theta);
 
@@ -309,9 +307,9 @@ x2 = A2 \ b;
 
 % Constants
 M = 61; % Number of different Basis signals
-sk = 250; % Index of s = 0.5 
+sk = 250; % Index of s = 0.5
 
-% Plot example basis functions;  
+% Plot example basis functions;
 %if (0) % to do this, re-run basispursuit.m to create A
 figure(1); clf;
 subplot(3,1,1); plot(t,A(:,M*sk+1)); axis([0 1 -1 1]);
@@ -337,11 +335,11 @@ xlabel('t'); ylabel('y - y_{hat}');
 % Plot frequency plot
 figure(3); clf;
 
-subplot(2,1,1); 
+subplot(2,1,1);
 plot(t,b); xlabel('t'); ylabel('y'); axis([0 1 -1.5 1.5]);
 title('Original Signal')
-subplot(2,1,2); 
-plot(t,150*abs(cos(w0*t)),'REPLACE_WITH_DASH_DASH'); 
+subplot(2,1,2);
+plot(t,150*abs(cos(w0*t)),'REPLACE_WITH_DASH_DASH');
 hold on;
 for k = 1:length(t);
   if(abs(x((k-1)*M+1)) > 1e-5), plot(t(k),0,'o'); end;

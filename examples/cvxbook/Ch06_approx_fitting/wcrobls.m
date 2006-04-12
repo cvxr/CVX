@@ -1,5 +1,5 @@
-% Comparison of worst-case robust, Tickhonov and nominal least squares
-% Sec. 6.4.2, EX. 6.6/fig. 6.16,
+% Example 6.6: Comparison of worst-case robust, Tikhonov, and nominal least squares
+% Section 6.4.2, Figure 6.16
 % Boyd & Vandenberghe "Convex Optimization"
 % Original by Lieven Vandenberghe
 % Adapted for CVX Argyris Zymnis - 11/27/05

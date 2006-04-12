@@ -1,9 +1,8 @@
-% Quadratic smoothing example
-% Sec. 6.3.3, fig 6.8, 6.9 and 6.10
+% Figures 6.8-6.10: Quadratic smoothing
+% Section 6.3.3
 % Boyd & Vandenberghe "Convex Optimization"
 % Original by Lieven Vandenberghe
 % Adapted for CVX Argyris Zymnis - 10/2005
-% (figures are generated)
 %
 % Suppose we have a signal x, which does not vary too rapidly
 % and that x is corrupted by some small, rapidly varying noise v,

@@ -1,9 +1,8 @@
-% Fitting a convex function to given data
-% Sec. 6.5.5, fig 6.24
+% Figure 6.24: Fitting a convex function to given data
+% Section 6.5.5
 % Boyd & Vandenberghe "Convex Optimization"
 % Original by Lieven Vandenberghe
 % Adapted for CVX by Argyris Zymnis - 11/27/2005
-% (a figure is generated)
 %
 % Here we find the convex function f that best fits
 % some given data in the least squares sense.

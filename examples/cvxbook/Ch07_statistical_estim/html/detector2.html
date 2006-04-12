@@ -8,7 +8,7 @@ To make changes, update the M-file and republish this document.
       -->
       <title>Example 7.4: Binary hypothesis testing</title>
       <meta name="generator" content="MATLAB 7.2">
-      <meta name="date" content="2006-04-01">
+      <meta name="date" content="2006-04-11">
       <meta name="m-file" content="detector2"><style>
 
 body {
@@ -71,10 +71,10 @@ p.footer {
   </style></head>
    <body>
       <div class="content">
-         <h1>Example 7.4: Binary hypothesis testing</h1><pre class="codeinput"><span class="comment">% Boyd &amp; Vandenberghe "Convex Optimization"</span>
+         <h1>Example 7.4: Binary hypothesis testing</h1><pre class="codeinput"><span class="comment">% Figure 7.4</span>
+<span class="comment">% Boyd &amp; Vandenberghe "Convex Optimization"</span>
 <span class="comment">% Original version by Lieven Vandenberghe</span>
 <span class="comment">% Updated for CVX by Michael Grant, 2005-12-19</span>
-<span class="comment">% (generates Figure 7.4)</span>
 
 <span class="comment">% Generate the data</span>
 P = [0.70  0.10
@@ -147,12 +147,12 @@ nnz(A) = 22 + 0, nnz(ADA) = 24, nnz(L) = 15
   4 :  1.68E-001 2.25E-003 0.000 0.0835 0.9900 0.9900   1.01  1  1  2.5E-003
   5 :  1.67E-001 8.62E-007 0.000 0.0004 0.9999 0.9999   1.00  1  1  
 iter seconds digits       c*x               b*y
-  5      0.0  14.8  1.6666666667e-001  1.6666666667e-001
+  5      0.1  14.8  1.6666666667e-001  1.6666666667e-001
 |Ax-b| =  4.1e-016, [Ay-c]_+ =  7.8E-017, |x|= 2.2e+000, |y|= 8.7e-001
 
 Detailed timing (sec)
    Pre          IPM          Post
-1.001E-002    3.004E-002    0.000E+000    
+1.001E-002    6.009E-002    1.001E-002    
 Max-norms: ||b||=1, ||c|| = 1,
 Cholesky |add|=0, |skip| = 0, ||L.L|| = 1.
 ------------------------------------------------------------------------
@@ -165,10 +165,10 @@ Optimal value (cvx_optval): +0.166667
 ##### SOURCE BEGIN #####
 %% Example 7.4: Binary hypothesis testing
 
+% Figure 7.4
 % Boyd & Vandenberghe "Convex Optimization"
 % Original version by Lieven Vandenberghe
 % Updated for CVX by Michael Grant, 2005-12-19
-% (generates Figure 7.4)
 
 % Generate the data
 P = [0.70  0.10
@@ -210,7 +210,7 @@ for i=2:size(obj,2)-1
 end;
 
 % Minimax detector: not deterministic
-    
+
 cvx_begin
     variables T( m, n ) D( m, m )
     minimize max( D(1,2), D(2,1) )

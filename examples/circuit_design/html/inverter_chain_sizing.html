@@ -1,0 +1,417 @@
+<html xmlns:mwsh="http://www.mathworks.com/namespace/mcode/v1/syntaxhighlight.dtd">
+   <head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   
+      <!--
+This HTML is auto-generated from an M-file.
+To make changes, update the M-file and republish this document.
+      -->
+      <title>Digital circuit sizing for an inverter chain (GP)</title>
+      <meta name="generator" content="MATLAB 7.2">
+      <meta name="date" content="2006-04-10">
+      <meta name="m-file" content="inverter_chain_sizing"><style>
+
+body {
+  background-color: white;
+  margin:10px;
+}
+
+h1 {
+  color: #990000; 
+  font-size: x-large;
+}
+
+h2 {
+  color: #990000;
+  font-size: medium;
+}
+
+/* Make the text shrink to fit narrow windows, but not stretch too far in 
+wide windows.  On Gecko-based browsers, the shrink-to-fit doesn't work. */ 
+p,h1,h2,div.content div {
+  /* for MATLAB's browser */
+  width: 600px;
+  /* for Mozilla, but the "width" tag overrides it anyway */
+  max-width: 600px;
+  /* for IE */
+  width:expression(document.body.clientWidth > 620 ? "600px": "auto" );
+}
+
+pre.codeinput {
+  background: #EEEEEE;
+  padding: 10px;
+}
+@media print {
+  pre.codeinput {word-wrap:break-word; width:100%;}
+} 
+
+span.keyword {color: #0000FF}
+span.comment {color: #228B22}
+span.string {color: #A020F0}
+span.untermstring {color: #B20000}
+span.syscmd {color: #B28C00}
+
+pre.codeoutput {
+  color: #666666;
+  padding: 10px;
+}
+
+pre.error {
+  color: red;
+}
+
+p.footer {
+  text-align: right;
+  font-size: xx-small;
+  font-weight: lighter;
+  font-style: italic;
+  color: gray;
+}
+
+  </style></head>
+   <body>
+      <div class="content">
+         <h1>Digital circuit sizing for an inverter chain (GP)</h1><pre class="codeinput"><span class="comment">% Boyd, Kim, Patil, and Horowitz, "Digital circuit optimization</span>
+<span class="comment">% via geometric programming"</span>
+<span class="comment">% Written for CVX by Almir Mutapcic 02/08/06</span>
+<span class="comment">%</span>
+<span class="comment">% We consider a chain of N inverters driving a load capacitance CL.</span>
+<span class="comment">% The problem is to find optimal scale factors for the inverter</span>
+<span class="comment">% that minimize the sum of them (area), while obeying constraints</span>
+<span class="comment">% on the maximum delay through the circuit, and minimum and maximum</span>
+<span class="comment">% limits on scale factors. There are no limits on the total power.</span>
+<span class="comment">% (For more details about the inverter chain see sec. 2.1.11 in the paper.)</span>
+<span class="comment">%</span>
+<span class="comment">%   minimize   sum(x)</span>
+<span class="comment">%       s.t.   T_j &lt;= Dmax          for j an output gate</span>
+<span class="comment">%              T_j + d_i &lt;= T_i     for j in FI(i)</span>
+<span class="comment">%              x_min &lt;= x &lt;= x_max</span>
+<span class="comment">%</span>
+<span class="comment">% where variables are x and T.</span>
+<span class="comment">% Here we use data structures and digital circuit models from the</span>
+<span class="comment">% referenced paper.</span>
+
+<span class="comment">%********************************************************************</span>
+<span class="comment">% problem data</span>
+<span class="comment">%********************************************************************</span>
+N  = 8;      <span class="comment">% number of inverters</span>
+CL = 20;     <span class="comment">% capacitance load</span>
+Dmax = 20;   <span class="comment">% maximum delay through the circuit</span>
+x_min = 1;   <span class="comment">% minimum scale factor</span>
+x_max = 20;  <span class="comment">% maximum scale factor</span>
+
+<span class="comment">% circuit labeling convention:</span>
+<span class="comment">% label primary input (input to the first inverter in the chain) with N+1</span>
+<span class="comment">% label primary output (output of the last inverter in the chain) with N+2</span>
+<span class="comment">% label inverters in the chain with 1,2,...,N based on their location</span>
+
+<span class="comment">% primary input and primary output labels (start with N+1)</span>
+primary_inputs  = [N+1];
+primary_outputs = [N+2];
+M = N + length( primary_inputs ) + length( primary_outputs );
+
+<span class="comment">% fan-in cell array for a straight chain of inverters</span>
+FI{1} = [N+1];   <span class="comment">% fan-in of the first inverter is the primary input</span>
+<span class="keyword">for</span> k = 2:N
+  FI{k} = [k-1]; <span class="comment">% fan-in of other inverters is the inverter feeding into them</span>
+<span class="keyword">end</span>
+FI{N+2} = [N];   <span class="comment">% fan-in of the primary output is the last inverter in the chain</span>
+
+<span class="comment">% fan-out cell array</span>
+<span class="comment">% (will be computed from the fan-in cell array, no need to modify)</span>
+FO = cell(M,1);
+<span class="keyword">for</span> gate = [1:N primary_outputs]
+  preds = FI{gate};
+  <span class="keyword">for</span> k = 1:length(preds)
+    FO{preds(k)}(end+1) = gate;
+  <span class="keyword">end</span>
+<span class="keyword">end</span>
+
+<span class="comment">% input and internal capacitance of gates and the driving resistance</span>
+Cin_norm  = ones(N,1);
+Cint_norm = ones(N,1);
+Rdrv_norm = ones(N,1);
+
+<span class="comment">% place extra capacitance before the input of the 5th inverter</span>
+Cin_norm(5) = 80;
+
+<span class="comment">% primary output has Cin capacitance (but has no Cload)</span>
+Cin_po = sparse(M,1);
+Cin_po(primary_outputs) = CL;
+
+<span class="comment">% primary input has Cload capacitance (but has no Cin)</span>
+Cload_pi = sparse(M,1);
+Cload_pi(primary_inputs) = 1;
+
+<span class="comment">%********************************************************************</span>
+<span class="comment">% optimization</span>
+<span class="comment">%********************************************************************</span>
+cvx_begin <span class="string">gp</span>
+  <span class="comment">% optimization variables</span>
+  variable <span class="string">x(N)</span>                 <span class="comment">% sizes</span>
+  variable <span class="string">T(N)</span>                 <span class="comment">% arrival times</span>
+
+  <span class="comment">% minimize the sum of scale factors subject to above constraints</span>
+  minimize( sum(x) )
+  subject <span class="string">to</span>
+
+    <span class="comment">% input capacitance is an affine function of sizes</span>
+    Cin  = Cin_norm.*x;
+    Cint = Cint_norm.*x;
+
+    <span class="comment">% driving resistance is inversily proportional to sizes</span>
+    R = Rdrv_norm./x;
+
+    <span class="comment">% gate delay is the product of its driving resistance and load cap.</span>
+    Cload = cvx( zeros(N,1) );
+    <span class="keyword">for</span> gate = 1:N
+      <span class="keyword">if</span> ~ismember( FO{gate}, primary_outputs )
+        Cload(gate) = sum( Cin(FO{gate}) );
+      <span class="keyword">else</span>
+        Cload(gate) = Cin_po( FO{gate} );
+      <span class="keyword">end</span>
+    <span class="keyword">end</span>
+
+    <span class="comment">% delay</span>
+    D = 0.69*ones(N,1).*R.*( Cint + Cload );
+
+    <span class="comment">% create timing constraints</span>
+    <span class="keyword">for</span> gate = 1:N
+      <span class="keyword">if</span> ~ismember( FI{gate}, primary_inputs )
+        <span class="keyword">for</span> j = FI{gate}
+          <span class="comment">% enforce T_j + D_j &lt;= T_i over all gates j that drive i</span>
+          D(gate) + T(j) &lt;= T(gate);
+        <span class="keyword">end</span>
+      <span class="keyword">else</span>
+        <span class="comment">% enforce D_i &lt;= T_i for gates i connected to primary inputs</span>
+        D(gate) &lt;= T(gate);
+      <span class="keyword">end</span>
+    <span class="keyword">end</span>
+
+    <span class="comment">% circuit delay is the max of arrival times for output gates</span>
+    output_gates = [FI{primary_outputs}];
+    circuit_delay = max( T(output_gates) );
+
+    <span class="comment">% collect all the constraints</span>
+    circuit_delay &lt;= Dmax;
+    x &gt;= x_min;
+    x &lt;= x_max;
+cvx_end
+
+<span class="comment">% message about extra capacitance and result display</span>
+disp(<span class="string">' '</span>)
+disp([<span class="string">'Note: there is an extra capacitance between the 4th and 5th inverter'</span><span class="keyword">...</span>
+     <span class="string">' in the chain.'</span>])
+fprintf(1,<span class="string">'\nOptimal scale factors are: \n'</span>), x
+
+<span class="comment">% plot scale factors and maximum delay for inverter i</span>
+close <span class="string">all</span>;
+subplot(2,1,1); plot([1:N],T,<span class="string">'g--'</span>,[1:N],T,<span class="string">'bo'</span>);
+ylabel(<span class="string">'maximum delay T'</span>)
+subplot(2,1,2); stem([1:N],x);
+ylabel(<span class="string">'scale factor x'</span>)
+xlabel(<span class="string">'inverter stage'</span>)
+</pre><pre class="codeoutput"> 
+Calling SeDuMi: 487 variables (10 free), 267 equality constraints
+------------------------------------------------------------------------
+SeDuMi 1.1 by AdvOL, 2005 and Jos F. Sturm, 1998, 2001-2003.
+Alg = 2: xz-corrector, Adaptive Step-Differentiation, theta = 0.250, beta = 0.500
+Split 10 free variables
+eqs m = 267, order n = 243, dim = 753, blocks = 23
+nnz(A) = 923 + 0, nnz(ADA) = 2903, nnz(L) = 1690
+ it :     b*y       gap    delta  rate   t/tP*  t/tD*   feas cg cg  prec
+  0 :            4.97E-001 0.000
+  1 :  1.00E+001 2.20E-001 0.000 0.4433 0.9000 0.9000   3.38  1  1  2.5E+000
+  2 :  7.09E+000 8.65E-002 0.000 0.3927 0.9000 0.9000   1.82  1  1  7.5E-001
+  3 :  5.06E+000 2.80E-002 0.000 0.3238 0.9000 0.9000   1.29  1  1  2.3E-001
+  4 :  3.99E+000 8.06E-003 0.000 0.2877 0.9000 0.9000   1.12  1  1  6.5E-002
+  5 :  3.74E+000 2.90E-003 0.000 0.3595 0.9000 0.9000   1.17  1  1  2.2E-002
+  6 :  3.57E+000 8.69E-004 0.000 0.2999 0.9000 0.9000   1.15  1  1  6.3E-003
+  7 :  3.50E+000 2.11E-004 0.000 0.2429 0.9000 0.9000   1.10  1  1  1.5E-003
+  8 :  3.48E+000 2.11E-005 0.017 0.0999 0.9900 0.9900   1.06  1  1  1.4E-004
+  9 :  3.48E+000 1.23E-006 0.000 0.0581 0.9900 0.9900   1.06  1  1  8.1E-006
+ 10 :  3.48E+000 2.21E-007 0.015 0.1800 0.9000 0.9000   1.03  1  2  1.4E-006
+ 11 :  3.48E+000 3.83E-009 0.402 0.0174 0.9000 0.0000   1.01  2  2  4.6E-007
+ 12 :  3.48E+000 2.01E-010 0.000 0.0524 0.9902 0.9900   1.00  2  2  2.5E-008
+ 13 :  3.48E+000 7.93E-012 0.000 0.0395 0.9902 0.9900   1.00  4  7  9.4E-010
+
+iter seconds digits       c*x               b*y
+ 13      0.5   Inf  3.4785870482e+000  3.4785871256e+000
+|Ax-b| =  2.5e-009, [Ay-c]_+ =  8.8E-010, |x|= 2.4e+001, |y|= 1.4e+001
+
+Detailed timing (sec)
+   Pre          IPM          Post
+2.003E-002    4.607E-001    1.001E-002    
+Max-norms: ||b||=4.380570e+000, ||c|| = 2.202759e+000,
+Cholesky |add|=0, |skip| = 0, ||L.L|| = 16.4641.
+------------------------------------------------------------------------
+Status: Solved
+Optimal value (cvx_optval): +32.4139
+ 
+Note: there is an extra capacitance between the 4th and 5th inverter in the chain.
+
+Optimal scale factors are: 
+
+x =
+
+    3.0526
+    2.6619
+    4.3604
+   12.5014
+    1.0000
+    1.3273
+    2.2520
+    5.2445
+
+</pre><img vspace="5" hspace="5" src="inverter_chain_sizing_01.png"> <p class="footer"><br>
+            Published with MATLAB&reg; 7.2<br></p>
+      </div>
+      <!--
+##### SOURCE BEGIN #####
+%% Digital circuit sizing for an inverter chain (GP)
+
+% Boyd, Kim, Patil, and Horowitz, "Digital circuit optimization
+% via geometric programming"
+% Written for CVX by Almir Mutapcic 02/08/06
+%
+% We consider a chain of N inverters driving a load capacitance CL.
+% The problem is to find optimal scale factors for the inverter
+% that minimize the sum of them (area), while obeying constraints
+% on the maximum delay through the circuit, and minimum and maximum
+% limits on scale factors. There are no limits on the total power.
+% (For more details about the inverter chain see sec. 2.1.11 in the paper.)
+%
+%   minimize   sum(x)
+%       s.t.   T_j <= Dmax          for j an output gate
+%              T_j + d_i <= T_i     for j in FI(i)
+%              x_min <= x <= x_max
+%
+% where variables are x and T.
+% Here we use data structures and digital circuit models from the
+% referenced paper.
+
+%********************************************************************
+% problem data
+%********************************************************************
+N  = 8;      % number of inverters
+CL = 20;     % capacitance load
+Dmax = 20;   % maximum delay through the circuit
+x_min = 1;   % minimum scale factor
+x_max = 20;  % maximum scale factor
+
+% circuit labeling convention:
+% label primary input (input to the first inverter in the chain) with N+1
+% label primary output (output of the last inverter in the chain) with N+2
+% label inverters in the chain with 1,2,...,N based on their location
+
+% primary input and primary output labels (start with N+1)
+primary_inputs  = [N+1];
+primary_outputs = [N+2];
+M = N + length( primary_inputs ) + length( primary_outputs );
+
+% fan-in cell array for a straight chain of inverters
+FI{1} = [N+1];   % fan-in of the first inverter is the primary input
+for k = 2:N
+  FI{k} = [k-1]; % fan-in of other inverters is the inverter feeding into them
+end
+FI{N+2} = [N];   % fan-in of the primary output is the last inverter in the chain
+
+% fan-out cell array
+% (will be computed from the fan-in cell array, no need to modify)
+FO = cell(M,1);
+for gate = [1:N primary_outputs]
+  preds = FI{gate};
+  for k = 1:length(preds)
+    FO{preds(k)}(end+1) = gate;
+  end
+end
+
+% input and internal capacitance of gates and the driving resistance
+Cin_norm  = ones(N,1);
+Cint_norm = ones(N,1);
+Rdrv_norm = ones(N,1);
+
+% place extra capacitance before the input of the 5th inverter
+Cin_norm(5) = 80;
+
+% primary output has Cin capacitance (but has no Cload)
+Cin_po = sparse(M,1);
+Cin_po(primary_outputs) = CL;
+
+% primary input has Cload capacitance (but has no Cin)
+Cload_pi = sparse(M,1);
+Cload_pi(primary_inputs) = 1;
+
+%********************************************************************
+% optimization
+%********************************************************************
+cvx_begin gp
+  % optimization variables
+  variable x(N)                 % sizes
+  variable T(N)                 % arrival times
+
+  % minimize the sum of scale factors subject to above constraints
+  minimize( sum(x) )
+  subject to
+
+    % input capacitance is an affine function of sizes
+    Cin  = Cin_norm.*x;
+    Cint = Cint_norm.*x;
+
+    % driving resistance is inversily proportional to sizes
+    R = Rdrv_norm./x;
+
+    % gate delay is the product of its driving resistance and load cap.
+    Cload = cvx( zeros(N,1) );
+    for gate = 1:N
+      if ~ismember( FO{gate}, primary_outputs )
+        Cload(gate) = sum( Cin(FO{gate}) );
+      else
+        Cload(gate) = Cin_po( FO{gate} );
+      end
+    end
+
+    % delay
+    D = 0.69*ones(N,1).*R.*( Cint + Cload );
+
+    % create timing constraints
+    for gate = 1:N
+      if ~ismember( FI{gate}, primary_inputs )
+        for j = FI{gate}
+          % enforce T_j + D_j <= T_i over all gates j that drive i
+          D(gate) + T(j) <= T(gate);
+        end
+      else
+        % enforce D_i <= T_i for gates i connected to primary inputs
+        D(gate) <= T(gate);
+      end
+    end
+
+    % circuit delay is the max of arrival times for output gates
+    output_gates = [FI{primary_outputs}];
+    circuit_delay = max( T(output_gates) );
+
+    % collect all the constraints
+    circuit_delay <= Dmax;
+    x >= x_min;
+    x <= x_max;
+cvx_end
+
+% message about extra capacitance and result display
+disp(' ')
+disp(['Note: there is an extra capacitance between the 4th and 5th inverter'...
+     ' in the chain.'])
+fprintf(1,'\nOptimal scale factors are: \n'), x
+
+% plot scale factors and maximum delay for inverter i
+close all;
+subplot(2,1,1); plot([1:N],T,'gREPLACE_WITH_DASH_DASH',[1:N],T,'bo');
+ylabel('maximum delay T')
+subplot(2,1,2); stem([1:N],x);
+ylabel('scale factor x')
+xlabel('inverter stage')
+
+##### SOURCE END #####
+-->
+   </body>
+</html>

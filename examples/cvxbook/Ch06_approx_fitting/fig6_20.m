@@ -1,5 +1,6 @@
-% Spline fitting
-% Sec. 6.5.3, Ex. 6.8/fig 6.20, Boyd & Vandenberghe "Convex Optimization"
+% Example 6.8: Spline fitting
+% Section 6.5.3, Figure 6.20
+% Boyd & Vandenberghe "Convex Optimization"
 % Original by Lieven Vandenberghe
 % Adapted for CVX by Joelle Skaf - 10/03/05
 % (a figure is generated)

@@ -1,10 +1,10 @@
-% Logistic Regression Example
-% Sec. 7.1.1, fig 7.1, Boyd & Vandenberghe "Convex Optimization"
-% Original by Lieven Vandenberghe 
+% Figure 7.1: Logistic regression
+% Section 7.1.1
+% Boyd & Vandenberghe, "Convex Optimization"
+% Original by Lieven Vandenberghe
 % Adapted for CVX by Argyris Zymnis - 01/31/06
-% (a figure is generated)
 %
-% We consider a binary random variable y with prob(y=1) = p and 
+% We consider a binary random variable y with prob(y=1) = p and
 % prob(y=0) = 1-p. We assume that that y depends on a vector of
 % explanatory variables u in R^n. The logistic model has the form
 % p = exp(a'*u+b)/(1+exp(a'*u+b)), where a and b are the model parameters.
@@ -23,7 +23,6 @@
 randn('state',0);
 rand('state',0);
 
-
 % Generate data
 a =  1;
 b = -5 ;
@@ -34,7 +33,6 @@ y = (rand(m,1) < exp(a*u+b)./(1+exp(a*u+b)));
 plot(u,y,'o')
 axis([-1,11,-0.1, 1.1]);
 
-
 % Solve problem
 %
 % minimize  -(sum_(y_i=1) ui)*a - b + sum log (1+exp(a*ui+b)
@@ -44,7 +42,6 @@ cvx_begin
     variables x(2)
     maximize(y'*U*x-sum(logsumexp_sdp([zeros(1,m); x'*U'])))
 cvx_end
-
 
 % Plot results and logistic function
 
