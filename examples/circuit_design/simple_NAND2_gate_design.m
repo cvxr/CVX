@@ -55,27 +55,27 @@ for k = 1:Npoints
     % device width variables
     variable w(N)
 
-    % gate specs
-    gates(1:2) = PMOS; gates(3:4) = NMOS;
+    % device specs
+    device(1:2) = PMOS; device(3:4) = NMOS;
 
     for num = 1:N
-      gates(num).R   = gates(num).R/w(num);
-      gates(num).Cdb = gates(num).Cdb*w(num);
-      gates(num).Csb = gates(num).Csb*w(num);
-      gates(num).Cgb = gates(num).Cgb*w(num);
-      gates(num).Cgs = gates(num).Cgs*w(num);
+      device(num).R   = device(num).R/w(num);
+      device(num).Cdb = device(num).Cdb*w(num);
+      device(num).Csb = device(num).Csb*w(num);
+      device(num).Cgb = device(num).Cgb*w(num);
+      device(num).Cgs = device(num).Cgs*w(num);
     end
 
     % capacitances
-    C1 = sum([gates(1:3).Cdb]) + Cload;
-    C2 = gates(3).Csb + gates(4).Cdb;
+    C1 = sum([device(1:3).Cdb]) + Cload;
+    C2 = device(3).Csb + device(4).Cdb;
 
     % input capacitances
-    Cin_A = sum([ gates([2 3]).Cgb ]) + sum([ gates([2 3]).Cgs ]);
-    Cin_B = sum([ gates([1 4]).Cgb ]) + sum([ gates([1 4]).Cgs ]);
+    Cin_A = sum([ device([2 3]).Cgb ]) + sum([ device([2 3]).Cgs ]);
+    Cin_B = sum([ device([1 4]).Cgb ]) + sum([ device([1 4]).Cgs ]);
 
     % resistances
-    R = [gates.R]';
+    R = [device.R]';
 
     % area definition
     area = sum(w);
