@@ -8,7 +8,7 @@ To make changes, update the M-file and republish this document.
       -->
       <title>Figures 6.21-6.23: Basis pursuit using Gabor functions</title>
       <meta name="generator" content="MATLAB 7.2">
-      <meta name="date" content="2006-04-11">
+      <meta name="date" content="2006-05-20">
       <meta name="m-file" content="basispursuit"><style>
 
 body {
@@ -186,11 +186,11 @@ hold <span class="string">off</span>;
 done.
 Solving Basis Pursuit problem...
  
-Calling SeDuMi: 61628 variables (0 free), 503 equality constraints
+Calling SeDuMi: 61627 variables (0 free), 503 equality constraints
 ------------------------------------------------------------------------
 SeDuMi 1.1 by AdvOL, 2005 and Jos F. Sturm, 1998, 2001-2003.
 Alg = 2: xz-corrector, Adaptive Step-Differentiation, theta = 0.250, beta = 0.500
-eqs m = 503, order n = 61128, dim = 61630, blocks = 3
+eqs m = 503, order n = 61127, dim = 61629, blocks = 3
 nnz(A) = 7480146 + 0, nnz(ADA) = 252007, nnz(L) = 126255
  it :     b*y       gap    delta  rate   t/tP*  t/tD*   feas cg cg  prec
   0 :            7.63E+004 0.000
@@ -218,22 +218,22 @@ nnz(A) = 7480146 + 0, nnz(ADA) = 252007, nnz(L) = 126255
  22 :  1.28E+001 2.10E-005 0.000 0.2075 0.9000 0.9023   1.00  3  3  8.2E-007
  23 :  1.28E+001 4.34E-006 0.000 0.2065 0.9029 0.9000   1.00  3  3  1.7E-007
  24 :  1.28E+001 1.03E-006 0.000 0.2373 0.9087 0.9000   1.00  3  3  4.0E-008
- 25 :  1.28E+001 3.41E-007 0.000 0.3309 0.9069 0.9000   1.00  3  3  1.3E-008
+ 25 :  1.28E+001 3.41E-007 0.000 0.3310 0.9069 0.9000   1.00  3  3  1.3E-008
 
 iter seconds digits       c*x               b*y
- 25   1340.2   7.6  1.2845156027e+001  1.2845155686e+001
+ 25    820.2   7.6  1.2845156027e+001  1.2845155686e+001
 |Ax-b| =  4.2e-011, [Ay-c]_+ =  0.0E+000, |x|= 2.8e+000, |y|= 1.4e+000
 
 Detailed timing (sec)
    Pre          IPM          Post
-3.614E+001    1.340E+003    3.755E+000    
+3.089E+001    8.202E+002    9.013E-001    
 Max-norms: ||b||=1.497811e+000, ||c|| = 1,
 Cholesky |add|=0, |skip| = 0, ||L.L|| = 3303.62.
 ------------------------------------------------------------------------
 Status: Solved
 Optimal value (cvx_optval): +12.8452
 done
-Elapsed time is 1969.236462 seconds.
+Elapsed time is 1368.519160 seconds.
 </pre><img vspace="5" hspace="5" src="basispursuit_01.png"> <img vspace="5" hspace="5" src="basispursuit_02.png"> <img vspace="5" hspace="5" src="basispursuit_03.png"> <p class="footer"><br>
             Published with MATLAB&reg; 7.2<br></p>
       </div>

@@ -150,7 +150,7 @@ for i = 1 : npts  + xnpts,
            end;
         end;
         tthres = T(indmax);
-        tdom   = max(eig(inv(G)*C));
+        tdom   = max(eig(full(inv(G)*C)));
         elmore = max(sum((inv(G)*C)'));
         hold off; plot(T,Y(jmax,:),'-',T,Y(jmin,:));  hold on;
         plot( tdom   * [1;1], [0;1], '--', ...

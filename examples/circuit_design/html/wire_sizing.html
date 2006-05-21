@@ -8,7 +8,7 @@ To make changes, update the M-file and republish this document.
       -->
       <title>Optimal interconnect wire sizing</title>
       <meta name="generator" content="MATLAB 7.2">
-      <meta name="date" content="2006-04-10">
+      <meta name="date" content="2006-05-20">
       <meta name="m-file" content="wire_sizing"><style>
 
 body {
@@ -189,7 +189,7 @@ sizes   = zeros(m,xnpts);
 
         <span class="comment">% compute threshold delay, elmore delay, dominant time constant</span>
         tthres=T(min(find(Y(n,:)&gt;0.5)));
-        tdom=max(eig(inv(G)*C));
+        tdom=max(eig(full(inv(G)*C)));
         telm=max(sum((inv(G)*C)'));
         plot(tdom*[1;1], [0;1], <span class="string">'--'</span>, telm*[1;1], [0;1],<span class="string">'--'</span>, <span class="keyword">...</span>
              tthres*[1;1], [0;1], <span class="string">'--'</span>);
@@ -424,7 +424,7 @@ for i = 1 : npts + xnpts,
 
         % compute threshold delay, elmore delay, dominant time constant
         tthres=T(min(find(Y(n,:)>0.5)));
-        tdom=max(eig(inv(G)*C));
+        tdom=max(eig(full(inv(G)*C)));
         telm=max(sum((inv(G)*C)'));
         plot(tdom*[1;1], [0;1], 'REPLACE_WITH_DASH_DASH', telm*[1;1], [0;1],'REPLACE_WITH_DASH_DASH', ...
              tthres*[1;1], [0;1], 'REPLACE_WITH_DASH_DASH');
