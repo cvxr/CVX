@@ -1084,8 +1084,8 @@ with variable $x\in\Rn$, and $m$ inequality constraints.
 The dual of this problem is
 \[
 \begin{array}{llcll}
-\mbox{maximize} & b^T y \\
-\mbox{subject to} & A^T y = c \\ & y \succeq 0
+\mbox{maximize} & - b^T y \\
+\mbox{subject to} & c + A^T y = 0 \\ & y \succeq 0
 \end{array}
 \]
 The dual variable $y$ is associated with the inequality
@@ -1280,7 +1280,7 @@ the categories have the following meanings:
 \text{convex:}  & f(\alpha x + (1-\alpha)y)
  & \leq \alpha f(x) + (1-\alpha) f(y) & \forall x,y\in\Rn,~\alpha\in [0,1] \\
 \text{concave:}     \quad & f(\alpha x + (1-\alpha)y) & 
-\leq \alpha f(x) + (1-\alpha) f(y) &
+\geq \alpha f(x) + (1-\alpha) f(y) &
 \forall x,y\in\Rn,~\alpha\in [0,1] 
 \end{array}
 \end{equation*}
@@ -1835,7 +1835,7 @@ different manner. To be specific:
 	\begin{center}
 	\begin{tabular}{ccccc}
 	\verb@X >= Y@ & and & \verb@X > Y@ & become & \verb@X - Y == semidefinite(n)@ \\
-	\verb@X <= Y@ & and & \verb@X > Y@  & become & \verb@Y - X == semidefinite(n)@
+	\verb@X <= Y@ & and & \verb@X < Y@  & become & \verb@Y - X == semidefinite(n)@
 	\end{tabular}
 	\end{center}
       If either side is complex, then the inequalities are
@@ -1843,7 +1843,7 @@ different manner. To be specific:
 	\begin{center}
 	\begin{tabular}{ccccc}
 	\verb@X >= Y@ & and & \verb@X > Y@ & become & \verb@X - Y == hermitian_semidefinite(n)@ \\
-	\verb@X <= Y@ & and & \verb@X > Y@  & become & \verb@Y - X == hermitian_semidefinite(n)@
+	\verb@X <= Y@ & and & \verb@X < Y@  & become & \verb@Y - X == hermitian_semidefinite(n)@
 	\end{tabular}
 	\end{center}
       In the above, \verb@n=max(size(X,1),size(Y,1))@.
@@ -2001,6 +2001,7 @@ where the left side is a monomial and the right side is a generalized posynomial
 As with DCPs, non-equality constraints are not permitted.
 
 \subsection{Expressions}
+\label{sec:gp-expressions}
 
 The basic building blocks of generalized geometric programming are
 monomials, posynomials, and generalized posynomials. A valid monomial is
@@ -2711,7 +2712,7 @@ and answer the prompted questions. If necessary, consult the Matlab documentatio
 
 With the MEX system properly configured, following the instructions in
 \S\ref{sec:winlin} should work. The \verb@cvx_setup@ script will automatically
-compile the MEX files for both SeDuMi and \cvx. Unfortuntaely, the authors do not have ready access to these platforms, so if you
+compile the MEX files for both SeDuMi and \cvx. Unfortunately, the authors do not have ready access to these platforms, so if you
 are unable to compile the MEX files for your platform, we may not be able to help.
 Nevertheless, we have tried to make the installation process simple, and 
 want to hear from you if you run into problems, so please send us a note. If
@@ -2858,7 +2859,7 @@ is symmetric (if real) or Hermitian (if complex).
 Concave.
 \item \verb@log(sum(exp(x)))@: the
 logarithm of the sum of the elementwise exponentials of \verb@x@.
-Concave and nondecreasing.
+Convex and nondecreasing.
 This is used internally in GP mode, but can also be used in standard
 DCPs. This function is actually \emph{approximated} in the
 current version of \cvx; see \S\ref{sec:gp-approx} for details.
