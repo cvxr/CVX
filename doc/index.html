@@ -15,7 +15,7 @@
   <h1><tt>CVX</tt>: Matlab Software for Disciplined Convex
   Programming</h1>
 
-  <h2>Version 1.0 beta 2 (April 2006)</h2>
+  <h2>Version 1.0 beta 3 (June 2006)</h2>
 
   <h3><a href="http://www.stanford.edu/~mcgrant">Michael Grant</a>,
   <a href="http://www.stanford.edu/~boyd">Stephen Boyd</a>, and
@@ -248,7 +248,19 @@
 
     <dd>Users' guide: <a href="cvx_usrguide.pdf">cvx_usrguide.pdf
     (___PDF___)</a></dd>
-  </dl>
+    </dl>
+
+  <h3><a id="note" name="node">Note for users of MATLAB 7.0</a></h3>
+
+    <p>Version 7.0 of MATLAB (R14, R14SP1, R14SP2) rejects
+    certain CVX models, issuing syntax errors that are simply not correct.
+    We have a special note about
+    this in Appendix A of the user's guide, including a very simple
+    way to identify and work around the problem. So if you use this
+    version of MATLAB, <i>please make sure to
+    read the note!</i> Prior and subsequent versions of Matlab, including
+    6.1 (R12), 6.5 (R13), 7.1 (R14SP3), and 7.2 (R2006a), do not seem to exhibit the problem,
+    so I would strongly recommend an upgrade at least to 7.1/R14SP3 if at all possible.</p>
   <hr />
 
   <p><a href="../research.html">Stephen Boyd's research group
