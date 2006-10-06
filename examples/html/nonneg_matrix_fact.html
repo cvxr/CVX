@@ -1,0 +1,313 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN">
+<html xmlns:mwsh="http://www.mathworks.com/namespace/mcode/v1/syntaxhighlight.dtd">
+   <head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   
+      <!--
+This HTML is auto-generated from an M-file.
+To make changes, update the M-file and republish this document.
+      -->
+      <title>Nonnegative matrix factorization</title>
+      <meta name="generator" content="MATLAB 7.3">
+      <meta name="date" content="2006-10-06">
+      <meta name="m-file" content="nonneg_matrix_fact"><style>
+
+body {
+  background-color: white;
+  margin:10px;
+}
+
+h1 {
+  color: #990000; 
+  font-size: x-large;
+}
+
+h2 {
+  color: #990000;
+  font-size: medium;
+}
+
+/* Make the text shrink to fit narrow windows, but not stretch too far in 
+wide windows. */ 
+p,h1,h2,div.content div {
+  max-width: 600px;
+  /* Hack for IE6 */
+  width: auto !important; width: 600px;
+}
+
+pre.codeinput {
+  background: #EEEEEE;
+  padding: 10px;
+}
+@media print {
+  pre.codeinput {word-wrap:break-word; width:100%;}
+} 
+
+span.keyword {color: #0000FF}
+span.comment {color: #228B22}
+span.string {color: #A020F0}
+span.untermstring {color: #B20000}
+span.syscmd {color: #B28C00}
+
+pre.codeoutput {
+  color: #666666;
+  padding: 10px;
+}
+
+pre.error {
+  color: red;
+}
+
+p.footer {
+  text-align: right;
+  font-size: xx-small;
+  font-weight: lighter;
+  font-style: italic;
+  color: gray;
+}
+
+  </style></head>
+   <body>
+      <div class="content">
+         <h1>Nonnegative matrix factorization</h1><pre class="codeinput"><span class="comment">% Argyris Zymnis, Joelle Skaf, Stephen Boyd</span>
+<span class="comment">%</span>
+<span class="comment">% We are given a matrix A in R^{m*n}</span>
+<span class="comment">% and are interested in solving the problem:</span>
+<span class="comment">%</span>
+<span class="comment">% minimize    ||A - Y*X||_F</span>
+<span class="comment">% subject to  Y &gt;= 0, X &gt;= 0</span>
+<span class="comment">%</span>
+<span class="comment">% where Y in R{m*k} and X in R{k*n}.</span>
+<span class="comment">% This script generates a random matrix A and obtains an</span>
+<span class="comment">% *approximate* solution to the above problem by first generating</span>
+<span class="comment">% a random initial guess for Y and the alternatively minimizing</span>
+<span class="comment">% over X and Y for a fixed number of iterations.</span>
+
+<span class="comment">% Generate data matrix A</span>
+m = 10; n = 10; k = 5;
+A = rand(m,k)*rand(k,n);
+
+<span class="comment">% Initialize Y randomly</span>
+Y = rand(m,k);
+
+<span class="comment">% Perform alternating minimization</span>
+MAX_ITERS = 30;
+residual = zeros(1,MAX_ITERS);
+cvx_q = cvx_quiet(true);
+<span class="keyword">for</span> iter = 1:MAX_ITERS
+    cvx_begin
+        <span class="keyword">if</span> mod(iter,2) == 1
+            variable <span class="string">X(k,n)</span>
+        <span class="keyword">else</span>
+            variable <span class="string">Y(m,k)</span>
+        <span class="keyword">end</span>
+        X &gt;= 0;
+        Y &gt;= 0;
+        minimize(norm(A - Y*X,<span class="string">'fro'</span>));
+    cvx_end
+    fprintf(1,<span class="string">'Iteration %d, residual norm %g\n'</span>,iter,cvx_optval);
+    residual(iter) = cvx_optval;
+<span class="keyword">end</span>
+cvx_quiet(cvx_q);
+
+<span class="comment">% Plot residuals</span>
+plot(residual);
+xlabel(<span class="string">'Iteration Number'</span>);
+ylabel(<span class="string">'Residual Norm'</span>);
+
+<span class="comment">% Display results</span>
+disp( <span class="string">'Original matrix:'</span> );
+disp( A );
+disp( <span class="string">'Left factor Y:'</span> );
+disp( Y );
+disp( <span class="string">'Right factor X:'</span> );
+disp( X );
+disp( <span class="string">'Residual A - Y * X:'</span> );
+disp( A - Y * X );
+fprintf( <span class="string">'Residual after %d iterations: %g\n'</span>, iter, cvx_optval );
+</pre><pre class="codeoutput">Iteration 1, residual norm 3.13787
+Iteration 2, residual norm 0.719034
+Iteration 3, residual norm 0.492329
+Iteration 4, residual norm 0.253786
+Iteration 5, residual norm 0.154329
+Iteration 6, residual norm 0.100086
+Iteration 7, residual norm 0.0668919
+Iteration 8, residual norm 0.0489776
+Iteration 9, residual norm 0.0383371
+Iteration 10, residual norm 0.031966
+Iteration 11, residual norm 0.0277519
+Iteration 12, residual norm 0.0248446
+Iteration 13, residual norm 0.0227487
+Iteration 14, residual norm 0.0211994
+Iteration 15, residual norm 0.0200123
+Iteration 16, residual norm 0.0190802
+Iteration 17, residual norm 0.0183213
+Iteration 18, residual norm 0.0176864
+Iteration 19, residual norm 0.0171368
+Iteration 20, residual norm 0.0166503
+Iteration 21, residual norm 0.0162074
+Iteration 22, residual norm 0.0157868
+Iteration 23, residual norm 0.0153834
+Iteration 24, residual norm 0.0149968
+Iteration 25, residual norm 0.0146245
+Iteration 26, residual norm 0.0142669
+Iteration 27, residual norm 0.0139221
+Iteration 28, residual norm 0.0135901
+Iteration 29, residual norm 0.0132695
+Iteration 30, residual norm 0.0129605
+Original matrix:
+  Columns 1 through 8
+
+    1.0584    1.0243    0.8435    1.2232    1.1195    1.2467    1.5608    1.4798
+    1.0757    1.5735    0.9303    1.8336    1.1897    1.5009    1.6280    1.5077
+    1.3260    0.8096    0.7381    1.0113    1.0907    0.8539    1.2888    1.3903
+    0.2583    0.2825    0.1712    0.3433    0.2778    0.3055    0.3490    0.3327
+    1.0871    1.3358    0.9383    1.6301    1.2539    1.5278    1.5561    1.3488
+    1.0074    1.0016    0.6738    1.1978    1.0153    1.0686    1.3459    1.3316
+    1.0765    1.3813    0.7181    1.6344    1.0201    1.1153    1.2052    1.1989
+    1.1451    1.4785    0.7662    1.7144    1.1521    1.2958    1.5744    1.5912
+    0.9908    1.6243    0.8189    1.9368    1.1329    1.4616    1.3333    1.1668
+    1.1008    1.0743    0.7537    1.3301    1.0474    1.0695    1.1541    1.0943
+
+  Columns 9 through 10
+
+    1.0940    1.7418
+    1.0331    2.0732
+    1.0209    1.9522
+    0.2211    0.4226
+    1.2944    2.0849
+    0.8275    1.5916
+    0.7853    1.9744
+    0.7495    1.9129
+    0.9664    2.0830
+    1.0507    1.9679
+
+Left factor Y:
+    0.5177    1.0544    0.1668    0.6511    0.9036
+    0.3951    0.0000    0.8839    0.2101    1.1685
+    0.9263    0.5064    0.0090    0.6983    0.0000
+    0.0683    1.2246    0.2066    0.2191    0.0000
+    0.0793    0.9981    1.0908    1.3257    0.5974
+    0.4715    3.5284    0.4359    0.5602    0.2235
+    0.4540    0.6930    1.0599    0.2449    0.2217
+    0.5944    4.2589    0.7910    0.0000    0.4150
+    0.0000    1.2797    1.6658    0.7498    0.3577
+    0.3373    0.0000    0.8960    1.0600    0.0062
+
+Right factor X:
+  Columns 1 through 8
+
+    1.1620    0.8076    0.5809    0.9669    0.8681    0.6164    1.0287    1.2021
+    0.0173    0.0376    0.0127    0.0399    0.0404    0.0592    0.0860    0.0837
+    0.3933    0.8295    0.2866    0.9719    0.4047    0.5418    0.4056    0.3711
+    0.3375    0.0516    0.2775    0.1235    0.3720    0.3536    0.4146    0.3323
+    0.1696    0.4368    0.3329    0.4849    0.3517    0.6026    0.6640    0.5433
+
+  Columns 9 through 10
+
+    0.6718    1.7022
+    0.0010    0.0000
+    0.2439    0.9280
+    0.5679    0.5261
+    0.3704    0.4020
+
+Residual A - Y * X:
+  Columns 1 through 8
+
+    0.0000    0.0000    0.0000    0.0000    0.0000   -0.0000   -0.0000   -0.0000
+   -0.0001   -0.0000    0.0000   -0.0000   -0.0001   -0.0000    0.0000    0.0000
+    0.0017   -0.0010   -0.0029    0.0004    0.0027    0.0011   -0.0008   -0.0010
+    0.0026   -0.0013   -0.0041    0.0007    0.0039    0.0015   -0.0011   -0.0014
+    0.0000    0.0000    0.0000    0.0000    0.0000   -0.0000   -0.0000   -0.0000
+    0.0001    0.0000    0.0001    0.0000    0.0000   -0.0001   -0.0000   -0.0000
+   -0.0001   -0.0000   -0.0000   -0.0000   -0.0000    0.0000    0.0000    0.0000
+   -0.0007    0.0010    0.0017   -0.0001   -0.0021   -0.0015    0.0004    0.0011
+   -0.0001   -0.0005   -0.0021    0.0008    0.0023    0.0025   -0.0006   -0.0021
+   -0.0023    0.0013    0.0046   -0.0008   -0.0045   -0.0025    0.0002    0.0006
+
+  Columns 9 through 10
+
+    0.0000   -0.0000
+   -0.0000    0.0001
+   -0.0006   -0.0003
+   -0.0008   -0.0006
+    0.0000   -0.0000
+    0.0001   -0.0001
+   -0.0000    0.0001
+   -0.0006    0.0003
+    0.0007   -0.0012
+    0.0014    0.0020
+
+Residual after 30 iterations: 0.0129605
+</pre><img vspace="5" hspace="5" src="nonneg_matrix_fact_01.png"> <p class="footer"><br>
+            Published with MATLAB&reg; 7.3<br></p>
+      </div>
+      <!--
+##### SOURCE BEGIN #####
+%% Nonnegative matrix factorization
+
+% Argyris Zymnis, Joelle Skaf, Stephen Boyd
+%
+% We are given a matrix A in R^{m*n}
+% and are interested in solving the problem:
+%
+% minimize    ||A - Y*X||_F
+% subject to  Y >= 0, X >= 0
+%
+% where Y in R{m*k} and X in R{k*n}.
+% This script generates a random matrix A and obtains an
+% *approximate* solution to the above problem by first generating
+% a random initial guess for Y and the alternatively minimizing
+% over X and Y for a fixed number of iterations.
+
+% Generate data matrix A
+m = 10; n = 10; k = 5;
+A = rand(m,k)*rand(k,n);
+
+% Initialize Y randomly
+Y = rand(m,k);
+
+% Perform alternating minimization
+MAX_ITERS = 30;
+residual = zeros(1,MAX_ITERS);
+cvx_q = cvx_quiet(true);
+for iter = 1:MAX_ITERS
+    cvx_begin
+        if mod(iter,2) == 1
+            variable X(k,n)
+        else
+            variable Y(m,k)
+        end
+        X >= 0; 
+        Y >= 0;
+        minimize(norm(A - Y*X,'fro'));
+    cvx_end
+    fprintf(1,'Iteration %d, residual norm %g\n',iter,cvx_optval);
+    residual(iter) = cvx_optval;
+end
+cvx_quiet(cvx_q);
+
+% Plot residuals
+plot(residual); 
+xlabel('Iteration Number');
+ylabel('Residual Norm');
+
+% Display results
+disp( 'Original matrix:' );
+disp( A );
+disp( 'Left factor Y:' );
+disp( Y );
+disp( 'Right factor X:' );
+disp( X );
+disp( 'Residual A - Y * X:' );
+disp( A - Y * X );
+fprintf( 'Residual after %d iterations: %g\n', iter, cvx_optval );
+
+
+
+##### SOURCE END #####
+-->
+   </body>
+</html>
