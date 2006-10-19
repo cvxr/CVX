@@ -40,7 +40,7 @@ Jo&euml;lle Skaf, Argyris Zymnis, <a href=
 dynamic. Clicking on the <img src="plus.gif" alt="plus" /><img src=
 "minus.gif" alt="minus" /> icons will expand/collapse directories
 to reveal/hide their contents.</p>
-<!-- BEGIN TOC --><h3>Last updated: 06-Oct-2006</h3>
+<!-- BEGIN TOC --><h3>Last updated: 18-Oct-2006</h3>
 <p><a href="#" onclick="expandTree('tree1'); return false;">Expand all</a>&nbsp;&nbsp;
 <a href="#" onclick="collapseTree('tree1'); return false;">Collapse all</a></p>
 <ul class="mktree" id="tree1">
@@ -232,6 +232,26 @@ See the tutorial: <a href="http://www.stanford.edu/~boyd/gp_tutorial.html">~boyd
 <li><a href="gp_tutorial/html/basic_odp.html">Optimal doping profile optimization</a> (<a href="gp_tutorial/basic_odp.m">basic_odp.m</a>)</li>
 <li><a href="gp_tutorial/html/beta_min_odp.html">Optimal doping profile optimization with current gain constraint.</a> (<a href="gp_tutorial/beta_min_odp.m">beta_min_odp.m</a>)</li>
 <li><a href="gp_tutorial/html/power_control.html">Simple power control in communication systems via GP.</a> (<a href="gp_tutorial/power_control.m">power_control.m</a>)</li>
+</ul>
+</li>
+<li class="liClosed"><b>Optimization of graph Laplacian eigenvalues</b>
+<blockquote>
+From a talk delivered by S. Boyd to the 2006 ICM:
+<a href="http://www.stanford.edu/~boyd/cvx_opt_graph_lapl_eigs.html">~boyd/cvx_opt_graph_lapl_eigs.html</a>
+</blockquote>
+<ul>
+<li><a href="graph_laplacian/html/larger_example.html">FDLA and FMMC solutions for a 50-node, 200-edge graph</a> (<a href="graph_laplacian/larger_example.m">larger_example.m</a>)</li>
+<li><a href="graph_laplacian/html/cut_grid_example.html">FDLA and FMMC solutions for a 64-node, 95-edge cut-grid graph</a> (<a href="graph_laplacian/cut_grid_example.m">cut_grid_example.m</a>)</li>
+<li><a href="graph_laplacian/html/small_example.html">FDLA and FMMC solutions for an 8-node, 13-edge graph</a> (<a href="graph_laplacian/small_example.m">small_example.m</a>)</li>
+<li class="liOpen">Utility functions:<ul>
+<li><a href="graph_laplacian/fmmc.m">Computes fastest mixing Markov chain (FMMC) edge weights (fmmc.m)</a></li>
+<li><a href="graph_laplacian/mh.m">Computes the Metropolis-Hastings heuristic edge weights (mh.m)</a></li>
+<li><a href="graph_laplacian/best_const.m">Computes the constant edge weight that yields fastest averaging. (best_const.m)</a></li>
+<li><a href="graph_laplacian/fdla.m">Computes the fastest distributed linear averaging (FDLA) edge weights (fdla.m)</a></li>
+<li><a href="graph_laplacian/max_deg.m">Computes the maximum-degree heuristic edge weights (max_deg.m)</a></li>
+<li><a href="graph_laplacian/cut_grid_data.m">Generate a cut-grid graph for the ICM 2006 talk example (cut_grid_data.m)</a></li>
+<li><a href="graph_laplacian/plotgraph.m">Plots a graph with each edge width proportional to its weight. (plotgraph.m)</a></li>
+</ul></li>
 </ul>
 </li>
 <li class="liClosed"><b>Sparse solution heuristics</b>

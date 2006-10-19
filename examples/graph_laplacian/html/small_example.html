@@ -1,0 +1,308 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN">
+<html xmlns:mwsh="http://www.mathworks.com/namespace/mcode/v1/syntaxhighlight.dtd">
+   <head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   
+      <!--
+This HTML is auto-generated from an M-file.
+To make changes, update the M-file and republish this document.
+      -->
+      <title>FDLA and FMMC solutions for an 8-node, 13-edge graph</title>
+      <meta name="generator" content="MATLAB 7.3">
+      <meta name="date" content="2006-10-18">
+      <meta name="m-file" content="small_example"><style>
+
+body {
+  background-color: white;
+  margin:10px;
+}
+
+h1 {
+  color: #990000; 
+  font-size: x-large;
+}
+
+h2 {
+  color: #990000;
+  font-size: medium;
+}
+
+/* Make the text shrink to fit narrow windows, but not stretch too far in 
+wide windows. */ 
+p,h1,h2,div.content div {
+  max-width: 600px;
+  /* Hack for IE6 */
+  width: auto !important; width: 600px;
+}
+
+pre.codeinput {
+  background: #EEEEEE;
+  padding: 10px;
+}
+@media print {
+  pre.codeinput {word-wrap:break-word; width:100%;}
+} 
+
+span.keyword {color: #0000FF}
+span.comment {color: #228B22}
+span.string {color: #A020F0}
+span.untermstring {color: #B20000}
+span.syscmd {color: #B28C00}
+
+pre.codeoutput {
+  color: #666666;
+  padding: 10px;
+}
+
+pre.error {
+  color: red;
+}
+
+p.footer {
+  text-align: right;
+  font-size: xx-small;
+  font-weight: lighter;
+  font-style: italic;
+  color: gray;
+}
+
+  </style></head>
+   <body>
+      <div class="content">
+         <h1>FDLA and FMMC solutions for an 8-node, 13-edge graph</h1><pre class="codeinput"><span class="comment">% S. Boyd, et. al., "Convex Optimization of Graph Laplacian Eigenvalues"</span>
+<span class="comment">% ICM'06 talk examples (www.stanford.edu/~boyd/cvx_opt_graph_lapl_eigs.html)</span>
+<span class="comment">% Written for CVX by Almir Mutapcic 08/29/06</span>
+<span class="comment">% (figures are generated)</span>
+<span class="comment">%</span>
+<span class="comment">% In this example we consider a graph described by the incidence matrix A.</span>
+<span class="comment">% Each edge has a weight W_i, and we optimize various functions of the</span>
+<span class="comment">% edge weights as described in the referenced paper; in particular,</span>
+<span class="comment">%</span>
+<span class="comment">% - the fastest distributed linear averaging (FDLA) problem (fdla.m)</span>
+<span class="comment">% - the fastest mixing Markov chain (FMMC) problem (fmmc.m)</span>
+<span class="comment">%</span>
+<span class="comment">% Then we compare these solutions to the heuristics listed below:</span>
+<span class="comment">%</span>
+<span class="comment">% - maximum-degree heuristic (max_deg.m)</span>
+<span class="comment">% - constant weights that yield fastest averaging (best_const.m)</span>
+<span class="comment">% - Metropolis-Hastings heuristic (mh.m)</span>
+
+<span class="comment">% small example (incidence matrix A)</span>
+A = [ 1  0  0  1  0  0  0  0  0  0  0  0  0;
+     -1  1  0  0  1  1  0  0  0  0  0  0  1;
+      0 -1  1  0  0  0  0  0 -1  0  0  0  0;
+      0  0 -1  0  0 -1  0  0  0 -1  0  0  0;
+      0  0  0 -1  0  0 -1  1  0  0  0  0  0;
+      0  0  0  0  0  0  1  0  0  0  1  0  0;
+      0  0  0  0  0  0  0 -1  1  0 -1  1 -1;
+      0  0  0  0 -1  0  0  0  0  1  0 -1  0];
+
+<span class="comment">% x and y locations of the graph nodes</span>
+xy = [ 1 2   3 3 1 1 2   3 ; <span class="keyword">...</span>
+       3 2.5 3 2 2 1 1.5 1 ]';
+
+<span class="comment">% Compute edge weights: some optimal, some based on heuristics</span>
+fprintf(1,<span class="string">'WARNING: The optimal weight computations take some time...\n'</span>);
+[n,m] = size(A);
+
+[ w_fdla, rho_fdla ] = fdla(A);
+[ w_fmmc, rho_fmmc ] = fmmc(A);
+[ w_md,   rho_md   ] = max_deg(A);
+[ w_bc,   rho_bc   ] = best_const(A);
+[ w_mh,   rho_mh   ] = mh(A);
+
+tau_fdla = 1/log(1/rho_fdla);
+tau_fmmc = 1/log(1/rho_fmmc);
+tau_md   = 1/log(1/rho_md);
+tau_bc   = 1/log(1/rho_bc);
+tau_mh   = 1/log(1/rho_mh);
+
+fprintf(1,<span class="string">'\nResults:\n'</span>);
+fprintf(1,<span class="string">'FDLA weights:\t\t rho = %5.4f \t tau = %5.4f\n'</span>,rho_fdla,tau_fdla);
+fprintf(1,<span class="string">'FMMC weights:\t\t rho = %5.4f \t tau = %5.4f\n'</span>,rho_fmmc,tau_fmmc);
+fprintf(1,<span class="string">'M-H weights:\t\t rho = %5.4f \t tau = %5.4f\n'</span>,rho_mh,tau_mh);
+fprintf(1,<span class="string">'MAX_DEG weights:\t rho = %5.4f \t tau = %5.4f\n'</span>,rho_md,tau_md);
+fprintf(1,<span class="string">'BEST_CONST weights:\t rho = %5.4f \t tau = %5.4f\n'</span>,rho_bc,tau_bc);
+
+<span class="comment">% Plot results</span>
+figure(1), clf
+plotgraph(A,xy,w_fdla);
+text(0.55,1.05,<span class="string">'FDLA optimal weights'</span>)
+
+figure(2), clf
+plotgraph(A,xy,w_fmmc);
+text(0.55,1.05,<span class="string">'FMMC optimal weights'</span>)
+
+figure(3), clf
+plotgraph(A,xy,w_md);
+text(0.5,1.05,<span class="string">'Max degree optimal weights'</span>)
+
+figure(4), clf
+plotgraph(A,xy,w_bc);
+text(0.5,1.05,<span class="string">'Best constant optimal weights'</span>)
+
+figure(5), clf
+plotgraph(A,xy,w_mh);
+text(0.46,1.05,<span class="string">'Metropolis-Hastings optimal weights'</span>)
+</pre><pre class="codeoutput">WARNING: The optimal weight computations take some time...
+ 
+Calling SeDuMi: 73 variables (1 free), 59 equality constraints
+------------------------------------------------------------------------
+SeDuMi 1.1R3 by AdvOL, 2006 and Jos F. Sturm, 1998-2003.
+Alg = 2: xz-corrector, Adaptive Step-Differentiation, theta = 0.250, beta = 0.500
+eqs m = 59, order n = 19, dim = 131, blocks = 4
+nnz(A) = 122 + 0, nnz(ADA) = 2791, nnz(L) = 1425
+ it :     b*y       gap    delta  rate   t/tP*  t/tD*   feas cg cg  prec
+  0 :            1.64E+000 0.000
+  1 :  7.35E-001 3.78E-001 0.000 0.2299 0.9000 0.9000   0.58  1  1  1.9E+000
+  2 :  6.23E-001 1.28E-001 0.000 0.3382 0.9000 0.9000   2.42  1  1  3.5E-001
+  3 :  6.61E-001 2.65E-002 0.000 0.2075 0.9000 0.9000   1.20  1  1  6.6E-002
+  4 :  6.46E-001 4.86E-003 0.000 0.1831 0.9000 0.9000   1.10  1  1  1.2E-002
+  5 :  6.44E-001 2.01E-004 0.000 0.0413 0.9900 0.9900   1.02  1  1  4.7E-004
+  6 :  6.43E-001 3.58E-006 0.000 0.0178 0.9900 0.9900   1.00  1  1  8.8E-006
+  7 :  6.43E-001 3.23E-007 0.340 0.0902 0.9450 0.6429   1.00  1  1  1.8E-006
+  8 :  6.43E-001 3.04E-008 0.458 0.0944 0.9900 0.9900   1.00  1  1  1.7E-007
+  9 :  6.43E-001 4.81E-009 0.091 0.1581 0.9071 0.9000   1.00  1  1  3.2E-008
+ 10 :  6.43E-001 8.47E-010 0.000 0.1760 0.9026 0.9000   1.00  2  2  5.8E-009
+
+iter seconds digits       c*x               b*y
+ 10      0.1   Inf  6.4333140590e-001  6.4333140963e-001
+|Ax-b| =  3.0e-009, [Ay-c]_+ =  3.0E-009, |x|= 3.6e+000, |y|= 8.8e-001
+
+Detailed timing (sec)
+   Pre          IPM          Post
+0.000E+000    1.202E-001    0.000E+000    
+Max-norms: ||b||=6.250000e-001, ||c|| = 1,
+Cholesky |add|=0, |skip| = 0, ||L.L|| = 100.102.
+------------------------------------------------------------------------
+Status: Solved
+Optimal value (cvx_optval): +0.643331
+ 
+Calling SeDuMi: 94 variables (1 free), 80 equality constraints
+------------------------------------------------------------------------
+SeDuMi 1.1R3 by AdvOL, 2006 and Jos F. Sturm, 1998-2003.
+Alg = 2: xz-corrector, Adaptive Step-Differentiation, theta = 0.250, beta = 0.500
+eqs m = 80, order n = 40, dim = 152, blocks = 4
+nnz(A) = 164 + 0, nnz(ADA) = 2916, nnz(L) = 1829
+ it :     b*y       gap    delta  rate   t/tP*  t/tD*   feas cg cg  prec
+  0 :            1.99E+000 0.000
+  1 :  2.21E-001 6.87E-001 0.000 0.3458 0.9000 0.9000   3.11  1  1  2.1E+000
+  2 :  6.36E-001 2.30E-001 0.000 0.3355 0.9000 0.9000   1.57  1  1  5.5E-001
+  3 :  6.99E-001 5.60E-002 0.000 0.2428 0.9000 0.9000   1.34  1  1  1.2E-001
+  4 :  6.82E-001 1.26E-002 0.000 0.2255 0.9000 0.9000   1.14  1  1  2.4E-002
+  5 :  6.81E-001 3.21E-003 0.000 0.2545 0.9000 0.9000   1.02  1  1  6.2E-003
+  6 :  6.81E-001 6.65E-004 0.000 0.2069 0.9001 0.9000   1.00  1  1  1.3E-003
+  7 :  6.81E-001 1.90E-005 0.000 0.0285 0.9900 0.9372   1.00  1  1  5.6E-005
+  8 :  6.81E-001 8.26E-007 0.398 0.0436 0.9900 0.9900   1.00  1  1  2.4E-006
+  9 :  6.81E-001 1.15E-007 0.179 0.1396 0.9175 0.9000   1.00  1  1  4.8E-007
+ 10 :  6.81E-001 1.07E-008 0.436 0.0925 0.9900 0.9900   1.00  1  1  4.5E-008
+ 11 :  6.81E-001 6.47E-010 0.483 0.0607 0.9901 0.9900   1.00  1  1  3.0E-009
+
+iter seconds digits       c*x               b*y
+ 11      0.1   9.8  6.8096067742e-001  6.8096067732e-001
+|Ax-b| =  2.8e-009, [Ay-c]_+ =  1.2E-009, |x|= 3.8e+000, |y|= 1.3e+000
+
+Detailed timing (sec)
+   Pre          IPM          Post
+1.001E-002    1.001E-001    0.000E+000    
+Max-norms: ||b||=1, ||c|| = 1,
+Cholesky |add|=0, |skip| = 0, ||L.L|| = 47.8555.
+------------------------------------------------------------------------
+Status: Solved
+Optimal value (cvx_optval): +0.680961
+
+Results:
+FDLA weights:		 rho = 0.6433 	 tau = 2.2671
+FMMC weights:		 rho = 0.6810 	 tau = 2.6025
+M-H weights:		 rho = 0.7743 	 tau = 3.9094
+MAX_DEG weights:	 rho = 0.7793 	 tau = 4.0093
+BEST_CONST weights:	 rho = 0.7119 	 tau = 2.9422
+</pre><img vspace="5" hspace="5" src="small_example_01.png"> <img vspace="5" hspace="5" src="small_example_02.png"> <img vspace="5" hspace="5" src="small_example_03.png"> <img vspace="5" hspace="5" src="small_example_04.png"> <img vspace="5" hspace="5" src="small_example_05.png"> <p class="footer"><br>
+            Published with MATLAB&reg; 7.3<br></p>
+      </div>
+      <!--
+##### SOURCE BEGIN #####
+%% FDLA and FMMC solutions for an 8-node, 13-edge graph
+
+% S. Boyd, et. al., "Convex Optimization of Graph Laplacian Eigenvalues"
+% ICM'06 talk examples (www.stanford.edu/~boyd/cvx_opt_graph_lapl_eigs.html)
+% Written for CVX by Almir Mutapcic 08/29/06
+% (figures are generated)
+%
+% In this example we consider a graph described by the incidence matrix A.
+% Each edge has a weight W_i, and we optimize various functions of the
+% edge weights as described in the referenced paper; in particular,
+%
+% - the fastest distributed linear averaging (FDLA) problem (fdla.m)
+% - the fastest mixing Markov chain (FMMC) problem (fmmc.m)
+%
+% Then we compare these solutions to the heuristics listed below:
+%
+% - maximum-degree heuristic (max_deg.m)
+% - constant weights that yield fastest averaging (best_const.m)
+% - Metropolis-Hastings heuristic (mh.m)
+
+% small example (incidence matrix A)
+A = [ 1  0  0  1  0  0  0  0  0  0  0  0  0;
+     -1  1  0  0  1  1  0  0  0  0  0  0  1;
+      0 -1  1  0  0  0  0  0 -1  0  0  0  0;
+      0  0 -1  0  0 -1  0  0  0 -1  0  0  0;
+      0  0  0 -1  0  0 -1  1  0  0  0  0  0;
+      0  0  0  0  0  0  1  0  0  0  1  0  0;
+      0  0  0  0  0  0  0 -1  1  0 -1  1 -1;
+      0  0  0  0 -1  0  0  0  0  1  0 -1  0];
+
+% x and y locations of the graph nodes
+xy = [ 1 2   3 3 1 1 2   3 ; ...
+       3 2.5 3 2 2 1 1.5 1 ]';
+
+% Compute edge weights: some optimal, some based on heuristics
+fprintf(1,'WARNING: The optimal weight computations take some time...\n');
+[n,m] = size(A);
+
+[ w_fdla, rho_fdla ] = fdla(A);
+[ w_fmmc, rho_fmmc ] = fmmc(A);
+[ w_md,   rho_md   ] = max_deg(A);
+[ w_bc,   rho_bc   ] = best_const(A);
+[ w_mh,   rho_mh   ] = mh(A);
+
+tau_fdla = 1/log(1/rho_fdla);
+tau_fmmc = 1/log(1/rho_fmmc);
+tau_md   = 1/log(1/rho_md);
+tau_bc   = 1/log(1/rho_bc);
+tau_mh   = 1/log(1/rho_mh);
+
+fprintf(1,'\nResults:\n');
+fprintf(1,'FDLA weights:\t\t rho = %5.4f \t tau = %5.4f\n',rho_fdla,tau_fdla);
+fprintf(1,'FMMC weights:\t\t rho = %5.4f \t tau = %5.4f\n',rho_fmmc,tau_fmmc);
+fprintf(1,'M-H weights:\t\t rho = %5.4f \t tau = %5.4f\n',rho_mh,tau_mh);
+fprintf(1,'MAX_DEG weights:\t rho = %5.4f \t tau = %5.4f\n',rho_md,tau_md);
+fprintf(1,'BEST_CONST weights:\t rho = %5.4f \t tau = %5.4f\n',rho_bc,tau_bc);
+
+% Plot results
+figure(1), clf
+plotgraph(A,xy,w_fdla);
+text(0.55,1.05,'FDLA optimal weights')
+
+figure(2), clf
+plotgraph(A,xy,w_fmmc);
+text(0.55,1.05,'FMMC optimal weights')
+
+figure(3), clf
+plotgraph(A,xy,w_md);
+text(0.5,1.05,'Max degree optimal weights')
+
+figure(4), clf
+plotgraph(A,xy,w_bc);
+text(0.5,1.05,'Best constant optimal weights')
+
+figure(5), clf
+plotgraph(A,xy,w_mh);
+text(0.46,1.05,'Metropolis-Hastings optimal weights')
+
+##### SOURCE END #####
+-->
+   </body>
+</html>

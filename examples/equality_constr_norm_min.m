@@ -35,3 +35,5 @@ disp( [ '   A*x-b = [ ', sprintf( '%7.4f ', A*x-b ), ']' ] );
 disp( 'Equality constraints:' );
 disp( [ '   C*x   = [ ', sprintf( '%7.4f ', C*x ), ']' ] );
 disp( [ '   d     = [ ', sprintf( '%7.4f ', d   ), ']' ] );
+disp( 'Lagrange multiplier for C*x==d:' );
+disp( [ '   y     = [ ', sprintf( '%7.4f ', y ), ']' ] );
