@@ -2,8 +2,8 @@
 %  circuit_design/             - Circuit design
 %  cvxbook/                    - Figures, examples, and exercises from Boyd & Vandenberghe, "Convex Optimization"
 %  filter_design/              - Filter design
-%  gp_tutorial/                - Examples from Boyd, Kim, Vandenberghe, and Hassibi, "A Tutorial on Geometric Programming"
-%  graph_laplacian/            - Optimization of graph Laplacian eigenvalues
+%  gp_tutorial/                - Geometric programming
+%  graph_laplacian/            - Graph Laplacian eigenvalue optimization
 %  sparse_heuristics/          - Sparse solution heuristics
 %  quickstart.m                - Examples from the CVX User's guide
 %  regularized_norm_tradeoff.m - Builds a norm minimization tradeoff curve

@@ -1,4 +1,4 @@
-% Optimization of graph Laplacian eigenvalues
+% Graph Laplacian eigenvalue optimization
 % From a talk delivered by S. Boyd to the 2006 ICM:
 % http://www.stanford.edu/~boyd/cvx_opt_graph_lapl_eigs.html
 %
