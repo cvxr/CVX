@@ -10,7 +10,7 @@
 \newcommand{\lorentz}{{\mbox{\bf Q}}}  % lorentz cone
 \newcommand{\ones}{\mathbf 1}
 
-\title{\cvx Users' Guide\\\large version 1.0 (beta)}
+\title{\cvx Users' Guide\\\large version 1.0}
 \author{Michael Grant\\\texttt{mcgrant@stanford.edu} 
 \and Stephen Boyd\\\texttt{boyd@stanford.edu}
 \and Yinyu Ye\\\texttt{yyye@stanford.edu}}
@@ -155,22 +155,27 @@ MOSEK \cite{MOSEK}, CVXOPT \cite{CVXOPT},
 and a general purpose solver we are developing.
 
 Because SeDuMi supports only LPs, SOCPs, and SDPs, this
-version of \cvx can only handle functions that can be represented
+version of \cvx can only handle functions and sets that can be represented
 using these problem types, and problems that can be reduced to 
-these problem forms. Thus the current version includes such
-functions as $\ell_1$, $\ell_2$,
-and $\ell_\infty$ norms, maximum, minimum, absolute value,
-quadratic forms, square root,
-and maximum and minimum eigenvalue of a symmetric matrix,
-as well as a few obscure functions such as the 
-sum of the largest $k$ entries of a vector.
+these problem forms.
+The current version of \cvx includes such functions as
+\begin{itemize}
+	\item Maximum, minimum, absolute value;
+	\item $\ell_p$ norms, and certain convex and concave branches
+	      power function $x^p$;
+	\item Quadratic forms and convex and concave univariate polynomials;
+	\item The maximum or minimum eigenvalue of a symmetric matrix, and
+	      the maximum singular value of an unsymmetric matrix;
+	\item A few obscure functions such as the 
+          sum of the largest $k$ entries of a vector. 
+\end{itemize}
 Geometric programs are handled through a novel approximation
 method that is described briefly in Appendix \ref{sec:gp-approx}.
 
-Some useful functions that are \emph{not} supported in
-the current version include
-exponential and log, powers other than 2 and $0.5$, and
-so forth. Support for such functions will require the use
+For a more complete list of functions and sets supported by \cvx, 
+see Appendix \ref{s-functions}. Some useful functions that are \emph{not} supported in
+the current version include exponential, log, and entropy.
+Support for such functions will require the use
 of one of the new solvers mentioned above.
 
 \subsection{Feedback}
@@ -686,9 +691,6 @@ The specifics of the construction rules are discussed in
 more detail in \S\ref{sec:rules} below.  
 These rules are relatively intuitive if you know the basics of
 convex analysis and convex optimization.
-%For now, let us just
-%say that the rules are relatively intuitive and are unlikely
-%to significantly hinder the construction of problems in practice.
 
 \subsection{An optimal trade-off curve}
 \index{tradeoff curve}
@@ -1388,12 +1390,13 @@ variable;
 \item a valid constant, affine, or log-convex expression 
 (\S\ref{sec:gpmode});
 \item a valid call to a function in the atom library with a convex result;
+\item an affine expression raised to an even positive integer power;
 \item a convex scalar quadratic form (\S\ref{sec:quadforms});
 \item the sum of two or more convex expressions;
 \item the difference between a convex expression and a concave expression;
 \item the product of a convex expression and a nonnegative constant;
 \item the product of a concave expression and a nonpositive constant;
-\item the negation of a concave expression;
+\item the negation of a concave expression.
 \end{itemize}
 \item A valid concave expression is
 \begin{itemize}
@@ -1965,7 +1968,7 @@ not support geometric programming natively. Therefore, we have developed an
 approximation method which allows \cvx to use SeDuMi to solve GPs and related
 problems. The method converts GPs to SDPs, and the approximation error can be bounded in advance.
 Details of the method are outside of the scope of this document,
-but Appendix \S\ref{sec:gp-approx} provides a brief introduction  and describes
+but Appendix\ref{sec:gp-approx} provides a brief introduction  and describes
 how to control its accuracy. While this approach
 is ultimately \emph{not} suited for very large GPs, it has proven
 in practice to perform respectably on small- and medium-scale
@@ -2629,7 +2632,7 @@ reverse implication is \emph{not} true; for example,
 \newpage
 \appendix
 
-\section{Installing \cvx}
+\section{Installation and compatability}
 \label{s-installing}
 
 \index{installing \cvx}
@@ -2640,20 +2643,26 @@ versions of this manual stated that \cvx required Matlab
 6.0 or later; we have since discovered that version 6.0
 is not sufficient.}
 We are able to precompile and test the SeDuMi
-and \cvx MEX files on the following platform combinations:
+and \cvx MEX files on the following platforms and Matlab versions:
 \begin{itemize}
-\item Windows (32-bit): Matlab 6.1, 6.5, 7.1, and 7.2
+\item Windows (32-bit): Matlab 6.1, 6.5.2, 7.0.4, 7.1, 7.2a, 7.3
 \item Linux (32-bit): Matlab 6.5, 7.0, 7.1
 \item Solaris 8: Matlab 6.5, 7.1
 \item Mac OS X (PowerPC only): Matlab 7.1
 \end{itemize}
-If your platform combination differs only slightly from these---say,
-for example, you are running Matlab 7.0
-on Windows---then the instructions in \S\ref{sec:winlin} below should still work.
-Nevertheless, we encourage
-you to upgrade to at least upgrade to the latest minor version of
-Matlab if at all possible. For other platforms besides those listed above, see
+If you are running a different minor version of Matlab---for example, version
+7.0.0 for Windows---then \cvx should still work just fine. However, the unique
+design of \cvx seems to make it somewhat sensitive to bugs, quirks, and 
+limitations of Matlab. Therefore, we encourage you to upgrade to the latest
+version you are licensed to use.
+
+For other platforms besides those listed above, see
 see \S\ref{sec:othersys} before proceeding.
+
+We have identified an issue that occasionally causes problems using \cvx
+with Matlab 7.0.x (R14,R14SP1,R14SP2), on all platforms. Prior and subsequent
+versions of Matlab are not affected. Fortunately, the workaround is
+simple; see \label{sec:sevenprob} below for more details.
 
 \subsection{Basic instructions}
 \label{sec:winlin}
@@ -2662,9 +2671,12 @@ see \S\ref{sec:othersys} before proceeding.
 \item Retrieve the latest version of cvx from \url{http://www.stanford.edu/~boyd/cvx}.
 You can download the package as either a \verb@.zip@ file or a \verb@.tar.gz@ 
 file.
+\item If you have been running a previous version of \cvx, \emph{remove it} or
+move it out of the way---say, by renaming it \verb@cvx_old@---before proceeding.
 \item Unpack the file anywhere you like; a directory called \verb@cvx@ will be created.
-However, if you have been running a previous version of \cvx, \emph{remove the old 
-version}, or move it out of the way, before proceeding.
+There is one important exception: do \emph{not} place \cvx in MATLAB's own
+\verb@toolbox@ directory. (If your previous installation of \cvx was placed
+there, you'll need to move it out of there.)
 \item Start Matlab.
 \item Change the current directory to the location of \cvx.
 For example, if you unpacked \verb@cvx.zip@ on your Windows machine into the
@@ -2700,7 +2712,7 @@ by \verb@cvx_setup@ to accomplish that.
 \subsection{Unsupported platforms}
 \label{sec:othersys}
 
-It may be possible to run \cvx on other platforms that run MATLAB 6.0, 
+It may be possible to run \cvx on other platforms that run MATLAB 6.1, 
 but the MEX files must be successfully compiled to do so. Therefore, before
 following the instructions in \S\ref{sec:winlin} above, you must
 confirm that your MEX system has been set up properly. If you have compiled
@@ -2733,6 +2745,47 @@ available from the web. Therefore, we \emph{strongly} recommend that
 you use our version of SeDuMi, and remove any other versions that 
 you may have from your Matlab path.
 
+\subsection{A Matlab 7.0 issue}
+\label{sec:sevenprob}
+
+The techniques that \cvx use to embed a new modeling language inside Matlab
+seem to cause some confusion for Matlab 7.0, specifically version 7.0.4 (R14SP2). 
+We are reasonably confident
+that the issue is due to a bug in Matlab itself. It does not occur in versions
+6.5.2 and earlier, or 7.1 and later. It may occur in earlier versions of
+Matlab 7.0 as well (R14,R14SP1).
+
+The bug is this: in  some circumstances, a \verb@.m@-file containing a \cvx model will cause
+an error that looks like this:
+\begin{code}
+	??? Error: File: thrusters.m Line: 43 Column: 5
+	"p" was previously used as a variable,
+	conflicting with its use here as the name of a function.
+\end{code}
+The file name, line/column numbers, and variable name may differ, 
+but the error message remains the same. The example that produced this particular 
+error is a simple inequality constraint
+\begin{code}
+	p >= -5;
+\end{code}
+where \verb@p@ is a \cvx variable previously declared with a \verb@variable@ statement.
+Interestingly, a different inequality constraint
+\begin{code}
+	u >= 0
+\end{code}
+in the same model causes no complaint. So we cannot offer you a precise set
+of circumstances that cause the error.
+
+Fortunately, the workaround is very simple: simply remove all of the extra space
+in the constraint. In this example, changing the constraint to
+\begin{code}
+	p>=-5;
+\end{code}
+eliminates the error. You may still indent the constraint as you wish---just
+remove the intermediate spaces.
+
+We have no idea why this workaround works, but it does---reliably.
+
 \section{Operators, functions, and sets}
 \label{s-functions}
 \index{operators}
@@ -2762,9 +2815,8 @@ For example:
       constant matrix of appropriate dimension.
 \end{itemize}
 Numerious other combinations are possible, of course.
-The use of the exponentiation operators \verb@^@ \verb@.^@ are limited
-to instances that produce quadratic forms; so, for example, the exponent
-must be 2.
+For example, the use of the exponentiation operators \verb@^@
+\verb@.^@ are somewhat limited; see \S\ref{sec:nonl} below.
 
 Matlab's basic matrix manipulation and arithmetic
 operations have been extended to work with
@@ -2778,9 +2830,12 @@ operations have been extended to work with
 A number of Matlab's basic functions have been extended to work with \verb@cvx@
 expressions as well:
 \begin{center}
-\verb@conj@\ \ \ \verb@cumsum@\ \ \ \verb@diag@\ \ \ \verb@dot@\ \ \ \verb@fliplr@\ \ \ \verb@flipud@\ \ \ \verb@flipdim@\ \ \ \verb@horzcat@\ \ \ \
-\verb@hankel@\ \ \ \verb@ipermute@\ \ \ \verb@kron@\ \ \ \verb@permute@\ \ \ \verb@repmat@\ \ \ \verb@reshape@\ \ \ \
-\verb@rot90@\ \ \ \verb@sum@\ \ \ \verb@trace@\ \ \ \verb@tril@\ \ \ \verb@triu@\ \ \ \verb@toeplitz@\ \ \ \verb@vertcat@
+\verb@conj@\ \ \ \verb@cumsum@\ \ \ \verb@diag@\ \ \ \verb@dot@\ \ \ 
+\verb@find@\ \ \ \verb@fliplr@\ \ \ \verb@flipud@\ \ \ \verb@flipdim@\ \ \
+\verb@horzcat@\ \ \ \verb@hankel@\ \ \ \verb@ipermute@\ \ \ \verb@kron@\ \ \
+\verb@permute@\ \ \ \verb@repmat@\ \ \ \verb@reshape@\ \ \ \verb@rot90@\ \ \
+\verb@sparse@\ \ \ \verb@sum@\ \ \ \verb@trace@\ \ \ \verb@tril@\ \ \
+\verb@triu@\ \ \ \verb@toeplitz@\ \ \ \verb@vertcat@
 \end{center}
 Most should behave identically with \cvx expressions as they do with numeric expressions.
 Those that perform some sort of summation, such as \verb@cumsum@, \verb@sum@, or
@@ -2790,6 +2845,8 @@ only be used in accordance with the disciplined convex programming rules. For ex
 \verb@trace(Z)@ is valid only if the elements along the diagonal have the same curvature.
 
 \subsection{Standard Matlab nonlinear functions}
+\label{sec:nonl}
+
 The following standard Matlab nonlinear functions 
 are overloaded to work in \cvx:
 \begin{itemize}
@@ -2801,25 +2858,48 @@ elementwise maximum and minimum, for real arrays only.
 The 1, 2, and 3-argument syntaxes are all supported.
 \verb@max@ is convex and increasing; \verb@min@ is concave and 
 decreasing.
-\item \verb@norm( x, 1 )@ and \verb@norm( x, Inf )@,
-for real and complex vectors and matrices.
+\item \verb@norm( x )@ for real and complex affine vectors/matrices.
 Convex.
-\item \verb@norm( x )@ or \verb@norm( x, 2 )@, 
-for real and complex vectors and matrices.
-Convex.
-\item \verb@norm( X, 'fro' )@, for real and complex matrices.
-Convex.
-\item \verb@sqrt@, elementwise squareroot, for real arrays only.
-Adds constraint that entries are nonnegative.
-Concave and increasing.
+\item \verb@norm( x, p )@ for real and complex affine vectors/matrices:
+\begin{itemize}
+\item For vectors,
+all valid values of \verb@p@ are accepted, but see
+Appendix \ref{sec:ratpow} for more details about how \cvx
+handles values other than \verb@1@, \verb@2@, and \verb@Inf@. Convex.
+\item For matrices, \verb@p@ must be \verb@1@, \verb@2@, \verb@Inf@, and
+\verb@'Fro'@. Convex.
 \end{itemize}
-
-We note that in this version of \cvx, most powers such as \verb@x^4@
-or \verb@x^(1/3)@, are \emph{not} supported. The only exception is
-the power of $2$ which is translated to an appropriate call to 
-\verb@square@. Furthermore, an expression such as \verb@x^(1/2)@ can
-usually be adequately represented by \verb@sqrt(x)@, as long as \verb@x@
-is intended to be real and nonnegative.
+\item \verb@sqrt@, elementwise square root, for real arrays only.
+Adds the constraint that entries of \verb@x@ are nonnegative.
+Concave and increasing.
+\item \verb@x^p@ and \verb@x.^p@, where \verb@x@ is real and affine,
+and \verb@p@ is constant. For \verb@x^p@, \verb@x@ and \verb@p@ must
+be scalars. Valid values of \verb@p@ include:
+\begin{itemize}
+\item $\verb@p@ \in\{0,1\}$. Constant and affine, respectively.
+\item $0<\verb@p@<1$. Concave, and constrains \verb@x@ to be nonnegative.
+\item $\verb@p@\in\{2,4,6,8,...\}$. Convex.
+\end{itemize}
+Other values of \verb@p@ are not permitted, but see the function
+\verb@pow_pos@ in Appendix \ref{sec:ratpow} below for a useful alternative.
+Note also that irrational values of \verb@p@ are approximated
+by rational values; see Appendix \ref{sec:ratpow} for detail on this issue as well.
+\item \verb@polyval( p, x )@, where \verb@p@ is a vector of length
+\verb@n@, computes
+\begin{center}
+	\verb@p(1) * x.^(n-1) + p(2) * x.^(n-2) + ... + p(n-1) * x + p(n)@
+\end{center}
+This function can be used in \cvx variables in two ways:
+\begin{itemize}
+\item If \verb@p@ is a variable and \verb@x@ is a constant, then \verb@polyval(x,p)@
+	  computes a linear combination of the elements of \verb@p@. The combination
+	  must satisfy the DCP rules for addition and scaling.
+\item If \verb@p@ is a constant and \verb@x@ is a variable, then \verb@polyval(x,p)@
+      constructs a polynomial function of the variable \verb@x@. The 
+      polynomial must be affine, convex, or concave, and 
+       \verb@x@ must be real and affine.
+\end{itemize}
+\end{itemize}
 
 \subsection{New nonlinear functions}
 
@@ -2827,6 +2907,11 @@ The following functions are part of the base \cvx library.
 These functions work both inside a \cvx specification,
 and outside a \cvx specification (with numerical arguments).
 \begin{itemize}
+\item \verb@berhu(x,M)@: The reversed Huber function (hence, Berhu), defined as
+$|x|$ for $|x|\leq M$, and $(|x|^2+M^2)/2M$ for $|x|\geq M$. Convex. If $M$
+is omitted, $M=1$ is assumed; but if supplied, it must be a positive constant.
+Also callable as \verb@berhu(x,M,t)@, which computes \verb@t+t*berhu(x/t,M)@,
+useful for concomitant scale estimation (see \cite{Owen}).
 \item \verb@geomean@: the geometric mean of a vector, $\left( \prod_{k=1}^n x_k \right)^{1/n}$. When
 used inside a \cvx specification, \verb@geomean@ constrains the elements of the vector
 to be nonnegative. When used with numerical arguments, \verb@geomean@ returns \verb@-Inf@
@@ -2840,8 +2925,12 @@ constraints are not met. Concave.
 \item \verb@det_root2n@: the $2n$-th root of the determinant of a semidefinite
 matrix; \ie, \verb@det_root2n(X)=sqrt(det_rootn(X))@. Concave. Maintained
 solely for back-compatibility purposes.
-\item \verb@huber(x)@, defined as $2|x|-1$ for $|x|\geq 1$,
-and $x^2$ for $|x|<1$.  Convex.
+\item \verb@huber(x,M)@, defined as $2M|x|-M^2$ for $|x|\geq M$,
+and $|x|^2$ for $|x|\leq M$. Convex. If $M$ is omitted, then $M=1$ is
+assumed; but if it supplied, it must be a positive constant.
+Also callable as \verb@huber(x,M,t)@, which computes \verb@t+t*huber(x/t,M)@,
+useful for concomitant scale estimation
+(see \cite{Owen}).
 \item \verb@inv_pos@, inverse of the positive portion, $1/\max\{x,0\}$.
 Inside \cvx specification,
 imposes constraint that its argument is positive.
@@ -2868,15 +2957,53 @@ $x^TY^{-1}x$.  In \cvx, imposes constraint that $Y$ is
 symmetric (or Hermitian) and positive definite; outside \cvx,
 returns $+\infty$ unless $Y=Y^T\succ 0$.
 Convex. 
-%Note that \cvx will \emph{not} recognize \verb@x'*(Y\x)@ as convex.
-\item \verb@norm_largest( x, k )@, for real and complex vectors.
+\item \verb@norm_largest( x, k )@, for real and complex vectors,
+returns the sum of the largest \verb@k@ \emph{magnitudes} in the
+vector \verb@x@.
 Convex.
-\item \verb@norms( x, p, dim )@ and \verb@norms( x, 'largest', k, dim )@.
+\item \verb@norms( x, p, dim )@ and \verb@norms_largest( x, k, dim )@.
 Computes \emph{vector} norms along a specified dimension of a matrix
 or N-d array. Useful for sum-of-norms and max-of-norms problems.
 Convex.
+\item \verb@polyenv( p, x )@. 
+Computes the value of the \emph{convex envelope} of the polynomial
+described by \verb@p@ (in the \verb@polyval@ sense). \verb@p@ must be
+a real constant vector and \verb@x@ must be real and affine.
+For example, consider the function $p(x)\eqbydef (x^2-1)^2=x^4-2x^2+1$,
+depicted along with its convex envelope in Figure~\ref{fig:envelope}.
+\begin{figure}
+\begin{center}
+\includegraphics[width=4.5in]{envelope.eps}
+\end{center}
+~\\[-48pt]
+\caption{The polynomial function $p(x)=x^4-2x^2+1$ and its convex envelope.}
+\label{fig:envelope}
+\end{figure}
+The two coincide when $|x|\geq 1$, but deviate when $|x|<1$. Attempting to call
+\verb@polyval([1,0,2,0,1],x)@ in a \cvx model would  yield an error,
+but a call to \verb@polyenv([1,0,2,0,1],x)@ yields a valid 
+representation of the envelope. For convex polynomials,
+this function produces the same result as \verb@polyval@.
 \item \verb@pos@, $\max\{x,0\}$, for real $x$. 
 Convex and increasing.
+\item \verb@pow_pos(x,p)@, for real \verb@x@ and real constant \verb@p@,
+computes monotonic extensions of certain convex and concave branches of
+the power function:
+\begin{equation*}
+	\begin{aligned}
+	&p \leq 0: \quad  
+	f_p(x) &&\eqbydef \Cases{ x^p & x > 0 \\ +\infty & x \leq 0 } 
+	&& \quad \text{convex, nonincreasing} \\
+	0 <  &p < 1: \quad
+	f_p(x) &&\eqbydef\Cases{ x^p & x \geq 0 \\ -\infty & x < 0 } 
+	&& \quad  \text{concave, nondecreasing} \\
+	&p \geq 1: \quad
+	f_p(x) && \eqbydef\Cases{ x^p & x \geq 0 \\ 0 & x < 0 }
+	&& \quad \text{convex, nondecreasing}
+	\end{aligned}
+\end{equation*}
+If \verb@p@ is irrational, a nearby rational value is used
+instead; see Appendix \ref{sec:ratpow} for details.
 \item \verb@quad_form(x,P)@, $x^TPx$ for real $x$ and symmetric $P$,
 and $x^HPx$ for complex $x$ and Hermitian $P$.
 Convex in $x$ for $P$ constant and positive semidefinite;
@@ -2966,6 +3093,16 @@ integer constant:
 \item \verb@hermitian_semidefinite(n):@ 
 \begin{equation*}
 \herm^n_+ \eqbydef \Condset{Z\in\complex^{n\times n}}{Z=Z^H,~X\succeq 0}
+\end{equation*}
+\item \verb@nonneg_poly_coeffs(n):@ The cone of all coefficients of nonnegative
+polynomials of degree $n$; $n$ must be even:
+\begin{equation*}
+P_{+,n} \eqbydef \Condset{p\in\Rn[n+1]}{\sum_{i=0}^n p_{i+1} x^{n-i} \geq 0 ~ \forall x\in\R }
+\end{equation*}
+\item \verb@convex_poly_coeffs(n):@ The cone of all coefficients of convex
+polynomials of degree $n$; $n$ must be even:
+\begin{equation*}
+P_{+,n} \eqbydef \Condset{p\in\Rn[n+1]}{\sum_{i=0}^{n-2} (n-i)(n-i-1) p_{i+1} x^{n-i-2} \geq 0 ~ \forall x\in\R }
 \end{equation*}
 \end{itemize}
 
@@ -3199,6 +3336,62 @@ as it is a byproduct of the unified approach to verifying DCPs and GPs.)
 Such constructions are automatically recognized by \cvx, which utilizes the
 precision value $\epsilon_{GP}$ in determining the accuracy of their approximation.
 
+\section{The irrational power limitation}
+\label{sec:ratpow}
+\index{powers}
+\index{cvx_power_warning}
+
+In order to implement power expressions like $x^p$ and $p$-norms 
+$\|x\|_p$ for $1<p<\infty$, \cvx uses an SDP-compatible method
+described in \cite{Alizadeh}, and enhanced by the authors of \cvx.
+This approach is exact---as long as the
+exponent $p$ is rational. To determine integral values $p_n,p_d$ such
+that $p_n/p_d=p$, \cvx
+uses MATLAB's \verb@rat@ function with its default tolerance
+of $10^{-6}$. There is currently no way to change this tolerance.
+See the documentation for \verb@rat@  for more details.
+
+The complexity of the SDP implementation depends on roughly
+on the size of the values $p_n$ and $p_d$. Let us introduce
+a more precise measure of this complexity.
+For $p=2$, a constraint $x^p\leq y$ can be represented with exactly
+one $2\times 2$ LMI:
+\begin{equation*}
+	x^2 \leq y \quad\Longrightarrow\quad \bmat{ y & x \\ x & 1 } \succeq 0.
+\end{equation*}
+For other values of $p=p_n/p_d$, \cvx generates
+a number of $2\times 2$ LMIs that depends on 
+both $p_n$ and $p_d$; we denote this
+number by $k(p_n,p_d)$. (A number of internal variables and
+equality constraints are also
+generated, but we ignore them for this analysis.) 
+An empirical study has shown that for $p=p_n/p_d>1$, \cvx achieves
+\begin{equation*}
+k(p_n,p_d)\leq\log_2 p_n+\alpha(p_n),
+\end{equation*}
+where the  $\alpha(p_n)$ term
+grows very slowly compared to the $\log_2$ term.
+Indeed, for $p_n\leq 4096$, we have verified that $\alpha(p_n)$ is
+usually 1 or 2, but occasionally 0 or 3.
+Similar results are obtained for $0<p<1$ and $p<0$.
+
+The cost of this SDP representation
+is relatively small for nearly all useful values of $p$. Nevertheless,
+\cvx issues a warning whenever $k(p_n,p_d)>10$ to insure that the user
+is not surprised by any unexpected slowdown. In the event that this
+threshold does not suit you, you may change it using the command
+\verb@cvx_power_warning(@\emph{thresh}\verb@)@, where \emph{thresh}
+is the desired cutoff value. Setting the
+threshold to \verb@Inf@ disables it completely. 
+As with the command \verb@cvx_precision@, you can place a
+call to \verb@cvx_power_warning@ within a model
+to change the threshold for a single model; or
+outside of a model to make a global change. The command always
+returns the \emph{previous}
+value of the threshold, so you can save it and restore it upon completion
+of your model, if you wish. You can query the current value
+by calling \verb@cvx_power_warning@ with no arguments. 
+
 \section{Miscellaneous \cvx commands}
 \index{cvx_problem@\texttt{cvx\_problem}}
 \index{cvx_clear@\texttt{cvx\_clear}}
@@ -3385,13 +3578,13 @@ version of the specification corrects this problem by extracting the symmetric p
 We wish to thank the following people for their contributions to
 the development of \cvx:  Laurent El Ghaoui, Arpita Ghosh, 
 Siddharth Joshi, Johan L\"{o}fberg, Almir Mutapcic, Michael Overton
-and his students, Rahul Panicker, Jo\"{e}lle Skaf, 
+and his students, Art Owen, Rahul Panicker, Imre Polik, Jo\"{e}lle Skaf, 
 Lieven Vandenberghe, Argyris Zymnis. We are also grateful to the many
 students in several universities who have (perhaps unwittingly)
 served as beta testers by using \cvx in their classwork.
 
 \newpage
-\bibliography{cvxrefs}
+\bibliography{cvx_usrguide}
 \newpage
 \printindex
 \end{document}

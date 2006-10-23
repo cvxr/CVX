@@ -134,7 +134,20 @@
     <a href="http://www.stanford.edu/class/ee364/">convex optimization
     class</a>. Many thanks to them <i>and</i> to all of our
     faithful users for their testing and reports.
-
+    
+    <dt>Version 1.0, October 2006:</dt>
+    
+    <dd>Incorporated a new version of SeDuMi with much improved
+    SOCP support. The most interesting consequence of this improvement
+    is that problems involving absolute values, including 1-norms and
+    infinity norms, are now represented as SOCPs, in order to better
+    exploit structure.</dd>
+    
+    <dd>Added a new function <tt>pow_pos(x,p)</tt> which implements convex and
+    concave versions of the power function <tt>x^p</tt>. Also added support for
+    <tt>norm(x,p)</tt> for numerical values of <tt>p</tt> other than 1, 2, and
+    infinity. There are mild limitations to the approach used; see the user
+    guide for more details.
   </dl>
   <hr />
 

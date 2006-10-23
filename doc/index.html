@@ -15,7 +15,7 @@
   <h1><tt>CVX</tt>: Matlab Software for Disciplined Convex
   Programming</h1>
 
-  <h2>Version 1.0 beta 3 (June 2006)</h2>
+  <h2>Version 1.0 (October 2006)</h2>
 
   <h3><a href="http://www.stanford.edu/~mcgrant">Michael Grant</a>,
   <a href="http://www.stanford.edu/~boyd">Stephen Boyd</a>, and
@@ -25,21 +25,13 @@
 
   <ul>
     <li><a href="#intro">Introduction</a></li>
-
     <li><a href="#system">System requirements</a></li>
-
     <li><a href="#examples">The example library</a></li>
-
     <li><a href="#mail">The <tt>CVX</tt> mailing list</a></li>
-
     <li><a href="#feed">Request for feedback</a></li>
-
     <li><a href="#hist">Version history</a></li>
-
     <li><a href="#plans">Future plans</a></li>
-
     <li><a href="#copy">Copyright information</a></li>
-
     <li><a href="#down"><b>Download!</b></a></li>
   </ul>
 
@@ -52,23 +44,18 @@
   code segment randomly generates a constrained norm minimization
   problem, and solves it:</p>
 
-  <table cellspacing="0" cellpadding="0" summary=
-  "CVX code example">
+  <table cellspacing="0" cellpadding="0" summary="CVX code example">
     <tr>
-      <td width="15%"></td>
-
-      <td width="85%"><code>m = 20; n = 10; p = 4;<br />
+      <td width="10%"></td>
+      <td width="90%"><code>m = 20; n = 10; p = 4;<br />
       A = randn(m,n); b = randn(m,1);<br />
       C = randn(p,n); d = randn(p,1);<br />
       cvx_begin<br />
       &nbsp;&nbsp;&nbsp;&nbsp;variable x(n)<br />
-      &nbsp;&nbsp;&nbsp;&nbsp;minimize( norm( A * x - b, 2 )
-      )<br />
+      &nbsp;&nbsp;&nbsp;&nbsp;minimize( norm( A * x - b, 2 ) )<br />
       &nbsp;&nbsp;&nbsp;&nbsp;subject to<br />
-      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;C * x ==
-      d;<br />
-      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;norm( x, Inf
-      ) &lt;= 0.4;<br />
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;C * x == d;<br />
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;norm( x, Inf ) &lt;= 0.4;<br />
       cvx_end</code></td>
     </tr>
   </table>
@@ -188,25 +175,33 @@
   <p>The first public release of <tt>CVX</tt> was in July of 2005
   with version 0.80 alpha. Between July 2005 and March 2006, a
   number of incremental improvements and bug fixes were made,
-  culminating in the release of 0.93 alpha in March 2006.</p>
-
-  <p>Version 1.0 (beta) represents a major revision of the
-  software. Much of the system's internals have been reworked in
-  order to improve efficiency and performance, and to support the
-  addition of geometric programming support.</p>
+  culminating in the release of 0.93 alpha in March 2006. The
+  system's internals were considerably reworked for Version 1.0,
+  in order to improve efficiency and performance, and to add
+  support for geometric programming.</p>
 
   <p>For a more detailed version history, <a href=
   "history.html">click here.</a></p>
 
   <h3><a id="plans" name="plans">Future plans</a></h3>
-
-  <p>The next major revision will add support for smooth
-  nonlinearities. The current plan is to include <tt>log()</tt>,
-  <tt>exp()</tt>, <tt>entropy()</tt>, and convex and concave
-  branches of <tt>pow(x,p)</tt>. Others may be added upon request.
-  This revision will require the development of a new solver,
-  however, so its release date cannot be predicted at this
-  point.</p>
+  
+  <p>We intend to stabilize this version of <tt>CVX</tt> so
+  that we may focus on the next generation of the software. For
+  that reason, we do not anticipate adding a significant number
+  of additional functions to version 1.0, although we are
+  considering several: <tt>log()</tt>,
+  <tt>exp()</tt>, <tt>entropy()</tt>, and <tt>log(erfc())</tt>.
+  We will continue to respond to bug reports, however, and
+  issue updates as needed.
+  
+  <p>In the longer term, we are in the planning stages of
+  a significant redesign of CVX. The primary goal of this new
+  design will be to make it portable to a variety of platforms,
+  including R, Octave, Python, Mathematica, and others. This
+  version will also include the long-desired support for
+  smooth, non-SDP-representable nonlinearities. Needless to
+  say, this is an ambitious undertaking and we cannot yet
+  offer a predictions for when this version will be available.</p>
 
   <h3><a id="copy" name="copy">Copyright information</a></h3>
 
@@ -238,9 +233,11 @@
     <dt><tt>CVX</tt> requires Matlab 6.x or later, and should work "out of the box"
     on Windows, Linux (Intel), Solaris (Sparc), and MacOSX (PowerPC).
     For these platforms, installation is relatively simple:</dt>
-    <dd>1. Unpack the distribution wherever you like<br />
-    2. Fire up Matlab, and <tt>cd</tt> to the <tt>cvx/</tt> directory that was created<br />
-    3. <b>Important:</b> Run the command <tt>cvx_setup</tt> to configure the software.</dd>
+    <dd>1. If you already have an earlier version of CVX installed, <i>remove it
+    or move it out of the way.</i> Do not install this version on top of the old.<br />
+    2. Unpack the distribution wherever you like.<br />
+    3. Fire up Matlab, and <tt>cd</tt> to the <tt>cvx/</tt> directory that was created<br />
+    4. <b>Important:</b> Run the command <tt>cvx_setup</tt> to configure the software.</dd>
     <dt>For more detailed system requirements and installation instructions,
     see Appendix A of the user's guide, which is included in the <tt>doc/</tt>
     subdirectory of the distribution, or can be downloaded directly
@@ -253,14 +250,13 @@
   <h3><a id="note" name="node">Note for users of MATLAB 7.0</a></h3>
 
     <p>Version 7.0 of MATLAB (R14, R14SP1, R14SP2) rejects
-    certain CVX models, issuing syntax errors that are simply not correct.
+    certain <tt>CVX</tt> models, issuing syntax errors that are simply not correct.
     We have a special note about
-    this in Appendix A of the user's guide, including a very simple
+    this in section A.4 of the user's guide, including a very simple
     way to identify and work around the problem. So if you use this
     version of MATLAB, <i>please make sure to
-    read the note!</i> Prior and subsequent versions of Matlab, including
-    6.1 (R12), 6.5 (R13), 7.1 (R14SP3), and 7.2 (R2006a), do not seem to exhibit the problem,
-    so I would strongly recommend an upgrade at least to 7.1/R14SP3 if at all possible.</p>
+    read the note!</i> Earlier <i>and</i> later versions of MATLAB
+    do not exhibit this problem.
   <hr />
 
   <p><a href="../research.html">Stephen Boyd's research group
