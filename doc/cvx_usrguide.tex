@@ -156,24 +156,20 @@ and a general purpose solver we are developing.
 
 Because SeDuMi supports only LPs, SOCPs, and SDPs, this
 version of \cvx can only handle functions and sets that can be represented
-using these problem types, and problems that can be reduced to 
-these problem forms.
-The current version of \cvx includes such functions as
-\begin{itemize}
-	\item Maximum, minimum, absolute value;
-	\item $\ell_p$ norms, and certain convex and concave branches
-	      power function $x^p$;
-	\item Quadratic forms and convex and concave univariate polynomials;
-	\item The maximum or minimum eigenvalue of a symmetric matrix, and
-	      the maximum singular value of an unsymmetric matrix;
-	\item A few obscure functions such as the 
-          sum of the largest $k$ entries of a vector. 
-\end{itemize}
-Geometric programs are handled through a novel approximation
+using these problem types. Despite this limitation, the current version
+of \cvx includes a wide variety of functions, such as minimums and
+maximums, absolute values and $\ell_p$ norms, quadratic forms and square roots,
+forms of the power function $x^p$, the minimum and maximum eigenvalues
+of a symmetric matrix. A few obscure functions have also been included, 
+such as  the sum of the $k$ largest entries of a vector, and the
+convex envelopes of nonconvex polynomials.
+For a full list of functions supported by \cvx, 
+see Appendix \ref{s-functions}. 
+Geometric programs and the related log-sum-exp function
+are handled through a novel approximation
 method that is described briefly in Appendix \ref{sec:gp-approx}.
 
-For a more complete list of functions and sets supported by \cvx, 
-see Appendix \ref{s-functions}. Some useful functions that are \emph{not} supported in
+Some useful functions that are \emph{not} supported in
 the current version include exponential, log, and entropy.
 Support for such functions will require the use
 of one of the new solvers mentioned above.
@@ -184,17 +180,17 @@ of one of the new solvers mentioned above.
 \index{bug report}
 
 Any feedback and criticism you might
-have about this software, would be greatly appreciated.
+have about this software would be greatly appreciated.
 Please contact Michael Grant or Stephen Boyd 
 (\texttt{mcgrant@stanford.edu}, \texttt{boyd@stanford.edu}) with your comments. If
-you discover a bug, please try to include the following in your communication:
+you discover a bug, please include the following in your communication:
 \begin{itemize}
 \item the \cvx model and supporting data that caused the error;
 \item a copy of any error messages that it produced;
 \item the version number of Matlab that you are running; and
 \item the name and version of the operating system you are using.
 \end{itemize}
-Doing so will greatly increase our chances of being able to reproduce and fix the problem.
+Doing so will increase our chances of being able to reproduce and fix the problem.
 
 \subsection{What \cvx is \emph{not}}
 
@@ -2966,9 +2962,12 @@ Computes \emph{vector} norms along a specified dimension of a matrix
 or N-d array. Useful for sum-of-norms and max-of-norms problems.
 Convex.
 \item \verb@polyenv( p, x )@. 
-Computes the value of the \emph{convex envelope} of the polynomial
+Computes the value of the \emph{convex or concave envelope} of the polynomial
 described by \verb@p@ (in the \verb@polyval@ sense). \verb@p@ must be
-a real constant vector and \verb@x@ must be real and affine.
+a real constant vector whose length \verb@n@ is 0, 1, 2, 3, or some other
+\emph{odd} length; and \verb@x@ must be real and affine. The sign of the
+first nonzero element of \verb@p@ determines whether a convex (positive)
+or concave (negative) envelope is constructed.
 For example, consider the function $p(x)\eqbydef (x^2-1)^2=x^4-2x^2+1$,
 depicted along with its convex envelope in Figure~\ref{fig:envelope}.
 \begin{figure}
@@ -2982,7 +2981,7 @@ depicted along with its convex envelope in Figure~\ref{fig:envelope}.
 The two coincide when $|x|\geq 1$, but deviate when $|x|<1$. Attempting to call
 \verb@polyval([1,0,2,0,1],x)@ in a \cvx model would  yield an error,
 but a call to \verb@polyenv([1,0,2,0,1],x)@ yields a valid 
-representation of the envelope. For convex polynomials,
+representation of the envelope. For convex or concave polynomials,
 this function produces the same result as \verb@polyval@.
 \item \verb@pos@, $\max\{x,0\}$, for real $x$. 
 Convex and increasing.
