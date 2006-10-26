@@ -2,7 +2,7 @@
 
 function X = simple_step(A,B,DT,N)
 n  = size(A,1);
-Ad = expm( A * DT );
+Ad = expm( full( A * DT ) );
 Bd = ( Ad - eye(n) ) * B;
 Bd = A \ Bd;
 X  = zeros(n,N);
