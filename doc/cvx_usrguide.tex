@@ -881,12 +881,12 @@ use the longer form \verb@<=@, since it is mathematically correct.
 
 These equality and inequality operators work for arrays.
 When both sides of the constraint are arrays of the same size,
-the constraint is imposed elementwise.  If \verb@a@ and \verb@b@
-are $m \times n$ matrices, for example, then \verb@a<=b@
+the constraint is imposed elementwise. For example, if \verb@a@ and \verb@b@
+are $m \times n$ matrices, then \verb@a<=b@
 is interpreted by \cvx as $mn$ (scalar) inequalities, \ie,
 each entry of \verb@a@ must be less than or equal to
 the corresponding entry of \verb@b@.
-\cvx also handles equalities and inequalities where one side is 
+\cvx also handles cases where one side is 
 a scalar and the other is an array.  This is interpreted as a
 constraint for each element of the array, with the (same) scalar
 appearing on the other side.
@@ -896,7 +896,8 @@ must be nonnegative.
 
 Note also the important distinction between \verb@=@, which is an 
 assignment, and \verb@==@, which imposes an equality constraint
-(inside a \cvx specification); more about this in \S\ref{sec:eqass}.
+(inside a \cvx specification); for more on this distinction,
+see \S\ref{sec:eqass}.
 Also note that the non-equality operator \verb@~=@ may \emph{not}
 be used in a constraint, because such a constraint is rarely convex.
 Inequalities cannot be used if either side is complex.
@@ -925,7 +926,7 @@ An example of a function in the base library is
 quadratic-over-linear function, defined as $f(x,y)=x^Tx/y$,
 with domain $\R^n \times \R_{++}$, \ie,
 $x$ is an arbitrary vector in $\R^n$, and $y$ is a positive
-scalar.  (There is a version of this function that accepts
+scalar.  (The function also accepts
 complex $x$, but we'll consider real $x$ to keep things simple.)
 The quadratic-over-linear function is convex in 
 $x$ and $y$, and so can be 
@@ -1369,14 +1370,15 @@ While this list may seem long, it is for the most part an enumeration of basic
 rules of convex analysis for combining convex, concave, and affine forms: sums,
 multiplication by scalars, and so forth.
 \begin{itemize}
-\item A valid constant expression 
-is any well-formed Matlab expression that 
-evaluates to a finite numeric value.
+\item A valid constant expression is
+\begin{itemize}
+\item any well-formed Matlab expression that 
+evaluates to a finite value.
+\end{itemize}
 \item A valid affine expression is
 \begin{itemize}
 \item a valid constant expression;
-\item a declared %(non-geometric) 
-variable;
+\item a declared variable;
 \item a valid call to a function in the atom library with an affine result;
 \item the sums or difference of affine expressions;
 \item the product of an affine expression and a constant.
@@ -1386,7 +1388,7 @@ variable;
 \item a valid constant, affine, or log-convex expression 
 (\S\ref{sec:gpmode});
 \item a valid call to a function in the atom library with a convex result;
-\item an affine expression raised to an even positive integer power;
+\item an affine scalar raised to a power $p=2,4,6,8,...$;
 \item a convex scalar quadratic form (\S\ref{sec:quadforms});
 \item the sum of two or more convex expressions;
 \item the difference between a convex expression and a concave expression;
@@ -1398,6 +1400,7 @@ variable;
 \begin{itemize}
 \item a valid constant or affine expression;
 \item a valid call to a function in the atom library with a concave result;
+\item a concave scalar raised to a power $p\in(0,1)$;
 \item a concave scalar quadratic form (\S\ref{sec:quadforms});
 \item the sum of two or more concave expressions;
 \item the difference between a concave expression and a convex expression;
@@ -1574,9 +1577,8 @@ the above rule, so is
 if \verb@A@ and \verb@b@ are constant matrices of compatible size.
 
 DCP also allows nonlinear functions to be combined using more
-sophisticated composition rules. 
-The general
-DCP rules that govern these compositions are as follows:
+sophisticated composition rules. The general
+rules that govern these compositions are as follows:
 \begin{itemize}
 \item If a function is convex and nondecreasing in a given argument,
 then that argument may be convex.
@@ -1620,18 +1622,16 @@ expression
 \begin{code}
 sqrt(f'*x) + min(4,1.3-norm(A*x-b))
 \end{code}
-as concave. Consider, for example, the first term, \verb@sqrt(f'*x)@.
-\cvx recognizes \verb@f'*x@ as affine, and it knows that a concave
-increasing function of a concave function is concave, so it
-concludes that \verb@sqrt(f'*x)@ is concave.
-(Incidently, when \verb@sqrt@ is used inside a \cvx specification,
-it adds the constraint that its argument must
-be nonnegative.)
-\cvx recognizes that \verb@-norm(A*x-b)@ is concave,
-since it is the negative of a convex function;
-and it knows that the minimum of two concave functions is concave,
-so it concludes that the second term,  \verb@min(4,1.3-norm(A*x-b))@,
-is also concave.  The whole expression is then recognized as concave,
+as concave. Consider the term \verb@sqrt(f'*x)@. \cvx
+recognizes that \verb@sqrt@ is convex and \verb@f'*x@ is affine,
+so it concludes that \verb@sqrt(f'*x)@ is concave. Now consider
+the second term \verb@min(4,1.3-norm(A*x-b))@. \cvx
+recognizes that \verb@min@ is concave and nondecreasing, so
+it can accept concave arguments.
+\cvx recognizes that \verb@1.3-norm(A*x-b)@ is concave,
+since it is the negative of a convex function. So \cvx
+concludes that the second term is also concave.
+The whole expression is then recognized as concave,
 since it is the sum of two concave functions.
 
 As these composition rules are sufficient but not necessary,
@@ -1676,20 +1676,29 @@ It must instead require
 that outer functions be \emph{globally} monotonic.
 
 There are many ways to modify this example that it complies with the ruleset.
+The simplest is to take advantage of a recent addition to \cvx that allows
+affine expressions to be raised
+to a positive even integer power using the \verb@.^@ operator:
+\begin{code}
+	( A * x + b ).^4 <= 1
+\end{code}
+But let us look at some alternatives for further illustration.
 One is to recognize that a constraint such as
 \begin{code}
-	square( square( a * x + b ) ) <= 1
+	square( square( A * x + b ) ) <= 1
 \end{code}
 is equivalent to
 \begin{code}
-	square( a * x + b ) <= z
+	square( A * x + b ) <= z
 	square( z ) <= 1
 \end{code}
-where \verb@z@ is a new variable. The equivalence of this decomposition
+where \verb@z@ is a new variable of the same size as \verb@A*x+b@.
+The equivalence of this decomposition
 is a direct consequence of the monotonicity of 
 \verb@square@ when \verb@z@
 is nonnegative. In fact, \cvx performs this decomposition itself for
-those nonlinear compositions that it accepts.
+those nonlinear compositions that it accepts; \ie, those that
+satisfy the DCP ruleset.
 
 Another approach is to use an alternate outer function 
 \verb@square_pos@,
@@ -1702,7 +1711,7 @@ Obviously, \verb@square@ and \verb@square_pos@ coincide when their
 inputs are nonnegative. But \verb@square_pos@ is globally nondecreasing, so it
 can be used as the outer function in a nonlinear composition. Thus, the expression
 \begin{code}
-	square_pos( square( a * x + b ) )
+	square_pos( square( A * x + b ) )
 \end{code}
 is mathematically equivalent to the rejected version, but satisfies the DCP
 ruleset and is therefore acceptable to \cvx.
@@ -1721,7 +1730,9 @@ expression to be rewritten
 	power4( A * x + b )
 \end{code}
 and new expressions can now take advantage of the effort.
-In \S\ref{s-new-fcts}, we show how to accomplish this.
+In \S\ref{s-new-fcts}, we show how to accomplish this. (Of course,
+in this particular case, it is no longer necessary, since \cvx
+supports positive even powers natively.)
 
 \subsection{Scalar quadratic forms}
 \label{sec:quadforms}
@@ -1738,7 +1749,7 @@ directly to certain convex quadratic functions (or their concave negatives)
 in the \cvx atom library:
 \begin{center}
 	\begin{tabular}{ccc}
-	\verb@square( x )@ & $\Longleftarrow$ & \verb@conj(x) .* x@ \\
+	\verb@square( x )@ & $\Longleftarrow$ & \verb@conj( x ) .* x@ \\
 	\verb@sum_square( y )@ & $\Longleftarrow$ & \verb@y' * y@ \\
 	\verb@quad_form( A * x - b, Q )@ & $\Longleftarrow$ &  \verb@(A*x-b)'*Q*(Ax-b)@
 	\end{tabular}
@@ -2658,7 +2669,7 @@ see \S\ref{sec:othersys} before proceeding.
 We have identified an issue that occasionally causes problems using \cvx
 with Matlab 7.0.x (R14,R14SP1,R14SP2), on all platforms. Prior and subsequent
 versions of Matlab are not affected. Fortunately, the workaround is
-simple; see \label{sec:sevenprob} below for more details.
+simple; see \S\ref{sec:sevenprob} below for more details.
 
 \subsection{Basic instructions}
 \label{sec:winlin}
@@ -2983,8 +2994,9 @@ The two coincide when $|x|\geq 1$, but deviate when $|x|<1$. Attempting to call
 but a call to \verb@polyenv([1,0,2,0,1],x)@ yields a valid 
 representation of the envelope. For convex or concave polynomials,
 this function produces the same result as \verb@polyval@.
-\item \verb@pos@, $\max\{x,0\}$, for real $x$. 
+\item \verb@pos@: $\max\{x,0\}$, for real $x$. 
 Convex and increasing.
+\item \verb@pow_abs(x,p)@: $|x|^p$ for $x\in\R$ or $x\in\C$ and $p\geq 1$. Convex.
 \item \verb@pow_pos(x,p)@, for real \verb@x@ and real constant \verb@p@,
 computes monotonic extensions of certain convex and concave branches of
 the power function:
@@ -3001,8 +3013,8 @@ the power function:
 	&& \quad \text{convex, nondecreasing}
 	\end{aligned}
 \end{equation*}
-If \verb@p@ is irrational, a nearby rational value is used
-instead; see Appendix \ref{sec:ratpow} for details.
+If \verb@p@ is irrational, a nearby rational value is chosen;
+see Appendix \ref{sec:ratpow} for details.
 \item \verb@quad_form(x,P)@, $x^TPx$ for real $x$ and symmetric $P$,
 and $x^HPx$ for complex $x$ and Hermitian $P$.
 Convex in $x$ for $P$ constant and positive semidefinite;
@@ -3024,9 +3036,9 @@ Convex, increasing in $x$, and decreasing in $y$.
 %if $x \leq 0$ or $y\leq 0$. Convex.
 \item \verb@sigma_max@: maximum singular value of real or 
 complex matrix.  Same as \verb@norm@.  Convex.
-\item \verb@square@: $x^2$ for $x \in \R$;
-$|x|^2$ for $x \in \complex$.
+\item \verb@square@: $x^2$ for $x \in \R$.
 Convex.
+\item \verb@square_abs@: $|x|^2$ for $x\in\R$ or $x\in\C$.
 \item \verb@square_pos@: $\max\{x,0\}^2$ for $x\in\R$.
 Convex and increasing.
 \item \verb@sum_largest(x,k)@ sum of the largest $k$ values, for
@@ -3036,6 +3048,7 @@ Convex and increasing.
 \ie, \verb@-sum_smallest(-x,k)@.
 Concave and decreasing.
 \item \verb@sum_square@: \verb@sum( square( x ) )@. Convex.
+\item \verb@sum_square_abs@: \verb@sum( square_abs( x ) )@. Convex.
 \item \verb@sum_square_pos@: \verb@sum( square_pos( x ) )@; 
 works only for real values. Convex and increasing.
 \end{itemize}
@@ -3068,6 +3081,10 @@ integer constant:
 \item \verb@nonnegative(n)@:
 \begin{equation*}
 	\reals^n_+ \eqbydef \Condset{x\in\Rn}{x_i\geq 0,~i=1,2,\dots,n}
+\end{equation*}	
+\item \verb@simplex(n)@:
+\begin{equation*}
+	\reals^n_{1+} \eqbydef \Condset{x\in\Rn}{x_i\geq 0,~i=1,2,\dots,n,~\TS\sum_ix_i=1}
 \end{equation*}	
 \item \verb@lorentz(n)@:
 \begin{equation*}
@@ -3154,7 +3171,7 @@ identically to the ``accurate'' cases. Two final results are also possible:
 	\item \verb@Failed@: The solver failed to make sufficient progress towards
 	      a solution. The values of \verb@cvx_optval@ and primal and dual
 	      variables are filled with \verb@NaN@s. This result can occur because
-	      of significant numerical problems within SeDuMi, or because the problem
+	      of numerical problems within SeDuMi, often because the problem
 	      is particularly ``nasty'' in some way (\eg, a non-zero duality gap).
 	\item \verb@Overdetermined@: The presolver has determined that the problem
 	      has more equality constraints than variables, which means that the coefficient
@@ -3212,7 +3229,7 @@ the standard precision, and the larger value as the reduced precision.
 
 The \verb@cvx_precision@ command can be used either \emph{within} a \cvx model or
 \emph{outside} of it; and its behavior differs in each case. If you call it from
-within a model, for example,
+within a model, \eg,
 \begin{code}
 	cvx_begin
 	    cvx_precision high
@@ -3220,7 +3237,7 @@ within a model, for example,
 	cvx_end
 \end{code}
 then the setting you choose will apply only until \verb@cvx_end@ is reached. If you call it outside
-a model, for example,
+a model, \eg,
 \begin{code}
 	cvx_precision high
 	cvx_begin
