@@ -117,8 +117,9 @@ for i = 1 : npts + xnpts,
 
         % compute threshold delay, elmore delay, dominant time constant
         tthres=T(min(find(Y(n,:)>0.5)));
-        tdom=max(eig(full(inv(G)*C)));
-        telm=max(sum((inv(G)*C)'));
+        GinvC=full(G\C);
+        tdom=max(eig(GinvC));
+        telm=max(sum(GinvC'));
         plot(tdom*[1;1], [0;1], '--', telm*[1;1], [0;1],'--', ...
              tthres*[1;1], [0;1], '--');
         text(tdom,0,'d');
