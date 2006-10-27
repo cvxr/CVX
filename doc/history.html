@@ -135,20 +135,28 @@
     class</a>. Many thanks to them <i>and</i> to all of our
     faithful users for their testing and reports.
     
-    <dt>Version 1.0, October 2006:</dt>
+    <dt>Version 1.0RC, October 2006:</dt>
     
-    <dd>Incorporated a new version of SeDuMi with much improved
-    SOCP support. The most interesting consequence of this improvement
-    is that problems involving absolute values, including 1-norms and
-    infinity norms, are now represented as SOCPs, in order to better
-    exploit structure.</dd>
+    <dd>Added support for Matlab R2006b.</dd>
     
-    <dd>Added a new function <tt>pow_pos(x,p)</tt> which implements convex and
-    concave versions of the power function <tt>x^p</tt>. Also added support for
-    <tt>norm(x,p)</tt> for numerical values of <tt>p</tt> other than 1, 2, and
-    infinity. There are mild limitations to the approach used; see the user
-    guide for more details.
-  </dl>
+    <dd>Incorporated SeDuMi 1.1R3, and added an additional bug fix. 
+    
+    <dd>The absolute value function is now represented using a second-order
+    cone to better exploit sparsity. This also impacts 1-norms and
+    infinity-norms.</dd>
+    
+    <dd>Added support for <i>p</i>-norms for values of <i>p</i> other than
+    1, 2, and infinity; and added support for expressions of the form
+    <tt>x^p</tt> where <tt>p</tt> is a positive even integer OR a real
+    integer between 0 and 1. See the user guide for a very mild
+    caution on the use of powers and <i>p</i>-norms.</dd>
+    
+    <dd>New and/or improved functions: <tt>pow_pos(x,p)</tt>, <tt>pow_abs(x,p)</tt>,
+    <tt>norm(x,p)</tt>, <tt>huber(x,M,t)</tt>, <tt>berhu(x,M,t)</tt>.
+    
+    <dd>New sets: <tt>nonneg_poly_coeffs(deg)</tt> and
+    <tt>convex_poly_coeffs(deg)</tt>.</dd>
+    </dl>
   <hr />
 
   <p><a href="index.html">The <tt>CVX</tt> main page</a><br />
