@@ -2057,83 +2057,10 @@ In this section we describe a number of the more advanced capabilities of \cvx.
 We recommend that you \emph{skip} this section at first, until you are comfortable
 with the basic capabilities described above.
 
-\subsection{Indexed dual variables}
-\label{sec:indexeddual}
-
-In some models, the \emph{number} of constraints depends on the model
-parameters---not just their sizes. It is
-straightforward to build such models in \cvx using, say, a
-Matlab \verb@for@ loop. In order to assign each of these constraints
-a separate dual variable, we must find a way to adjust the number of
-dual variables as well. For this reason, \cvx supports
-\emph{indexed dual variables}. In reality, they are simply standard
-Matlab cell arrays whose entries are \cvx dual variable objects.
-
-Let us illustrate by example how to declare and use indexed dual
-variables. Consider the following semidefinite program:
-\begin{equation}
-	\begin{array}{ll}
-		\text{minimize}   & \sum_{i=1}^n (n-i) X_{ii} \\
-		\text{subject to} & \sum_{i=1}^n X_{i,i+k} = b_k, ~ k = 1,2,\dots,n \\
-				  & X \succeq 0
-	\end{array}
-\end{equation}
-(\cite{Stu:99}). This problem minimizes a weighted sum of the main diagonal
-of a positive semidefinite matrix, while holding the sums along each diagonal
-constant. The parameters of the problem are
-the elements of the vector $b\in\Rn$, and the optimization variable is a
-symmetric matrix $X\in\Rnn$. The \cvx version of this model is
-\begin{code}
-	cvx_begin
-	    variable X( n, n ) symmetric
-	    minimize( ( n - 1 : -1 : 0 ) * diag( X ) );
-	    for k = 0 : n-1,
-	        sum( diag( X, k ) ) == b( k+1 );
-	    end
-	    X == semidefinite(n);
-	cvx_end
-\end{code}
-If we wish to obtain dual information for the $n$ simple equality constraints,
-we need a way to assign each constraint in the \verb@for@ loop a separate dual variable.
-This is accomplished as follows:
-\begin{code}
-	cvx_begin
-	    variable X( n, n ) symmetric
-	    dual variables y{n}
-	    minimize( ( n - 1 : -1 : 0 ) * diag( X ) );
-	    for k = 0 : n-1,
-	        sum( diag( X, k ) ) == b( k+1 ) : y{k+1};
-	    end
-	    X == semidefinite(n);
-	cvx_end
-\end{code}
-The statement
-\begin{code}
-	dual variables y{n}
-\end{code}
-allocates a cell array $n$ dual variables, and stores the result in the Matlab
-variable \verb@Z@. The equality constraint in the \verb@for@ loop has been augmented
-with a reference to \verb@y{k+1}@, so that each constraint is assigned a separate
-dual variable.
-When the \verb@cvx_end@ command is issued, \cvx will compute the optimal values
-of these dual variables, and deposit them into an $n$-element cell array \verb@y@.
-
-This example admittedly is a bit simplistic. With a bit of careful arrangement,
-it is possible to rewrite this model so that the $n$ equality constraints can be
-combined into a single vector constraint, which in turn would require only a single
-vector dual variable.\footnote{Indeed, a future version of \cvx will support the
-use of the Matlab function \texttt{spdiags}, which will reduce the entire for loop
-to the single constraint \texttt{spdiags(X,0:n-1)==b.}} For a more complex example
-that is not amenable to such a simplification, see the file
-\begin{code}
-	examples/cvxbook/Ch07_statistical_estim/cheb.m
-\end{code}
-in the \cvx distribution.
-In that problem, each constraint in the \verb@for@ loop is a linear matrix
-inequality, not a scalar linear equation;
-so the indexed dual variables are symmetric matrices, not scalars.
-
-\subsection{Expanding the \cvx atom library}
+\subsection{Adding new functions to the \cvx atom library}
+\label{s-new-fcts}
+\index{function!defining new}
+\index{defining new function}
 
 The restrictions imposed by the DCP ruleset imply that,
 for a fixed atom library, the variety of constraints and objective 
@@ -2141,24 +2068,17 @@ functions that can be constructed is limited.
 Thus in order to preserve generality in
 disciplined convex programming, the atom library must be extensible.
 \cvx allows
-you to define new convex and concave functions, and new convex sets, 
-that can be used in \cvx specifications. 
-This can be accomplished in a number of
-ways, which we describe in this section.
+you to define new convex and concave functions
+that can be used in \cvx specifications.
+This can be accomplished in two ways, both of
+which we describe in this section.
 
-\subsubsection{Defining new functions via overloading}
-\label{s-new-fcts}
-
-\index{function!defining new}
-\index{defining new function}
-The simplest method of constructing a new function is to use the 
-standard function definition mechanism in Matlab, and to rely on
-the overloaded operators to do the right thing when the function is
-invoked inside a \cvx specification.
-
+The simplest way to construct a new function that works within \cvx
+is to construct it using expressions that fully conform to the DCP
+ruleset.
 \index{deadzone function}
 \index{function!deadzone}
-To illustrate this, we consider the \emph{deadzone} function,
+To illustrate this, consider the convex \emph{deadzone} function,
 defined as
 \[
 f(x) = \max \{ |x|-1, 0 \} =
@@ -2168,50 +2088,46 @@ x-1 & x > 1\\
 1-x & x <-1
 \end{array}\right.
 \]
-The deadzone function is convex in $x$.  
-
-It's very straightforward to add this function to \cvx.   In a file
-\verb@deadzone.m@ we put the following code:
+To implement this function in \cvx, simply create a file \verb@deadzone.m@
+containing
 \begin{code}
 	function y = deadzone( x )
 	y = max( abs( x ) - 1, 0 )
 \end{code}
-This is nothing but a standard Matlab function, and it works
-outside of \cvx 
-(\ie, when it arguments are numerical), and also inside
-\cvx (when its arguments are expressions).
-The reason it works inside a \cvx specification is that the operations
-carried out all conform to the rules of DCP:
+This function works just as you expect it would outside of \cvx---\ie,
+when its argument is numerical. But thanks to Matlab's operator
+overloading capability, it will also work within \cvx if called with an affine
+argument. \cvx will properly conclude that the function is convex,
+because all of the operations
+carried out conform to the rules of DCP:
 \verb@abs@ is recognized as a convex function; we can subtract 
 a constant from it, and we can take the maximum of the result and 
-\verb@0@, which yields a convex function.
-Inside \cvx, we can use \verb@deadzone@ anywhere we can
-use \verb@norm@, for example; 
-\cvx knows that it is a convex function.
+\verb@0@, which yields a convex function. So we are free
+to use \verb@deadzone@ anywhere in a \cvx specification that we might
+use \verb@abs@, for example,
+because \cvx knows that it is a convex function.
 
-Now consider what happens if we replace \verb@max@ with \verb@min@
-in our definition of the \verb@deadzone@ function.
-(The function $\min \{ |x|-1, 0 \}$ is neither convex nor concave.)
-The modified function will work \emph{outside}
-a \cvx specification, happily computing and returning 
-the \emph{number} $\min \{|x|-1,0\}$, given a \emph{numerical}
-argument $x$.
-But inside a \cvx specification, and invoked 
-with a nonconstant argument,
-the modified function won't work,
-since we haven't followed the DCP composition rules.
+Let us emphasize that when defining a function this way, the
+the expressions you use \emph{must} conform to the DCP ruleset, just as
+they would if they had been inserted directly into a \cvx model. For
+example, if we replace \verb@max@ with \verb@min@ above; \eg,
+\begin{code}
+	function y = deadzone_bad( x )
+	y = min( abs( x ) - 1, 0 )
+\end{code}
+then the modified function fails to meet the DCP ruleset. The
+function will work \emph{outside} of a \cvx specification,
+happily computing
+the $\min \{|x|-1,0\}$ for a \emph{numerical}
+argument $x$. But inside a \cvx specification, invoked 
+with a nonconstant argument, it will not work, because
+it doesn't follow the DCP composition rules.
 
-This method of defining an ordinary function, and relying on
-overloading of operators inside a \cvx specification,
-works provided you make sure that all the 
-calculations carried out inside
-the function satisfy the DCP composition rules.
-
-\subsubsection{Defining new functions via incomplete specifications}
-
+A more advanced method for defining new functions in \cvx
+is also possible, and relies on the following basic result of conex
+analysis.
 Suppose that $S\subset\R^n\times\R^m$ is a convex set and 
-$g:(\R^n\times\R^m)\rightarrow(\R\cup+\infty)$ is a convex function.
-Then convex analysis tells us that
+$g:(\R^n\times\R^m)\rightarrow(\R\cup+\infty)$ is a convex function; then
 \begin{equation}
 	\label{eq:partial}
 	f:\R^n\rightarrow(\R\cup+\infty), \quad f(x) \triangleq \inf\Condset{g(x,y)}{(x,y)\in S }
@@ -2635,6 +2551,297 @@ for example, \verb@sum@ is both nondecreasing and p-nondecreasing. The
 reverse implication is \emph{not} true; for example,
 \verb@norm( x, q )@ is p-nondecreasing in x, but nonmonotonic.
 \fi
+
+\subsection{Controlling solver precision}
+\label{sec:precision}
+\index{precision!changing}
+\index{cvx_precision@\texttt{cvx\_precision}}
+
+Numerical methods for convex optimization are not exact; they compute their results
+to within a predefined numerical precision or tolerance. The precision chosen by default in \cvx,
+which in turn is inherited from the defaults chosen by its solver SeDuMi, should
+be entirely acceptable for most applications. Nevertheless, you may wish to tighten
+or relax that precision in some applications.
+
+There are several ways to call the \verb@cvx_precision@ command. If you call it with no arguments,
+it simply returns a two-element vector of the current precision settings. The first element
+in that vector is the standard precision; the precision the solver must obtain to return
+\verb@Solved@, \verb@Unbounded@, or \verb@Infeasible@. The second element in the vector is
+the ``reduced'' precision, the precision that the solver must achieve in order to
+return \verb@Solved/Inaccurate@, \verb@Unbounded/Inaccurate@, \verb@Infeasible/Inaccurate@.
+
+Calling \verb@cvx_precision@ with an argument allows you to actually \emph{change} the
+precision level. One way is to supply a string as an argument, either in command mode
+or function mode, chosen from one of five values:
+\begin{itemize}
+	\item \verb@cvx_precision low@:      $\text{standard} = \text{reduced} = \epsilon^{1/4} \approx 1.2\times10^{-4}$.
+	\item \verb@cvx_precision medium@:   $\text{standard} = \epsilon^{3/8} \approx 1.3\times10^{-6}$, $\text{reduced} = \epsilon^{1/4}$.
+	\item \verb@cvx_precision default@:  $\text{standard} = \epsilon^{1/2} \approx 1.5\times10^{-8}$, $\text{reduced} = \epsilon^{1/4}$.
+	\item \verb@cvx_precision high@:     $\text{standard} = \epsilon^{3/4} \approx 1.1\times10^{-11}$, $\text{reduced} = \epsilon^{3/8}$.
+	\item \verb@cvx_precision best@:     $\text{standard} = 0$, $\text{``reduced''} = \epsilon^{1/2}$  (see below).
+\end{itemize}
+In function mode, these calls look like \verb@cvx_precision('low')@, etc.
+The \verb@best@ precision setting is special: it instructs the solver to continue until it is
+completely unable to make progress. Then, as long as it reaches at least the ``reduced'' precision
+of $\epsilon^{1/2}$, it may claim a successful solution; otherwise,
+it returns a \verb@cvx_status@ value of \verb@Failed@. An \verb@Inaccurate@ status value is 
+not possible in \verb@best@ mode (nor, for that matter, in \verb@low@ mode, which
+sets the standard and reduced precisions to be identical).
+
+The \verb@cvx_precision@ command can also be called with either a scalar or a
+length-two vector. If you pass it a scalar, it will assume that as the standard
+precision, and it will compute a default reduced precision value for you.
+Roughly speaking, that reduced precision will be the square root of the standard
+precision, with some bounds imposed to make sure that it stays reasonable. If
+you supply a vector of values, then the smallest value will be chosen as
+the standard precision, and the larger value as the reduced precision.
+
+The \verb@cvx_precision@ command can be used either \emph{within} a \cvx model or
+\emph{outside} of it; and its behavior differs in each case. If you call it from
+within a model, \eg,
+\begin{code}
+	cvx_begin
+	    cvx_precision high
+	    ...
+	cvx_end
+\end{code}
+then the setting you choose will apply only until \verb@cvx_end@ is reached. If you call it outside
+a model, \eg,
+\begin{code}
+	cvx_precision high
+	cvx_begin
+	    ...
+	cvx_end
+\end{code}
+then the setting you choose will apply \emph{globally}; that is, to any
+subsequent models that are created and solved. The local approach should be
+preferred in an application where multiple models are constructed and solved
+at different levels of precision.
+with multiple precision
+
+If you call \verb@cvx_precision@ in function mode, either with a string or a numeric
+value, it will return as its output the \emph{previous} precision vector---the same
+result you would obtain if you called it with no arguments. This may
+seem confusing at first, but this is done so that you can save the previous value
+in a variable, and restore it at the end of your calcuations; e.g.,
+\begin{code}
+	cvxp = cvx_precision( 'high' );
+	cvx_begin
+		...
+	cvx_end
+	cvx_precision( cvxp );
+\end{code}
+This is considered good coding etiquette in a larger application where multiple 
+\cvx models at multiple precision levels may be employed. Of course, a simpler but
+equally courteous approach is to call \verb@cvx_precision@ within the \cvx
+model, as described above, so that its effect lasts only for that model.
+
+\subsection{Miscellaneous \cvx commands}
+\index{cvx_problem@\texttt{cvx\_problem}}
+\index{cvx_clear@\texttt{cvx\_clear}}
+\index{cvx_quiet@\texttt{cvx\_quiet}}
+\index{cvx_pause@\texttt{cvx\_pause}}
+\index{cvx_where@\texttt{cvx\_where}}
+\index{output!suppressing}
+
+\begin{itemize}
+\item \verb+cvx_problem+: typing this within a \cvx specification provides a summary
+of the current problem. Note that this will contain a \emph{lot} of information
+that you may not recognize---\cvx performs its conversion to canonical form
+\emph{as the problem is entered}, generating extra temporary variables and
+constraints in the process.
+\item \verb+cvx_clear+: typing this resets the \cvx system, clearing any and all problems
+from memory, but without erasing any of your numeric data.
+This is useful if you make a mistake and need to start over. But note that in current
+versions of \cvx, you can simply start another model with \verb@cvx_begin@, and
+the previous model will be erased (with a warning).
+\item \verb@cvx_quiet@: typing \verb@cvx_quiet(true)@ suppresses screen
+output from the solver. Typing \verb@cvx_quiet(false)@ restores the screen
+output. In each case, it returns a logical value representing the \emph{previous}
+state of the quiet flag, so you can restore that state later if you wish---which
+is good practice if you wish to share your code with others.
+\item \verb@cvx_pause@: typing \verb@cvx_pause(true)@ causes \cvx to pause and
+wait for keyboard input before \emph{and} after the solver is called. Useful
+primarily for demo purposes. Typing \verb@cvx_pause(false)@ resets the behavior.
+In each case, it returns a logical value representing the \emph{previous} state
+of the pause flag, so you can restore that state later if you wish.
+\item \verb@cvx_where@: returns the directory where the \cvx distribution
+has been installed---assuming that the Matlab path has been set to include
+that distribution. Useful if you want to find certain helpful subdirectories,
+such as \verb@doc@, \verb@examples@, \emph{etc.}
+\end{itemize}
+
+\subsection{Assignments versus equality constraints}
+\label{sec:eqass}
+\index{assignment}
+\index{equality constraint}
+\index{constraint!equality} 
+
+Anyone who has used the C or Matlab languages for a sufficiently long time
+understands the differences between \emph{assignments}, which employ a single
+equals sign \verb@=@ operator, and an \emph{equality}, which employs the
+double equal \verb@==@ operator. In \cvx, this distinction is particularly
+important, so let us address it for a moment.
+
+The consequences of using assignments within a \cvx specification, whether
+accidentally or inadvertently, can often cause subtle problems, so in certain
+instances, \cvx takes steps to prevent you from doing anything dangerous.
+For example, suppose $A,C\in\Rnn$ and $b\in\R$ are given, and
+consider the simple SDP
+\begin{equation}
+	\begin{array}{ll}
+		\text{minimize} & \Tr{CX} \\
+		\text{subject to} & \Tr{AX} = b \\
+		& X \succeq 0
+	\end{array}
+\end{equation}	
+Suppose that we tried to express this problem in \cvx as follows:
+\begin{code2}[firstnumber=1]
+	n = 5;
+	A = randn(n,n); C = randn(n,n); b = randn;
+	cvx_begin
+	    variable X(n,n) symmetric;
+	    minimize( trace( C * X ) );
+	    subject to
+	        trace( A * X ) == b;
+	        X = semidefinite(n);		!label{code:badass}
+	cvx_end
+\end{code2}
+At first glance, line~\ref{code:badass} looks like it constrains \verb@X@ to be positive
+semidefinite; but in fact, it is an assignment, not an equality constraint. So
+it actually \emph{overwrites} the
+variable \verb@X@ with an anonymous, positive semidefinite variable; and \verb@X@
+is \emph{not} constrained to be positive semidefinite. The numerical
+consequences are, of course, considerable---but Matlab (and previous versions of \cvx)
+would happily accept and process this problem without complaint, leaving you (perhaps)
+mystified why the results are not what you expect.
+
+No longer. From now on, when \verb@cvx_end@ is reached, \cvx will examine each 
+declared variable, primal and dual, and verify that it still points to the object it was originally
+assigned upon declaration. If it does not, 
+it will issue an error like this:
+\begin{code}
+	??? Error using ==> cvx_end
+	The following cvx variable(s) have been overwritten:
+	   X
+	This is often an indication that an equality constraint was
+	written with one equals '=' instead of two '=='. The model
+	must be rewritten before cvx can proceed.
+\end{code}	
+We hope that this check will prevent at least some typographical errors from 
+having frustrating consequences in your models.
+
+Of course, this single check does not prevent you from using \emph{all} assignments 
+inside your \cvx specifications, only those that overwrite formally declared variables.
+Other kinds of assignments are still permitted; and in some cases, they may be genuinely
+useful. For example, consider the following \cvx excerpt:
+\begin{code}
+	variables x y
+	z = 2 * x - y;
+	square( z ) <= 3;
+	quad_over_lin( x, z ) <= 1;
+\end{code}
+This excerpt uses a Matlab variable \verb@z@ to hold an
+intermediate calculation \verb@2 * x - y@ so that it can be used in two different constraints.
+It is technically correct, and \cvx will do the right thing with it. In fact, if the value
+of \verb@z@ is not altered for the remainder of the problem, \cvx will actually replace it
+with its proper \emph{numerical} value (\ie, \verb@2 * x - y@) after solving the problem.
+
+Having said that, the following alternative formulation, which declares \verb@z@
+as a formal variable, is numerically equivalent:
+\begin{code}
+	variables x y z
+	z == 2 * x - y;
+	square( z ) <= 3;
+	quad_over_lin( x, z ) <= 1;
+\end{code}
+This is the approach we would recommend that you adopt instead. Declaring intermediate
+calculations as variables provides an extra measure of clarity in your models, in our
+opinion. You need not worry that these ``extra'' variables will make your models slower. 
+In fact, in many cases, this
+practice may \emph{improve} performance by exposing more of your problem's structure.
+Even when this is not the case, \cvx's presolve routine insures that it will perform
+no \emph{worse} than the first form.
+
+What about assignments involving purely constant expressions, such as \verb@a=2@?
+We would simply recommend that for style reasons they be placed \emph{before}
+the \verb@cvx_begin@ command, as we do in the examples presented in this document.
+
+\subsection{Indexed dual variables}
+\label{sec:indexeddual}
+
+In some models, the \emph{number} of constraints depends on the model
+parameters---not just their sizes. It is
+straightforward to build such models in \cvx using, say, a
+Matlab \verb@for@ loop. In order to assign each of these constraints
+a separate dual variable, we must find a way to adjust the number of
+dual variables as well. For this reason, \cvx supports
+\emph{indexed dual variables}. In reality, they are simply standard
+Matlab cell arrays whose entries are \cvx dual variable objects.
+
+Let us illustrate by example how to declare and use indexed dual
+variables. Consider the following semidefinite program:
+\begin{equation}
+	\begin{array}{ll}
+		\text{minimize}   & \sum_{i=1}^n (n-i) X_{ii} \\
+		\text{subject to} & \sum_{i=1}^n X_{i,i+k} = b_k, ~ k = 1,2,\dots,n \\
+				  & X \succeq 0
+	\end{array}
+\end{equation}
+(\cite{Stu:99}). This problem minimizes a weighted sum of the main diagonal
+of a positive semidefinite matrix, while holding the sums along each diagonal
+constant. The parameters of the problem are
+the elements of the vector $b\in\Rn$, and the optimization variable is a
+symmetric matrix $X\in\Rnn$. The \cvx version of this model is
+\begin{code}
+	cvx_begin
+	    variable X( n, n ) symmetric
+	    minimize( ( n - 1 : -1 : 0 ) * diag( X ) );
+	    for k = 0 : n-1,
+	        sum( diag( X, k ) ) == b( k+1 );
+	    end
+	    X == semidefinite(n);
+	cvx_end
+\end{code}
+If we wish to obtain dual information for the $n$ simple equality constraints,
+we need a way to assign each constraint in the \verb@for@ loop a separate dual variable.
+This is accomplished as follows:
+\begin{code}
+	cvx_begin
+	    variable X( n, n ) symmetric
+	    dual variables y{n}
+	    minimize( ( n - 1 : -1 : 0 ) * diag( X ) );
+	    for k = 0 : n-1,
+	        sum( diag( X, k ) ) == b( k+1 ) : y{k+1};
+	    end
+	    X == semidefinite(n);
+	cvx_end
+\end{code}
+The statement
+\begin{code}
+	dual variables y{n}
+\end{code}
+allocates a cell array $n$ dual variables, and stores the result in the Matlab
+variable \verb@Z@. The equality constraint in the \verb@for@ loop has been augmented
+with a reference to \verb@y{k+1}@, so that each constraint is assigned a separate
+dual variable.
+When the \verb@cvx_end@ command is issued, \cvx will compute the optimal values
+of these dual variables, and deposit them into an $n$-element cell array \verb@y@.
+
+This example admittedly is a bit simplistic. With a bit of careful arrangement,
+it is possible to rewrite this model so that the $n$ equality constraints can be
+combined into a single vector constraint, which in turn would require only a single
+vector dual variable.\footnote{Indeed, a future version of \cvx will support the
+use of the Matlab function \texttt{spdiags}, which will reduce the entire for loop
+to the single constraint \texttt{spdiags(X,0:n-1)==b.}} For a more complex example
+that is not amenable to such a simplification, see the file
+\begin{code}
+	examples/cvxbook/Ch07_statistical_estim/cheb.m
+\end{code}
+in the \cvx distribution.
+In that problem, each constraint in the \verb@for@ loop is a linear matrix
+inequality, not a scalar linear equation;
+so the indexed dual variables are symmetric matrices, not scalars.
 
 \newpage
 \appendix
@@ -3183,90 +3390,6 @@ identically to the ``accurate'' cases. Two final results are also possible:
 The situations that most commonly produce an \verb@Overdetermined@ result are discussed
 in \S\ref{sec:overdetermined} below.
 
-\section{Controlling solver precision}
-\label{sec:precision}
-\index{precision!changing}
-\index{cvx_precision@\texttt{cvx\_precision}}
-
-Numerical methods for convex optimization are not exact; they compute their results
-to within a predefined numerical precision or tolerance. The precision chosen by default in \cvx,
-which in turn is inherited from the defaults chosen by its solver SeDuMi, should
-be entirely acceptable for most applications. Nevertheless, you may wish to tighten
-or relax that precision in some applications.
-
-There are several ways to call the \verb@cvx_precision@ command. If you call it with no arguments,
-it simply returns a two-element vector of the current precision settings. The first element
-in that vector is the standard precision; the precision the solver must obtain to return
-\verb@Solved@, \verb@Unbounded@, or \verb@Infeasible@. The second element in the vector is
-the ``reduced'' precision, the precision that the solver must achieve in order to
-return \verb@Solved/Inaccurate@, \verb@Unbounded/Inaccurate@, \verb@Infeasible/Inaccurate@.
-
-Calling \verb@cvx_precision@ with an argument allows you to actually \emph{change} the
-precision level. One way is to supply a string as an argument, either in command mode
-or function mode, chosen from one of five values:
-\begin{itemize}
-	\item \verb@cvx_precision low@:      $\text{standard} = \text{reduced} = \epsilon^{1/4} \approx 1.2\times10^{-4}$.
-	\item \verb@cvx_precision medium@:   $\text{standard} = \epsilon^{3/8} \approx 1.3\times10^{-6}$, $\text{reduced} = \epsilon^{1/4}$.
-	\item \verb@cvx_precision default@:  $\text{standard} = \epsilon^{1/2} \approx 1.5\times10^{-8}$, $\text{reduced} = \epsilon^{1/4}$.
-	\item \verb@cvx_precision high@:     $\text{standard} = \epsilon^{3/4} \approx 1.1\times10^{-11}$, $\text{reduced} = \epsilon^{3/8}$.
-	\item \verb@cvx_precision best@:     $\text{standard} = 0$, $\text{``reduced''} = \epsilon^{1/2}$  (see below).
-\end{itemize}
-In function mode, these calls look like \verb@cvx_precision('low')@, etc.
-The \verb@best@ precision setting is special: it instructs the solver to continue until it is
-completely unable to make progress. Then, as long as it reaches at least the ``reduced'' precision
-of $\epsilon^{1/2}$, it may claim a successful solution; otherwise,
-it returns a \verb@cvx_status@ value of \verb@Failed@. An \verb@Inaccurate@ status value is 
-not possible in \verb@best@ mode (nor, for that matter, in \verb@low@ mode, which
-sets the standard and reduced precisions to be identical).
-
-The \verb@cvx_precision@ command can also be called with either a scalar or a
-length-two vector. If you pass it a scalar, it will assume that as the standard
-precision, and it will compute a default reduced precision value for you.
-Roughly speaking, that reduced precision will be the square root of the standard
-precision, with some bounds imposed to make sure that it stays reasonable. If
-you supply a vector of values, then the smallest value will be chosen as
-the standard precision, and the larger value as the reduced precision.
-
-The \verb@cvx_precision@ command can be used either \emph{within} a \cvx model or
-\emph{outside} of it; and its behavior differs in each case. If you call it from
-within a model, \eg,
-\begin{code}
-	cvx_begin
-	    cvx_precision high
-	    ...
-	cvx_end
-\end{code}
-then the setting you choose will apply only until \verb@cvx_end@ is reached. If you call it outside
-a model, \eg,
-\begin{code}
-	cvx_precision high
-	cvx_begin
-	    ...
-	cvx_end
-\end{code}
-then the setting you choose will apply \emph{globally}; that is, to any
-subsequent models that are created and solved. The local approach should be
-preferred in an application where multiple models are constructed and solved
-at different levels of precision.
-with multiple precision
-
-If you call \verb@cvx_precision@ in function mode, either with a string or a numeric
-value, it will return as its output the \emph{previous} precision vector---the same
-result you would obtain if you called it with no arguments. This may
-seem confusing at first, but this is done so that you can save the previous value
-in a variable, and restore it at the end of your calcuations; e.g.,
-\begin{code}
-	cvxp = cvx_precision( 'high' );
-	cvx_begin
-		...
-	cvx_end
-	cvx_precision( cvxp );
-\end{code}
-This is considered good coding etiquette in a larger application where multiple 
-\cvx models at multiple precision levels may be employed. Of course, a simpler but
-equally courteous approach is to call \verb@cvx_precision@ within the \cvx
-model, as described above, so that its effect lasts only for that model.
-
 \section{The GP/SDP approximation}
 \label{sec:gp-approx}
 \index{precision!for GPs}
@@ -3408,140 +3531,7 @@ value of the threshold, so you can save it and restore it upon completion
 of your model, if you wish. You can query the current value
 by calling \verb@cvx_power_warning@ with no arguments. 
 
-\section{Miscellaneous \cvx commands}
-\index{cvx_problem@\texttt{cvx\_problem}}
-\index{cvx_clear@\texttt{cvx\_clear}}
-\index{cvx_quiet@\texttt{cvx\_quiet}}
-\index{cvx_pause@\texttt{cvx\_pause}}
-\index{cvx_where@\texttt{cvx\_where}}
-\index{output!suppressing}
-
-\begin{itemize}
-\item \verb+cvx_problem+: typing this within a \cvx specification provides a summary
-of the current problem. Note that this will contain a \emph{lot} of information
-that you may not recognize---\cvx performs its conversion to canonical form
-\emph{as the problem is entered}, generating extra temporary variables and
-constraints in the process.
-\item \verb+cvx_clear+: typing this resets the \cvx system, clearing any and all problems
-from memory, but without erasing any of your numeric data.
-This is useful if you make a mistake and need to start over. But note that in current
-versions of \cvx, you can simply start another model with \verb@cvx_begin@, and
-the previous model will be erased (with a warning).
-\item \verb@cvx_quiet@: typing \verb@cvx_quiet(true)@ suppresses screen
-output from the solver. Typing \verb@cvx_quiet(false)@ restores the screen
-output. In each case, it returns a logical value representing the \emph{previous}
-state of the quiet flag, so you can restore that state later if you wish---which
-is good practice if you wish to share your code with others.
-\item \verb@cvx_pause@: typing \verb@cvx_pause(true)@ causes \cvx to pause and
-wait for keyboard input before \emph{and} after the solver is called. Useful
-primarily for demo purposes. Typing \verb@cvx_pause(false)@ resets the behavior.
-In each case, it returns a logical value representing the \emph{previous} state
-of the pause flag, so you can restore that state later if you wish.
-\item \verb@cvx_where@: returns the directory where the \cvx distribution
-has been installed---assuming that the Matlab path has been set to include
-that distribution. Useful if you want to find certain helpful subdirectories,
-such as \verb@doc@, \verb@examples@, \emph{etc.}
-\end{itemize}
-
-\section{Caveats}
-
-\subsection{Assignments versus equality constraints}
-\label{sec:eqass}
-\index{assignment}
-\index{equality constraint}
-\index{constraint!equality} 
-
-Anyone who has used the C or Matlab languages for a sufficiently long time
-understands the differences between \emph{assignments}, which employ a single
-equals sign \verb@=@ operator, and an \emph{equality}, which employs the
-double equal \verb@==@ operator. In \cvx, this distinction is particularly
-important, so let us address it for a moment.
-
-The consequences of using assignments within a \cvx specification, whether
-accidentally or inadvertently, can often cause subtle problems, so in certain
-instances, \cvx takes steps to prevent you from doing anything dangerous.
-For example, suppose $A,C\in\Rnn$ and $b\in\R$ are given, and
-consider the simple SDP
-\begin{equation}
-	\begin{array}{ll}
-		\text{minimize} & \Tr{CX} \\
-		\text{subject to} & \Tr{AX} = b \\
-		& X \succeq 0
-	\end{array}
-\end{equation}	
-Suppose that we tried to express this problem in \cvx as follows:
-\begin{code2}[firstnumber=1]
-	n = 5;
-	A = randn(n,n); C = randn(n,n); b = randn;
-	cvx_begin
-	    variable X(n,n) symmetric;
-	    minimize( trace( C * X ) );
-	    subject to
-	        trace( A * X ) == b;
-	        X = semidefinite(n);		!label{code:badass}
-	cvx_end
-\end{code2}
-At first glance, line~\ref{code:badass} looks like it constrains \verb@X@ to be positive
-semidefinite; but in fact, it is an assignment, not an equality constraint. So
-it actually \emph{overwrites} the
-variable \verb@X@ with an anonymous, positive semidefinite variable; and \verb@X@
-is \emph{not} constrained to be positive semidefinite. The numerical
-consequences are, of course, considerable---but Matlab (and previous versions of \cvx)
-would happily accept and process this problem without complaint, leaving you (perhaps)
-mystified why the results are not what you expect.
-
-No longer. From now on, when \verb@cvx_end@ is reached, \cvx will examine each 
-declared variable, primal and dual, and verify that it still points to the object it was originally
-assigned upon declaration. If it does not, 
-it will issue an error like this:
-\begin{code}
-	??? Error using ==> cvx_end
-	The following cvx variable(s) have been overwritten:
-	   X
-	This is often an indication that an equality constraint was
-	written with one equals '=' instead of two '=='. The model
-	must be rewritten before cvx can proceed.
-\end{code}	
-We hope that this check will prevent at least some typographical errors from 
-having frustrating consequences in your models.
-
-Of course, this single check does not prevent you from using \emph{all} assignments 
-inside your \cvx specifications, only those that overwrite formally declared variables.
-Other kinds of assignments are still permitted; and in some cases, they may be genuinely
-useful. For example, consider the following \cvx excerpt:
-\begin{code}
-	variables x y
-	z = 2 * x - y;
-	square( z ) <= 3;
-	quad_over_lin( x, z ) <= 1;
-\end{code}
-This excerpt uses a Matlab variable \verb@z@ to hold an
-intermediate calculation \verb@2 * x - y@ so that it can be used in two different constraints.
-It is technically correct, and \cvx will do the right thing with it. In fact, if the value
-of \verb@z@ is not altered for the remainder of the problem, \cvx will actually replace it
-with its proper \emph{numerical} value (\ie, \verb@2 * x - y@) after solving the problem.
-
-Having said that, the following alternative formulation, which declares \verb@z@
-as a formal variable, is numerically equivalent:
-\begin{code}
-	variables x y z
-	z == 2 * x - y;
-	square( z ) <= 3;
-	quad_over_lin( x, z ) <= 1;
-\end{code}
-This is the approach we would recommend that you adopt instead. Declaring intermediate
-calculations as variables provides an extra measure of clarity in your models, in our
-opinion. You need not worry that these ``extra'' variables will make your models slower. 
-In fact, in many cases, this
-practice may \emph{improve} performance by exposing more of your problem's structure.
-Even when this is not the case, \cvx's presolve routine insures that it will perform
-no \emph{worse} than the first form.
-
-What about assignments involving purely constant expressions, such as \verb@a=2@?
-We would simply recommend that for style reasons they be placed \emph{before}
-the \verb@cvx_begin@ command, as we do in the examples presented in this document.
-
-\subsection{Overdetermined problems}
+\section{Overdetermined problems}
 \label{sec:overdetermined}
 
 \index{overdetermined problem}
