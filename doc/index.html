@@ -5,7 +5,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
   <meta name="generator" content=
-  "HTML Tidy for Linux/x86 (vers 1st September 2004), see www.w3.org" />
+  "HTML Tidy for Linux (vers 1 September 2005), see www.w3.org" />
 
   <title>CVX -- Matlab Software for Disciplined Convex
   Programming</title>
@@ -21,26 +21,33 @@
   <a href="http://www.stanford.edu/~boyd">Stephen Boyd</a>, and
   <a href="http://www.stanford.edu/~yyye">Yinyu Ye</a></h3>
 
-  <h3>IMPORTANT compatability warning:</h3>
-
-  Unfortunately, <tt>CVX</tt> does not work with the latest <i>64-bit</i>
-  versions of Matlab (R2006b/7.3) due to changes in Matlab's MEX interface.
-  <tt>CVX</tt> works fine with all 32-bit versions of Matlab, as well
-  as older 64-bit versions (R2006a/7.2 or earlier). Fixes to <tt>CVX</tt>'s
-  solver SeDuMi are required, and we cannot predict when they will be 
-  available.
+  <h3>IMPORTANT compatability warning:</h3>Unfortunately,
+  <tt>CVX</tt> does not work with the latest <i>64-bit</i> versions
+  of Matlab (R2006b/7.3) due to changes in Matlab's MEX interface.
+  <tt>CVX</tt> works fine with all 32-bit versions of Matlab, as
+  well as older 64-bit versions (R2006a/7.2 or earlier). Fixes to
+  <tt>CVX</tt>'s solver SeDuMi are required, and we cannot predict
+  when they will be available.
 
   <h3>Table of Contents</h3>
 
   <ul>
     <li><a href="#intro">Introduction</a></li>
+
     <li><a href="#system">System requirements</a></li>
+
     <li><a href="#examples">The example library</a></li>
+
     <li><a href="#mail">The <tt>CVX</tt> mailing list</a></li>
+
     <li><a href="#feed">Request for feedback</a></li>
+
     <li><a href="#hist">Version history</a></li>
+
     <li><a href="#plans">Future plans</a></li>
+
     <li><a href="#copy">Copyright information</a></li>
+
     <li><a href="#down"><b>Download!</b></a></li>
   </ul>
 
@@ -53,18 +60,23 @@
   code segment randomly generates a constrained norm minimization
   problem, and solves it:</p>
 
-  <table cellspacing="0" cellpadding="0" summary="CVX code example">
+  <table cellspacing="0" cellpadding="0" summary=
+  "CVX code example">
     <tr>
       <td width="10%"></td>
+
       <td width="90%"><code>m = 20; n = 10; p = 4;<br />
       A = randn(m,n); b = randn(m,1);<br />
       C = randn(p,n); d = randn(p,1);<br />
       cvx_begin<br />
       &nbsp;&nbsp;&nbsp;&nbsp;variable x(n)<br />
-      &nbsp;&nbsp;&nbsp;&nbsp;minimize( norm( A * x - b, 2 ) )<br />
+      &nbsp;&nbsp;&nbsp;&nbsp;minimize( norm( A * x - b, 2 )
+      )<br />
       &nbsp;&nbsp;&nbsp;&nbsp;subject to<br />
-      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;C * x == d;<br />
-      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;norm( x, Inf ) &lt;= 0.4;<br />
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;C * x ==
+      d;<br />
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;norm( x, Inf
+      ) &lt;= 0.4;<br />
       cvx_end</code></td>
     </tr>
   </table>
@@ -137,24 +149,10 @@
   the bottom of this web page indicates when this distribution was
   last updated. If you would like to be notified when an update
   occurs, we invite you to subscribe to the <tt>cvx-announce</tt>
-  mailing list. To do so, simply send a plain-text email to</p>
-
-  <blockquote>
-    <p><a href=
-    "mailto:majordomo@lists.stanford.edu?subject=Subscribe%20to%20the%20cvx-announce%20mailing%20list&amp;body=subscribe%20cvx-announce">
-    majordomo@lists.stanford.edu</a></p>
-  </blockquote>
-
-  <p>with the command</p>
-
-  <blockquote>
-    <p><b><tt>subscribe cvx-announce</tt></b></p>
-  </blockquote>
-
-  <p>in the <i>body</i> of the email. If you click on the email
-  address above, it will create the email for you. (Outlook users:
-  make sure to select "Plain-text" in the "Format" menu, if it is
-  not already your default, before sending this message.)</p>
+  mailing list. To do so, simply complete the subscription request
+  form at the <a href=
+  "https://mailman.stanford.edu/mailman/listinfo/cvx-announce">mailing
+  list home page</a>.</p>
 
   <h3><a id="feed" name="feed">Feedback</a></h3>
 
@@ -185,32 +183,31 @@
   with version 0.80 alpha. Between July 2005 and March 2006, a
   number of incremental improvements and bug fixes were made,
   culminating in the release of 0.93 alpha in March 2006. The
-  system's internals were considerably reworked for Version 1.0,
-  in order to improve efficiency and performance, and to add
-  support for geometric programming.</p>
+  system's internals were considerably reworked for Version 1.0, in
+  order to improve efficiency and performance, and to add support
+  for geometric programming.</p>
 
   <p>For a more detailed version history, <a href=
   "history.html">click here.</a></p>
 
   <h3><a id="plans" name="plans">Future plans</a></h3>
-  
-  <p>We intend to stabilize this version of <tt>CVX</tt> so
-  that we may focus on the next generation of the software. For
-  that reason, we do not anticipate adding a significant number
-  of additional functions to version 1.0, although we are
-  considering several: <tt>log()</tt>,
-  <tt>exp()</tt>, <tt>entropy()</tt>, and <tt>log(erfc())</tt>.
-  We will continue to respond to bug reports, however, and
-  issue updates as needed.</p>
-  
-  <p>In the longer term, we are in the planning stages of
-  a significant redesign of CVX. The primary goal of this new
-  design will be to make it portable to a variety of platforms,
-  including R, Octave, Python, Mathematica, and others. This
-  version will also include the long-desired support for
-  smooth, non-SDP-representable nonlinearities. Needless to
-  say, this is an ambitious undertaking and we cannot yet
-  offer a predictions for when this version will be available.</p>
+
+  <p>We intend to stabilize this version of <tt>CVX</tt> so that we
+  may focus on the next generation of the software. For that
+  reason, we do not anticipate adding a significant number of
+  additional functions to version 1.0, although we are considering
+  several: <tt>log()</tt>, <tt>exp()</tt>, <tt>entropy()</tt>, and
+  <tt>log(erfc())</tt>. We will continue to respond to bug reports,
+  however, and issue updates as needed.</p>
+
+  <p>In the longer term, we are in the planning stages of a
+  significant redesign of CVX. The primary goal of this new design
+  will be to make it portable to a variety of platforms, including
+  R, Octave, Python, Mathematica, and others. This version will
+  also include the long-desired support for smooth,
+  non-SDP-representable nonlinearities. Needless to say, this is an
+  ambitious undertaking and we cannot yet offer a predictions for
+  when this version will be available.</p>
 
   <h3><a id="copy" name="copy">Copyright information</a></h3>
 
@@ -239,33 +236,39 @@
     Unix <tt>.tar.gz</tt> file: <a href="cvx.tar.gz">cvx.tar.gz
     (___TAR___)</a></dd>
 
-    <dt><tt>CVX</tt> requires Matlab 6.x or later, and should work "out of the box"
-    on Windows, Linux (Intel), Solaris (Sparc), and MacOSX (PowerPC).
-    For these platforms, installation is relatively simple:</dt>
-    <dd>1. If you already have an earlier version of CVX installed, <i>remove it
-    or move it out of the way.</i> Do not install this version on top of the old.<br />
+    <dt><tt>CVX</tt> requires Matlab 6.x or later, and should work
+    "out of the box" on Windows, Linux (Intel), Solaris (Sparc),
+    and MacOSX (PowerPC). For these platforms, installation is
+    relatively simple:</dt>
+
+    <dd>1. If you already have an earlier version of CVX installed,
+    <i>remove it or move it out of the way.</i> Do not install this
+    version on top of the old.<br />
     2. Unpack the distribution wherever you like.<br />
-    3. Fire up Matlab, and <tt>cd</tt> to the <tt>cvx/</tt> directory that was created<br />
-    4. <b>Important:</b> Run the command <tt>cvx_setup</tt> to configure the software.</dd>
-    <dt>For more detailed system requirements and installation instructions,
-    see Appendix A of the user's guide, which is included in the <tt>doc/</tt>
-    subdirectory of the distribution, or can be downloaded directly
-    from here:</dt>
+    3. Fire up Matlab, and <tt>cd</tt> to the <tt>cvx/</tt>
+    directory that was created<br />
+    4. <b>Important:</b> Run the command <tt>cvx_setup</tt> to
+    configure the software.</dd>
+
+    <dt>For more detailed system requirements and installation
+    instructions, see Appendix A of the user's guide, which is
+    included in the <tt>doc/</tt> subdirectory of the distribution,
+    or can be downloaded directly from here:</dt>
 
     <dd>Users' guide: <a href="cvx_usrguide.pdf">cvx_usrguide.pdf
     (___PDF___)</a></dd>
-    </dl>
+  </dl>
 
-  <h3><a id="note" name="node">Note for users of MATLAB 7.0</a></h3>
+  <h3><a id="note" name="note">Note for users of MATLAB
+  7.0</a></h3>
 
-    <p>Version 7.0 of MATLAB (R14, R14SP1, R14SP2) rejects
-    certain <tt>CVX</tt> models, issuing syntax errors that are simply not correct.
-    We have a special note about
-    this in section A.4 of the user's guide, including a very simple
-    way to identify and work around the problem. So if you use this
-    version of MATLAB, <i>please make sure to
-    read the note!</i> Earlier <i>and</i> later versions of MATLAB
-    do not exhibit this problem.</p>
+  <p>Version 7.0 of MATLAB (R14, R14SP1, R14SP2) rejects certain
+  <tt>CVX</tt> models, issuing syntax errors that are simply not
+  correct. We have a special note about this in section A.4 of the
+  user's guide, including a very simple way to identify and work
+  around the problem. So if you use this version of MATLAB,
+  <i>please make sure to read the note!</i> Earlier <i>and</i>
+  later versions of MATLAB do not exhibit this problem.</p>
   <hr />
 
   <p><a href="../research.html">Stephen Boyd's research group
