@@ -53,6 +53,7 @@ if strcmp( ARRAY_GEOMETRY, '2D_RANDOM' )
   n = 40;
   L = 5;
   loc = L*rand(n,2);
+  angleRange = 360;
 
 %********************************************************************
 % uniform 1D array with n elements with inter-element spacing d
@@ -62,6 +63,7 @@ elseif strcmp( ARRAY_GEOMETRY, '1D_UNIFORM_LINE' )
   n = 30;
   d = 0.45*lambda;
   loc = [d*[0:n-1]' zeros(n,1)];
+  angleRange = 180;
 
 %********************************************************************
 % uniform 2D array with m-by-m element with d spacing
@@ -77,6 +79,7 @@ elseif strcmp( ARRAY_GEOMETRY, '2D_UNIFORM_LATTICE' )
     end
   end
   loc = loc*d;
+  angleRange = 360;
 
 else
   error('Undefined array geometry')
@@ -86,7 +89,7 @@ end
 % construct optimization data
 %********************************************************************
 % build matrix A that relates w and y(theta), ie, y = A*w
-theta = [1:360]';
+theta = [1:angleRange]';
 A = kron(cos(pi*theta/180), loc(:,1)') + kron(sin(pi*theta/180), loc(:,2)');
 A = exp(2*pi*i/lambda*A);
 
@@ -141,9 +144,13 @@ plot(loc(:,1),loc(:,2),'o')
 title('Antenna locations')
 
 % plot array pattern
+if angleRange == 180,
+    theta = [1:360]';
+    A = [ A; -A ];
+end
 y = A*w;
 figure(2), clf
-ymin = -40; ymax = 0;
+ymin = floor(0.1*min_sidelobe_level)*10-10; ymax = 0;
 plot([1:360], 20*log10(abs(y)), ...
      [theta_tar theta_tar],[ymin ymax],'r--',...
      [theta_tar+half_beamwidth theta_tar+half_beamwidth],[ymin ymax],'g--',...
@@ -160,7 +167,7 @@ axis([0 360 ymin ymax]);
 
 % polar plot
 figure(3), clf
-zerodB = 50;
+zerodB = -ymin;
 dBY = 20*log10(abs(y)) + zerodB;
 ind = find( dBY <= 0 ); dBY(ind) = 0;
 plot(dBY.*cos(pi*theta/180), dBY.*sin(pi*theta/180), '-');
@@ -170,7 +177,8 @@ plot(zerodB*cos(pi*theta/180),zerodB*sin(pi*theta/180),'k:') % 0 dB
 plot( (min_sidelobe_level + zerodB)*cos(pi*theta/180), ...
       (min_sidelobe_level + zerodB)*sin(pi*theta/180),'k:')  % min level
 text(-zerodB,0,'0 dB')
-text(-(min_sidelobe_level + zerodB),0,sprintf('%0.1f dB',min_sidelobe_level));
+tt = text(-(min_sidelobe_level + zerodB),0,sprintf('%0.1f dB',min_sidelobe_level));
+set(tt,'HorizontalAlignment','right');
 theta_1 = theta_tar+half_beamwidth;
 theta_2 = theta_tar-half_beamwidth;
 plot([0 55*cos(theta_tar*pi/180)], [0 55*sin(theta_tar*pi/180)], 'k:')
