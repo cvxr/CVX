@@ -17,31 +17,35 @@
 clear
 
 % Problem parameters
-sigma = 0.05; % Size of Gaussian function
-T = 0.002; % Sample time
-Thr = 0.001; % Basis signal threshold
-kmax = 30; % Number of signals are 2*kmax+1
-w0 = 5;    % Base frequency (w0 * kmax should be 150 for good results)
+sigma = 0.05;  % Size of Gaussian function
+Tinv  = 500;   % Inverse of sample time
+Thr   = 0.001; % Basis signal threshold
+kmax  = 30;    % Number of signals are 2*kmax+1
+w0    = 5;     % Base frequency (w0 * kmax should be 150 for good results)
 
-% Build dictionary matrix
-disp('Building dictionary matrix...');
-A = sparse(401,401*61);
-p = 1;
-t = (0:T:1)';
-for s = 0:T:1
-  x = exp(-(t-s).^2/(sigma^2)); x(find(x < Thr)) = 0;
-  A(find(x),p) = x(find(x)); % Gaussian
-  p = p+1;
-  for k=1:kmax
-    c = x.*sin(w0*t*k);
-    A(find(c),p) = c(find(c)); % Sinus basis
-    p = p + 1;
-    c = x.*cos(w0*t*k);
-    A(find(c),p) = c(find(c)); % Cosine basis
-    p = p + 1;
-  end;
-end;
-disp('done.');
+% Build sine/cosine basis
+fprintf(1,'Building dictionary matrix...');
+% Gaussian kernels
+TK = (Tinv+1)*(2*kmax+1);
+t  = (0:Tinv)'/Tinv;
+A  = exp(-t.^2/(sigma^2));
+ns = nnz(A>=Thr)-1;
+A  = A([ns+1:-1:1,2:ns+1],:);
+ii = (0:2*ns)';
+jj = ones(2*ns+1,1)*(1:Tinv+1);
+oT = ones(1,Tinv+1);
+A  = sparse(ii(:,oT)+jj,jj,A(:,oT));
+A  = A(ns+1:ns+Tinv+1,:);
+% Sine/Cosine basis
+k  = [ 0, reshape( [ 1 : kmax ; 1 : kmax ], 1, 2 * kmax ) ];
+p  = zeros(1,2*kmax+1); p(3:2:end) = -pi/2;
+SC = cos(w0*t*k+ones(Tinv+1,1)*p);
+% Multiply
+ii = 1:numel(SC);
+jj = rem(ii-1,Tinv+1)+1;
+A  = sparse(ii,jj,SC(:)) * A;
+A  = reshape(A,Tinv+1,(Tinv+1)*(2*kmax+1));
+fprintf(1,'done.\n');
 
 % Construct example signal
 a = 0.5*sin(t*11)+1;
@@ -53,7 +57,7 @@ disp('Solving Basis Pursuit problem...');
 tic
 cvx_begin
     variable x(30561)
-    minimize(square_pos(norm(A*x-b,2))+norm(x,1))
+    minimize(sum_square(A*x-b)+norm(x,1))
 cvx_end
 disp('done');
 toc

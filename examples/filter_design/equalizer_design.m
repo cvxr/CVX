@@ -58,7 +58,7 @@ cvx_end
 
 % check if problem was successfully solved
 disp(['Frequency equalization problem is ' cvx_status])
-if ~strcmp(cvx_status,'Solved')
+if ~strfind(cvx_status,'Solved')
   return
 end
 
@@ -82,7 +82,7 @@ cvx_begin
 cvx_end
 
 % check if problem was successfully solved
-if ~strcmp(cvx_status,'Solved')
+if ~strfind(cvx_status,'Solved')
   disp(['Frequency equalization problem is ' cvx_status])
   return
 end
