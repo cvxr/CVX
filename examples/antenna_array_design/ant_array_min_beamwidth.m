@@ -117,7 +117,7 @@ while( halfbeam_top - halfbeam_bot > 1)
   cvx_end
 
   % bisection
-  if strcmp(cvx_status,'Solved') % feasible
+  if strfind(cvx_status,'Solved') % feasible
     fprintf(1,'Problem is feasible for half beam-width = %d degress\n',...
                halfbeam_cur);
     halfbeam_top = halfbeam_cur;
