@@ -8,11 +8,7 @@ catch
 end
 if nargout > 0,
     a = 'Constraint accepted';
-elseif ~isreal( x ) | ~isreal( y ),
-    if ~cvx_problem.sdp | ( ( size( x, 1 ) == 1 | size( x, 2 ) == 1 ) & ( size( y, 1 ) == 1 | size( y, 2 ) == 1 ) ),
-        error( sprintf( 'Disciplined convex programming error:\n    Both sides of an inequality constraint must be real.' ) );
-    end
-end    
+end
 
 % Copyright 2005 Michael C. Grant and Stephen P. Boyd.
 % See the file COPYING.txt for full copyright information.

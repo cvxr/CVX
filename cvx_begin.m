@@ -50,18 +50,6 @@ function cvx_begin( varargin )
 % when the CVX model is being used to compute a scalar function applied
 % elementwise to an array. It is ignored for single-objective problems,
 % feasibility problems, sets, and incomplete specifications.
-%
-% The command
-%     CVX_BEGIN SEPARABLE
-% gives permission for CVX to solve a multiobjective problem simply by
-% taking the sum of the objectives and solving the resulting single-
-% objective problem. As the name implies, this produces equivalent results
-% when the subproblems are separable---and when there is not a mixture of
-% infeasible, unbounded, and feasible subproblems. (A later version of CVX
-% will remove this latter limitation.) This keyword is useful, for example,
-% when the CVX model is being used to compute a scalar function applied
-% elementwise to an array. It is ignored for single-objective problems,
-% feasibility problems, sets, and incomplete specifications.
 
 % Copyright 2005 Michael C. Grant and Stephen P. Boyd.
 % See the file COPYING.txt for full copyright information.
