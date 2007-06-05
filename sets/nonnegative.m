@@ -7,12 +7,9 @@ if ~temp,
 end
     
 cvx_begin_set
-   variables x( sx )
-   global cvx___
-   p = index( cvx_problem );
-   temp = [ 2 : length( cvx___.problems( p ).reserved ) ]';
-   cvx___.problems( p ).reserved( temp ) = 1;
-   cvx___.problems( p ).cones = struct( 'type', 'nonnnegative', 'indices', temp );
+    variables x( sx )
+    [ tx, dummy ] = find( cvx_basis( x ) );
+    newnonl( cvx_problem, 'nonnegative', tx(:) );
 cvx_end_set
 
 % Copyright 2005 Michael C. Grant and Stephen P. Boyd. 

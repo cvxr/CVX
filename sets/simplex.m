@@ -1,5 +1,5 @@
 function cvx_optpnt = simplex( sx, dim )
-error( nargchk( 1, 1, nargin ) );
+error( nargchk( 1, 2, nargin ) );
 
 %
 % Check size vector

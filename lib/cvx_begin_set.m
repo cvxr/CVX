@@ -17,6 +17,9 @@ function cvx_begin_set
 % The command 'cvx_where' will show where this file is located.
 
 cvx_problem = evalin( 'caller', 'cvx_problem', '[]' );
+if isa( cvx_problem, 'cvxprob' ),
+    error( sprintf( 'A cvx problem already exists in this scope.\n(To clear it and start a new one, use the command ''cvx_clear''.)' ) );
+end
 cvx_setpath( 1 );
 cvx_create_problem( 'set' );
 assignin( 'caller', 'cvx_problem', cvx_problem );

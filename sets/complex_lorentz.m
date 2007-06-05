@@ -2,7 +2,7 @@ function cvx_optpnt = complex_lorentz( sx, dim )
 error( nargchk( 1, 2, nargin ) );
 if nargin == 1,
     cvx_optpnt = lorentz( sx, [], true );
-else,
+else
     cvx_optpnt = lorentz( sx, dim, true );
 end
 

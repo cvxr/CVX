@@ -12,71 +12,102 @@ case 0,
     for k = 2 : length( st ),
         name = st(k).name;
         if ~isver7,
-            if ispc, ds = '\'; else, ds = '/'; end
+            if ispc, ds = '\'; else ds = '/'; end
             name( 1 : max( find( name == ds ) ) ) = [];
             tt = find( name == '(' );
             if ~isempty( tt ),
                 name = name( tt + 1 : end - 1 );
-            else,
+            else
                 tt = find( name == '.' );
                 name = name( 1 : tt( 1 ) - 1 );
             end
         end
-        if any( strcmp( name, { 'cvx_begin', 'cvx_begin_set', 'cvx_create_problem' } ) ),
-            name = '';
-        else,
-            break;
+        switch k,
+            case 2,
+                if ~strcmp( name, 'cvx_create_problem' ),
+                    error( 'Creating a cvxprob object manually is not permitted.' );
+                else
+                    name = '';
+                end
+            case 3,
+                if ~any( strcmp( name, { 'cvx_begin', 'cvx_begin_set' } ) ),
+                    error( 'Calling cvx_create_problem manually is not permitted.' );
+                else
+                    name = '';
+                end
+            otherwise,
+                break;
         end
     end
 
+    if ~isempty( cvx___.problems ),
+        ndx = [ cvx___.problems.depth ];
+        ndx = min( find( ndx >= length( st ) - 3 ) );
+        if ~isempty( ndx ),
+            pop( cvx___.problems( ndx ).self, 'reset' );
+        end
+    end
+
+    if ~isempty( cvx___.problems ),
+        nprec  = cvx___.problems( end ).precision;
+        ngprec = cvx___.problems( end ).gptol;
+        nrprec = cvx___.problems( end ).rat_growth;
+        nsolv  = cvx___.problems( end ).solver;
+    else
+        nprec  = cvx___.precision;
+        ngprec = cvx___.gptol;
+        nrprec = cvx___.rat_growth;
+        nsolv  = cvx___.solver;
+    end
+
     if ~isvarname( name ), name = 'cvx_'; end
-    z = class( struct( 'dummy', [] ), 'cvxprob', cvxobj( length( cvx___.problems ) + 1 ) );
+    z = class( struct( 'index_', length( cvx___.problems ) + 1 ), 'cvxprob', cvxobj );
+    nres = length( cvx___.reserved );
+    neqs = length( cvx___.equalities );
     temp = struct( ...
         'name',          name,   ...
         'complete',      true,   ...
         'sdp',           false,  ...
+        'gp',            false,  ...
         'separable',     false,  ...
         'locked',        false,  ...
-        'variables',     [],     ...
-        'duals',         [],     ...
-        'direction',     '',     ...
-        'objective',     cvx( z, [ 0, 1 ], [] ), ...
-        'equalities',    cvx( z, [ 0, 1 ], [] ), ...
-        'cones',         struct( 'type', {}, 'indices', {} ), ...
-        'reserved',      true, ...
-        'vexity',        0,    ...
-        'substitutions', [],   ...
-        'x',             [],   ...
-        'y',             [],   ...
-        'result',        [],   ...
+        'precision',     nprec,  ...
+        'solver',        nsolv,  ...
+        'gptol',         ngprec, ...
+        'rat_growth',    nrprec, ...
+        't_variable',    logical( sparse( nres, 1 ) ), ...
+        'n_equality',    0,          ...
+        'n_linform',     0,          ...
+        'n_uniform',     0,          ...
+        'variables',     [],         ...
+        'duals',         [],         ...
+        'dvars',         [],         ...
+        'direction',     '',         ...
+        'geometric',     [],         ...
+        'objective',     [],         ...
         'status',        'unsolved', ...
-        'stackpos',      length( cvx___.stack ) + 1, ...
-        'depth',         length( dbstack ) - 1, ...
+        'result',        [],         ...
+        'depth',         length( st ) - 3, ...
         'self',          z );
+    temp.t_variable( 1 ) = true;
     if isempty( cvx___.problems ),
         cvx___.problems = temp;
-    else,
+    else
         cvx___.problems( end + 1 ) = temp;
     end
-    cvx___.stack{ temp.stackpos } = z;
 
 case 1,
 
-    switch class( x ),
-        case 'cvxobj',
-            z = cvx___.problems( index( x ) ).self;
-        case 'cvxprob',
-            z = x;
-        otherwise,
-            if isempty( cvx___.stack ),
-                error( 'There is no problem in progress.' );
-            else,
-                z = cvx___.stack{ end };
-            end
+    if ~isequal( x, 'current' ),
+        error( 'Argument must be the string ''current''.' );
+    elseif isempty( cvx___.problems ),
+        error( 'There is no problem in progress.' );
+    else
+        z = cvx___.problems( end ).self;
     end
-    
-end        
 
-% Copyright 2005 Michael C. Grant and Stephen P. Boyd. 
+end
+
+% Copyright 2005 Michael C. Grant and Stephen P. Boyd.
 % See the file COPYING.txt for full copyright information.
 % The command 'cvx_where' will show where this file is located.

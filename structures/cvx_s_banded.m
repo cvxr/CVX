@@ -18,7 +18,7 @@ temp = r - c;
 temp = temp <= lower & temp >= -upper;
 r  = r( temp );
 c  = c( temp );
-y = sparse( r + m * c + 1, 1 : length( r ), 1, m * n, length( r ) );
+y = sparse( 1 : length( r ), r + m * c + 1, 1, length( r ), m * n );
 
 % Copyright 2005 Michael C. Grant and Stephen P. Boyd. 
 % See the file COPYING.txt for full copyright information.

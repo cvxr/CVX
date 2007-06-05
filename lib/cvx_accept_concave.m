@@ -6,7 +6,7 @@ if any( t( : ) ),
         src = x;
         dst = newtemp( prob, size( src ) );
         x = dst;
-    else,
+    else
         src = x( t );
         dst = newtemp( prob, size( src ) );
         x( t ) = dst;

@@ -5,10 +5,10 @@ nm = cvx_subs2str( x.name_ );
 nm = nm(2:end);
 if ~isequal( nm, iname ),
     disp( [ prefix, 'cvx dual variable ', nm, ' (', type( x ), ')' ] );
-else,
+else
     disp( [ prefix, 'cvx dual variable (', type( x ), ')' ] );
 end
 
-% Copyright 2005 Michael C. Grant and Stephen P. Boyd. 
+% Copyright 2005 Michael C. Grant and Stephen P. Boyd.
 % See the file COPYING.txt for full copyright information.
 % The command 'cvx_where' will show where this file is located.

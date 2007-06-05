@@ -1,59 +1,44 @@
-function [ xL, xR, xI ] = cvx_bcompress( x, magonly, nsrt )
+function [ xR, x ] = cvx_bcompress( x, mode, num_sorted )
 error( nargchk( 1, 3, nargin ) );
-if nargin < 2, magonly = false; end
-if nargin < 3, nsrt = 0; end
-
-%
-% Quick exit for all-zero matrices
-%
-    
-[ m, n ] = size( x );
-if nnz( x ) == 0,
-    xL = sparse( [], [], [], m, 0 );
-    if nargout > 1,
-        xR = sparse( [], [], [], 0, n );
-        xI = xL;
+if nargin < 3 | isempty( num_sorted ),
+    num_sorted = 0;
+end
+if nargin < 2 | isempty( mode ),
+    mode = 0;
+else
+    switch mode,
+        case 'full',      mode = 0;
+        case 'magnitude', mode = 1;
+        case 'none',      mode = 2;
+        otherwise,        error( [ 'Invalid normalization mode: ', mode ] );
     end
-    return
 end
 
 %
-% Separate real and imaginary parts
+% Separate the real and imaginary parts. But while we're at it, we need to
+% make sure we we're at it, 
 %
 
+[ m, n ] = size( x );
 iscplx = ~isreal( x );
 if iscplx,
-    x = cvx_c2r( x, 1 );
-    m = m * 2;
+    x = cvx_c2r( x, 2, 8 * eps );
+    n = n * 2;
 end
 
-[ ndxs, scls ] = cvx_bcompress_mex( sparse( x' ), magonly, nsrt );
-temp = scls ~= 0; 
-scls( temp ) = 1.0 ./ scls( temp );
-xL = sparse( 1 : m, ndxs, scls, m, m );
-t2 = any( xL, 1 );
-xL = xL( :, t2 );
-    
-if nargout > 1,
-   if all( t2 ),
-       xR = x;
-       xI = xL;
-   else,
-       xR = x( t2, : );
-       if nargout > 2,
-           dof = size( xL, 2 );
-           xI = xL * sparse( 1 : dof, 1 : dof, 1.0 ./ diag( xL' * xL ), dof, dof );
-       end
-   end
+[ ndxs, scls ] = cvx_bcompress_mex( sparse( x ), mode, num_sorted );
+xR = sparse( ndxs, 1 : n, scls, n, n );
+t2 = any( xR, 2 );
+xR = xR( t2, : );
+
+if nargout > 1 & ~all( t2 ),
+    x = x( :, t2 );
 end
 
 if iscplx,
-    xL = cvx_r2c( xL, 1 );
-    if nargout > 2,
-        xI = cvx_r2c( xI, 1 );
-    end
+    xR = cvx_r2c( xR, 2 );
 end
 
-% Copyright 2005 Michael C. Grant and Stephen P. Boyd. 
+% Copyright 2005 Michael C. Grant and Stephen P. Boyd.
 % See the file COPYING.txt for full copyright information.
 % The command 'cvx_where' will show where this file is located.

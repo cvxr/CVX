@@ -1,6 +1,4 @@
 function y = cat( dim, varargin )
-error( cvx_verify( varargin{:} ) );
-[ prob, varargin{ : } ] = cvx_operate( [], varargin{ : } );
 
 %
 % Check dimension
@@ -11,6 +9,15 @@ if ~isnumeric( dim ) | any( size( dim ) ~= 1 ) | dim <= 0 | dim ~= floor( dim ),
 end
 
 %
+% Quick exit
+%
+
+if nargin == 2,
+    y = varargin{1};
+    return
+end
+
+%
 % Check sizes
 %
 
@@ -18,18 +25,19 @@ nz = 0;
 msiz = 0;
 nzer = 0;
 first = 1;
+nargs = 0;
+msimp = 1;
+isr = true;
 for k = 1 : nargin - 1,
-    x  = varargin{ k };
-    sx = size( x );
-    bx = cvx_basis( x );
-    if length( sx ) < dim, 
-        sx( end + 1 : dim ) = 1; 
-    end
+    x    = cvx( varargin{ k } );
+    sx   = x.size_;
+    bx   = x.basis_;
+    nz   = max( nz, size( bx, 1 ) );
     nzer = nzer + nnz( bx );
-    nz = max( nz, size( bx, 2 ) );
-    sx2 = sx; 
-    sx2( dim ) = [];
-    if k == 1 | ( first & all( sx > 0 ) ),
+    if length( sx ) < dim,
+        sx( end + 1 : dim ) = 1;
+    end
+    if k == 1 | ( first & all( sx ) ),
         lsiz = sx( 1 : dim -1 );
         rsiz = sx( dim + 1 : end );
         first = any( sx == 0 );
@@ -39,55 +47,94 @@ for k = 1 : nargin - 1,
         end
     end
     msiz = msiz + sx( dim );
+    if all( sx ),
+        nargs = nargs + 1;
+        varargin{nargs} = x;
+        if ~isreal( bx ),
+            isr = false;
+        end
+    end
 end
 
 %
 % Concatenate
 %
 
-sz = [ lsiz, msiz, rsiz ];
+sz   = [ lsiz, msiz, rsiz ];
 lsiz = prod( lsiz );
 rsiz = prod( rsiz );
-if rsiz > 1,
-    nmvec = lsiz * msiz;
-    nmvec = 0 : nmvec : nmvec * ( rsiz - 1 );
-end
-ndx = 0;
-y = sparse( [], [], [], prod( sz ), nz, nzer );
-if nzer ~= 0,
-    bi = {}; bj = {}; bv = {};
-    for k = 1 : nargin - 1,
-        x = varargin{ k };
-        s = size( x );
-        if all( s ~= 0 ),
-            [ bi{end+1}, bj{end+1}, bv{end+1} ] = find( cvx_basis( x ) );
-            s = [ s, ones( 1, dim - length( s ) ) ];
-            tsiz = s( dim );
-            ltsiz = lsiz * tsiz;
-            rndx = ndx + 1 : ndx + ltsiz;
-            ndx  = rndx( end );
-            if rsiz > 1,
-                rndx = rndx( : );
-                rndx = rndx( :, ones( 1, rsiz ) ) + nmvec( ones( 1, ltsiz ), : );
-            end
-            nzs = length(bi{end});
-            bi{end} = reshape( rndx(bi{end}), nzs, 1 );
-            bj{end} = reshape( bj{end}, nzs, 1 );
-            bv{end} = reshape( bv{end}, nzs, 1 );
+if nzer == 0,
+
+    yb = [];
+
+elseif nargs == 1,
+
+    y = varargin{1};
+    return
+
+elseif lsiz == 1 | rsiz == 1,
+
+    psz = prod( sz );
+    issp = cvx_use_sparse( [ nz, psz ], nzer, isr );
+    for k = 1 : nargs,
+        x = varargin{k};
+        x = x.basis_;
+        if issp ~= issparse( x ),
+            if issp, x = sparse( x ); else x = full( x ); end
         end
+        qx = size( x, 1 );
+        if qx < nz,
+            if issp,
+                x = [ x ; sparse( nz - qx, size( x, 2 ) ) ];
+            else,
+                x = [ x ; zeros( nz - qx, size( x, 2 ) ) ];
+            end
+        end
+        if rsiz > 1,
+            x = cvx_reshape( x, [ prod( size( x ) ) / rsiz, rsiz ] );
+        end
+        varargin{k} = x;
     end
-    y = sparse( cat( 1, bi{:} ), cat( 1, bj{:} ), cat( 1, bv{:} ), prod( sz ), nz );
-    clear bi bj bv
-else,
-    y = sparse( prod( sz ), nz );
+    if rsiz == 1,
+        yb = builtin( 'horzcat', varargin{1:nargs} );
+    else
+        yb = builtin( 'vertcat', varargin{1:nargs} );
+        yb = cvx_reshape( yb, [ nz, psz ] );
+    end
+
+else
+
+    ndx = 0;
+    psz = prod( sz );
+    if cvx_use_sparse( [ nz, psz ], nzer, isr ),
+        yb = sparse( [], [], [], nz, psz, nzer );
+    else
+        yb = zeros( nz, psz );
+    end
+    for k = 1 : nargs,
+        x = varargin{ k };
+        s = x.size_;
+        b = x.basis_;
+        s = [ s, ones( 1, dim - length( s ) ) ];
+        tsiz = s( dim );
+        ltsiz = lsiz * tsiz;
+        rndx = ndx + 1 : ndx + ltsiz;
+        ndx  = rndx( end );
+        if rsiz > 1,
+            rndx = rndx( : );
+            rndx = rndx( :, ones( 1, rsiz ) ) + nmvec( ones( 1, ltsiz ), : );
+        end
+        yb( 1 : size( b, 1 ), rndx( : ) ) = b;
+    end
+
 end
 
 %
 % Create object
 %
 
-y = cvx( prob, sz, y );
+y = cvx( sz, yb );
 
-% Copyright 2005 Michael C. Grant and Stephen P. Boyd. 
+% Copyright 2005 Michael C. Grant and Stephen P. Boyd.
 % See the file COPYING.txt for full copyright information.
 % The command 'cvx_where' will show where this file is located.

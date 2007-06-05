@@ -1,5 +1,4 @@
 function spy( x, mode )
-error( cvx_verify( x ) );
 
 switch nargin,
     case 0,
@@ -12,25 +11,23 @@ switch nargin,
         end
 end
 
-b = cvx_basis( x );
-s = size( x );
+b = x.basis_;
+s = x.size_;
 
 switch mode,
     case { '2-d', '2-D', '2d', '2D' },
-        b( find( b ) ) = 1;
-        b = sum( b, 2 );
+        b = sum( b ~= 0, 1 );
         b = reshape( b, s );
     case { '', '3-d', '3-D', '3d', '3D' },
-    	p = dimension( problem( x ) ) + 1;
-        if size( b, 2 ) < p,
-            b( end, p ) = 0;
-        end
+        global cvx___
+        p = length( cvx___.reserved ) + 1;
+        if size( b, 1 ) < p, b( p, end ) = 0; end
     otherwise,
         error( [ 'Unknown spy mode: ', mode ] );
 end
-        
+
 spy( b );
 
-% Copyright 2005 Michael C. Grant and Stephen P. Boyd. 
+% Copyright 2005 Michael C. Grant and Stephen P. Boyd.
 % See the file COPYING.txt for full copyright information.
 % The command 'cvx_where' will show where this file is located.

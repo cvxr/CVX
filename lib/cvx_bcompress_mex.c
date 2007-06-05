@@ -1,21 +1,32 @@
 #include "mex.h"
 #include "matrix.h"
 
+#if !defined(MX_API_VER) || ( MX_API_VER < 0x07030000 )
+typedef int mwIndex;
+typedef int mwSize;
+#endif
+
 /*
 % Copyright 2005 Michael C. Grant and Stephen P. Boyd.
 % See the file COPYING.txt for full copyright information.
 % The command 'cvx_where' will show where this file is located.
 */
 
+#define FULL_COMPRESS    0
+#define MAGNITUDE_ONLY   1
+#define NO_NORMALIZATION 2
+
 #define MY_EPS 1.776356839400251e-015
-int *ss_ir, *ss_jc, *ss_temp, *ss_ndxs, ss_sign;
+mwIndex *ss_ir, *ss_jc;
+mwSize *ss_temp;
+int ss_mode;
 double *ss_pr;
 
-static int mycomp( int c1, int c2 )
+static int mycomp( mwSize c1, mwSize c2 )
 {
-    int d1, d2;
-    int *j1, *j2, *rb1, *rb2, *re1, *re2;
-    double nm1, nm2, b1, b2, bs, bd;
+    mwIndex d1, d2;
+    mwIndex *j1, *j2, *rb1, *rb2, *re1, *re2;
+    double nm1, nm2;
     double *pb1, *pb2, *pe1;
 
     /*
@@ -54,35 +65,48 @@ static int mycomp( int c1, int c2 )
 
     pb1 = ss_pr + j1[0];
     pb2 = ss_pr + j2[0];
-    /* Quick exit for one-element columns */
-    if ( d1 == 1 )
-        if ( ss_sign )       return 0;
-        else if ( *pb1 < 0 ) return *pb2 < 0 ?  0 : -1;
-        else                 return *pb2 < 0 ? +1 :  0;
-    pe1 = pb1 + d1;
-    nm1 = 1.0 / *pb1++;
-    nm2 = 1.0 / *pb2++;
-    if ( !ss_sign ) {
-        if ( nm1 < 0 ) nm1 = -nm1;
-        if ( nm2 < 0 ) nm2 = -nm2;
+    switch ( ss_mode ) {
+        case MAGNITUDE_ONLY:
+            if ( *pb1 < 0 ) {
+                if ( *pb2 > 0 )
+                    return -1;
+            } else if ( *pb2 < 0 )
+                return +1;
+        default:
+        case FULL_COMPRESS:
+            if ( d1 == 1 )
+                return 0;
+            break;
+        case NO_NORMALIZATION:
+            pe1 = pb1 + d1;
+            while ( 1 ) {
+                if ( *pb1 < *pb2  ) return -1;
+                if ( *pb1 > *pb2  ) return +1;
+                if ( ++pb1 == pe1 ) return 0;
+                ++pb2;
+            }
+            break;
     }
+    pe1 = pb1 + d1;
+    nm1 = *pb2++;
+    nm2 = *pb1++;
     while ( 1 ) {
-        b1 = nm1 * *pb1;
-        b2 = nm2 * *pb2;
-        bd = b1 - b2;
-        bs = b1 + b2;
-        if ( ( bd < 0 ? -bd : +bd ) > MY_EPS * ( bs < 0 ? -bs : +bs ) )
+        double b1 = nm1 * *pb1,
+               b2 = nm2 * *pb2,
+               bd = b1 - b2,
+               bs = MY_EPS * ( ( b1 < 0 ? -b1 : +b1 ) + ( b2 < 0 ? -b2 : +b2 ) );
+        if ( bd > bs || bd < -bs ) 
             return b1 < b2 ? -1 : +1;
-        if ( ++pb1 == pe1 ) break;
+        if ( ++pb1 == pe1 ) 
+            return 0;
         ++pb2;
     }
-   
     return 0;
 }
 
-void merge( int *nb, int* nm, int* ne )
+void merge( mwSize *nb, mwSize *nm, mwSize *ne )
 {
-    int *i = nb, *j = nm, *t = ss_temp;
+    mwSize *i = nb, *j = nm, *t = ss_temp;
     for ( ;; )
         if ( mycomp( *i, *j ) <= 0 ) {
             *t++ = *i++;
@@ -102,9 +126,9 @@ void merge( int *nb, int* nm, int* ne )
     for ( i = nb, t = ss_temp ; i != ne ; *i++ = *t++ );
 }
 
-void merge_sort( int *nb, int* ne )
+static void merge_sort( mwSize *nb, mwSize* ne )
 {
-    int *nm;
+    mwSize *nm;
     ptrdiff_t numel = ne - nb;
     if ( numel < 2 ) return;
     nm = nb + ( numel / 2 );
@@ -119,18 +143,17 @@ void mexFunction(
         )
 
 {
-    static const char* errmsg = "Error allocating temporary data";
-    int n, n2, k, col, col2, nsrt, *ss_ndxs, *p, lastcol, usesign;
-    double norm, sign, *map, *scl, lastnorm;
+    mwSize n, k, col, nskip, lastcol, *ss_ndxs;
+    double *map, *scl, lastnorm;
     
     n       = mxGetN(  prhs[0] );
     ss_ir   = mxGetIr( prhs[0] );
     ss_jc   = mxGetJc( prhs[0] );
     ss_pr   = mxGetPr( prhs[0] );
-    ss_sign = nrhs < 2 || mxGetScalar(prhs[1]) == 0;
-    nsrt    = nrhs < 3 ? 0 : (int)mxGetScalar(prhs[2]);
-    ss_ndxs = mxCalloc( n, sizeof(int) );
-    ss_temp = mxCalloc( n, sizeof(int) );
+    ss_mode = nrhs < 2 ? FULL_COMPRESS :  mxGetScalar( prhs[1] );
+    nskip   = nrhs < 3 ? 0 : (int)mxGetScalar(prhs[2]);
+    ss_ndxs = mxCalloc( n, sizeof(mwSize) );
+    ss_temp = mxCalloc( n, sizeof(mwSize) );
     
     /*
      * Sort the column indices
@@ -138,11 +161,8 @@ void mexFunction(
 
     for ( col = 0 ; col != n ; ++col )
         ss_ndxs[col] = col;
-    if ( nsrt < n ) {
-        merge_sort( ss_ndxs + nsrt, ss_ndxs + n );
-        if ( nsrt > 0 )
-            merge( ss_ndxs, ss_ndxs + nsrt, ss_ndxs + n );
-    }
+    if ( nskip < n )
+        merge_sort( ss_ndxs + nskip, ss_ndxs + n );
 
     /*
      * Determine which rows are unique, and which are scales of another row
@@ -156,9 +176,12 @@ void mexFunction(
     scl = mxGetPr( plhs[1] );
     lastcol = -1;
     lastnorm = 0.0;
-    for ( k = 0 ; k != n ; ++k ) {
+    for ( k = 0 ; k < n ; ++k ) {
         col = ss_ndxs[k];
-        if ( ss_jc[col] == ss_jc[col+1] ) {
+        if ( col < nskip ) {
+            map[col] = col + 1;
+            scl[col] = 1.0;
+        } else if ( ss_jc[col] == ss_jc[col+1] ) {
             map[col] = col + 1;
             scl[col] = 0;
         } else if ( lastcol == -1 || mycomp( lastcol, col ) != 0 ) {

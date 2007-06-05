@@ -1,5 +1,4 @@
 function y = diag( v, k )
-error( cvx_verify( v ) );
 
 switch nargin,
     case 0,
@@ -11,9 +10,8 @@ switch nargin,
             error( 'Second argument must be an integer.' );
         end
 end
- 
-s = size( v );
 
+s = size( v );
 if length( s ) ~= 2,
     error( 'First input must be 2D.' );
 end
@@ -22,26 +20,24 @@ if k < 0,
     absk = -k;
     roff = absk;
     coff = 0;
-else,
+else
     absk = +k;
     roff = 0;
     coff = absk;
 end
 
 if any( s == 1 ),
-    [ r, c, d ] = find( cvx_basis( v ) );
-    r = r + roff + ( r + coff - 1 ) * ( s( 1 ) + absk ); 
-    s = s( [ 1, 1 ] ) + absk;
-    y = cvx( problem( v ), s, sparse( r, c, d, prod( s ), max( c ) ) );
-elseif -k >= s( 1 ) | k >= s( 2 ),
-    y = cvx( problem( v ), [ 0, 1 ], sparse( 0, 0 ) );
-else,
-    b = cvx_basis( v );
-    sz = min( s - [ roff, coff ] );
-    r = ( roff + s( 1 ) * coff + 1 ) + ( 0 : sz - 1 ) * ( s( 1 ) + 1 );
-    y = cvx( problem( v ), length( r ),  b( r, : ) );
+    nn = prod( s );
+    nel = nn + roff + coff;
+    y = sparse( roff + 1 : roff + nn, coff + 1 : coff + nn, v, nel, nel );
+elseif roff >= s(1) | coff >= s(2),
+    y = sparse( 0, 1 );
+else
+    nel = min( s(1) - roff, s(2) - coff );
+    nv = roff + ( coff - 1 ) * s(1) + ( 1 : nel ) * ( s(1) + 1 );
+    y = reshape( cvx_subsref( v, nv ), nel, 1 );
 end
 
-% Copyright 2005 Michael C. Grant and Stephen P. Boyd. 
+% Copyright 2005 Michael C. Grant and Stephen P. Boyd.
 % See the file COPYING.txt for full copyright information.
 % The command 'cvx_where' will show where this file is located.

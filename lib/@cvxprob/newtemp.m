@@ -17,18 +17,18 @@ p = index( prob );
 
 if nargin < 2 | isempty( model ),
     ismod = 0;
-    siz = [ 1, 1 ];
-    str = sparse( 1, 2, 1 );
+    siz   = [ 1, 1 ];
+    str   = sparse( 1, 1, 1 );
 elseif isa( model, 'cvx' ),
     ismod = 1;
     siz = size( model );
-    str = cvx_bcompress( cvx_basis( model ) );
+    str = bcompress( model );
 elseif cvx_check_dimlist( model ),
     ismod = 0;
-    siz = model( : ).';
-    nsz = prod( siz );
-    str = sparse( 1 : nsz, 2 : nsz + 1, 1 );
-else,
+    siz   = model( : ).';
+    str   = 1 : prod( siz );
+    str   = sparse( str, str, 1 );
+else
     error( 'Second argument must be a cvx object or a non-empty size vector.' );
 end
 
@@ -47,7 +47,7 @@ end
 % Create temporary variable
 %
 
-len = length( cvx___.problems( p ).vexity );
+len = length( cvx___.vexity );
 z = newvar( prob, base, siz, str );
 
 %
@@ -56,7 +56,7 @@ z = newvar( prob, base, siz, str );
 
 if ismod,
     model = cvx_vexity( model );
-    cvx___.problems( p ).vexity( len + 1 : end ) = sign( str' * model( : ) );
+    cvx___.vexity( len + 1 : end ) = sign( str * model( : ) );
 end
 
 % Copyright 2005 Michael C. Grant and Stephen P. Boyd.

@@ -49,7 +49,7 @@ if isempty( xt ),
     x.size = [1,1];
 elseif nm( end ) ~= ')',
     error( sprintf( 'Invalid variable specification: %s', nm ) );
-else,
+else
     x.name = nm( 1 : xt( 1 ) - 1 );
     x.size = nm( xt( 1 ) + 1 : end - 1 );
 end
@@ -79,6 +79,11 @@ end
 %
 
 nmods = length( varargin );
+filt = true( 1, nmods );
+islin = false;
+isgeo = false;
+isepi = false;
+ishypo = false;
 modifiers = '';
 for k = 1 : length( varargin ),
     strs = varargin{k};
@@ -87,12 +92,30 @@ for k = 1 : length( varargin ),
     elseif ~ischar( strs ) | size( strs, 1 ) ~= 1,
         error( 'Structure modifiers must be strings.' );
     end
+    switch strs,
+        case 'geometric_',
+            isgeo = true;
+            filt( k ) = false;
+            continue;
+        case 'linear_',
+            islin = true;
+            filt( k ) = false;
+            continue;
+        case 'epigraph_',
+            isepi = true;
+            filt( k ) = false;
+            continue;
+        case 'hypograph_',
+            ishypo = true;
+            filt( k ) = false;
+            continue;
+    end
     xt = find( strs == '(' );
     if isempty( xt ),
         nm = strs;
     elseif strs( end ) ~= ')',
         error( sprintf( 'Invalid structure modifier: %s', strs ) );
-    else,
+    else
         nm = strs( 1 : xt(1) - 1 );
         strx.name = nm;
         strx.args = evalin( 'caller', [ '{', strs(xt(1)+1:xt(1)-1), '}' ], 'NaN' );
@@ -107,18 +130,31 @@ for k = 1 : length( varargin ),
     modifiers = [ modifiers, ' ', strs ];
 end
 if ~isempty( varargin ),
-    str = cvx_create_structure( x.size, varargin{:} );
+    str = cvx_create_structure( x.size, varargin{filt} );
     if isempty( str ),
         error( sprintf( 'Incompatible structure modifiers:%s', modifiers ) );
     end
-else,
+else
     str = [];
 end
-
-v = newvar( prob, x.name, x.size, str );
+if isgeo & islin,
+    error( 'GEOMETRIC and LINEAR keywords used simultaneously.' );
+end
+if isepi & ishypo,
+    error( 'EPIGRAPH and HYPOGRAPH keywords used simultaneously.' );
+end
+geo = isgeo | ( ~islin & cvx___.problems( p ).gp );
+v = newvar( prob, x.name, x.size, str, geo );
+if isepi | ishypo,
+    if geo, vv = log( v ); else vv = v; end
+    if isepi, dir = 'epigraph'; else dir = 'hypograph'; end
+    cvx___.problems( p ).objective = vv;
+    cvx___.problems( p ).direction = dir;
+    cvx___.problems( p ).geometric = geo;
+end
 if nargout > 0,
     varargout{1} = v;
-else,
+else
     assignin( 'caller', x.name, v );
 end
 

@@ -24,17 +24,32 @@ function cvx_begin( varargin )
 % X >= 0 have the expected meaning.
 %
 % The command
+%   CVX_BEGIN GP
+% can be used to mark the beginning of a geometric programming (GP) model
+% in CVX. This command alters the definition of the VARIABLE keyword so
+% that it creates geometric variables by default. GP and SDP cannot be
+% supplied for the same problem.
+%
+% The command
 %    CVX_BEGIN SET
 % can be used to mark the beginning of a set definition---a cvx feasibility
 % problem intended to describe a set for use in other models. See the files
-% in the cvx subdirectory sets/ for examples.
+% in the cvx subdirectory sets/ for examples. The SET keyword can be
+% combined with SDP or GP to specify sets which use SDP or GP conventions;
+% for example,
+%   CVX_BEGIN SET SDP
 %
-% The commands
-%    CVX_BEGIN SET SDP
-%    CVX_BEGIN SDP SET
-% are also possible, and combine the two functions. That is, they mark the
-% beginning of a set definition which uses the SDP constraint conventions
-% for its description.
+% The command
+%     CVX_BEGIN SEPARABLE
+% gives permission for CVX to solve a multiobjective problem simply by
+% taking the sum of the objectives and solving the resulting single-
+% objective problem. As the name implies, this produces equivalent results
+% when the subproblems are separable---and when there is not a mixture of
+% infeasible, unbounded, and feasible subproblems. (A later version of CVX
+% will remove this latter limitation.) This keyword is useful, for example,
+% when the CVX model is being used to compute a scalar function applied
+% elementwise to an array. It is ignored for single-objective problems,
+% feasibility problems, sets, and incomplete specifications.
 %
 % The command
 %     CVX_BEGIN SEPARABLE
@@ -53,9 +68,21 @@ function cvx_begin( varargin )
 % The command 'cvx_where' will show where this file is located.
 
 if ~iscellstr( varargin ),
-    error( 'Arguments, if supplied, must be strings.' );
+    error( 'Arguments must be strings.' );
 end
 cvx_problem = evalin( 'caller', 'cvx_problem', '[]' );
+if isa( cvx_problem, 'cvxprob' ),
+    if ~isempty( cvx_problem.objective ) | ~isempty( cvx_problem.variables ) | ~isempty( cvx_problem.duals ) | nnz( cvx_problem.t_variable ) > 1,
+        warning( sprintf( 'A cvx problem already existed in this scope.\n   It is being overwritten.' ) );
+    end
+    evalin( 'caller', 'pop( cvx_problem, ''clear'' );' );
+    cvx_problem = [];
+%   error( sprintf( 'A cvx problem already exists in this scope.\n(To clear it and start a new one, use the command ''cvx_clear''.)' ) );
+end
 cvx_setpath( 1 );
+global cvx___
+if isempty( cvx___.problems ) & cvx___.profile,
+    profile resume
+end
 cvx_create_problem( varargin{:} );
 assignin( 'caller', 'cvx_problem', cvx_problem );

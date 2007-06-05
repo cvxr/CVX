@@ -1,9 +1,10 @@
 function ans = cvx_isnonzero( x, full )
 error( nargchk( 1, 2, nargin ) );
-error( cvx_verify( x ) );
-ans = any( cvx_basis( x ), 2 );
+ans = any( x.basis_, 1 );
 if nargin < 2,
     ans = all( ans );
+else
+    ans = cvx_reshape( ans, x.size_ );
 end
 
 % Copyright 2005 Michael C. Grant and Stephen P. Boyd.

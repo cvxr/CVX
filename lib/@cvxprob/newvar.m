@@ -1,5 +1,5 @@
-function y = newvar( prob, name, siz, str )
-error( nargchk( 2, 4, nargin ) );
+function y = newvar( prob, name, siz, str, geo )
+error( nargchk( 2, 5, nargin ) );
 
 %
 % Check problem
@@ -23,11 +23,9 @@ if ischar( name ),
             error( sprintf( 'Invalid variable name: %s', name ) );
         elseif isfield( cvx___.problems( p ).variables, name ),
             error( sprintf( 'Variable already exists: %s', name ) );
-        elseif isfield( cvx___.problems( p ).duals, name ),
-            error( sprintf( 'Primal/dual variable name conflict: %s', name ) );
         end
         nstr = struct( 'type', '.', 'subs', name );
-    else,
+    else
         nstr = [];
     end
 elseif ~isstruct( name ),
@@ -42,6 +40,37 @@ else
 end
 
 %
+% Retrieve an existing variable, and check for conflicts
+%
+
+vars = cvx___.problems( p ).variables;
+if ~isempty( nstr ),
+    try
+        y = builtin( 'subsref', vars, nstr );
+    catch
+        y = [];
+    end
+    if nargin == 2,
+        if ~isempty( y ), return; end
+        error( [ 'Unknown variable: ', name ] );
+    elseif ~isempty( y ),
+        error( [ 'Duplicate variable name: ', name ] );
+    end
+elseif nargin == 2,
+    error( 'Second argument must be a non-empty string or subscript structure array.' );
+else
+    y = [];
+end
+
+%
+% Check for conflict with dual variable
+%
+
+if ~isempty( nstr ) & isfield( cvx___.problems( p ).duals, nstr(1).subs ),
+    error( sprintf( 'Primal/dual variable name conflict: %s', nstr(1).subs ) );
+end
+
+%
 % Quick exit for retrieval mode
 %
 
@@ -50,96 +79,113 @@ if nargin == 2,
     try
         y = subsref( y, name );
         return
-    catch,
+    catch
         error( [ 'Unknown variable: ', nstr ] );
     end
 end
 
 %
-% Quick exit for creating variables out of existing data
+% Create the variable
 %
 
-if isa( siz, 'cvx' ) & problem( siz ) == prob,
-    cvx___.problems( p ).variables = builtin( 'subsasgn', cvx___.problems( p ).variables, nstr, siz );
-    y = siz;
-    return
-end
+if isa( siz, 'cvx' ),
 
-%
-% Creating variables from new data
-%
+    %
+    % Out of an existing object
+    %
 
-vars = cvx___.problems( p ).variables;
-if ~isempty( nstr ),
-    if isfield( cvx___.problems( p ).duals, nstr(1).subs ),
-        error( sprintf( 'Primal/dual variable name conflict: %s', nstr(1).subs ) );
-    else,
-        try,
-            temp = builtin( 'subsref', vars, nstr );
-        catch,
-            temp = [];
-        end
-        if isa( temp, 'cvx' ),
-            error( [ 'Variable already declared: ', name ] );
-        end
-        try,
-            vars = builtin( 'subsasgn', vars, nstr, 0 );
-        catch,
-            error( sprintf( 'Invalid variable name: %s\n   %s', name, lasterror ) );
+    y = newsubst( prob, siz );
+
+else
+
+    %
+    % Check size
+    %
+
+    [ temp, siz ] = cvx_check_dimlist( siz, true );
+    if ~temp,
+        error( 'Invalid size vector.' );
+    end
+
+    %
+    % Check structure
+    %
+
+    len = prod( siz );
+    if nargin < 4 | isempty( str ),
+        dof = len;
+        str = [];
+    elseif ~isnumeric( str ) | ndims( str ) > 2 | size( str, 2 ) ~= len,
+        error( 'Fourth argument must be a valid structure matrix.' );
+    elseif nnz( str ) == 0,
+        error( 'Structure matrix cannot be identically zero.' );
+    else
+        temp = any( str, 2 );
+        dof = full( sum( temp ) );
+        if dof ~= length( temp ),
+            str = str( temp, : );
         end
     end
+
+    %
+    % Geometric flag
+    %
+
+    if nargin < 5 | isempty( geo ),
+        geo = false;
+    elseif ~isnumeric( geo ) & ~islogical( geo ) | length( geo ) ~= 1,
+        error( 'Fifth argument must be true or false.' );
+    end
+
+    %
+    % Allocate the raw variable data
+    %
+
+    geo  = any( geo( : ) );
+    odim = length( cvx___.reserved );
+    ndim = odim + 1 : odim + ( geo + 1 ) * dof;
+    cvx___.reserved(    ndim, 1 ) = 0;
+    cvx___.vexity(      ndim, 1 ) = 0;
+    cvx___.canslack(    ndim, 1 ) = true;
+    cvx___.readonly(    ndim, 1 ) = p;
+    cvx___.geometric(   ndim, 1 ) = 0;
+    cvx___.logarithm(   ndim, 1 ) = 0;
+    cvx___.exponential( ndim, 1 ) = 0;
+    if geo,
+        ndim2 = ndim( 1 : dof );
+        ndim  = ndim( dof + 1 : end );
+        cvx___.vexity(      ndim,  1 ) = +1;
+        cvx___.canslack(    ndim,  1 ) = true;
+        cvx___.geometric(   ndim,  1 ) = +1;
+        cvx___.exponential( ndim2, 1 ) = ndim( : );
+        cvx___.logarithm(   ndim,  1 ) = ndim2( : );
+    end
+    cvx___.x = [];
+    cvx___.y = [];
+
+    %
+    % Create the variable object
+    %
+
+    str2 = sparse( ndim, 1 : dof, 1 );
+    if ~isempty( str ),
+        str2 = str2 * str;
+    end
+    y = cvx( siz, str2, dof * ( 1 - 2 * geo ), false );
+
 end
 
 %
-% Check size
+% If the variable is named, save it in the problem structure
 %
 
-[ temp, siz ] = cvx_check_dimlist( siz, true );
-if ~temp,
-    error( 'Invalid size vector.' );
-end
-
-%
-% Check structure
-%
-
-len = prod( siz );
-if nargin < 4 | isempty( str ),
-    dof = len;
-    str = [];
-elseif ~isnumeric( str ) | ndims( str ) > 2 | size( str, 1 ) ~= len,
-    error( 'Fourth argument must be a valid structure matrix.' );
-elseif nnz( str ) == 0,
-    error( 'Structure matrix cannot be identically zero.' );
-else,
-    temp = any( str, 1 );
-    dof = full( sum( temp ) );
-    if dof ~= length( temp ),
-        str = str( :, temp );
+if ~isempty( nstr ),
+    try
+        cvx___.problems( p ).variables = builtin( 'subsasgn', vars, nstr, y );
+    catch
+        error( [ 'Invalid variable name: ', name ] );
     end
 end
-
-%
-% Add the variable to the problem
-%
-
-if len > 0,
-    dims = length( cvx___.problems( p ).reserved );
-    dims = dims + 1 : dims + dof;
-    str2 = sparse( 1 : dof, dims, 1, dof, dims(end) );
-    if ~isempty( str ), str2 = str * str2; end
-    y = cvx( prob, siz, str2, dof );
-    cvx___.problems( p ).reserved( dims, 1 ) = 0;
-    cvx___.problems( p ).vexity(   dims, 1 ) = 0;
-else,
-    y = cvx( prob, siz, [], 0 );
-end    
-if ~isempty( nstr ),
-    vars = builtin( 'subsasgn', vars, nstr, y );
-    cvx___.problems( p ).variables = vars;
-end
-cvx___.problems( p ).x = [];
-cvx___.problems( p ).y = [];
 
 % Copyright 2005 Michael C. Grant and Stephen P. Boyd.
 % See the file COPYING.txt for full copyright information.

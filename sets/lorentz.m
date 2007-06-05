@@ -24,7 +24,7 @@ nd = length( sx );
 if dim <= 0 | dim > nd | sx( dim ) == 1,
     nv  = 1;
     dim = 0;
-else,
+else
     nv = sx( dim );
     sy( dim ) = 1;
 end
@@ -37,7 +37,7 @@ if nargin < 3 | isempty( iscplx ),
     iscplx = false;
 elseif length( iscplx ) ~= 1,
     error( 'Third argument must be a scalar.' );
-else,
+else
     iscplx = logical( iscplx );
 end
 
@@ -63,11 +63,9 @@ if iscplx,
 end
 cvx_begin_set
     variables x( nv, ny ) y( 1, ny )
-    global cvx___
-    p = index( cvx_problem );
-    cvx___.problems( p ).reserved( 2 : end ) = 1;
-    cvx___.problems( p ).cones = struct( 'type', 'lorentz', 'indices', ...
-        [ reshape( 2 : nx + 1, nv, ny ) ; nx + 2 : nx + ny + 1 ] );
+    [ tx, dummy ] = find( cvx_basis( x ) );
+    [ ty, dummy ] = find( cvx_basis( y ) );
+    newnonl( cvx_problem, 'lorentz', [ reshape( tx, nv, ny ) ; reshape( ty, 1, ny ) ] );
 cvx_end_set
 
 %

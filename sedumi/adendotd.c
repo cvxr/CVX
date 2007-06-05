@@ -156,7 +156,7 @@ void mexFunction(const int nlhs, mxArray *plhs[],
   MY_FIELD = mxGetField(DENSE_IN,0,"q");                    /* dense.q */
   mxAssert( MY_FIELD != NULL, "Missing field dense.q.");
   nq = mxGetM(MY_FIELD) * mxGetN(MY_FIELD);
-  qPr = mxGetPr(MY_FIELD);
+  qPr = (double*)mxGetData(MY_FIELD);
   MY_FIELD = mxGetField(DENSE_IN,0,"cols");                 /* dense.cols */
   mxAssert( MY_FIELD != NULL, "Missing field dense.cols.");
   nden = mxGetM(MY_FIELD) * mxGetN(MY_FIELD) - nl - nq;

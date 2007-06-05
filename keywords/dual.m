@@ -11,9 +11,9 @@ function varargout = dual( varargin )
 %
 %   Note that a dual variable initially has no size; i.e., SIZE(x) returns
 %   [0,0]. This is because the size of a dual variable is determined by the
-%   constraint to which it is attached. To attach a dual variable to a 
+%   constraint to which it is attached. To attach a dual variable to a
 %   constraint, use the colon notation as follows:
-%   
+%
 %      variable x(n)
 %      dual variable z
 %      A * x == b : z
@@ -48,7 +48,7 @@ function varargout = dual( varargin )
 
 if ~evalin( 'caller', 'exist(''cvx_problem'',''var'')', '0' ),
     error( 'A cvx problem does not exist in this scope.' );
-else,
+else
     prob = evalin( 'caller', 'cvx_problem' );
     p = index( prob );
 end
@@ -76,7 +76,7 @@ for k = 1 : nargs,
         x.size = [];
     elseif nm(end) ~= '}',
         error( sprintf( 'Invalid dual variable specification: %s', nm ) );
-    else,
+    else
         x.name = nm( 1 : xt( 1 ) - 1 );
         x.size = nm( xt( 1 ) + 1 : end - 1 );
     end
@@ -98,7 +98,7 @@ for k = 1 : nargs,
     end
     assignin( 'caller', x.name, temp );
 end
-    
-% Copyright 2005 Michael C. Grant and Stephen P. Boyd. 
+
+% Copyright 2005 Michael C. Grant and Stephen P. Boyd.
 % See the file COPYING.txt for full copyright information.
 % The command 'cvx_where' will show where this file is located.

@@ -1,34 +1,31 @@
 function y = ctranspose( x )
-error( cvx_verify( x ) );
 
 %
 % Determine permutation
 %
 
 s = x.size_;
-ndxs = 1 : prod( s );
-try,
-    ndx2 = reshape( ndxs, s ).';
-catch,
-    error( lasterror );
+if length( s ) > 2,
+    error( 'Transpose of an ND array is not defined.' );
 end
 
 %
 % Permute the data
 %
 
-b = x.basis_;
-try,
-    b = x.basis_( ndx2, : );
-catch,
-    ndxs( ndxs2( : ).' ) = ndxs;
+ndxs = 1 : prod( s );
+ndx2 = reshape( ndxs, s ).';
+b = conj( x.basis_ );
+try
+    b = b( :, ndx2 );
+catch
+    ndxs( ndx2( : ).' ) = ndxs;
     [ r, c, v ] = find( b );
-    v = conj( v );
-    b = sparse( ndxs( r ), c, v );
+    b = sparse( r, ndxs( c ), v, size( b, 1 ), size( b, 2 ) );
     clear r c v
 end
-y = cvx( problem( x ), size( ndx2 ), b );
+y = cvx( size( ndx2 ), b );
 
-% Copyright 2005 Michael C. Grant and Stephen P. Boyd. 
+% Copyright 2005 Michael C. Grant and Stephen P. Boyd.
 % See the file COPYING.txt for full copyright information.
 % The command 'cvx_where' will show where this file is located.

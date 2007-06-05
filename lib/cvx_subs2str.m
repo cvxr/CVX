@@ -11,17 +11,17 @@ end
 y = '';
 needfield = fieldalt ~= 0;
 for k = 1 : length( x ),
-    try,
+    try
         tp = x(k).type;
-    catch,
+    catch
         error( 'Invalid subscript structure: field "type" is missing.' );
     end
     if ~ischar( tp ) | size( tp, 1 ) ~= 1,
         error( sprintf( 'Invalid subscript entry #%d: field "type" must be a string', k ) );
     end
-    try,
+    try
         sb = x(k).subs;
-    catch,
+    catch
         error( 'Invalid subscript structure: field "subs" is missing.' );
     end
     switch tp,
@@ -59,6 +59,6 @@ for k = 1 : length( x ),
     end
 end
 
-% Copyright 2005 Michael C. Grant and Stephen P. Boyd. 
+% Copyright 2005 Michael C. Grant and Stephen P. Boyd.
 % See the file COPYING.txt for full copyright information.
 % The command 'cvx_where' will show where this file is located.

@@ -12,15 +12,15 @@ error( nargchk( 1, 1, nargin ) );
 %         specifications, its argument must be concave (or affine).
 
 if ~isreal( x ),
-    
+
     error( 'Input must be real.' );
-    
-else,
+
+else
 
     y = 1.0 ./ max( x, 0 );
 
 end
 
-% Copyright 2005 Michael C. Grant and Stephen P. Boyd. 
+% Copyright 2005 Michael C. Grant and Stephen P. Boyd.
 % See the file COPYING.txt for full copyright information.
 % The command 'cvx_where' will show where this file is located.

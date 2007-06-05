@@ -1,5 +1,4 @@
 function x = reshape( x, varargin )
-error( cvx_verify( x ) );
 
 %
 % Check size arguments
@@ -24,7 +23,7 @@ end
 % Quick exit if the size remains the same
 %
 
-sx = size( x );
+sx = x.size_;
 if isequal( sx, sz ),
     return;
 end
@@ -41,8 +40,8 @@ end
 % Perform the resize
 %
 
-x = cvx( problem( x ), sz, cvx_basis( x ) );
+x = cvx( sz, x.basis_ );
 
-% Copyright 2005 Michael C. Grant and Stephen P. Boyd. 
+% Copyright 2005 Michael C. Grant and Stephen P. Boyd.
 % See the file COPYING.txt for full copyright information.
 % The command 'cvx_where' will show where this file is located.

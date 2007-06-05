@@ -53,7 +53,7 @@ end
 nstr = struct( 'type', '.', 'subs', name );
 if ~isempty( reps ),
     y = cell( reps );
-    [ y{:} ] = deal( cvx( prob, [0,0], [] ) );
+    [ y{:} ] = deal( cvx );
     z = cell( reps );
     ndxs = cell( 1, length( reps ) - ( reps(end) == 1 ) );
     [ ndxs{:} ] = ind2sub( reps, 1 : prod( reps ) );
@@ -64,16 +64,19 @@ if ~isempty( reps ),
         nstr(2).subs = eval( [ '{', nstr(2).subs(1:end-1), '}' ] );
         z{k} = cvxdual( prob, nstr );
     end
-else,
-    y = cvx( prob, [0,0], [] );
+else
+    y = cvx( [0,0], [] );
     z = cvxdual( prob, nstr );
 end
+vars = cvx___.problems( p ).dvars;
+vars = builtin( 'subsasgn', vars, nstr(1), z );
+cvx___.problems( p ).dvars = vars;
 vars = cvx___.problems( p ).duals;
 vars = builtin( 'subsasgn', vars, nstr(1), y );
 cvx___.problems( p ).duals = vars;
-cvx___.problems( p ).x = [];
-cvx___.problems( p ).y = [];
-    
-% Copyright 2005 Michael C. Grant and Stephen P. Boyd. 
+cvx___.x = [];
+cvx___.y = [];
+
+% Copyright 2005 Michael C. Grant and Stephen P. Boyd.
 % See the file COPYING.txt for full copyright information.
 % The command 'cvx_where' will show where this file is located.

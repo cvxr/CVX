@@ -1,5 +1,6 @@
-% FROMSDPA   Reads SDP problem from sparse SDPA-formatted input file.
-%    [At,b,c,K] = fromsdpa(fname) produces conic optimization problem
+function [At,b,c,K]=fromsdpa(fname)
+% readsdpa Reads SDP problem from sparse SDPA-formatted input file.
+%    [At,b,c,K] = readsdpa(fname) produces conic optimization problem
 %    data, as can be used by sedumi. "fname" contains a full pathname
 %    to the SDPA 4.10-formatted file. (SDPA is a stand-alone solver for
 %    semidefinite programming, by Fujisawa, Kojima and Nakata.  It is
@@ -7,7 +8,7 @@
 %
 %    To read and solve the problem "arch0", you may type
 %
-%    [At,b,c,K, perm] = fromsdpa('arch0.dat-s');
+%    [At,b,c,K] = readsdpa('arch0.dat-s');
 %    [x,y,info] = sedumi(At,b,c,K);
 %
 %    The above 2 lines assume that arch0.dat-s is somewhere in your MATLAB
@@ -17,22 +18,9 @@
 %
 % SEE ALSO SeDuMi, getproblem, frompack, prelp.
 
-function [At,b,c,K,perm] = fromsdpa(fname)
-
 %
 % This file is part of SeDuMi 1.1 by Imre Polik and Oleksandr Romanko
 % Copyright (C) 2005 McMaster University, Hamilton, CANADA  (since 1.1)
-%
-% Copyright (C) 2001 Jos F. Sturm (up to 1.05R5)
-%   Dept. Econometrics & O.R., Tilburg University, the Netherlands.
-%   Supported by the Netherlands Organization for Scientific Research (NWO).
-%
-% Affiliation SeDuMi 1.03 and 1.04Beta (2000):
-%   Dept. Quantitative Economics, Maastricht University, the Netherlands.
-%
-% Affiliations up to SeDuMi 1.02 (AUG1998):
-%   CRL, McMaster University, Canada.
-%   Supported by the Netherlands Organization for Scientific Research (NWO).
 %
 % This program is free software; you can redistribute it and/or modify
 % it under the terms of the GNU General Public License as published by
@@ -53,61 +41,82 @@ fid = fopen(fname,'r');
 if fid == -1
     error('File not found.')
 end
-m = fscanf(fid,'%d',1);
+%The number of equality constraints
+m='';
 while(isempty(m))
-    fgetl(fid); m = fscanf(fid,'%d',1);
-end
-sdpN = fscanf(fid,'%d',1);
-Ks = fscanf(fid,'%d',sdpN);
-Ks = abs(Ks);
-perm = find(Ks == 1);
-K.l = length(perm);
-perm2 = find(Ks>1);
-K.s = Ks(perm2);
-perm = [perm; perm2];
-if length(perm) ~= sdpN
-    error('PSD orders should be positive integers')
-end
-invperm = zeros(sdpN,1);
-invperm(perm) = 1:sdpN;
-b = fscanf(fid,'%f',m);
-if(isempty(b))
-    b1 = fscanf(fid,'{%f,',1);
-    if(isempty(b1))
-        error('Invalid sdpa file format\n')
+    m = fscanf(fid,'%d',1);
+    if fgetl(fid)==-1;
+        error('Invalid SDPA file.')
     end
-    b = [b1; fscanf(fid,'%f,',m-2); fscanf(fid,'%f}',1)];
 end
-if length(b) ~= m
-    error('Invalid sdpa file format\n')
+%The number of blocks
+nblocks = fscanf(fid,'%d',1);
+if isempty(nblocks)
+    error('Invalid SDPA file.')
 end
-% ------------------------------------------------------------
-% Get data in "ikrcf" format: A(constraint i, block k) has
-%    entry "f" at position (r,c).
-% ------------------------------------------------------------
+fgetl(fid);
+%The dimension of the blocks
+%Negative means diagonal block, we convert that to linear
+%.,(){} are omitted
+dims=sscanf(regexprep(fgetl(fid),'[\.\,(){}]',' '),'%d',nblocks)';
+if length(dims(dims==0))>0 | length(dims)~=nblocks
+    error('Invalid SDPA file.')
+end
+N=-sum(dims(dims<0))+sum(dims(dims>0).^2);
+nblocks=length(dims);
+%Create a vector with the offsets of the blocks.
+%This is one less than the blockstart!
+%Diagonal and one dimensional blocks are coming first
+loffset=0;
+sdpoffset=sum(abs(dims(dims<=1)));
+offset=zeros(1,nblocks);
+for i=1:nblocks
+    if dims(i)<=1
+        offset(i)=loffset;
+        loffset=loffset+abs(dims(i));
+    else
+        offset(i)=sdpoffset;
+        sdpoffset=sdpoffset+dims(i)^2;
+    end
+end
+%This is needed so that we can compute where the second column starts
+stride=dims;
+stride(stride<0)=0;
+
+%Vector b
+%,(){} are omitted
+b = sscanf(regexprep(fgetl(fid),'[\,(){}]',' '),'%f',m);
+if length(b)~=m
+    error('Invalid SDPA file.')
+end
+if nnz(b)/m<0.1
+    b=sparse(b);
+end
+
+%Coefficients
 E = fscanf(fid,'%d %d %d %d %f',[5. inf]);
-% ------------------------------------------------------------
-% Split E into C, A1, A2, ..., Am
-% ------------------------------------------------------------
-[xir,xjc] = sdpasplit(E(1,:),m+1);
-% ------------------------------------------------------------
-% Get c-vector. We've to change sign, because SDPA assumes "max"
-% instead of "min".
-% ------------------------------------------------------------
-c = sparse([],[],[],sum(Ks.^2),1);
-knz = 1;
-if ~isempty(xir)
-    if xir(1) == 0
-        c = -sdpa2vec( E(2:5,xjc(1):xjc(2)-1),  K, invperm);
-        knz = 2;
-    end
-end
-% ------------------------------------------------------------
-% Construct each constraint i=1:m
-% ------------------------------------------------------------
-N = length(c);
-At = sparse([],[],[],N,m,2*size(E,2));
-for i = knz:length(xir)
-    At(:,xir(i)) = sdpa2vec( E(2:5,xjc(i):xjc(i+1)-1),  K, invperm);
-end
 fclose(fid);
+
+%Extract the objective
+cE=E(:,E(1,:)==0);
+%Repeating indices in the sparse matrix structure create the sum of
+%elements, we need to clear one for the diagonals
+data2=cE(5,:);
+data2(cE(3,:)==cE(4,:))=0;
+c=-sparse([offset(cE(2,:))+(cE(3,:)-1).*stride(cE(2,:))+cE(4,:),offset(cE(2,:))+(cE(4,:)-1).*stride(cE(2,:))+cE(3,:)],1,[cE(5,:),data2],N,1);
+clear cE data2
+AtE=E(:,E(1,:)~=0);
+clear E
+data2=AtE(5,:);
+data2(AtE(3,:)==AtE(4,:))=0;
+At=sparse([offset(AtE(2,:))+(AtE(3,:)-1).*stride(AtE(2,:))+AtE(4,:),offset(AtE(2,:))+(AtE(4,:)-1).*stride(AtE(2,:))+AtE(3,:)],[AtE(1,:),AtE(1,:)],[AtE(5,:),data2],N,m);
+clear AtE data2
+
+K.l=-sum(dims(dims<0))+sum(dims==1);
+K.s=dims(dims>1);
+
+%Finally, let us correct the sparsity
+[i,j,v]=find(c);
+c=sparse(i,1,v,N,1);
+[i,j,v]=find(At);
+At=sparse(i,j,v,N,m);

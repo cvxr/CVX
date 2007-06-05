@@ -1,5 +1,5 @@
-function cvx_optval = geomean( x, dim )
-error( nargchk( 1, 2, nargin ) );
+function y = geomean( x, dim, w, ismap )
+error( nargchk( 1, 4, nargin ) );
 
 % GEOMEAN   Geometric mean.
 %     For vectors, GEOMEAN(X) is the geometric mean of the elements of X.
@@ -16,108 +16,198 @@ error( nargchk( 1, 2, nargin ) );
 %     columns of X. For N-D arrays, the geometric means are taken along the
 %     first non-singleton dimension of X.
 %
+%     GEOMEAN(X,DIM,W), where W is a vector of nonnegative integers,
+%     computes a weighted geometric mean Y = PROD(X.^W)^(1/SUM(W)). In 
+%     effect, each element X(i) is replicated W(i) times in the geometric
+%     mean---but this method is far more efficient.
+%
 %     Disciplined convex programming information:
 %         GEOMEAN is convex and nondecreasing; therefore, when used in CVX
 %         specifications, its argument must be concave.
 
 %
-% Check types
+% Basic argument check
 %
 
-if ~isreal( x ),
-    error( 'First argument must be real.' );
-elseif ~cvx_isconcave( x ),
-    error( sprintf( 'Disciplined convex programming error: \n    GEOMEAN is concave and nondecreasing; its argument must therefore be concave.' ) );
-elseif nargin < 2,
-    dim = cvx_default_dimension( size( x ) );
-elseif ~cvx_check_dimension( dim, false ),
+sx = size( x );
+if nargin < 2 | isempty( dim ),
+    dim = cvx_default_dimension( sx );
+elseif ~cvx_check_dimension( dim ),
     error( 'Second argument must be a positive integer.' );
 end
 
 %
-% Determine sizes
+% Determine sizes, quick exit for empty arrays
 %
 
-sx = size( x );
 sx = [ sx, ones( 1, dim - length( sx ) ) ];
 nx = sx( dim );
-
-%
-% Empty arrays
-%
-
+sy = sx;
+sy( dim ) = 1;
 if any( sx == 0 ),
-    sx( dim ) = 1;
-    cvx_optval = ones( sx );
+    y = ones( sy );
     return
 end
 
 %
-% A single element: -Inf if x < 0, x if x >= 0
+% Third and fourth argument check
 %
 
-if nx == 1,
-    cvx_begin
-        variable z( sz )
-        maximize z;
-        z <= x;
-        0 <= x;
-    cvx_end
+map = [];
+if nargin == 4,
+    map = w;
+elseif nargin < 3 | isempty( w ),
+    w = [];
+elseif numel( w ) ~= length( w ) | ~isnumeric( w ) | ~isreal( w ) | any( w < 0 ) | any( w ~= floor( w ) ),
+    error( 'Third argument must be a vector of nonnegative integers.' );
+elseif length( w ) ~= nx,
+    error( sprintf( 'Third argument must be a vector of length %d', nx ) );
+elseif ~any( w ),
+    y = ones( sy );
     return
 end
 
 %
-% Permute the matrix, if needed, so the geometric mean can be taken
-% along the first dimension.
+% Type check
 %
 
-if dim > 1 & any( sx( 1 : dim - 1 ) > 1 ),
-    perm = [ dim, 1 : dim - 1, dim + 1 : length( sx ) ];
-    x = permute( x, perm );
-    sx = sx( perm );
-    dim = 1;
-else,
-    perm = [];
+persistent remap_1 remap_2 remap_3 remap_4
+if isempty( remap_4 ),
+    % Constant (postive or negative)
+    remap_1 = cvx_remap( 'real' );
+    remap_2 = cvx_remap( 'concave' );
+    remap_3 = cvx_remap( 'log-convex' );
+    remap_4 = cvx_remap( 'log-concave' );
 end
+vx = cvx_reshape( cvx_classify( x ), sx );
+t1 = all( reshape( remap_1( vx ), sx ), dim );
+t2 = all( reshape( remap_2( vx ), sx ), dim );
+t3 = all( reshape( remap_3( vx ), sx ), dim ) | ...
+     all( reshape( remap_4( vx ), sx ), dim );
+% Valid combinations with zero or negative entries can be treated as constants
+t1 = t1 | ( ( t2 | t3 ) & any( vx == 1 | vx == 9, dim ) );
+ta = t1 + ( 2 * t2 + 3 * t3 ) .* ~t1;
+nu = unique( ta( : ) );
+nk = length( nu );
 
 %
-% Construct the problem.
-% --- For n == 2, we use the following equivalency
-%     sqrt(x*y)>=z, x>=0, y>=0 <--> z^2/x <= y
-% --- For n == 2^k, we can recursively apply this log(k,2) times.
-% --- For other n, note that
-%     x(1)*x(2)*...*x(n) <= y^n
-%         <----> x(1)*x(2)*...*x(n)*y^m <= y^(n+m)
-%     so by adding extra y's to the left-hand side we can use the same
-%     recursion for lengths that are not powers of two.
+% Permute and reshape, if needed
 %
 
-nv = prod( sx ) / nx;
-x = reshape( x, nx, nv );
-cvx_begin
-    x = cvx_accept_concave( x );
-    variable y( 1, nv )
-    maximize( y )
-    while nx >= 2,
-        n2 = ceil( nx * 0.5 );
-        if n2 * 2 ~= nx, x = [ x ; y ]; end
-        cone = rotated_lorentz( [ n2, nv ], 0 );
-        cone.y == x( 1 : 2 : end, : );
-        cone.z == x( 2 : 2 : end, : );
-        x = cone.x;
-        nx = n2;
+perm = [];
+if nk > 1 | ( any( nu > 1 ) & nx > 1 ),
+    if dim > 1 & any( sx( 1 : dim - 1 ) > 1 ),
+        perm = [ dim, 1 : dim - 1, dim + 1 : length( sx ) ];
+        x   = permute( x,  perm );
+        sx  = sx( perm );
+        sy  = sy( perm );
+        ta  = permute( ta, perm );
+        dim = 1;
+    else
+        perm = [];
     end
-    y == x;
-cvx_end
+    nv = prod( sy );
+    x  = reshape( x, nx, nv );
+    ta = reshape( ta, 1, nv );
+end
+
+%
+% Perform the computations
+%
+
+if nk > 1,
+    y = cvx( [ 1, nv ], [] );
+end
+for k = 1 : nk,
+
+    if nk == 1,
+        xt = x;
+        sz = sy;
+    else
+        tt = ta == nu( k );
+        xt = cvx_subsref( x, ':', tt );
+        nv = nnz( tt );
+        sz = [ 1, nv ];
+    end
+
+    switch nu( k ),
+        case 0,
+            error( sprintf( 'Disciplined convex programming error:\n   Invalid computation: geomean( {%s} )', cvx_class( xt, true, true ) ) );
+        case 1,
+            yt = geomean( cvx_constant( xt ), dim, w );
+        case 2,
+            if nx == 1,
+                cvx_begin
+                    variable z( sz )
+                    z <= xt;
+                    z <= 0;
+                cvx_end
+                yt = cvx_optval;
+            else
+                %
+                % Construct the problem.
+                % --- For n == 2, we use the following equivalency
+                %     sqrt(x*y)>=z, x>=0, y>=0 <--> z^2/x <= y
+                % --- For n == 2^k, we can recursively apply this log(k,2) times.
+                % --- For other n, note that
+                %     x(1)*x(2)*...*x(n) <= y^n
+                %         <----> x(1)*x(2)*...*x(n)*y^m <= y^(n+m)
+                %     so by adding extra y's to the left-hand side we can use the same
+                %     recursion for lengths that are not powers of two.
+                % --- For integer-weighted geometric means, we effectively
+                %     replicate each x(i) w(i) times. However, because
+                %     sqrt(x(i)*x(i)) = x(i), we can prune away most of
+                %     the duplicated values very cheaply. The number of
+                %     non-trivial appearances of x(i) will be reduced from
+                %     w(i) to at most ceil(log2(w(i))), or more precisely
+                %     the number of 1's in a binary expansion of w(i).
+                %
+                if isempty( map ),
+                    if isempty( w ),
+                        w = ones( 1, nx );
+                    end
+                    map  = cvx_geomean_map( w );
+                end
+                nm   = size(map,2);
+                msiz = [ 1, nm, nv ];
+                cvx_begin
+                    variable xw( nm, nv );
+                    xt = [ cvx_accept_concave( xt ) ; xw ];
+                    cone = rotated_lorentz( msiz, 0 );
+                    cone.y == reshape( xt(map(1,:),:), msiz ); 
+                    cone.z == reshape( xt(map(2,:),:), msiz );
+                    cone.x == reshape( xt(map(3,:),:), msiz );
+                    maximize( xw( end, : ) );
+                cvx_end
+                yt = cvx_optval;
+            end
+        case 3,
+            if nx == 1,
+                yt = xt;
+            elseif isempty( w ),
+                yt = exp( sum( log( xt ), 1 ) * ( 1 / nx ) );
+            else
+                yt = exp( ( w / sum( w ) ) * log( xt ) );
+            end
+        otherwise,
+            error( 'Shouldn''t be here.' );
+    end
+
+    if nk == 1,
+        y = yt;
+    else
+        y = cvx_subsasgn( y, tt, yt );
+    end
+
+end
 
 %
 % Reverse the reshaping and permutation steps
 %
 
-sx( dim ) = 1;
-cvx_optval = reshape( cvx_optval, sx );
+y = reshape( y, sy );
 if ~isempty( perm ),
-    cvx_optval = ipermute( cvx_optval, perm );
+    y = ipermute( y, perm );
 end
 
 % Copyright 2005 Michael C. Grant and Stephen P. Boyd.

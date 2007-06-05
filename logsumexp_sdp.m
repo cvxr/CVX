@@ -149,7 +149,7 @@ use_lse2 = dndx == 1;
 if use_lse2,
     xoff = xmax_lse2(degs(1));
     p = poly_lse2{degs(1)};
-else,
+else
     xoff = offsets(degs(dndx));
     p = polynomials{degs(dndx)};
     if dndx == 3, npairs = 1; end
@@ -178,7 +178,7 @@ if dim > 1 & any( sx( 1 : dim - 1 ) > 1 ),
     x = permute( x, perm );
     sx = sx( perm );
     dim = 1;
-else,
+else
     perm = [];
 end
 nv = prod( sx ) / nx;
@@ -189,13 +189,12 @@ x = reshape( x, nx, nv );
 %
 
 cvx_begin sdp separable
-    variable y( 1, nv )
-    minimize( y )
+    epigraph variable y( 1, nv )
     if npairs > 1,
         variable xtemp( npairs - 1, nv );
         xq = reshape( [ x ; xtemp ], 2, npairs * nv );
         yq = reshape( [ xtemp ; y ], 1, npairs * nv );
-    else,
+    else
         xq = x;
         yq = y;
     end
@@ -205,12 +204,12 @@ cvx_begin sdp separable
         abs( [0.5,-0.5]*xq ) <= w + v;
         w <= xoff;
         v >= 0;
-        polyval_sdp( p, w / ( 0.5 * xoff ) - 1 ) + v + [0.5,0.5]*xq <= yq;
-    else,
+        polyenv( p, w / ( 0.5 * xoff ) - 1 ) + v + [0.5,0.5]*xq <= yq;
+    else
         xy = xq - ones(size(xq,1),1) * yq;
         xy = max( xy, - xoff );
         xy = cvx_accept_convex( xy );
-        sum( polyval_sdp( p, xy / ( 0.5 * xoff ) + 1 ), 1 ) <= 1;
+        sum( polyenv( p, xy / ( 0.5 * xoff ) + 1 ), 1 ) <= 1;
     end
 cvx_end
 

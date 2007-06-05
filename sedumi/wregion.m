@@ -47,8 +47,9 @@ n = length(vfrm.lab);
 if wr.delta > 0.0           % initial centering needed ?
     vTAR = (1-wr.alpha) * max(wr.h,vfrm.lab);
     pv = 2*(vTAR-vfrm.lab);
+    pMode = 1;
     [dx, dy, dz, dy0, errc] = sddir(L,Lden,Lsd,pv,...
-        d,v,vfrm,A,DAt,dense, R,K,y,y0,b, pars);
+        d,v,vfrm,A,DAt,dense, R,K,y,y0,b, pars,pMode);
     % ------------------------------------------------------------
     % Take initial centering step
     % ------------------------------------------------------------
@@ -82,15 +83,17 @@ else
     errc.b = sparse(length(y),1);
     errc.maxb = 0; errc.db0 = 0;
     pv = [];              % Means pv = -v, the predictor direction.
+    pMode = 2;
 end
 % ----------------------------------------
 % PREDICTOR
 % ----------------------------------------
 if STOP ~= -1
     [dx,dy,dz,dy0, err] = sddir(L,Lden,Lsd,pv,...
-        d,v,vfrm,A,DAt,dense, R,K,y,y0,b, pars);
+        d,v,vfrm,A,DAt,dense, R,K,y,y0,b, pars,pMode);
     dxmdz = dx-dz;
     if (pars.alg ~= 0)
+        pMode = 3;
         gd1 = [dxmdz(1:K.l)./vTAR(1:K.l);qinvjmul(vTAR,vfrm.q,dxmdz, K);...
             psdinvjmul(vTAR,vfrm.s,dxmdz, K)];
         maxt1 = min(maxstep(dx,xc,uxc,K), maxstep(dz,zc,uzc,K));
@@ -113,7 +116,7 @@ if STOP ~= -1
         end
         pv = pv + frameit(pv2, vfrm.q, vfrm.s, K);
         [dx,dy,dz,dy0, err] = sddir(L,Lden,Lsd,pv,...
-            d,v,vfrm,A,DAt,dense, R,K,y,y0,b, pars);
+            d,v,vfrm,A,DAt,dense, R,K,y,y0,b, pars,pMode);
     end
     % ----------------------------------------
     % The steplength should be such that

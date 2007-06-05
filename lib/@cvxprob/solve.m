@@ -2,113 +2,181 @@ function solve( prob, quiet )
 if nargin < 2, quiet = false; end
 
 global cvx___
-prob = index( prob );
-p = cvx___.problems( prob );
-
-objsize = size( p.objective );
+p = index( prob );
+[ At, cones, objsize, sgn, Q, P, esrc ] = eliminate( prob );
 nobj = prod( objsize );
-if nobj > 1 & ~p.separable,
-    error( 'Non-separable, multiobjective problems are not supported.' );
+
+if nobj == 0,
+    error( 'Shouldn''t have an empty objective here.' );
+elseif nobj > 1 & ~cvx___.problems( p ).separable,
+    error( 'Non-separable multiobjective problems are not supported.' );
+elseif ~isempty( esrc ),
+    error( 'Non-GP exp() and log() constraints are not supported.' );
 end
 
-n = length( p.reserved );
-A = cvx_basis( p.equalities );
-if size( A, 2 ) < n, 
-    if size( A, 1 ) == 0,
-        A = sparse( [], [], [], 0, n );
-    else,
-        A( :, n ) = 0;
-    end
+c = At( :, 1 : nobj );
+At( :, 1 : nobj ) = [];
+d = c( 1, : );
+c( 1, : ) = [];
+[ n1, m ] = size( At );
+if n1 < 1,
+    b = zeros( m, 1 );
+else
+    b = - At( 1, : ).';
+    At( 1, : ) = [];
 end
-if isempty( p.objective ),
-    sign = +1;
-    c = zeros( n - 1, 1 );
-    d = 0;
-else,
-    c = cvx_basis( p.objective );
-    if size( c, 2 ) < n,
-        c( :, n ) = 0;
-    end
-    switch p.direction,
-        case 'minimize', sign = +1;
-        case 'maximize', sign = -1;
-    end
-    d = c( :, 1 ).'; 
-    c = c( :, 2 : end ).';
+n = n1 - 1;
+lambda = ones( nobj, 1 );
+tot_ineqs = 0;
+for k = 1 : length( cones ),
+    cones(k).indices = cones(k).indices - 1;
+    tot_ineqs = tot_ineqs + length(cones(k).indices);
 end
-lambda = ones( max( nobj, 1 ), 1 );
 
-[ m, n ] = size( A );
-n = n - 1;
-x = zeros( n, 1 );
-y = zeros( m, 1 );
+%
+% Ferret out the degenerate and overdetermined problems
+%
 
-b = - A( :, 1 ); 
-A = + A( :, 2 : end );
-
+found = true;
+tt = ( b' ~= 0 ) & ~any( At, 1 );
+infeas = any( tt );
 if m > n & n > 0,
     
-    x( : ) = NaN;
-    y( : ) = NaN;
+    %
+    % Overdetermined problem
+    %
+    
+    x      = NaN * ones( n, 1 );
+    y      = NaN * ones( m, 1 );
     value  = NaN * ones( objsize );
     status = 'Overdetermined';
-    warning( 'Overdetermined equality constraints; problem is likely infeasible.' );
+    estr = sprintf( 'Overdetermined equality constraints detected.\n   CVX cannot solve this problem; but it is likely infeasible.' );
+    if ~quiet,
+        disp( estr );
+    else
+        warning( estr );
+    end
     pval = NaN;
     dval = NaN;
 
-elseif n == 0,
+elseif n ~= 0 & ~infeas & ( any( b ) | any( c ) ),
+        
+    %
+    % Call solver
+    %
     
-    %
-    % No variables
-    %
-
-    if any( b ~= 0 ),
-
-        status = 'Infeasible';
-        y = - P * sign( b );
-        value = sign * Inf * ones( objsize );
-        pval = NaN;
-        dval = 0;
-
-    else,
-
-        status = 'Solved';
-        value = reshape( d, objsize );
-        pval = 1;
-        dval = 1;
-
+    prob = cvx___.problems( p );
+    solv = prob.solver;
+    lsolv = lower(solv);
+    prec = prob.precision;
+    spacer = '-';
+    spacer = spacer(:,ones(1,60));
+    sfunc  = [ 'cvx_solve_', lsolv ];
+    if ~quiet,
+        disp( ' ' );
+        disp( sprintf( 'Calling %s: %d variables, %d equality constraints', solv, n, m ) );
+        disp( spacer );
     end
-
-else,
-    
-    [ value, x, y, status ] = cvx_solve_sedumi( A, b, c * lambda, d * lambda, sign, p.cones, quiet );
+    opath = path;
+%    try
+        path( [ getfield( cvx___.path.solvers, lsolv ), opath ] );
+        if cvx___.profile,
+            profile off
+        end
+        [ x, y, status ] = feval( sfunc, At, b, c * lambda, sgn, cones, quiet, prec );
+        if cvx___.profile,
+            profile resume
+        end
+%    catch
+%        path( opath );
+%        rethrow( lasterror );
+%    end
     switch status,
     case { 'Solved', 'Inaccurate/Solved' },
-        if nobj > 1, value = reshape( c' * x + d', objsize ); end
+        value = sgn * reshape( c' * x + d', objsize );
         pval = 1;
         dval = 1;
     case { 'Infeasible', 'Inaccurate/Infeasible' },
-        if nobj > 1, value = sign * Inf * ones( objsize ); end
+        value = sgn * Inf * ones( objsize );
         pval = NaN;
         dval = 0;
     case { 'Unbounded', 'Inaccurate/Unbounded' },
-        if nobj > 1, value = -sign * Inf * ones( objsize ); end
+        value = -sgn * Inf * ones( objsize );
         pval = 0;
         dval = NaN;
     otherwise,
-        if nobj > 1, value = NaN * ones( objsize ); end
+        value = NaN * ones( objsize );
         pval = NaN;
         dval = NaN;
     end
-
+    if ~quiet,
+        disp( spacer );
+    end
+    
+elseif infeas,
+    
+    %
+    % Infeasible
+    %
+    
+    if ~quiet,
+        disp( 'Trivial infeasibilities detected; solution determined analytically.' );
+    end
+    status = 'Infeasible';
+    x = NaN * ones( n, 1 );
+    b( ~tt ) = 0;
+    y = - b / ( b' * b );
+    value = sgn * Inf * ones( objsize );
+    pval = NaN;
+    dval = 0;
+    
+else
+    
+    %
+    % The origin is optional
+    %
+    
+    if ~quiet,
+        disp( 'Homogeneous problem detected; solution determined analytically.' );
+    end
+    status = 'Solved';
+    x = zeros( n, 1 );
+    y = zeros( m, 1 );
+    value = sgn * reshape( d, objsize );
+    pval = 1;
+    dval = 1;
+    
 end
 
-p.x = full( [ pval ; x ] );
-p.y = full( [ dval ; y ] );
-p.result = full( value );
-p.status = status;
-cvx___.problems( prob ) = p;
+gvec = cvx___.problems( p ).geometric;
+if nnz( gvec ),
+    value( gvec ) = exp( value( gvec ) );
+end
+value = full( value );
+if ~quiet,
+    disp( sprintf( 'Status: %s', status ) );
+    if length( value ) == 1,
+        disp( sprintf( 'Optimal value (cvx_optval): %+g', value ) );
+    else
+        disp( sprintf( 'Optimal value (cvx_optval): (multiobjective)' ) );
+    end
+end
 
-% Copyright 2005 Michael C. Grant and Stephen P. Boyd. 
+%
+% Push the results into the master CVX workspace
+%
+
+global cvx___
+cvx___.x = full( Q * [ pval ; x ] );
+cvx___.y = full( P * [ dval * lambda ; y ] );
+cvx___.problems( p ).result = value;
+cvx___.problems( p ).status = status;
+if nnz( cvx___.exponential ),
+    esrc = find( cvx___.exponential );
+    edst = cvx___.exponential( esrc );
+    cvx___.x( edst ) = exp( cvx___.x( esrc ) );
+end
+
+% Copyright 2005 Michael C. Grant and Stephen P. Boyd.
 % See the file COPYING.txt for full copyright information.
 % The command 'cvx_where' will show where this file is located.

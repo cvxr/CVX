@@ -138,7 +138,7 @@ while STOP == 0
             STOP = 2;
         end
     else
-        %     fprintf('Warning: DAp = 0 in PCG\n');
+        %     my_fprintf('Warning: DAp = 0 in PCG\n');
         STOP = 1;         % If DAp == 0 then can't go on.
     end
 end

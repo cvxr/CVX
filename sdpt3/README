@@ -1,0 +1,26 @@
+----------------------------------------------------------------
+    BUILD THE EXECUTABLE AND MEX FILES.
+----------------------------------------------------------------
+
+    To build the executable mex-files from the c-files,
+    the most direct method is to run the MATLAB script file 
+    ** Installmex.m ** in the directory
+  
+    SDPT3-* (where * denotes the version number)
+   
+    That is, do the following at the MATLAB command window:  
+
+    >> Installmex 
+
+    It is important that you run the script file in the
+    directory mentioned above. 
+
+----------------------------------------------------------------
+    Checking whether SDPT3 has been installed correctly
+----------------------------------------------------------------
+
+    To do so, do the following at the MATLAB command window:  
+
+    >> sqlpdemo
+
+----------------------------------------------------------------

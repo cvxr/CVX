@@ -7,7 +7,7 @@ function cvx_setpath( arg )
 %        automatically as needed. However, if you are debugging cvx for
 %        some reason, this helps to facilitate the process.
 
-% Copyright 2005 Michael C. Grant and Stephen P. Boyd. 
+% Copyright 2005 Michael C. Grant and Stephen P. Boyd.
 % See the file COPYING.txt for full copyright information.
 % The command 'cvx_where' will show where this file is located.
 
@@ -20,8 +20,40 @@ if isempty( cvx___ ),
         ver( temp( 2 ) : end ) = [];
     end
     ver = eval( ver, 'NaN' );
-    pstr   = struct( 'string', '', 'formed', false, 'active', false, 'hold', false );
-    cvx___ = struct( 'path', pstr, 'problems', [], 'stack', {{}}, 'id', 0, 'has_mex', false, 'pause', false, 'quiet', false, 'mversion', ver );
+    pstr = struct( ...
+        'string', '',    ...
+        'solvers','',    ...
+        'formed', false, ...
+        'active', false, ...
+        'hold',   false );
+    cvx___ = struct( ...
+        'path',         pstr,  ...
+        'problems',     [],    ...
+        'mversion',     ver,   ...
+        'id',           0,     ...
+        'pause',        false, ...
+        'quiet',        false, ...
+        'profile',      false, ...
+        'gptol',        0.001, ...
+        'solver',       'SDPT3', ...
+        'precision',    [ eps^0.5, eps^0.25 ], ...
+        'rat_growth',   10, ...
+        'reserved',     1, ...
+        'geometric',    sparse( 1, 1 ), ...
+        'logarithm',    sparse( 1, 1 ), ...
+        'exponential',  sparse( 1, 1 ), ...
+        'vexity',       0, ... % sparse( 1, 1 ), ...
+        'canslack',     false, ...
+        'readonly',     0,  ...
+        'equalities',   [], ...
+        'needslack',    logical( zeros( 0, 1 ) ), ...
+        'linforms',     [], ...
+        'linrepls',     [], ...
+        'uniforms',     [], ...
+        'unirepls',     [], ...
+        'cones',        struct( 'type', {}, 'indices', {} ), ...
+        'x',            zeros( 0, 1 ), ...
+        'y',            zeros( 0, 1 ) );
 end
 
 % Set the hold flag
@@ -44,25 +76,51 @@ if ~cvx___.path.formed,
         ps = ':';
     end
     s( max( strfind( s, 'cvx_begin' ) ) : end ) = [];
-    subs = { 'lib', 'functions', 'sets', 'structures', 'sedumi' };
+    solvers = { 'sdpt3/Solver', 'sdpt3/SolverHSD', 'sdpt3/Solver/Mexfun', 'sdpt3/Linsysolver/spchol', 'sdpt3/Linsysolver/MA47', 'sedumi' };
+    subs = { solvers{:}, 'lib', 'functions', 'sets', 'structures' };
+    miss_solv = 0;
     if cvx___.mversion >= 7,
         subs{end+1} = 'keywords';
     end
     npath = '';
+    spaths = [];
     for k = 1 : length( subs ),
-        temp = [ s, subs{k} ];
+        tsub = subs{k};
+        tt = tsub == '/';
+        if any( tt ),
+            base = tsub(1:min(find(tt))-1);
+            tsub(tt) = fs;
+        else
+            base = tsub;
+        end
+        temp = [ s, tsub ];
         if exist( temp, 'dir' ),
             temp2 = [ temp, ps ];
-            npath = [ npath, temp2 ];
             ndxs = strfind( opath, temp2 );
             if ~isempty( ndxs ),
                 opath( ndxs(1) : ndxs(1) + length(temp2) - 1 ) = [];
                 matlabpath( opath );
             end
-        elseif ~isequal( subs{k}, 'sedumi' ),
-            error( [ 'Cannot find the required cvx subdirectory: ', temp ] );
+            if k > length(solvers),
+                npath = [ npath, temp2 ];
+            elseif isempty( spaths ),
+                spaths = struct( base, temp2 ); 
+            elseif isfield( spaths, base ),
+                spaths = setfield( spaths, base, [ getfield( spaths, base ), temp2 ] );
+            else
+                spaths = setfield( spaths, base, temp2 );
+            end
+        elseif k > length(solvers),
+            error( sprintf( [ ...
+                'Cannot find the required cvx subdirectory: %s\n', ...
+                'The cvx distribution is corrupt; please reinstall.' ], temp ) );
+        elseif isfield( spaths, base ),
+            error( sprintf( [ ...
+                'The cvx solver directory %s is incomplete.\n', ...
+                'The cvx distribution is corrupt; please reinstall.' ], temp ) );
         end
     end
+    cvx___.path.solvers = spaths;
     cvx___.path.string = npath;
 end
 
@@ -71,9 +129,14 @@ if ~cvx___.path.active,
     if ~isempty( cvx___.path.string ),
         matlabpath( [ cvx___.path.string, matlabpath ] );
     end
-    if ~cvx___.path.formed,
-        cvx___.has_mex = exist( 'cvx_bcompress_mex', 'file' ) == 3;
-    end
+end
+
+if ~isa( cvx___.equalities, 'cvx' ),
+    cvx___.equalities = cvx( [1,0], [] );
+    cvx___.linforms   = cvx( [1,0], [] );
+    cvx___.linrepls   = cvx( [1,0], [] );
+    cvx___.uniforms   = cvx( [1,0], [] );
+    cvx___.unirepls   = cvx( [1,0], [] );
 end
 
 cvx___.path.formed = true;

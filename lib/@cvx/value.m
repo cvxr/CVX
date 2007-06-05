@@ -1,12 +1,16 @@
 function v = value( x, data )
-error( cvx_verify( x ) );
 if nargin == 1,
-    data = problem( x );
-    data = data.x;
+    global cvx___
+    data = cvx___.x;
 end
-s = x.size_;
-b = x.basis_;
-v = reshape( b * data( 1 : size( b, 2 ), : ), s );
+nx = size( data, 1 );
+nb = size( x.basis_, 1 );
+if nx < nb,
+    data( end + 1 : nb, : ) = NaN;
+elseif nx > nb,
+    data( nb + 1 : end, : ) = [];
+end
+v = cvx_reshape( data.' * x.basis_, x.size_ );
 
 % Copyright 2005 Michael C. Grant and Stephen P. Boyd.
 % See the file COPYING.txt for full copyright information.

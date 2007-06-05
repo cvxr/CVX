@@ -12,8 +12,8 @@ r  = c';
 mn = min( r, c );
 mx = max( r, c );
 y  = mx + mn .* ( n - 0.5 * ( mn + 1 ) ) + 1;
-y  = sparse( 1 : nsq, y( : ), sign( r( : ) - c( : ) ), nsq, ntr );
-y  = y( :, any( y, 1 ) );
+y  = sparse( y( : ), 1 : nsq, sign( r( : ) - c( : ) ), ntr, nsq );
+y  = y( any( y, 2 ), : );
 
 % Copyright 2005 Michael C. Grant and Stephen P. Boyd. 
 % See the file COPYING.txt for full copyright information.

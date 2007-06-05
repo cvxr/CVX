@@ -10,11 +10,7 @@ error( nargchk( 1, 1, nargin ) );
 %       SQUARE_POS(X) is convex and nondecreasing in X. Thus when used in
 %       CVX expressions, X must be convex (or affine).
 
-cvx_begin
-   variable x2( size( x ) )
-   minimize square( x2 )
-   x2 >= x;
-cvx_end
+cvx_optval = pow_pos( x, 2 );
 
 % Copyright 2005 Michael C. Grant and Stephen P. Boyd. 
 % See the file COPYING.txt for full copyright information.

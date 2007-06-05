@@ -26,33 +26,37 @@ end
 % Check objective expression
 %
 
-if ~cvx_isvalid( x ),
-    error( 'Objective expression must be a valid cvx object.' );
-elseif ~isreal( x ),
+if ~isreal( x ),
     error( 'Expressions in objective functions must be real.' );
 elseif isempty( x ),
     warning( 'Empty objective.' );
 end
-    
+
 %
-% Convert to pure epigraph/hypograph form
+% Store the objective
 %
 
-sz = size( x );
-switch dir,
-   case 'minimize', nm = 'epi_'; dirn = +1;
-   case 'maximize', nm = 'hyp_'; dirn = -1;
+persistent remap
+if isempty( remap ),
+    remap = cvx_remap( 'log-valid' ) & ~cvx_remap( 'constant' );
 end
-temp = newvar( prob, nm, sz, cvx_bcompress( cvx_basis( x ), true ) );
-newcnstr( prob, temp, x, '=' );
-cvx___.problems( p ).objective = temp;
-[ r, c ] = find( cvx_basis( temp ) );
-cvx___.problems( p ).vexity( c ) = dirn;
-cvx___.problems( p ).vexity( 1 ) = 0;
-cvx___.problems( p ).direction   = dir;
-cvx___.problems( p ).x = [];
-cvx___.problems( p ).y = [];
+vx = remap( cvx_classify( x ) );
+if any( vx ),
+    if all( vx ),
+        x = log( x );
+    else
+        x( vx ) = log( x( vx ) );
+    end
+end
+if isa( x, 'cvx' ),
+    zndx = any( cvx_basis( x ), 2 );
+    v = cvx___.problems( p ).t_variable;
+    cvx___.problems( p ).t_variable = v | zndx( 1 : size( v, 1 ), : );
+end
+cvx___.problems( p ).objective = x;
+cvx___.problems( p ).direction = dir;
+cvx___.problems( p ).geometric = vx;
 
-% Copyright 2005 Michael C. Grant and Stephen P. Boyd. 
+% Copyright 2005 Michael C. Grant and Stephen P. Boyd.
 % See the file COPYING.txt for full copyright information.
 % The command 'cvx_where' will show where this file is located.

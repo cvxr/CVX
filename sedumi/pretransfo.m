@@ -227,8 +227,8 @@ prep.cpx = cpx;
 % ----------------------------------------
 prep.lenKq = length(K.q);
 if ~isempty(K.r)
-    c = rotlorentz(c,K);
-    At = rotlorentz(At,K);
+    c(K.f+1:end) = rotlorentz(c(K.f+1:end),K);
+    At(K.f+1:end,:) = rotlorentz(At(K.f+1:end,:),K);
     K.q = [K.q; K.r];
     K.r = [];
     prep.rq=1;
@@ -252,7 +252,17 @@ if cpx.dim>0
     pars.sdp=0;    % No SDP preprocessing for complex problems
 end
 if pars.sdp==1
-    [At,b,c,K,prep.sdp]=preprocessSDP(At,b,c,K);
+    Atf=At(1:K.f,:);
+    cf=c(1:K.f);
+    Kf=K.f;
+    K.f=0;
+    [At,b,c,K,prep.sdp]=preprocessSDP(At(Kf+1:end,:),b,c(Kf+1:end),K);
+    At=[Atf;At];
+    c=[cf;c];
+    K.f=Kf;
+    clear Atf cf Kf
+    
+    %[At,b,c,K,prep.sdp]=preprocessSDP(At,b,c,K);
 end
 % ------------------------------------------------------------
 % Search for hidden free variables in split form and convert them into free

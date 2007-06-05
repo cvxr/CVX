@@ -28,7 +28,7 @@ elseif nnz( X - X' ) ~= 0,
 
     cvx_optval = -Inf;
 
-else,
+else
 
     n = size( X, 1 );
     [ R, p ] = chol( X );
@@ -36,10 +36,10 @@ else,
         eigs = eig( X );
         if any( eigs < 0 ),
             cvx_optval = -Inf;
-        else,
+        else
             cvx_optval = geomean( eigs );
         end
-    else,
+    else
         cvx_optval = geomean( diag( R ) ) .^ 2;
     end
 

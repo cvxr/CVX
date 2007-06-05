@@ -1,7 +1,6 @@
 function varargout = size( x, dim )
-error( cvx_verify( x ) );
-if nargin == 1, 
-    dim = []; 
+if nargin == 1,
+    dim = [];
 end
 s = x.size_;
 if ~isempty( dim ),
@@ -11,13 +10,13 @@ if ~isempty( dim ),
         error( 'Dimension argument must be a positive integer scalar.' );
     elseif dim > length( s ),
         s = 1;
-    else,
+    else
         s = s( dim );
     end
 end
 if nargout <= 1,
     varargout{1} = s;
-else,
+else
     if nargout > length( s ),
         s( nargout ) = 1;
     elseif nargout < length( s ),
@@ -28,6 +27,6 @@ else,
     end
 end
 
-% Copyright 2005 Michael C. Grant and Stephen P. Boyd. 
+% Copyright 2005 Michael C. Grant and Stephen P. Boyd.
 % See the file COPYING.txt for full copyright information.
 % The command 'cvx_where' will show where this file is located.

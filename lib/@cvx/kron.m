@@ -1,63 +1,39 @@
 function z = kron( x, y )
 error( nargchk( 2, 2, nargin ) );
-error( cvx_verify( x, y ) );
-[ prob, x, y ] = cvx_operate( [], x, y );
 
 %
-% Enforce DCP rules
-%
-
-xc = cvx_isconstant( x );
-yc = cvx_isconstant( y );
-if ~xc & ~yc,
-    error( 'The multiplication of non-cvx_constant expressions is forbidden.' );
-end
-
-%
-% Determine new size
+% Check sizes and handle cases that can be computed
+% using non-Kronecker products
 %
 
 sx = size( x );
 sy = size( y );
-dx = length( sx );
-dy = length( sy );
-dz = max( dx, dy );
-sx = [ sx, ones( 1, dz - dx ) ];
-sy = [ sy, ones( 1, dz - dy ) ];
-sz = sx .* sy;
-
-%
-% Construct indices
-%
-
-for k = 1 : dz,
-    temp = 0 : sz( k ) - 1;
-    ndxx{k} = floor( temp / sy( k ) ) + 1;
-    ndxy{k} = rem( temp, sy( k ) ) + 1;
+if length( sx ) > 2 | length( sy ) > 2,
+    error( 'N-D arrays not supported.' );
+elseif sx( 2 ) == 1 & sy( 1 ) == 1,
+    z = mtimes( x, y );
+    return
+elseif sx( 1 ) == 1 & sy( 2 ) == 1,
+    z = mtimes( y, x );
+else
+    sz = sx .* sy;
 end
-temp = reshape( 1 : prod( sx ), sx );
-ndxx = temp( ndxx{:} );
-temp = reshape( 1 : prod( sy ), sy );
-ndxy = temp( ndxy{:} );
 
 %
 % Expand and multiply
 %
 
-bx = cvx_basis( x );
-by = cvx_basis( y );
-if xc, 
-    bz = diag( bx( ndxx, 1 ) ) * by( ndxy, : );
-else,
-    bz = diag( by( ndxy, 1 ) ) * bx( ndxx, : );
-end
+[ ix, jx, vx ] = find(x);
+[ iy, jy, vy ] = find(y);
+ix = ix(:); jx = jx(:); nx = numel(ix); kx = ones(nx,1);
+iy = iy(:); jy = jy(:); ny = numel(iy); ky = ones(ny,1);
+t  = sy(1) * ( ix - 1 )';
+iz = t( ky, : ) + iy( :, kx );
+t  = sy(2) * ( jx - 1 )';
+jz = t( ky, : ) + jy( :, kx );
+z  = reshape( vy, ny, 1 ) * reshape( vx, 1, nx );
+z  = sparse( iz, jz, z, sz(1), sz(2) );
 
-%
-% Create object
-%
-
-z = cvx( prob, sz, bz );
-
-% Copyright 2005 Michael C. Grant and Stephen P. Boyd. 
+% Copyright 2005 Michael C. Grant and Stephen P. Boyd.
 % See the file COPYING.txt for full copyright information.
 % The command 'cvx_where' will show where this file is located.

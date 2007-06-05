@@ -1,15 +1,15 @@
 function [ y, x ] = cvx_check_dimlist( x, emptyok )
 
-% CVX_CHECK_DIMLIST	Verifies the input is a valid dimension list.
+% CVX_CHECK_DIMLIST Verifies the input is a valid dimension list.
 
-% Copyright 2005 Michael C. Grant and Stephen P. Boyd. 
+% Copyright 2005 Michael C. Grant and Stephen P. Boyd.
 % See the file COPYING.txt for full copyright information.
 % The command 'cvx_where' will show where this file is located.
 
-if nargin < 2 | emptyok, 
-    xmin = 0; 
+if nargin < 2 | emptyok,
+    xmin = 0;
 else
-    xmin = 1; 
+    xmin = 1;
 end
 if isa( x, 'cell' ),
     nel = numel( x );
@@ -23,7 +23,7 @@ if isa( x, 'cell' ),
 end
 if isnumeric( x ) & ndims( x ) <= 2 & ~all( size( x ) > 1 ) & isreal( x ) & ~any( isnan( x ) | isinf( x ) ) & all( x >= xmin ) & all( floor( x ) == x ),
     y = true;
-else,
+else
     y = false;
 end
 if y & nargout > 1,

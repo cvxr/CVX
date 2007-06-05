@@ -10,10 +10,10 @@ elseif len == 1,
     isstruct = 0;
     if isr,
         st = 'scalar';
-    else,
+    else
         st = 'complex scalar';
     end
-else,
+else
     dof = size( cvx_basis( x ), 2 ) - 1;
     isstruct = dof < ( 2 - isr ) * len;
     st = sprintf( '%dx', s );
@@ -25,7 +25,7 @@ else,
         st = [ st, ' array' ];
     elseif any( s == 1 ),
         st = [ st, ' vector' ];
-    else,
+    else
         st = [ st, ' matrix' ];
     end
     if isstruct,
@@ -33,6 +33,6 @@ else,
     end
 end
 
-% Copyright 2005 Michael C. Grant and Stephen P. Boyd. 
+% Copyright 2005 Michael C. Grant and Stephen P. Boyd.
 % See the file COPYING.txt for full copyright information.
 % The command 'cvx_where' will show where this file is located.

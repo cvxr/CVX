@@ -12,7 +12,7 @@ r  = c';
 mn = min( r, c );
 mx = max( r, c );
 y  = mx + mn .* ( n - 0.5 * ( mn + 1 ) ) + 1;
-y  = sparse( 1 : nsq, y( : ), 1, nsq, ntr );
+y  = sparse( y( : ), 1 : nsq, 1, ntr, nsq );
 
 % Copyright 2005 Michael C. Grant and Stephen P. Boyd. 
 % See the file COPYING.txt for full copyright information.

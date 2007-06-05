@@ -38,12 +38,13 @@ function x = sdpa2vec(E,K,invperm)
 % Foundation, Inc.,  51 Franklin Street, Fifth Floor, Boston, MA
 % 02110-1301, USA %
 
+
+
 % ------------------------------------------------------------
 % Split E into blocks E[1], E[2], ..., E[length(K.s)]
 % ------------------------------------------------------------
 [xir,xjc] = sdpasplit(E(1,:),length(K.s));
-blkstart = cumsum([K.l+1; K.s.^2]);
-x = sparse([],[],[],K.l+sum(K.s.^2),1,2*size(E,2));
+x = sparse([],[],[],0,0,2*size(E,2));
 for knz = 1:length(xir)
     permk = xir(knz);
     k = invperm(permk);
@@ -53,8 +54,8 @@ for knz = 1:length(xir)
         Ek = E(2:4,xjc(knz):xjc(knz+1)-1);
         Xk = sparse(Ek(1,:),Ek(2,:),Ek(3,:),nk,nk);
         Xk = Xk + triu(Xk,1)';
-        x(blkstart(k):blkstart(k+1)-1) = vec(Xk);
+        x=[x;Xk(:)];
     else
-        x(k) = E(4,xjc(knz));      % Scalar
+        x=[x;E(4,xjc(knz))];
     end
 end

@@ -1,5 +1,5 @@
-function y = huber( x, M )
-error( nargchk( 1, 2, nargin ) );
+function y = huber( x, M, t )
+error( nargchk( 1, 3, nargin ) );
 
 % HUBER   Huber penalty function.
 %     For a real or complex scalar X, HUBER(X) is the Huber penalty
@@ -11,6 +11,10 @@ error( nargchk( 1, 2, nargin ) );
 %     HUBER(X,M) is the Huber penalty function of halfwidth M applied to X;
 %     that is, HUBER(X,M)=M.^2.*HUBER(X./M).
 %
+%     HUBER(X,M,T) computes T.*HUBER(X./T,M), the perspective transformation
+%     of HUBER(X,M). This is useful for solving regression problems with
+%     concomitant scale. T is constrained to be nonnegative.
+%
 %     For matrices and N-D arrays, the penalty function is applied to each
 %     element of X independently. M and X must be compatible in the same
 %     sense as .*: one must be a scalar, or they must have identical size.
@@ -18,10 +22,6 @@ error( nargchk( 1, 2, nargin ) );
 %     Disciplined convex programming information:
 %         HUBER is convex and nonmonotonic; therefore, when used in CVX
 %         specifications, its argument must be affine.
-
-%
-% Check types
-%
 
 if nargin < 2,
     M = 1;
@@ -31,17 +31,27 @@ elseif ~isreal( M ) | any( M( : ) <= 0 ),
     error( 'Second argument must be real and positive.' );
 end
 
+if nargin < 3,
+    t = 1;
+elseif ~isreal( t ),
+    error( 'Third argument must be real.' );
+elseif cvx_isconstant( t ) & nnz( cvx_constant( t ) <= 0 ),
+    error( 'Third argument must be real and positive.' );
+end
+
+if ~cvx_isaffine( x ) | ~cvx_isaffine( t ),
+    error( sprintf( 'Disciplined convex programming error:\n    HUBER is convex and nonmonotonic; its arguments must therefore be affine.' ) );
+end
+
 %
 % Check sizes
 %
 
-sx = size( x );
-sM = size( M );
-if all( sx == 1 ),
-   sz = sM;
-elseif all( sM == 1 ) | isequal( sx, sM ),
-   sz = sx;
-else
+sx = size( x ); xs = all( sx == 1 );
+sM = size( M ); Ms = all( sM == 1 );
+st = size( t ); ts = all( st == 1 );
+if ~xs, sz = sx; elseif ~Ms, sz = sM; else sz = st; end
+if ~( xs | isequal( sz, sx ) ) | ~( Ms | isequal( sz, sM ) ) | ~( ts | isequal( sz, st ) ),
    error( 'Sizes are incompatible.' );
 end
 
@@ -49,9 +59,16 @@ end
 % Compute result
 %
 
-y = abs( x );
+y = abs( x ./ max(t,realmin) );
 z = min( y, M );
-y = z .* ( 2 * y - z );
+y = t .* z .* ( 2 * y - z );
+if nnz( t <= 0 ),
+    if ts, 
+        y = Inf * ones( size( y ) );
+    else
+        y( t <= 0 ) = Inf;
+    end
+end
 
 % Copyright 2005 Michael C. Grant and Stephen P. Boyd. 
 % See the file COPYING.txt for full copyright information.

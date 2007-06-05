@@ -23,10 +23,10 @@ if nargin < 3, tol = 4 * eps; end
 %       so at least one of the two arguments must be constant.
 %
 %       If Q is constant, then QUAD_FORM is convex if Q is positive
-%       semidefinite, and concave if Q is negative semidefinite. An error 
-%       is generated if Q is indefinite (unless x is also constant). 
+%       semidefinite, and concave if Q is negative semidefinite. An error
+%       is generated if Q is indefinite (unless x is also constant).
 %       QUAD_FORM is nonmonotonic in x, so x must be affine.
-%       
+%
 %       If x is constant, then QUAD_FORM is affine in Q. The monotonicity
 %       of QUAD_FORM depends on the precise values of x in this case, which
 %       in turn govern whether the elements of Q can be convex, concave, or
@@ -49,52 +49,52 @@ if length( sQ ) ~= 2 | sQ( 1 ) ~= sQ( 2 ),
     error( 'The second argument must be a scalar or a square matrix.' );
 elseif sQ( 1 ) ~= sx & sQ( 1 ) ~= 1,
     error( 'Sizes are incompatible.' );
-else,
+else
     sQ = sQ( 1 );
 end
 
 success = true;
 if cvx_isconstant( x ),
-    
-    if cvx_isconstant( Q ),
-        
-        %
-        % Constant case
-        %
 
-        cvx_optval = quad_form( cvx_constant( x ), cvx_constant( Q ) );
-        
-    elseif isreal( Q ) | isreal( x ),
-        
+    if isreal( Q ) | isreal( x ),
+
         %
         % Constant x, affine Q, real case
         %
-        
+
         x = real( x( : ) );
         Q = real( Q );
         cvx_optval = x' * ( Q * x );
-        
-    else,
-        
+
+    else
+
         %
         % Constant x, affine Q, complex case
         %
-        
+
         xR = real( x( : ) );
         xI = imag( x( : ) );
         cvx_optval = xR' * ( real( Q ) * xR ) + xI' * ( imag( Q ) * xI );
-        
+
     end
-        
+
+elseif ~cvx_isaffine( x ),
+
+    error( 'First argument must be affine.' );
+    
+elseif size( Q, 1 ) == 1,
+    
+    %
+    % Constant scalar Q, affine x
+    %
+    
+    cvx_optval = real( Q ) * sum_square_abs( x(:) );
+    
 else,
 
     %
-    % Constant Q, affine x
-    % 
-    
-    if ~cvx_isaffine( x ),
-        error( 'First argument must be affine.' );
-    end
+    % Constant matrix Q, affine x
+    %
 
     x = x( : );
     Q = cvx_constant( Q );
@@ -103,37 +103,57 @@ else,
     Q = Q( nnzs, nnzs );
     x = x( nnzs, : );
     
-    [ V, D ] = eig( full( Q ) );
-    D = diag( D );
-    D = D( : );
-
-    %
-    % Branch for positive and negative semidefinite
-    %
-
-    if D(1) >= -tol * D(end),
+    if all( diag( Q ) <= 0 ),
+        alpha = -1;
+        Q = -Q;
+    else,
+        alpha = +1;
+    end
+    
+    if cvx_use_sparse( Q ),
         
-        % Q positive semidefinite;
-        cvx_optval = sum_square( sqrt( max( D, 0 ) ) .* ( V' * x( : ) ) );
-
-    elseif D(end) <= -tol * D(1),
-
-        % Q negative semidefinite
-        cvx_optval = - sum_square( sqrt( max( -D, 0 ) ) .* ( V' * x( : ) ) );
-
-    elseif nargout > 1,
-
-        success = false;
-        cvx_optval = [];
+        Q = sparse( Q );
+        prm = symamd( Q );
+        if any( diff( prm ) ~= 1 ),
+            x = x( prm, : );
+            Q = Q( prm, prm );
+        end
+        R  = cholinc( Q, 'inf' );
+        tt = any( isinf( R ), 2 );
+        if any( tt ),
+            R( tt, : ) = [];
+            valid = normest( Q - R' * R ) < tol * normest( Q );
+        else,
+            valid = true;
+        end
         
     else,
         
-        error( 'The second argument must be positive or negative semidefinite.' );
-
+        [ R, p ] = chol( full( Q ) );
+        valid = p == 0;
+        
     end
+    
+    if ~valid,
+        [ V, D ] = eig( full( Q ) );
+        D = diag( D );
+        Derr = tol * max( D );
+        if min( D ) < - Derr,
+            if nargout > 1,
+                success = false;
+                cvx_optval = [];
+            else,
+                error( 'The second argument must be positive or negative semidefinite.' );
+            end
+        end
+        tt = find( D > Derr );
+        R = diag( sqrt( D( tt ) ) ) * V( :, tt )';
+    end
+    
+    cvx_optval = alpha * sum_square_abs( R * x );
 
 end
 
-% Copyright 2005 Michael C. Grant and Stephen P. Boyd. 
+% Copyright 2005 Michael C. Grant and Stephen P. Boyd.
 % See the file COPYING.txt for full copyright information.
 % The command 'cvx_where' will show where this file is located.

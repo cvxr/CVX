@@ -23,8 +23,8 @@ temp = r == c;
 v( temp ) = real( v( temp ) );
 mn = min( r, c );
 mx = max( r, c );
-y  = sparse( r + n * c + 1, 2 * ( mx + mn .* ( n - 0.5 * ( mn + 1 ) ) + 1 ) - ( v == 1 ), v, nsq, length( v ) );
-y  = y( :, any( y, 1 ) );
+y  = sparse( 2 * ( mx + mn .* ( n - 0.5 * ( mn + 1 ) ) + 1 ) - ( v == 1 ), r + n * c + 1, v, length( v ), nsq );
+y  = y( any( y, 2 ), : );
 
 % Copyright 2005 Michael C. Grant and Stephen P. Boyd. 
 % See the file COPYING.txt for full copyright information.

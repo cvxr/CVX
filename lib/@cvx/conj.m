@@ -1,7 +1,6 @@
 function y = conj( x )
-error( cvx_verify( x ) );
-y = cvx( problem( x ), size( x ), conj( cvx_basis( x ) ) );
+y = cvx( x.size_, conj( x.basis_ ) );
 
-% Copyright 2005 Michael C. Grant and Stephen P. Boyd. 
+% Copyright 2005 Michael C. Grant and Stephen P. Boyd.
 % See the file COPYING.txt for full copyright information.
 % The command 'cvx_where' will show where this file is located.

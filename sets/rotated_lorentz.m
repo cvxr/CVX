@@ -23,7 +23,7 @@ elseif dim == 0 | dim > nd | sx( dim ) == 1,
     dim = find( sx == 1 );
     if isempty( dim ),
         dim = nd + 1;
-    else,
+    else
         dim = dim( 1 );
     end
 end
@@ -40,7 +40,7 @@ if nargin < 3 | isempty( iscplx ),
     iscplx = false;
 elseif length( iscplx ) ~= 1,
     error( 'Third argument must be a scalar.' );
-else,
+else
     iscplx = logical( iscplx );
 end
 
@@ -57,7 +57,7 @@ if sx( dim ) == 1,
     cvx_optpnt.x = reshape( cone( 2, 1, : ), sx );
     cvx_optpnt.y = reshape( cone( 1, 1, : ), sx );
     cvx_optpnt.z = reshape( cone( 2, 2, : ), sx );
-else,
+else
     sx( dim ) = sx( dim ) + 1;
     cone = lorentz( sx, dim );
     ndxs = cell( 1, nd );

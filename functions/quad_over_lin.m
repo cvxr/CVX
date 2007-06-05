@@ -59,7 +59,7 @@ elseif all( sz == 1 ),
     need_contraction = sx( dim ) ~= 1;
     sx = sz;
     dim = 0;
-else,
+else
     error( 'Dimensions are not compatible.' );
 end
 
@@ -89,10 +89,9 @@ elseif any( sx == 0 ),
     cvx_begin
         y == nonnegative( sz );
     cvx_end
-else,
+else
     cvx_begin
-        variable z( sz )
-        minimize z
+        epigraph variable z( sz )
         y = cvx_accept_concave( y );
         if need_contraction,
             x = cvx_accept_convex( norms( x, 2, dim ) );

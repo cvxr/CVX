@@ -1,15 +1,11 @@
-function y = cvxobj( p )
+function y = cvxobj()
 global cvx___
-if isempty( cvx___ ), 
-    error( 'Internal cvx data corruption' ); 
-elseif isa( p, 'cvxprob' ),
-    p = index( p );
-elseif ~isnumeric( p ) | length( p ) ~= 1 | p <= 0 | p > length( cvx___.problems ) + 1 | p ~= floor( p ),
-    error( 'Argument must be a positive integer.' );
+if isempty( cvx___ ),
+    error( 'Internal cvx data corruption' );
 end
-y = class( struct( 'index_', p, 'id_', cvx___.id + 1 ), 'cvxobj' );
-cvx___.id = y.id_ + 1;
+cvx___.id = cvx___.id + 1;
+y = class( struct( 'id_', cvx___.id ), 'cvxobj' );
 
-% Copyright 2005 Michael C. Grant and Stephen P. Boyd. 
+% Copyright 2005 Michael C. Grant and Stephen P. Boyd.
 % See the file COPYING.txt for full copyright information.
 % The command 'cvx_where' will show where this file is located.

@@ -83,7 +83,14 @@ end
 % Postprocess the SDP part
 % ----------------------------------------
 if pars.sdp==1 & isfield(prep,'sdp')
+    xpf(1:K.f,1)=xp(1:K.f);
+    xp=xp(K.f+1:end);
+    Kf=K.f;
+    K.f=0;
     [xp,yp,K]=postprocessSDP(xp,y,prep.sdp,K);
+    xp=[xpf;xp];
+    K.f=Kf;
+    clear Kf xpf
 end
 
 % ----------------------------------------
@@ -92,7 +99,7 @@ end
 if prep.rq==1
     K.r = K.q(prep.lenKq + 1 : end);
     K.q = K.q(1:prep.lenKq);
-    xp = rotlorentz(xp,K);
+    xp(K.f+1:end) = rotlorentz(xp(K.f+1:end),K);
 else
     K.r=[];
 end

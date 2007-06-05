@@ -16,21 +16,25 @@ error( nargchk( 1, 1, nargin ) );
 %         DET_ROOTN is concave and nonmonotonic; therefore, when used in
 %         CVX specifications, its argument must be affine.
 
+n = size( X, 1 );
 if ndims( X ) > 2,
-    
+
     error( 'N-D arrays are not supported.' );
-    
-elseif diff( size( X ) ) ~= 0,
-    
+
+elseif size( X, 2 ) ~= n,
+
     error( 'Matrix must be square.' );
-    
+
+elseif nnz( X ) <= n & nnz( diag( X ) ) == nnz( X ),
+
+    cvx_optval = geomean( diag( X ) );
+
 elseif cvx_isconstant( X ),
-    
+
     cvx_optval = det_rootn( cvx_constant( X ) );
-    
+
 elseif isreal( X ),
 
-    n = size(X,1);
     cvx_begin
         variable Z(n,n) lower_triangular
         D = diag( Z );
@@ -38,10 +42,9 @@ elseif isreal( X ),
         subject to
             [ diag( D ), Z' ; Z, X ] == semidefinite(2*n);
     cvx_end
-    
-else,
-    
-    n = size(X,1);
+
+else
+
     cvx_begin
         variable Z(n,n) lower_triangular complex
         D = diag( Z );
@@ -49,5 +52,5 @@ else,
         subject to
             [ diag( D ), Z' ; Z, X ] == hermitian_semidefinite(2*n);
     cvx_end
-    
+
 end

@@ -132,7 +132,7 @@ function [x,y,info] = sedumi(A,b,c,K,pars)
 %      0 < theta <= 1 and 0 < beta < 1. Setting theta=1 restricts the iterates
 %      to follow the central path in an N_2(beta)-neighborhood.
 %
-%    (4) pars.stepdif, pars.w. By default, stepdif = 2 and w=[1 1].
+%    (4) pars.stepdif, pars.w. By default, stepdif = 2 and w=[1 1]. 
 %       This implements an adaptive heuristic to control ste-differentiation.
 %       You can enable primal/dual step length differentiation by setting stepdif=1 or 0.
 %      If so, it weights the rel. primal, dual and gap residuals as
@@ -171,7 +171,7 @@ function [x,y,info] = sedumi(A,b,c,K,pars)
 %
 %    (11) pars.vplot  If this field is 1, then SeDuMi produces a fancy
 %      v-plot, for research purposes. Default: vplot = 0.
-%
+% 
 %    (12) pars.errors  If this field is 1 then SeDuMi outputs some error
 %    measures as defined in the Seventh DIMACS Challenge. For more details
 %    see the User Guide.
@@ -181,7 +181,7 @@ function [x,y,info] = sedumi(A,b,c,K,pars)
 % See also mat, vec, cellK, eyeK, eigK
 
 % This file is part of SeDuMi 1.1 by Imre Polik and Oleksandr Romanko
-% Copyright (C) 2005 McMaster University, Hamilton, CANADA  (since 1.1)
+% Copyright (C) 2006 McMaster University, Hamilton, CANADA  (since 1.1)
 %
 % Copyright (C) 2001 Jos F. Sturm (up to 1.05R5)
 %   Dept. Econometrics & O.R., Tilburg University, the Netherlands.
@@ -259,23 +259,23 @@ pars = checkpars(pars,lponly);
 % ----------------------------------------
 % Print welcome and statistics of cone-problem
 % ----------------------------------------
-fprintf(pars.fid,'SeDuMi 1.1 by AdvOL, 2005 and Jos F. Sturm, 1998, 2001-2003.\n');
+my_fprintf(pars.fid,'SeDuMi 1.1R3 by AdvOL, 2006 and Jos F. Sturm, 1998-2003.\n');
 switch pars.alg
     case 0
-        fprintf(pars.fid,'Alg = 0: No corrector, ');
+        my_fprintf(pars.fid,'Alg = 0: No corrector, ');
     case  1
-        fprintf(pars.fid,'Alg = 1: v-corrector, ');
+        my_fprintf(pars.fid,'Alg = 1: v-corrector, ');
     case 2
-        fprintf(pars.fid,'Alg = 2: xz-corrector, ');
+        my_fprintf(pars.fid,'Alg = 2: xz-corrector, ');
 end
 switch pars.stepdif
     case 0
     case 1
-        fprintf(pars.fid,'Step-Differentiation, ');
+        my_fprintf(pars.fid,'Step-Differentiation, ');
     case 2
-        fprintf(pars.fid,'Adaptive Step-Differentiation, ');
+        my_fprintf(pars.fid,'Adaptive Step-Differentiation, ');
 end
-fprintf(pars.fid,'theta = %5.3f, beta = %5.3f\n',pars.theta,pars.beta);
+my_fprintf(pars.fid,'theta = %5.3f, beta = %5.3f\n',pars.theta,pars.beta);
 % --------------------------------------------------
 % Print preprocessing information
 % --------------------------------------------------
@@ -290,18 +290,18 @@ if pars.prep==1
             end
         end
         if blockcount>0
-            fprintf(pars.fid,'Detected %i diagonal SDP block(s) with %i linear variables\n',blockcount,varcount);
+            my_fprintf(pars.fid,'Detected %i diagonal SDP block(s) with %i linear variables\n',blockcount,varcount);
         end
     end
     if isfield(prep,'freeblock1') & length(prep.freeblock1)>0
-        fprintf(pars.fid,'Detected %i free variables in the linear part\n',length(prep.freeblock1));
+        my_fprintf(pars.fid,'Detected %i free variables in the linear part\n',length(prep.freeblock1));
     end
     if isfield(prep,'Kf') & prep.Kf>0
         switch pars.free
             case 0
-                fprintf(pars.fid,'Split %i free variables\n',prep.Kf);
+                my_fprintf(pars.fid,'Split %i free variables\n',prep.Kf);
             case 1
-                fprintf(pars.fid,'Put %i free variables in a quadratic cone\n',prep.Kf);
+                my_fprintf(pars.fid,'Put %i free variables in a quadratic cone\n',prep.Kf);
         end
     end
 end
@@ -350,15 +350,15 @@ symLden = symbcholden(L,dense,DAt);
 [d, v,vfrm, y,y0, R] = sdinit(A,b,c,dense,K,pars);
 n = length(vfrm.lab);                         % order of K
 merit = (sum(R.w) + max(R.sd,0))^2 * y0 / R.b0;  % Merit function
-fprintf(pars.fid,'eqs m = %g, order n = %g, dim = %g, blocks = %g\n',...
+my_fprintf(pars.fid,'eqs m = %g, order n = %g, dim = %g, blocks = %g\n',...
     length(b),n,length(c),1 + length(K.q) + length(K.s));
-fprintf(pars.fid,'nnz(A) = %d + %d, nnz(ADA) = %d, nnz(L) = %d\n',nnz(A),nnz(dense.A), nnz(ADA), nnz(L.L));
+my_fprintf(pars.fid,'nnz(A) = %d + %d, nnz(ADA) = %d, nnz(L) = %d\n',nnz(A),nnz(dense.A), nnz(ADA), nnz(L.L));
 if length(dense.cols) > 0
-    fprintf(pars.fid,'Handling %d + %d dense columns.\n',...
+    my_fprintf(pars.fid,'Handling %d + %d dense columns.\n',...
         length(dense.cols),length(dense.q));
 end
-fprintf(pars.fid,' it :     b*y       gap    delta  rate   t/tP*  t/tD*   feas cg cg  prec\n');
-fprintf(pars.fid,'  0 :            %8.2E %5.3f\n',merit,0);
+my_fprintf(pars.fid,' it :     b*y       gap    delta  rate   t/tP*  t/tD*   feas cg cg  prec\n');
+my_fprintf(pars.fid,'  0 :            %8.2E %5.3f\n',merit,0);
 % ----------------------------------------
 % Initialize iterative statistics
 % ----------------------------------------
@@ -383,7 +383,7 @@ while STOP == 0
     if any(iter == pars.stopat)
         keyboard
     end
-
+    
     if pars.stepdif==2 & ...
             (iter>20 | (iter>1 & (err.kcg + Lsd.kcg>3)) | ...
             (iter>5 & abs(1-feasratio)<0.05) )
@@ -445,7 +445,7 @@ while STOP == 0
         STOP = -1;                  % insuf. progress in descent direction.
         iter = iter - 1;
         y0 = y0Old;
-        fprintf(pars.fid,'Run into numerical problems.\n');
+        my_fprintf(pars.fid,'Run into numerical problems.\n');
         break
     end
     feasratio = dxmdz(1) / v(1);            % (deltax0/x0) - (deltaz0/z0)
@@ -460,7 +460,7 @@ while STOP == 0
     % ----------------------------------------
     % SHOW ITERATION STATISTICS
     % ----------------------------------------
-    fprintf(pars.fid,' %2.0f : %10.2E %8.2E %5.3f %6.4f %6.4f %6.4f %6.2f %2d %2d  ',...
+    my_fprintf(pars.fid,' %2.0f : %10.2E %8.2E %5.3f %6.4f %6.4f %6.4f %6.2f %2d %2d  ',...
         iter,by/x0,merit,wr.delta,rate,relt.p,relt.d,feasratio,err.kcg, Lsd.kcg);
     if pars.vplot == 1
         vlist = [vlist vfrm.lab/sqrt((R.b0*y0)/n)];
@@ -495,7 +495,7 @@ while STOP == 0
     rgap = max(cx-by,0) / max([abs(cx),abs(by),1e-3 * x0]);
     precision1=y0*r0/(1+x0);
     precision2=(y0 * r0 + rgap)/x0;
-    fprintf(pars.fid,'%1.1E\n',max(precision1,precision2));
+    my_fprintf(pars.fid,'%1.1E\n',max(precision1,precision2));
     if precision1 < pars.eps       % P/D residuals small
         if precision2 < pars.eps    %Approx feasible and optimal
             STOP = 1;
@@ -509,12 +509,12 @@ while STOP == 0
         end
     end
     if iter >= pars.maxiter
-        fprintf(pars.fid,'Maximum number of iterations reached.\n');
+        my_fprintf(pars.fid,'Maximum number of iterations reached.\n');
         STOP = -1;
     end
 end % while STOP == 0.
-fprintf(pars.fid,'\n');
-clear ADA
+my_fprintf(pars.fid,'\n');
+clear ADA 
 nnzLadd=nnz(L.add);
 nnzLskip=nnz(L.skip);
 normLL=full(max(max(abs(L.L))));
@@ -542,7 +542,7 @@ end
 % Compute cx, Ax, etc.
 % --------------------------------------------------
 x0 = x(1);
-cx = full(sum(c.*x));
+cx = full(sum(c.*x)); 
 abscx = sum(abs(c).*abs(x));
 by = full(sum(b.*y));
 Ax = Amul(A,dense,x,0);
@@ -604,27 +604,27 @@ if x0 > 0
     else                       % Optimization problem
         sigdig = -log((cx-by)/(abs(by) + 1E-5 * (x0+abscx))) / log(10);
     end
-    fprintf(pars.fid,...
+    my_fprintf(pars.fid,...
         'iter seconds digits       c*x               b*y\n');
-    fprintf(pars.fid,'%3d %8.1f %5.1f %- 17.10e %- 17.10e\n',...
+    my_fprintf(pars.fid,'%3d %8.1f %5.1f %- 17.10e %- 17.10e\n',...
         iter,cputime2-cputime1,sigdig,cx,by);
-    fprintf(pars.fid,'|Ax-b| = %9.1e, [Ay-c]_+ = %9.1E, |x|=%9.1e, |y|=%9.1e\n',...
+    my_fprintf(pars.fid,'|Ax-b| = %9.1e, [Ay-c]_+ = %9.1E, |x|=%9.1e, |y|=%9.1e\n',...
         pinf,dinf,normx,normy);
     % ------------------------------------------------------------
     % Determine level of numerical problems with x0>0 (feasible)
     % ------------------------------------------------------------
-    if STOP == -1
+    % if STOP == -1
         r0 = max([10^(-sigdig); pinf;dinf] ./ [1; 1+R.maxb+(1E-3)*R.maxRb;...
             1+R.maxc+(1E-3)*R.maxRc]);
         if r0 > pars.bigeps
-            fprintf(pars.fid, 'No sensible solution found.\n');
+            my_fprintf(pars.fid, 'No sensible solution found.\n');
             info.numerr = 2;                          % serious numerical error
         elseif r0 > pars.eps
             info.numerr = 1;                          % moderate numerical error
         else
             info.numerr = 0;                          % achieved desired accuracy
         end
-    end
+    % end
 else  % (if x0>0)
     % --------------------------------------------------
     % Infeasible problems: pinf==norm(Ax), dinf==max(eigK(At*y,K)).
@@ -635,23 +635,23 @@ else  % (if x0>0)
         pinf = pinf / abscx;
         normx = normx / abscx;
         x = x / abscx;
-        fprintf(pars.fid, 'Dual infeasible, primal improving direction found.\n');
+        my_fprintf(pars.fid, 'Dual infeasible, primal improving direction found.\n');
     end
     if dinf < pars.bigeps * by
         info.pinf = 1;
         dinf = dinf / by;
         normy = normy / by;
         y = y / by;
-        fprintf(pars.fid, 'Primal infeasible, dual improving direction found.\n');
+        my_fprintf(pars.fid, 'Primal infeasible, dual improving direction found.\n');
     end
-    fprintf(pars.fid,'iter seconds  |Ax|    [Ay]_+     |x|       |y|\n');
-    fprintf(pars.fid,'%3d %8.1f %9.1e %9.1e %9.1e %9.1e\n',...
+    my_fprintf(pars.fid,'iter seconds  |Ax|    [Ay]_+     |x|       |y|\n');
+    my_fprintf(pars.fid,'%3d %8.1f %9.1e %9.1e %9.1e %9.1e\n',...
         iter,cputime2-cputime1,pinf,dinf,normx,normy);
     % --------------------------------------------------
     % Guess infeasible, but stopped due to numerical problems
     % --------------------------------------------------
     if info.pinf + info.dinf == 0
-        fprintf(pars.fid, 'Failed: no sensible solution/direction found.\n');
+        my_fprintf(pars.fid, 'Failed: no sensible solution/direction found.\n');
         info.numerr = 2;
     elseif STOP == -1
         if (pinf > -pars.eps * cx) & (dinf > pars.eps * by)
@@ -673,10 +673,10 @@ end
 info.timing=[cputime1-cputime0 cputime2-cputime1 cputime-cputime2];
 % Total time (for backward compatibility)
 info.cpusec=sum(info.timing);
-fprintf(pars.fid,'\nDetailed timing (sec)\n')
-fprintf(pars.fid,'   Pre          IPM          Post\n')
-fprintf(pars.fid,'%1.3E    ',info.timing)
-fprintf(pars.fid,'\n')
+my_fprintf(pars.fid,'\nDetailed timing (sec)\n')
+my_fprintf(pars.fid,'   Pre          IPM          Post\n')
+my_fprintf(pars.fid,'%1.3E    ',info.timing)
+my_fprintf(pars.fid,'\n')
 
 
 % ----------------------------------------
@@ -696,8 +696,8 @@ if pars.vplot == 1
     xlabel('iterations')
     ylabel('reduction rate')
 end
-fprintf(pars.fid,'Max-norms: ||b||=%d, ||c|| = %d,\n',R.maxb,R.maxc);
-fprintf(pars.fid,'Cholesky |add|=%d, |skip| = %d, ||L.L|| = %g.\n',...
+my_fprintf(pars.fid,'Max-norms: ||b||=%d, ||c|| = %d,\n',R.maxb,R.maxc);
+my_fprintf(pars.fid,'Cholesky |add|=%d, |skip| = %d, ||L.L|| = %g.\n',...
     nnzLadd, nnzLskip, normLL);
 
 % ----------------------------------------
@@ -717,22 +717,20 @@ if ~isempty(origcoeff)
     info.err(1)=norm(x'*(origcoeff.At)-(origcoeff.b)',2)/(1+normb);
     %Let us get rid of the K.f part, since the free variables don't make
     %any difference in the cone infeasibility.
-    s=s(origcoeff.K.f+1:end);
-    x=x(origcoeff.K.f+1:end);
-    origcoeff.K.f=0;
+    %origcoeff.K.f=0;
     %     Primal cone infeasibility
-    info.err(2)=max(0,-min(eigK(full(x),origcoeff.K))/(1+normb));
+    info.err(2)=max(0,-min(eigK(full(x(origcoeff.K.f+1:end)),origcoeff.K))/(1+normb));
     %     Dual infeasibility
     %info.err(3)=0.0; %s is not maintained explicitely
     %     Dual cone infeasibility
-    info.err(4)=max(0,-min(eigK(full(s),origcoeff.K))/(1+normc));
+    info.err(4)=max(0,-min(eigK(full(s(origcoeff.K.f+1:end)),origcoeff.K))/(1+normc));
     %     Relative duality gap
     info.err(5)=(cx-by)/(1+abs(cx)+abs(by));
     %     Relative complementarity
     info.err(6)=xs/(1+abs(cx)+abs(by));
 
-    fprintf(pars.fid,'\nDIMACS error measures\n')
-    fprintf(pars.fid,'  PInf     PConInf     DInf    DConInf    RelGap    RelComp\n')
-    fprintf(pars.fid,'%2.2E  ',info.err)
-    fprintf(pars.fid,'\n')
+    my_fprintf(pars.fid,'\nDIMACS error measures\n')
+    my_fprintf(pars.fid,'  PInf     PConInf     DInf    DConInf    RelGap    RelComp\n')
+    my_fprintf(pars.fid,'%2.2E  ',info.err)
+    my_fprintf(pars.fid,'\n')
 end

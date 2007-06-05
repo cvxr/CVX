@@ -7,7 +7,7 @@ end
 if ~isempty( cvx_problem.direction ),
     if isequal( cvx_problem.direction, 'find' ),
         error( 'Objective functions cannot be added to sets.' );
-    else,
+    else
         error( 'An objective function has already been supplied.' );
     end
 end
@@ -15,20 +15,26 @@ end
 if nargin < 1,
     error( 'Objective expression missing.' );
 elseif iscellstr( varargin ),
-    varargin = { evalin( 'caller', sprintf( '%s ', varargin{:} ) ) };
+    arg = evalin( 'caller', sprintf( '%s ', varargin{:} ) );
+elseif nargin > 1,
+    error( 'Too many input arguments.' );
+else
+    arg = varargin{1};
 end
 
-if ~cvx_isvalid( varargin ),
-    error( 'Input argument(s) must be valid cvx objective expressions.' );
-elseif length( varargin ) > 1 | isa( varargin{1}, 'cell' ) | isa( varargin{1}, 'struct' ),
-    error( 'Objective functions cannot be composite.' );
+if ~isa( arg, 'cvx' ) & ~isa( arg, 'double' ) & ~isa( arg, 'sparse' ),
+    error( sprintf( 'Cannot accept an objective of type ''%s''.', class( arg ) ) );
+end
+persistent remap
+if isempty( remap ),
+    remap = cvx_remap( 'concave', 'log-concave' );
+end
+vx = remap( cvx_classify( arg ) );
+if ~all( vx ),
+    error( sprintf( 'Disciplined convex programming error:\n   Cannot maximize a(n) %s expression.', cvx_class(arg(vx==0),false,true) ) );
 end
 
-if ~cvx_isconcave( varargin{1} ),
-    error( sprintf( 'Disciplined convex programming error:\n   Objective function in a maximization must be concave.' ) );
-end
-
-newobj( cvx_problem, 'maximize', varargin{1} );
+newobj( cvx_problem, 'maximize', arg );
 
 % Copyright 2005 Michael C. Grant and Stephen P. Boyd.
 % See the file COPYING.txt for full copyright information.

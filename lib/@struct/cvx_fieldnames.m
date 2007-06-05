@@ -6,7 +6,9 @@ for k = 1 : length( ans ),
     ndxs( k ) = str( end ) ~= '_';
 end
 ans = ans( ndxs );
-ndxs = find( ndxs );
+if nargout > 2,
+    ndxs = find( ndxs );
+end
 
 % Copyright 2005 Michael C. Grant and Stephen P. Boyd. 
 % See the file COPYING.txt for full copyright information.

@@ -4,7 +4,7 @@ c  = c( ones( 1, m ), : );
 r  = [ 0 : m - 1 ]';
 r  = r( :, ones( 1, n ) );
 v  = abs( r + c ) + 1;
-y = sparse( r + m * c + 1, v, 1, m * n, m + n + 1 );
+y = sparse( v, r + m * c + 1, 1, m + n + 1, m * n );
 
 % Copyright 2005 Michael C. Grant and Stephen P. Boyd. 
 % See the file COPYING.txt for full copyright information.

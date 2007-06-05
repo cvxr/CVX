@@ -1,5 +1,6 @@
 function y = cvxaff( x )
-y = struct( problem( x ) );
+global cvx___
+y = cvx___.problems( index( x.problem_ ) );
 y = builtin( 'subsref', y.duals, x.name_ );
 
 % Copyright 2005 Michael C. Grant and Stephen P. Boyd. 

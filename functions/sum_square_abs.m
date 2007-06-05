@@ -3,10 +3,10 @@ error( nargchk( 1, 2, nargin ) );
 
 %SUM_SQUARE_ABS   Sum of the squares of absolute values.
 %
-%   For real arrays, SUM_SQUARE_ABS(X) computes the same result as 
+%   For real arrays, SUM_SQUARE_ABS(X) computes the same result as
 %   SUM_SQUARE(X). For complex arrays, SUM_SQUARE(X) first computes the
 %   magnitudes of the elements of X, so it compute SUM_SQUARE_ABS(X).
-% 
+%
 %   Similarly, SUM_SQUARE_ABS(X,DIM) implements SUM_SQUARE(ABS(X),DIM).
 %
 %   Disciplined convex programming information:
@@ -15,10 +15,10 @@ error( nargchk( 1, 2, nargin ) );
 
 if nargin == 1,
     cvx_optval = quad_over_lin( x, 1 );
-else,
+else
     cvx_optval = quad_over_lin( x, 1, dim );
 end
 
-% Copyright 2005 Michael C. Grant and Stephen P. Boyd. 
+% Copyright 2005 Michael C. Grant and Stephen P. Boyd.
 % See the file COPYING.txt for full copyright information.
 % The command 'cvx_where' will show where this file is located.

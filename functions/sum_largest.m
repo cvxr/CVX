@@ -18,7 +18,7 @@ error( nargchk( 2, 3, nargin ) );
 %   between their integral neighbors.
 %
 %   For matrices, SUM_LARGEST(X,k) is a row vector containing the
-%   application of SUM_LARGEST to each column. For N-D arrays, the 
+%   application of SUM_LARGEST to each column. For N-D arrays, the
 %   SUM_LARGEST operation is applied to the first non-singleton dimension
 %   of X.
 %
@@ -50,35 +50,34 @@ sx = [ sx, ones( 1, dim - nd ) ];
 sy = sx;
 sy( dim ) = 1;
 if k <= 0,
-    
+
     cvx_optval = zeros( sy );
-    
+
 elseif k <= 1,
-    
+
     cvx_optval = k * max( x, [], dim );
-    
+
 elseif k >= sx( dim ),
-    
+
     cvx_optval = sum( x, dim );
-    
-else,
-    
+
+else
+
     nd = length( sx );
     ndxs = cell( 1, nd );
     [ ndxs{:} ] = deal( ':' );
     ndxs{ dim } = ones( 1, sx( dim ) );
-    
+
     cvx_begin
-        variables xp( sx ) yp( sy ) z( sy )
-        minimize z
-        subject to
-            xp >= 0;
-            k * yp == sum( xp, dim ) - z;
-            xp >= cvx_subref( yp, ndxs{:} ) + x;
+        epigraph variable z( sy )
+        variables xp( sx ) yp( sy )
+        xp >= 0;
+        k * yp == sum( xp, dim ) - z;
+        xp >= cvx_subsref( yp, ndxs{:} ) + x;
     cvx_end
-    
+
 end
 
-% Copyright 2005 Michael C. Grant and Stephen P. Boyd. 
+% Copyright 2005 Michael C. Grant and Stephen P. Boyd.
 % See the file COPYING.txt for full copyright information.
 % The command 'cvx_where' will show where this file is located.

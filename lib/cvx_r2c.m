@@ -4,7 +4,7 @@ function x = cvx_r2c( x, dim )
 % Quick exit for complex quantities
 %
 
-if ~isreal( x ), 
+if ~isreal( x ),
     error( 'Matrix must be real.' );
 end
 
@@ -30,9 +30,9 @@ end
 
 [ ndxs{ 1 : nd } ] = deal( ':' );
 ndxs{ dim } = 1 : 2 : sx( dim );
-xr = cvx_subref( x, ndxs{:} );
+xr = cvx_subsref( x, ndxs{:} );
 ndxs{ dim } = 2 : 2 : sx( dim );
-xi = cvx_subref( x, ndxs{:} );
+xi = cvx_subsref( x, ndxs{:} );
 
 %
 % Combine
@@ -40,6 +40,6 @@ xi = cvx_subref( x, ndxs{:} );
 
 x = xr + j * xi;
 
-% Copyright 2005 Michael C. Grant and Stephen P. Boyd. 
+% Copyright 2005 Michael C. Grant and Stephen P. Boyd.
 % See the file COPYING.txt for full copyright information.
 % The command 'cvx_where' will show where this file is located.

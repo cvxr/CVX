@@ -1,18 +1,33 @@
 function v = cvx_vexity( x )
-error( cvx_verify( x ) );
 
 global cvx___
-p = cvx___.problems( index( problem( x ) ) );
-b = cvx_basis( x );
-s = size( x );
+if isempty( x ),
+    v = cvx_zeros( x.size_ );
+    return
+end
+p  = cvx___.vexity;
+b  = x.basis_;
+n  = length( p );
+nb = size( b, 1 );
+if nb < n,
+    p = p( 1 : nb, : );
+    b = b( p ~= 0, : );
+elseif n < nb,
+    p( n, : ) = 0;
+    b = b( p ~= 0, : );
+else
+    b = b( p ~= 0, : );
+end
+if isempty( b ),
+    v = cvx_zeros( x.size_ );
+    return
+end
+p = nonzeros( p ).';
+v = p * b;
+v( abs( v ) ~= abs( p ) * abs( b ) ) = NaN;
+v = sign( v );
+v = cvx_reshape( v, x.size_ );
 
-temp1 = p.vexity( 1 : size( b, 2 ) );
-temp2 = full( b * temp1( : ) );
-temp3 = b( :, temp1 ~= 0 );
-temp3 = full( sum( reshape( abs( temp3 ), size( temp3 ) ), 2 ) );
-temp2( abs( temp2 ) ~= temp3 ) = NaN;
-v = reshape( sign( temp2 ), s );
-
-% Copyright 2005 Michael C. Grant and Stephen P. Boyd. 
+% Copyright 2005 Michael C. Grant and Stephen P. Boyd.
 % See the file COPYING.txt for full copyright information.
 % The command 'cvx_where' will show where this file is located.

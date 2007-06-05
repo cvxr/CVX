@@ -21,10 +21,10 @@ error( nargchk( 1, 2, nargin ) );
 y = x .* x;
 if nargin == 2,
     y = sum( y, dim );
-else,
+else
     y = sum( y );
 end
 
-% Copyright 2005 Michael C. Grant and Stephen P. Boyd. 
+% Copyright 2005 Michael C. Grant and Stephen P. Boyd.
 % See the file COPYING.txt for full copyright information.
 % The command 'cvx_where' will show where this file is located.

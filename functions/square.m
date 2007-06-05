@@ -1,4 +1,4 @@
-function cvx_optval = square( x )
+function y = square( x )
 error( nargchk( 1, 1, nargin ) );
 
 %SQUARE    Square.
@@ -9,13 +9,79 @@ error( nargchk( 1, 1, nargin ) );
 %   Disciplined quadratic programming information:
 %       If X is real, then SQUARE(X) is convex and nonmonotonic in X. If X
 %       is complex, then SQUARE(X) is neither convex nor concave. Thus when
-%       when use in CVX expressions, X must be real and affine.
+%       when use in CVX expressions, X must be real, affine, monomial, or
+%       posynomial.
 
-if ~isreal( x ),
-    error( sprintf( 'Disciplined convex programming error:\n   The argument to SQUARE must be real and affine.' ) );
+% 0 : all others
+% 1 : constant
+% 2 : real affine
+% 3 : monomial, posynomial
+persistent remap
+if isempty( remap ),
+    remap1 = cvx_remap( 'constant' );
+    remap2 = cvx_remap( 'affine' ) & ~remap1;
+    remap3 = cvx_remap( 'log-valid' ) & ~remap1;
+    remap  = remap1 + 2 * remap2 + 3 * remap3;
 end
-cvx_optval = quad_over_lin( x, 1, 0 );
+v = remap( cvx_classify( x ) );
 
-% Copyright 2005 Michael C. Grant and Stephen P. Boyd. 
+%
+% Perform the computations for each expression type separately
+%
+
+vu = unique( v );
+nv = length( vu );
+if nv ~= 1,
+    y = cvx( size( x ), [] );
+end
+for k = 1 : nv,
+
+    %
+    % Select the category of expression to compute
+    %
+
+    vk = vu( k );
+    if nv == 1,
+        xt = x;
+    else
+        t = v == vk;
+        xt = cvx_subsref( x, t );
+    end
+
+    %
+    % Perform the computations
+    %
+
+    switch vk,
+        case 0,
+            % Invalid
+            error( sprintf( 'Disciplined convex programming error:\n    Illegal operation: square( {%s} ).', cvx_class( xt, true ) ) );
+        case 1,
+            % Constant
+            yt = cvx_constant( xt );
+            yt = yt .* yt;
+        case 2,
+            % Real affine
+            yt = quad_over_lin( xt, 1, 0 );
+        case 3,
+            % Monomial, posynomial
+            yt = exp( 2 * log( xt ) );
+        otherwise,
+            error( 'Shouldn''t be here.' );
+    end
+
+    %
+    % Store the results
+    %
+
+    if nv == 1,
+        y = yt;
+    else
+        y = cvx_subsasgn( y, t, yt );
+    end
+
+end
+
+% Copyright 2005 Michael C. Grant and Stephen P. Boyd.
 % See the file COPYING.txt for full copyright information.
 % The command 'cvx_where' will show where this file is located.

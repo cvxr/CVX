@@ -15,7 +15,7 @@ while true,
         case 'struct',
             if keeptemp,
                 fx = fieldnames( x );
-            else,
+            else
                 [ fx, ndxs ] = cvx_fieldnames( x );
             end
             nfx = length( fx );
@@ -26,7 +26,7 @@ while true,
             if tocell,
                 if nfx == 1,
                     sx = [ 1, sx ];
-                else,
+                else
                     sx = [ 1, nfx, sx ];
                 end
                 x = struct2cell( x );

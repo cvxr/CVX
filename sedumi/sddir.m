@@ -9,7 +9,7 @@
 % See also sedumi
 
 function [dx,dy,dz,dy0, err] = sddir(L,Lden,Lsd,pv,...
-    d,v,vfrm,At,DAt,dense, R,K,y,y0,b, pars)
+    d,v,vfrm,At,DAt,dense, R,K,y,y0,b, pars,pMode)
 %
 % This file is part of SeDuMi 1.1 by Imre Polik and Oleksandr Romanko
 % Copyright (C) 2005 McMaster University, Hamilton, CANADA  (since 1.1)
@@ -44,16 +44,17 @@ function [dx,dy,dz,dy0, err] = sddir(L,Lden,Lsd,pv,...
 % ------------------------------------------------
 % dy0 = v'*pv,    ADp = A*D(d)*pv
 % ------------------------------------------------
-if isempty(pv)          % pv = [] means affine scaling (so pv = -v)
-    dy0 = -y0;
-    pv = -v;
-else
-    if length(pv) == length(vfrm.lab)        % spectral values w.r.t. vfrm
+switch pMode,
+    case 1,
+        % Spectral values w.r.t. vfrm
         dy0 = (vfrm.lab'*pv) / R.b0;
         pv = frameit(pv,vfrm.q,vfrm.s,K);       % Let p = VFRM * p.
-    else
+    case 2,
+        % Affine scaling
+        dy0 = -y0;
+        pv = -v;
+    case 3,
         dy0 = (v'*pv) / R.b0;
-    end
 end
 % ------------------------------------------------------------
 % Solve  AP(d)A' * ypv = dy0 * Rb + AD(dy0*DRc - pv)

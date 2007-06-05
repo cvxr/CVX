@@ -12,7 +12,7 @@ r  = r( :, ones( 1, n ) );
 y  = r - c + 1;
 temp = y <= 0;
 y( temp ) = m + 1 - y( temp );
-y  = sparse( 1 : mn, y, 1, mn, m + n - 1 );
+y  = sparse( y, 1 : mn, 1, m + n - 1, mn );
 
 % Copyright 2005 Michael C. Grant and Stephen P. Boyd. 
 % See the file COPYING.txt for full copyright information.

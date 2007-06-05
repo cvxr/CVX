@@ -1,7 +1,12 @@
-function st = type( x, mod )
-error( cvx_verify( x ) );
+function st = type( x, usegeo )
 
 df  = x.dof_;
+if nargin > 1 & usegeo,
+    geo = any( df < 0 );
+else
+    geo = false;
+end
+df  = abs( df );
 s   = x.size_;
 len = prod( s );
 isr = isreal( x.basis_ );
@@ -10,13 +15,13 @@ if len == 1,
     isstruct = 0;
     if ~isr,
         st = 'complex scalar';
-    else,
+    else
         st = 'scalar';
     end
-else,
+else
     if isempty( df ),
         isstruct = false;
-    else,
+    else
         isstruct = df < ( 2 - isr ) * len;
     end
     nd = length( s );
@@ -29,17 +34,19 @@ else,
         st = [ st, ' array' ];
     elseif any( s == 1 ),
         st = [ st, ' vector' ];
-    else,
+    else
         st = [ st, ' matrix' ];
     end
 end
 
-if cvx_isconstant( x ),
-    st = [ st, ' constant' ];
-end
-
+%if cvx_isconstant( x ),
+%    st = [ st, ' constant' ];
+%end
 if isstruct,
     st = sprintf( '%s: %d d.o.f.', st, df );
+end
+if geo,
+    st = [ st, ', geometric' ];
 end
 
 % Copyright 2005 Michael C. Grant and Stephen P. Boyd.

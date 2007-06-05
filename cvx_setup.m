@@ -2,7 +2,7 @@ function cvx_setup
 
 % CVX_SETUP   Sets up and tests the cvx distribution.
 
-% Copyright 2005 Michael C. Grant and Stephen P. Boyd. 
+% Copyright 2007 Michael C. Grant and Stephen P. Boyd.
 % See the file COPYING.txt for full copyright information.
 % The command 'cvx_where' will show where this file is located.
 
@@ -17,56 +17,92 @@ temp = find( ver == '.' );
 if length( temp ) > 1,
     ver( temp( 2 ) : end ) = [];
 end
+needLarge = 0;
 ver = eval( ver, 'NaN' );
 if isnan( ver ) | ver < 6.1,
-    error( sprintf( 'cvx has not yet been configured to handle your MATLAB version (%s).\nPlease contact the authors to inquire about future support plans.', version ) ) 
+    error( 'CVX requires MATLAB 6.1 or later.' );
 elseif ver < 7,
     mpath = dbstack;
     mpath = mpath(1);
     mpath = mpath.name;
-else,
+else
     mpath = dbstack( '-completenames' );
     mpath = mpath(1);
     mpath = mpath.file;
+    if ver >= 7.3,
+        newext = mexext;
+        needLarge = strcmp( newext(end-1:end), '64' );
+    end
 end
-if ispc, 
-    fs = '\'; 
+if ispc,
+    fs = '\';
     ps = ';';
-else, 
-    fs = '/'; 
+else
+    fs = '/';
     ps = ':';
 end
 temp = strfind( mpath, fs );
 mpath( temp(end) : end ) = [];
 
-rmpaths = { 'lib', 'functions', 'sets', 'structures', 'sedumi', 'doc' };
+if needLarge,
+	solvers = { 'sdpt3' };
+else
+        solvers = { 'sdpt3', 'sedumi' };
+end
+checkpaths = { 'functions', 'lib', 'sets', 'structures', 'keywords' };
+rmpaths = { checkpaths{:}, 'matlab6' };
 addpaths = { mpath };
 needpaths = {};
+delepaths = {};
 if ver < 7,
+    checkpaths{end+1} = 'keywords';
     addpaths{end+1} = [ mpath, fs, 'keywords' ];
-else,
-    rmpaths{end+1} = 'keywords';
 end
 if ver < 6.5,
+    checkpaths{end+1} = 'matlab6';
     addpaths{end+1} = [ mpath, fs, 'matlab6' ];
-else,
-    rmpaths{end+1} = 'matlab6';
+end
+missing = {};
+for k = 1 : length(checkpaths),
+    temp = [ mpath, fs, checkpaths{k} ];
+    if ~exist( temp, 'dir' ),
+        missing{end+1} = checkpaths{k};
+    end
+end
+msolv = 0;
+for k = 1 : length(solvers),
+    temp = [ mpath, fs, solvers{k} ];
+    if ~exist( temp, 'dir' ),
+        missing{end+1} = solvers{k};
+        msolv = msolv + 1;
+    end
+end
+if length(missing) > msolv | msolv == length(solvers),
+    error( sprintf( ...
+        [ 'The following directories in the CVX distribution are missing:\n', ...
+          '  %s\n', ...
+          'Please reinstall the distribution and try again.' ], ...
+          sprintf( ' %s', missing{:} ) ) );
 end
 needupd = 0;
-missing = 0;
-newpath = [ ps, matlabpath, ps ]; 
+newpath = [ ps, matlabpath, ps ];
 if ispc,
     newpath2 = lower(newpath);
     mpath2 = lower(mpath);
-else,
+else
     newpath2 = newpath;
     mpath2 = mpath;
 end
 for k = 1 : length(rmpaths),
     temp = [ ps, mpath2, fs, rmpaths{k}, ps ];
     ndxs = strfind( newpath2, temp );
+    if isempty( ndxs ),
+        temp = [ ps, rmpaths{k}, ps ];
+        ndxs = strfind( newpath2, temp );
+    end
     if ~isempty( ndxs ),
         needupd = 1;
+        delepaths{end+1} = temp(2:end-1);
         len = length( temp ) - 1;
         for j = 1 : length( ndxs ),
             newpath( ndxs(j) + 1 : ndxs(j) + len ) = [];
@@ -83,18 +119,10 @@ for k = 1 : length(addpaths),
     ndxs = strfind( newpath2, temp );
     if isempty( ndxs ),
         needupd = 1;
+        needpaths{end+1} = temp(2:end-1);
         newpath2 = [ temp(1:end-1), newpath2 ];
         newpath = [ ps, addpaths{k}, newpath ];
-        if ~exist( temp(2:end-1), 'dir' ),
-            missing = 1;
-        end
     end
-end
-if missing,
-    disp( 'The cvx distribution seems to be incomplete; one or more of the required' );
-    disp( 'directories is missing. Please re-unpack the distribution and try again.' );
-    disp( ' ' )
-    return
 end
 matlabpath(newpath);
 
@@ -105,40 +133,72 @@ matlabpath(newpath);
 newext = mexext;
 isw32 = strcmp( newext, 'mexw32' );
 sedpath = [ mpath, fs, 'sedumi' ];
-mexfiles = dir( [ sedpath, fs, '*.', newext ] );
-if isempty( mexfiles ) & ispc & isw32,
-    mexfiles = dir( [ sedpath, fs, '*.dll' ] );
-end
-if isempty( mexfiles ),
-    try,
+if ~needLarge & exist( sedpath, 'dir' ),
+    mexfiles = dir( [ sedpath, fs, '*.', newext ] );
+    if isempty( mexfiles ) & ispc & isw32,
+        mexfiles = dir( [ sedpath, fs, '*.dll' ] );
+    end
+    if isempty( mexfiles ),
         cd( sedpath );
-    catch,
-        disp( 'The cvx distribution seems to be incomplete: the lib/ directory is' );
-        disp( 'missing. Please re-unpack the distribution and try again.' );
-        disp( ' ' );
+        try
+            disp( 'Running the SeDuMi MEX compilation script in 5 seconds.' );
+            pause(5);
+            install_sedumi;
+        catch
+            disp( '-------------------------------------------------------------' );
+            disp( 'SeDuMi was NOT built successfully. Please try CVX on a supported' );
+            disp( 'platform, or manually run the ''install_sedumi'' command in the' );
+            disp( 'sedumi/ subdirectory to try and find and correct the error.' );
+            disp( 'Once the error has been fixed, please re-run cvx_setup.' );
         cd( dd );
         return
-    end
-    try,
-        disp( 'Running the SeDuMi MEX compilation script in 5 seconds.' );
-        pause(5);
-        install_sedumi;
-    catch,
+        end
         disp( '-------------------------------------------------------------' );
-        disp( 'SeDuMi was NOT built successfully. Please try CVX on a supported' );
-        disp( 'platform, or manually run the ''install_sedumi'' command in the' );
-        disp( 'sedumi/ subdirectory to try and find and correct the error.' );
+        cd( dd );
     end
-    disp( '-------------------------------------------------------------' );
-    cd( dd );
+end
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Compile the SDPT3 MEX files %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+sedpath = [ mpath, fs, 'sdpt3' ];
+if exist( sedpath, 'dir' ),
+    mexfiles = dir( [ sedpath, fs, 'Linsysolver', fs, 'spchol', fs, '*.', newext ] );
+    if isempty( mexfiles ) & ispc & isw32,
+        newext = 'dll';
+        mexfiles = dir( [ sedpath, fs, 'Linsysolver', fs, 'spchol', fs, '*.', newext ] );
+    end
+    if isempty( mexfiles ),
+        cd( sedpath );
+        try
+            disp( 'Running the SDPT3 MEX compilation script in 5 seconds.' );
+            pause(5);
+            Installmex;
+        catch
+            disp( '-------------------------------------------------------------' );
+            disp( 'SDPT3 was NOT built successfully. Please try CVX on a supported' );
+            disp( 'platform, or manually run the ''Installmex'' command in the' );
+            disp( 'sdpt3/ subdirectory to try and find and correct the error.' );
+            disp( 'Once the error has been fixed, please re-run cvx_setup.' );
+        cd( dd );
+        return
+        end
+        disp( '-------------------------------------------------------------' );
+        cd( dd );
+    end
 end
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Compile the CVX MEX files %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+mexcmd = { '-O' };
+if needLarge,
+    mexcmd{end+1} = '-largeArrayDims';
+end
 libpath = [ mpath, fs, 'lib' ];
-try,
+try
     cd( libpath );
     mexfiles = dir( '*.c' );
     mexfiles = { mexfiles.name };
@@ -152,7 +212,7 @@ try,
             end
         end
     end
-catch,
+catch
     disp( 'The cvx distribution seems to be incomplete: the lib/ directory is' );
     disp( 'missing. Please re-unpack the distribution and try again.' );
     disp( ' ' );
@@ -165,10 +225,10 @@ if ~has_mex,
     has_mex = 1;
     for k = 1 : length( mexfiles ),
         str = mexfiles{k};
-        try,
-            disp( [ 'mex -O ', str(1:end-1), newext ] );
-            mex( '-O', str );
-        catch,
+        try
+            disp( sprintf( '%s ', 'mex', mexcmd{:}, str ) );
+            mex( mexcmd{:}, str );
+        catch
             has_mex = 0;
         end
     end
@@ -179,9 +239,9 @@ if ~has_mex,
         disp( ' ' );
         cd( dd );
         return
-    else,
+    else
         disp( '-------------------------------------------------------------' );
-    end    
+    end
 end
 cd( dd );
 
@@ -199,41 +259,52 @@ cvx_begin
     minimize( norm(A*x-b) );
 cvx_end
 cvx_quiet( s );
-try,
+try
     cvx_clearpath;
 end
 
 if norm( x - xls ) > 0.01 * norm( x ),
+    err = norm( x - xls ) / norm( x );
     disp( '-------------------------------------------------------------' );
     disp( sprintf( 'cvx differs from native Matlab by %g%%', 100 * err ) );
     disp( 'Unexpected numerical errors were found when solving the test problem.' );
     disp( 'Please report this to the authors.' );
     disp( ' ' );
     return
-else,
+else
     disp( 'No errors! cvx has been successfully installed.' );
     disp( ' ' );
 end
 
+if needLarge,
+    disp( 'NOTE: SeDuMi does not yet work on recent versions of 64-bit Matlab.' );
+    disp( 'SDPT3 will be the only solver available.' );
+    if needupd, disp( ' ' ); end 
+end
 if needupd,
     disp( 'NOTE: The MATLAB path has been updated to point to the cvx distribution.' );
     disp( 'In order to use cvx regularly, you must save this new path definition.' );
-    if ispc,
-        disp( 'To accomplish this, type the command' );
-        if ver < 7,
+    switch computer,
+        case 'PCWIN',
+        case 'MAC',
+        case 'MACI',
+            disp( 'To accomplish this, type the command' );
+            if ver >= 7,
+                disp( '    savepath' );
+                disp( 'at the MATLAB prompt. Alternatively, type the command' );
+            end
             disp( '    pathtool' );
             disp( 'at the MATLAB prompt, which brings up the ''Set Path'' dialog. Press' );
             disp( 'the ''Save'' button, and then the ''Close'' button.' );
-        else,
-            disp( '    savepath' );
-            disp( 'at the MATLAB prompt.' );
-        end
-    else,
-        disp( 'To accomplish this, add these lines to your startup.m file:' );
-        for k = 1 : length( addpaths ),
-            disp( [ '    addpath ', addpaths{k} ] );
-        end
-        disp( 'Consult the MATLAB documentation if necessary.' );
+        otherwise,
+            disp( 'To accomplish this, add these lines to your startup.m file:' );
+            for k = 1 : length( delepaths ),
+                disp( [ '    rmpath ', delepaths{k} ] );
+            end
+            for k = 1 : length( needpaths ),
+                disp( [ '    addpath ', needpaths{k} ] );
+            end
+            disp( 'Consult the MATLAB documentation if necessary.' );
     end
     disp( ' ' );
 end

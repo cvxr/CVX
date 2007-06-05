@@ -1,29 +1,28 @@
 function cvx_clear( arg )
 
-% CVX_CLEAR	Clears all active cvx data in case of an error.
+% CVX_CLEAR Clears all active cvx data in case of an error.
 
-% Copyright 2005 Michael C. Grant and Stephen P. Boyd. 
+% Copyright 2005 Michael C. Grant and Stephen P. Boyd.
 % See the file COPYING.txt for full copyright information.
 % The command 'cvx_where' will show where this file is located.
 
-prob = evalin( 'caller', 'cvx_problem', '[]' );
-if ~isa( prob, 'cvxprob' ), return; end
-p = index( prob );
-global cvx___
-prob = cvx___.problems( p );
-if isempty( prob.variables ),
-    varf = {};
-else,
-    varf = fieldnames( prob.variables );
+cvx_problem = evalin( 'caller', 'cvx_problem', '[]' );
+if ~isa( cvx_problem, 'cvxprob' ),
+    global cvx___
+    if ~isempty( cvx___ ) & ~isempty( cvx___.problems ),
+        ndx = [ cvx___.problems.depth ];
+        ndx = min( find( ndx >= length( dbstack ) - 1 ) );
+        if isempty( ndx ),
+            cvx_problem = [];
+        else
+            cvx_problem = cvx___.problems( ndx ).self;
+            assignin( 'caller', 'cvx_problem', cvx_problem );
+        end
+    end
 end
-if isempty( prob.duals ),
-    dulf = {};
-else,
-    dulf = fieldnames( prob.duals );
+if ~isempty( cvx_problem ),
+    evalin( 'caller', 'pop( cvx_problem, ''clear'' );' );
 end
-evalin( 'caller', sprintf( '%s ', 'clear cvx_problem cvx___ cvx_status cvx_optval', varf{:}, dulf{:} ) );
-cvx___.stack( prob.stackpos : end ) = [];
-cvx___.problems( p : end ) = [];
 if nargin == 0,
     cvx_clearpath( 1 );
 end

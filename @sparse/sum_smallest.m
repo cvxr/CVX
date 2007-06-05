@@ -18,7 +18,7 @@ error( nargchk( 2, 3, nargin ) );
 %   between their integral neighbors.
 %
 %   For matrices, SUM_SMALLEST(X,k) is a row vector containing the
-%   application of SUM_SMALLEST to each column. For N-D arrays, the 
+%   application of SUM_SMALLEST to each column. For N-D arrays, the
 %   SUM_SMALLEST operation is applied to the first non-singleton dimension
 %   of X.
 %
@@ -31,10 +31,10 @@ error( nargchk( 2, 3, nargin ) );
 
 if nargin == 2,
     cvx_optval = - sum_largest( - x, k );
-else,
+else
     cvx_optval = - sum_largest( - x, k, dim );
 end
 
-% Copyright 2005 Michael C. Grant and Stephen P. Boyd. 
+% Copyright 2005 Michael C. Grant and Stephen P. Boyd.
 % See the file COPYING.txt for full copyright information.
 % The command 'cvx_where' will show where this file is located.
