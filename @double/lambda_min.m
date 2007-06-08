@@ -21,7 +21,7 @@ elseif any( any( x ~= x' ) ),
 
 else
 
-    z = min( eig( x ) );
+    z = min( eig( full( x ) ) );
 
 end
 
