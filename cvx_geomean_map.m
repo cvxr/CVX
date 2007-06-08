@@ -1,4 +1,10 @@
 function [ map, pn, pd, cplx ] = cvx_geomean_map( w, isnorm )
+
+% CVX_GEOMEAN_MAP    Helper function for geomean->SOCP conversion.
+%
+% This is an internal CVX function involved in the conversion of geomean()
+% function calls to SOCP-solvable form.
+
 w = reshape( w, 1, numel(w) );
 base = length( w );
 do_norm = 0;
@@ -122,6 +128,10 @@ if base == 1 & ( base * cplx > cvx_power_warning ),
         'powers" for more details---including how to disable this warning.' ], ...
         p, pn, pd, cplx ) );
 end
+
+% Copyright 2007 Michael C. Grant and Stephen P. Boyd.
+% See the file COPYING.txt for full copyright information.
+% The command 'cvx_where' will show where this file is located.
 
 
 

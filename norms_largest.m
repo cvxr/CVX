@@ -1,5 +1,4 @@
 function cvx_optval = norms_largest( x, k, dim )
-error( nargchk( 2, 3, nargin ) );
 
 %NORMS_LARGEST    Computation of multiple largest-k norms.
 %
@@ -15,6 +14,7 @@ error( nargchk( 2, 3, nargin ) );
 %   Disciplined convex programming information:
 %       NORMS_LARGEST is convex and non-monotonic, so its input must be affine.
 
+error( nargchk( 2, 3, nargin ) );
 sx = size( x );
 
 %
@@ -41,6 +41,6 @@ end
 
 cvx_optval = sum_largest( abs( x ), k, dim );
 
-% Copyright 2005 Michael C. Grant and Stephen P. Boyd.
+% Copyright 2007 Michael C. Grant and Stephen P. Boyd. 
 % See the file COPYING.txt for full copyright information.
 % The command 'cvx_where' will show where this file is located.

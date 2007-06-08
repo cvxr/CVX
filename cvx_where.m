@@ -10,10 +10,6 @@ function s = cvx_where
 %    The proper operation of this function assumes that it has not been
 %    moved from its default position within the cvx distribution.
 
-% Copyright 2005 Michael C. Grant and Stephen P. Boyd.
-% See the file COPYING.txt for full copyright information.
-% The command 'cvx_where' will show where this file is located.
-
 s = '-completenames';
 s = eval( 'dbstack(s)', 'dbstack' );
 s = s(1);
@@ -21,3 +17,7 @@ s = eval( 's.file', 's.name' );
 if ispc, fs = '\'; else fs = '/'; end
 temp = strfind( s, fs );
 s( temp(end) + 1 : end ) = [];
+
+% Copyright 2007 Michael C. Grant and Stephen P. Boyd.
+% See the file COPYING.txt for full copyright information.
+% The command 'cvx_where' will show where this file is located.

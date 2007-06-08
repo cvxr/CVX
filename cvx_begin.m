@@ -51,10 +51,6 @@ function cvx_begin( varargin )
 % elementwise to an array. It is ignored for single-objective problems,
 % feasibility problems, sets, and incomplete specifications.
 
-% Copyright 2005 Michael C. Grant and Stephen P. Boyd.
-% See the file COPYING.txt for full copyright information.
-% The command 'cvx_where' will show where this file is located.
-
 if ~iscellstr( varargin ),
     error( 'Arguments must be strings.' );
 end
@@ -74,3 +70,7 @@ if isempty( cvx___.problems ) & cvx___.profile,
 end
 cvx_create_problem( varargin{:} );
 assignin( 'caller', 'cvx_problem', cvx_problem );
+
+% Copyright 2007 Michael C. Grant and Stephen P. Boyd. 
+% See the file COPYING.txt for full copyright information.
+% The command 'cvx_where' will show where this file is located.

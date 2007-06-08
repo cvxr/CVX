@@ -1,13 +1,11 @@
 function cvx_clearpath( arg )
 
 % CVX_CLEARPATH   Clears the cvx path.
-%        CVX_CLEARPATH removes the internal cvx directories to Matlab's
-%        when they are no longer needed, to avoid any possibility that they
-%        might shadow the functions from another package. There is no need
-%        to call this function during the normal use of cvx; it is done
-%        automatically as needed. In fact, if you attempt to use it, and
-%        cvx still needs the directories in the path for some reason, it
-%        will simply return silently without doing anything.
+%
+% CVX_CLEARPATH removes the internal cvx directories from Matlab's path. CVX
+% does this automatically when a model is completed (i.e., after CVX_END), in
+% order to reduce potential naming conflicts with other packages. There is no
+% need to call this function during the normal use of CVX.
 
 if nargin == 0,
     cvx_clear( 1 );
@@ -28,6 +26,6 @@ if nargin == 0,
     cvx___.path.hold = false;
 end
 
-% Copyright 2005 Michael C. Grant and Stephen P. Boyd.
+% Copyright 2007 Michael C. Grant and Stephen P. Boyd.
 % See the file COPYING.txt for full copyright information.
 % The command 'cvx_where' will show where this file is located.

@@ -1,10 +1,9 @@
 function cvx_setup
 
 % CVX_SETUP   Sets up and tests the cvx distribution.
-
-% Copyright 2007 Michael C. Grant and Stephen P. Boyd.
-% See the file COPYING.txt for full copyright information.
-% The command 'cvx_where' will show where this file is located.
+%
+% This function is to be called any time CVX is installed on a new machine,
+% to insure that the paths are set properly and the MEX files are compiled.
 
 disp( ' ' );
 dd = cd;
@@ -308,3 +307,7 @@ if needupd,
     end
     disp( ' ' );
 end
+
+% Copyright 2007 Michael C. Grant and Stephen P. Boyd.
+% See the file COPYING.txt for full copyright information.
+% The command 'cvx_where' will show where this file is located.

@@ -1,10 +1,6 @@
 function cvx_clear( arg )
 
-% CVX_CLEAR Clears all active cvx data in case of an error.
-
-% Copyright 2005 Michael C. Grant and Stephen P. Boyd.
-% See the file COPYING.txt for full copyright information.
-% The command 'cvx_where' will show where this file is located.
+% CVX_CLEAR Clears all active cvx data; e.g., in case of an error.
 
 cvx_problem = evalin( 'caller', 'cvx_problem', '[]' );
 if ~isa( cvx_problem, 'cvxprob' ),
@@ -26,3 +22,7 @@ end
 if nargin == 0,
     cvx_clearpath( 1 );
 end
+
+% Copyright 2007 Michael C. Grant and Stephen P. Boyd.
+% See the file COPYING.txt for full copyright information.
+% The command 'cvx_where' will show where this file is located.

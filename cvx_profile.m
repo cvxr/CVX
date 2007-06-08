@@ -1,4 +1,11 @@
 function s = cvx_profile( flag )
+
+% CVX_PROFILE	CVX-specific profiler control.
+%
+% This is a function used for internal CVX development to help determine 
+% performance limits within the CVX code itself, by turning off the profiler
+% when the solver is being called.
+
 global cvx___
 if isempty( cvx___ ), 
     cvx_setpath( 1 ); 
@@ -19,5 +26,9 @@ if nargin == 1,
         end
     end
 end
-    
+  
+% Copyright 2007 Michael C. Grant and Stephen P. Boyd.
+% See the file COPYING.txt for full copyright information.
+% The command 'cvx_where' will show where this file is located.
+  
 

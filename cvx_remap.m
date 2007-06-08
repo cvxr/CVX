@@ -1,5 +1,9 @@
 function r = cvx_remap( varargin )
 
+% CVX_REMAP		CVX expression type map generator.
+%
+% This is an internal function used to help filter CVX expressions by type.
+
 % Classifications:
 % 1  - negative constant
 % 2  - zero
@@ -56,3 +60,7 @@ end
 [ c, ndx ] = sort( [ remap_str ; varargin(:) ] );
 d = strcmp(c(1:end-1),c(2:end));
 r = +any( remap_big( ndx(d), : ), 1 );
+
+% Copyright 2007 Michael C. Grant and Stephen P. Boyd.
+% See the file COPYING.txt for full copyright information.
+% The command 'cvx_where' will show where this file is located.
