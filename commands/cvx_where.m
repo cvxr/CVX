@@ -16,7 +16,7 @@ s = s(1);
 s = eval( 's.file', 's.name' );
 if ispc, fs = '\'; else fs = '/'; end
 temp = strfind( s, fs );
-s( temp(end) + 1 : end ) = [];
+s( temp(end-1) + 1 : end ) = [];
 
 % Copyright 2007 Michael C. Grant and Stephen P. Boyd.
 % See the file COPYING.txt for full copyright information.

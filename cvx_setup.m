@@ -47,9 +47,9 @@ if needLarge,
 else
         solvers = { 'sdpt3', 'sedumi' };
 end
-checkpaths = { 'functions', 'lib', 'sets', 'structures', 'util', 'keywords' };
+checkpaths = { 'commands', 'functions', 'internal', 'lib', 'sets', 'structures', 'keywords' };
 rmpaths = { checkpaths{:}, 'matlab6' };
-addpaths = { mpath, [ mpath, fs, 'functions' ], [ mpath, fs, 'util' ] };
+addpaths = { mpath, [ mpath, fs, 'commands' ], [ mpath, fs, 'functions' ], [ mpath, fs, 'internal' ] };
 needpaths = {};
 delepaths = {};
 if ver < 7,
