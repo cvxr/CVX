@@ -71,9 +71,10 @@ if ~cvx___.path.formed,
         fs = '/';
         ps = ':';
     end
-    s( max( strfind( s, 'cvx_begin' ) ) : end ) = [];
+    temp = strfind( s, fs );
+    s( temp(end-1) + 1 : end ) = [];
     solvers = { 'sdpt3/Solver', 'sdpt3/SolverHSD', 'sdpt3/Solver/Mexfun', 'sdpt3/Linsysolver/spchol', 'sdpt3/Linsysolver/MA47', 'sedumi' };
-    subs = { solvers{:}, 'lib', 'functions', 'sets', 'structures' };
+    subs = { solvers{:}, 'lib', 'sets', 'structures' };
     miss_solv = 0;
     if cvx___.mversion >= 7,
         subs{end+1} = 'keywords';
