@@ -1,7 +1,6 @@
 function cvx_optval = norm_largest( x, k )
 
 %NORM_LARGEST    Largest-k norm.
-%
 %   NORM_LARGEST( X, k ) computes the 'largest-k' norm; that is, it computes
 %   the sum of the magnitudes of the k largest elements in X. X must
 %   be a vector, and k must be a real scalar.

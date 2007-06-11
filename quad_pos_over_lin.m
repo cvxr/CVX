@@ -1,9 +1,9 @@
 function z = quad_pos_over_lin( x, y, dim )
 
 %QUAD_POS_OVER_LIN   quadratic positive part over linear.
-%
-%   For real vectors X, QUAD_OVER_LIN(X,Y) is the sum of the squares of the
-%   positive parts of X, divided by Y; i.e., SUM( MAX(X,0) .^ 2 ) / Y.
+%   Z=QUAD_POS_OVER_LIN(X,Y), where X is a vector and Y is a scalar, is equal to
+%   SUM(MAX(X,0).^2)./Y if Y is positive, and +Inf otherwise. Both X and Y must
+%   be real.
 %
 %   For matrices, QUAD_POS_OVER_LIN(X,Y) is a row vector containing the 
 %   application of QUAD_POS_OVER_LIN to each column. For N-D arrays, the

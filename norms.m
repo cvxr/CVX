@@ -1,7 +1,6 @@
 function cvx_optval = norms( x, p, dim )
 
 %NORMS   Computation of multiple vector norms.
-%
 %   NORMS( X ) provides a means to compute the norms of multiple vectors
 %   packed into a matrix or N-D array. This is useful for performing
 %   max-of-norms or sum-of-norms calculations.

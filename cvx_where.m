@@ -1,14 +1,14 @@
 function s = cvx_where
 
-% CVX_WHERE    Returns the location of the CVX system.
-%    CVX_WHERE returns a string containing the base directory of the CVX
-%    modeling framework. Within that directory are some useful
-%    subdirectories and files:
-%        doc/          documentation
-%        examples/     sample cvx models
-%        COPYING.txt   copyright information
-%    The proper operation of this function assumes that it has not been
-%    moved from its default position within the cvx distribution.
+%CVX_WHERE    Returns the location of the CVX system.
+%   CVX_WHERE returns a string containing the base directory of the CVX
+%   modeling framework. Within that directory are some useful
+%   subdirectories and files:
+%       doc/          documentation
+%       examples/     sample cvx models
+%       COPYING.txt   copyright information
+%   The proper operation of this function assumes that it has not been
+%   moved from its default position within the cvx distribution.
 
 s = '-completenames';
 s = eval( 'dbstack(s)', 'dbstack' );

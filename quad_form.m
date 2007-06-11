@@ -1,7 +1,6 @@
 function y = quad_form( x, Q )
 
 %QUAD_FORM quadratic form.
-%
 %   QUAD_FORM(x,Q) is x'*((Q+Q'/2))*x = real(x'*Q*x).
 %
 %   x must be a row or column vector, and Q must either be a scalar or

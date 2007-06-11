@@ -1,26 +1,32 @@
 function y = huber( x, M, t )
 
-% HUBER   Huber penalty function.
-%     For a real or complex scalar X, HUBER(X) is the Huber penalty
-%     function applied to X: that is,
+%HUBER   Huber penalty function.
+%   HUBER(X) computes the Huber penalty function
 %
-%         HUBER(X) = |X|^2   if |X|<=1,
-%                    2|X|-1  if |X|>=1.
+%       HUBER(X) = |X|^2   if |X|<=1,
+%                  2|X|-1  if |X|>=1.
 %
-%     HUBER(X,M) is the Huber penalty function of halfwidth M applied to X;
-%     that is, HUBER(X,M)=M.^2.*HUBER(X./M).
+%   HUBER(X,M) is the Huber penalty function of halfwidth M, M.^2.*HUBER(X./M). 
+%   M must be real and positive.
 %
-%     HUBER(X,M,T) computes T.*HUBER(X./T,M), the perspective transformation
-%     of HUBER(X,M). This is useful for solving regression problems with
-%     concomitant scale. T is constrained to be nonnegative.
+%   HUBER(X,M,T) computes the Huber penalty function with halfwidth M and
+%   concomitant scale T:
 %
-%     For matrices and N-D arrays, the penalty function is applied to each
-%     element of X independently. M and X must be compatible in the same
-%     sense as .*: one must be a scalar, or they must have identical size.
+%       HUBER(X,M,T) = T.*HUBER(X./T) if T > 0
+%                      +Inf           if T <= 0
 %
-%     Disciplined convex programming information:
-%         HUBER is convex and nonmonotonic; therefore, when used in CVX
-%         specifications, its argument must be affine.
+%   This form supports the joint estimation of regression coefficients and
+%   scaling; c.f. Art B. Owen, "A robust hybrid of lasso and ridge regression",
+%   techincal report, Department of Statistics, Stanford University, 2006: 
+%       http://www-stat.stanford.edu/~owen/reports/hhu.pdf
+%
+%   For matrices and N-D arrays, the penalty function is applied to each
+%   element of X independently. M and T must be compatible with X in the same
+%   sense as .*: one must be a scalar, or they must have identical size.
+%
+%   Disciplined convex programming information:
+%       HUBER is convex and nonmonotonic in X and T; therefore, when used in 
+%       CVX specifications, X and T must be affine. T must be real.
 
 error( nargchk( 1, 3, nargin ) );
 if nargin < 2,

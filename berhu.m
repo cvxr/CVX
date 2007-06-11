@@ -1,26 +1,32 @@
 function y = berhu( x, M, t )
 
-% BERHU   Reverse Huber penalty function.
-%     For a real or complex scalar X, BERHU(X) is the reverse Huber penalty
-%     function applied to X: that is,
+%BERHU   Reverse Huber penalty function.
+%   BERHU(X) computes the reverse Huber penalty function
 %
-%         BERHU(X) = |X|          if |X|<=1,
-%                    (|X|^2+1)/2  if |X|>=1.
+%       BERHU(X) = ABS(X)            if ABS(X)<=1,
+%                  (ABS(X).^2+1)./2  if ABS(X)>=1.
 %
-%     BERHU(X,M) is the Huber penalty function of halfwidth M applied to X;
-%     that is, BERHU(X,M)=M.*BERHU(X./M).
+%   BERHU(X,M) computes the reverse Huber penalty function with halfwidth M,
+%   M.*BERHU(X./M). M must be real and positive.
 %
-%     BERHU(X,M,T) computes T.*BERHU(X./T,M), the perspective transformation
-%     of BERHU(X,M). This is useful for solving regression problems with
-%     concomitant scale. T is constrained to be nonnegative.
+%   BERHU(X,M,T) computes the reverse Huber penalty function with halfwidth M
+%   and concomitant scale T: 
 %
-%     For matrices and N-D arrays, the penalty function is applied to each
-%     element of X independently. M and X must be compatible in the same
-%     sense as .*: one must be a scalar, or they must have identical size.
+%       BERHU(X,M,T) = (M.*T).*BERHU(X./(M.*T))     if T>0
+%                      +Inf                         if T<=0
 %
-%     Disciplined convex programming information:
-%         BERHU is convex and nonmonotonic; therefore, when used in CVX
-%         specifications, its argument must be affine.
+%   This form supports the joint estimation of regression coefficients and
+%   scaling; c.f. Art B. Owen, "A robust hybrid of lasso and ridge regression",
+%   techincal report, Department of Statistics, Stanford University, 2006: 
+%       http://www-stat.stanford.edu/~owen/reports/hhu.pdf
+%
+%   For matrices and N-D arrays, the penalty function is applied to each
+%   element of X independently. M and T must be compatible with X in the same
+%   sense as .*: one must be a scalar, or they must have identical size.
+%
+%   Disciplined convex programming information:
+%       BERHU is convex and nonmonotonic in X and T; therefore, when used in 
+%       CVX specifications, X and T must be affine. T must be real.
 
 error( nargchk( 1, 3, nargin ) );
 if nargin < 2,

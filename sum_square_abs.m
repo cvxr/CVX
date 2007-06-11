@@ -1,7 +1,6 @@
 function y = sum_square_abs( x, dim )
 
 %SUM_SQUARE_ABS   Sum of the squares of absolute values.
-%
 %   For real arrays, SUM_SQUARE_ABS(X) computes the same result as
 %   SUM_SQUARE(X). For complex arrays, SUM_SQUARE(X) first computes the
 %   magnitudes of the elements of X, so it compute SUM_SQUARE_ABS(X).

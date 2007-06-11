@@ -1,7 +1,6 @@
 function y = sum_square_pos( x, dim )
 
 %SUM_SQUARE_POS   Sum of squares of the positive parts.
-%
 %   For vectors, SUM_SQUARE(X) is the sum of the squares of the positive
 %   parts of X; i.e., SUM( MAX(X,0)^2 ). X must be real.
 %

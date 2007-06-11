@@ -1,6 +1,10 @@
 function cvx_clear( arg )
 
-% CVX_CLEAR Clears all active cvx data; e.g., in case of an error.
+% CVX_CLEAR   Clears all active cvx data.
+%    CVX_CLEAR clears the current CVX model in progress. This is useful if, for
+%    example, you have made an error typing in your model and wish to start 
+%    over. Typing this before entering another CVX_BEGIN again avoids the 
+%    warning message that occurs if CVX_BEGIN detects a model in progress.
 
 cvx_problem = evalin( 'caller', 'cvx_problem', '[]' );
 if ~isa( cvx_problem, 'cvxprob' ),

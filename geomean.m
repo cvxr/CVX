@@ -1,29 +1,24 @@
 function y = geomean( x, dim, w )
 
-% GEOMEAN   Geometric mean.
-%     For vectors, GEOMEAN(X) is the geometric mean of the elements of X. 
-%     If any of the elements of X are negative, then Y=-Inf. Otherwise,
-%     Y = PROD(X)^(1/LENGTH(X)). All elements must be real.
+%GEOMEAN   Geometric mean.
+%   Y=GEOMEAN(X), where X is a vector, computes the geometrix mean of X. If any
+%   of the elements of X are negative, then Y=-Inf. Otherwise, it is equivalent
+%   to Y=PROD(X).^(1/LENGTH(X)). All elements must be real.
 %
-%     For matrices, GEOMEAN(X) is a row vector containing the geometric 
-%     means of the columns. For N-D arrays, GEOMEAN(X) is an array of the
-%     geometric means taken along the first non-singleton dimension of X.
+%   For matrices, GEOMEAN(X) is a row vector containing the geometric means of
+%   the columns. For N-D arrays, GEOMEAN(X) is an array of the geometric means
+%   taken along the first non-singleton dimension of X.
 %
-%     GEOMEAN(X,DIM) takes the geometric mean along the dimension DIM of X.
+%   GEOMEAN(X,DIM) takes the geometric mean along the dimension DIM of X.
 %
-%     For matrices, Y=GEOMEAN(X) is a vector of the geometric means of the
-%     columns of X. For N-D arrays, the geometric means are taken along the
-%     first non-singleton dimension of X.
+%   GEOMEAN(X,DIM,W), where W is a vector of positive integers, computes a
+%   weighted geometric mean Y = PROD(X.^W)^(1/SUM(W)). This is more efficient
+%   than replicating the values of X W times. Note that W must be a vector,
+%   even if X is a matrix, and its length must be the same as SIZE(X,DIM).
 %
-%     GEOMEAN(X,DIM,W), where W is a vector of positive integers, computes
-%     a weighted geometric mean Y = PROD(X.^W)^(1/SUM(W)). This is more
-%     efficient than replicating the values of X W times. Note that W must
-%     be a *vector*, even if X is a matrix, and its length must be the
-%     same as SIZE(X,DIM).
-%
-%     Disciplined convex programming information:
-%         GEOMEAN is convex and nondecreasing; therefore, when used in CVX
-%         specifications, its argument must be concave.
+%   Disciplined convex programming information:
+%       GEOMEAN is convex and nondecreasing; therefore, when used in CVX
+%       specifications, its argument must be concave.
 
 %
 % Check arguments

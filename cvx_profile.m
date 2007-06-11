@@ -1,10 +1,9 @@
 function s = cvx_profile( flag )
 
 % CVX_PROFILE	CVX-specific profiler control.
-%
-% This is a function used for internal CVX development to help determine 
-% performance limits within the CVX code itself, by turning off the profiler
-% when the solver is being called.
+%    This is a function used for internal CVX development to help determine 
+%    performance limits within the CVX code itself, by turning off the profiler
+%    when the solver is being called.
 
 global cvx___
 if isempty( cvx___ ), 

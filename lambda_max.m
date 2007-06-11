@@ -15,7 +15,7 @@ if ndims( x ) > 2 | size( x, 1 ) ~= size( x, 2 ),
 
     error( 'Input must be a square matrix.' );
 
-elseif any( any( x ~= x' ) ),
+elseif nnz( x ~= x' ),
 
     z = Inf;
 

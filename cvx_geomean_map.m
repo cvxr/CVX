@@ -1,9 +1,11 @@
 function [ map, pn, pd, cplx ] = cvx_geomean_map( w, isnorm )
 
-% CVX_GEOMEAN_MAP    Helper function for geomean->SOCP conversion.
+%CVX_GEOMEAN_MAP    Helper function for geomean->SOCP conversion.
+%   This is an internal CVX function involved in the conversion of geomean()
+%   function calls to SOCP-solvable form.
 %
-% This is an internal CVX function involved in the conversion of geomean()
-% function calls to SOCP-solvable form.
+%   This is an internal CVX function, and as such no checking is performed to
+%   insure that the arguments are valid.
 
 w = reshape( w, 1, numel(w) );
 base = length( w );

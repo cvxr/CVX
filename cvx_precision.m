@@ -1,61 +1,60 @@
 function sout = cvx_precision( flag )
 
-% CVX_PRECISION    CVX solver precision.
+%CVX_PRECISION    CVX solver precision.
+%   The CVX_PRECISION command controls the precision-related stopping criteria
+%   for the numerical solver. It defines two precision levels:
+%       --- a 'high' precision level, below which a problem is considered
+%           accurately solved (returning cvx_status = 'Solved' );
+%       --- a 'low' precision level, below which a problem is considered
+%           inaccurately solved (returning cvx_status = 'Inaccurate/Solved').
+%   Problems for which the solver is unable to achieve even the 'low' precision
+%   level are considered unsolved (returning cvx_status = 'Failed'). These
+%   tolerance levels apply in appropriate ways to infeasible and unbounded
+%   problems as well.
 %
-% The CVX_PRECISION command controls the precision-related stopping criteria
-% for the numerical solver. It defines two precision levels:
-%     --- a 'high' precision level, below which a problem is considered
-%         accurately solved (returning cvx_status = 'Solved' );
-%     --- a 'low' precision level, below which a problem is considered
-%         inaccurately solved (returning cvx_status = 'Inaccurate/Solved').
-% Problems for which the solver is unable to achieve even the 'low' precision
-% level are considered unsolved (returning cvx_status = 'Failed'). These
-% tolerance levels apply in appropriate ways to infeasible and unbounded
-% problems as well.
+%   CVX_PRECISION(TOL), where TOL is a 2-element vector, sets the low and high
+%   precisions to MIN(TOL) and MAX(TOL), respectively. If the two values are
+%   identical, then the low precision level is effectively removed.
 %
-% CVX_PRECISION(TOL), where TOL is a 2-element vector, sets the low and high
-% precisions to MIN(TOL) and MAX(TOL), respectively. If the two values are
-% identical, then the low precision level is effectively removed.
+%   CVX_PRECISION(TOL), where TOL is a scalar, sets the low and high precisions
+%   to min(sqrt(TOL),max(TOL,eps^0.25)) and TOL, respectively. Note that if TOL
+%   is below eps^0.25, then the low precision level is set equal to the high.
 %
-% CVX_PRECISION(TOL), where TOL is a scalar, sets the low and high precisions
-% to min(sqrt(TOL),max(TOL,eps^0.25)) and TOL, respectively. Note that if TOL
-% is below eps^0.25, then the low precision level is set equal to the high.
+%   A number of text-based options are provided for convenience:
+%       CVX_PRECISION DEFAULT: [eps^0.25,eps^0.5]
+%       CVX_PRECISION HIGH   : [eps^0.375,eps^0.75] 
+%       CVX_PRECISION MEDIUM : [eps^0.25,eps^0.375]
+%       CVX_PRECISION LOW    : [eps^0.25,eps^0.25]
+%       CVX_PRECISION BEST   : (see below)
 %
-% A number of text-based options are provided for convenience:
-%     CVX_PRECISION DEFAULT: [eps^0.25,eps^0.5]
-%     CVX_PRECISION HIGH   : [eps^0.375,eps^0.75] 
-%     CVX_PRECISION MEDIUM : [eps^0.25,eps^0.375]
-%     CVX_PRECISION LOW    : [eps^0.25,eps^0.25]
-%     CVX_PRECISION BEST   : (see below)
+%   CVX_PRECISION BEST and CVX_PRECISION(0) select a special 'best effort' 
+%   mode. In this case, the solver proceeds as long as it can make progress. If
+%   the precision achieved is eps^0.5 or better, then the problem is considered
+%   solved (cvx_status='Solved'); otherwise, the problem is considered unsolved
+%   (cvx_status='Failed'). This mode can produce higher precision but at cost
+%   of slower performance.
 %
-% CVX_PRECISION BEST and CVX_PRECISION(0) select a special 'best effort' mode.
-% In this case, the solver proceeds as long as it can make progress. If the
-% precision achieved is eps^0.5 or better, then the problem is considered
-% solved (cvx_status='Solved'); otherwise, the problem is considered unsolved
-% (cvx_status='Failed'). This mode can produce higher precision but at cost
-% of slower performance.
+%   If CVX_PRECISION(TOL) is called within a model---that is, between the
+%   statements CVX_BEGIN and CVX_END---then the new precision applies only to
+%   that particular model. If called outside of a model, then the change 
+%   applies to all subsequent models.
 %
-% If CVX_PRECISION(TOL) is called within a model---that is, between the
-% statements CVX_BEGIN and CVX_END---then the new precision applies only to that
-% particular model. If called outside of a model, then the change applies to
-% all subsequent models; that is, it modifies the default tolerance.
+%   On exit, CVX_PRECISION(TOL) returns the *previous* precision, so that it
+%   can be saved and restored later; for example:
+%       otol = cvx_precision(tol);
+%       cvx_begin
+%           ...
+%       cvx_end
+%       cvx_precision(otol);
+%   Of course, this is equivalent to
+%       cvx_begin
+%           cvx_precision(tol);
+%           ...
+%       cvx_end
+%   but the former syntax it may come in handy if you wish to solve several 
+%   models in a row with a different precision.
 %
-% On exit, CVX_PRECISION(TOL) returns the *previous* precision, so that it
-% can be saved and restored later; for example:
-%    otol = cvx_precision(tol);
-%    cvx_begin
-%       ...
-%    cvx_end
-%    cvx_precision(otol);
-% Of course, this is equivalent to
-%    cvx_begin
-%        cvx_precision(tol);
-%        ...
-%    cvx_end
-% but the former syntax it may come in handy if you wish to solve several models
-% in a row with a different precision.
-%
-% CVX_PRECISION, with no arguments, returns the current precision value.
+%   CVX_PRECISION, with no arguments, returns the current precision value.
 
 if nargin > 0,
     if isempty( flag ),

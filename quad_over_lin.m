@@ -1,24 +1,20 @@
 function z = quad_over_lin( x, y, dim )
 
 %QUAD_OVER_LIN   quadratic over linear.
+%   Z=QUAD_OVER_LIN(X,Y), where X is a vector and Y is a scalar, is equal to
+%   SUM(ABS(X).^2)./Y if Y is positive, and +Inf otherwise. Y must be real.
 %
-%   For real vectors X, QUAD_OVER_LIN(X,Y) is the sum of the squares of the
-%   elements of X, divided by Y; i.e., SUM( X .^ 2 ) / Y.
-%
-%   For complex vectors X, QUAD_OVER_LIN(X,Y) is the sum of the squares of
-%   the magnitudes of X, divided by Y; i.e., SUM( ABS( X ) .^ 2 ) / Y.
-%
-%   For matrices, QUAD_OVER_LIN(X,Y) is a row vector containing the
-%   application of QUAD_OVER_LIN to each column. For N-D arrays, the
-%   operation is applied to the first non-singleton dimension of X.
+%   If X is a matrix, QUAD_OVER_LIN(X,Y) is a row vector containing the values
+%   of QUAD_OVER_LIN applied to each column. If X is an N-D array, the operation
+%   is applied to the first non-singleton dimension of X.
 %
 %   QUAD_OVER_LIN(X,Y,DIM) takes the sum along the dimension DIM of X.
-%   A special value of DIM == 0, is accepted here, which is automatically
+%   A special value of DIM == 0 is accepted here, which is automatically
 %   replaced with DIM == NDIMS(X) + 1. This has the effect of eliminating
 %   the sum; thus QUAD_OVER_LIN( X, Y, NDIMS(X) + 1 ) = ABS( X ).^2 ./ Y.
 %
-%   In all cases, Y must either be a scalar or a matrix of the same size
-%   as SUM(X,DIM).
+%   In all cases, Y must be compatible in the same sense as ./ with the squared
+%   sum; that is, Y must be a scalar or the same size as SUM(ABS(X).^2,DIM).
 %
 %   Disciplined quadratic programming information:
 %       QUAD_OVER_LIN is convex, nonmontonic in X, and nonincreasing in Y.

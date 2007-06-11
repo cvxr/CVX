@@ -1,7 +1,6 @@
 function y = square_pos( x )
 
 %SQUARE    Square of the positive part.
-%
 %   SQUARE_POS(X) is the square of the postive parts of the elements of X;
 %   i.e., SQUARE_POS(X)=MAX(X,0).^2. X must be real.
 %

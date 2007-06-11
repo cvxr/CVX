@@ -1,13 +1,16 @@
 function y = cvx_default_dimension( sx )
 
-% CVX_DEFAULT_DIMENSION   Default dimension for SUM, MAX, etc. 
+%CVX_DEFAULT_DIMENSION   Default dimension for SUM, MAX, etc. 
+%   DIM = CVX_DEFAULT_DIMENSION( SX ), where SX is a size vector, returns the
+%   first index DIM such that SX(DIM)>1, if one exists; otherwise, DIM=1. This
+%   matches the behavior by functions like SUM, MAX, ANY, ALL, etc. in
+%   selecting the dimension over which to operate if DIM is not supplied.
 %
-% CVX_DEFAULT_DIMENSION( SX ) selects the dimension index DIM that would be used
-% in a call to such functions like SUM, MAX, and so forth if none is supplied.
-% SX is the size of the matrix being considered.
+%   For example, suppose size(X) = [1,3,4]; then SUM(X) would sum over dimension
+%   2; and DIM=CVX_DEFAULT_DIMENSION([1,3,4]) returns DIM=2.
 %
-% For example suppose size(X) = [1,3,4]; then SUM(X) would sum over dimension
-% 2; and CVX_DEFAULT_DIMENSION([1,3,4]) would return 2.
+%   This is an internal CVX function, and as such no checking is performed to
+%   insure that the arguments are valid.
 
 y = find( sx ~= 1 );
 if isempty( y ), 

@@ -1,7 +1,6 @@
 function z = sigma_max( x )
 
 %SIGMA_MAX    Maximum singular value.
-%
 %   SIGMA_MAX(X) returns the maximum singular value of X. X must be a 2-D
 %   matrix, real or complex. SIGMA_MAX(X) is synonymous with NORM(X).
 %

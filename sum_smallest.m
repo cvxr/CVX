@@ -1,7 +1,6 @@
 function cvx_optval = sum_smallest( x, k, dim )
 
 %SUM_SMALLEST   Sum of the smallest k elements of an array.
-%
 %   For a real vector X and an integer k between 1 and length(X) inclusive,
 %   y = SUM_SMALLEST(X,k) is the sum of the k smallest elements of X; e.g.,
 %       temp = sort( x )

@@ -1,7 +1,6 @@
 function cvx_optval = logsumexp_sdp( x, dim, tol )
 
 %LOGSUMEXP_SDP    SDP-based approximation of log(sum(exp(x))).
-%
 %   LOGSUMEXP_SDP(X) computes an approximation of the function
 %   LOG(SUM(EXP(X))) using semidefinite programming techniques.
 %   The approximation is chosen so that, to within the numerical

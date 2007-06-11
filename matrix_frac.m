@@ -1,12 +1,12 @@
 function z = matrix_frac( x,Y )
 
 % MATRIX_FRAC
-%     For square matrix Y and vector x of same size, MATRIX_FRAC(x,Y)
-%     is x'*(inv(Y)*x) if Y is Hermitian
-%     or symmetric and real positive definite; +Inf otherwise.
+%     MATRIX_FRAC(x,Y), where Y is a square matrix and x is a vector of the
+%     same size, computes x'*(inv(Y)*x) if Y is Hermitian positive definite, and
+%     +Inf otherwise.
 %
 %     An error results if Y is not a square matrix, or the size of
-%     the vector x does not match the size of matrix Y
+%     the vector x does not match the size of matrix Y.
 %
 %     Disciplined convex programming information:
 %         MATRIX_FRAC is convex and nonmonotonic (at least with respect to

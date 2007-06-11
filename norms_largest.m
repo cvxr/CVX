@@ -1,7 +1,6 @@
 function cvx_optval = norms_largest( x, k, dim )
 
 %NORMS_LARGEST    Computation of multiple largest-k norms.
-%
 %   NORMS_LARGEST( X, K, DIM ) provides a means to compute the largest-k
 %   norms of multiple vectors packed into a matrix or N-D vector. This is
 %   useful for performing max-of-norms or sum-of-norms calculations.

@@ -1,8 +1,7 @@
 function r = cvx_remap( varargin )
 
-% CVX_REMAP		CVX expression type map generator.
-%
-% This is an internal function used to help filter CVX expressions by type.
+%CVX_REMAP   CVX expression type map generator.
+%   This is an internal function used to help filter CVX expressions by type.
 
 % Classifications:
 % 1  - negative constant

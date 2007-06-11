@@ -1,12 +1,11 @@
 function cvx_setpath( arg )
 
-% CVX_SETPATH   Sets the cvx path.
-%
-% CVX_SETPATH adds the internal cvx directories to Matlab's path so that the
-% CVX system can find the functions that they contain. There is no reason to 
-% call this function during normal use of CVX; it is done automatically as
-% needed. However, if you are debugging CVX, calling this function can help to
-% insure that breakpoints stay valid.
+%CVX_SETPATH   Sets the cvx path.
+%   CVX_SETPATH adds the internal cvx directories to Matlab's path so that the
+%   CVX system can find the functions that they contain. There is no reason to 
+%   call this function during normal use of CVX; it is done automatically as
+%   needed. However, if you are debugging CVX, calling this function can help to
+%   insure that breakpoints stay valid.
 
 % Create the global cvx data structure
 global cvx___

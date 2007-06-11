@@ -1,7 +1,6 @@
 function y = sum_square( x, dim )
 
 %SUM_SQUARE   Sum of squares.
-%
 %   For vectors, SUM_SQUARE(X) is the sum of the squares of the elements of
 %   the vector; i.e., SUM(X.^2).
 %

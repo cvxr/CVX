@@ -1,9 +1,8 @@
 function cvx_setup
 
 % CVX_SETUP   Sets up and tests the cvx distribution.
-%
-% This function is to be called any time CVX is installed on a new machine,
-% to insure that the paths are set properly and the MEX files are compiled.
+%    This function is to be called any time CVX is installed on a new machine,
+%    to insure that the paths are set properly and the MEX files are compiled.
 
 disp( ' ' );
 dd = cd;

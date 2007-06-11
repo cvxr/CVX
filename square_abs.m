@@ -1,7 +1,6 @@
 function y = square_abs( x )
 
 %SQUARE_ABS    Squared absolute value.
-%
 %   For real X, SQUARE_ABS(X) produces the same result as SQUARE(X); that
 %   is, it squares the elements of X. For complex X, SQUARE_ABS(X) returns
 %   a real array whose elements are the squares of the magnitudes of the

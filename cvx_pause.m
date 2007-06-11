@@ -1,10 +1,11 @@
 function s = cvx_pause( flag )
 
-% CVX_PAUSE
+%CVX_PAUSE   Pauses the processing of CVX models.
+%   CVX_PAUSE(TRUE) instructs CVX to pause and wait for user keypress before
+%   and after proceeding with the numerical solution of a model. The pauses
+%   occur within the CVX_END. This is useful for demo purposes.
 %
-% CVX_PAUSE(TRUE) instructs CVX to pause and wait for user keypress before and
-% after proceeding with the numerical solution of a model. The pauses occur
-% within the CVX_END. This is useful for demo purposes.
+%   CVX_PAUSE(FALSE) ends the pausing behavior.
 
 global cvx___
 if isempty( cvx___ ), cvx_setpath( 1 ); end

@@ -1,14 +1,16 @@
 function cvx_cd( subdir )
 
-% CVX_CD    Change current working directory to a CVX subdirectory. 
+%CVX_CD   Change current working directory to a CVX subdirectory. 
+%   CVX_CD executes CD <cvx_dir>, where <cvx_dir> is the root directory of the
+%   cvx package.
 %
-% CVX_CD, called with no arguments, changes the current directory to the root
-% directory of the CVX package.
-%
-% CVX_CD <subdir> changes the current directory to the subdirectory <subdir>
-% of the CVX package. Useful subdirectories include:
+%   CVX_CD <subdir> executes CD <cvx_dir>/<subdir>. Useful subdirectories of the
+%   cvx package include:
 %        doc/          documentation
 %        examples/     sample cvx models
+%   So for example, 
+%       CVX_CD doc 
+%   sets the current directory to the documentation directory of cvx.
 
 oldd = pwd;
 cd(cvx_where);

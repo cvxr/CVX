@@ -1,7 +1,6 @@
 function y = square( x )
 
 %SQUARE    Square.
-%
 %   SQUARE(X) is an array of the same size as X, whose elements are the
 %   squares of the elements of X.
 %
