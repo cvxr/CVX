@@ -6,11 +6,11 @@ function cvx_cd( subdir )
 %
 %   CVX_CD <subdir> executes CD <cvx_dir>/<subdir>. Useful subdirectories of the
 %   cvx package include:
-%        doc/          documentation
+%        functions/    new functions
 %        examples/     sample cvx models
 %   So for example, 
-%       CVX_CD doc 
-%   sets the current directory to the documentation directory of cvx.
+%       CVX_CD examples
+%   sets the current directory to the example directory of cvx.
 
 oldd = pwd;
 cd(cvx_where);
