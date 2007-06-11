@@ -1,0 +1,18 @@
+function cvx_optval = det_root2n( X )
+error( nargchk( 1, 1, nargin ) );
+
+% DET_ROOT2N    2n-th root of the determinant of a symmetric matrix.
+%     For a square matrix X, DET_ROOT2N(X) returns
+%         POW(DET(X),1/(2*size(X,1))
+%     if X is symmetric (real) or Hermitian (complex) and positive
+%     semidefinite, and -Inf otherwise.
+%
+%     This function has been replaced in significance with DET_ROOTN(X),
+%     and is now simply implemented as SQRT(DET_ROOTN(X)). Please see
+%     DET_ROOTN for more information on its usefulness.
+%
+%     Disciplined convex programming information:
+%         DET_ROOT2N is concave and nonmonotonic; therefore, when used in
+%         CVX specifications, its argument must be affine.
+
+cvx_optval = sqrt(det_rootn(X));
