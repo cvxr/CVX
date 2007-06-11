@@ -1,42 +1,13 @@
 function [ cvx_optval, success ] = quad_form( x, Q, tol )
-error( nargchk( 2, 3, nargin ) );
-if nargin < 3, tol = 4 * eps; end
 
-%QUAD_FORM quadratic form.
-%
-%   QUAD_FORM(x,Q) is x'*((Q+Q'/2))*x = real(x'*Q*x).
-%
-%   x must be a row or column vector, and Q must either be a scalar or
-%   a square matrix with the same number of rows as x(:).
-%
-%   QUAD_FORM(x,Q,tol) uses the tolerance TOL when testing if Q is positive
-%   or negative semidefinite (when necessary; see below). That is:
-%       if min(eig(Q))>=-tol*max(eig(Q)), then Q is considered PSD;
-%       if max(eig(Q))<=-tol*min(eig(Q)), then Q is considered NSD.
-%   If not supplied, then tol=4*eps is assumed. This form should obviously
-%   be used with care; if tol is chosen too large, an incorrect result will
-%   be produced. However, the result will remain convex (or concave)
-%   regardless, because offending eigenvalues will be forced to zero.
-%
-%   Disciplined quadratic programming information:
-%       QUAD_FORM(x,Q) is neither convex nor concave in x and Q jointly,
-%       so at least one of the two arguments must be constant.
-%
-%       If Q is constant, then QUAD_FORM is convex if Q is positive
-%       semidefinite, and concave if Q is negative semidefinite. An error
-%       is generated if Q is indefinite (unless x is also constant).
-%       QUAD_FORM is nonmonotonic in x, so x must be affine.
-%
-%       If x is constant, then QUAD_FORM is affine in Q. The monotonicity
-%       of QUAD_FORM depends on the precise values of x in this case, which
-%       in turn govern whether the elements of Q can be convex, concave, or
-%       affine. An error message will be generated if an inappropriate sum
-%       of convex and concave terms occurs.
+%QUAD_FORM   Internal cvx version.
 
 %
 % Check sizes and types
 %
 
+error( nargchk( 2, 3, nargin ) );
+if nargin < 3, tol = 4 * eps; end
 sx = size( x );
 if length( sx ) ~= 2 | all( sx > 1 ),
     error( 'The first argument must be a row or column.' );
@@ -154,6 +125,6 @@ else,
 
 end
 
-% Copyright 2005 Michael C. Grant and Stephen P. Boyd.
+% Copyright 2007 Michael C. Grant and Stephen P. Boyd.
 % See the file COPYING.txt for full copyright information.
 % The command 'cvx_where' will show where this file is located.

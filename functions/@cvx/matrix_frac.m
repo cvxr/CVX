@@ -1,14 +1,8 @@
 function cvx_optval = matrix_frac( x,Y )
-%error( nargchk( 2, 2, nargin ) );
 
-% MATRIX_FRAC matrix fractional function.
-%     For x an n-vector and Y an n x n symmetric PD matrix,
-%     x'*inv(Y)*x; +Inf otherwise.
-%
-%     Disciplined convex programming information:
-%         matrix_frac is convex and nonmonotonic,
-%         so its argument must be affine.
+%MATRIX_FRAC   Internal cvx version.
 
+error( nargchk( 2, 2, nargin ) );
 if ndims( Y ) > 2 | size( Y, 1 ) ~= size( Y, 2 ),
 
     error( 'Second argument must be a square matrix.' );
@@ -39,6 +33,6 @@ else
 
 end
 
-% Copyright 2005 Michael C. Grant and Stephen P. Boyd.
+% Copyright 2007 Michael C. Grant and Stephen P. Boyd.
 % See the file COPYING.txt for full copyright information.
 % The command 'cvx_where' will show where this file is located.

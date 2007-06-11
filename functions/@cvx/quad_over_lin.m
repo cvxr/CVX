@@ -1,31 +1,8 @@
 function cvx_optval = quad_over_lin( x, y, dim )
+
+%QUAD_OVER_LIN   Internal cvx version.
+
 error( nargchk( 2, 3, nargin ) );
-
-%QUAD_OVER_LIN   quadratic over linear.
-%
-%   For real vectors X, QUAD_OVER_LIN(X,Y) is the sum of the squares of the
-%   elements of X, divided by Y; i.e., SUM( X .^ 2 ) / Y.
-%
-%   For complex vectors X, QUAD_OVER_LIN(X,Y) is the sum of the squares of
-%   the magnitudes of X, divided by Y; i.e., SUM( ABS( X ) .^ 2 ) / Y.
-%
-%   For matrices, QUAD_OVER_LIN(X,Y) is a row vector containing the
-%   application of QUAD_OVER_LIN to each column. For N-D arrays, the
-%   operation is applied to the first non-singleton dimension of X.
-%
-%   QUAD_OVER_LIN(X,Y,DIM) takes the sum along the dimension DIM of X.
-%   A special value of DIM == 0, is accepted here, has the effect of
-%   eliminating the sum; thus QUAD_OVER_LIN(X,Y,0) = ABS(X).^2 ./ Y.
-%
-%   In all cases, Y must be real and have a size compatible with elementwise
-%   division with SUM(X,DIM); and in particular, if DIM ~= 0, then
-%   size(Y,DIM) == 1.
-%
-%   Disciplined quadratic programming information:
-%       QUAD_OVER_LIN is convex, nonmontonic in X, and nonincreasing in Y.
-%       Thus when used with CVX expressions, X must be convex (or affine)
-%       and Y must be concave (or affine).
-
 sx = size( x );
 sy = size( y );
 nx = length( sx );
@@ -100,6 +77,6 @@ else
     cvx_end
 end
 
-% Copyright 2005 Michael C. Grant and Stephen P. Boyd.
+% Copyright 2007 Michael C. Grant and Stephen P. Boyd.
 % See the file COPYING.txt for full copyright information.
 % The command 'cvx_where' will show where this file is located.

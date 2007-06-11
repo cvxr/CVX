@@ -1,21 +1,12 @@
 function y = square( x )
-error( nargchk( 1, 1, nargin ) );
 
-%SQUARE    Square.
-%
-%   SQUARE(X) is an array of the same size as X, whose elements are the
-%   squares of the elements of X.
-%
-%   Disciplined quadratic programming information:
-%       If X is real, then SQUARE(X) is convex and nonmonotonic in X. If X
-%       is complex, then SQUARE(X) is neither convex nor concave. Thus when
-%       when use in CVX expressions, X must be real, affine, monomial, or
-%       posynomial.
+%SQUARE   Internal cvx version.
 
 % 0 : all others
 % 1 : constant
 % 2 : real affine
 % 3 : monomial, posynomial
+error( nargchk( 1, 1, nargin ) );
 persistent remap
 if isempty( remap ),
     remap1 = cvx_remap( 'constant' );
@@ -82,6 +73,6 @@ for k = 1 : nv,
 
 end
 
-% Copyright 2005 Michael C. Grant and Stephen P. Boyd.
+% Copyright 2007 Michael C. Grant and Stephen P. Boyd.
 % See the file COPYING.txt for full copyright information.
 % The command 'cvx_where' will show where this file is located.

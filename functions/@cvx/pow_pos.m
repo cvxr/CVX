@@ -1,24 +1,6 @@
 function y = pow_pos( x, p )
 
-% POW_POS   Convex/concave branches of the power function.
-%    POW_POS(X,P) computes convex and concave extensions of X.^P:
-%          P < 0:      POW_POS(X,P) = X.^P if X >  0, +Inf otherwise.
-%          0 <= P < 1: POW_POS(X,P) = X.^P if X >= 0, -Inf otherwise.
-%          P >= 1:     POW_POS(X,P) = MAX(X,0).^P.
-%    The dimensions of X and P must be identical, or one must be a scalar.
-%    The P == 0 case is ambiguous, so the limiting concave case was chosen.
-%    
-%    POW_POS actually converts P to its nearest rational representation, as
-%    given by the RAT() function. Please see the user's guide in the
-%    section "Powers, p-norms, and polynomials" for more information about
-%    how this function is implemented.
-%
-%    Disciplined convex programming information:
-%         The curvature and monotonicity of POW_POS depends on P; so,
-%         thererfore, does the rules of its usage:
-%              P < 0:     convex,  nonincreasing: X must be concave
-%              0 < P < 1: concave, nondecreasing: X must be concave
-%              P > 1:     convex,  nondecreasing: X must be convex
+%POW_POS   Internal cvx version.
 
 %
 % Check second argument
@@ -177,7 +159,7 @@ for k = 1 : nv,
     
 end
 
-% Copyright 2005 Michael C. Grant and Stephen P. Boyd.
+% Copyright 2007 Michael C. Grant and Stephen P. Boyd.
 % See the file COPYING.txt for full copyright information.
 % The command 'cvx_where' will show where this file is located.
 

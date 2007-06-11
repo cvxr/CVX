@@ -1,21 +1,8 @@
 function cvx_optval = det_rootn( X )
+
+%DET_ROOTN   Internal cvx version.
+
 error( nargchk( 1, 1, nargin ) );
-
-% DET_ROOTN    n-th root of the determinant of a symmetric matrix.
-%     For a square matrix X, DET_ROOTN(X) returns
-%         POW(DET(X),1/(size(X,1))
-%     if X is symmetric (real) or Hermitian (complex) and positive
-%     semidefinite, and -Inf otherwise.
-%
-%     This function can be used in many convex optimization problems that
-%     call for LOG(DET(X)) instead. For example, if the objective function
-%     contains nothing but LOG(DET(X)), it can be replaced with
-%     DET_ROOTN(X), and the same optimal point will be produced.
-%
-%     Disciplined convex programming information:
-%         DET_ROOTN is concave and nonmonotonic; therefore, when used in
-%         CVX specifications, its argument must be affine.
-
 n = size( X, 1 );
 if ndims( X ) > 2,
 
@@ -54,3 +41,7 @@ else
     cvx_end
 
 end
+
+% Copyright 2007 Michael C. Grant and Stephen P. Boyd.
+% See the file COPYING.txt for full copyright information.
+% The command 'cvx_where' will show where this file is located.

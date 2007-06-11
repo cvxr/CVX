@@ -1,32 +1,12 @@
 function cvx_optval = berhu( x, M, t )
-error( nargchk( 1, 3, nargin ) );
 
-% BERHU   Reverse Huber penalty function.
-%     For a real or complex scalar X, BERHU(X) is the reverse Huber penalty
-%     function applied to X: that is,
-%
-%         BERHU(X) = |X|          if |X|<=1,
-%                    (|X|^2+1)/2  if |X|>=1.
-%
-%     BERHU(X,M) is the Huber penalty function of halfwidth M applied to X;
-%     that is, BERHU(X,M)=M.*BERHU(X./M).
-%
-%     BERHU(X,M,T) computes T.*BERHU(X./T,M), the perspective transformation
-%     of BERHU(X,M). This is useful for solving regression problems with
-%     concomitant scale. T is constrained to be nonnegative.
-%
-%     For matrices and N-D arrays, the penalty function is applied to each
-%     element of X independently. M and X must be compatible in the same
-%     sense as .*: one must be a scalar, or they must have identical size.
-%
-%     Disciplined convex programming information:
-%         BERHU is convex and nonmonotonic; therefore, when used in CVX
-%         specifications, its argument must be affine.
+%BERHU   Internal cvx version.
 
 %
 % Check types
 %
 
+error( nargchk( 1, 3, nargin ) );
 if nargin < 2,
     M = 1;
 elseif ~isnumeric( M ),
@@ -71,6 +51,6 @@ cvx_begin
     w >= 0;
 cvx_end
 
-% Copyright 2005 Michael C. Grant and Stephen P. Boyd.
+% Copyright 2007 Michael C. Grant and Stephen P. Boyd.
 % See the file COPYING.txt for full copyright information.
 % The command 'cvx_where' will show where this file is located.
