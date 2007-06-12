@@ -1,9 +1,11 @@
 function y = cvx_isconvex( x, full )
 error( nargchk( 1, 2, nargin ) );
-if nargin == 1,
+if nargin == 2,
+    y = ~imag( x );
+elseif isreal( x ),
     y = true;
 else
-    y = ~imag( x );
+    y = nnz(imag(x)) == 0;
 end
 
 % Copyright 2005 Michael C. Grant and Stephen P. Boyd.
