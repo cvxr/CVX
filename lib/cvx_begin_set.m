@@ -12,7 +12,7 @@ function cvx_begin_set
 % (two separate words). However, it will continue to be available for back-
 % compatability reasons, so you are free to use either.
 
-% Copyright 2005 Michael C. Grant and Stephen P. Boyd.
+% Copyright 2007 Michael C. Grant and Stephen P. Boyd.
 % See the file COPYING.txt for full copyright information.
 % The command 'cvx_where' will show where this file is located.
 

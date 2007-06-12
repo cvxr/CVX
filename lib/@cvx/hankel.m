@@ -35,6 +35,6 @@ ridx = 0 : nr - 1;
 H    = cidx(:,ones(nr,1)) + ridx(ones(nc,1),:);
 H    = reshape( cvx_subsref( x, H( : ) ), size( H ) );
 
-% Copyright 2005 Michael C. Grant and Stephen P. Boyd.
+% Copyright 2007 Michael C. Grant and Stephen P. Boyd.
 % See the file COPYING.txt for full copyright information.
 % The command 'cvx_where' will show where this file is located.

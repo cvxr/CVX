@@ -15,16 +15,11 @@ function v = cvx_classify( x )
 % 12 - log convex posynomial
 % 13 - invalid
 
-n = prod( size( x ) );
-x = reshape( full( x ), 1, n );
-if isreal( x ),
-    v = sign( x ) + 2;
-else,
-    t = imag( x ) == 0;
-    v = zeros( 1, n );
-    v( t ) = sign( x( t ) ) + 2;
-    v( ~t ) = 4;
+v = full( sign( real( x ) ) ) + 2;
+if ~isreal( x ),
+	v( imag( x ) ~= 0 ) = 4;
 end
-v( isinf( x ) | isnan( x ) ) = 13;
+v( ~isfinite( x ) ) = 13;
+v = reshape( v, 1, numel( x ) );
 
 
