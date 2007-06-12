@@ -1,5 +1,10 @@
-function y = cvx_readlevel( x )
-y = sparse( size( x, 1 ), size( x, 2 ) );
+function y = cvx_isconvex( x, full )
+error( nargchk( 1, 2, nargin ) );
+if nargin == 1,
+    y = true;
+else
+    y = ~imag( x );
+end
 
 % Copyright 2005 Michael C. Grant and Stephen P. Boyd.
 % See the file COPYING.txt for full copyright information.

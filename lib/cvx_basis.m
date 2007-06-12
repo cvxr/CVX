@@ -1,5 +1,6 @@
 function y = cvx_basis( x )
-if isempty( x ),
+
+if isempty( x )
     y = sparse( 1, 0 );
 else
     y = sparse( reshape( x, 1, prod( size( x ) ) ) );
