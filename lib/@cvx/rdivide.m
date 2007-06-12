@@ -1,5 +1,5 @@
 function z = rdivide( x, y )
-z = times( x, cvx_recip( y ) );
+z = times( x, y, './' );
 
 % Copyright 2005 Michael C. Grant and Stephen P. Boyd.
 % See the file COPYING.txt for full copyright information.
