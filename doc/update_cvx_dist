@@ -3,7 +3,7 @@
 # Key directories
 SRCBASE=/home/boyd/src
 CPYDIR=$SRCBASE/cvx.dist
-ARCHIVE=file://$SRCBASE/svn/cvx/branches/transpose
+ARCHIVE=file://$SRCBASE/svn/cvx/trunk
 EXAMPLES=file://$SRCBASE/svn/cvx/examples
 DOCDIR=file://$SRCBASE/svn/cvx/doc
 DSTDIR=/home/boyd/WWW/cvx
@@ -35,8 +35,8 @@ find $CPYDIR -type d -exec chmod g+s {} \;
 # Create the archives
 cd $CPYDIR
 rm $DSTDIR/cvx.{tar.gz,zip}
-tar cvfz $DSTDIR/cvx.tar.gz cvx/*.{m,txt} cvx/doc/*.pdf cvx/{@double,@sparse,@logical,examples,functions,keywords,lib,matlab6,sedumi,sdpt3,sets,structures}
-zip -r -9 $DSTDIR/cvx.zip cvx/*.{m,txt} cvx/doc/*.pdf cvx/{@double,@sparse,@logical,examples,functions,keywords,lib,matlab6,sedumi,sdpt3,sets,structures}
+tar cvfz $DSTDIR/cvx.tar.gz cvx/*.{m,txt} cvx/doc/*.pdf cvx/{commands,examples,functions,internal,keywords,lib,matlab6,sdpt3,sedumi,sets,structures}
+zip -r -9 $DSTDIR/cvx.zip cvx/*.{m,txt} cvx/doc/*.pdf cvx/{commands,examples,functions,internal,keywords,lib,matlab6,sdpt3,sedumi,sets,structures}
 cd cvx
 tar cvf $DSTDIR/cvx-examples.tar examples
 
