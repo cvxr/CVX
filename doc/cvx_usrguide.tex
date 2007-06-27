@@ -94,9 +94,8 @@ The modeling language follows
 the spirit of AMPL \cite{AMPL} or GAMS \cite{GAMS}; unlike
 these packages, however, \cvx is designed to fully exploit convexity.
 The specific method for implementing \cvx in Matlab
-draws heavily from YALMIP \cite{YALMIP}.
-We hope to implement a version of \cvx in Python,
-as part of the CVXOPT system \cite{CVXOPT}, in the near future.
+draws heavily from YALMIP \cite{YALMIP}. We also hope
+to develop versions of \cvx for other platforms in the future.
 
 \subsection{What is disciplined convex programming?}
 \label{sec:what-is-dcp}
@@ -141,20 +140,21 @@ their natural mathematical forms.
 \label{sec:version}
 \index{version information}
 \index{SeDuMi}
+\index{SDPT3}
 \index{MOSEK}
 \index{LP}
 \index{SDP}
 \index{SOCP}
 \index{CVXOPT}
-In this version of \cvx,
-SeDuMi \cite{Stu:99} is the only core solver supported.
-SeDuMi is an open-source interior-point solver written in Matlab for 
+This version of \cvx supports two core solvers, SeDuMi
+\cite{Stu:99} and SDPT3 \cite{SDPT3}, with the latter being the default.
+Both are open-source interior-point solvers written in Matlab for 
 LPs, SOCPs, SDPs, and combinations thereof.
 Future versions of \cvx will support other solvers, such as
 MOSEK \cite{MOSEK}, CVXOPT \cite{CVXOPT}, 
 and a general purpose solver we are developing.
 
-Because SeDuMi supports only LPs, SOCPs, and SDPs, this
+Because SeDuMi and SDPT3 support only LPs, SOCPs, and SDPs, this
 version of \cvx can only handle functions and sets that can be represented
 using these problem types. Despite this limitation, the current version
 of \cvx includes a wide variety of functions, such as minimums and
@@ -171,8 +171,10 @@ method that is described briefly in Appendix \ref{sec:gp-approx}.
 
 Some useful functions that are \emph{not} supported in
 the current version include exponential, log, and entropy.
-Support for such functions will require the use
-of one of the new solvers mentioned above.
+Support for such functions will likely require the use
+of one of the new solvers mentioned above, but we are also
+investigating approximation methods similar to that developed
+for geometric programs.
 
 \subsection{Feedback}
 \label{sec:feedback}
@@ -2552,6 +2554,35 @@ reverse implication is \emph{not} true; for example,
 \verb@norm( x, q )@ is p-nondecreasing in x, but nonmonotonic.
 \fi
 
+\subsection{Solver selection}
+\label{sec:solver}
+\index{solver!changing}
+\index{SDPT3}
+\index{SeDuMi}
+\index{cvx_solver@\texttt{cvx\_solver}}
+
+As mentioned in \S\ref{sec:version}, \cvx currently supports two solvers: SeDuMi
+and SDPT3. SDTP3 is the newest addition to \cvx, and has been selected as the
+default solver. However, to select SeDuMi as your default solver, simply type
+\begin{code2}
+	cvx_solver sedumi
+\end{code2}
+at the command line, \emph{outside} of a \cvx model. To revert to SDPT3, type
+\begin{code2}
+	cvx_solver sdpt3
+\end{code2}
+To see which solver is currently selected, simply type
+\begin{code2}
+	cvx_solver
+\end{code2}
+We have found that SDPT3 is strongly preferred for problems that 
+require the use of second-order cones, which include problems involving
+absolute values, quadratics, power functions, and norms. SDPT3 is
+currently in very active development; so if you
+encounter a problem that SDPT3 cannot solve but SeDuMi can, 
+please send us a bug report and we will forward the results to
+the authors of SDPT3.
+
 \subsection{Controlling solver precision}
 \label{sec:precision}
 \index{precision!changing}
@@ -3368,9 +3399,9 @@ make one of the above determinations---but is able to draw a weaker conclusion
 by relaxing those tolerances somewhat. In such cases, one of the following
 results is returned:
 \begin{itemize}
-	\item \verb@Solved/Inaccurate@: The problem is likely to have a complementary solution.
-	\item \verb@Unbounded/Inaccurate@: The problem is likely to be unbounded.
-	\item \verb@Infeasible/Inaccurate@: The problem is likely to be infeasible.
+	\item \verb@Inaccurate/Solved@: The problem is likely to have a complementary solution.
+	\item \verb@Inaccurate/Unbounded@: The problem is likely to be unbounded.
+	\item \verb@Inaccurate/Infeasible@: The problem is likely to be infeasible.
 \end{itemize}
 The values of the primal and dual variables, and of \verb@cvx_optval@, are updated
 identically to the ``accurate'' cases. Two final results are also possible:
@@ -3383,8 +3414,8 @@ identically to the ``accurate'' cases. Two final results are also possible:
 	\item \verb@Overdetermined@: The presolver has determined that the problem
 	      has more equality constraints than variables, which means that the coefficient
 	      matrix of the equality constraints is singular. In practice, such problems are
-	      often, but not necessarily, infeasible. Unfortunately, SeDuMi 
-	      cannot handle such problems, so a precise conclusion
+	      often, but not necessarily, infeasible. Unfortunately, solvers 
+	      typically cannot handle such problems, so a precise conclusion
 	      cannot be reached.
 \end{itemize}
 The situations that most commonly produce an \verb@Overdetermined@ result are discussed
@@ -3582,7 +3613,7 @@ version of the specification corrects this problem by extracting the symmetric p
 \section{Acknowledgements}
 
 We wish to thank the following people for their contributions to
-the development of \cvx:  Laurent El Ghaoui, Arpita Ghosh, 
+the development of \cvx: Toh Kim Chuan, Laurent El Ghaoui, Arpita Ghosh, 
 Siddharth Joshi, Johan L\"{o}fberg, Almir Mutapcic, Michael Overton
 and his students, Art Owen, Rahul Panicker, Imre Polik, Jo\"{e}lle Skaf, 
 Lieven Vandenberghe, Argyris Zymnis. We are also grateful to the many
