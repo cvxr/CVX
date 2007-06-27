@@ -5,7 +5,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
   <meta name="generator" content=
-  "HTML Tidy for Linux/x86 (vers 1st September 2004), see www.w3.org" />
+  "HTML Tidy for Linux (vers 1 September 2005), see www.w3.org" />
 
   <title>CVX version history</title>
 </head>
@@ -128,43 +128,47 @@
 
     <dt>Version 1.0 beta 3, June 2006:</dt>
 
-    <dd>Bug fix and performance improvement release.
-    This release incorporates quite a few
-    fixes reported by students in Stephen Boyd's
-    <a href="http://www.stanford.edu/class/ee364/">convex optimization
-    class</a>. Many thanks to them <i>and</i> to all of our
-    faithful users for their testing and reports.</dd>
-    
+    <dd>Bug fix and performance improvement release. This release
+    incorporates quite a few fixes reported by students in Stephen
+    Boyd's <a href="http://www.stanford.edu/class/ee364/">convex
+    optimization class</a>. Many thanks to them <i>and</i> to all
+    of our faithful users for their testing and reports.</dd>
+
     <dt>Version 1.0RC, October 2006:</dt>
-    
+
     <dd>Added support for Matlab R2006b.</dd>
-    
-    <dd>Incorporated SeDuMi 1.1R3, and added an additional bug fix.</dd>
-    
-    <dd>The absolute value function is now represented using a second-order
-    cone to better exploit sparsity. This also impacts 1-norms and
-    infinity-norms.</dd>
-    
-    <dd>Added support for <i>p</i>-norms for values of <i>p</i> other than
-    1, 2, and infinity; and added support for expressions of the form
-    <tt>x^p</tt> where <tt>p</tt> is a positive even integer OR a real
-    integer between 0 and 1. See the user guide for a very mild
-    caution on the use of powers and <i>p</i>-norms.</dd>
-    
-    <dd>New and/or improved functions: <tt>pow_pos(x,p)</tt>, <tt>pow_abs(x,p)</tt>,
-    <tt>norm(x,p)</tt>, <tt>huber(x,M,t)</tt>, <tt>berhu(x,M,t)</tt>, 
+
+    <dd>Incorporated SeDuMi 1.1R3, and added an additional bug
+    fix.</dd>
+
+    <dd>The absolute value function is now represented using a
+    second-order cone to better exploit sparsity. This also impacts
+    1-norms and infinity-norms.</dd>
+
+    <dd>Added support for <i>p</i>-norms for values of <i>p</i>
+    other than 1, 2, and infinity; and added support for
+    expressions of the form <tt>x^p</tt> where <tt>p</tt> is a
+    positive even integer OR a real integer between 0 and 1. See
+    the user guide for a very mild caution on the use of powers and
+    <i>p</i>-norms.</dd>
+
+    <dd>New and/or improved functions: <tt>pow_pos(x,p)</tt>,
+    <tt>pow_abs(x,p)</tt>, <tt>norm(x,p)</tt>,
+    <tt>huber(x,M,t)</tt>, <tt>berhu(x,M,t)</tt>,
     <tt>polyval(p,x)</tt>, <tt>polyenv(p,x)</tt>.</dd>
-    
+
     <dd>New sets: <tt>nonneg_poly_coeffs(deg)</tt> and
     <tt>convex_poly_coeffs(deg)</tt>.</dd>
 
     <dt>Version 1.0RC2, February 2007:</dt>
-    <dd>A bug has been discovered in SeDuMi that was producing incorrect
-    results for some, but not all, problems involving second-order cones,
-    norms, powers, and absolute values. A temporary workaround has been
-    provided to detect these cases and return an invalid result flag,
-    a permanent fix is forthcoming.</dd>
-    </dl>
+
+    <dd>A bug has been discovered in SeDuMi that was producing
+    incorrect results for some, but not all, problems involving
+    second-order cones, norms, powers, and absolute values. A
+    temporary workaround has been provided to detect these cases
+    and return an invalid result flag, a permanent fix is
+    forthcoming.</dd>
+  </dl>
   <hr />
 
   <p><a href="index.html">The <tt>CVX</tt> main page</a><br />
