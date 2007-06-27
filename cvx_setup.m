@@ -45,21 +45,23 @@ mpath( temp(end) : end ) = [];
 if needLarge,
 	solvers = { 'sdpt3' };
 else
-        solvers = { 'sdpt3', 'sedumi' };
+    solvers = { 'sdpt3', 'sedumi' };
 end
-checkpaths = { 'commands', 'functions', 'internal', 'lib', 'sets', 'structures', 'keywords' };
-rmpaths = { checkpaths{:}, 'matlab6' };
-addpaths = { mpath, [ mpath, fs, 'commands' ], [ mpath, fs, 'functions' ], [ mpath, fs, 'internal' ] };
+rmpaths = { 'sets', 'keywords', 'commands', 'functions', 'lib', 'structures', 'matlab6' };
 needpaths = {};
 delepaths = {};
-if ver < 7,
-    checkpaths{end+1} = 'keywords';
-    addpaths{end+1} = [ mpath, fs, 'keywords' ];
+if ver >= 7.0,
+    checkpaths = rmpaths(1:end-1);
+    addpaths = rmpaths(3:end-1);
+elseif ver >= 6.5,
+    checkpaths = rmpaths(1:end-1);
+    addpaths = rmpaths(1:end-1);
+else
+    checkpaths = rmpaths;
+    addpaths = rmapths;
 end
-if ver < 6.5,
-    checkpaths{end+1} = 'matlab6';
-    addpaths{end+1} = [ mpath, fs, 'matlab6' ];
-end
+addpaths = strcat( [ mpath, fs ], addpaths );
+addpaths{end+1} = mpath;
 missing = {};
 for k = 1 : length(checkpaths),
     temp = [ mpath, fs, checkpaths{k} ];
@@ -122,6 +124,7 @@ for k = 1 : length(addpaths),
         newpath = [ ps, addpaths{k}, newpath ];
     end
 end
+newpath = newpath(2:end-1);
 matlabpath(newpath);
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
