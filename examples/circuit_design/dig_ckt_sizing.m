@@ -167,7 +167,7 @@ for n = 1:N
       end
   cvx_end
 
-  if ~strcmp(cvx_status,'Solved')
+  if ~strfind(cvx_status,'Solved')
     error('Problem could not be solved.')
   end
 

@@ -37,7 +37,8 @@
 % NOTE: This file requires the auxilliary function utilfun.m to run.
 
 clear
-cvx_quiet(true);
+cvxq = cvx_quiet(true);
+cvxs = cvx_solver('sedumi');
 
 data= [...
    4.5e-01   9.6e-01
@@ -172,3 +173,6 @@ for k=1:m
    end;
 end;
 xlabel('x_1');  ylabel('x_2');
+
+cvx_quiet(cvxq);
+cvx_solver(cvxs);

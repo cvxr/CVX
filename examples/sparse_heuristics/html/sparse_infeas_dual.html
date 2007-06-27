@@ -1,3 +1,6 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN">
 <html xmlns:mwsh="http://www.mathworks.com/namespace/mcode/v1/syntaxhighlight.dtd">
    <head>
       <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
@@ -7,8 +10,8 @@ This HTML is auto-generated from an M-file.
 To make changes, update the M-file and republish this document.
       -->
       <title>Detecting a small subset of infeasible linear inequalities</title>
-      <meta name="generator" content="MATLAB 7.2">
-      <meta name="date" content="2006-05-20">
+      <meta name="generator" content="MATLAB 7.4">
+      <meta name="date" content="2007-06-27">
       <meta name="m-file" content="sparse_infeas_dual"><style>
 
 body {
@@ -27,14 +30,11 @@ h2 {
 }
 
 /* Make the text shrink to fit narrow windows, but not stretch too far in 
-wide windows.  On Gecko-based browsers, the shrink-to-fit doesn't work. */ 
+wide windows. */ 
 p,h1,h2,div.content div {
-  /* for MATLAB's browser */
-  width: 600px;
-  /* for Mozilla, but the "width" tag overrides it anyway */
   max-width: 600px;
-  /* for IE */
-  width:expression(document.body.clientWidth > 620 ? "600px": "auto" );
+  /* Hack for IE6 */
+  width: auto !important; width: 600px;
 }
 
 pre.codeinput {
@@ -127,7 +127,7 @@ cvx_begin
 cvx_end
 
 <span class="comment">% report the smaller set of mutually inconsistent inequalities</span>
-infeas_set = find( lambda &gt; 0 );
+infeas_set = find( abs(b.*lambda) &gt; sqrt(eps)/n );
 disp(<span class="string">' '</span>);
 fprintf(1,<span class="string">'Found a smaller set of %d mutually inconsistent inequalities.\n'</span>,<span class="keyword">...</span>
         length(infeas_set));
@@ -142,34 +142,51 @@ disp(<span class="string">'with row indices:'</span>), infeas_set'
 <span class="comment">% cvx_end</span>
 </pre><pre class="codeoutput">Starting with an infeasible set of 150 inequalities in 10 variables.
  
-Calling SeDuMi: 150 variables (0 free), 11 equality constraints
-------------------------------------------------------------------------
-SeDuMi 1.1 by AdvOL, 2005 and Jos F. Sturm, 1998, 2001-2003.
-Alg = 2: xz-corrector, Adaptive Step-Differentiation, theta = 0.250, beta = 0.500
-eqs m = 11, order n = 151, dim = 151, blocks = 1
-nnz(A) = 1650 + 0, nnz(ADA) = 121, nnz(L) = 66
- it :     b*y       gap    delta  rate   t/tP*  t/tD*   feas cg cg  prec
-  0 :            2.27E+002 0.000
-  1 :  1.27E-002 7.71E+000 0.000 0.0339 0.9900 0.9900   2.93  1  1  1.7E+000
-  2 :  4.31E-001 2.34E+000 0.000 0.3028 0.9000 0.9000   0.88  1  1  8.0E-001
-  3 :  5.11E-001 1.16E+000 0.000 0.4971 0.9000 0.9000   0.88  1  1  5.3E-001
-  4 :  5.53E-001 4.79E-001 0.000 0.4126 0.9000 0.9000   0.95  1  1  2.9E-001
-  5 :  5.86E-001 1.85E-001 0.000 0.3860 0.9000 0.9000   0.95  1  1  1.4E-001
-  6 :  5.96E-001 7.30E-002 0.000 0.3946 0.9000 0.9125   0.99  1  1  6.2E-002
-  7 :  5.99E-001 2.74E-002 0.000 0.3748 0.9000 0.9202   1.00  1  1  2.6E-002
-  8 :  6.01E-001 7.80E-003 0.000 0.2850 0.9105 0.9000   1.00  1  1  7.4E-003
-  9 :  6.01E-001 4.39E-004 0.000 0.0563 0.9902 0.9900   1.00  1  1  4.2E-004
- 10 :  6.01E-001 5.09E-007 0.000 0.0012 0.9990 0.9990   1.00  1  1  
-iter seconds digits       c*x               b*y
- 10      0.1   Inf  6.0131198034e-001  6.0131198034e-001
-|Ax-b| =  2.8e-016, [Ay-c]_+ =  2.7E-016, |x|= 2.8e-001, |y|= 8.1e-001
+Calling SDPT3: 150 variables, 11 equality constraints
+------------------------------------------------------------
 
-Detailed timing (sec)
-   Pre          IPM          Post
-0.000E+000    5.007E-002    0.000E+000    
-Max-norms: ||b||=1, ||c|| = 1,
-Cholesky |add|=0, |skip| = 0, ||L.L|| = 9.91492.
-------------------------------------------------------------------------
+ num. of constraints = 11
+ dim. of linear var  = 150
+*******************************************************************
+   SDPT3: homogeneous self-dual path-following algorithms
+*******************************************************************
+ version  predcorr  gam  expon
+    NT      1      0.000   1
+it  pstep dstep p_infeas d_infeas  gap     mean(obj)    cputime
+-------------------------------------------------------------------
+ 0  0.000 0.000 2.7e+01 0.0e+00  1.5e+02  7.500000e+01  0:0:00 chol  1  1
+ 1  0.975 0.975 1.0e+00 5.1e-16  5.5e+00  2.740790e+00  0:0:00 chol  1  1
+ 2  0.983 0.983 3.7e-01 1.1e-15  3.9e+00  2.245351e+00  0:0:00 chol  1  1
+ 3  0.996 0.996 1.8e-01 6.5e-16  2.1e+00  1.445665e+00  0:0:00 chol  1  1
+ 4  0.747 0.747 5.2e-02 7.5e-16  6.1e-01  8.275093e-01  0:0:00 chol  1  1
+ 5  1.000 1.000 2.3e-02 9.4e-16  2.7e-01  7.010885e-01  0:0:00 chol  1  1
+ 6  1.000 1.000 1.1e-02 9.8e-16  1.3e-01  6.476386e-01  0:0:00 chol  1  1
+ 7  0.641 0.641 4.8e-03 9.2e-16  5.6e-02  6.222276e-01  0:0:00 chol  1  1
+ 8  1.000 1.000 2.6e-03 1.3e-15  3.2e-02  6.127636e-01  0:0:00 chol  1  1
+ 9  0.847 0.847 6.9e-04 1.0e-15  8.1e-03  6.042330e-01  0:0:00 chol  1  1
+10  1.000 1.000 2.7e-04 1.3e-15  3.2e-03  6.024865e-01  0:0:00 chol  1  1
+11  0.953 0.953 1.8e-05 1.1e-15  2.0e-04  6.013850e-01  0:0:00 chol  1  1
+12  0.988 0.988 3.4e-07 1.2e-15  2.4e-06  6.013128e-01  0:0:00 chol  1  1
+13  1.000 1.000 8.3e-09 1.0e-15  7.3e-08  6.013120e-01  0:0:00 chol  1  1
+14  1.000 1.000 1.9e-10 1.3e-15  1.7e-09  6.013120e-01  0:0:00
+  Stop: max(relative gap, infeasibilities) &lt; 1.49e-08
+-------------------------------------------------------------------
+ number of iterations   = 14
+ primal objective value =  6.01311982e-01
+ dual   objective value =  6.01311980e-01
+ gap := trace(XZ)       = 1.65e-09
+ relative gap           = 1.03e-09
+ actual relative gap    = 6.58e-10
+ rel. primal infeas     = 1.91e-10
+ rel. dual   infeas     = 1.27e-15
+ norm(X), norm(y), norm(Z) = 2.8e-01, 8.1e-01, 1.7e+01
+ norm(A), norm(b), norm(C) = 4.2e+01, 1.0e+00, 1.2e+01
+ Total CPU time (secs)  = 0.2  
+ CPU time per iteration = 0.0  
+ termination code       =  0
+ DIMACS: 1.9e-10  0.0e+00  1.3e-15  0.0e+00  6.6e-10  7.5e-10
+-------------------------------------------------------------------
+------------------------------------------------------------
 Status: Solved
 Optimal value (cvx_optval): +0.601312
  
@@ -183,7 +200,7 @@ ans =
      1    22    33    54    59    73    79    94   115   136   149
 
 </pre><p class="footer"><br>
-            Published with MATLAB&reg; 7.2<br></p>
+            Published with MATLAB&reg; 7.4<br></p>
       </div>
       <!--
 ##### SOURCE BEGIN #####
@@ -245,7 +262,7 @@ cvx_begin
 cvx_end
 
 % report the smaller set of mutually inconsistent inequalities
-infeas_set = find( lambda > 0 );
+infeas_set = find( abs(b.*lambda) > sqrt(eps)/n );
 disp(' ');
 fprintf(1,'Found a smaller set of %d mutually inconsistent inequalities.\n',...
         length(infeas_set));

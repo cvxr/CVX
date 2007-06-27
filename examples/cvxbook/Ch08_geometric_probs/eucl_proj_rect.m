@@ -9,11 +9,8 @@
 %                                 x0_k      if  l_k <= x0_k <= u_k
 %                                 u_k       if  x0_k >= u_k
 
-cvx_quiet(true);
-% Input data
-randn('seed',0);
+% Input data: generate vectors l and u such that l < 0 < u
 n  = 10;
-% generating vector l and u such that l < u
 l  = -rand(n,1);
 u  = rand(n,1);
 x0 = randn(n,1);
@@ -29,6 +26,7 @@ fprintf(1,'Done! \n');
 fprintf(1,'Computing the optimal solution by solving a QP ...');
 
 cvx_begin
+    cvx_quiet true
     variable x(n)
     minimize ( norm(x-x0) )
     x <= u;

@@ -1,3 +1,6 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN">
 <html xmlns:mwsh="http://www.mathworks.com/namespace/mcode/v1/syntaxhighlight.dtd">
    <head>
       <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
@@ -7,8 +10,8 @@ This HTML is auto-generated from an M-file.
 To make changes, update the M-file and republish this document.
       -->
       <title>Example 8.4: One free point localization</title>
-      <meta name="generator" content="MATLAB 7.2">
-      <meta name="date" content="2006-05-20">
+      <meta name="generator" content="MATLAB 7.4">
+      <meta name="date" content="2007-06-26">
       <meta name="m-file" content="ex_8_4"><style>
 
 body {
@@ -27,14 +30,11 @@ h2 {
 }
 
 /* Make the text shrink to fit narrow windows, but not stretch too far in 
-wide windows.  On Gecko-based browsers, the shrink-to-fit doesn't work. */ 
+wide windows. */ 
 p,h1,h2,div.content div {
-  /* for MATLAB's browser */
-  width: 600px;
-  /* for Mozilla, but the "width" tag overrides it anyway */
   max-width: 600px;
-  /* for IE */
-  width:expression(document.body.clientWidth > 620 ? "600px": "auto" );
+  /* Hack for IE6 */
+  width: auto !important; width: 600px;
 }
 
 pre.codeinput {
@@ -116,65 +116,92 @@ disp(x1);
 disp(<span class="string">'The optimal point location for the L2-norm case is: '</span>);
 disp(x2);
 </pre><pre class="codeoutput">Minimizing the L1-norm of the sum of the distances to fixed points... 
-Calling SeDuMi: 46 variables (2 free), 22 equality constraints
-------------------------------------------------------------------------
-SeDuMi 1.1 by AdvOL, 2005 and Jos F. Sturm, 1998, 2001-2003.
-Alg = 2: xz-corrector, Adaptive Step-Differentiation, theta = 0.250, beta = 0.500
-Split 2 free variables
-eqs m = 22, order n = 49, dim = 49, blocks = 1
-nnz(A) = 88 + 0, nnz(ADA) = 242, nnz(L) = 132
- it :     b*y       gap    delta  rate   t/tP*  t/tD*   feas cg cg  prec
-  0 :            7.19E+001 0.000
-  1 :  7.88E+000 1.87E+001 0.000 0.2598 0.9000 0.9000   2.59  1  1  1.0E+000
-  2 :  1.19E+001 4.29E+000 0.000 0.2297 0.9000 0.9000   1.15  1  1  2.9E-001
-  3 :  1.34E+001 8.96E-001 0.000 0.2087 0.9000 0.9000   1.02  1  1  6.7E-002
-  4 :  1.37E+001 2.54E-001 0.000 0.2835 0.9000 0.9000   1.00  1  1  1.9E-002
-  5 :  1.39E+001 1.55E-002 0.000 0.0611 0.9900 0.9900   1.00  1  1  1.2E-003
-  6 :  1.39E+001 8.05E-007 0.209 0.0001 1.0000 1.0000   1.00  1  1  
-iter seconds digits       c*x               b*y
-  6      0.0   Inf  1.3868099974e+001  1.3868099974e+001
-|Ax-b| =  1.4e-015, [Ay-c]_+ =  2.7E-016, |x|= 5.6e+000, |y|= 4.5e+000
+Calling SDPT3: 46 variables, 22 equality constraints
+------------------------------------------------------------
 
-Detailed timing (sec)
-   Pre          IPM          Post
-0.000E+000    0.000E+000    0.000E+000    
-Max-norms: ||b||=2.183186e+000, ||c|| = 1,
-Cholesky |add|=0, |skip| = 0, ||L.L|| = 1.
-------------------------------------------------------------------------
+ num. of constraints = 22
+ dim. of socp   var  = 44,   num. of socp blk  = 22
+ dim. of free   var  =  2 *** convert ublk to linear blk
+*******************************************************************
+   SDPT3: homogeneous self-dual path-following algorithms
+*******************************************************************
+ version  predcorr  gam  expon
+    NT      1      0.000   1
+it  pstep dstep p_infeas d_infeas  gap     mean(obj)    cputime
+-------------------------------------------------------------------
+ 0  0.000 0.000 1.3e+00 1.0e+00  2.6e+01  1.100000e+01  0:0:00 chol  1  1
+ 1  0.526 0.526 9.8e-01 7.6e-01  3.0e+01  1.729242e+01  0:0:00 chol  1  1
+ 2  0.920 0.920 2.0e-01 1.6e-01  7.7e+00  1.433831e+01  0:0:00 chol  1  1
+ 3  0.943 0.943 3.3e-02 2.6e-02  1.3e+00  1.386551e+01  0:0:00 chol  1  1
+ 4  0.826 0.826 8.5e-03 6.6e-03  3.4e-01  1.385112e+01  0:0:00 chol  1  1
+ 5  0.980 0.980 1.1e-03 8.8e-04  4.8e-02  1.386545e+01  0:0:00 chol  1  1
+ 6  0.986 0.986 3.9e-05 3.1e-05  7.1e-04  1.386793e+01  0:0:00 chol  1  1
+ 7  0.987 0.987 1.3e-06 1.0e-06  1.2e-05  1.386809e+01  0:0:00 chol  1  1
+ 8  1.000 1.000 4.7e-08 3.7e-08  1.2e-06  1.386810e+01  0:0:00 chol  1  1
+ 9  1.000 1.000 1.9e-09 1.2e-09  4.0e-08  1.386810e+01  0:0:00
+  Stop: max(relative gap, infeasibilities) &lt; 1.49e-08
+-------------------------------------------------------------------
+ number of iterations   =  9
+ primal objective value =  1.38681000e+01
+ dual   objective value =  1.38681000e+01
+ gap := trace(XZ)       = 4.05e-08
+ relative gap           = 2.72e-09
+ actual relative gap    = 4.31e-10
+ rel. primal infeas     = 1.90e-09
+ rel. dual   infeas     = 1.22e-09
+ norm(X), norm(y), norm(Z) = 5.8e+00, 4.5e+00, 6.5e+00
+ norm(A), norm(b), norm(C) = 9.6e+00, 4.1e+00, 4.7e+00
+ Total CPU time (secs)  = 0.2  
+ CPU time per iteration = 0.0  
+ termination code       =  0
+ DIMACS: 1.9e-09  0.0e+00  1.2e-09  0.0e+00  4.3e-10  1.4e-09
+-------------------------------------------------------------------
+------------------------------------------------------------
 Status: Solved
 Optimal value (cvx_optval): +13.8681
 Done! 
 Minimizing the L2-norm of the sum of the distances to fixed points... 
-Calling SeDuMi: 35 variables (2 free), 22 equality constraints
-------------------------------------------------------------------------
-SeDuMi 1.1 by AdvOL, 2005 and Jos F. Sturm, 1998, 2001-2003.
-Alg = 2: xz-corrector, Adaptive Step-Differentiation, theta = 0.250, beta = 0.500
-Split 2 free variables
-eqs m = 22, order n = 27, dim = 38, blocks = 12
-nnz(A) = 66 + 0, nnz(ADA) = 264, nnz(L) = 208
- it :     b*y       gap    delta  rate   t/tP*  t/tD*   feas cg cg  prec
-  0 :            2.04E+001 0.000
-  1 :  9.28E+000 6.74E+000 0.000 0.3301 0.9000 0.9000   2.25  1  1  1.1E+000
-  2 :  1.08E+001 1.38E+000 0.000 0.2040 0.9000 0.9000   1.30  1  1  2.3E-001
-  3 :  1.14E+001 1.08E-001 0.000 0.0788 0.9900 0.9900   1.04  1  1  1.8E-002
-  4 :  1.15E+001 7.38E-003 0.000 0.0681 0.9900 0.9900   1.00  1  1  1.3E-003
-  5 :  1.15E+001 3.90E-004 0.000 0.0529 0.9900 0.9900   1.00  1  1  6.7E-005
-  6 :  1.15E+001 6.24E-005 0.000 0.1598 0.9073 0.9000   1.00  1  1  1.1E-005
-  7 :  1.15E+001 7.13E-006 0.212 0.1144 0.9455 0.9450   1.00  1  1  1.3E-006
-  8 :  1.15E+001 1.58E-006 0.000 0.2221 0.9036 0.9000   1.00  1  1  2.9E-007
-  9 :  1.15E+001 2.61E-007 0.000 0.1645 0.9058 0.9000   1.00  2  2  5.1E-008
- 10 :  1.15E+001 4.14E-008 0.000 0.1587 0.9055 0.9000   1.00  2  2  9.1E-009
+Calling SDPT3: 35 variables, 22 equality constraints
+------------------------------------------------------------
 
-iter seconds digits       c*x               b*y
- 10      0.1   8.3  1.1483929305e+001  1.1483929241e+001
-|Ax-b| =  2.6e-009, [Ay-c]_+ =  1.3E-009, |x|= 6.9e+000, |y|= 3.3e+000
-
-Detailed timing (sec)
-   Pre          IPM          Post
-0.000E+000    6.009E-002    0.000E+000    
-Max-norms: ||b||=2.183186e+000, ||c|| = 1,
-Cholesky |add|=0, |skip| = 0, ||L.L|| = 83.9825.
-------------------------------------------------------------------------
+ num. of constraints = 22
+ dim. of socp   var  = 33,   num. of socp blk  = 11
+ dim. of free   var  =  2 *** convert ublk to linear blk
+*******************************************************************
+   SDPT3: homogeneous self-dual path-following algorithms
+*******************************************************************
+ version  predcorr  gam  expon
+    NT      1      0.000   1
+it  pstep dstep p_infeas d_infeas  gap     mean(obj)    cputime
+-------------------------------------------------------------------
+ 0  0.000 0.000 1.3e+00 1.0e+00  1.5e+01  5.500000e+00  0:0:00 chol  1  1
+ 1  0.627 0.627 8.8e-01 6.8e-01  1.6e+01  1.085839e+01  0:0:00 chol  1  1
+ 2  0.916 0.916 1.9e-01 1.4e-01  4.4e+00  1.122978e+01  0:0:00 chol  1  1
+ 3  0.941 0.941 2.8e-02 2.1e-02  6.4e-01  1.141031e+01  0:0:00 chol  1  1
+ 4  0.970 0.970 1.7e-03 1.3e-03  2.2e-02  1.147696e+01  0:0:00 chol  1  1
+ 5  0.971 0.971 9.1e-05 7.1e-05  7.6e-04  1.148355e+01  0:0:00 chol  1  1
+ 6  0.954 0.954 6.4e-06 5.0e-06  4.4e-05  1.148390e+01  0:0:00 chol  1  1
+ 7  0.936 0.936 5.7e-07 4.4e-07  3.4e-06  1.148393e+01  0:0:00 chol  1  1
+ 8  1.000 1.000 6.1e-08 4.8e-08  1.4e-06  1.148393e+01  0:0:00 chol  1  1
+ 9  0.997 0.997 4.2e-09 3.2e-09  8.3e-08  1.148393e+01  0:0:00
+  Stop: max(relative gap, infeasibilities) &lt; 1.49e-08
+-------------------------------------------------------------------
+ number of iterations   =  9
+ primal objective value =  1.14839292e+01
+ dual   objective value =  1.14839292e+01
+ gap := trace(XZ)       = 8.32e-08
+ relative gap           = 6.66e-09
+ actual relative gap    = 1.19e-09
+ rel. primal infeas     = 4.18e-09
+ rel. dual   infeas     = 3.22e-09
+ norm(X), norm(y), norm(Z) = 5.8e+00, 3.3e+00, 4.7e+00
+ norm(A), norm(b), norm(C) = 9.0e+00, 4.1e+00, 3.3e+00
+ Total CPU time (secs)  = 0.2  
+ CPU time per iteration = 0.0  
+ termination code       =  0
+ DIMACS: 4.2e-09  0.0e+00  3.2e-09  0.0e+00  1.2e-09  3.5e-09
+-------------------------------------------------------------------
+------------------------------------------------------------
 Status: Solved
 Optimal value (cvx_optval): +11.4839
 Done! 
@@ -184,11 +211,11 @@ The optimal point location for the L1-norm case is:
     0.1139
 
 The optimal point location for the L2-norm case is: 
-    0.1251
-    0.1716
+    0.1252
+    0.1717
 
 </pre><p class="footer"><br>
-            Published with MATLAB&reg; 7.2<br></p>
+            Published with MATLAB&reg; 7.4<br></p>
       </div>
       <!--
 ##### SOURCE BEGIN #####

@@ -1,3 +1,6 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN">
 <html xmlns:mwsh="http://www.mathworks.com/namespace/mcode/v1/syntaxhighlight.dtd">
    <head>
       <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
@@ -7,8 +10,8 @@ This HTML is auto-generated from an M-file.
 To make changes, update the M-file and republish this document.
       -->
       <title>Digital circuit sizing example (GP)</title>
-      <meta name="generator" content="MATLAB 7.2">
-      <meta name="date" content="2006-05-20">
+      <meta name="generator" content="MATLAB 7.4">
+      <meta name="date" content="2007-06-27">
       <meta name="m-file" content="dig_ckt_sizing"><style>
 
 body {
@@ -27,14 +30,11 @@ h2 {
 }
 
 /* Make the text shrink to fit narrow windows, but not stretch too far in 
-wide windows.  On Gecko-based browsers, the shrink-to-fit doesn't work. */ 
+wide windows. */ 
 p,h1,h2,div.content div {
-  /* for MATLAB's browser */
-  width: 600px;
-  /* for Mozilla, but the "width" tag overrides it anyway */
   max-width: 600px;
-  /* for IE */
-  width:expression(document.body.clientWidth > 620 ? "600px": "auto" );
+  /* Hack for IE6 */
+  width: auto !important; width: 600px;
 }
 
 pre.codeinput {
@@ -239,7 +239,7 @@ disp(<span class="string">'Generating the optimal tradeoff curve...'</span>)
       <span class="keyword">end</span>
   cvx_end
 
-  <span class="keyword">if</span> ~strcmp(cvx_status,<span class="string">'Solved'</span>)
+  <span class="keyword">if</span> ~strfind(cvx_status,<span class="string">'Solved'</span>)
     error(<span class="string">'Problem could not be solved.'</span>)
   <span class="keyword">end</span>
 
@@ -285,7 +285,7 @@ cvx_quiet(cvxq);
   Pmax =  20.00   delay = 9.15
 Optimal tradeoff curve plotted.
 </pre><img vspace="5" hspace="5" src="dig_ckt_sizing_01.png"> <p class="footer"><br>
-            Published with MATLAB&reg; 7.2<br></p>
+            Published with MATLAB&reg; 7.4<br></p>
       </div>
       <!--
 ##### SOURCE BEGIN #####
@@ -459,7 +459,7 @@ for n = 1:N
       end
   cvx_end
 
-  if ~strcmp(cvx_status,'Solved')
+  if ~strfind(cvx_status,'Solved')
     error('Problem could not be solved.')
   end
 

@@ -1,3 +1,6 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN">
 <html xmlns:mwsh="http://www.mathworks.com/namespace/mcode/v1/syntaxhighlight.dtd">
    <head>
       <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
@@ -7,8 +10,8 @@ This HTML is auto-generated from an M-file.
 To make changes, update the M-file and republish this document.
       -->
       <title>Minimize transition bandwidth of a linear phase lowpass FIR filter</title>
-      <meta name="generator" content="MATLAB 7.2">
-      <meta name="date" content="2006-05-20">
+      <meta name="generator" content="MATLAB 7.4">
+      <meta name="date" content="2007-06-27">
       <meta name="m-file" content="fir_lin_phase_lowpass_min_trans"><style>
 
 body {
@@ -27,14 +30,11 @@ h2 {
 }
 
 /* Make the text shrink to fit narrow windows, but not stretch too far in 
-wide windows.  On Gecko-based browsers, the shrink-to-fit doesn't work. */ 
+wide windows. */ 
 p,h1,h2,div.content div {
-  /* for MATLAB's browser */
-  width: 600px;
-  /* for Mozilla, but the "width" tag overrides it anyway */
   max-width: 600px;
-  /* for IE */
-  width:expression(document.body.clientWidth > 620 ? "600px": "auto" );
+  /* Hack for IE6 */
+  width: auto !important; width: 600px;
 }
 
 pre.codeinput {
@@ -147,7 +147,7 @@ wstop_top  = wstop;
   cvx_end
 
   <span class="comment">% bisection</span>
-  <span class="keyword">if</span> strcmp(cvx_status,<span class="string">'Solved'</span>) <span class="comment">% feasible</span>
+  <span class="keyword">if</span> strfind(cvx_status,<span class="string">'Solved'</span>) <span class="comment">% feasible</span>
     fprintf(1,<span class="string">'Problem is feasible for stopband freq = %3.4f rads\n'</span>,wstop_cur);
     wstop_top = wstop_cur;
     <span class="comment">% construct the full impulse response</span>
@@ -202,7 +202,7 @@ Problem is not feasible for stopband freq = 0.6929 rads
 Optimum stopband frequency for given specs is 0.2208*pi rads
 and the minimum transition width is 0.1008*pi radians.
 </pre><img vspace="5" hspace="5" src="fir_lin_phase_lowpass_min_trans_01.png"> <img vspace="5" hspace="5" src="fir_lin_phase_lowpass_min_trans_02.png"> <p class="footer"><br>
-            Published with MATLAB&reg; 7.2<br></p>
+            Published with MATLAB&reg; 7.4<br></p>
       </div>
       <!--
 ##### SOURCE BEGIN #####
@@ -284,7 +284,7 @@ while( wstop_top - wstop_bot > TOL)
   cvx_end
 
   % bisection
-  if strcmp(cvx_status,'Solved') % feasible
+  if strfind(cvx_status,'Solved') % feasible
     fprintf(1,'Problem is feasible for stopband freq = %3.4f rads\n',wstop_cur);
     wstop_top = wstop_cur;
     % construct the full impulse response

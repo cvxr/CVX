@@ -1,3 +1,6 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN">
 <html xmlns:mwsh="http://www.mathworks.com/namespace/mcode/v1/syntaxhighlight.dtd">
    <head>
       <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
@@ -7,8 +10,8 @@ This HTML is auto-generated from an M-file.
 To make changes, update the M-file and republish this document.
       -->
       <title>Euclidean distance between polyhedra</title>
-      <meta name="generator" content="MATLAB 7.2">
-      <meta name="date" content="2006-05-20">
+      <meta name="generator" content="MATLAB 7.4">
+      <meta name="date" content="2007-06-26">
       <meta name="m-file" content="eucl_dist_poly"><style>
 
 body {
@@ -27,14 +30,11 @@ h2 {
 }
 
 /* Make the text shrink to fit narrow windows, but not stretch too far in 
-wide windows.  On Gecko-based browsers, the shrink-to-fit doesn't work. */ 
+wide windows. */ 
 p,h1,h2,div.content div {
-  /* for MATLAB's browser */
-  width: 600px;
-  /* for Mozilla, but the "width" tag overrides it anyway */
   max-width: 600px;
-  /* for IE */
-  width:expression(document.body.clientWidth > 620 ? "600px": "auto" );
+  /* Hack for IE6 */
+  width: auto !important; width: 600px;
 }
 
 pre.codeinput {
@@ -105,42 +105,58 @@ disp(<span class="string">'-----------------------------------------------------
 disp(<span class="string">'The distance between the 2 polyhedra C and D is: '</span> );
 disp([<span class="string">'dist(C,D) = '</span> num2str(cvx_optval)]);
 </pre><pre class="codeoutput"> 
-Calling SeDuMi: 41 variables (10 free), 30 equality constraints
-------------------------------------------------------------------------
-SeDuMi 1.1 by AdvOL, 2005 and Jos F. Sturm, 1998, 2001-2003.
-Alg = 2: xz-corrector, Adaptive Step-Differentiation, theta = 0.250, beta = 0.500
-Split 10 free variables
-eqs m = 30, order n = 48, dim = 52, blocks = 2
-nnz(A) = 300 + 0, nnz(ADA) = 600, nnz(L) = 315
- it :     b*y       gap    delta  rate   t/tP*  t/tD*   feas cg cg  prec
-  0 :            9.10E-001 0.000
-  1 :  1.46E-001 4.20E-001 0.000 0.4609 0.9000 0.9000   3.17  1  1  1.5E+000
-  2 :  6.39E-001 1.14E-001 0.000 0.2726 0.9000 0.9000   1.85  1  1  2.9E-001
-  3 :  4.83E-001 3.04E-002 0.000 0.2656 0.9000 0.9000   1.31  1  1  7.7E-002
-  4 :  5.06E-001 2.68E-003 0.000 0.0884 0.9900 0.9900   1.09  1  1  6.8E-003
-  5 :  5.07E-001 1.00E-003 0.000 0.3737 0.9000 0.9000   1.02  1  1  2.7E-003
-  6 :  5.09E-001 2.51E-005 0.000 0.0250 0.9902 0.9900   1.01  1  1  7.5E-005
-  7 :  5.09E-001 4.24E-007 0.000 0.0169 0.9901 0.9900   1.00  1  1  1.4E-006
-  8 :  5.09E-001 3.72E-008 0.407 0.0877 0.9900 0.9900   1.00  1  1  1.3E-007
-  9 :  5.09E-001 1.15E-009 0.000 0.0310 0.9900 0.9737   1.00  1  1  4.0E-009
+Calling SDPT3: 41 variables, 30 equality constraints
+------------------------------------------------------------
 
-iter seconds digits       c*x               b*y
-  9      0.1   8.0  5.0856706332e-001  5.0856705866e-001
-|Ax-b| =  1.6e-009, [Ay-c]_+ =  5.1E-010, |x|= 6.6e+000, |y|= 1.5e+000
-
-Detailed timing (sec)
-   Pre          IPM          Post
-0.000E+000    9.013E-002    0.000E+000    
-Max-norms: ||b||=2.829728e+000, ||c|| = 1,
-Cholesky |add|=0, |skip| = 0, ||L.L|| = 2.11833.
-------------------------------------------------------------------------
+ num. of constraints = 30
+ dim. of socp   var  =  6,   num. of socp blk  =  1
+ dim. of linear var  = 25
+ dim. of free   var  = 10 *** convert ublk to linear blk
+*******************************************************************
+   SDPT3: homogeneous self-dual path-following algorithms
+*******************************************************************
+ version  predcorr  gam  expon
+    NT      1      0.000   1
+it  pstep dstep p_infeas d_infeas  gap     mean(obj)    cputime
+-------------------------------------------------------------------
+ 0  0.000 0.000 1.4e+00 3.4e+00  4.6e+01  5.000000e-01  0:0:00 chol  1  1
+ 1  0.610 0.610 1.3e+00 3.0e+00  6.7e+01 -1.506548e+00  0:0:00 chol  1  1
+ 2  0.924 0.924 1.8e-01 4.1e-01  9.2e+00  1.236406e-01  0:0:00 chol  1  1
+ 3  1.000 1.000 5.9e-02 1.4e-01  4.0e+00  9.273688e-02  0:0:00 chol  1  1
+ 4  0.870 0.870 1.1e-02 2.6e-02  6.8e-01  4.267932e-01  0:0:00 chol  1  1
+ 5  0.957 0.957 2.5e-03 5.8e-03  1.5e-01  4.947967e-01  0:0:00 chol  1  1
+ 6  1.000 1.000 5.6e-04 1.3e-03  3.5e-02  5.059465e-01  0:0:00 chol  1  1
+ 7  0.961 0.961 3.4e-05 7.9e-05  1.5e-03  5.085426e-01  0:0:00 chol  1  1
+ 8  0.979 0.979 1.3e-06 3.1e-06  3.7e-05  5.085711e-01  0:0:00 chol  1  1
+ 9  0.981 0.981 4.8e-08 1.1e-07  1.1e-06  5.085673e-01  0:0:00 chol
+  SWM to ill-conditioned, switch to LU factor. lu   1  1
+10  1.000 1.000 2.8e-09 4.9e-09  9.4e-08  5.085671e-01  0:0:00 lu   1  1
+11  1.000 1.000 2.7e-10 1.8e-10  3.5e-09  5.085671e-01  0:0:00
+  Stop: max(relative gap, infeasibilities) &lt; 1.49e-08
+-------------------------------------------------------------------
+ number of iterations   = 11
+ primal objective value =  5.08567059e-01
+ dual   objective value =  5.08567059e-01
+ gap := trace(XZ)       = 3.48e-09
+ relative gap           = 2.30e-09
+ actual relative gap    = -3.05e-11
+ rel. primal infeas     = 2.70e-10
+ rel. dual   infeas     = 1.79e-10
+ norm(X), norm(y), norm(Z) = 4.5e+00, 1.5e+00, 1.8e+00
+ norm(A), norm(b), norm(C) = 1.7e+01, 5.8e+00, 1.0e+00
+ Total CPU time (secs)  = 0.2  
+ CPU time per iteration = 0.0  
+ termination code       =  0
+ DIMACS: 2.7e-10  0.0e+00  1.8e-10  0.0e+00  -3.0e-11  1.7e-09
+-------------------------------------------------------------------
+------------------------------------------------------------
 Status: Solved
 Optimal value (cvx_optval): +0.508567
 ------------------------------------------------------------------
 The distance between the 2 polyhedra C and D is: 
 dist(C,D) = 0.50857
 </pre><p class="footer"><br>
-            Published with MATLAB&reg; 7.2<br></p>
+            Published with MATLAB&reg; 7.4<br></p>
       </div>
       <!--
 ##### SOURCE BEGIN #####

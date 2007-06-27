@@ -75,7 +75,7 @@ while( wstop_top - wstop_bot > TOL)
   cvx_end
 
   % bisection
-  if strcmp(cvx_status,'Solved') % feasible
+  if strfind(cvx_status,'Solved') % feasible
     fprintf(1,'Problem is feasible for stopband freq = %3.4f rads\n',wstop_cur);
     wstop_top = wstop_cur;
     % construct the full impulse response

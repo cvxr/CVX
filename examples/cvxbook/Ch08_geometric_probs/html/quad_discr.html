@@ -1,3 +1,6 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN">
 <html xmlns:mwsh="http://www.mathworks.com/namespace/mcode/v1/syntaxhighlight.dtd">
    <head>
       <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
@@ -7,8 +10,8 @@ This HTML is auto-generated from an M-file.
 To make changes, update the M-file and republish this document.
       -->
       <title>Quadratic discrimination (separating ellipsoid)</title>
-      <meta name="generator" content="MATLAB 7.2">
-      <meta name="date" content="2006-05-20">
+      <meta name="generator" content="MATLAB 7.4">
+      <meta name="date" content="2007-06-26">
       <meta name="m-file" content="quad_discr"><style>
 
 body {
@@ -27,14 +30,11 @@ h2 {
 }
 
 /* Make the text shrink to fit narrow windows, but not stretch too far in 
-wide windows.  On Gecko-based browsers, the shrink-to-fit doesn't work. */ 
+wide windows. */ 
 p,h1,h2,div.content div {
-  /* for MATLAB's browser */
-  width: 600px;
-  /* for Mozilla, but the "width" tag overrides it anyway */
   max-width: 600px;
-  /* for IE */
-  width:expression(document.body.clientWidth > 620 ? "600px": "auto" );
+  /* Hack for IE6 */
+  width: auto !important; width: 600px;
 }
 
 pre.codeinput {
@@ -119,37 +119,55 @@ set(gca,<span class="string">'XTick'</span>,[]); set(gca,<span class="string">'Y
 title(<span class="string">'Quadratic discrimination'</span>);
 <span class="comment">% print -deps ellips.eps</span>
 </pre><pre class="codeoutput">Find the optimal ellipsoid that seperates the 2 classes... 
-Calling SeDuMi: 108 variables (5 free), 102 equality constraints
-------------------------------------------------------------------------
-SeDuMi 1.1 by AdvOL, 2005 and Jos F. Sturm, 1998, 2001-2003.
-Alg = 2: xz-corrector, Adaptive Step-Differentiation, theta = 0.250, beta = 0.500
-Split 5 free variables
-eqs m = 102, order n = 113, dim = 115, blocks = 2
-nnz(A) = 1206 + 0, nnz(ADA) = 10404, nnz(L) = 5253
- it :     b*y       gap    delta  rate   t/tP*  t/tD*   feas cg cg  prec
-  0 :            2.17E-001 0.000
-  1 :  5.73E+001 1.04E-001 0.000 0.4809 0.9000 0.9000  -4.15  1  1  2.4E+001
-  2 :  5.84E+001 3.22E-002 0.000 0.3084 0.9000 0.9000  -2.53  1  1  6.3E+000
-  3 :  3.83E+001 7.39E-003 0.000 0.2296 0.9000 0.9000  -0.07  1  1  2.3E+000
-  4 :  2.16E+000 1.67E-004 0.000 0.0227 0.9900 0.9900   0.65  1  1  6.2E-002
-  5 :  9.15E-005 5.20E-009 0.000 0.0000 1.0000 1.0000   0.99  1  1  1.9E-006
-  6 :  2.42E-008 2.49E-012 0.000 0.0005 0.9999 0.9997   1.00  1  1  7.6E-010
+Calling SDPT3: 108 variables, 102 equality constraints
+------------------------------------------------------------
 
-iter seconds digits       c*x               b*y
-  6      0.1   Inf  0.0000000000e+000  2.4161599043e-008
-|Ax-b| =  4.2e-009, [Ay-c]_+ =  7.4E-011, |x|= 4.0e+002, |y|= 1.1e-008
-
-Detailed timing (sec)
-   Pre          IPM          Post
-2.003E-002    5.007E-002    0.000E+000    
-Max-norms: ||b||=1, ||c|| = 0,
-Cholesky |add|=0, |skip| = 0, ||L.L|| = 18.1252.
-------------------------------------------------------------------------
+ num. of constraints = 102
+ dim. of sdp    var  =  2,   num. of sdp  blk  =  1
+ dim. of linear var  = 100
+ dim. of free   var  =  5 *** convert ublk to linear blk
+*******************************************************************
+   SDPT3: homogeneous self-dual path-following algorithms
+*******************************************************************
+ version  predcorr  gam  expon
+    NT      1      0.000   1
+it  pstep dstep p_infeas d_infeas  gap     mean(obj)    cputime
+-------------------------------------------------------------------
+ 0  0.000 0.000 1.0e+01 1.1e+01  1.1e+02  0.000000e+00  0:0:00 chol  1  1
+ 1  0.604 0.604 1.6e+01 1.7e+01  5.9e+02  7.928661e+00  0:0:00 chol  1  1
+ 2  1.000 1.000 1.4e+01 1.4e+01  1.3e+03  2.873065e+01  0:0:00 chol  1  1
+ 3  0.902 0.902 3.3e+00 3.5e+00  3.7e+02  2.121274e+01  0:0:00 chol  1  1
+ 4  0.961 0.961 2.1e-01 2.2e-01  2.2e+01  2.499969e+00  0:0:00 chol  1  1
+ 5  0.982 0.982 4.9e-03 5.2e-03  4.7e-01  7.989319e-02  0:0:00 chol  1  1
+ 6  0.982 0.982 1.3e-04 1.3e-04  1.1e-02  2.532751e-03  0:0:00 chol  1  1
+ 7  0.982 0.982 3.4e-06 3.6e-06  2.6e-04  7.825370e-05  0:0:00 chol  1  1
+ 8  0.987 0.987 1.5e-07 1.5e-07  1.4e-05  1.893344e-06  0:0:00 chol
+  SWM to ill-conditioned, switch to LU factor. lu   1  1
+ 9  1.000 1.000 4.8e-09 5.1e-09  4.9e-07  3.940760e-08  0:0:00 lu   1  1
+10  1.000 1.000 1.3e-10 1.4e-10  1.3e-08  1.236658e-09  0:0:01
+  Stop: max(relative gap, infeasibilities) &lt; 1.49e-08
+-------------------------------------------------------------------
+ number of iterations   = 10
+ primal objective value =  0.00000000e+00
+ dual   objective value =  2.47331508e-09
+ gap := trace(XZ)       = 1.31e-08
+ relative gap           = 1.31e-08
+ actual relative gap    = -2.47e-09
+ rel. primal infeas     = 1.28e-10
+ rel. dual   infeas     = 1.44e-10
+ norm(X), norm(y), norm(Z) = 1.3e+02, 9.8e-10, 1.0e-09
+ norm(A), norm(b), norm(C) = 9.9e+01, 1.0e+01, 0.0e+00
+ Total CPU time (secs)  = 0.5  
+ CPU time per iteration = 0.1  
+ termination code       =  0
+ DIMACS: 1.3e-10  0.0e+00  1.4e-10  0.0e+00  -2.5e-09  1.3e-08
+-------------------------------------------------------------------
+------------------------------------------------------------
 Status: Solved
 Optimal value (cvx_optval): +0
 Done! 
 </pre><img vspace="5" hspace="5" src="quad_discr_01.png"> <p class="footer"><br>
-            Published with MATLAB&reg; 7.2<br></p>
+            Published with MATLAB&reg; 7.4<br></p>
       </div>
       <!--
 ##### SOURCE BEGIN #####

@@ -1,3 +1,6 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN">
 <html xmlns:mwsh="http://www.mathworks.com/namespace/mcode/v1/syntaxhighlight.dtd">
    <head>
       <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
@@ -7,8 +10,8 @@ This HTML is auto-generated from an M-file.
 To make changes, update the M-file and republish this document.
       -->
       <title>Example 6.6: Comparison of worst-case robust, Tikhonov, and nominal least squares</title>
-      <meta name="generator" content="MATLAB 7.2">
-      <meta name="date" content="2006-05-20">
+      <meta name="generator" content="MATLAB 7.4">
+      <meta name="date" content="2007-06-26">
       <meta name="m-file" content="wcrobls"><style>
 
 body {
@@ -27,14 +30,11 @@ h2 {
 }
 
 /* Make the text shrink to fit narrow windows, but not stretch too far in 
-wide windows.  On Gecko-based browsers, the shrink-to-fit doesn't work. */ 
+wide windows. */ 
 p,h1,h2,div.content div {
-  /* for MATLAB's browser */
-  width: 600px;
-  /* for Mozilla, but the "width" tag overrides it anyway */
   max-width: 600px;
-  /* for IE */
-  width:expression(document.body.clientWidth > 620 ? "600px": "auto" );
+  /* Hack for IE6 */
+  width: auto !important; width: 600px;
 }
 
 pre.codeinput {
@@ -183,40 +183,53 @@ xlabel(<span class="string">'||(A0 + u1*A1 + u2*A2)*x - b||_2'</span>)
 ylabel(<span class="string">'Frequency'</span>)
 hold <span class="string">off</span>
 </pre><pre class="codeoutput"> 
-Calling SeDuMi: 1451 variables (20 free), 1429 equality constraints
-------------------------------------------------------------------------
-SeDuMi 1.1 by AdvOL, 2005 and Jos F. Sturm, 1998, 2001-2003.
-Alg = 2: xz-corrector, Adaptive Step-Differentiation, theta = 0.250, beta = 0.500
-Split 20 free variables
-eqs m = 1429, order n = 94, dim = 2850, blocks = 2
-nnz(A) = 7430 + 0, nnz(ADA) = 2042041, nnz(L) = 1021735
- it :     b*y       gap    delta  rate   t/tP*  t/tD*   feas cg cg  prec
-  0 :            3.68E-001 0.000
-  1 :  5.13E+000 1.23E-001 0.000 0.3345 0.9000 0.9000   2.53  1  1  7.0E-001
-  2 :  6.12E+000 3.39E-002 0.000 0.2757 0.9000 0.9000   1.34  1  1  1.7E-001
-  3 :  6.59E+000 6.42E-003 0.000 0.1896 0.9000 0.9000   1.07  1  1  3.3E-002
-  4 :  6.74E+000 4.87E-004 0.000 0.0758 0.9900 0.9900   1.01  1  1  2.5E-003
-  5 :  6.76E+000 1.09E-004 0.000 0.2238 0.9000 0.9000   1.00  1  1  5.7E-004
-  6 :  6.76E+000 8.25E-007 0.120 0.0076 0.9166 0.9900   1.00  1  1  5.6E-005
-  7 :  6.76E+000 2.01E-007 0.000 0.2439 0.9000 0.8356   1.00  1  1  1.3E-005
-  8 :  6.76E+000 1.95E-008 0.170 0.0968 0.9900 0.9162   1.00  1  1  1.3E-006
-  9 :  6.76E+000 3.44E-009 0.000 0.1765 0.8235 0.9000   1.00  2  2  2.3E-007
- 10 :  6.76E+000 2.19E-010 0.407 0.0637 0.9900 0.9882   1.00  2  2  1.4E-008
+Calling SDPT3: 1451 variables, 1429 equality constraints
+------------------------------------------------------------
 
-iter seconds digits       c*x               b*y
- 10     50.1   Inf  6.7594994749e+000  6.7594994957e+000
-|Ax-b| =  6.9e-008, [Ay-c]_+ =  6.1E-009, |x|= 1.4e+001, |y|= 8.7e+000
-
-Detailed timing (sec)
-   Pre          IPM          Post
-1.312E+000    5.007E+001    3.004E-002    
-Max-norms: ||b||=1.466545e+000, ||c|| = 1,
-Cholesky |add|=0, |skip| = 0, ||L.L|| = 8.39483.
-------------------------------------------------------------------------
+ num. of constraints = 1429
+ dim. of sdp    var  = 53,   num. of sdp  blk  =  1
+ dim. of free   var  = 20 *** convert ublk to linear blk
+*******************************************************************
+   SDPT3: homogeneous self-dual path-following algorithms
+*******************************************************************
+ version  predcorr  gam  expon
+    NT      1      0.000   1
+it  pstep dstep p_infeas d_infeas  gap     mean(obj)    cputime
+-------------------------------------------------------------------
+ 0  0.000 0.000 1.8e+00 4.8e+00  9.3e+01  1.000000e+00  0:0:00 spchol  1  1
+ 1  1.000 1.000 1.5e+00 4.0e+00  1.8e+02 -2.247585e+01  0:0:01 chol  1  1
+ 2  1.000 1.000 2.0e-01 5.2e-01  2.4e+01  3.026685e+00  0:0:01 chol  1  1
+ 3  0.996 0.996 3.3e-02 8.7e-02  4.2e+00  5.949430e+00  0:0:02 chol  1  1
+ 4  0.954 0.954 2.4e-03 6.3e-03  2.7e-01  6.713346e+00  0:0:02 chol  1  1
+ 5  0.961 0.961 1.2e-04 3.2e-04  1.1e-02  6.758338e+00  0:0:03 chol  1  1
+ 6  0.946 0.946 8.2e-06 2.1e-05  6.8e-04  6.759455e+00  0:0:04 chol  1  1
+ 7  0.977 0.977 4.2e-07 1.1e-06  3.6e-05  6.759496e+00  0:0:04 chol  1  1
+ 8  1.000 1.000 3.2e-08 8.4e-08  3.6e-06  6.759499e+00  0:0:05 chol
+  SWM to ill-conditioned, switch to LU factor. lu   1  1
+ 9  1.000 1.000 2.9e-09 5.9e-09  2.5e-07  6.759500e+00  0:0:06 lu   1  1
+10  1.000 1.000 3.8e-10 2.6e-10  1.0e-08  6.759500e+00  0:0:07
+  Stop: max(relative gap, infeasibilities) &lt; 1.49e-08
+-------------------------------------------------------------------
+ number of iterations   = 10
+ primal objective value =  6.75949960e+00
+ dual   objective value =  6.75949960e+00
+ gap := trace(XZ)       = 1.03e-08
+ relative gap           = 1.33e-09
+ actual relative gap    = 1.42e-10
+ rel. primal infeas     = 3.78e-10
+ rel. dual   infeas     = 2.62e-10
+ norm(X), norm(y), norm(Z) = 1.0e+01, 8.7e+00, 6.3e+00
+ norm(A), norm(b), norm(C) = 3.8e+01, 8.4e+00, 1.4e+00
+ Total CPU time (secs)  = 7.3  
+ CPU time per iteration = 0.7  
+ termination code       =  0
+ DIMACS: 3.8e-10  0.0e+00  2.6e-10  0.0e+00  1.4e-10  7.1e-10
+-------------------------------------------------------------------
+------------------------------------------------------------
 Status: Solved
 Optimal value (cvx_optval): +6.7595
 </pre><img vspace="5" hspace="5" src="wcrobls_01.png"> <p class="footer"><br>
-            Published with MATLAB&reg; 7.2<br></p>
+            Published with MATLAB&reg; 7.4<br></p>
       </div>
       <!--
 ##### SOURCE BEGIN #####

@@ -1,3 +1,6 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN">
 <html xmlns:mwsh="http://www.mathworks.com/namespace/mcode/v1/syntaxhighlight.dtd">
    <head>
       <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
@@ -7,8 +10,8 @@ This HTML is auto-generated from an M-file.
 To make changes, update the M-file and republish this document.
       -->
       <title>Section 8.2.2: Separating polyhedra in 2D</title>
-      <meta name="generator" content="MATLAB 7.2">
-      <meta name="date" content="2006-05-20">
+      <meta name="generator" content="MATLAB 7.4">
+      <meta name="date" content="2007-06-26">
       <meta name="m-file" content="separate_poly_2D"><style>
 
 body {
@@ -27,14 +30,11 @@ h2 {
 }
 
 /* Make the text shrink to fit narrow windows, but not stretch too far in 
-wide windows.  On Gecko-based browsers, the shrink-to-fit doesn't work. */ 
+wide windows. */ 
 p,h1,h2,div.content div {
-  /* for MATLAB's browser */
-  width: 600px;
-  /* for Mozilla, but the "width" tag overrides it anyway */
   max-width: 600px;
-  /* for IE */
-  width:expression(document.body.clientWidth > 620 ? "600px": "auto" );
+  /* Hack for IE6 */
+  width: auto !important; width: 600px;
 }
 
 pre.codeinput {
@@ -126,34 +126,49 @@ hold <span class="string">on</span>;
 plot(t,p)
 title(<span class="string">'Separating 2 polyhedra by a hyperplane'</span>);
 </pre><pre class="codeoutput">Finding a separating hyperplane between the 2 polyhedra... 
-Calling SeDuMi: 11 variables (0 free), 5 equality constraints
-------------------------------------------------------------------------
-SeDuMi 1.1 by AdvOL, 2005 and Jos F. Sturm, 1998, 2001-2003.
-Alg = 2: xz-corrector, Adaptive Step-Differentiation, theta = 0.250, beta = 0.500
-eqs m = 5, order n = 11, dim = 12, blocks = 2
-nnz(A) = 17 + 0, nnz(ADA) = 25, nnz(L) = 15
- it :     b*y       gap    delta  rate   t/tP*  t/tD*   feas cg cg  prec
-  0 :            1.25E+001 0.000
-  1 : -1.28E+000 3.97E+000 0.000 0.3167 0.9000 0.9000   2.37  1  1  1.8E+000
-  2 : -2.11E+000 7.52E-001 0.000 0.1897 0.9000 0.9000   1.38  1  1  2.9E-001
-  3 : -2.12E+000 3.80E-002 0.000 0.0506 0.9900 0.9900   1.07  1  1  1.4E-002
-  4 : -2.12E+000 6.95E-003 0.000 0.1828 0.9000 0.9000   1.01  1  1  2.6E-003
-  5 : -2.12E+000 1.81E-004 0.000 0.0260 0.9900 0.9900   1.00  1  1  7.7E-005
-  6 : -2.12E+000 2.90E-005 0.075 0.1602 0.9000 0.4777   1.00  1  1  1.8E-005
-  7 : -2.12E+000 1.02E-007 0.000 0.0035 0.9990 0.9990   1.00  1  1  1.4E-007
-  8 : -2.12E+000 3.48E-009 0.000 0.0342 0.9000 0.7312   1.00  2  2  2.8E-008
-  9 : -2.12E+000 9.28E-010 0.000 0.2671 0.9000 0.9000   1.00  2  2  7.4E-009
+Calling SDPT3: 11 variables, 5 equality constraints
+------------------------------------------------------------
 
-iter seconds digits       c*x               b*y
-  9      0.1   Inf -2.1213203161e+000 -2.1213203136e+000
-|Ax-b| =  2.9e-010, [Ay-c]_+ =  2.3E-008, |x|= 1.9e+000, |y|= 3.9e+000
-
-Detailed timing (sec)
-   Pre          IPM          Post
-0.000E+000    6.009E-002    0.000E+000    
-Max-norms: ||b||=1, ||c|| = 5,
-Cholesky |add|=0, |skip| = 0, ||L.L|| = 2165.92.
-------------------------------------------------------------------------
+ num. of constraints =  5
+ dim. of socp   var  =  3,   num. of socp blk  =  1
+ dim. of linear var  =  8
+*******************************************************************
+   SDPT3: homogeneous self-dual path-following algorithms
+*******************************************************************
+ version  predcorr  gam  expon
+    NT      1      0.000   1
+it  pstep dstep p_infeas d_infeas  gap     mean(obj)    cputime
+-------------------------------------------------------------------
+ 0  0.000 0.000 0.0e+00 1.2e+00  9.0e+00  6.000000e+00  0:0:00 chol  1  1
+ 1  0.972 0.972 2.5e-15 7.3e-01  1.1e+01  2.962752e+00  0:0:00 chol  1  1
+ 2  1.000 1.000 1.5e-15 2.2e-01  3.2e+00 -1.038609e+00  0:0:00 chol  1  1
+ 3  0.970 0.970 2.9e-15 3.7e-02  3.5e-01 -1.945954e+00  0:0:00 chol  1  1
+ 4  0.954 0.954 4.4e-15 5.8e-03  3.6e-02 -2.102353e+00  0:0:00 chol  1  1
+ 5  1.000 1.000 1.1e-14 7.4e-04  5.5e-03 -2.119009e+00  0:0:00 chol  1  1
+ 6  0.990 0.990 4.6e-15 6.9e-05  6.9e-05 -2.121160e+00  0:0:00 chol  1  1
+ 7  1.000 1.000 7.4e-14 5.8e-06  2.0e-06 -2.121307e+00  0:0:00 chol  1  1
+ 8  1.000 1.000 6.7e-13 5.0e-07  3.2e-07 -2.121319e+00  0:0:00 chol  1  1
+ 9  1.000 1.000 1.1e-12 7.7e-08  7.8e-07 -2.121320e+00  0:0:00 chol  1  1
+10  1.000 1.000 1.8e-13 1.2e-08  1.2e-07 -2.121320e+00  0:0:00 chol  1  1
+11  1.000 1.000 2.0e-13 1.8e-09  1.8e-08 -2.121320e+00  0:0:00
+  Stop: max(relative gap, infeasibilities) &lt; 1.49e-08
+-------------------------------------------------------------------
+ number of iterations   = 11
+ primal objective value = -2.12132033e+00
+ dual   objective value = -2.12132034e+00
+ gap := trace(XZ)       = 1.82e-08
+ relative gap           = 5.82e-09
+ actual relative gap    = 1.94e-09
+ rel. primal infeas     = 2.01e-13
+ rel. dual   infeas     = 1.79e-09
+ norm(X), norm(y), norm(Z) = 1.9e+00, 3.9e+00, 6.6e+00
+ norm(A), norm(b), norm(C) = 1.1e+01, 1.0e+00, 8.1e+00
+ Total CPU time (secs)  = 0.2  
+ CPU time per iteration = 0.0  
+ termination code       =  0
+ DIMACS: 2.0e-13  0.0e+00  1.8e-09  0.0e+00  1.9e-09  3.5e-09
+-------------------------------------------------------------------
+------------------------------------------------------------
 Status: Solved
 Optimal value (cvx_optval): +2.12132
 Done! 
@@ -161,7 +176,7 @@ Done!
 The distance between the 2 polyhedra C and D is: 
 dist(C,D) = 2.1213
 </pre><img vspace="5" hspace="5" src="separate_poly_2D_01.png"> <p class="footer"><br>
-            Published with MATLAB&reg; 7.2<br></p>
+            Published with MATLAB&reg; 7.4<br></p>
       </div>
       <!--
 ##### SOURCE BEGIN #####

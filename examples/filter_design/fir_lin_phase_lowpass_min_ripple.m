@@ -65,7 +65,7 @@ cvx_end
 
 % check if problem was successfully solved
 disp(['Problem is ' cvx_status])
-if ~strcmp(cvx_status,'Solved')
+if ~strfind(cvx_status,'Solved')
   return
 else
   % construct the full impulse response

@@ -1,3 +1,6 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN">
 <html xmlns:mwsh="http://www.mathworks.com/namespace/mcode/v1/syntaxhighlight.dtd">
    <head>
       <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
@@ -7,8 +10,8 @@ This HTML is auto-generated from an M-file.
 To make changes, update the M-file and republish this document.
       -->
       <title>Maximize stopband attenuation of a bandpass IIR filter</title>
-      <meta name="generator" content="MATLAB 7.2">
-      <meta name="date" content="2006-05-20">
+      <meta name="generator" content="MATLAB 7.4">
+      <meta name="date" content="2007-06-27">
       <meta name="m-file" content="iir_mag_design_bandpass_max_atten"><style>
 
 body {
@@ -27,14 +30,11 @@ h2 {
 }
 
 /* Make the text shrink to fit narrow windows, but not stretch too far in 
-wide windows.  On Gecko-based browsers, the shrink-to-fit doesn't work. */ 
+wide windows. */ 
 p,h1,h2,div.content div {
-  /* for MATLAB's browser */
-  width: 600px;
-  /* for Mozilla, but the "width" tag overrides it anyway */
   max-width: 600px;
-  /* for IE */
-  width:expression(document.body.clientWidth > 620 ? "600px": "auto" );
+  /* Hack for IE6 */
+  width: auto !important; width: 600px;
 }
 
 pre.codeinput {
@@ -181,7 +181,7 @@ Us_bot = 1e-8; <span class="comment">% -80 dB (in original variables)</span>
   cvx_end
 
   <span class="comment">% bisection</span>
-  <span class="keyword">if</span> strcmp(cvx_status,<span class="string">'Solved'</span>) <span class="comment">% feasible</span>
+  <span class="keyword">if</span> strfind(cvx_status,<span class="string">'Solved'</span>) <span class="comment">% feasible</span>
     fprintf(1,<span class="string">'Problem is feasible for stopband atten = %3.2f dB\n'</span>, <span class="keyword">...</span>
                10*log10(Us_cur));
     Us_top = Us_cur;
@@ -233,35 +233,35 @@ Problem not feasible for stopband atten = -30.00 dB
 Problem not feasible for stopband atten = -25.00 dB
 Problem not feasible for stopband atten = -22.50 dB
 Problem not feasible for stopband atten = -21.25 dB
-Problem is feasible for stopband atten = -20.63 dB
+Problem is feasible for stopband atten = -20.62 dB
 Problem not feasible for stopband atten = -20.94 dB
 
-Optimum min stopband atten is between -20.94 and -20.63 dB.
+Optimum min stopband atten is between -20.94 and -20.62 dB.
 Optimal IIR filter coefficients are: 
 Numerator: 
 
 b =
 
-    0.0482
-    0.0059
-    0.0503
-    0.0209
-    0.0293
-    0.0338
+   0.048488228736700
+   0.006365082552160
+   0.049789143077810
+   0.021694314724701
+   0.028827398736221
+   0.034013971743844
 
 Denominator: 
 
 a =
 
-    0.5067
-    0.0094
-    0.7359
-    0.2894
-    0.2419
-    0.2434
+   0.506259477933294
+   0.014220562499121
+   0.732476367025007
+   0.297882804699054
+   0.239187495824855
+   0.247047899931216
 
 </pre><img vspace="5" hspace="5" src="iir_mag_design_bandpass_max_atten_01.png"> <p class="footer"><br>
-            Published with MATLAB&reg; 7.2<br></p>
+            Published with MATLAB&reg; 7.4<br></p>
       </div>
       <!--
 ##### SOURCE BEGIN #####
@@ -377,7 +377,7 @@ while( 20*log10(Us_top/Us_bot) > 1)
   cvx_end
 
   % bisection
-  if strcmp(cvx_status,'Solved') % feasible
+  if strfind(cvx_status,'Solved') % feasible
     fprintf(1,'Problem is feasible for stopband atten = %3.2f dB\n', ...
                10*log10(Us_cur));
     Us_top = Us_cur;

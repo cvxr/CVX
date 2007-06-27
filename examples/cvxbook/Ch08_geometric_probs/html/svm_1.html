@@ -1,3 +1,6 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN">
 <html xmlns:mwsh="http://www.mathworks.com/namespace/mcode/v1/syntaxhighlight.dtd">
    <head>
       <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
@@ -7,8 +10,8 @@ This HTML is auto-generated from an M-file.
 To make changes, update the M-file and republish this document.
       -->
       <title>Figure 8.10: Approximate linear discrimination via linear programming</title>
-      <meta name="generator" content="MATLAB 7.2">
-      <meta name="date" content="2006-05-20">
+      <meta name="generator" content="MATLAB 7.4">
+      <meta name="date" content="2007-06-26">
       <meta name="m-file" content="svm_1"><style>
 
 body {
@@ -27,14 +30,11 @@ h2 {
 }
 
 /* Make the text shrink to fit narrow windows, but not stretch too far in 
-wide windows.  On Gecko-based browsers, the shrink-to-fit doesn't work. */ 
+wide windows. */ 
 p,h1,h2,div.content div {
-  /* for MATLAB's browser */
-  width: 600px;
-  /* for Mozilla, but the "width" tag overrides it anyway */
   max-width: 600px;
-  /* for IE */
-  width:expression(document.body.clientWidth > 620 ? "600px": "auto" );
+  /* Hack for IE6 */
+  width: auto !important; width: 600px;
 }
 
 pre.codeinput {
@@ -125,44 +125,60 @@ axis <span class="string">equal</span>
 title(<span class="string">'Approximate linear discrimination via linear programming'</span>);
 <span class="comment">% print -deps svc-discr.eps</span>
 </pre><pre class="codeoutput"> 
-Calling SeDuMi: 203 variables (3 free), 100 equality constraints
-------------------------------------------------------------------------
-SeDuMi 1.1 by AdvOL, 2005 and Jos F. Sturm, 1998, 2001-2003.
-Alg = 2: xz-corrector, Adaptive Step-Differentiation, theta = 0.250, beta = 0.500
-Split 3 free variables
-eqs m = 100, order n = 207, dim = 207, blocks = 1
-nnz(A) = 200 + 600, nnz(ADA) = 100, nnz(L) = 100
-Handling 6 + 0 dense columns.
- it :     b*y       gap    delta  rate   t/tP*  t/tD*   feas cg cg  prec
-  0 :            5.18E+001 0.000
-  1 :  1.53E+001 2.32E+001 0.000 0.4484 0.9000 0.9000   2.92  1  1  1.4E+000
-  2 :  1.38E+001 6.94E+000 0.000 0.2989 0.9000 0.9000   1.34  1  1  5.7E-001
-  3 :  1.12E+001 2.10E+000 0.000 0.3032 0.9000 0.9000   0.87  1  1  3.0E-001
-  4 :  1.03E+001 1.05E+000 0.000 0.4984 0.9000 0.9000   0.79  1  1  2.1E-001
-  5 :  9.94E+000 6.88E-001 0.000 0.6561 0.9000 0.9000   0.68  1  1  1.8E-001
-  6 :  9.50E+000 2.38E-001 0.000 0.3459 0.9000 0.9000   0.37  1  1  1.8E-001
-  7 :  8.22E+000 1.34E-001 0.000 0.5623 0.9000 0.9000   0.13  1  1  1.3E-001
-  8 :  7.83E+000 8.96E-002 0.000 0.6698 0.9000 0.9000   0.62  1  1  1.2E-001
-  9 :  7.65E+000 7.10E-002 0.000 0.7920 0.9000 0.9000   0.27  1  1  1.2E-001
- 10 :  6.79E+000 3.11E-002 0.000 0.4378 0.9000 0.9000   0.79  1  1  6.2E-002
- 11 :  6.47E+000 1.43E-002 0.000 0.4609 0.9000 0.9000   0.85  1  1  3.3E-002
- 12 :  6.36E+000 7.87E-003 0.000 0.5494 0.9000 0.9000   0.83  1  1  2.2E-002
- 13 :  6.21E+000 2.33E-003 0.000 0.2957 0.9000 0.9000   0.93  1  1  6.6E-003
- 14 :  6.15E+000 1.05E-004 0.000 0.0452 0.9900 0.9900   0.96  1  1  
-iter seconds digits       c*x               b*y
- 14      0.1  14.8  6.1485694323e+000  6.1485694323e+000
-|Ax-b| =  9.8e-014, [Ay-c]_+ =  2.1E-015, |x|= 9.0e+001, |y|= 2.4e+000
+Calling SDPT3: 203 variables, 100 equality constraints
+------------------------------------------------------------
 
-Detailed timing (sec)
-   Pre          IPM          Post
-0.000E+000    1.102E-001    0.000E+000    
-Max-norms: ||b||=1, ||c|| = 1,
-Cholesky |add|=0, |skip| = 0, ||L.L|| = 1.
-------------------------------------------------------------------------
+ num. of constraints = 100
+ dim. of linear var  = 200
+ dim. of free   var  =  3 *** convert ublk to linear blk
+*******************************************************************
+   SDPT3: homogeneous self-dual path-following algorithms
+*******************************************************************
+ version  predcorr  gam  expon
+    NT      1      0.000   1
+it  pstep dstep p_infeas d_infeas  gap     mean(obj)    cputime
+-------------------------------------------------------------------
+ 0  0.000 0.000 5.0e+00 5.1e+00  2.1e+02  5.000000e+01  0:0:00 chol  1  1
+ 1  1.000 1.000 2.7e+00 2.8e+00  2.2e+02  7.209176e+01  0:0:00 chol  1  1
+ 2  0.926 0.926 6.6e-01 6.8e-01  6.1e+01  2.761659e+01  0:0:00 chol  1  1
+ 3  0.794 0.794 2.1e-01 2.1e-01  2.1e+01  1.489751e+01  0:0:00 chol  1  1
+ 4  0.558 0.558 1.5e-01 1.6e-01  1.8e+01  1.343433e+01  0:0:00 chol  1  1
+ 5  0.876 0.876 8.4e-02 8.7e-02  1.4e+01  1.131771e+01  0:0:00 chol  1  1
+ 6  0.449 0.449 7.2e-02 7.4e-02  1.1e+01  1.014891e+01  0:0:00 chol  1  1
+ 7  0.644 0.644 6.2e-02 6.4e-02  1.1e+01  9.720256e+00  0:0:00 chol  1  1
+ 8  0.743 0.743 5.1e-02 5.2e-02  9.8e+00  9.100924e+00  0:0:00 chol  1  1
+ 9  1.000 1.000 2.9e-02 3.0e-02  5.6e+00  7.866734e+00  0:0:00 chol  1  1
+10  1.000 1.000 1.1e-02 1.1e-02  2.2e+00  6.857502e+00  0:0:00 chol  1  1
+11  1.000 1.000 3.5e-03 3.6e-03  7.6e-01  6.420757e+00  0:0:00 chol  1  1
+12  1.000 1.000 1.7e-03 1.7e-03  3.6e-01  6.271626e+00  0:0:00 chol  1  1
+13  0.923 0.923 2.0e-04 2.1e-04  4.3e-02  6.163494e+00  0:0:00 chol  1  1
+14  0.987 0.987 3.7e-06 3.8e-06  5.7e-04  6.148842e+00  0:0:00 chol  1  1
+15  0.997 0.997 9.1e-08 9.3e-08  1.5e-05  6.148576e+00  0:0:00 chol
+  SWM to ill-conditioned, switch to LU factor. lu   1  1
+16  1.000 1.000 1.5e-08 1.7e-09  3.0e-07  6.148570e+00  0:0:00 lu   1  1
+17  1.000 1.000 1.2e-09 2.9e-11  5.8e-09  6.148569e+00  0:0:00
+  Stop: max(relative gap, infeasibilities) &lt; 1.49e-08
+-------------------------------------------------------------------
+ number of iterations   = 17
+ primal objective value =  6.14856943e+00
+ dual   objective value =  6.14856943e+00
+ gap := trace(XZ)       = 5.82e-09
+ relative gap           = 8.14e-10
+ actual relative gap    = -1.44e-11
+ rel. primal infeas     = 1.19e-09
+ rel. dual   infeas     = 2.89e-11
+ norm(X), norm(y), norm(Z) = 8.9e+01, 2.4e+00, 1.0e+01
+ norm(A), norm(b), norm(C) = 7.4e+01, 1.0e+01, 1.0e+01
+ Total CPU time (secs)  = 0.5  
+ CPU time per iteration = 0.0  
+ termination code       =  0
+ DIMACS: 1.2e-09  0.0e+00  2.9e-11  0.0e+00  -1.4e-11  4.4e-10
+-------------------------------------------------------------------
+------------------------------------------------------------
 Status: Solved
 Optimal value (cvx_optval): +6.14857
 </pre><img vspace="5" hspace="5" src="svm_1_01.png"> <p class="footer"><br>
-            Published with MATLAB&reg; 7.2<br></p>
+            Published with MATLAB&reg; 7.4<br></p>
       </div>
       <!--
 ##### SOURCE BEGIN #####

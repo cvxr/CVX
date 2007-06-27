@@ -1,3 +1,6 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN">
 <html xmlns:mwsh="http://www.mathworks.com/namespace/mcode/v1/syntaxhighlight.dtd">
    <head>
       <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
@@ -7,8 +10,8 @@ This HTML is auto-generated from an M-file.
 To make changes, update the M-file and republish this document.
       -->
       <title>Polynomial discrimination</title>
-      <meta name="generator" content="MATLAB 7.2">
-      <meta name="date" content="2006-05-20">
+      <meta name="generator" content="MATLAB 7.4">
+      <meta name="date" content="2007-06-26">
       <meta name="m-file" content="poly4_discr"><style>
 
 body {
@@ -27,14 +30,11 @@ h2 {
 }
 
 /* Make the text shrink to fit narrow windows, but not stretch too far in 
-wide windows.  On Gecko-based browsers, the shrink-to-fit doesn't work. */ 
+wide windows. */ 
 p,h1,h2,div.content div {
-  /* for MATLAB's browser */
-  width: 600px;
-  /* for Mozilla, but the "width" tag overrides it anyway */
   max-width: 600px;
-  /* for IE */
-  width:expression(document.body.clientWidth > 620 ? "600px": "auto" );
+  /* Hack for IE6 */
+  width: auto !important; width: 600px;
 }
 
 pre.codeinput {
@@ -84,41 +84,42 @@ p.footer {
 <span class="comment">%                       P(y_i) &gt;= t   for i = 1,...,M</span>
 
 <span class="comment">% Data generation</span>
-rand(<span class="string">'state'</span>,0);  randn(<span class="string">'state'</span>,0);
-N=100;
-M=120;
-X1 = -1+2*rand(2,N);  X1 = X1*diag(0.9*rand(1,N)./sqrt(sum(X1.^2)));
-ind = find(sqrt(sum((X1-[1.1*ones(1,N);zeros(1,N)]).^2)) &lt; 0.9);
-Y1 = X1(:,ind);
-ind = find(sqrt(sum((X1-[1.1*ones(1,N);zeros(1,N)]).^2)) &gt; 1);
-X = X1(:,ind);
-Y = -1+2*rand(2,M);  Y = Y*diag((1.1+rand(1,M))./sqrt(sum(Y.^2)));
-Y = [Y Y1];
+rand(<span class="string">'state'</span>,0);
+N = 100;
+M = 120;
 
+<span class="comment">% The points X lie within a circle of radius 0.9, with a wedge of points</span>
+<span class="comment">% near [1.1,0] removed. The points Y lie outside a circle of radius 1.1,</span>
+<span class="comment">% with a wedge of points near [1.1,0] added. The wedges are precisely what</span>
+<span class="comment">% makes the separation difficult and interesting.</span>
+X = 2 * rand(2,N) - 1;
+X = X * diag(0.9*rand(1,N)./sqrt(sum(X.^2)));
+Y = 2 * rand(2,M) - 1;
+Y = Y * diag((1.1+rand(1,M))./sqrt(sum(Y.^2)));
+d = sqrt(sum((X-[1.1;0]*ones(1,N)).^2));
+Y = [ Y, X(:,d&lt;0.9) ];
+X = X(:,d&gt;1);
 N = size(X,2);
 M = size(Y,2);
-<span class="comment">% "Vandermonde"-like matrix</span>
-monX = [ ones(1,N); X(1,:); X(2,:); X(1,:).^2;  X(1,:).*X(2,:); <span class="keyword">...</span>
-         X(2,:).^2;  X(1,:).^3;  X(2,:).^2.*X(2,:); <span class="keyword">...</span>
-         X(1,:).*X(2,:).^2;  X(2,:).^3;  X(1,:).^4; <span class="keyword">...</span>
-         X(1,:).^3.*X(2,:); X(1,:).^2.*X(2,:).^2; X(1,:).*X(2,:).^3; <span class="keyword">...</span>
-         X(2,:).^4 ];
-monY = [ones(1,M); Y(1,:); Y(2,:); Y(1,:).^2;  Y(1,:).*Y(2,:); <span class="keyword">...</span>
-        Y(2,:).^2;  Y(1,:).^3;  Y(2,:).^2.*Y(2,:); <span class="keyword">...</span>
-        Y(1,:).*Y(2,:).^2;  Y(2,:).^3;  Y(1,:).^4; <span class="keyword">...</span>
-        Y(1,:).^3.*Y(2,:); Y(1,:).^2.*Y(2,:).^2; Y(1,:).*Y(2,:).^3; <span class="keyword">...</span>
-        Y(2,:).^4 ];
 
-[m1,m2] = size(monX);
+<span class="comment">% Construct Vandermonde-style monomial matrices</span>
+p1   = [0,0,1,0,1,2,0,1,2,3,0,1,2,3,4]';
+p2   = [0,1,1,2,2,2,3,3,3,3,4,4,4,4,4]'-p1;
+np   = length(p1);
+op   = ones(np,1);
+monX = X(op,:) .^ p1(:,ones(1,N)) .* X(2*op,:) .^ p2(:,ones(1,N));
+monY = Y(op,:) .^ p1(:,ones(1,M)) .* Y(2*op,:) .^ p2(:,ones(1,M));
 
 <span class="comment">% Solution via CVX</span>
 fprintf(1,<span class="string">'Finding the optimal polynomial of order 4 that separates the 2 classes...'</span>);
 
 cvx_begin
-    variables <span class="string">a(m1)</span> <span class="string">t(1)</span>
+    variables <span class="string">a(np)</span> <span class="string">t(1)</span>
     minimize ( t )
     a'*monX &lt;= t;
     a'*monY &gt;= -t;
+    <span class="comment">% For normalization purposes only</span>
+    norm(a) &lt;= 1;
 cvx_end
 
 fprintf(1,<span class="string">'Done! \n'</span>);
@@ -130,15 +131,16 @@ cont = zeros(2,nopts);
 <span class="keyword">for</span> i=1:nopts
    v = [cos(angles(i)); sin(angles(i))];
    l = 0;  u = 1;
-   <span class="keyword">while</span> (u-l &gt; 1e-3)
+   <span class="keyword">while</span> ( u - l &gt; 1e-3 )
       s = (u+l)/2;
-      x = s*v;
-      <span class="keyword">if</span> (a'*[1; x(1); x(2); x(1)^2; x(1)*x(2); x(2)^2; x(1)^3; <span class="keyword">...</span>
-             x(1)^2*x(2); x(1)*x(2)^2; x(2)^3; x(1)^4; x(1)^3*x(2); <span class="keyword">...</span>
-             x(1)^2*x(2)^2; x(1)*x(2)^3; x(2)^4]  &gt; 0), u = s;
-      <span class="keyword">else</span>, l=s;
-      <span class="keyword">end</span>;
+      x = s * v;
+      <span class="keyword">if</span> a' * ( x(op,:) .^ p1 .* x(2*op) .^ p2 ) &gt; 0,
+          u = s;
+      <span class="keyword">else</span>
+          l = s;
+      <span class="keyword">end</span>
    <span class="keyword">end</span>;
+   s = (u+l)/2;
    cont(:,i) = s*v;
 <span class="keyword">end</span>;
 
@@ -149,39 +151,63 @@ title(<span class="string">'Optimal order-4 polynomial that separates the 2 clas
 
 <span class="comment">%%%% Dual infeasible ?????</span>
 </pre><pre class="codeoutput">Finding the optimal polynomial of order 4 that separates the 2 classes... 
-Calling SeDuMi: 227 variables (16 free), 211 equality constraints
-------------------------------------------------------------------------
-SeDuMi 1.1 by AdvOL, 2005 and Jos F. Sturm, 1998, 2001-2003.
-Alg = 2: xz-corrector, Adaptive Step-Differentiation, theta = 0.250, beta = 0.500
-Split 16 free variables
-eqs m = 211, order n = 244, dim = 244, blocks = 1
-nnz(A) = 211 + 6752, nnz(ADA) = 211, nnz(L) = 211
-Handling 32 + 0 dense columns.
- it :     b*y       gap    delta  rate   t/tP*  t/tD*   feas cg cg  prec
-  0 :            1.00E-001 0.000
-  1 :  0.00E+000 3.94E-002 0.000 0.3926 0.9000 0.9000   1.98  1  1  1.7E+000
-  2 :  0.00E+000 2.61E-002 0.000 0.6616 0.9000 0.9000   9.06  1  1  2.2E-001
-  3 :  0.00E+000 1.37E-002 0.000 0.5260 0.9000 0.9000   5.62  1  1  8.1E-002
-  4 :  0.00E+000 5.73E-003 0.000 0.4174 0.9000 0.9000   1.65  1  1  5.3E-002
-  5 :  0.00E+000 2.30E-003 0.000 0.4021 0.9000 0.9000   0.60  1  1  6.3E-002
-  6 :  0.00E+000 6.09E-004 0.000 0.2646 0.9000 0.9000  -0.26  1  1  1.9E-001
-  7 :  0.00E+000 1.87E-005 0.000 0.0307 0.9900 0.9900  -0.77  1  1  5.3E-003
-  8 :  0.00E+000 6.99E-010 0.000 0.0000 1.0000 1.0000  -0.99  1  1  
-Dual infeasible, primal improving direction found.
-iter seconds  |Ax|    [Ay]_+     |x|       |y|
-  8      0.2  6.1e-012  3.3e-018  3.3e+003  6.6e-018
+Calling SDPT3: 228 variables, 212 equality constraints
+------------------------------------------------------------
 
-Detailed timing (sec)
-   Pre          IPM          Post
-3.004E-002    1.702E-001    0.000E+000    
-Max-norms: ||b||=0, ||c|| = 1,
-Cholesky |add|=0, |skip| = 0, ||L.L|| = 1.
-------------------------------------------------------------------------
-Status: Unbounded
-Optimal value (cvx_optval): -Inf
+ num. of constraints = 212
+ dim. of socp   var  = 16,   num. of socp blk  =  1
+ dim. of linear var  = 211
+ dim. of free   var  =  1 *** convert ublk to linear blk
+*******************************************************************
+   SDPT3: homogeneous self-dual path-following algorithms
+*******************************************************************
+ version  predcorr  gam  expon
+    NT      1      0.000   1
+it  pstep dstep p_infeas d_infeas  gap     mean(obj)    cputime
+-------------------------------------------------------------------
+ 0  0.000 0.000 7.3e+00 7.3e+00  2.1e+02  0.000000e+00  0:0:00 chol  1  1
+ 1  1.000 1.000 3.5e+00 3.5e+00  2.0e+02  2.284259e-01  0:0:00 chol  1  1
+ 2  0.908 0.908 3.3e-01 3.4e-01  1.9e+01  7.859132e-01  0:0:00 chol  1  1
+ 3  0.675 0.675 2.1e-01 2.1e-01  1.4e+01  7.224551e-01  0:0:00 chol  1  1
+ 4  0.700 0.700 7.5e-02 7.6e-02  4.0e+00  3.148302e-01  0:0:00 chol  1  1
+ 5  1.000 1.000 1.5e-02 1.5e-02  8.3e-01  5.779988e-02  0:0:00 chol  1  1
+ 6  0.563 0.563 1.2e-02 1.3e-02  7.7e-01  6.717503e-02  0:0:01 chol  1  1
+ 7  1.000 1.000 7.8e-03 7.9e-03  5.0e-01  3.254145e-03  0:0:01 chol  1  1
+ 8  1.000 1.000 4.4e-03 4.5e-03  2.7e-01 -2.987113e-02  0:0:01 chol  1  1
+ 9  1.000 1.000 1.8e-03 1.8e-03  1.0e-01 -5.311133e-02  0:0:01 chol  1  1
+10  0.548 0.548 1.5e-03 1.5e-03  8.7e-02 -4.382293e-02  0:0:01 chol  1  1
+11  0.945 0.945 4.0e-04 4.1e-04  2.3e-02 -4.300688e-02  0:0:01 chol  1  1
+12  0.998 0.998 2.0e-04 2.0e-04  1.1e-02 -4.288206e-02  0:0:01 chol  1  1
+13  1.000 1.000 9.2e-05 9.3e-05  5.1e-03 -4.200712e-02  0:0:01 chol  1  1
+14  0.951 0.951 1.2e-05 1.3e-05  6.7e-04 -4.113048e-02  0:0:01 chol  1  1
+15  1.000 1.000 3.0e-06 3.0e-06  1.6e-04 -4.102842e-02  0:0:01 chol  1  1
+16  1.000 1.000 3.9e-07 3.9e-07  2.1e-05 -4.099766e-02  0:0:01 chol  1  1
+17  1.000 1.000 1.6e-08 1.6e-08  8.2e-07 -4.099338e-02  0:0:01 chol
+  SWM to ill-conditioned, switch to LU factor. lu   1  1
+18  1.000 1.000 5.7e-10 3.1e-10  1.3e-08 -4.099323e-02  0:0:02
+  Stop: max(relative gap, infeasibilities) &lt; 1.49e-08
+-------------------------------------------------------------------
+ number of iterations   = 18
+ primal objective value = -4.09932249e-02
+ dual   objective value = -4.09932300e-02
+ gap := trace(XZ)       = 1.33e-08
+ relative gap           = 1.28e-08
+ actual relative gap    = 4.72e-09
+ rel. primal infeas     = 5.71e-10
+ rel. dual   infeas     = 3.10e-10
+ norm(X), norm(y), norm(Z) = 2.1e+01, 5.5e-01, 5.6e-01
+ norm(A), norm(b), norm(C) = 1.0e+02, 1.0e+00, 1.4e+00
+ Total CPU time (secs)  = 1.5  
+ CPU time per iteration = 0.1  
+ termination code       =  0
+ DIMACS: 5.7e-10  0.0e+00  3.1e-10  0.0e+00  4.7e-09  1.2e-08
+-------------------------------------------------------------------
+------------------------------------------------------------
+Status: Solved
+Optimal value (cvx_optval): -0.0409932
 Done! 
 </pre><img vspace="5" hspace="5" src="poly4_discr_01.png"> <p class="footer"><br>
-            Published with MATLAB&reg; 7.2<br></p>
+            Published with MATLAB&reg; 7.4<br></p>
       </div>
       <!--
 ##### SOURCE BEGIN #####
@@ -200,41 +226,42 @@ Done!
 %                       P(y_i) >= t   for i = 1,...,M
 
 % Data generation
-rand('state',0);  randn('state',0);
-N=100;
-M=120;
-X1 = -1+2*rand(2,N);  X1 = X1*diag(0.9*rand(1,N)./sqrt(sum(X1.^2)));
-ind = find(sqrt(sum((X1-[1.1*ones(1,N);zeros(1,N)]).^2)) < 0.9);
-Y1 = X1(:,ind);
-ind = find(sqrt(sum((X1-[1.1*ones(1,N);zeros(1,N)]).^2)) > 1);
-X = X1(:,ind);
-Y = -1+2*rand(2,M);  Y = Y*diag((1.1+rand(1,M))./sqrt(sum(Y.^2)));
-Y = [Y Y1];
+rand('state',0);
+N = 100;
+M = 120;
 
+% The points X lie within a circle of radius 0.9, with a wedge of points
+% near [1.1,0] removed. The points Y lie outside a circle of radius 1.1,
+% with a wedge of points near [1.1,0] added. The wedges are precisely what
+% makes the separation difficult and interesting.
+X = 2 * rand(2,N) - 1;
+X = X * diag(0.9*rand(1,N)./sqrt(sum(X.^2)));
+Y = 2 * rand(2,M) - 1;
+Y = Y * diag((1.1+rand(1,M))./sqrt(sum(Y.^2)));
+d = sqrt(sum((X-[1.1;0]*ones(1,N)).^2));
+Y = [ Y, X(:,d<0.9) ];
+X = X(:,d>1);
 N = size(X,2);
 M = size(Y,2);
-% "Vandermonde"-like matrix
-monX = [ ones(1,N); X(1,:); X(2,:); X(1,:).^2;  X(1,:).*X(2,:); ...
-         X(2,:).^2;  X(1,:).^3;  X(2,:).^2.*X(2,:); ...
-         X(1,:).*X(2,:).^2;  X(2,:).^3;  X(1,:).^4; ...
-         X(1,:).^3.*X(2,:); X(1,:).^2.*X(2,:).^2; X(1,:).*X(2,:).^3; ...
-         X(2,:).^4 ];
-monY = [ones(1,M); Y(1,:); Y(2,:); Y(1,:).^2;  Y(1,:).*Y(2,:); ...
-        Y(2,:).^2;  Y(1,:).^3;  Y(2,:).^2.*Y(2,:); ...
-        Y(1,:).*Y(2,:).^2;  Y(2,:).^3;  Y(1,:).^4; ...
-        Y(1,:).^3.*Y(2,:); Y(1,:).^2.*Y(2,:).^2; Y(1,:).*Y(2,:).^3; ...
-        Y(2,:).^4 ];
 
-[m1,m2] = size(monX);
+% Construct Vandermonde-style monomial matrices
+p1   = [0,0,1,0,1,2,0,1,2,3,0,1,2,3,4]';
+p2   = [0,1,1,2,2,2,3,3,3,3,4,4,4,4,4]'-p1;
+np   = length(p1);
+op   = ones(np,1);
+monX = X(op,:) .^ p1(:,ones(1,N)) .* X(2*op,:) .^ p2(:,ones(1,N));
+monY = Y(op,:) .^ p1(:,ones(1,M)) .* Y(2*op,:) .^ p2(:,ones(1,M));
 
 % Solution via CVX
 fprintf(1,'Finding the optimal polynomial of order 4 that separates the 2 classes...');
 
 cvx_begin
-    variables a(m1) t(1)
+    variables a(np) t(1)
     minimize ( t )
     a'*monX <= t;
     a'*monY >= -t;
+    % For normalization purposes only
+    norm(a) <= 1;
 cvx_end
 
 fprintf(1,'Done! \n');
@@ -246,15 +273,16 @@ cont = zeros(2,nopts);
 for i=1:nopts
    v = [cos(angles(i)); sin(angles(i))];
    l = 0;  u = 1;
-   while (u-l > 1e-3)
+   while ( u - l > 1e-3 )
       s = (u+l)/2;
-      x = s*v;
-      if (a'*[1; x(1); x(2); x(1)^2; x(1)*x(2); x(2)^2; x(1)^3; ...
-             x(1)^2*x(2); x(1)*x(2)^2; x(2)^3; x(1)^4; x(1)^3*x(2); ...
-             x(1)^2*x(2)^2; x(1)*x(2)^3; x(2)^4]  > 0), u = s;
-      else, l=s;
-      end;
+      x = s * v;
+      if a' * ( x(op,:) .^ p1 .* x(2*op) .^ p2 ) > 0, 
+          u = s; 
+      else
+          l = s;
+      end
    end;
+   s = (u+l)/2;
    cont(:,i) = s*v;
 end;
 

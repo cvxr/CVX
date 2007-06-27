@@ -62,7 +62,7 @@ cvx_end
 
 % check if problem was successfully solved
 disp(['Problem is ' cvx_status])
-if ~strcmp(cvx_status,'Solved')
+if ~strfind(cvx_status,'Solved')
   return
 else
   fprintf(1,'The minimum attenuation in the stopband is %3.2f dB.\n\n',...

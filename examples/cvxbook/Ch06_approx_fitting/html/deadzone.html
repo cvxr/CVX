@@ -1,3 +1,6 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN">
 <html xmlns:mwsh="http://www.mathworks.com/namespace/mcode/v1/syntaxhighlight.dtd">
    <head>
       <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
@@ -7,8 +10,8 @@ This HTML is auto-generated from an M-file.
 To make changes, update the M-file and republish this document.
       -->
       <title>Section 6.1.2: Residual minimization with deadzone penalty</title>
-      <meta name="generator" content="MATLAB 7.2">
-      <meta name="date" content="2006-05-20">
+      <meta name="generator" content="MATLAB 7.4">
+      <meta name="date" content="2007-06-26">
       <meta name="m-file" content="deadzone"><style>
 
 body {
@@ -27,14 +30,11 @@ h2 {
 }
 
 /* Make the text shrink to fit narrow windows, but not stretch too far in 
-wide windows.  On Gecko-based browsers, the shrink-to-fit doesn't work. */ 
+wide windows. */ 
 p,h1,h2,div.content div {
-  /* for MATLAB's browser */
-  width: 600px;
-  /* for Mozilla, but the "width" tag overrides it anyway */
   max-width: 600px;
-  /* for IE */
-  width:expression(document.body.clientWidth > 620 ? "600px": "auto" );
+  /* Hack for IE6 */
+  width: auto !important; width: 600px;
 }
 
 pre.codeinput {
@@ -105,31 +105,49 @@ disp( [ <span class="string">'   A*x-b = [ '</span>, sprintf( <span class="strin
 disp( <span class="string">' '</span> );
 </pre><pre class="codeoutput">Computing the optimal solution of the deadzone approximation problem: 
  
-Calling SeDuMi: 56 variables (8 free), 32 equality constraints
-------------------------------------------------------------------------
-SeDuMi 1.1 by AdvOL, 2005 and Jos F. Sturm, 1998, 2001-2003.
-Alg = 2: xz-corrector, Adaptive Step-Differentiation, theta = 0.250, beta = 0.500
-Split 8 free variables
-eqs m = 32, order n = 65, dim = 65, blocks = 1
-nnz(A) = 336 + 0, nnz(ADA) = 304, nnz(L) = 168
- it :     b*y       gap    delta  rate   t/tP*  t/tD*   feas cg cg  prec
-  0 :            2.38E+001 0.000
-  1 :  1.22E+001 9.04E+000 0.000 0.3794 0.9000 0.9000   4.55  1  1  6.5E-001
-  2 :  1.52E+001 1.98E+000 0.000 0.2186 0.9000 0.9000   1.37  1  1  1.3E-001
-  3 :  1.60E+001 1.66E-002 0.000 0.0084 0.9990 0.9990   1.10  1  1  1.1E-003
-  4 :  1.60E+001 4.85E-008 0.000 0.0000 1.0000 1.0000   1.00  1  1  
-iter seconds digits       c*x               b*y
-  4      0.1  15.3  1.6000000000e+001  1.6000000000e+001
-|Ax-b| =  2.5e-015, [Ay-c]_+ =  1.4E-016, |x|= 4.8e+000, |y|= 4.0e+000
+Calling SDPT3: 56 variables, 32 equality constraints
+------------------------------------------------------------
 
-Detailed timing (sec)
-   Pre          IPM          Post
-0.000E+000    6.009E-002    0.000E+000    
-Max-norms: ||b||=1.488490e+000, ||c|| = 1,
-Cholesky |add|=0, |skip| = 0, ||L.L|| = 1.30797.
-------------------------------------------------------------------------
+ num. of constraints = 32
+ dim. of socp   var  = 32,   num. of socp blk  = 16
+ dim. of linear var  = 16
+ dim. of free   var  =  8 *** convert ublk to linear blk
+*******************************************************************
+   SDPT3: homogeneous self-dual path-following algorithms
+*******************************************************************
+ version  predcorr  gam  expon
+    NT      1      0.000   1
+it  pstep dstep p_infeas d_infeas  gap     mean(obj)    cputime
+-------------------------------------------------------------------
+ 0  0.000 0.000 2.2e+00 2.8e+00  4.8e+01  8.000000e+00  0:0:00 chol  1  1
+ 1  1.000 1.000 1.0e+00 1.4e+00  4.8e+01  1.537062e+01  0:0:00 chol  1  1
+ 2  0.942 0.942 1.4e-01 1.8e-01  4.8e+00  1.515914e+01  0:0:00 chol  1  1
+ 3  0.988 0.988 2.4e-02 3.2e-02  1.1e+00  1.597670e+01  0:0:00 chol  1  1
+ 4  0.980 0.980 8.5e-04 1.1e-03  2.2e-02  1.599767e+01  0:0:00 chol  1  1
+ 5  0.979 0.979 3.0e-05 4.0e-05  5.4e-04  1.599990e+01  0:0:00 chol  1  1
+ 6  0.972 0.972 1.3e-06 1.6e-06  1.8e-05  1.600000e+01  0:0:00 chol  1  1
+ 7  1.000 1.000 6.1e-08 8.0e-08  2.0e-06  1.600000e+01  0:0:00 chol  1  1
+ 8  1.000 1.000 2.3e-09 2.8e-09  6.4e-08  1.600000e+01  0:0:00
+  Stop: max(relative gap, infeasibilities) &lt; 1.49e-08
+-------------------------------------------------------------------
+ number of iterations   =  8
+ primal objective value =  1.60000000e+01
+ dual   objective value =  1.60000000e+01
+ gap := trace(XZ)       = 6.39e-08
+ relative gap           = 3.76e-09
+ actual relative gap    = 7.12e-10
+ rel. primal infeas     = 2.31e-09
+ rel. dual   infeas     = 2.81e-09
+ norm(X), norm(y), norm(Z) = 4.7e+00, 4.0e+00, 4.0e+00
+ norm(A), norm(b), norm(C) = 1.7e+01, 5.4e+00, 4.0e+00
+ Total CPU time (secs)  = 0.2  
+ CPU time per iteration = 0.0  
+ termination code       =  0
+ DIMACS: 2.3e-09  0.0e+00  2.8e-09  0.0e+00  7.1e-10  1.9e-09
+-------------------------------------------------------------------
+------------------------------------------------------------
 Status: Solved
-Optimal value (cvx_optval): +0
+Optimal value (cvx_optval): +3.04446e-09
 Done! 
 
 Results:
@@ -139,12 +157,12 @@ cvx_optval: 0.0000
 cvx_status: Solved
 
 Optimal vector:
-   x     = [  0.2921  0.1200 -0.3514  0.0522  0.6037  0.3546 -0.6392  0.6843 ]
+   x     = [  0.2946  0.1140 -0.3462  0.0433  0.5906  0.3544 -0.6331  0.6762 ]
 Residual vector:
-   A*x-b = [  0.5785  0.4111 -0.8196 -0.3117  0.3849  0.3361 -0.6416 -0.7070 -0.5074  0.7695  0.1929 -0.1898  0.5407  0.7482  0.2783 -0.3828 ]
+   A*x-b = [  0.5816  0.4019 -0.8079 -0.3167  0.3832  0.3143 -0.6474 -0.7194 -0.5084  0.7751  0.2086 -0.1699  0.5385  0.7594  0.2562 -0.3840 ]
  
 </pre><p class="footer"><br>
-            Published with MATLAB&reg; 7.2<br></p>
+            Published with MATLAB&reg; 7.4<br></p>
       </div>
       <!--
 ##### SOURCE BEGIN #####

@@ -1,3 +1,6 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN">
 <html xmlns:mwsh="http://www.mathworks.com/namespace/mcode/v1/syntaxhighlight.dtd">
    <head>
       <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
@@ -7,8 +10,8 @@ This HTML is auto-generated from an M-file.
 To make changes, update the M-file and republish this document.
       -->
       <title>Section 4.3.1: Compute the Chebyshev center of a polyhedron</title>
-      <meta name="generator" content="MATLAB 7.2">
-      <meta name="date" content="2006-05-20">
+      <meta name="generator" content="MATLAB 7.4">
+      <meta name="date" content="2007-06-26">
       <meta name="m-file" content="chebyshev_center"><style>
 
 body {
@@ -27,14 +30,11 @@ h2 {
 }
 
 /* Make the text shrink to fit narrow windows, but not stretch too far in 
-wide windows.  On Gecko-based browsers, the shrink-to-fit doesn't work. */ 
+wide windows. */ 
 p,h1,h2,div.content div {
-  /* for MATLAB's browser */
-  width: 600px;
-  /* for Mozilla, but the "width" tag overrides it anyway */
   max-width: 600px;
-  /* for IE */
-  width:expression(document.body.clientWidth > 620 ? "600px": "auto" );
+  /* Hack for IE6 */
+  width: auto !important; width: 600px;
 }
 
 pre.codeinput {
@@ -102,52 +102,71 @@ disp(x_c);
 fprintf(1,<span class="string">'The radius of the largest Euclidean ball is: \n'</span>);
 disp(r);
 </pre><pre class="codeoutput">Computing Chebyshev center... 
-Calling SeDuMi: 31 variables (11 free), 20 equality constraints
-------------------------------------------------------------------------
-SeDuMi 1.1 by AdvOL, 2005 and Jos F. Sturm, 1998, 2001-2003.
-Alg = 2: xz-corrector, Adaptive Step-Differentiation, theta = 0.250, beta = 0.500
-Split 11 free variables
-eqs m = 20, order n = 43, dim = 43, blocks = 1
-nnz(A) = 460 + 0, nnz(ADA) = 400, nnz(L) = 210
- it :     b*y       gap    delta  rate   t/tP*  t/tD*   feas cg cg  prec
-  0 :            6.02E-001 0.000
-  1 : -1.10E-002 1.22E-001 0.000 0.2022 0.9000 0.9000   1.00  1  1  2.0E+000
-  2 : -1.15E-001 3.91E-002 0.000 0.3218 0.9000 0.9000   2.70  1  1  9.1E-001
-  3 : -2.45E-001 1.07E-002 0.000 0.2739 0.9000 0.9000   1.93  1  1  8.2E-002
-  4 : -2.96E-001 2.98E-003 0.000 0.2776 0.9000 0.9000   1.03  1  1  2.0E-002
-  5 : -3.16E-001 8.64E-004 0.000 0.2903 0.9000 0.9000   1.08  1  1  5.1E-003
-  6 : -3.22E-001 4.31E-005 0.000 0.0499 0.9900 0.9900   1.21  1  1  2.3E-004
-  7 : -3.23E-001 1.67E-007 0.000 0.0039 0.9990 0.9990   1.06  1  1  
-iter seconds digits       c*x               b*y
-  7      0.1   Inf -3.2276133170e-001 -3.2276133170e-001
-|Ax-b| =  6.1e-015, [Ay-c]_+ =  2.1E-016, |x|= 8.9e+000, |y|= 1.5e-001
+Calling SDPT3: 31 variables, 20 equality constraints
+------------------------------------------------------------
 
-Detailed timing (sec)
-   Pre          IPM          Post
-0.000E+000    7.010E-002    0.000E+000    
-Max-norms: ||b||=4.197234e+000, ||c|| = 1,
-Cholesky |add|=0, |skip| = 0, ||L.L|| = 1.51389.
-------------------------------------------------------------------------
+ num. of constraints = 20
+ dim. of linear var  = 20
+ dim. of free   var  = 11 *** convert ublk to linear blk
+*******************************************************************
+   SDPT3: homogeneous self-dual path-following algorithms
+*******************************************************************
+ version  predcorr  gam  expon
+    NT      1      0.000   1
+it  pstep dstep p_infeas d_infeas  gap     mean(obj)    cputime
+-------------------------------------------------------------------
+ 0  0.000 0.000 1.7e+00 3.3e+00  4.2e+01  0.000000e+00  0:0:00 chol  1  1
+ 1  0.873 0.873 1.6e+00 3.1e+00  9.3e+01 -2.659542e+00  0:0:00 chol  1  1
+ 2  0.955 0.955 1.0e-01 1.9e-01  5.3e+00  1.526772e-02  0:0:00 chol  1  1
+ 3  0.812 0.812 1.8e-02 3.4e-02  6.6e-01 -1.633997e-01  0:0:00 chol  1  1
+ 4  0.909 0.909 3.5e-03 6.7e-03  1.4e-01 -2.009272e-01  0:0:00 chol  1  1
+ 5  0.936 0.936 2.0e-03 3.8e-03  1.3e-01 -2.085609e-01  0:0:00 chol  1  1
+ 6  0.914 0.914 2.7e-04 5.1e-04  1.4e-02 -2.251417e-01  0:0:00 chol  1  1
+ 7  1.000 1.000 9.6e-05 1.8e-04  5.8e-03 -2.262562e-01  0:0:00 chol  1  1
+ 8  0.963 0.963 5.6e-06 1.1e-05  2.1e-04 -2.271171e-01  0:0:00 chol  1  1
+ 9  0.975 0.975 2.6e-07 4.9e-07  6.7e-06 -2.271613e-01  0:0:00 chol  1  1
+10  1.000 1.000 1.6e-08 3.0e-08  6.7e-07 -2.271632e-01  0:0:00 chol
+  SWM to ill-conditioned, switch to LU factor. lu   1  1
+11  1.000 1.000 3.5e-09 1.6e-09  3.6e-08 -2.271634e-01  0:0:00 lu   1  1
+12  1.000 1.000 3.4e-10 7.8e-11  1.8e-09 -2.271634e-01  0:0:00
+  Stop: max(relative gap, infeasibilities) &lt; 1.49e-08
+-------------------------------------------------------------------
+ number of iterations   = 12
+ primal objective value = -2.27163356e-01
+ dual   objective value = -2.27163356e-01
+ gap := trace(XZ)       = 1.75e-09
+ relative gap           = 1.43e-09
+ actual relative gap    = 1.67e-10
+ rel. primal infeas     = 3.38e-10
+ rel. dual   infeas     = 7.81e-11
+ norm(X), norm(y), norm(Z) = 8.6e+00, 1.6e-01, 1.6e-01
+ norm(A), norm(b), norm(C) = 2.7e+01, 8.1e+00, 1.4e+00
+ Total CPU time (secs)  = 0.2  
+ CPU time per iteration = 0.0  
+ termination code       =  0
+ DIMACS: 3.4e-10  0.0e+00  7.8e-11  0.0e+00  1.7e-10  1.2e-09
+-------------------------------------------------------------------
+------------------------------------------------------------
 Status: Solved
-Optimal value (cvx_optval): +0.322761
+Optimal value (cvx_optval): +0.227163
 Done! 
 The Chebyshev center coordinates are: 
-    0.8511
-   -0.6874
-    1.1205
-    0.3555
-    0.2573
-    0.3947
-    1.1970
-    1.4711
-    1.7486
-    1.0573
+    1.3099
+   -0.2098
+    0.9695
+   -0.3175
+    2.1909
+    1.5115
+    0.1185
+    0.7041
+    1.6461
+    0.5200
 
 The radius of the largest Euclidean ball is: 
-    0.3228
+    0.2272
 
 </pre><p class="footer"><br>
-            Published with MATLAB&reg; 7.2<br></p>
+            Published with MATLAB&reg; 7.4<br></p>
       </div>
       <!--
 ##### SOURCE BEGIN #####

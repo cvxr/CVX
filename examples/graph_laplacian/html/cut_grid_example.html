@@ -10,8 +10,8 @@ This HTML is auto-generated from an M-file.
 To make changes, update the M-file and republish this document.
       -->
       <title>FDLA and FMMC solutions for a 64-node, 95-edge cut-grid graph</title>
-      <meta name="generator" content="MATLAB 7.3">
-      <meta name="date" content="2006-10-18">
+      <meta name="generator" content="MATLAB 7.4">
+      <meta name="date" content="2007-06-26">
       <meta name="m-file" content="cut_grid_example"><style>
 
 body {
@@ -137,87 +137,125 @@ plotgraph(A,xy,w_mh);
 text(0.3,1.05,<span class="string">'Metropolis-Hastings optimal weights'</span>)
 </pre><pre class="codeoutput">WARNING: The optimal weight computations take some time...
  
-Calling SeDuMi: 4166 variables (6 free), 4070 equality constraints
-------------------------------------------------------------------------
-SeDuMi 1.1R3 by AdvOL, 2006 and Jos F. Sturm, 1998-2003.
-Alg = 2: xz-corrector, Adaptive Step-Differentiation, theta = 0.250, beta = 0.500
-eqs m = 4070, order n = 131, dim = 8200, blocks = 4
-nnz(A) = 4553 + 0, nnz(ADA) = 8884742, nnz(L) = 4444406
- it :     b*y       gap    delta  rate   t/tP*  t/tD*   feas cg cg  prec
-  0 :            2.24E-001 0.000
-  1 :  1.21E+001 1.45E-002 0.000 0.0647 0.9900 0.9900  -0.68  1  1  1.3E+000
-  2 :  3.41E+000 6.17E-003 0.000 0.4256 0.9000 0.9000   2.14  1  1  3.1E-001
-  3 :  1.14E+000 2.77E-003 0.000 0.4483 0.9000 0.9000   4.54  1  1  4.6E-002
-  4 :  1.02E+000 9.92E-004 0.000 0.3585 0.9000 0.9000   1.30  1  1  1.6E-002
-  5 :  1.00E+000 2.92E-004 0.000 0.2942 0.9000 0.9000   1.04  1  1  4.6E-003
-  6 :  9.92E-001 1.50E-005 0.000 0.0516 0.9081 0.9000   1.02  1  1  7.4E-004
-  7 :  9.89E-001 4.20E-006 0.000 0.2790 0.9000 0.8584   1.00  1  1  2.0E-004
-  8 :  9.89E-001 1.55E-006 0.000 0.3702 0.9000 0.7890   1.00  1  1  7.5E-005
-  9 :  9.88E-001 4.84E-007 0.000 0.3113 0.9000 0.9000   1.00  1  1  2.3E-005
- 10 :  9.88E-001 1.22E-007 0.000 0.2525 0.9000 0.9000   1.00  1  1  5.9E-006
- 11 :  9.88E-001 8.82E-009 0.160 0.0723 0.9903 0.9900   1.00  1  1  5.0E-007
- 12 :  9.88E-001 1.32E-009 0.000 0.1500 0.9195 0.9000   1.00  1  1  1.0E-007
- 13 :  9.88E-001 5.48E-011 0.207 0.0414 0.9900 0.9900   1.00  1  1  4.2E-009
+Calling SDPT3: 4166 variables, 4070 equality constraints
+------------------------------------------------------------
 
-iter seconds digits       c*x               b*y
- 13    363.3   Inf  9.8829189011e-001  9.8829190041e-001
-|Ax-b| =  6.3e-009, [Ay-c]_+ =  1.8E-009, |x|= 1.4e+001, |y|= 1.3e+000
-
-Detailed timing (sec)
-   Pre          IPM          Post
-8.462E+000    3.633E+002    1.001E-001    
-Max-norms: ||b||=9.843750e-001, ||c|| = 1,
-Cholesky |add|=0, |skip| = 0, ||L.L|| = 48.5623.
-------------------------------------------------------------------------
+ num. of constraints = 4070
+ dim. of sdp    var  = 128,   num. of sdp  blk  =  2
+ dim. of free   var  =  6 *** convert ublk to linear blk
+*******************************************************************
+   SDPT3: homogeneous self-dual path-following algorithms
+*******************************************************************
+ version  predcorr  gam  expon
+    NT      1      0.000   1
+it  pstep dstep p_infeas d_infeas  gap     mean(obj)    cputime
+-------------------------------------------------------------------
+ 0  0.000 0.000 1.1e+01 6.0e+00  1.4e+02  0.000000e+00  0:0:04 spchol  1  1
+ 1  1.000 1.000 1.0e+01 5.5e+00  3.9e+02 -2.086870e+01  0:0:06 chol  1  1
+ 2  0.977 0.977 4.8e-01 2.6e-01  1.9e+01  1.232849e+00  0:0:14 chol  1  1
+ 3  0.610 0.610 1.5e-01 8.1e-02  4.5e+00  9.288422e-01  0:0:22 chol  1  1
+ 4  1.000 1.000 5.1e-02 2.8e-02  1.4e+00  1.019275e+00  0:0:29 chol  1  1
+ 5  1.000 1.000 1.6e-02 8.5e-03  4.2e-01  9.551994e-01  0:0:37 chol  1  1
+ 6  1.000 1.000 6.9e-03 3.7e-03  1.8e-01  9.556282e-01  0:0:45 chol  1  1
+ 7  0.890 0.890 3.7e-03 2.0e-03  9.7e-02  9.727062e-01  0:0:52 chol  1  1
+ 8  0.904 0.904 4.4e-04 2.4e-04  1.1e-02  9.872609e-01  0:1:00 chol  1  1
+ 9  0.863 0.863 2.1e-04 1.1e-04  5.4e-03  9.872306e-01  0:1:08 chol  1  1
+10  1.000 1.000 1.0e-04 5.4e-05  2.6e-03  9.878281e-01  0:1:15 chol  1  1
+11  0.867 0.867 2.0e-05 1.1e-05  5.0e-04  9.881920e-01  0:1:23 chol  1  1
+12  1.000 1.000 7.6e-06 4.1e-06  2.0e-04  9.882527e-01  0:1:31 chol  1  1
+13  0.954 0.954 4.3e-07 2.3e-07  9.9e-06  9.882902e-01  0:1:38 chol  1  1
+14  1.000 1.000 6.2e-08 3.3e-08  1.5e-06  9.882916e-01  0:1:46 chol
+  SWM to ill-conditioned, switch to LU factor. lu   1  1
+15  1.000 1.000 1.8e-08 1.1e-09  4.3e-08  9.882919e-01  0:2:05 lu   1  1
+16  1.000 1.000 5.0e-09 2.4e-11  1.1e-09  9.882919e-01  0:2:18
+  Stop: max(relative gap, infeasibilities) &lt; 1.49e-08
+-------------------------------------------------------------------
+ number of iterations   = 16
+ primal objective value =  9.88291883e-01
+ dual   objective value =  9.88291883e-01
+ gap := trace(XZ)       = 1.09e-09
+ relative gap           = 5.51e-10
+ actual relative gap    = -1.70e-11
+ rel. primal infeas     = 4.97e-09
+ rel. dual   infeas     = 2.41e-11
+ norm(X), norm(y), norm(Z) = 1.3e+01, 1.3e+00, 9.9e-01
+ norm(A), norm(b), norm(C) = 5.6e+01, 7.8e+00, 1.4e+00
+ Total CPU time (secs)  = 137.9  
+ CPU time per iteration = 8.6  
+ termination code       =  0
+ DIMACS: 5.0e-09  0.0e+00  2.4e-11  0.0e+00  -1.7e-11  3.7e-10
+-------------------------------------------------------------------
+------------------------------------------------------------
 Status: Solved
 Optimal value (cvx_optval): +0.988292
  
-Calling SeDuMi: 4320 variables (1 free), 4224 equality constraints
-------------------------------------------------------------------------
-SeDuMi 1.1R3 by AdvOL, 2006 and Jos F. Sturm, 1998-2003.
-Alg = 2: xz-corrector, Adaptive Step-Differentiation, theta = 0.250, beta = 0.500
-eqs m = 4224, order n = 290, dim = 8354, blocks = 4
-nnz(A) = 4862 + 0, nnz(ADA) = 8662492, nnz(L) = 4357082
- it :     b*y       gap    delta  rate   t/tP*  t/tD*   feas cg cg  prec
-  0 :            2.16E-001 0.000
-  1 :  2.76E-001 7.40E-002 0.000 0.3426 0.9000 0.9000   2.60  1  1  2.1E+000
-  2 :  8.80E-001 1.77E-002 0.000 0.2397 0.9000 0.9000   1.69  1  1  3.6E-001
-  3 :  9.98E-001 6.10E-004 0.000 0.0344 0.9900 0.9900   1.21  1  1  1.1E-002
-  4 :  9.93E-001 1.60E-004 0.000 0.2618 0.9000 0.9000   1.04  1  1  2.8E-003
-  5 :  9.91E-001 4.36E-005 0.000 0.2729 0.9000 0.9000   1.02  1  1  7.6E-004
-  6 :  9.90E-001 1.63E-005 0.000 0.3734 0.9022 0.9000   1.03  1  1  3.2E-004
-  7 :  9.90E-001 2.31E-006 0.000 0.1421 0.9350 0.9000   1.03  1  1  1.0E-004
-  8 :  9.89E-001 6.65E-007 0.000 0.2881 0.9270 0.9000   1.02  1  1  3.7E-005
-  9 :  9.89E-001 1.31E-007 0.000 0.1967 0.9503 0.9000   1.01  1  1  1.2E-005
- 10 :  9.89E-001 4.32E-008 0.000 0.3303 0.9000 0.9085   1.01  1  1  3.9E-006
- 11 :  9.89E-001 1.95E-008 0.000 0.4516 0.9312 0.9000   1.01  1  1  1.7E-006
- 12 :  9.89E-001 1.03E-008 0.000 0.5274 0.9482 0.9000   1.00  1  1  9.0E-007
- 13 :  9.89E-001 2.11E-009 0.000 0.2045 0.9000 0.9107   1.00  2  2  1.9E-007
- 14 :  9.89E-001 7.02E-010 0.000 0.3336 0.9000 0.9023   1.00  2  2  6.4E-008
- 15 :  9.89E-001 2.60E-010 0.000 0.3707 0.0000 0.9000   1.00  2  2  2.8E-008
- 16 :  9.89E-001 9.54E-011 0.000 0.3665 0.9000 0.6588   1.00  2  2  1.1E-008
+Calling SDPT3: 4320 variables, 4224 equality constraints
+------------------------------------------------------------
 
-iter seconds digits       c*x               b*y
- 16    426.3   Inf  9.8882651338e-001  9.8882651703e-001
-|Ax-b| =  1.2e-009, [Ay-c]_+ =  5.6E-009, |x|= 1.4e+001, |y|= 1.4e+000
-
-Detailed timing (sec)
-   Pre          IPM          Post
-9.243E+000    4.263E+002    1.001E-002    
-Max-norms: ||b||=1, ||c|| = 1,
-Cholesky |add|=0, |skip| = 0, ||L.L|| = 44.4774.
-------------------------------------------------------------------------
+ num. of constraints = 4224
+ dim. of sdp    var  = 128,   num. of sdp  blk  =  2
+ dim. of linear var  = 159
+ dim. of free   var  =  1 *** convert ublk to linear blk
+*******************************************************************
+   SDPT3: homogeneous self-dual path-following algorithms
+*******************************************************************
+ version  predcorr  gam  expon
+    NT      1      0.000   1
+it  pstep dstep p_infeas d_infeas  gap     mean(obj)    cputime
+-------------------------------------------------------------------
+ 0  0.000 0.000 1.6e+01 8.5e+00  2.9e+02  0.000000e+00  0:0:04 spchol  1  1
+ 1  0.796 0.796 1.4e+01 7.5e+00  5.1e+02 -3.065380e+01  0:0:06 chol  1  1
+ 2  0.812 0.812 3.5e+00 1.8e+00  1.2e+02 -1.420275e+01  0:0:15 chol  1  1
+ 3  0.778 0.778 7.6e-01 4.0e-01  2.0e+01 -2.508401e+00  0:0:24 chol  1  1
+ 4  0.943 0.943 4.8e-02 2.5e-02  1.1e+00  7.804932e-01  0:0:32 chol  1  1
+ 5  0.999 0.999 2.2e-02 1.1e-02  6.3e-01  8.361334e-01  0:0:41 chol  1  1
+ 6  0.856 0.856 6.3e-03 3.3e-03  1.8e-01  9.386519e-01  0:0:49 chol  1  1
+ 7  0.929 0.929 3.0e-03 1.6e-03  8.4e-02  9.671562e-01  0:0:57 chol  1  1
+ 8  0.901 0.901 4.2e-04 2.2e-04  1.2e-02  9.878236e-01  0:1:06 chol  1  1
+ 9  0.794 0.794 3.1e-04 1.6e-04  8.6e-03  9.873347e-01  0:1:14 chol  1  1
+10  0.826 0.826 1.2e-04 6.5e-05  3.4e-03  9.882411e-01  0:1:22 chol  1  1
+11  0.974 0.974 8.4e-05 4.4e-05  2.4e-03  9.885364e-01  0:1:31 chol  1  1
+12  1.000 1.000 3.0e-05 1.6e-05  8.3e-04  9.887163e-01  0:1:39 chol  1  1
+13  1.000 1.000 1.1e-05 6.0e-06  3.2e-04  9.887923e-01  0:1:47 chol  1  1
+14  1.000 1.000 3.6e-06 1.9e-06  1.0e-04  9.888154e-01  0:1:56 chol  1  1
+15  1.000 1.000 1.7e-06 9.1e-07  4.8e-05  9.888215e-01  0:2:04 chol  1  1
+16  1.000 1.000 5.4e-07 2.8e-07  1.5e-05  9.888246e-01  0:2:12 chol  1  1
+17  1.000 1.000 1.7e-07 9.1e-08  4.8e-06  9.888257e-01  0:2:21 chol
+  SWM to ill-conditioned, switch to LU factor. lu   1  1
+18  1.000 1.000 5.4e-08 2.9e-08  1.5e-06  9.888260e-01  0:2:41 lu   1  1
+19  1.000 1.000 1.8e-08 9.7e-09  5.1e-07  9.888261e-01  0:2:55 lu   1  1
+20  1.000 1.000 5.9e-09 3.0e-09  1.6e-07  9.888261e-01  0:3:10 lu   1  1
+21  1.000 1.000 2.0e-09 1.0e-09  5.3e-08  9.888261e-01  0:3:24 lu   1  1
+22  1.000 1.000 1.5e-09 3.1e-10  1.6e-08  9.888262e-01  0:3:38
+  Stop: max(relative gap, infeasibilities) &lt; 1.49e-08
+-------------------------------------------------------------------
+ number of iterations   = 22
+ primal objective value =  9.88826158e-01
+ dual   objective value =  9.88826148e-01
+ gap := trace(XZ)       = 1.61e-08
+ relative gap           = 8.09e-09
+ actual relative gap    = 3.38e-09
+ rel. primal infeas     = 1.45e-09
+ rel. dual   infeas     = 3.08e-10
+ norm(X), norm(y), norm(Z) = 1.4e+01, 1.4e+00, 1.0e+00
+ norm(A), norm(b), norm(C) = 5.7e+01, 8.5e+00, 1.4e+00
+ Total CPU time (secs)  = 218.2  
+ CPU time per iteration = 9.9  
+ termination code       =  0
+ DIMACS: 1.5e-09  0.0e+00  3.1e-10  0.0e+00  3.4e-09  5.4e-09
+-------------------------------------------------------------------
+------------------------------------------------------------
 Status: Solved
-Optimal value (cvx_optval): +0.988827
+Optimal value (cvx_optval): +0.988826
 
 Results:
-FDLA weights:		 rho = 0.9883 	 tau = 84.9099
-FMMC weights:		 rho = 0.9888 	 tau = 88.9966
+FDLA weights:		 rho = 0.9883 	 tau = 84.9098
+FMMC weights:		 rho = 0.9888 	 tau = 88.9938
 M-H weights:		 rho = 0.9917 	 tau = 120.2442
 MAX_DEG weights:	 rho = 0.9927 	 tau = 136.7523
 BEST_CONST weights:	 rho = 0.9921 	 tau = 126.3450
 </pre><img vspace="5" hspace="5" src="cut_grid_example_01.png"> <img vspace="5" hspace="5" src="cut_grid_example_02.png"> <img vspace="5" hspace="5" src="cut_grid_example_03.png"> <img vspace="5" hspace="5" src="cut_grid_example_04.png"> <img vspace="5" hspace="5" src="cut_grid_example_05.png"> <p class="footer"><br>
-            Published with MATLAB&reg; 7.3<br></p>
+            Published with MATLAB&reg; 7.4<br></p>
       </div>
       <!--
 ##### SOURCE BEGIN #####

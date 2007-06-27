@@ -1,3 +1,6 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN">
 <html xmlns:mwsh="http://www.mathworks.com/namespace/mcode/v1/syntaxhighlight.dtd">
    <head>
       <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
@@ -7,8 +10,8 @@ This HTML is auto-generated from an M-file.
 To make changes, update the M-file and republish this document.
       -->
       <title>Figure 6.24: Fitting a convex function to given data</title>
-      <meta name="generator" content="MATLAB 7.2">
-      <meta name="date" content="2006-05-20">
+      <meta name="generator" content="MATLAB 7.4">
+      <meta name="date" content="2007-06-26">
       <meta name="m-file" content="convex_interpolation"><style>
 
 body {
@@ -27,14 +30,11 @@ h2 {
 }
 
 /* Make the text shrink to fit narrow windows, but not stretch too far in 
-wide windows.  On Gecko-based browsers, the shrink-to-fit doesn't work. */ 
+wide windows. */ 
 p,h1,h2,div.content div {
-  /* for MATLAB's browser */
-  width: 600px;
-  /* for Mozilla, but the "width" tag overrides it anyway */
   max-width: 600px;
-  /* for IE */
-  width:expression(document.body.clientWidth > 620 ? "600px": "auto" );
+  /* Hack for IE6 */
+  width: auto !important; width: 600px;
 }
 
 pre.codeinput {
@@ -121,57 +121,71 @@ plot(u,yns,<span class="string">'o'</span>,t,f,<span class="string">'-'</span>);
 axis <span class="string">off</span>
 <span class="comment">%print -deps interpol_convex_function2.eps</span>
 </pre><pre class="codeoutput"> 
-Calling SeDuMi: 2702 variables (102 free), 2601 equality constraints
-------------------------------------------------------------------------
-SeDuMi 1.1 by AdvOL, 2005 and Jos F. Sturm, 1998, 2001-2003.
-Alg = 2: xz-corrector, Adaptive Step-Differentiation, theta = 0.250, beta = 0.500
-Split 102 free variables
-eqs m = 2601, order n = 2755, dim = 2805, blocks = 2
-nnz(A) = 7699 + 10302, nnz(ADA) = 127551, nnz(L) = 65076
-Handling 103 + 1 dense columns.
- it :     b*y       gap    delta  rate   t/tP*  t/tD*   feas cg cg  prec
-  0 :            2.23E-002 0.000
-  1 :  2.81E+000 6.78E-003 0.000 0.3039 0.9000 0.9000   0.33  1  1  1.8E+000
-  2 :  4.38E+000 2.16E-003 0.000 0.3192 0.9000 0.9000   1.59  1  1  4.6E-001
-  3 :  5.38E+000 5.45E-004 0.000 0.2517 0.9000 0.9000   1.42  1  1  8.8E-002
-  4 :  5.51E+000 1.14E-004 0.000 0.2099 0.9000 0.9000   1.22  1  1  1.6E-002
-  5 :  5.22E+000 4.07E-005 0.000 0.3559 0.9000 0.9000   1.05  1  1  5.8E-003
-  6 :  4.90E+000 2.40E-006 0.000 0.0591 0.9040 0.9000   0.91  1  1  2.8E-003
-  7 :  4.90E+000 3.71E-007 0.470 0.1542 0.9000 0.0000   0.86  1  1  2.5E-003
-  8 :  4.69E+000 2.23E-007 0.229 0.6005 0.9563 0.9000   0.86  1  1  1.7E-003
-  9 :  4.53E+000 1.49E-007 0.465 0.6704 0.9675 0.9000   0.85  1  1  1.3E-003
- 10 :  4.38E+000 1.31E-007 0.000 0.8745 0.9000 0.9000   0.86  1  1  1.2E-003
- 11 :  3.67E+000 8.83E-008 0.000 0.6761 0.9000 0.8368   0.77  1  1  7.6E-004
- 12 :  3.48E+000 6.56E-008 0.000 0.7439 0.9321 0.9000   0.84  1  1  5.9E-004
- 13 :  3.36E+000 4.93E-008 0.022 0.7503 0.9554 0.9000   0.86  1  1  4.7E-004
- 14 :  3.28E+000 3.58E-008 0.443 0.7275 0.9731 0.9000   0.89  1  1  3.7E-004
- 15 :  3.20E+000 3.12E-008 0.000 0.8692 0.9000 0.9000   0.93  1  1  3.2E-004
- 16 :  2.76E+000 1.81E-008 0.000 0.5806 0.9000 0.8186   0.86  1  1  1.9E-004
- 17 :  2.68E+000 1.14E-008 0.000 0.6282 0.9573 0.9000   0.95  1  1  1.3E-004
- 18 :  2.49E+000 5.58E-009 0.000 0.4910 0.9000 0.9095   0.92  1  1  6.5E-005
- 19 :  2.43E+000 3.51E-009 0.000 0.6287 0.9511 0.9000   0.96  1  1  4.0E-005
- 20 :  2.39E+000 2.00E-009 0.000 0.5689 0.9545 0.9000   0.93  1  1  2.2E-005
- 21 :  2.31E+000 5.30E-010 0.000 0.2655 0.9000 0.9248   0.89  1  1  6.9E-006
- 22 :  2.29E+000 1.67E-010 0.000 0.3157 0.5554 0.9000   0.97  1  1  2.4E-006
- 23 :  2.28E+000 5.64E-011 0.000 0.3373 0.9000 0.9000   0.99  1  1  8.3E-007
- 24 :  2.28E+000 1.72E-011 0.000 0.3051 0.9000 0.9000   1.00  2  2  2.5E-007
- 25 :  2.27E+000 1.63E-012 0.000 0.0950 0.9900 0.9900   1.00  2  2  2.4E-008
- 26 :  2.27E+000 5.03E-013 0.000 0.3081 0.9000 0.9000   1.00  2  2  7.4E-009
+Calling SDPT3: 2702 variables, 2601 equality constraints
+------------------------------------------------------------
 
-iter seconds digits       c*x               b*y
- 26      9.4   Inf  2.2743017410e+000  2.2743017789e+000
-|Ax-b| =  1.6e-008, [Ay-c]_+ =  6.6E-009, |x|= 5.3e+002, |y|= 2.5e+000
-
-Detailed timing (sec)
-   Pre          IPM          Post
-3.104E-001    9.414E+000    0.000E+000    
-Max-norms: ||b||=7.026093e+000, ||c|| = 1,
-Cholesky |add|=0, |skip| = 0, ||L.L|| = 49.9994.
-------------------------------------------------------------------------
+ num. of constraints = 2601
+ dim. of socp   var  = 52,   num. of socp blk  =  1
+ dim. of linear var  = 2548
+ dim. of free   var  = 102 *** convert ublk to linear blk
+*******************************************************************
+   SDPT3: homogeneous self-dual path-following algorithms
+*******************************************************************
+ version  predcorr  gam  expon
+    NT      1      0.000   1
+it  pstep dstep p_infeas d_infeas  gap     mean(obj)    cputime
+-------------------------------------------------------------------
+ 0  0.000 0.000 6.7e+00 2.6e+01  2.8e+03  5.000000e-01  0:0:03 spchol  1  1
+ 1  0.142 0.142 7.5e+00 3.0e+01  4.1e+03  4.498694e+00  0:0:07 spchol  1  1
+ 2  1.000 1.000 1.1e+01 4.3e+01  2.1e+04  2.515542e+01  0:0:11 spchol  1  1
+ 3  0.986 0.986 3.9e+00 1.5e+01  1.0e+04  1.910755e+01  0:0:15 spchol  1  1
+ 4  0.718 0.718 1.3e+00 5.3e+00  3.8e+03  7.885036e+00  0:0:19 spchol  1  1
+ 5  0.549 0.549 1.1e+00 4.3e+00  3.9e+03  4.031524e+00  0:0:23 spchol  1  1
+ 6  1.000 1.000 7.1e-01 2.8e+00  4.0e+03  1.001007e+01  0:0:27 spchol  1  1
+ 7  0.764 0.764 1.7e-01 6.6e-01  7.8e+02  6.009475e+00  0:0:31 spchol  1  1
+ 8  0.140 0.140 1.7e-01 6.5e-01  8.0e+02  8.711997e+00  0:0:35 spchol  1  1
+ 9  0.201 0.201 1.2e-01 4.7e-01  4.4e+02  6.155880e+00  0:0:38 spchol  1  1
+10  0.484 0.484 6.6e-02 2.6e-01  1.6e+02  3.837446e+00  0:0:42 spchol  1  1
+11  1.000 1.000 4.8e-02 1.9e-01  1.6e+02  1.317258e+01  0:0:46 spchol  1  1
+12  0.874 0.874 7.2e-03 2.8e-02  1.8e+01  4.185757e+00  0:0:50 spchol  1  1
+13  0.616 0.616 5.9e-03 2.3e-02  1.5e+01  3.165711e+00  0:0:54 spchol  1  1
+14  0.859 0.859 3.5e-03 1.4e-02  8.5e+00  2.876268e+00  0:0:58 spchol  1  1
+15  0.881 0.881 2.5e-03 9.7e-03  6.4e+00  2.736523e+00  0:1:02 spchol  1  1
+16  1.000 1.000 1.4e-03 5.5e-03  3.5e+00  2.705457e+00  0:1:06 spchol  1  1
+17  1.000 1.000 6.4e-04 2.5e-03  1.7e+00  2.495650e+00  0:1:09 spchol  1  1
+18  0.991 0.991 3.4e-04 1.4e-03  8.9e-01  2.424640e+00  0:1:13 spchol  1  1
+19  1.000 1.000 2.1e-04 8.2e-04  5.5e-01  2.370705e+00  0:1:17 spchol  1  1
+20  1.000 1.000 5.7e-05 2.3e-04  1.5e-01  2.304697e+00  0:1:21 spchol  1  1
+21  1.000 1.000 1.6e-05 6.4e-05  4.4e-02  2.283737e+00  0:1:25 spchol  1  1
+22  0.989 0.989 1.8e-06 7.1e-06  4.9e-03  2.275350e+00  0:1:29 spchol
+  SWM to ill-conditioned, switch to LU factor. splu   1  1
+23  1.000 1.000 3.2e-07 1.3e-06  8.7e-04  2.274468e+00  0:1:36 splu   1  1
+24  1.000 1.000 4.1e-08 1.6e-07  1.1e-04  2.274292e+00  0:1:41 splu   1  1
+25  1.000 1.000 2.7e-09 1.1e-08  7.4e-06  2.274268e+00  0:1:45 splu   1  1
+26  1.000 1.000 7.8e-10 2.5e-10  1.7e-07  2.274266e+00  0:1:49 splu   1  1
+27  1.000 1.000 6.1e-10 2.8e-12  1.9e-09  2.274266e+00  0:1:53
+  Stop: max(relative gap, infeasibilities) &lt; 1.49e-08
+-------------------------------------------------------------------
+ number of iterations   = 27
+ primal objective value =  2.27426583e+00
+ dual   objective value =  2.27426583e+00
+ gap := trace(XZ)       = 1.94e-09
+ relative gap           = 5.93e-10
+ actual relative gap    = 4.38e-11
+ rel. primal infeas     = 6.09e-10
+ rel. dual   infeas     = 2.83e-12
+ norm(X), norm(y), norm(Z) = 5.3e+02, 2.4e+00, 2.6e+00
+ norm(A), norm(b), norm(C) = 1.4e+02, 1.8e+01, 1.0e+00
+ Total CPU time (secs)  = 112.8  
+ CPU time per iteration = 4.2  
+ termination code       =  0
+ DIMACS: 6.1e-10  0.0e+00  2.8e-12  0.0e+00  4.4e-11  3.5e-10
+-------------------------------------------------------------------
+------------------------------------------------------------
 Status: Solved
-Optimal value (cvx_optval): +2.2743
+Optimal value (cvx_optval): +2.27427
 </pre><img vspace="5" hspace="5" src="convex_interpolation_01.png"> <p class="footer"><br>
-            Published with MATLAB&reg; 7.2<br></p>
+            Published with MATLAB&reg; 7.4<br></p>
       </div>
       <!--
 ##### SOURCE BEGIN #####

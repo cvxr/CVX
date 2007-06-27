@@ -1,3 +1,6 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN">
 <html xmlns:mwsh="http://www.mathworks.com/namespace/mcode/v1/syntaxhighlight.dtd">
    <head>
       <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
@@ -7,8 +10,8 @@ This HTML is auto-generated from an M-file.
 To make changes, update the M-file and republish this document.
       -->
       <title>Minimize sidelobe level of an FIR broadband far-field antenna array</title>
-      <meta name="generator" content="MATLAB 7.2">
-      <meta name="date" content="2006-05-20">
+      <meta name="generator" content="MATLAB 7.4">
+      <meta name="date" content="2007-06-26">
       <meta name="m-file" content="broadband_array_min_sidelobe"><style>
 
 body {
@@ -27,14 +30,11 @@ h2 {
 }
 
 /* Make the text shrink to fit narrow windows, but not stretch too far in 
-wide windows.  On Gecko-based browsers, the shrink-to-fit doesn't work. */ 
+wide windows. */ 
 p,h1,h2,div.content div {
-  /* for MATLAB's browser */
-  width: 600px;
-  /* for Mozilla, but the "width" tag overrides it anyway */
   max-width: 600px;
-  /* for IE */
-  width:expression(document.body.clientWidth > 620 ? "600px": "auto" );
+  /* Hack for IE6 */
+  width: auto !important; width: 600px;
 }
 
 pre.codeinput {
@@ -196,7 +196,7 @@ cvx_end
 
 <span class="comment">% check if problem was successfully solved</span>
 disp([<span class="string">'Problem is '</span> cvx_status])
-<span class="keyword">if</span> ~strcmp(cvx_status,<span class="string">'Solved'</span>)
+<span class="keyword">if</span> ~strfind(cvx_status,<span class="string">'Solved'</span>)
   <span class="keyword">return</span>
 <span class="keyword">end</span>
 
@@ -232,54 +232,85 @@ subplot(2,2,2); polar_plot_ant(abs( Atotal(:,:,3)*w ),theta_tar,bw,<span class="
 subplot(2,2,3); polar_plot_ant(abs( Atotal(:,:,4)*w ),theta_tar,bw,<span class="string">'f = 2000 (pass)'</span>);
 subplot(2,2,4); polar_plot_ant(abs( Atotal(:,:,5)*w ),theta_tar,bw,<span class="string">'f = 2500 (stop)'</span>);
 </pre><pre class="codeoutput"> 
-Calling SeDuMi: 3324 variables (144 free), 3183 equality constraints
-------------------------------------------------------------------------
-SeDuMi 1.1 by AdvOL, 2005 and Jos F. Sturm, 1998, 2001-2003.
-Alg = 2: xz-corrector, Adaptive Step-Differentiation, theta = 0.250, beta = 0.500
-Split 144 free variables
-eqs m = 3183, order n = 2409, dim = 3469, blocks = 1061
-nnz(A) = 3179 + 608523, nnz(ADA) = 9533, nnz(L) = 6360
-Handling 289 + 1 dense columns.
- it :     b*y       gap    delta  rate   t/tP*  t/tD*   feas cg cg  prec
-  0 :            1.18E-002 0.000
-  1 :  7.34E+000 7.00E-004 0.000 0.0594 0.9900 0.9900  -0.43  1  1  4.4E-001
-  2 :  1.95E+000 4.01E-004 0.000 0.5733 0.9000 0.9000   3.68  1  1  1.2E-001
-  3 :  8.39E-001 2.45E-004 0.000 0.6114 0.9000 0.9000   4.90  1  1  2.4E-002
-  4 :  7.57E-001 1.40E-004 0.000 0.5723 0.9000 0.9000   1.77  1  1  1.2E-002
-  5 :  6.44E-001 7.36E-005 0.000 0.5242 0.9000 0.9000   1.52  1  1  5.7E-003
-  6 :  5.69E-001 3.26E-005 0.000 0.4422 0.9000 0.9000   1.34  1  1  2.5E-003
-  7 :  5.45E-001 2.04E-005 0.000 0.6267 0.9000 0.9000   1.20  1  1  1.6E-003
-  8 :  5.19E-001 9.85E-006 0.000 0.4825 0.9000 0.9000   1.15  1  1  7.8E-004
-  9 :  5.06E-001 4.85E-006 0.000 0.4929 0.9000 0.9000   1.08  1  1  3.9E-004
- 10 :  4.98E-001 2.01E-006 0.000 0.4136 0.9000 0.9000   1.04  1  1  1.7E-004
- 11 :  4.98E-001 2.01E-007 0.000 0.1002 0.9000 0.0000   1.01  1  1  1.0E-004
- 12 :  4.95E-001 8.44E-008 0.000 0.4199 0.9299 0.9000   1.00  1  1  4.5E-005
- 13 :  4.93E-001 2.56E-008 0.000 0.3028 0.9000 0.9013   1.00  1  1  1.3E-005
- 14 :  4.92E-001 9.16E-009 0.000 0.3584 0.9000 0.9074   1.00  1  1  4.9E-006
- 15 :  4.92E-001 3.75E-009 0.000 0.4098 0.9046 0.9000   1.00  1  1  2.0E-006
- 16 :  4.92E-001 1.40E-009 0.000 0.3728 0.9037 0.9000   1.00  1  2  7.4E-007
- 17 :  4.92E-001 6.46E-010 0.000 0.4613 0.9217 0.9000   1.00  2  2  3.4E-007
- 18 :  4.92E-001 2.13E-010 0.000 0.3306 0.9198 0.9000   1.00  2  2  1.1E-007
- 19 :  4.92E-001 6.22E-011 0.000 0.2913 0.9000 0.9000   1.00  2  2  3.3E-008
- 20 :  4.92E-001 1.68E-011 0.000 0.2702 0.9076 0.9000   1.00  2  2  9.0E-009
+Calling SDPT3: 3324 variables, 3183 equality constraints
+------------------------------------------------------------
 
-iter seconds digits       c*x               b*y
- 20     74.0   Inf  4.9187941824e-001  4.9188003068e-001
-|Ax-b| =  2.2e-010, [Ay-c]_+ =  5.2E-009, |x|= 2.3e+001, |y|= 6.7e-001
-
-Detailed timing (sec)
-   Pre          IPM          Post
-2.874E+000    7.403E+001    1.903E-001    
-Max-norms: ||b||=1, ||c|| = 1,
-Cholesky |add|=0, |skip| = 10, ||L.L|| = 246.687.
-------------------------------------------------------------------------
-Status: Solved
+ num. of constraints = 3183
+ dim. of socp   var  = 3180,   num. of socp blk  = 1060
+ dim. of free   var  = 144 *** convert ublk to linear blk
+ number of dense column in A = 1
+*******************************************************************
+   SDPT3: homogeneous self-dual path-following algorithms
+*******************************************************************
+ version  predcorr  gam  expon
+    NT      1      0.000   1
+it  pstep dstep p_infeas d_infeas  gap     mean(obj)    cputime
+-------------------------------------------------------------------
+ 0  0.000 0.000 7.1e-01 1.8e+01  1.3e+03  5.000000e-01  0:0:23 chol  1  1
+ 1  1.000 1.000 1.7e-01 4.5e+00  5.1e+02 -3.998513e+00  0:0:44 chol  1  1
+ 2  0.978 0.978 4.0e-03 1.0e-01  1.3e+01  6.692877e-01  0:1:05 chol  1  1
+ 3  0.707 0.707 9.5e-04 2.5e-02  2.7e+00  4.579398e-01  0:1:27 chol  1  1
+ 4  0.385 0.385 6.2e-04 1.6e-02  1.7e+00  4.782006e-01  0:1:48 chol  1  1
+ 5  0.635 0.635 2.8e-04 7.1e-03  7.3e-01  5.000784e-01  0:2:09 chol  1  1
+ 6  0.562 0.562 1.5e-04 3.8e-03  3.9e-01  4.936569e-01  0:2:30 chol  1  1
+ 7  0.846 0.846 4.1e-05 1.1e-03  1.2e-01  4.855872e-01  0:2:51 chol  1  1
+ 8  0.517 0.517 2.5e-05 6.4e-04  7.3e-02  4.862574e-01  0:3:12 chol  1  1
+ 9  0.803 0.803 8.0e-06 2.1e-04  2.4e-02  4.888049e-01  0:3:33 chol  1  1
+10  0.730 0.730 3.4e-06 8.9e-05  1.1e-02  4.901742e-01  0:3:54 chol  1  1
+11  0.869 0.869 1.2e-06 3.2e-05  4.0e-03  4.911172e-01  0:4:15 chol  1  1
+12  0.821 0.821 4.3e-07 1.1e-05  1.4e-03  4.915849e-01  0:4:36 chol  1  1
+13  0.866 0.866 1.3e-07 3.4e-06  4.4e-04  4.917814e-01  0:4:57 chol
+  SWM to ill-conditioned, switch to LU factor. lu   1  1
+14  0.762 0.762 5.3e-08 1.4e-06  1.8e-04  4.918386e-01  0:5:23 lu   1  1
+15  0.831 0.831 2.5e-08 4.1e-07  5.3e-05  4.918669e-01  0:5:47 lu   1  1
+16  0.824 0.824 5.5e-08 1.2e-07  1.6e-05  4.918755e-01  0:6:10 lu   1  1
+17  0.991 0.991 1.6e-07 1.6e-08  2.1e-06  4.918788e-01  0:6:34 lu   1  1
+18  0.582 0.582 4.7e-07 8.8e-09  1.1e-06  4.918790e-01  0:6:57 lu   1  1
+19  0.577 0.577 2.1e-07 4.8e-09  6.1e-07  4.918792e-01  0:7:20 lu   1  1
+20  0.572 0.572 3.0e-07 2.6e-09  3.3e-07  4.918792e-01  0:7:44 lu   1  1
+21  0.579 0.579 1.3e-07 1.4e-09  1.8e-07  4.918793e-01  0:8:07 lu   1  1
+22  0.586 0.586 5.9e-08 7.7e-10  9.6e-08  4.918793e-01  0:8:30 lu   1  1
+23  0.588 0.588 3.8e-08 4.1e-10  5.1e-08  4.918793e-01  0:8:54 lu   1  1
+24  0.589 0.589 3.9e-08 2.2e-10  2.7e-08  4.918793e-01  0:9:17 lu   1  1
+25  0.589 0.589 5.4e-08 1.2e-10  1.4e-08  4.918793e-01  0:9:40 lu   1  1
+26  0.590 0.590 5.9e-08 6.2e-11  7.7e-09  4.918793e-01  0:10:04 lu   1  1
+27  0.590 0.590 6.5e-08 3.3e-11  4.1e-09  4.918793e-01  0:10:27 lu   1  1
+28  0.591 0.591 7.6e-08 1.8e-11  2.2e-09  4.918793e-01  0:10:51 lu   1  1
+29  0.591 0.591 1.2e-07 9.3e-12  1.1e-09  4.918793e-01  0:11:14 lu   1  1
+30  0.591 0.591 1.2e-07 4.9e-12  6.1e-10  4.918793e-01  0:11:37 lu   1  1
+31  0.591 0.591 2.5e-07 2.6e-12  3.2e-10  4.918793e-01  0:12:00 lu   1  1
+32  0.591 0.591 2.1e-07 1.4e-12  1.7e-10  4.918793e-01  0:12:24 lu   1  1
+33  0.591 0.591 3.2e-07 7.3e-13  9.0e-11  4.918793e-01  0:12:47 lu   1  1
+34  0.591 0.591 2.4e-07 3.9e-13  4.7e-11  4.918793e-01  0:13:11 lu   1  1
+35  0.592 0.592 3.4e-07 2.0e-13  2.5e-11  4.918793e-01  0:13:34 lu   1  1
+36  0.592 0.592 3.0e-07 1.1e-13  1.3e-11  4.918793e-01  0:13:57 lu   1  1
+37  0.592 0.592 2.5e-07 5.8e-14  7.0e-12  4.918793e-01  0:14:20 lu  /^ 16 20
+  Stop: primal infeas has deteriorated too much, 2.6e-05
+38  0.580 0.580 2.5e-07 5.8e-14  7.0e-12  4.918793e-01  0:14:53
+-------------------------------------------------------------------
+ number of iterations   = 38
+ primal objective value =  4.91879307e-01
+ dual   objective value =  4.91879305e-01
+ gap := trace(XZ)       = 7.02e-12
+ relative gap           = 4.71e-12
+ actual relative gap    = 7.73e-10
+ rel. primal infeas     = 2.46e-07
+ rel. dual   infeas     = 5.75e-14
+ norm(X), norm(y), norm(Z) = 2.2e+01, 6.7e-01, 5.2e-01
+ norm(A), norm(b), norm(C) = 5.6e+02, 1.4e+00, 1.0e+00
+ Total CPU time (secs)  = 892.9  
+ CPU time per iteration = 23.5  
+ termination code       = -7
+ DIMACS: 2.5e-07  0.0e+00  5.8e-14  0.0e+00  7.7e-10  3.5e-12
+-------------------------------------------------------------------
+------------------------------------------------------------
+Status: Inaccurate/Solved
 Optimal value (cvx_optval): +0.491879
-Problem is Solved
+Problem is Inaccurate/Solved
 The minimum sidelobe level is -6.16 dB.
 
 </pre><img vspace="5" hspace="5" src="broadband_array_min_sidelobe_01.png"> <img vspace="5" hspace="5" src="broadband_array_min_sidelobe_02.png"> <img vspace="5" hspace="5" src="broadband_array_min_sidelobe_03.png"> <p class="footer"><br>
-            Published with MATLAB&reg; 7.2<br></p>
+            Published with MATLAB&reg; 7.4<br></p>
       </div>
       <!--
 ##### SOURCE BEGIN #####
@@ -410,7 +441,7 @@ cvx_end
 
 % check if problem was successfully solved
 disp(['Problem is ' cvx_status])
-if ~strcmp(cvx_status,'Solved')
+if ~strfind(cvx_status,'Solved')
   return
 end
 

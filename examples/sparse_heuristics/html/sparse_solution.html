@@ -1,3 +1,6 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN">
 <html xmlns:mwsh="http://www.mathworks.com/namespace/mcode/v1/syntaxhighlight.dtd">
    <head>
       <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
@@ -7,8 +10,8 @@ This HTML is auto-generated from an M-file.
 To make changes, update the M-file and republish this document.
       -->
       <title>Computing a sparse solution of a set of linear inequalities</title>
-      <meta name="generator" content="MATLAB 7.2">
-      <meta name="date" content="2006-05-20">
+      <meta name="generator" content="MATLAB 7.4">
+      <meta name="date" content="2007-06-26">
       <meta name="m-file" content="sparse_solution"><style>
 
 body {
@@ -27,14 +30,11 @@ h2 {
 }
 
 /* Make the text shrink to fit narrow windows, but not stretch too far in 
-wide windows.  On Gecko-based browsers, the shrink-to-fit doesn't work. */ 
+wide windows. */ 
 p,h1,h2,div.content div {
-  /* for MATLAB's browser */
-  width: 600px;
-  /* for Mozilla, but the "width" tag overrides it anyway */
   max-width: 600px;
-  /* for IE */
-  width:expression(document.body.clientWidth > 620 ? "600px": "auto" );
+  /* Hack for IE6 */
+  width: auto !important; width: 600px;
 }
 
 pre.codeinput {
@@ -178,38 +178,53 @@ axis([1 NUM_RUNS 0 n])
 xlabel(<span class="string">'iteration'</span>), ylabel(<span class="string">'number of nonzeros (cardinality)'</span>);
 legend(<span class="string">'log heuristic'</span>,<span class="string">'l1-norm heuristic'</span>,<span class="string">'Location'</span>,<span class="string">'SouthEast'</span>)
 </pre><pre class="codeoutput">Finding a sparse feasible point using l1-norm heuristic ... 
-Calling SeDuMi: 200 variables (0 free), 100 equality constraints
-------------------------------------------------------------------------
-SeDuMi 1.1 by AdvOL, 2005 and Jos F. Sturm, 1998, 2001-2003.
-Alg = 2: xz-corrector, Adaptive Step-Differentiation, theta = 0.250, beta = 0.500
-eqs m = 100, order n = 201, dim = 201, blocks = 1
-nnz(A) = 10100 + 0, nnz(ADA) = 10000, nnz(L) = 5050
- it :     b*y       gap    delta  rate   t/tP*  t/tD*   feas cg cg  prec
-  0 :            6.74E+002 0.000
-  1 : -1.73E+001 2.29E+002 0.000 0.3397 0.9000 0.9000   2.99  1  1  1.7E+000
-  2 : -8.94E+000 6.85E+001 0.000 0.2991 0.9000 0.9000   1.57  1  1  7.5E-001
-  3 :  1.43E+001 3.66E+001 0.000 0.5336 0.9000 0.9000   1.55  1  1  4.1E-001
-  4 :  2.71E+001 1.70E+001 0.000 0.4653 0.9000 0.9000   1.40  1  1  1.9E-001
-  5 :  3.25E+001 7.34E+000 0.000 0.4313 0.9000 0.9000   1.20  1  1  8.4E-002
-  6 :  3.43E+001 3.21E+000 0.000 0.4376 0.9000 0.9000   1.08  1  1  3.8E-002
-  7 :  3.54E+001 1.13E+000 0.000 0.3514 0.9000 0.9000   1.04  1  1  1.3E-002
-  8 :  3.57E+001 3.91E-001 0.000 0.3460 0.9045 0.9000   1.02  1  1  4.6E-003
-  9 :  3.59E+001 1.20E-001 0.000 0.3083 0.9000 0.9241   1.01  1  1  1.5E-003
- 10 :  3.59E+001 2.91E-002 0.000 0.2420 0.9106 0.9000   1.00  1  1  3.5E-004
- 11 :  3.59E+001 6.58E-003 0.000 0.2259 0.9291 0.9000   1.00  1  1  7.4E-005
- 12 :  3.59E+001 9.89E-004 0.000 0.1502 0.9000 0.9165   1.00  1  1  1.1E-005
- 13 :  3.59E+001 1.90E-004 0.000 0.1918 0.9127 0.9000   1.00  2  2  2.2E-006
- 14 :  3.59E+001 6.42E-007 0.000 0.0034 0.9990 0.9990   1.00  2  2  
-iter seconds digits       c*x               b*y
- 14      0.2   Inf  3.5940776942e+001  3.5940776942e+001
-|Ax-b| =  2.6e-014, [Ay-c]_+ =  1.7E-015, |x|= 1.5e+001, |y|= 1.6e+000
+Calling SDPT3: 200 variables, 100 equality constraints
+------------------------------------------------------------
 
-Detailed timing (sec)
-   Pre          IPM          Post
-6.009E-002    2.003E-001    0.000E+000    
-Max-norms: ||b||=2.494989e+001, ||c|| = 1,
-Cholesky |add|=0, |skip| = 0, ||L.L|| = 4.38669.
-------------------------------------------------------------------------
+ num. of constraints = 100
+ dim. of socp   var  = 100,   num. of socp blk  = 50
+ dim. of linear var  = 100
+*******************************************************************
+   SDPT3: homogeneous self-dual path-following algorithms
+*******************************************************************
+ version  predcorr  gam  expon
+    NT      1      0.000   1
+it  pstep dstep p_infeas d_infeas  gap     mean(obj)    cputime
+-------------------------------------------------------------------
+ 0  0.000 0.000 3.4e+00 5.0e+00  1.5e+02  2.500000e+01  0:0:00 chol  1  1
+ 1  0.368 0.368 3.2e+00 4.7e+00  2.0e+02  4.251406e+01  0:0:00 chol  1  1
+ 2  0.906 0.906 1.1e+00 1.7e+00  1.0e+02  4.141032e+01  0:0:00 chol  1  1
+ 3  0.883 0.883 2.1e-01 3.0e-01  1.8e+01  3.803702e+01  0:0:00 chol  1  1
+ 4  0.731 0.731 1.2e-01 1.8e-01  1.1e+01  3.607033e+01  0:0:00 chol  1  1
+ 5  0.915 0.915 3.2e-02 4.6e-02  3.0e+00  3.597417e+01  0:0:00 chol  1  1
+ 6  0.762 0.762 1.6e-02 2.3e-02  1.5e+00  3.597179e+01  0:0:00 chol  1  1
+ 7  0.924 0.924 3.9e-03 5.7e-03  3.6e-01  3.594840e+01  0:0:00 chol  1  1
+ 8  0.740 0.740 1.8e-03 2.6e-03  1.7e-01  3.594554e+01  0:0:00 chol  1  1
+ 9  1.000 1.000 6.3e-04 9.2e-04  5.9e-02  3.594317e+01  0:0:01 chol  1  1
+10  0.756 0.756 2.0e-04 2.9e-04  1.8e-02  3.594176e+01  0:0:01 chol  1  1
+11  1.000 1.000 8.0e-05 1.2e-04  7.5e-03  3.594101e+01  0:0:01 chol  1  1
+12  0.809 0.809 1.6e-05 2.3e-05  1.5e-03  3.594082e+01  0:0:01 chol  1  1
+13  0.975 0.975 4.7e-06 6.9e-06  4.4e-04  3.594080e+01  0:0:01 chol  1  1
+14  0.985 0.985 9.5e-08 1.4e-07  6.6e-06  3.594078e+01  0:0:01 chol  1  1
+15  1.000 1.000 1.7e-09 2.4e-09  1.1e-07  3.594078e+01  0:0:01
+  Stop: max(relative gap, infeasibilities) &lt; 1.49e-08
+-------------------------------------------------------------------
+ number of iterations   = 15
+ primal objective value =  3.59407770e+01
+ dual   objective value =  3.59407769e+01
+ gap := trace(XZ)       = 1.12e-07
+ relative gap           = 3.03e-09
+ actual relative gap    = 7.06e-10
+ rel. primal infeas     = 1.65e-09
+ rel. dual   infeas     = 2.41e-09
+ norm(X), norm(y), norm(Z) = 1.7e+01, 1.6e+00, 9.9e+00
+ norm(A), norm(b), norm(C) = 7.3e+01, 8.8e+01, 7.1e+00
+ Total CPU time (secs)  = 0.9  
+ CPU time per iteration = 0.1  
+ termination code       =  0
+ DIMACS: 1.7e-09  0.0e+00  2.4e-09  0.0e+00  7.1e-10  1.5e-09
+-------------------------------------------------------------------
+------------------------------------------------------------
 Status: Solved
 Optimal value (cvx_optval): +35.9408
 
@@ -217,12 +232,12 @@ Found a feasible x in R^50 that has 44 nonzeros using the l1-norm heuristic.
 
 Log-based heuristic:
    found a solution with 44 nonzeros...
-   found a solution with 44 nonzeros...
    found a solution with 37 nonzeros...
-   found a solution with 37 nonzeros...
-   found a solution with 36 nonzeros...
-   found a solution with 36 nonzeros...
-   found a solution with 36 nonzeros...
+   found a solution with 35 nonzeros...
+   found a solution with 35 nonzeros...
+   found a solution with 35 nonzeros...
+   found a solution with 35 nonzeros...
+   found a solution with 35 nonzeros...
    found a solution with 35 nonzeros...
    found a solution with 35 nonzeros...
    found a solution with 35 nonzeros...
@@ -234,7 +249,7 @@ Log-based heuristic:
 
 Found a feasible x in R^50 that has 35 nonzeros using the log heuristic.
 </pre><img vspace="5" hspace="5" src="sparse_solution_01.png"> <p class="footer"><br>
-            Published with MATLAB&reg; 7.2<br></p>
+            Published with MATLAB&reg; 7.4<br></p>
       </div>
       <!--
 ##### SOURCE BEGIN #####

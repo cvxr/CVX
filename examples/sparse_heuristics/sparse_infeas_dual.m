@@ -55,7 +55,7 @@ cvx_begin
 cvx_end
 
 % report the smaller set of mutually inconsistent inequalities
-infeas_set = find( lambda > 0 );
+infeas_set = find( abs(b.*lambda) > sqrt(eps)/n );
 disp(' ');
 fprintf(1,'Found a smaller set of %d mutually inconsistent inequalities.\n',...
         length(infeas_set));

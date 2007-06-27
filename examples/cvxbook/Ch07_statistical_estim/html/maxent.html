@@ -1,3 +1,6 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN">
 <html xmlns:mwsh="http://www.mathworks.com/namespace/mcode/v1/syntaxhighlight.dtd">
    <head>
       <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
@@ -7,8 +10,8 @@ This HTML is auto-generated from an M-file.
 To make changes, update the M-file and republish this document.
       -->
       <title>Example 7.2: Maximum entropy distribution</title>
-      <meta name="generator" content="MATLAB 7.2">
-      <meta name="date" content="2006-05-20">
+      <meta name="generator" content="MATLAB 7.4">
+      <meta name="date" content="2007-06-26">
       <meta name="m-file" content="maxent"><style>
 
 body {
@@ -27,14 +30,11 @@ h2 {
 }
 
 /* Make the text shrink to fit narrow windows, but not stretch too far in 
-wide windows.  On Gecko-based browsers, the shrink-to-fit doesn't work. */ 
+wide windows. */ 
 p,h1,h2,div.content div {
-  /* for MATLAB's browser */
-  width: 600px;
-  /* for Mozilla, but the "width" tag overrides it anyway */
   max-width: 600px;
-  /* for IE */
-  width:expression(document.body.clientWidth > 620 ? "600px": "auto" );
+  /* Hack for IE6 */
+  width: auto !important; width: 600px;
 }
 
 pre.codeinput {
@@ -177,58 +177,72 @@ xlabel( <span class="string">'x'</span> );
 ylabel( <span class="string">'CDF( x )'</span> );
 hold <span class="string">off</span>
 </pre><pre class="codeoutput"> 
-Calling SeDuMi: 1988 variables (99 free), 1089 equality constraints
-------------------------------------------------------------------------
-SeDuMi 1.1 by AdvOL, 2005 and Jos F. Sturm, 1998, 2001-2003.
-Alg = 2: xz-corrector, Adaptive Step-Differentiation, theta = 0.250, beta = 0.500
-Split 99 free variables
-eqs m = 1089, order n = 1098, dim = 3078, blocks = 100
-nnz(A) = 4145 + 600, nnz(ADA) = 11981, nnz(L) = 6810
-Handling 6 + 0 dense columns.
- it :     b*y       gap    delta  rate   t/tP*  t/tD*   feas cg cg  prec
-  0 :            9.31E-002 0.000
-  1 :  1.06E+001 5.30E-002 0.000 0.5696 0.9000 0.9000   2.58  1  1  3.3E+000
-  2 :  1.46E+001 1.59E-002 0.000 0.3003 0.9000 0.9000   2.27  1  1  5.9E-001
-  3 :  1.13E+001 5.28E-003 0.000 0.3314 0.9000 0.9000   1.58  1  1  1.5E-001
-  4 :  8.26E+000 2.21E-003 0.000 0.4184 0.9000 0.9000   1.39  1  1  5.6E-002
-  5 :  6.61E+000 1.09E-003 0.000 0.4936 0.9000 0.9000   1.18  1  1  2.7E-002
-  6 :  5.95E+000 7.16E-004 0.000 0.6571 0.9000 0.9000   1.06  1  1  1.8E-002
-  7 :  5.38E+000 4.07E-004 0.000 0.5685 0.9000 0.9000   1.05  1  1  1.0E-002
-  8 :  4.95E+000 2.14E-004 0.000 0.5257 0.9000 0.9000   1.04  1  1  5.3E-003
-  9 :  4.95E+000 3.71E-006 0.000 0.0173 0.9000 0.0000   1.04  1  1  2.4E-003
- 10 :  4.61E+000 6.31E-007 0.000 0.1702 0.9219 0.9000   1.00  1  1  5.0E-004
- 11 :  4.46E+000 1.65E-007 0.000 0.2615 0.9074 0.9000   0.98  1  1  1.3E-004
- 12 :  4.42E+000 5.66E-008 0.069 0.3429 0.1225 0.9000   0.99  1  1  5.4E-005
- 13 :  4.40E+000 2.57E-008 0.000 0.4539 0.9000 0.9000   0.97  1  1  2.5E-005
- 14 :  4.39E+000 5.16E-009 0.000 0.2007 0.9000 0.9000   1.01  1  1  5.0E-006
- 15 :  4.39E+000 1.01E-009 0.000 0.1949 0.9000 0.9000   1.02  1  1  9.6E-007
- 16 :  4.39E+000 2.28E-010 0.000 0.2268 0.9000 0.9000   1.03  1  1  2.1E-007
- 17 :  4.39E+000 5.19E-011 0.000 0.2277 0.9000 0.9000   1.05  1  2  4.7E-008
- 18 :  4.39E+000 1.07E-011 0.000 0.2068 0.9000 0.9000   1.04  2  2  9.6E-009
+Calling SDPT3: 1988 variables, 1089 equality constraints
+------------------------------------------------------------
 
-iter seconds digits       c*x               b*y
- 18      0.6   Inf  4.3882141650e+000  4.3882141729e+000
-|Ax-b| =  6.2e-008, [Ay-c]_+ =  7.2E-009, |x|= 6.2e+001, |y|= 2.5e+000
-
-Detailed timing (sec)
-   Pre          IPM          Post
-0.000E+000    5.908E-001    0.000E+000    
-Max-norms: ||b||=3.646025e+000, ||c|| = 1.849460e+000,
-Cholesky |add|=0, |skip| = 0, ||L.L|| = 18.0857.
-------------------------------------------------------------------------
+ num. of constraints = 1089
+ dim. of sdp    var  = 495,   num. of sdp  blk  = 99
+ dim. of socp   var  = 198,   num. of socp blk  = 99
+ dim. of linear var  = 206
+ dim. of free   var  = 99 *** convert ublk to linear blk
+*******************************************************************
+   SDPT3: homogeneous self-dual path-following algorithms
+*******************************************************************
+ version  predcorr  gam  expon
+    NT      1      0.000   1
+it  pstep dstep p_infeas d_infeas  gap     mean(obj)    cputime
+-------------------------------------------------------------------
+ 0  0.000 0.000 9.4e+00 1.1e+01  1.0e+03  1.628122e+00  0:0:00 spchol  1  1
+ 1  0.748 0.748 9.5e+00 1.1e+01  2.3e+03 -2.269250e+02  0:0:00 spchol  1  1
+ 2  1.000 1.000 2.4e+00 2.8e+00  7.6e+02 -7.704337e+01  0:0:00 spchol  1  1
+ 3  0.898 0.898 3.4e-01 4.0e-01  1.1e+02 -1.935101e+00  0:0:01 spchol  1  1
+ 4  0.794 0.794 1.9e-01 2.2e-01  6.2e+01  1.225528e+00  0:0:01 spchol  1  1
+ 5  0.821 0.821 9.4e-02 1.1e-01  3.1e+01  3.796283e+00  0:0:01 spchol  1  1
+ 6  1.000 1.000 4.9e-02 5.9e-02  1.6e+01  4.676661e+00  0:0:01 spchol  1  1
+ 7  0.777 0.777 1.8e-02 2.1e-02  5.5e+00  4.807755e+00  0:0:01 spchol  1  1
+ 8  1.000 1.000 8.2e-03 9.7e-03  2.5e+00  4.684651e+00  0:0:02 spchol  1  1
+ 9  0.897 0.897 1.3e-03 1.6e-03  3.8e-01  4.465609e+00  0:0:02 spchol  1  1
+10  1.000 1.000 3.4e-04 4.0e-04  9.5e-02  4.411471e+00  0:0:02 spchol  1  1
+11  0.890 0.890 4.4e-05 5.2e-05  1.2e-02  4.391409e+00  0:0:02 spchol  1  1
+12  1.000 1.000 6.8e-06 8.1e-06  1.8e-03  4.388694e+00  0:0:02 spchol  1  1
+13  0.984 0.984 9.6e-07 1.1e-06  2.5e-04  4.388284e+00  0:0:03 spchol
+  SWM to ill-conditioned, switch to LU factor. splu   1  1
+14  1.000 1.000 2.8e-07 3.3e-07  7.0e-05  4.388231e+00  0:0:03 splu   1  1
+15  0.994 0.994 3.7e-08 4.2e-08  8.8e-06  4.388213e+00  0:0:03 splu   1  1
+16  1.000 1.000 7.6e-09 5.8e-09  1.2e-06  4.388210e+00  0:0:03 splu   1  1
+17  0.834 0.834 3.9e-09 1.3e-09  2.8e-07  4.388210e+00  0:0:04 splu   1  1
+18  0.982 0.982 5.3e-10 7.8e-11  1.6e-08  4.388210e+00  0:0:04
+  Stop: max(relative gap, infeasibilities) &lt; 1.49e-08
+-------------------------------------------------------------------
+ number of iterations   = 18
+ primal objective value =  4.38820978e+00
+ dual   objective value =  4.38820977e+00
+ gap := trace(XZ)       = 1.63e-08
+ relative gap           = 3.03e-09
+ actual relative gap    = 7.05e-10
+ rel. primal infeas     = 5.34e-10
+ rel. dual   infeas     = 7.76e-11
+ norm(X), norm(y), norm(Z) = 5.9e+01, 2.5e+00, 2.7e+00
+ norm(A), norm(b), norm(C) = 6.5e+01, 3.9e+01, 3.1e+00
+ Total CPU time (secs)  = 3.8  
+ CPU time per iteration = 0.2  
+ termination code       =  0
+ DIMACS: 5.3e-10  0.0e+00  7.8e-11  0.0e+00  7.1e-10  1.7e-09
+-------------------------------------------------------------------
+------------------------------------------------------------
 Status: Solved
 Optimal value (cvx_optval): +4.38821
-0 &lt;= Prob(x&lt;=-1) &lt;= 0.329406
-0 &lt;= Prob(x&lt;=-0.979798) &lt;= 0.344777
-0 &lt;= Prob(x&lt;=-0.959596) &lt;= 0.360771
-0 &lt;= Prob(x&lt;=-0.939394) &lt;= 0.377365
-0 &lt;= Prob(x&lt;=-0.919192) &lt;= 0.394532
-0 &lt;= Prob(x&lt;=-0.89899) &lt;= 0.4
-0 &lt;= Prob(x&lt;=-0.878788) &lt;= 0.4
-0 &lt;= Prob(x&lt;=-0.858586) &lt;= 0.4
-0 &lt;= Prob(x&lt;=-0.838384) &lt;= 0.4
-0 &lt;= Prob(x&lt;=-0.818182) &lt;= 0.4
-0 &lt;= Prob(x&lt;=-0.79798) &lt;= 0.4
+3.14248e-11 &lt;= Prob(x&lt;=-1) &lt;= 0.329406
+5.4143e-11 &lt;= Prob(x&lt;=-0.979798) &lt;= 0.344777
+8.00403e-11 &lt;= Prob(x&lt;=-0.959596) &lt;= 0.360771
+7.82703e-11 &lt;= Prob(x&lt;=-0.939394) &lt;= 0.377365
+1.24962e-10 &lt;= Prob(x&lt;=-0.919192) &lt;= 0.394532
+2.74002e-10 &lt;= Prob(x&lt;=-0.89899) &lt;= 0.4
+5.45043e-11 &lt;= Prob(x&lt;=-0.878788) &lt;= 0.4
+2.76151e-10 &lt;= Prob(x&lt;=-0.858586) &lt;= 0.4
+1.23132e-09 &lt;= Prob(x&lt;=-0.838384) &lt;= 0.4
+4.24341e-11 &lt;= Prob(x&lt;=-0.818182) &lt;= 0.4
+4.76569e-10 &lt;= Prob(x&lt;=-0.79798) &lt;= 0.4
 0.0116304 &lt;= Prob(x&lt;=-0.777778) &lt;= 0.4
 0.0331953 &lt;= Prob(x&lt;=-0.757576) &lt;= 0.4
 0.0519157 &lt;= Prob(x&lt;=-0.737374) &lt;= 0.4
@@ -319,7 +333,7 @@ Optimal value (cvx_optval): +4.38821
 0.764914 &lt;= Prob(x&lt;=0.979798) &lt;= 1
 1 &lt;= Prob(x&lt;=1) &lt;= 1
 </pre><img vspace="5" hspace="5" src="maxent_01.png"> <img vspace="5" hspace="5" src="maxent_02.png"> <p class="footer"><br>
-            Published with MATLAB&reg; 7.2<br></p>
+            Published with MATLAB&reg; 7.4<br></p>
       </div>
       <!--
 ##### SOURCE BEGIN #####

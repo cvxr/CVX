@@ -1,3 +1,6 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN">
 <html xmlns:mwsh="http://www.mathworks.com/namespace/mcode/v1/syntaxhighlight.dtd">
    <head>
       <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
@@ -7,8 +10,8 @@ This HTML is auto-generated from an M-file.
 To make changes, update the M-file and republish this document.
       -->
       <title>Figure 8.15: Linear placement problem</title>
-      <meta name="generator" content="MATLAB 7.2">
-      <meta name="date" content="2006-05-20">
+      <meta name="generator" content="MATLAB 7.4">
+      <meta name="date" content="2007-06-26">
       <meta name="m-file" content="placement_lin"><style>
 
 body {
@@ -27,14 +30,11 @@ h2 {
 }
 
 /* Make the text shrink to fit narrow windows, but not stretch too far in 
-wide windows.  On Gecko-based browsers, the shrink-to-fit doesn't work. */ 
+wide windows. */ 
 p,h1,h2,div.content div {
-  /* for MATLAB's browser */
-  width: 600px;
-  /* for Mozilla, but the "width" tag overrides it anyway */
   max-width: 600px;
-  /* for IE */
-  width:expression(document.body.clientWidth > 620 ? "600px": "auto" );
+  /* Hack for IE6 */
+  width: auto !important; width: 600px;
 }
 
 pre.codeinput {
@@ -166,41 +166,52 @@ plot([0 2], [0 0 ], <span class="string">'k-'</span>);
 title(<span class="string">'Distribution of the 27 link lengths'</span>);
 <span class="comment">% print -deps placement-lin-hist.eps</span>
 </pre><pre class="codeoutput">Computing the optimal locations of the 6 free points... 
-Calling SeDuMi: 93 variables (12 free), 54 equality constraints
-------------------------------------------------------------------------
-SeDuMi 1.1 by AdvOL, 2005 and Jos F. Sturm, 1998, 2001-2003.
-Alg = 2: xz-corrector, Adaptive Step-Differentiation, theta = 0.250, beta = 0.500
-Split 12 free variables
-eqs m = 54, order n = 79, dim = 106, blocks = 28
-nnz(A) = 254 + 0, nnz(ADA) = 804, nnz(L) = 811
- it :     b*y       gap    delta  rate   t/tP*  t/tD*   feas cg cg  prec
-  0 :            2.20E+001 0.000
-  1 :  1.80E+001 6.07E+000 0.000 0.2758 0.9000 0.9000   2.08  1  1  9.2E-001
-  2 :  2.09E+001 1.36E+000 0.000 0.2241 0.9000 0.9000   1.23  1  1  2.1E-001
-  3 :  2.17E+001 2.69E-001 0.000 0.1975 0.9000 0.9000   1.04  1  1  4.1E-002
-  4 :  2.19E+001 4.91E-002 0.000 0.1827 0.9000 0.9000   1.01  1  1  7.5E-003
-  5 :  2.19E+001 3.91E-003 0.026 0.0796 0.9900 0.9900   1.00  1  1  6.0E-004
-  6 :  2.19E+001 1.13E-004 0.000 0.0288 0.9902 0.9900   1.00  1  1  2.0E-005
-  7 :  2.19E+001 7.27E-006 0.365 0.0646 0.9900 0.9900   1.00  1  1  1.3E-006
-  8 :  2.19E+001 1.49E-006 0.000 0.2045 0.9046 0.9000   1.00  1  1  2.8E-007
-  9 :  2.19E+001 1.47E-007 0.379 0.0991 0.9900 0.9900   1.00  2  2  2.8E-008
- 10 :  2.19E+001 3.74E-008 0.000 0.2539 0.9000 0.6125   1.00  2  2  1.0E-008
+Calling SDPT3: 93 variables, 54 equality constraints
+------------------------------------------------------------
 
-iter seconds digits       c*x               b*y
- 10      0.1   8.3  2.1908263842e+001  2.1908263730e+001
-|Ax-b| =  2.4e-009, [Ay-c]_+ =  2.9E-009, |x|= 9.4e+000, |y|= 7.9e+000
-
-Detailed timing (sec)
-   Pre          IPM          Post
-0.000E+000    1.001E-001    0.000E+000    
-Max-norms: ||b||=1, ||c|| = 1,
-Cholesky |add|=0, |skip| = 0, ||L.L|| = 7.13504.
-------------------------------------------------------------------------
+ num. of constraints = 54
+ dim. of socp   var  = 81,   num. of socp blk  = 27
+ dim. of free   var  = 12 *** convert ublk to linear blk
+*******************************************************************
+   SDPT3: homogeneous self-dual path-following algorithms
+*******************************************************************
+ version  predcorr  gam  expon
+    NT      1      0.000   1
+it  pstep dstep p_infeas d_infeas  gap     mean(obj)    cputime
+-------------------------------------------------------------------
+ 0  0.000 0.000 1.8e+00 2.4e+00  5.1e+01  1.350000e+01  0:0:00 chol  1  1
+ 1  0.639 0.639 1.1e+00 1.6e+00  5.3e+01  2.476356e+01  0:0:00 chol  1  1
+ 2  0.855 0.855 2.5e-01 3.4e-01  1.3e+01  2.225872e+01  0:0:00 chol  1  1
+ 3  0.886 0.886 4.2e-02 5.8e-02  2.3e+00  2.186633e+01  0:0:00 chol  1  1
+ 4  0.920 0.920 5.0e-03 7.0e-03  2.8e-01  2.188263e+01  0:0:00 chol  1  1
+ 5  0.991 0.991 3.9e-04 5.4e-04  2.4e-02  2.190609e+01  0:0:00 chol  1  1
+ 6  0.971 0.971 1.5e-05 2.0e-05  7.0e-04  2.190819e+01  0:0:00 chol  1  1
+ 7  0.959 0.959 7.2e-07 1.0e-06  3.0e-05  2.190826e+01  0:0:00 chol  1  1
+ 8  1.000 1.000 4.1e-08 5.7e-08  2.5e-06  2.190826e+01  0:0:00 chol  1  1
+ 9  1.000 1.000 1.6e-09 2.7e-09  1.0e-07  2.190826e+01  0:0:00
+  Stop: max(relative gap, infeasibilities) &lt; 1.49e-08
+-------------------------------------------------------------------
+ number of iterations   =  9
+ primal objective value =  2.19082638e+01
+ dual   objective value =  2.19082637e+01
+ gap := trace(XZ)       = 1.01e-07
+ relative gap           = 4.39e-09
+ actual relative gap    = 1.17e-09
+ rel. primal infeas     = 1.63e-09
+ rel. dual   infeas     = 2.68e-09
+ norm(X), norm(y), norm(Z) = 7.0e+00, 7.9e+00, 7.3e+00
+ norm(A), norm(b), norm(C) = 1.7e+01, 3.5e+00, 5.2e+00
+ Total CPU time (secs)  = 0.2  
+ CPU time per iteration = 0.0  
+ termination code       =  0
+ DIMACS: 1.6e-09  0.0e+00  2.7e-09  0.0e+00  1.2e-09  2.2e-09
+-------------------------------------------------------------------
+------------------------------------------------------------
 Status: Solved
 Optimal value (cvx_optval): +21.9083
 Done! 
 </pre><img vspace="5" hspace="5" src="placement_lin_01.png"> <img vspace="5" hspace="5" src="placement_lin_02.png"> <p class="footer"><br>
-            Published with MATLAB&reg; 7.2<br></p>
+            Published with MATLAB&reg; 7.4<br></p>
       </div>
       <!--
 ##### SOURCE BEGIN #####

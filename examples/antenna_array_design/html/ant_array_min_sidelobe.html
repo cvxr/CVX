@@ -1,3 +1,6 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN">
 <html xmlns:mwsh="http://www.mathworks.com/namespace/mcode/v1/syntaxhighlight.dtd">
    <head>
       <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
@@ -7,8 +10,8 @@ This HTML is auto-generated from an M-file.
 To make changes, update the M-file and republish this document.
       -->
       <title>Minimize sidelobe level of an array with arbitrary 2-D geometry</title>
-      <meta name="generator" content="MATLAB 7.2">
-      <meta name="date" content="2006-05-20">
+      <meta name="generator" content="MATLAB 7.4">
+      <meta name="date" content="2007-06-26">
       <meta name="m-file" content="ant_array_min_sidelobe"><style>
 
 body {
@@ -27,14 +30,11 @@ h2 {
 }
 
 /* Make the text shrink to fit narrow windows, but not stretch too far in 
-wide windows.  On Gecko-based browsers, the shrink-to-fit doesn't work. */ 
+wide windows. */ 
 p,h1,h2,div.content div {
-  /* for MATLAB's browser */
-  width: 600px;
-  /* for Mozilla, but the "width" tag overrides it anyway */
   max-width: 600px;
-  /* for IE */
-  width:expression(document.body.clientWidth > 620 ? "600px": "auto" );
+  /* Hack for IE6 */
+  width: auto !important; width: 600px;
 }
 
 pre.codeinput {
@@ -125,6 +125,7 @@ half_beamwidth = 10;  <span class="comment">% half beamwidth around the target d
   n = 40;
   L = 5;
   loc = L*rand(n,2);
+  angleRange = 360;
 
 <span class="comment">%********************************************************************</span>
 <span class="comment">% uniform 1D array with n elements with inter-element spacing d</span>
@@ -134,6 +135,7 @@ half_beamwidth = 10;  <span class="comment">% half beamwidth around the target d
   n = 30;
   d = 0.45*lambda;
   loc = [d*[0:n-1]' zeros(n,1)];
+  angleRange = 180;
 
 <span class="comment">%********************************************************************</span>
 <span class="comment">% uniform 2D array with m-by-m element with d spacing</span>
@@ -149,6 +151,7 @@ half_beamwidth = 10;  <span class="comment">% half beamwidth around the target d
     <span class="keyword">end</span>
   <span class="keyword">end</span>
   loc = loc*d;
+  angleRange = 360;
 
 <span class="keyword">else</span>
   error(<span class="string">'Undefined array geometry'</span>)
@@ -158,7 +161,7 @@ half_beamwidth = 10;  <span class="comment">% half beamwidth around the target d
 <span class="comment">% construct optimization data</span>
 <span class="comment">%********************************************************************</span>
 <span class="comment">% build matrix A that relates w and y(theta), ie, y = A*w</span>
-theta = [1:360]';
+theta = [1:angleRange]';
 A = kron(cos(pi*theta/180), loc(:,1)') + kron(sin(pi*theta/180), loc(:,2)');
 A = exp(2*pi*i/lambda*A);
 
@@ -197,7 +200,7 @@ cvx_end
 
 <span class="comment">% check if problem was successfully solved</span>
 disp([<span class="string">'Problem is '</span> cvx_status])
-<span class="keyword">if</span> ~strcmp(cvx_status,<span class="string">'Solved'</span>)
+<span class="keyword">if</span> ~strfind(cvx_status,<span class="string">'Solved'</span>)
   <span class="keyword">return</span>
 <span class="keyword">end</span>
 
@@ -213,9 +216,13 @@ plot(loc(:,1),loc(:,2),<span class="string">'o'</span>)
 title(<span class="string">'Antenna locations'</span>)
 
 <span class="comment">% plot array pattern</span>
+<span class="keyword">if</span> angleRange == 180,
+    theta = [1:360]';
+    A = [ A; -A ];
+<span class="keyword">end</span>
 y = A*w;
 figure(2), clf
-ymin = -40; ymax = 0;
+ymin = floor(0.1*min_sidelobe_level)*10-10; ymax = 0;
 plot([1:360], 20*log10(abs(y)), <span class="keyword">...</span>
      [theta_tar theta_tar],[ymin ymax],<span class="string">'r--'</span>,<span class="keyword">...</span>
      [theta_tar+half_beamwidth theta_tar+half_beamwidth],[ymin ymax],<span class="string">'g--'</span>,<span class="keyword">...</span>
@@ -232,7 +239,7 @@ axis([0 360 ymin ymax]);
 
 <span class="comment">% polar plot</span>
 figure(3), clf
-zerodB = 50;
+zerodB = -ymin;
 dBY = 20*log10(abs(y)) + zerodB;
 ind = find( dBY &lt;= 0 ); dBY(ind) = 0;
 plot(dBY.*cos(pi*theta/180), dBY.*sin(pi*theta/180), <span class="string">'-'</span>);
@@ -242,7 +249,8 @@ plot(zerodB*cos(pi*theta/180),zerodB*sin(pi*theta/180),<span class="string">'k:'
 plot( (min_sidelobe_level + zerodB)*cos(pi*theta/180), <span class="keyword">...</span>
       (min_sidelobe_level + zerodB)*sin(pi*theta/180),<span class="string">'k:'</span>)  <span class="comment">% min level</span>
 text(-zerodB,0,<span class="string">'0 dB'</span>)
-text(-(min_sidelobe_level + zerodB),0,sprintf(<span class="string">'%0.1f dB'</span>,min_sidelobe_level));
+tt = text(-(min_sidelobe_level + zerodB),0,sprintf(<span class="string">'%0.1f dB'</span>,min_sidelobe_level));
+set(tt,<span class="string">'HorizontalAlignment'</span>,<span class="string">'right'</span>);
 theta_1 = theta_tar+half_beamwidth;
 theta_2 = theta_tar-half_beamwidth;
 plot([0 55*cos(theta_tar*pi/180)], [0 55*sin(theta_tar*pi/180)], <span class="string">'k:'</span>)
@@ -256,69 +264,71 @@ plot([0 55*cos(theta_2*pi/180)], [0 55*sin(theta_2*pi/180)], <span class="string
 <span class="keyword">end</span>
 hold <span class="string">off</span>
 </pre><pre class="codeoutput"> 
-Calling SeDuMi: 1103 variables (80 free), 1024 equality constraints
-------------------------------------------------------------------------
-SeDuMi 1.1 by AdvOL, 2005 and Jos F. Sturm, 1998, 2001-2003.
-Alg = 2: xz-corrector, Adaptive Step-Differentiation, theta = 0.250, beta = 0.500
-Split 80 free variables
-eqs m = 1024, order n = 843, dim = 1184, blocks = 342
-nnz(A) = 1022 + 109780, nnz(ADA) = 3062, nnz(L) = 2044
-Handling 161 + 1 dense columns.
- it :     b*y       gap    delta  rate   t/tP*  t/tD*   feas cg cg  prec
-  0 :            3.37E-002 0.000
-  1 :  1.46E-001 1.46E-002 0.000 0.4342 0.9000 0.9000   2.01  1  1  1.5E+000
-  2 :  1.63E-001 7.36E-003 0.000 0.5034 0.9000 0.9000   7.56  1  1  1.2E-001
-  3 :  1.15E-001 4.91E-003 0.000 0.6664 0.9000 0.9000   3.48  1  1  4.8E-002
-  4 :  9.66E-002 2.70E-003 0.000 0.5501 0.9000 0.9000   2.10  1  1  2.0E-002
-  5 :  9.26E-002 1.71E-003 0.000 0.6335 0.9000 0.9000   1.43  1  1  1.2E-002
-  6 :  8.60E-002 7.23E-004 0.000 0.4230 0.9000 0.9000   1.30  1  1  4.9E-003
-  7 :  8.28E-002 4.49E-004 0.000 0.6204 0.9000 0.9000   1.08  1  1  3.1E-003
-  8 :  7.90E-002 2.25E-004 0.000 0.5025 0.9000 0.9000   1.01  1  1  1.6E-003
-  9 :  7.68E-002 4.03E-005 0.000 0.1789 0.9124 0.9000   0.95  1  1  5.6E-004
- 10 :  7.63E-002 7.13E-006 0.000 0.1769 0.9650 0.9000   0.86  1  1  2.9E-004
- 11 :  7.49E-002 3.38E-006 0.000 0.4745 0.9257 0.9000   0.81  1  1  1.5E-004
- 12 :  7.44E-002 1.72E-006 0.000 0.5068 0.9362 0.9000   0.89  1  1  7.9E-005
- 13 :  7.41E-002 1.09E-006 0.000 0.6354 0.9564 0.9000   0.90  1  1  5.1E-005
- 14 :  7.39E-002 8.53E-007 0.000 0.7830 0.9156 0.9000   0.59  1  1  4.5E-005
- 15 :  7.35E-002 6.10E-007 0.000 0.7152 0.9000 0.9213   0.28  1  1  3.7E-005
- 16 :  7.33E-002 4.49E-007 0.000 0.7349 0.9240 0.9000   0.45  1  1  3.1E-005
- 17 :  7.30E-002 3.47E-007 0.071 0.7728 0.9000 0.9144  -0.19  1  1  2.9E-005
- 18 :  7.29E-002 2.95E-007 0.375 0.8503 0.9840 0.9000   0.03  2  1  2.7E-005
- 19 :  7.25E-002 2.03E-007 0.000 0.6900 0.9060 0.9000  -0.25  1  1  2.4E-005
- 20 :  7.23E-002 1.69E-007 0.339 0.8296 0.9562 0.9000  -0.12  1  2  2.2E-005
- 21 :  7.21E-002 1.29E-007 0.000 0.7647 0.9461 0.9000  -0.09  2  2  2.0E-005
- 22 :  7.19E-002 1.07E-007 0.426 0.8265 0.9549 0.9000   0.06  2  2  1.7E-005
- 23 :  7.16E-002 7.91E-008 0.000 0.7416 0.9143 0.9000   0.19  2  2  1.4E-005
- 24 :  7.14E-002 6.35E-008 0.215 0.8033 0.9661 0.9000   0.41  2  2  1.2E-005
- 25 :  7.13E-002 5.16E-008 0.000 0.8123 0.9634 0.9000   0.51  2  2  1.0E-005
- 26 :  7.11E-002 3.78E-008 0.327 0.7326 0.9635 0.9000   0.54  2  2  8.1E-006
- 27 :  7.09E-002 2.86E-008 0.238 0.7566 0.9661 0.9000   0.65  2  2  6.3E-006
- 28 :  7.08E-002 2.04E-008 0.301 0.7126 0.9594 0.9000   0.71  2  2  4.6E-006
- 29 :  7.07E-002 1.58E-008 0.103 0.7759 0.0000 0.9000   0.83  2  2  3.6E-006
- 30 :  7.05E-002 6.59E-009 0.000 0.4167 0.9000 0.9061   0.80  2  2  1.6E-006
- 31 :  7.04E-002 3.21E-009 0.000 0.4874 0.0000 0.9000   0.86  2  2  8.4E-007
- 32 :  7.03E-002 8.65E-010 0.000 0.2693 0.0318 0.9000   0.87  2  2  2.9E-007
- 33 :  7.03E-002 2.75E-010 0.000 0.3174 0.9000 0.7756   0.91  2  2  9.5E-008
- 34 :  7.03E-002 5.96E-011 0.000 0.2171 0.9000 0.8307   0.98  2  2  2.1E-008
- 35 :  7.03E-002 1.34E-011 0.000 0.2254 0.9000 0.9000   1.00  2  2  4.7E-009
+Calling SDPT3: 1103 variables, 1024 equality constraints
+------------------------------------------------------------
 
-iter seconds digits       c*x               b*y
- 35     14.5   Inf  7.0302334493e-002  7.0302336272e-002
-|Ax-b| =  1.7e-012, [Ay-c]_+ =  3.3E-009, |x|= 1.1e+002, |y|= 4.6e-001
-
-Detailed timing (sec)
-   Pre          IPM          Post
-3.605E-001    1.447E+001    8.012E-002    
-Max-norms: ||b||=1, ||c|| = 1,
-Cholesky |add|=0, |skip| = 2, ||L.L|| = 54.9682.
-------------------------------------------------------------------------
-Status: Solved
-Optimal value (cvx_optval): +0.0703023
-Problem is Solved
+ num. of constraints = 1024
+ dim. of socp   var  = 1023,   num. of socp blk  = 341
+ dim. of free   var  = 80 *** convert ublk to linear blk
+ number of dense column in A = 161
+ number of nearly dependent constraints = 2
+ warning: the sparse part of AAt may be nearly singular.
+*******************************************************************
+   SDPT3: homogeneous self-dual path-following algorithms
+*******************************************************************
+ version  predcorr  gam  expon
+    NT      1      0.000   1
+it  pstep dstep p_infeas d_infeas  gap     mean(obj)    cputime
+-------------------------------------------------------------------
+ 0  0.000 0.000 5.0e-01 1.1e+01  5.0e+02  5.000000e-01  0:0:00 spchol
+  spchol: L.skip exists but ncolU &gt; 0.
+  switch to LU factor.
+  switch to LU factor splu   1  1
+ 1  1.000 1.000 2.7e-02 6.0e-01  3.1e+01  5.220858e-01  0:0:00 splu   1  1
+ 2  0.912 0.912 2.2e-03 5.0e-02  3.0e+00  4.569587e-01  0:0:01 splu   1  1
+ 3  0.643 0.643 7.0e-04 1.6e-02  6.7e-01  1.698366e-01  0:0:02 splu   1  1
+ 4  0.686 0.686 2.5e-04 5.7e-03  2.3e-01  8.037542e-02  0:0:02 splu   1  1
+ 5  0.644 0.644 1.2e-04 2.7e-03  1.3e-01  6.942738e-02  0:0:03 splu   1  1
+ 6  0.347 0.347 9.1e-05 2.0e-03  9.9e-02  7.339505e-02  0:0:03 splu   1  1
+ 7  0.821 0.821 3.0e-05 6.7e-04  3.7e-02  7.396090e-02  0:0:04 splu   1  1
+ 8  0.571 0.571 1.8e-05 4.1e-04  2.5e-02  7.259442e-02  0:0:04 splu   1  1
+ 9  0.585 0.585 1.3e-05 2.8e-04  2.1e-02  7.083933e-02  0:0:05 splu   1  1
+10  0.550 0.550 8.3e-06 1.8e-04  1.6e-02  7.004117e-02  0:0:05 splu   1  1
+11  0.731 0.731 4.0e-06 8.9e-05  8.5e-03  6.979616e-02  0:0:06 splu   1  1
+12  0.815 0.815 1.5e-06 3.4e-05  3.4e-03  6.997564e-02  0:0:06 splu   1  1
+13  0.826 0.826 5.4e-07 1.2e-05  1.2e-03  7.016261e-02  0:0:07 splu   1  1
+14  0.917 0.917 1.3e-07 2.9e-06  3.1e-04  7.026174e-02  0:0:08 splu   1  1
+15  0.962 0.962 3.2e-08 6.9e-07  7.3e-05  7.029164e-02  0:0:08 splu   1  1
+16  0.974 0.974 1.3e-08 8.4e-08  8.9e-06  7.030074e-02  0:0:09 splu   1  1
+17  0.951 0.951 4.0e-07 1.6e-08  1.7e-06  7.030183e-02  0:0:09 splu   1  1
+18  0.986 0.986 2.2e-06 2.4e-09  2.6e-07  7.030205e-02  0:0:10 splu   1  1
+19  0.601 0.601 6.0e-06 1.3e-09  1.4e-07  7.030207e-02  0:0:10 splu   1  1
+20  0.604 0.604 3.2e-05 6.7e-10  7.2e-08  7.030208e-02  0:0:11
+  Stop: infeas has deteriorated too much, 3.2e-05
+-------------------------------------------------------------------
+ number of iterations   = 20
+ primal objective value =  7.03020968e-02
+ dual   objective value =  7.03020409e-02
+ gap := trace(XZ)       = 1.35e-07
+ relative gap           = 6.73e-08
+ actual relative gap    = 4.91e-08
+ rel. primal infeas     = 5.96e-06
+ rel. dual   infeas     = 1.26e-09
+ norm(X), norm(y), norm(Z) = 1.1e+02, 4.6e-01, 4.5e-01
+ norm(A), norm(b), norm(C) = 2.4e+02, 1.0e+00, 1.0e+00
+ Total CPU time (secs)  = 10.6  
+ CPU time per iteration = 0.5  
+ termination code       = -7
+ DIMACS: 6.0e-06  0.0e+00  1.3e-09  0.0e+00  4.9e-08  1.2e-07
+-------------------------------------------------------------------
+------------------------------------------------------------
+Status: Inaccurate/Solved
+Optimal value (cvx_optval): +0.0703021
+Problem is Inaccurate/Solved
 The minimum sidelobe level is -23.06 dB.
 
 </pre><img vspace="5" hspace="5" src="ant_array_min_sidelobe_01.png"> <img vspace="5" hspace="5" src="ant_array_min_sidelobe_02.png"> <img vspace="5" hspace="5" src="ant_array_min_sidelobe_03.png"> <p class="footer"><br>
-            Published with MATLAB&reg; 7.2<br></p>
+            Published with MATLAB&reg; 7.4<br></p>
       </div>
       <!--
 ##### SOURCE BEGIN #####
@@ -378,6 +388,7 @@ if strcmp( ARRAY_GEOMETRY, '2D_RANDOM' )
   n = 40;
   L = 5;
   loc = L*rand(n,2);
+  angleRange = 360;
 
 %********************************************************************
 % uniform 1D array with n elements with inter-element spacing d
@@ -387,6 +398,7 @@ elseif strcmp( ARRAY_GEOMETRY, '1D_UNIFORM_LINE' )
   n = 30;
   d = 0.45*lambda;
   loc = [d*[0:n-1]' zeros(n,1)];
+  angleRange = 180;
 
 %********************************************************************
 % uniform 2D array with m-by-m element with d spacing
@@ -402,6 +414,7 @@ elseif strcmp( ARRAY_GEOMETRY, '2D_UNIFORM_LATTICE' )
     end
   end
   loc = loc*d;
+  angleRange = 360;
 
 else
   error('Undefined array geometry')
@@ -411,7 +424,7 @@ end
 % construct optimization data
 %********************************************************************
 % build matrix A that relates w and y(theta), ie, y = A*w
-theta = [1:360]';
+theta = [1:angleRange]';
 A = kron(cos(pi*theta/180), loc(:,1)') + kron(sin(pi*theta/180), loc(:,2)');
 A = exp(2*pi*i/lambda*A);
 
@@ -450,7 +463,7 @@ cvx_end
 
 % check if problem was successfully solved
 disp(['Problem is ' cvx_status])
-if ~strcmp(cvx_status,'Solved')
+if ~strfind(cvx_status,'Solved')
   return
 end
 
@@ -466,9 +479,13 @@ plot(loc(:,1),loc(:,2),'o')
 title('Antenna locations')
 
 % plot array pattern
+if angleRange == 180,
+    theta = [1:360]';
+    A = [ A; -A ];
+end
 y = A*w;
 figure(2), clf
-ymin = -40; ymax = 0;
+ymin = floor(0.1*min_sidelobe_level)*10-10; ymax = 0;
 plot([1:360], 20*log10(abs(y)), ...
      [theta_tar theta_tar],[ymin ymax],'rREPLACE_WITH_DASH_DASH',...
      [theta_tar+half_beamwidth theta_tar+half_beamwidth],[ymin ymax],'gREPLACE_WITH_DASH_DASH',...
@@ -485,7 +502,7 @@ axis([0 360 ymin ymax]);
 
 % polar plot
 figure(3), clf
-zerodB = 50;
+zerodB = -ymin;
 dBY = 20*log10(abs(y)) + zerodB;
 ind = find( dBY <= 0 ); dBY(ind) = 0;
 plot(dBY.*cos(pi*theta/180), dBY.*sin(pi*theta/180), '-');
@@ -495,7 +512,8 @@ plot(zerodB*cos(pi*theta/180),zerodB*sin(pi*theta/180),'k:') % 0 dB
 plot( (min_sidelobe_level + zerodB)*cos(pi*theta/180), ...
       (min_sidelobe_level + zerodB)*sin(pi*theta/180),'k:')  % min level
 text(-zerodB,0,'0 dB')
-text(-(min_sidelobe_level + zerodB),0,sprintf('%0.1f dB',min_sidelobe_level));
+tt = text(-(min_sidelobe_level + zerodB),0,sprintf('%0.1f dB',min_sidelobe_level));
+set(tt,'HorizontalAlignment','right');
 theta_1 = theta_tar+half_beamwidth;
 theta_2 = theta_tar-half_beamwidth;
 plot([0 55*cos(theta_tar*pi/180)], [0 55*sin(theta_tar*pi/180)], 'k:')

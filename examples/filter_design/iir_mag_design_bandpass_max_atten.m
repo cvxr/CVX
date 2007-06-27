@@ -109,7 +109,7 @@ while( 20*log10(Us_top/Us_bot) > 1)
   cvx_end
 
   % bisection
-  if strcmp(cvx_status,'Solved') % feasible
+  if strfind(cvx_status,'Solved') % feasible
     fprintf(1,'Problem is feasible for stopband atten = %3.2f dB\n', ...
                10*log10(Us_cur));
     Us_top = Us_cur;

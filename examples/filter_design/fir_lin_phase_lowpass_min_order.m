@@ -78,7 +78,7 @@ while( n_top - n_bot > 1)
   cvx_end
 
   % bisection
-  if strcmp(cvx_status,'Solved') % feasible
+  if strfind(cvx_status,'Solved') % feasible
     fprintf(1,'Problem is feasible for n = %d taps\n',n_cur);
     n_top = n_cur;
     % construct the full impulse response
