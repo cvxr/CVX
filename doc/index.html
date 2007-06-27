@@ -5,7 +5,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
   <meta name="generator" content=
-  "HTML Tidy for Linux (vers 1 September 2005), see www.w3.org" />
+  "HTML Tidy for Mac OS X (vers 1st December 2004), see www.w3.org" />
 
   <title>CVX -- Matlab Software for Disciplined Convex
   Programming</title>
@@ -15,19 +15,11 @@
   <h1><tt>CVX</tt>: Matlab Software for Disciplined Convex
   Programming</h1>
 
-  <h2>Version 1.0RC3 (February 2007)</h2>
+  <h2>Version 1.1beta (June 2007)</h2>
 
   <h3><a href="http://www.stanford.edu/~mcgrant">Michael Grant</a>,
   <a href="http://www.stanford.edu/~boyd">Stephen Boyd</a>, and
   <a href="http://www.stanford.edu/~yyye">Yinyu Ye</a></h3>
-
-  <h3>IMPORTANT compatability warning:</h3>Unfortunately,
-  <tt>CVX</tt> does not work with the latest <i>64-bit</i> versions
-  of Matlab (R2006b/7.3) due to changes in Matlab's MEX interface.
-  <tt>CVX</tt> works fine with all 32-bit versions of Matlab, as
-  well as older 64-bit versions (R2006a/7.2 or earlier). Fixes to
-  <tt>CVX</tt>'s solver SeDuMi are required, and we cannot predict
-  when they will be available.
 
   <h3>Table of Contents</h3>
 
@@ -130,15 +122,25 @@
   <p>The <tt>CVX</tt> modeling system is built using <a href=
   "http://www.mathworks.com/products/matlab/">Matlab</a>, and
   requires version 6.1 or later of Matlab to run. It is built using
-  both native Matlab code and C MEX files. It currently employs
-  <a href="http://sedumi.mcmaster.ca">SeDuMi</a> as its solver,
-  which is also built using a combination of Matlab and C MEX
-  files. Precompiled binaries for Windows, Linux, and Solaris are
-  supplied with the distribution, but it should work fine on other
-  platforms as well, as long as they support both Matlab and
-  SeDuMi. See Appendix A of the <a href="cvx_usrguide.pdf">user
-  guide</a> for more detials, and for installation
-  instructions.</p>
+  both native Matlab code and C MEX files. It currently supports
+  two solvers, <a href=
+  "http://www.math.nus.edu.sg/~mattohkc/sdpt3.html">SDPT3</a> and
+  <a href="http://sedumi.mcmaster.ca">SeDuMi</a>, with SDTP3 as the
+  default. Both solvers are also built using a combination of
+  Matlab and C MEX files. Precompiled binaries for Windows, Linux,
+  and Intel Mac OS X are supplied with the distribution, but it
+  should work fine on other platforms as well, as long as they
+  support both Matlab and at least one solver. See Appendix A of
+  the <a href="cvx_usrguide.pdf">user guide</a> for more detials,
+  and for installation instructions.</p>
+
+  <p><i>Compatability note:</i> SeDuMi is currently not supported
+  for the 64-bit versions of Matlab 7.3 and later. This is due to a
+  change made to Matlab's internal data structures between versions
+  7.2 and 7.3. When the SeDuMi authors have released a new version
+  of SeDuMi with an appropriate fix, we will update the
+  <tt>CVX</tt> distribution accordingly. Until then, SDPT3 is the
+  only solver available for those platforms.</p>
 
   <h3><a id="mail" name="mail">The <tt>CVX</tt> mailing
   list</a></h3>
@@ -185,7 +187,8 @@
   culminating in the release of 0.93 alpha in March 2006. The
   system's internals were considerably reworked for Version 1.0, in
   order to improve efficiency and performance, and to add support
-  for geometric programming.</p>
+  for geometric programming. Version 1.1 adds support for a new
+  solver, SDPT3.</p>
 
   <p>For a more detailed version history, <a href=
   "history.html">click here.</a></p>
