@@ -47,7 +47,6 @@ if isa( cvx_problem, 'cvxprob' ),
     end
     evalin( 'caller', 'pop( cvx_problem, ''clear'' );' );
     cvx_problem = [];
-%   error( sprintf( 'A cvx problem already exists in this scope.\n(To clear it and start a new one, use the command ''cvx_clear''.)' ) );
 end
 cvx_setpath( 1 );
 global cvx___

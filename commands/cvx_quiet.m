@@ -1,4 +1,4 @@
-function s = cvx_quiet( flag )
+function sout = cvx_quiet( flag )
 
 %CVX_QUIET    CVX output control.
 %   CVX_QUIET(TRUE) suppresses all text output from CVX (except for error and
@@ -29,15 +29,43 @@ function s = cvx_quiet( flag )
 %
 %   CVX_QUIET, with no arguments, returns the current flag value.
 
-global cvx___
-if isempty( cvx___ ), cvx_setpath( 1 ); end
-s = cvx___.quiet;
 if nargin == 1,
-    if length( flag ) ~= 1,
-        error( 'Argument must be a numeric or logical scalar.' );
+    nflag = [];
+    if isnumeric(flag) | islogical(flag),
+        ns = double(flag) ~= 0;
+    elseif ischar(flag) & size(flag,1) == 1,
+        switch lower(flag),
+            case 'true',
+                ns = true;
+            case 'false',
+                ns = false;
+            otherwise,
+                error( 'String arugment must be ''true'' or ''false''.' );
+        end
+    else
+        error( 'Argument must be a numeric scalar or a string.' );
     end
-    cvx___.quiet = double( flag ) ~= 0;
 end
+global cvx___
+if isempty( cvx___ ), 
+    cvx_setpath( 1 ); 
+end
+cvx_problem = evalin( 'caller', 'cvx_problem', '[]' );
+if isa( cvx_problem, 'cvxprob' ),
+    s = cvx_problem.quiet;
+    if nargin > 0,
+        cvx___.problems(index(cvx_problem)).quiet = ns;
+    end
+else
+    s = cvx___.quiet;
+    if nargin > 0,
+        cvx___.quiet = ns;
+    end
+end
+if nargin == 0 | nargout > 0,
+    sout = s;
+end
+
 
 % Copyright 2007 Michael C. Grant and Stephen P. Boyd.
 % See the file COPYING.txt for full copyright information.

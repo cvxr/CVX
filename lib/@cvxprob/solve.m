@@ -1,8 +1,8 @@
-function solve( prob, quiet )
-if nargin < 2, quiet = false; end
+function solve( prob )
 
 global cvx___
 p = index( prob );
+quiet = cvx___.problems(p).quiet;
 [ At, cones, objsize, sgn, Q, P, esrc ] = eliminate( prob );
 nobj = prod( objsize );
 

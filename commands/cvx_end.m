@@ -70,7 +70,7 @@ elseif pstr.complete & nnz( pstr.t_variable ) == 1,
     %
 
     clear pstr
-    solve( prob, cvx___.quiet );
+    solve( prob );
     pstr = cvx___.problems( p );
 
     %

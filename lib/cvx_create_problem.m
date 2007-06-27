@@ -18,6 +18,8 @@ if nargin > 0,
             error( 'Arguments must be strings.' );
         end
         switch lower( mode ),
+            case 'quiet',
+                cvx___.problems( p ).quiet = true;
             case 'set',
                 cvx___.problems( p ).complete  = false;
                 cvx___.problems( p ).direction = 'find';
