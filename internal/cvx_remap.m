@@ -22,7 +22,7 @@ persistent remap_big remap_str
 if isempty( remap_str ),
     remap_str = { ...
         'negative', 'zero', 'positive', 'complex', 'nonnegative', 'nonzero', 'nonpositive', 'real', 'constant', ...
-        'concave', 'affine', 'convex', 'real-affine', 'complex-affine', 'non-affine', ...
+        'non-constant', 'concave', 'affine', 'convex', 'real-affine', 'complex-affine', 'non-affine', ...
         'log-concave', 'log-affine', 'log-convex', 'log-valid', 'monomial', 'posynomial', ...
         'valid', 'invalid' ...
     };
@@ -36,6 +36,7 @@ if isempty( remap_str ),
         1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0; ... % nonpositive
         1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0; ... % real
         1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0; ... % constant
+        0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 0; ... % non-constant
         1, 1, 1, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0; ... % concave
         1, 1, 1, 1, 0, 1, 0, 1, 0, 0, 0, 0, 0; ... % affine
         1, 1, 1, 0, 0, 1, 1, 0, 0, 1, 1, 1, 0; ... % convex
@@ -54,6 +55,7 @@ if isempty( remap_str ),
      remap_str = remap_str(:);
      [ remap_str, ndx ] = sort( remap_str );
      remap_big = remap_big( ndx, : );
+     temp = strcat( '~', remap_str );
 end
 
 [ c, ndx ] = sort( [ remap_str ; varargin(:) ] );

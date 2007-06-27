@@ -1,4 +1,4 @@
-function n = numel( x )
+function n = numel( x, varargin )
 n = prod( size( x ) );
 
 % Copyright 2007 Michael C. Grant and Stephen P. Boyd.

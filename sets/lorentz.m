@@ -73,17 +73,18 @@ cvx_end_set
 %
 
 if iscplx,
-    cvx_optpnt.x = cvx_r2c( cvx_optpnt.x, 1 );
+    x = cvx_r2c( x, 1 );
 end
 nleft = prod( sx( 1 : dim - 1 ) );
 if nleft > 1,
-    cvx_optpnt.x = reshape( cvx_optpnt.x, [ nv, nleft, ny / nleft ] );
-    cvx_optpnt.y = reshape( cvx_optpnt.y, [ 1,  nleft, ny / nleft ] );
-    cvx_optpnt.x = permute( cvx_optpnt.x, [ 2, 1, 3 ] );
-    cvx_optpnt.y = permute( cvx_optpnt.y, [ 2, 1, 3 ] );
+    x = reshape( x, [ nv, nleft, ny / nleft ] );
+    y = reshape( y, [ 1,  nleft, ny / nleft ] );
+    x = permute( x, [ 2, 1, 3 ] );
+    y = permute( y, [ 2, 1, 3 ] );
 end
-cvx_optpnt.x = reshape( cvx_optpnt.x, sx );
-cvx_optpnt.y = reshape( cvx_optpnt.y, sy );
+x = reshape( x, sx );
+y = reshape( y, sy );
+cvx_optpnt = cvxtuple( struct( 'x', x, 'y', y ) );
 
 % Copyright 2007 Michael C. Grant and Stephen P. Boyd.
 % See the file COPYING.txt for full copyright information.

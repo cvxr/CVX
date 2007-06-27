@@ -24,6 +24,7 @@ else
     sQ = sQ( 1 );
 end
 
+x = vec( x );
 success = true;
 if cvx_isconstant( x ),
 
@@ -33,7 +34,7 @@ if cvx_isconstant( x ),
         % Constant x, affine Q, real case
         %
 
-        x = real( x( : ) );
+        x = real( x );
         Q = real( Q );
         cvx_optval = x' * ( Q * x );
 
@@ -43,8 +44,8 @@ if cvx_isconstant( x ),
         % Constant x, affine Q, complex case
         %
 
-        xR = real( x( : ) );
-        xI = imag( x( : ) );
+        xR = real( x );
+        xI = imag( x );
         cvx_optval = xR' * ( real( Q ) * xR ) + xI' * ( imag( Q ) * xI );
 
     end
@@ -59,25 +60,27 @@ elseif size( Q, 1 ) == 1,
     % Constant scalar Q, affine x
     %
     
-    cvx_optval = real( Q ) * sum_square_abs( x(:) );
+    cvx_optval = real( Q ) * sum_square_abs( x );
     
-else,
+else
 
     %
     % Constant matrix Q, affine x
     %
 
-    x = x( : );
     Q = cvx_constant( Q );
     Q = 0.5 * ( Q + Q' );
-    nnzs = find( any( Q ~= 0, 2 ) );
-    Q = Q( nnzs, nnzs );
-    x = x( nnzs, : );
+    tt = any( Q ~= 0, 2 );
+    if ~all( tt ),
+        nnzs = find( tt );
+        Q = Q( nnzs, nnzs );
+        x = cvx_subsref( x, nnzs, ':' );
+    end
     
     if all( diag( Q ) <= 0 ),
         alpha = -1;
         Q = -Q;
-    else,
+    else
         alpha = +1;
     end
     
@@ -94,11 +97,11 @@ else,
         if any( tt ),
             R( tt, : ) = [];
             valid = normest( Q - R' * R ) < tol * normest( Q );
-        else,
+        else
             valid = true;
         end
         
-    else,
+    else
         
         [ R, p ] = chol( full( Q ) );
         valid = p == 0;

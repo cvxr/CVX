@@ -152,10 +152,10 @@ for k = 1 : nk,
                     variable xw( nm, nv );
                     xt = [ cvx_accept_concave( xt ) ; xw ];
                     cone = rotated_lorentz( msiz, 0 );
-                    cone.y == reshape( xt(map(1,:),:), msiz ); 
-                    cone.z == reshape( xt(map(2,:),:), msiz );
-                    cone.x == reshape( xt(map(3,:),:), msiz );
-                    maximize( xw( end, : ) );
+                    cone.y == reshape( cvx_subsref( xt, map(1,:), ':' ), msiz ); 
+                    cone.z == reshape( cvx_subsref( xt, map(2,:), ':' ), msiz );
+                    cone.x == reshape( cvx_subsref( xt, map(3,:), ':' ), msiz );
+                    maximize( cvx_subsref( xw, nm, ':' ) );
                 cvx_end
                 yt = cvx_optval;
             end

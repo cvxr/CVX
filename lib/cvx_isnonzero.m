@@ -1,7 +1,7 @@
 function y = cvx_isnonzero( x, full )
 error( nargchk( 1, 2, nargin ) );
 if nargin == 1,
-	y = nnz( y ) ~= 0;
+	y = nnz( x ) ~= 0;
 else
     y = x ~= 0;
 end

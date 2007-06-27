@@ -1,5 +1,6 @@
 function ans = cvx_isconvex( x, full )
 error( nargchk( 1, 2, nargin ) );
+ans = cvx_vexity( x );
 if nargin < 2,
     ans = nnz( ans < 0 ) == 0;
 else

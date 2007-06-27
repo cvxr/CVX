@@ -25,24 +25,31 @@ elseif pstr.complete & nnz( pstr.t_variable ) == 1,
         fn1 = cell( 0, 1 );
         vv1 = fn1;
     else
-        [ fn1, ndx1 ] = cvx_fieldnames( pstr.variables );
-        vv1 = struct2cell( pstr.variables );
-        vv1 = vv1(ndx1);
+        fn1  = fieldnames( pstr.variables );
+        ndxs = horzcat( fn1{:} );
+        ndxs = ndxs( cumsum( cellfun( 'length', fn1 ) ) ) ~= '_';
+        fn1  = fn1( ndxs );
+        vv1  = struct2cell( pstr.variables );
+        vv1  = vv1(ndxs);
     end
     if isempty( pstr.duals ),
         fn2 = cell( 0, 1 );
         vv2 = fn2;
     else
-        [ fn2, ndx2 ] = cvx_fieldnames( pstr.dvars );
-        vv2 = struct2cell( pstr.dvars );
-        vv2 = vv2(ndx2);
+        fn2  = fieldnames( pstr.duals );
+        ndxs = horzcat( fn2{:} );
+        ndxs = ndxs( cumsum( cellfun( 'length', fn2 ) ) ) ~= '_';
+        fn2  = fn2( ndxs );
+        vv2  = struct2cell( pstr.dvars );
+        vv2  = vv2(ndxs);
     end
     i1 = cvx_ids( vv1{:}, vv2{:} );
     i2 = sprintf( '%s,', fn1{:}, fn2{:} );
     i2 = evalin( 'caller', sprintf( 'cvx_ids( %s )', i2(1:end-1) ) );
-    if any( i1 ~= i2 ),
+    tt = i1 ~= i2;
+    if any( tt ),
         vv = [ fn1 ; fn2 ];
-        temp = sprintf( ' %s', vv{i1~=i2} );
+        temp = sprintf( ' %s', vv{tt} );
         temp = sprintf( 'The following cvx variable(s) have been overwritten:\n  %s\nThis is often an indication that an equality constraint was\nwritten with one equals ''='' instead of two ''==''. The model\nmust be rewritten before cvx can proceed.', temp );
         eval( 'caller', 'cvx_clear' );
         error( temp );
@@ -139,8 +146,8 @@ else
     % epigraph/hypograph form if necessary
     %
 
-    assignin( 'caller', 'cvx_optpnt', cvx_collapse( vars, false, false ) );
-    assignin( 'caller', 'cvx_optdpt', cvx_collapse( dvars, false, false ) );
+    assignin( 'caller', 'cvx_optpnt', cvxtuple( cvx_collapse( vars, false, false ) ) );
+    assignin( 'caller', 'cvx_optdpt', cvxtuple( cvx_collapse( dvars, false, false ) ) );
     x = prob.objective;
     if isempty( x ),
 

@@ -13,10 +13,11 @@ while true,
             end
             x = reshape( x, 1, nx );
         case 'struct',
-            if keeptemp,
-                fx = fieldnames( x );
-            else
-                [ fx, ndxs ] = cvx_fieldnames( x );
+            fx = fieldnames( x );
+            if ~keeptemp,
+                ndxs = horzcat( fx{:} );
+                ndxs = ndxs( cumsum( cellfun( 'length', fx ) ) ) ~= '_';
+                fx   = fx( ndxs );
             end
             nfx = length( fx );
             if nfx == 1 & nx == 1,

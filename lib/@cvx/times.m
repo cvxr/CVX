@@ -1,3 +1,4 @@
+
 function z = times( x, y, oper )
 error( nargchk( 2, 3, nargin ) );
 if nargin < 3, oper = '.*'; end
@@ -28,44 +29,51 @@ zs = all( sz == 1 );
 
 persistent remap_m remap_l remap_r
 if isempty( remap_r ),
-    % Constant result
-    temp_0   = cvx_remap( 'zero' );
-    temp_1   = cvx_remap( 'constant' );
-    temp_2   = cvx_remap( 'valid' );
-    remap_1  = ( temp_0' * temp_2 ) | ( temp_1' * temp_1 );
-    remap_1  = remap_1 | remap_1';
-    remap_1n = ~remap_1;
-    
-    % Constant * affine, Real * convex/concave/log-convex, positive * log-concave
-    temp_3   = cvx_remap( 'affine' );
-    temp_4   = cvx_remap( 'real' );
-    temp_5   = cvx_remap( 'convex', 'concave', 'log-convex' );
-    temp_6   = cvx_remap( 'positive' );
-    temp_7   = cvx_remap( 'log-concave' ) .* ~temp_1;
-    remap_2  = ( temp_1' * temp_3 ) | ( temp_4' * temp_5 ) | ( temp_6' * temp_7 );
-    remap_2  = remap_2 .* remap_1n;
-    
-    % Real / log-concave, positive / log-convex
-    temp_8   = cvx_remap( 'log-convex' ) .* ~temp_1;
-    remap_2r = ( temp_4' * temp_7 ) | ( temp_6' * temp_8 );
-    remap_2r = remap_2r .* remap_1n;
-    
-    % Affine * constant, Convex/concave/log-convex * real, log-concave * positive
-    remap_3  = remap_2';
+    % zero .* valid, valid .* zero, constant .* constant
+    temp_1    = cvx_remap( 'constant' );
+    temp_2    = cvx_remap( 'zero' );
+    temp_3    = temp_2' * cvx_remap( 'valid' );
+    remap_1   = ( temp_1' * temp_1 ) | temp_3 | temp_3';
+    remap_1n  = ~remap_1;
+    % constant / nonzero, zero / log-concave, zero / log-convex
+    temp_4    = temp_1 & ~temp_2;
+    remap_1r  = ( temp_1' * temp_4 ) | ( temp_2' * cvx_remap( 'log-valid' ) );
+    remap_1rn = ~remap_1r;
 
+    % constant * affine, real * convex/concave/log-convex, positive * log-concave
+    temp_5   = cvx_remap( 'real' );
+    temp_6   = cvx_remap( 'positive' );
+    temp_7   = cvx_remap( 'affine' );
+    temp_1n   = ~temp_1;
+    temp_8   = cvx_remap( 'log-concave' ) & temp_1n;
+    remap_2  = ( temp_1' * temp_7 ) | ...
+               ( temp_5' * cvx_remap( 'convex', 'concave', 'log-convex' ) ) | ...
+               ( temp_6' * temp_8 );
+    remap_2  = remap_2 & remap_1n;
+    % real / log-concave, positive / log-convex
+    temp_9   = cvx_remap( 'log-convex' ) & temp_1n;
+    remap_2r = ( temp_5' * temp_8 ) | ...
+               ( temp_6' * temp_9 );
+    remap_2r = remap_2r & remap_1rn;
+           
+    % Affine * constant, convex/concave/log-convex * real, log-concave * positive
+    remap_3  = remap_2';
+    % Affine / nonzero, convex/concave/log-convex / nzreal, log-concave / positive
+    remap_3r = remap_3;
+    remap_3r(:,2) = 0;
+           
     % Affine * affine
-    temp_9  = temp_3 .* ~temp_1;
-    remap_4 = temp_9' * temp_9;
+    remap_4  = temp_7 & ~temp_1;
+    remap_4  = remap_4' * +remap_4;
 
     % log-concave * log-concave, log-convex * log-convex
-    remap_5  = ( temp_7' * temp_7 ) | ( temp_8' * temp_8 );
-    
+    remap_5  = ( temp_8' * +temp_8 ) | ( temp_9' * +temp_9 );
     % log-concave / log-convex, log-convex / log-concave
-    temp_9   = temp_7' * temp_8;
-    remap_5r = temp_9 | temp_9';
-
-    remap_m = remap_1 + ( 2 * remap_2  + 3 * remap_3 + 4 * remap_4 + 5 * remap_5 ) .* remap_1n;
-    remap_r = remap_1 + ( 2 * remap_2r + 3 * remap_3 + 5 * remap_5r ) .* remap_1n;
+    remap_5r = temp_8' * +temp_9;
+    remap_5r = remap_5r | remap_5r';
+           
+    remap_m = remap_1 + 2 * remap_2  + 3 * remap_3 + 4 * remap_4 + 5 * remap_5;
+    remap_r = remap_1r + 2 * remap_2r + 3 * remap_3r + 5 * remap_5r;
     remap_r(:,2) = 0;
     remap_l = remap_r';
 end
@@ -88,6 +96,11 @@ vy = cvx_classify( y );
 vr = remap( vx + size( remap, 1 ) * ( vy - 1 ) );
 vu = unique( vr );
 nv = length( vu );
+if vu(1) == 1 & nv > 1,
+    vr(vr==1) == vu(2);
+    nv = nv - 1;
+    vu(1) = [];
+end
 
 %
 % Process each computation type separately
@@ -129,23 +142,28 @@ for k = 1 : nv,
 
         % Invalid
         error( sprintf( 'Disciplined convex programming error:\n    Cannot perform the operation: {%s} %s {%s}', cvx_class( xt, true, true ), oper, cvx_class( yt, true, true ) ) );
-
+        
     case 1,
-
+        
         % constant .* constant
-        xt = cvx_constant( xt );
-        if l_recip, xt = 1.0 ./ xt; end
-        yt = cvx_constant( yt );
-        if r_recip, yt = 1.0 ./ yt; end
-        cvx_optval = xt .* yt;
+        xb = cvx_constant( xt );
+        yb = cvx_constant( yt );
+        if l_recip,
+            cvx_optval = xb .\ yb;
+        elseif r_recip,
+            cvx_optval = xb ./ yb;
+        else
+            cvx_optval = xb .* yb;
+        end
 
     case 2,
 
         % constant .* something
         xb = cvx_constant( xt );
-        if l_recip, xb = 1.0 ./ xt; end
-        if r_recip, yt = exp( - log( yt ) ); end
-        yb = yt.basis_;
+        if l_recip, xb = 1.0 ./ xb; end
+        yb = yt;
+        if r_recip & nnz( xb ), yb = exp( - log( yb ) ); end
+        yb = yb.basis_;
         if ~xs,
             nn = prod( size( xb ) );
             if ys,
@@ -163,10 +181,11 @@ for k = 1 : nv,
     case 3,
 
         % something .* constant
-        if l_recip, xt = exp( - log( xt ) ); end
-        xb = xt.basis_;
         yb = cvx_constant( yt );
         if r_recip, yb = 1.0 ./ yb; end
+        xb = xt;
+        if l_recip & any( xb ), xb = exp( - log( xb ) ); end
+        xb = xb.basis_;
         if ~ys,
             nn = prod( size( yb ) );
             if xs,
@@ -213,11 +232,11 @@ for k = 1 : nv,
     case 5,
 
         % posynomial .* posynomial
-        xt = log( xt );
-        if l_recip, xt = - xt; end
-        yt = log( yt );
-        if r_recip, yt = - yt; end
-        cvx_optval = exp( xt + yt );
+        xb = log( xt );
+        if l_recip, xb = - xb; end
+        yb = log( yt );
+        if r_recip, yb = - yb; end
+        cvx_optval = exp( xb + yb );
 
     otherwise,
 

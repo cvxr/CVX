@@ -30,7 +30,7 @@ end
 sx = size( x );
 sy = size( y );
 if ~cx | ~cy,
-    if cx | cy,
+    if cx | cy | op(1) ~= '=',
         error( sprintf( 'Invalid CVX constraint: {%s} %s {%s}', class( x ), op, class( y ) ) );
     elseif ~isequal( sx, sy ),
         error( 'The left- and right-hand sides have incompatible sizes.' );
