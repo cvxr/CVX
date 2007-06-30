@@ -209,10 +209,10 @@ end
 %
 
 OPTIONS = sqlparameters;
-OPTIONS.gaptol = min(prec);
+OPTIONS.gaptol = prec(1);
 OPTIONS.printlevel = 3 * ~quiet;
 OPTIONS.vers = 2;
-[ obj, xx, y, z, info ] = HSDsqlp( blk, Avec, Cvec, b, OPTIONS );
+[ obj, xx, y, z, info ] = sqlp( blk, Avec, Cvec, b, OPTIONS );
 
 %
 % Interpret the output
@@ -230,9 +230,9 @@ switch info.termcode,
         scode = 2;
     otherwise,
         err = max([info.relgap,info.pinfeas,info.dinfeas]);
-        if err>max(prec),
+        if err > prec(3),
             status = 'Failed';
-        elseif min(prec) == 0 | err <= min(prec),
+        elseif err <= prec(2),
             status = 'Solved',
             info.termcode = 0;
         else

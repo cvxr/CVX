@@ -1,5 +1,4 @@
 function cvx_optval = det_root2n( X )
-error( nargchk( 1, 1, nargin ) );
 
 % DET_ROOT2N    2n-th root of the determinant of a symmetric matrix.
 %     For a square matrix X, DET_ROOT2N(X) returns
@@ -15,4 +14,5 @@ error( nargchk( 1, 1, nargin ) );
 %         DET_ROOT2N is concave and nonmonotonic; therefore, when used in
 %         CVX specifications, its argument must be affine.
 
+error( nargchk( 1, 1, nargin ) );
 cvx_optval = sqrt(det_rootn(X));

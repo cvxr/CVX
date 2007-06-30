@@ -2,37 +2,50 @@ function sout = cvx_precision( flag )
 
 %CVX_PRECISION    CVX solver precision.
 %   The CVX_PRECISION command controls the precision-related stopping criteria
-%   for the numerical solver. It defines two precision levels:
-%       --- a 'high' precision level, below which a problem is considered
-%           accurately solved (returning cvx_status = 'Solved' );
-%       --- a 'low' precision level, below which a problem is considered
-%           inaccurately solved (returning cvx_status = 'Inaccurate/Solved').
-%   Problems for which the solver is unable to achieve even the 'low' precision
-%   level are considered unsolved (returning cvx_status = 'Failed'). These
-%   tolerance levels apply in appropriate ways to infeasible and unbounded
-%   problems as well.
+%   for the numerical solver. Up to 3 precision levels can be specified:
+%       0 <= PBEST <= PHIGH <= PLOW << 1.
+%       --- PBEST: the solver's target precision. The solver is instructed
+%           to iterate until it achieves this precision OR until it can
+%           make no further progress.
+%       --- PHIGH: the 'standard' precision level. Any problem achieving
+%           PRECISION <= PHIGH is considered accurately solved (returning
+%           cvx_status = 'Solved').
+%       --- PLOW: the 'minimum acceptable' precision level. Any problem
+%           achieving PHIGH < PRECISION <= PLOW is considered inaccurately
+%           solved (returning cvx_status = 'Inaccurate/Solved').
+%   Problems which cannot achieve PRECISION <= PLOW are considered unsolved
+%   (returning cvx_status = 'Failed'). These precision levels apply in
+%   appropriate ways to infeasible and unbounded problems as well.
 %
-%   CVX_PRECISION(TOL), where TOL is a 2-element vector, sets the low and high
-%   precisions to MIN(TOL) and MAX(TOL), respectively. If the two values are
-%   identical, then the low precision level is effectively removed.
+%   CVX_PRECISION(TOL), where TOL is a positive scalar, sets
+%       PBEST = MAX(TOL,eps^0.5), PHIGH = TOL, 
+%       PLOW = min(sqrt(TOL),max(TOL,eps^0.25)).
+%   Note that if TOL>eps^0.25, then PLOW=PHIGH.
 %
-%   CVX_PRECISION(TOL), where TOL is a scalar, sets the low and high precisions
-%   to min(sqrt(TOL),max(TOL,eps^0.25)) and TOL, respectively. Note that if TOL
-%   is below eps^0.25, then the low precision level is set equal to the high.
+%   CVX_PRECISION(TOL), where TOL is a positive 2-vector, sets
+%       PBEST = MAX(MIN(TOL),eps^0.5), PHIGH = MIN(TOL), and PLOW = MAX(TOL).
+%
+%   CVX_PRECISION(TOL), where TOL is a 3-vector, sets
+%       PBEST = MIN(TOL), PHIGH = MEDIAN(TOL), and PLOW = MAX(TOL).
+%   MIN(TOL) may be zero, but the other two elements must be positive.
+%   
+%   CVX_PRECISION([]) restores the default precision, which is
+%       PBEST = eps^0.5, PHIGH = eps^0.5, PLOW = eps^0.25.
 %
 %   A number of text-based options are provided for convenience:
-%       CVX_PRECISION DEFAULT: [eps^0.25,eps^0.5]
-%       CVX_PRECISION HIGH   : [eps^0.375,eps^0.75] 
-%       CVX_PRECISION MEDIUM : [eps^0.25,eps^0.375]
-%       CVX_PRECISION LOW    : [eps^0.25,eps^0.25]
-%       CVX_PRECISION BEST   : (see below)
+%       CVX_PRECISION DEFAULT: [eps^0.25, eps^0.5,   eps^0.5 ]
+%       CVX_PRECISION HIGH   : [eps^0.375,eps^0.75,  eps^0.75] 
+%       CVX_PRECISION MEDIUM : [eps^0.25, eps^0.375, eps^0.5 ]
+%       CVX_PRECISION LOW    : [eps^0.25, eps^0.25,  eps^0.5 ]
+%       CVX_PRECISION BEST   : [eps^0.25, eps^0.5,   0       ]
 %
-%   CVX_PRECISION BEST and CVX_PRECISION(0) select a special 'best effort' 
-%   mode. In this case, the solver proceeds as long as it can make progress. If
-%   the precision achieved is eps^0.5 or better, then the problem is considered
-%   solved (cvx_status='Solved'); otherwise, the problem is considered unsolved
-%   (cvx_status='Failed'). This mode can produce higher precision but at cost
-%   of slower performance.
+%   CVX_PRECISION BEST creates a sort of 'best effort' mode. By setting
+%   PBEST=0, it instructs the solver to proceed as long as it can make any
+%   progress whatsoever. By setting PLOW and PHIGH to their default values,
+%   it produces identical cvx_status values to the default in all cases.
+%   Thus it yields higher precision when it can be achieved, without
+%   penalizing those models for which it cannot. Of course, the higher
+%   precision comes at a cost of increased computation time as well.
 %
 %   If CVX_PRECISION(TOL) is called within a model---that is, between the
 %   statements CVX_BEGIN and CVX_END---then the new precision applies only to
@@ -65,29 +78,31 @@ if nargin > 0,
         else
             switch flag,
                 case 'default',
-                    ns = [ eps^0.5,   eps^0.25 ];
+                    ns = [ eps^0.75,  eps^0.5,   eps^0.25  ];
                 case 'high',
-                    ns = [ eps^0.75,  eps^0.375 ];
-                case 'best',
-                    ns = [ 0,         eps^0.5   ];
+                    ns = [ eps^0.75,  eps^0.75,  eps^0.375 ];
                 case 'medium',
-                    ns = [ eps^0.375, eps^0.25 ];
+                    ns = [ eps^0.5,   eps^0.375, eps^0.25  ];
                 case 'low',
-                    ns = [ eps^0.25,  eps^0.25 ];
+                    ns = [ eps^0.375, eps^0.25,  eps^0.25  ];
+                case 'best',
+                    ns = [ 0,         eps^0.5,   eps^0.25  ];
                 otherwise,
                     error( [ 'Invalid precision mode: ', flag ] );
             end
         end
-    elseif ~isnumeric( flag ) | numel( flag ) > 2,
-        error( 'Argument must be a real number or 2-vector, or a string.' );
-    elseif ~isreal( flag ) | any( flag < 0 ) | any( flag >= 1 ),
-        error( 'Tolerances must be between 0 (inclusive) and 1 (exclusive).' );
+    elseif ~isnumeric( flag ) | numel( flag ) > 3,
+        error( 'Argument must be a real number, a 2-vector, a 3-vector, or a string.' );
+    elseif any( flag < 0 ) | any( flag >= 1 ),
+        error( 'Precisions must be between 0 and 1 exclusTolerances must be between 0 and 1.' );
+    elseif nnz( flag == 0 ) > numel(flag) - 2,
+        error( 'Both PHIGH and PLOW must be positive.' );
+    elseif numel( flag ) == 3,
+        ns = reshape( sort(flag), 1, 3 );
     elseif length( flag ) == 2,
-        ns = [ min(flag), max(flag) ];
-    elseif flag == 0,
-        ns = [ 0, eps^0.5 ];
+        ns = [ min(flag), min(flag), max(flag) ];
     else
-        ns = [ flag, min(sqrt(flag),max(flag,eps^0.25)) ];
+        ns = [ max(flag,eps^0.5), flag, min(sqrt(flag),max(flag,eps^0.25)) ];
     end
 end
 global cvx___

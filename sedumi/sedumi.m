@@ -4,6 +4,10 @@ function [x,y,info] = sedumi(A,b,c,K,pars)
 % SEDUMI  Self-Dual-Minimization/ Optimization over self-dual homogeneous
 %         cones.
 %
+% NOTE: Modified by Michael Grant for CVX; see the documentation on
+% 'bigeps' below. Changes are entirely transparent if used according to
+% the original SeDuMi documentation.
+%
 % >  X = SEDUMI(A,b,c) yields an optimal solution to the linear program
 %      MINIMIZE c'*x SUCH THAT A*x = b, x >= 0
 %      x is a vector of decision variables.
@@ -143,7 +147,10 @@ function [x,y,info] = sedumi(A,b,c,K,pars)
 %
 %    (6) pars.bigeps  In case the desired accuracy pars.eps cannot be achieved,
 %     the solution is tagged as info.numerr=1 if it is accurate to pars.bigeps,
-%     otherwise it yields info.numerr=2.
+%     otherwise it yields info.numerr=2. NOTE: For CVX, if pars.bigeps has
+%     multiple entries, then info.numerr=1 is returned if the problem is
+%     accurate to min(pars.bigeps), and 1.5 if it is accurate
+%     to max(pars.bigeps).
 %
 %    (7) pars.maxiter Maximum number of iterations, before termination.
 %
@@ -576,7 +583,7 @@ if x0 > 0
         % If the quality of the Farkas solution is good and better than
         % the approx. feasible soln, set x0=0: Farkas solution found.
         % ------------------------------------------------------------
-        if (reldirinf < pars.eps) | (relinf > max(pars.bigeps, reldirinf))
+        if (reldirinf < pars.eps) | (relinf > max(max(pars.bigeps), reldirinf))
             x0 = 0.0;
             pinf = pdirinf;
             dinf = ddirinf;
@@ -616,20 +623,22 @@ if x0 > 0
     % if STOP == -1
         r0 = max([10^(-sigdig); pinf;dinf] ./ [1; 1+R.maxb+(1E-3)*R.maxRb;...
             1+R.maxc+(1E-3)*R.maxRc]);
-        if r0 > pars.bigeps
+        if r0 <= pars.eps
+            info.numerr = 0;
+        elseif r0 <= min(pars.bigeps)
+            info.numerr = 1;
+        elseif r0 <= max(pars.bigeps)
+            info.numerr = 1.5;
+        else
             my_fprintf(pars.fid, 'No sensible solution found.\n');
             info.numerr = 2;                          % serious numerical error
-        elseif r0 > pars.eps
-            info.numerr = 1;                          % moderate numerical error
-        else
-            info.numerr = 0;                          % achieved desired accuracy
         end
     % end
 else  % (if x0>0)
     % --------------------------------------------------
     % Infeasible problems: pinf==norm(Ax), dinf==max(eigK(At*y,K)).
     % --------------------------------------------------
-    if pinf < -pars.bigeps * cx
+    if pinf < -max(pars.bigeps) * cx
         info.dinf = 1;
         abscx = -cx;
         pinf = pinf / abscx;
@@ -637,7 +646,7 @@ else  % (if x0>0)
         x = x / abscx;
         my_fprintf(pars.fid, 'Dual infeasible, primal improving direction found.\n');
     end
-    if dinf < pars.bigeps * by
+    if dinf < max(pars.bigeps) * by
         info.pinf = 1;
         dinf = dinf / by;
         normy = normy / by;
@@ -654,10 +663,12 @@ else  % (if x0>0)
         my_fprintf(pars.fid, 'Failed: no sensible solution/direction found.\n');
         info.numerr = 2;
     elseif STOP == -1
-        if (pinf > -pars.eps * cx) & (dinf > pars.eps * by)
+        if (pinf <= -pars.eps * cx) & (dinf <= pars.eps * by)
+            info.numerr = 0;
+        elseif (pinf <= -min(pars.bigeps) * cx) & (dinf <= min(pars.bigeps) * by)
             info.numerr = 1;
         else
-            info.numerr = 0;
+            info.numerr = 1.5;
         end
     end
 end

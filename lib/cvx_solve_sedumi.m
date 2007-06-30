@@ -69,9 +69,9 @@ reord = sparse( reord.sr, reord.sc', reord.sv, n, n_out );
 
 At = reord' * At;
 c  = reord' * c;
-pars.free = 0;
-pars.eps = min(prec);
-pars.bigeps = max(prec);
+pars.free   = 0;
+pars.eps    = prec(1);
+pars.bigeps = prec(2:end);
 if quiet,
     pars.fid = 0;
 end
@@ -87,13 +87,13 @@ if cvx___.profile,
 end
 opath = path;
 path( [ cvx___.path.solvers.sedumi, opath ] );
-[ x, y, info ] = sedumi( At, b, c, K, pars );
+[ xx, yy, info ] = sedumi( At, b, c, K, pars );
 path( opath );
 if cvx___.profile,
     profile resume
 end
-x = full( x );
-y = full( y );
+xx = full( xx );
+yy = full( yy );
 if info.numerr == 2,
     status = 'Failed';
     x = NaN * ones( n, 1 );
@@ -101,16 +101,23 @@ if info.numerr == 2,
 elseif info.pinf ~= 0,
     status = 'Infeasible';
     x = NaN * ones( n, 1 );
+    y = yy;
+    if add_row,
+        y = zeros( 0, 1 );
+    end
 elseif info.dinf ~= 0,
     status = 'Unbounded';
     y = NaN * ones( m, 1 );
-    x = real( reord * x );
+    x = real( reord * xx );
 else
     status = 'Solved';
-    x = real( reord * x );
-    if add_row, y = zeros( 0, 1 ); end
+    x = real( reord * xx );
+    y = yy;
+    if add_row, 
+        y = zeros( 0, 1 ); 
+    end
 end
-if info.numerr == 1 & pars.eps > 0,
+if info.numerr == 1.5 | (info.numerr == 1 & prec(2) == prec(3))
     status = [ 'Inaccurate/', status ];
 end
 
