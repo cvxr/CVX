@@ -134,13 +134,21 @@
   the <a href="cvx_usrguide.pdf">user guide</a> for more detials,
   and for installation instructions.</p>
 
-  <p><i>Compatability note:</i> SeDuMi is currently not supported
-  for the 64-bit versions of Matlab 7.3 and later. This is due to a
-  change made to Matlab's internal data structures between versions
-  7.2 and 7.3. When the SeDuMi authors have released a new version
-  of SeDuMi with an appropriate fix, we will update the
+  <p><i>Note for 64-bit MATLAB users:</i> SeDuMi is currently not
+  supported for the 64-bit versions of Matlab 7.3 and later. This
+  is due to a change made to Matlab's internal data structures
+  between versions 7.2 and 7.3. When the SeDuMi authors release a
+  new version of SeDuMi with an appropriate fix, we will update the
   <tt>CVX</tt> distribution accordingly. Until then, SDPT3 is the
   only solver available for those platforms.</p>
+
+  <p><i>Note for users of MATLAB 7.0:</i> Versions 7.0.x of MATLAB
+  (R14, R14SP1, R14SP2) reject certain <tt>CVX</tt> models, issuing
+  syntax errors that are simply not correct. Numerical problems
+  with version 7.0.0 and SDPT3 have also been reported. See section
+  A.4 of the user's guide for more details; but in short we
+  recommend that versions 7.0.x be avoided, at least when using
+  <tt>CVX</tt>.</p>
 
   <h3><a id="mail" name="mail">The <tt>CVX</tt> mailing
   list</a></h3>
@@ -262,18 +270,6 @@
     <dd>Users' guide: <a href="cvx_usrguide.pdf">cvx_usrguide.pdf
     (___PDF___)</a></dd>
   </dl>
-
-  <h3><a id="note" name="note">Note for users of MATLAB
-  7.0</a></h3>
-
-  <p>Version 7.0 of MATLAB (R14, R14SP1, R14SP2) rejects certain
-  <tt>CVX</tt> models, issuing syntax errors that are simply not
-  correct. We have a special note about this in section A.4 of the
-  user's guide, including a very simple way to identify and work
-  around the problem. So if you use this version of MATLAB,
-  <i>please make sure to read the note!</i> Earlier <i>and</i>
-  later versions of MATLAB do not exhibit this problem.</p>
-  <hr />
 
   <p><a href="../research.html">Stephen Boyd's research group
   page</a><br />

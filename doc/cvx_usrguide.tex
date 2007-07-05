@@ -10,7 +10,7 @@
 \newcommand{\lorentz}{{\mbox{\bf Q}}}  % lorentz cone
 \newcommand{\ones}{\mathbf 1}
 
-\title{\cvx Users' Guide\\\large version 1.0}
+\title{\cvx Users' Guide\\\large for \cvx version 1.1 beta}
 \author{Michael Grant\\\texttt{mcgrant@stanford.edu} 
 \and Stephen Boyd\\\texttt{boyd@stanford.edu}
 \and Yinyu Ye\\\texttt{yyye@stanford.edu}}
@@ -2886,28 +2886,32 @@ so the indexed dual variables are symmetric matrices, not scalars.
 \cvx requires Matlab 6.1 or later.\footnote{Previous
 versions of this manual stated that \cvx required Matlab
 6.0 or later; we have since discovered that version 6.0
-is not sufficient.}
-We are able to precompile and test the SeDuMi
-and \cvx MEX files on the following platforms and Matlab versions:
+is not sufficient.} Primary \cvx development is performed using
+an Intel-based Mac running Matlab 7.4, with additional
+development performed on the following platforms and MATLAB versions:
 \begin{itemize}
-\item Windows (32-bit): Matlab 6.1, 6.5.2, 7.0.4, 7.1, 7.2a, 7.3
-\item Linux (32-bit): Matlab 6.5, 7.0, 7.1
-\item Solaris 8: Matlab 6.5, 7.1
-\item Mac OS X (PowerPC only): Matlab 7.1
+\item Windows (32-bit): Matlab 6.1, 7.4
+\item Linux (32-bit): Matlab 6.1, 7.4
+\item Linux (64-bit): Matlab 7.1, 7.4
 \end{itemize}
-If you are running a different minor version of Matlab---for example, version
-7.0.0 for Windows---then \cvx should still work just fine. However, the unique
-design of \cvx seems to make it somewhat sensitive to bugs, quirks, and 
-limitations of Matlab. Therefore, we encourage you to upgrade to the latest
-version you are licensed to use.
+For purposes of testing and support, we have access to most
+other versions of Matlab for Windows, Linux, and Mac (both
+Intel and PowerPC). The one significant exception is version 7.0.0,
+so we cannot provide support for it. 
 
-For other platforms besides those listed above, see
-see \S\ref{sec:othersys} before proceeding.
+Version 7.0.0 has exhibited numerical problems for at least one user;
+the problems were eliminated by upgrading.
+We have also identified another issue using \cvx
+with Matlab 7.0.1 and 7.0.4; workarounds
+are provided in \S\ref{sec:sevenprob} below. 
 
-We have identified an issue that occasionally causes problems using \cvx
-with Matlab 7.0.x (R14,R14SP1,R14SP2), on all platforms. Prior and subsequent
-versions of Matlab are not affected. Fortunately, the workaround is
-simple; see \S\ref{sec:sevenprob} below for more details.
+Precompiled MEX files are included for Windows (32-bit), Linux (32-bit),
+and Intel Mac OS X.
+For other platforms, the MEX files will be compiled during the setup
+process; see
+\S\ref{sec:othersys}. For platforms other than those
+listed above (\eg, Solaris, HPUX), \cvx is quite likely to work,
+but we are unable to provide support.
 
 \subsection{Basic instructions}
 \label{sec:winlin}
@@ -2918,8 +2922,9 @@ You can download the package as either a \verb@.zip@ file or a \verb@.tar.gz@
 file.
 \item If you have been running a previous version of \cvx, \emph{remove it} or
 move it out of the way---say, by renaming it \verb@cvx_old@---before proceeding.
+\emph{DO NOT} allow the new version of \cvx to be unpacked on top of the old.
 \item Unpack the file anywhere you like; a directory called \verb@cvx@ will be created.
-There is one important exception: do \emph{not} place \cvx in MATLAB's own
+There is one important exception: do not place \cvx in MATLAB's own
 \verb@toolbox@ directory. (If your previous installation of \cvx was placed
 there, you'll need to move it out of there.)
 \item Start Matlab.
@@ -2941,7 +2946,8 @@ at the Matlab command prompt.
 \end{code}
 at the Matlab prompt. This does two things: 
 it sets the Matlab search path so it can find all of the \cvx program files,
-and it runs a simple test problem to verify the installation.
+and it runs a simple test problem to verify the installation. On some
+platforms, it compiles MEX files as well (see \S\ref{sec:othersys} below).
 If all goes well, the command will output the line
 \begin{code}
 	No errors! cvx has been successfully installed.
@@ -2954,41 +2960,34 @@ Matlab path for subsequent Matlab sessions. Follow the instructions provided
 by \verb@cvx_setup@ to accomplish that.
 \end{enumerate}
 
-\subsection{Unsupported platforms}
+\subsection{MEX file compilaton}
 \label{sec:othersys}
 
-It may be possible to run \cvx on other platforms that run MATLAB 6.1, 
-but the MEX files must be successfully compiled to do so. Therefore, before
-following the instructions in \S\ref{sec:winlin} above, you must
-confirm that your MEX system has been set up properly. If you have compiled
-MEX files before, this is likely the case; otherwise, run the command
+Precompiled MEX files are provided only for a handful of platforms;
+for others, they must be compiled by the user. The \verb@cvx_setup@ script will
+automatically detect the absence of compiled MEX files and compile them
+for SeDuMi, SDPT3, and \cvx. However, \verb@cvx_setup@ will succeed only
+if the MEX system is configured properly on your machine. If you have
+compiled MEX files before, this is likely the case; otherwise, run the command
 \begin{code}
 	mex -setup
 \end{code}
-and answer the prompted questions. If necessary, consult the Matlab documentation for details.
+at the MATLAB prompt and answer the questions that follow. If necessary, consult documentation for
+Matlab for details on this process.
 
-With the MEX system properly configured, following the instructions in
-\S\ref{sec:winlin} should work. The \verb@cvx_setup@ script will automatically
-compile the MEX files for both SeDuMi and \cvx. Unfortunately, the authors do not have ready access to these platforms, so if you
-are unable to compile the MEX files for your platform, we may not be able to help.
-Nevertheless, we have tried to make the installation process simple, and 
-want to hear from you if you run into problems, so please send us a note. If
-you \emph{are} successful, please consider sending us the MEX files produced,
-so that we make consider including them in a future \cvx distribution.
+\subsection{About SeDuMi and SDPT3}
 
-\emph{Important note:} If you are using Linux,
-do \emph{not} delete the MEX files and recompile them again.
-Doing so can result in  errors that prevent SeDuMi and \cvx from running.
-If you remove them inadvertently, just reinstall them from the distribution.
-
-\subsection{About SeDuMi}
-
-The \cvx distribution includes a full copy of the SeDuMi package
-in the directory \verb@cvx/sedumi@. This version incorporates 
-some bug fixes that are \emph{not} currently found in the versions fo SeDuMi
-available from the web. Therefore, we \emph{strongly} recommend that
-you use our version of SeDuMi, and remove any other versions that 
-you may have from your Matlab path.
+The \cvx distribution includes copies of the solvers SeDuMi and SDPT3 in
+the directories \verb@cvx/sedumi@ and \verb@cvx/sdpt3@, respectively. 
+We strongly recommend that you use our versions of these solvers,
+and remove any other versions that you have in your Matlab path.
+The version of SeDuMi provided with \cvx incorporates some bug fixes
+and a slight modification that is not currently found in versions
+available from the authors. This is not the case with SDPT3; however,
+the author of SDPT3 frequently posts bug fixes to the software without
+updating the version number (currently 4.0 beta). Therefore, it is
+important to be sure that any newer version of SDPT3 that you might
+wish to use was downloaded \emph{after} you obtained \cvx.
 
 \subsection{A Matlab 7.0 issue}
 \label{sec:sevenprob}
