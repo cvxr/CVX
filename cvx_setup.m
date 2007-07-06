@@ -58,7 +58,7 @@ elseif ver >= 6.5,
     addpaths = rmpaths(1:end-1);
 else
     checkpaths = rmpaths;
-    addpaths = rmapths;
+    addpaths = rmpaths;
 end
 addpaths = strcat( [ mpath, fs ], addpaths );
 addpaths{end+1} = mpath;
