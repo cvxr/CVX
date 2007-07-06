@@ -80,7 +80,14 @@ else
         if k == 1,
             str = A;
         else
-            str = cvx_bcompress( A * str' ) * str;
+            PS = cvx_invert_structure( str, 'compact' ) * str;
+            PA = cvx_invert_structure( A,   'compact' ) * A;
+            while true,
+                osiz = size( str, 1 );
+                str = cvx_bcompress( str * PA );
+                str = cvx_bcompress( str * PS );
+                if size( str, 1 ) == osiz; break; end
+            end
         end
         if isempty( str ),
             break;

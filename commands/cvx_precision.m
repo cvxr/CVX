@@ -22,7 +22,7 @@ function sout = cvx_precision( flag )
 %       PLOW = min(sqrt(TOL),max(TOL,eps^0.25)).
 %   Note that if TOL>eps^0.25, then PLOW=PHIGH.
 %
-%   CVX_PRECISION(TOL), where TOL is a positive 2-vector, sets
+%   CVX_PRECISION(TOL), where TOL is a nonnegative 2-vector, sets
 %       PBEST = MAX(MIN(TOL),eps^0.5), PHIGH = MIN(TOL), and PLOW = MAX(TOL).
 %
 %   CVX_PRECISION(TOL), where TOL is a 3-vector, sets
@@ -71,14 +71,14 @@ function sout = cvx_precision( flag )
 
 if nargin > 0,
     if isempty( flag ),
-        ns = [ sqrt(eps), sqrt(sqrt(eps)) ];
+        ns = [ eps^0.5, eps^0.5, eps^0.25 ];
     elseif ischar( flag ),
         if size( flag, 1 ) ~= 1,
             error( 'Invalid precision string.' );
         else
             switch flag,
                 case 'default',
-                    ns = [ eps^0.75,  eps^0.5,   eps^0.25  ];
+                    ns = [ eps^0.5,   eps^0.5,   eps^0.25  ];
                 case 'high',
                     ns = [ eps^0.75,  eps^0.75,  eps^0.375 ];
                 case 'medium',
@@ -91,18 +91,18 @@ if nargin > 0,
                     error( [ 'Invalid precision mode: ', flag ] );
             end
         end
-    elseif ~isnumeric( flag ) | numel( flag ) > 3,
+    elseif ~isnumeric( flag ) | numel( flag ) > 3 | length(flag) ~= numel(flag),
         error( 'Argument must be a real number, a 2-vector, a 3-vector, or a string.' );
     elseif any( flag < 0 ) | any( flag >= 1 ),
-        error( 'Precisions must be between 0 and 1 exclusTolerances must be between 0 and 1.' );
-    elseif nnz( flag == 0 ) > numel(flag) - 2,
-        error( 'Both PHIGH and PLOW must be positive.' );
-    elseif numel( flag ) == 3,
-        ns = reshape( sort(flag), 1, 3 );
-    elseif length( flag ) == 2,
-        ns = [ min(flag), min(flag), max(flag) ];
-    else
+        error( 'Each precision value must satisfy 0 <= P < 1.' );
+    elseif numel( flag ) == 1,
         ns = [ max(flag,eps^0.5), flag, min(sqrt(flag),max(flag,eps^0.25)) ];
+    elseif numel( flag ) == 2,
+        ns = [ min(flag), min(flag), max(flag) ];
+    elseif all( flag == 0 ),
+        error( 'At least one precision must be positive.' );
+    else
+        ns = reshape( sort(flag), 1, 3 );
     end
 end
 global cvx___
