@@ -29,7 +29,6 @@ cvx_begin
 cvx_end
 
 obj1 = cvx_optval;
-lam1 = -lam1; lam2 = -lam2; lam3 = -lam3;
 P_lam = P0 + lam1*P1 + lam2*P2 + lam3*P3;
 q_lam = q0 + lam1*q1 + lam2*q2 + lam3*q3;
 r_lam = r0 + lam1*r1 + lam2*r2 + lam3*r3;
