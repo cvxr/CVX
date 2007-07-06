@@ -191,7 +191,7 @@ void mexFunction(
             scl[col] = 1.0;
         } else {
             map[col] = lastcol + 1;
-            scl[col] = lastnorm / ss_pr[ss_jc[col]];
+            scl[col] = ss_pr[ss_jc[col]] / lastnorm;
         }
     }
 }
