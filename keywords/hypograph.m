@@ -1,7 +1,6 @@
 function hypograph( varargin )
-error( nargchk( 0, Inf, nargin ) );
 
-%HYPOGRAPH Declare a hypograph cvx variable.
+%HYPOGRAPH Declares a hypograph variable.
 %   HYPOGRAPH VARIABLE x
 %   where x is a valid MATLAB variable name, declares a scalar
 %   variable for the current cvx problem, and specifies it as
@@ -34,8 +33,10 @@ error( nargchk( 0, Inf, nargin ) );
 
 if ~iscellstr( varargin ),
     error( 'HYPOGRAPH must be used in command mode.' );
-elseif nargin < 2 | ~isequal( varargin{1}, 'variable' ),
+elseif nargin ~= 2 | ~strcmpi( varargin{1}, 'variable' ),
     error( 'Syntax: hypograph variable <variable>' );
+elseif ~isa( evalin( 'caller', 'cvx_problem', '[]' ), 'cvxprob' ),
+    error( 'HYPOGRAPH can only be used within a CVX model.' );
 else
     evalin( 'caller', sprintf( '%s ', 'variable', varargin{2:end}, ' hypograph_' ) );
 end

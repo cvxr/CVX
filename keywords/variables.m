@@ -1,6 +1,6 @@
 function variables( varargin )
 
-%VARIABLES Declare multiple cvx variables.
+%VARIABLES Declares one or more CVX variables.
 %   VARIABLES x1 x2 x3 ..., where x1, x2, x3, etc. are valid
 %   variable names, declares multiple cvx variables. It is
 %   exactly equivalent to issuing a separate VARIABLE command

@@ -1,5 +1,7 @@
 function maximize( varargin )
 
+%MAXIMIZE Specifiies a concave (or affine) objective to be maximized.
+
 cvx_problem = evalin( 'caller', 'cvx_problem', '[]' );
 if isempty( cvx_problem ) | ~isa( cvx_problem, 'cvxprob' ),
     error( 'A cvx problem does not exist in this scope.' );

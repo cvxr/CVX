@@ -1,6 +1,6 @@
 function varargout = dual( varargin )
 
-%DUAL VARIABLE(s) Declares one or more cvx dual variables.
+%DUAL Declares one or more dual variables.
 %
 %   DUAL VARIABLE x
 %   where x is a valid MATLAB variable name, declares a dual variable

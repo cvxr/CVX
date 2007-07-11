@@ -1,7 +1,6 @@
 function epigraph( varargin )
-error( nargchk( 0, Inf, nargin ) );
 
-%EPIGRAPH Declare an epigraph cvx variable.
+%EPIGRAPH Declares an epigraph variable.
 %   EPIGRAPH VARIABLE x
 %   where x is a valid MATLAB variable name, declares a scalar
 %   variable for the current cvx problem, and specifies it as
@@ -34,8 +33,10 @@ error( nargchk( 0, Inf, nargin ) );
 
 if ~iscellstr( varargin ),
     error( 'EPIGRAPH must be used in command mode.' );
-elseif nargin < 2 | ~isequal( varargin{1}, 'variable' ),
+elseif nargin ~= 2 | ~strcmpi( varargin{1}, 'variable' ),
     error( 'Syntax: epigraph variable <variable>' );
+elseif ~isa( evalin( 'caller', 'cvx_problem', '[]' ), 'cvxprob' ),
+    error( 'EPIGRAPH can only be used within a CVX model.' );
 else
     evalin( 'caller', sprintf( '%s ', 'variable', varargin{2:end}, ' epigraph_' ) );
 end

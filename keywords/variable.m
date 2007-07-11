@@ -1,7 +1,6 @@
 function varargout = matrix( nm, varargin )
 
-%VARIABLE Declares a cvx variable.
-%
+%VARIABLE Declares a single CVX variable with optional matrix structure.
 %   VARIABLE x
 %   where x is a valid MATLAB variable nm, declares a scalar
 %   variable for the current cvx problem. A variable with that
