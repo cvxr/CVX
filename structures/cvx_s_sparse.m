@@ -1,4 +1,5 @@
 function y = cvx_s_sparse( m, n, i, j )
+%CVX_S_SPARSE Matrices with a fixed sparsity pattern.
 
 if nargin < 3,
     error( 'Sparsity structure missing.' );

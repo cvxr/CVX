@@ -1,4 +1,5 @@
 function y = cvx_s_lower_bidiagonal( m, n )
+%CVX_S_LOWER_BIDIAGONAL Lower bidiagonal matrices.
 y = cvx_s_banded( m, n, 1, 0 );
 
 % Copyright 2007 Michael C. Grant and Stephen P. Boyd. 

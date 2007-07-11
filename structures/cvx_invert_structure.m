@@ -1,20 +1,32 @@
-function x = cvx_invert_structure( x, compact )
-iscplx = ~isreal( x );
-if iscplx,
-    x = cvx_c2r( x, 2 );
-end
-[ m, n ] = size( x );
-if nargin == 2,
-    [ c, r, v ] = find( x' );
-    temp = [ 1 ; diff( r ) ] ~= 0;
-    x = sparse( r( temp ), c( temp ), 1.0 ./ v( temp ), m, n );
+function xi = cvx_invert_structure( x, compact )
+
+%CVX_INVERT_STRUCTURE Compute a right-inverse of a structure mapping.
+
+if nargin == 1,
+    
+    xi = x'*inv(x*x');
+    [ii,jj,vv] = find(xi);
+    [vn,vd] = rat(vv);
+    xi = sparse(ii,jj,vn./vd,size(x,2),size(x,1));
+    
+elseif isreal( x ),
+    
+    [LL,UU] = lu(x);
+    [jj,ii,vv] = find(UU');
+    dd = [true;diff(ii)~=0];
+    jj = jj(dd);
+    [i2,j2,vv] = find( inv(UU(:,jj)) / LL );
+    [vn,vd] = rat(vv);
+    xi = sparse(jj(i2),j2,vn./vd,size(x,2),size(x,1));
+    
 else
-    x = sparse( 1 : m, 1 : m, 1.0 ./ diag( x * x' ), m, m ) * x;
+    
+    x = [ real(x), imag(x) ];
+    x = x(:,[1:end/2;end/2+1:end]);
+    xi = cvx_invert_structure( x, true );
+    xi = xi(1:2:end,:) - sqrt(-1) * xi(2:2:end,:);
+    
 end
-if iscplx,
-    x = cvx_r2c( x, 2 );
-end
-x = x';
 
 % Copyright 2007 Michael C. Grant and Stephen P. Boyd.
 % See the file COPYING.txt for full copyright information.

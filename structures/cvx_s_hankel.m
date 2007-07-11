@@ -1,4 +1,5 @@
 function y = cvx_s_hankel( m, n )
+%CVX_S_HANKEL Hankel matrices.
 c  = 0 : n - 1;
 c  = c( ones( 1, m ), : );
 r  = [ 0 : m - 1 ]';

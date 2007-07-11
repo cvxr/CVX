@@ -1,4 +1,5 @@
 function y = cvx_s_banded( m, n, lower, upper )
+%CVX_S_BANDED (U,L)-banded matrices.
 
 if nargin < 3,
     error( 'Bandwidth arguments missing.' );

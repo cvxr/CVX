@@ -1,4 +1,5 @@
 function y = cvx_s_hermitian( m, n )
+%CVX_S_HERMITIAN Complex Hermitian matrices.
 
 if m ~= n,
     error( 'Hermitian structure requires square matrices.' );

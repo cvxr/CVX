@@ -1,4 +1,5 @@
 function y = cvx_s_diagonal( m, n )
+%CVX_S_DIAGONAL Diagonal matrices.
 y = cvx_s_banded( m, n, 0, 0 );
 
 % Copyright 2007 Michael C. Grant and Stephen P. Boyd. 

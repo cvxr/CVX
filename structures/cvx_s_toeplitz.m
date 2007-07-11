@@ -1,4 +1,5 @@
 function y = cvx_s_toeplitz( m, n )
+%CVX_S_TOEPLITZ Toeplitz matrices.
 
 if m ~= n,
     error( 'Symmetric structure requires square matrices.' );

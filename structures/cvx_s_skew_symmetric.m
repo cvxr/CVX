@@ -1,4 +1,5 @@
 function y = cvxs_skew_symmetric( m, n )
+%CVX_S_SKEW_SYMMETRIC Skew-symmetric matrices.
 
 if m ~= n,
     error( 'Skew symmetric structure requires square matrices.' );

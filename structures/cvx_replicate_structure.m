@@ -1,4 +1,5 @@
 function str = cvx_replicate_structure( str, sz )
+%CVX_REPLICATE_STRUCTURE Apply matrix structure to N-D arrays.
 
 szs  = size( str );
 nmat = prod( sz );

@@ -1,4 +1,5 @@
 function y = cvx_s_upper_triangular( m, n )
+%CVX_S_UPPER_TRIANGULAR Upper triangular matrices.
 y = cvx_s_banded( m, n, 0, n );
 
 % Copyright 2007 Michael C. Grant and Stephen P. Boyd. 

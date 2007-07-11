@@ -1,4 +1,5 @@
-function str = cvx_create_structure( sz, varargin )
+function S = cvx_create_structure( sz, varargin )
+%CVX_CREATE_STRUCTURE Construct a basis for a matrix structure.
 error( nargchk( 1, Inf, nargin ) );
 
 [ temp, sz ] = cvx_check_dimlist( sz, false );
@@ -6,14 +7,13 @@ if ~temp,
     error( 'First argument must be a non-empty dimension list.' );
 elseif nargin <= 1,
     nel = prod( sz );
-    str = sparse( 1 : nel, 1 : nel, 1, nel, nel );
+    S = sparse( 1 : nel, 1 : nel, 1, nel, nel );
     return
 end
 
 nstrs = nargin - 1;
 strs  = cell( 1, nstrs );
-sarg  = zeros( 1, nstrs );
-rarg  = zeros( 1, nstrs );
+rstr  = true;
 for k = 1 : nstrs,
     argt = varargin{k};
     if isstruct( argt ),
@@ -25,9 +25,9 @@ for k = 1 : nstrs,
     name = [ 'cvx_s_', argt ];
     try
         if iscell( args ),
-            str = feval( name, sz( 1 ), sz( 2 ), args{:} );
+            S = feval( name, sz( 1 ), sz( 2 ), args{:} );
         else
-            str = feval( name, sz( 1 ), sz( 2 ), args );
+            S = feval( name, sz( 1 ), sz( 2 ), args );
         end
     catch
         temp = exist( name );
@@ -37,71 +37,50 @@ for k = 1 : nstrs,
             error( lasterror );
         end
     end
-    strs{ k } = str;
-    sarg( k ) = size( str, 1 );
-    rarg( k ) = isreal( str );
+    strs{ k } = S;
+    if ~isreal( S ),
+        rstr = false;
+    end
 end
 
-if length( strs ) == 1,
-
-   strs = strs{1};
-
-else
-
-    [ temp, ndxs ] = sort( sarg );
-    if any( rarg( 1 : end - 1 ) == rarg( 2 : end ) ),
-        temp = min( find( ~rarg( ndxs ) ) );
-        if temp < nargin - 1,
-            rng  = temp + 1 : nstrs;
-            ndx1 = ndxs( rng );
-            [ temp2, ndx2 ] = sort( sarg( ndx1 ) .* ( 2 - rarg( ndx1 ) ) );
-            ndxs( rng ) = ndx1( ndx2 );
-        end
-    end
-
-    iscplx = false;
+if length( strs ) ~= 1,
+    
+    %
+    % Each matrix in strs{:} contains the basis of a given matrix 
+    % structure, arranged in rows. Here we intersect those bases by
+    % finding bases for their orthogonal complements, combining them,
+    % and taking the orthogonal complement of that. We then 'clean up'
+    % the result by converting the result to reduced row echelon form.
+    %
+    
+    n = size(strs{1},2)*(2-rstr);
     for k = 1 : nstrs,
-        A = strs{ndxs(k)};
-        if ~isreal( A ),
-            if ~iscplx,
-                [ r, c, v ] = find( str );
-                r = 2 * r( : ); c = 2 * c( : ); v = v( : );
-                str = sparse( [ r - 1 ; r ], [ c - 1 ; c ], [ v, v ], 2 * size( str, 1 ), 2 * size( str, 2 ) );
-                iscplx = true;
+        A = strs{k};
+        if ~rstr,
+            if isreal(A),
+                A = blkdiag(A,A);
+            else
+                A = [real(A),imag(A)];
             end
-            [ rr, cr, vr ] = find( real( A ) );
-            [ ri, ci, vi ] = find( imag( A ) );
-            A = sparse( [ rr ; ri ], [ 2 * cr - 1 ; 2 * ci ], [ vr ; vi ], size( A, 1 ), 2 * size( A, 2 ) );
-        elseif iscplx,
-            [ r, c, v ] = find( A );
-            r = 2 * r( : ); c = 2 * c( : ); v = v( : );
-            A = sparse( [ r - 1 ; r ], [ c - 1 ; c ], [ v, v ], 2 * size( A, 1 ), 2 * size( A, 2 ) );
+            A = A(:,[1:n/2;n/2+1:n]);
         end
-        if k == 1,
-            str = A;
-        else
-            PS = cvx_invert_structure( str, 'compact' ) * str;
-            PA = cvx_invert_structure( A,   'compact' ) * A;
-            while true,
-                osiz = size( str, 1 );
-                str = cvx_bcompress( str * PA );
-                str = cvx_bcompress( str * PS );
-                if size( str, 1 ) == osiz; break; end
-            end
-        end
-        if isempty( str ),
-            break;
-        end
+        strs{k} = cvx_orthog_structure(A);
     end
-
-    if iscplx,
-        str = str( :, 1 : 2 : end ) + j * str( :, 2 : 2 : end );
+    NS = cvx_cleanup_structure( vertcat(strs{:}) );
+    rr = size(NS,1);
+    if rr == n,
+        S = sparse(0,n);
+    else
+        S = cvx_orthog_structure(NS);
+    end
+    if ~rstr,
+        S = S( :, 1 : 2: end ) + sqrt(-1) * S( :, 2 : 2 : end );
     end
 
 end
 
 if length( sz ) > 2,
-    str = cvx_replicate_structure( str, sz( 3 : end ) );
+    S = cvx_replicate_structure( S, sz( 3 : end ) );
 end
 
 % Copyright 2007 Michael C. Grant and Stephen P. Boyd.

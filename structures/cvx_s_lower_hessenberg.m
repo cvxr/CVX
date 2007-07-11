@@ -1,4 +1,5 @@
 function y = cvx_s_lower_hessenberg( m, n )
+%CVX_S_LOWER_HESSENBERG Lower Hessenberg matrices.
 y = cvx_s_banded( m, n, m, 1 );
 
 % Copyright 2007 Michael C. Grant and Stephen P. Boyd. 

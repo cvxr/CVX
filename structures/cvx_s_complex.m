@@ -1,4 +1,5 @@
 function y = cvx_s_complex( m, n )
+%CVX_S_COMPLEX Complex variables.
 
 mn   = m * n;
 rvec = 1 : 2 * mn;
