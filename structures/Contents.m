@@ -25,8 +25,7 @@
 %   scaled_identity   - Scaled identity: t*eye(n).
 %   skew_symmetric    - Skew-symmetric matrices.
 %   sparse            - Matrices with a fixed sparsity pattern.
-%   symmetric         - Symmetric matrices (lower triangle storage).
-%   symmetric_ut      - Symmetric matrices (upper triangle storage).
+%   symmetric         - Symmetric matrices.
 %   toeplitz          - Toeplitz matrices.
 %   tridiagonal       - Tridiagional matrices.
 %   upper_bidiagonal  - Upper bidiagonal matrices.
