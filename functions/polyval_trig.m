@@ -1,6 +1,6 @@
 function y = polyval_trig( p, x )
 
-%POLYVAL    Evaluate a trigonometric polynomial.
+%POLYVAL_TRIG Evaluate a trigonometric polynomial.
 %   Y = POLYVAL_TRIG(P,X) returns the value of a trigonometric polynomial P
 %   evaluated at X. P is a vector of length N+1 whose elements are the
 %   coefficients of the polynomial in descending powers.

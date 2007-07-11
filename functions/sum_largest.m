@@ -1,6 +1,6 @@
 function cvx_optval = sum_largest( x, k, dim )
 
-%SUM_LARGEST   Sum of the largest k elements of an array.
+%SUM_LARGEST Sum of the largest k values of a vector.
 %   For a real vector X and an integer k between 1 and length(X) inclusive,
 %   y = SUM_LARGEST(X,k) is the sum of the k largest elements of X; e.g.,
 %       temp = sort( x )

@@ -1,6 +1,6 @@
 function z = quad_pos_over_lin( x, y, dim )
 
-%QUAD_POS_OVER_LIN   quadratic positive part over linear.
+%QUAD_POS_OVER_LIN Sum of squares of positives over linear.
 %   Z=QUAD_POS_OVER_LIN(X,Y), where X is a vector and Y is a scalar, is equal to
 %   SUM(MAX(X,0).^2)./Y if Y is positive, and +Inf otherwise. Both X and Y must
 %   be real.

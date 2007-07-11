@@ -1,6 +1,6 @@
 function z = quad_over_lin( x, y, dim )
 
-%QUAD_OVER_LIN   quadratic over linear.
+%QUAD_OVER_LIN Sum of squares over linear.
 %   Z=QUAD_OVER_LIN(X,Y), where X is a vector and Y is a scalar, is equal to
 %   SUM(ABS(X).^2)./Y if Y is positive, and +Inf otherwise. Y must be real.
 %

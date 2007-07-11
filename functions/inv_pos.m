@@ -1,6 +1,6 @@
 function y = inv_pos( x )
 
-% INV_POS   Inverse of a positive quantity.
+%INV_POS   Reciprocal of a positive quantity.
 %    INV_POS(X) returns 1./X if X is positive, and +Inf if X is nonnegative.
 %    X must be real.
 %

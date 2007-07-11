@@ -1,6 +1,6 @@
 function cvx_optval = det_root2n( X )
 
-% DET_ROOT2N    2n-th root of the determinant of a symmetric matrix.
+%DET_ROOT2N 2nth-root of the determinant of an SPD matrix.
 %     For a square matrix X, DET_ROOT2N(X) returns
 %         POW(DET(X),1/(2*size(X,1))
 %     if X is symmetric (real) or Hermitian (complex) and positive
@@ -16,3 +16,8 @@ function cvx_optval = det_root2n( X )
 
 error( nargchk( 1, 1, nargin ) );
 cvx_optval = sqrt(det_rootn(X));
+
+
+% Copyright 2007 Michael C. Grant and Stephen P. Boyd.
+% See the file COPYING.txt for full copyright information.
+% The command 'cvx_where' will show where this file is located.

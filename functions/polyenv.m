@@ -1,6 +1,6 @@
 function y = polyenv( p, x )
 
-%POLYENV    Convex and concave envelope sof polynomials.
+%POLYENV Evaluate the convex or concave envelope of a polynomial.
 %   POLYENV( P, X ) uses a semidefinite program to compute the value of the
 %   convex or concave envelope of the polynomial represented by the vector
 %   P. The format of the vector P is identical to that required by POLYVAL,

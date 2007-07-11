@@ -1,6 +1,6 @@
 function z = matrix_frac( x,Y )
 
-% MATRIX_FRAC
+%MATRIX_FRAC   Matrix fractional function.
 %     MATRIX_FRAC(x,Y), where Y is a square matrix and x is a vector of the
 %     same size, computes x'*(inv(Y)*x) if Y is Hermitian positive definite, and
 %     +Inf otherwise.
