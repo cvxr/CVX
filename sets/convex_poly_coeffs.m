@@ -1,4 +1,33 @@
 function cvx_optpnt = convex_poly_coeffs( deg, mm )
+
+%CONVEX_POLY_COEFFS   Coefficients of convex degree-n polynomials. 
+%   CONVEX_POLY_COEFFS(DEG), where DEG is a nonnegative integer, creates a
+%   CVX vector variable of length DEG+1 and treats its values as
+%   coefficients of a polynomial (in the same sense as POLYVAL). It then
+%   constraints those coefficients to guarantee that the resulting
+%   polynomial will be convex; that is, its second derivative will be
+%   nonnegative over the entire real line. That is, given the declaration
+%       variable p(deg+1)
+%       p == convex_poly_coeffs(deg)
+%   the value of P that results will satisfy
+%       POLYVAL([DEG:-1:2].*[DEG-1:-1:1].*P(1:END-2),X)>=0
+%   for any real value of X.
+%
+%   CONVEX_POLY_COEFFS(DEG,MM), where MM is a real vector of length 2,
+%   constrains convexity only over the interval MM(1) <= X <= MM(2).
+%   That is, given a declaration
+%       variable p(deg+1)
+%       p == nonneg_poly_coeffs(deg,mm)
+%   the value of P that results will satisfy
+%       POLYVAL([DEG:-1:2].*[DEG-1:-1:1].*P(1:END-2),X)>=0
+%   between MM(1) and MM(2), inclusive. It may be negative outside that
+%   interval. Note that MM(1) must be less than MM(2) for this constraint
+%   to have any effect.
+%
+%   Disciplined convex programming information:
+%       CONVEX_POLY_COEFFS is a cvx set specification. See the user guide
+%       for details on how to use sets.
+
 error( nargchk( 1, 2, nargin ) );
 
 %

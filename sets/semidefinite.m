@@ -1,10 +1,43 @@
 function cvx_optpnt = semidefinite( n, iscplx )
-error( nargchk( 1, 2, nargin ) );
+
+%SEMIDEFINITE   Real symmetric positive semidefinite matrices.
+%    SEMIDEFINITE(N), where N is an integer, creates a symmetric matrix
+%    variable of size [N,N] and constrains it to be positive semidefinite.
+%    Therefore, given the declaration
+%       variable x(n,n) symmetric
+%    the constraint
+%       x == semidefinite(n)
+%    is equivalent to
+%       lambda_min(x) >= 0;
+%    In fact, lambda_min is implemented in CVX using SEMIDEFINITE for
+%    real matrices.
+%
+%    SEMIDEFINITE(SX), where SX is a valid size vector, creates an array
+%    variable of size SX and constrains each subarray along the leading two
+%    dimensions to be positive semidefinite. SX(1) and SX(2) must be equal.
+%    Therefore, given the declaration
+%       variable x(sx) symmetric
+%    the constraint
+%       x == semidefinite(sx)
+%    is equivalent to
+%       for k = 1:prod(sx(3:end)),
+%          lambda_min(x(:,:,k)) >= 0;
+%       end
+%
+%    SEMIDEFINITE(N,CPLX) and SEMIDEFINITE(SX,CPLX) create real semidefinite
+%    sets if CPLX is FALSE, and complex Hermitian semidefinite sets if CPLX
+%    is TRUE. The latter case is equivalent to calling the function
+%    HERMITIAN_SEMIDEFINITE.
+%
+%   Disciplined convex programming information:
+%       SEMIDEFINITE is a cvx set specification. See the user guide for
+%       details on how to use sets.
 
 %
 % Check size vector
 %
 
+error( nargchk( 1, 2, nargin ) );
 if ~isnumeric( n ) | isempty( n ) | any( n < 0 ) | any( n ~= floor( n ) ),
     error( 'First argument must be a positive integer or a valid size vector.' );
 elseif length( n ) > 1 & n( 1 ) ~= n( 2 ),

@@ -1,4 +1,40 @@
 function coeffs = nonneg_poly_coeffs( deg, trig, mm )
+
+%NONNEG_POLY_COEFFS   Coefficients of nonnegative degree-n polynomials. 
+%   NONNEG_POLY_COEFFS(DEG), where DEG is a nonnegative integer, creates a
+%   vector variable of length DEG+1 and treats its values as
+%   coefficients of a polynomial (in the same sense as POLYVAL). It then
+%   constrains those coefficients to guarantee that the resulting
+%   polynomial will be nonnegative over the entire real line. That is, 
+%   given a declaration
+%       variable p(deg+1)
+%       p == nonneg_poly_coeffs(deg)
+%   the value of P that results will satisfy POLYVAL(P,X)>=0 for any real
+%   value of X.
+%
+%   NONNEG_POLY_COEFFS(DEG,MM), where MM is a real vector of length 2,
+%   constrains nonnegativity only over the interval MM(1) <= X <= MM(2).
+%   That is, given a declaration
+%       variable p(deg+1)
+%       p == nonneg_poly_coeffs(deg,mm)
+%   the value of P that results will satisfy POLYVAL(P,X)>=0 for any real
+%   value of X between MM(1) and MM(2), inclusive. It may be negative
+%   outside that interval. Note that MM(1) must be less than MM(2) for
+%   this constraint to have any effect.
+%
+%   NONNEG_POLY_COEFFS(DEG,'TRIG') and NONNEG_POLY_COEFFS(DEG,MM,'TRIG')
+%   create sets of coefficients of nonnegative *trigonometric* polynomials.
+%   That is, given the declaration
+%      variable p(deg+1)
+%      p == nonneg_poly_coeffs(deg,true)
+%   the value of P that resutls will satisfy 
+%      REAL(POLYVAL(P,EXP(-SQRT(-1)*X)))>=0 
+%   for any value of X.
+%
+%   Disciplined convex programming information:
+%       NONNEG_POLY_COEFFS is a cvx set specification. See the user guide
+%       for details on how to use sets.
+
 error( nargchk( 1, 3, nargin ) );
 
  

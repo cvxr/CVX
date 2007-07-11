@@ -1,5 +1,4 @@
 function cvx_optpnt = norm_ball( sz, varargin )
-error( nargchk( 1, Inf, nargin ) );
 
 %NORM_BALL   Norm ball.
 %   NORM_BALL( sz, ... ) returns a variable of size sz, say 'x', that is
@@ -14,6 +13,7 @@ error( nargchk( 1, Inf, nargin ) );
 %       NORM_BALL is a cvx set specification. See the user guide for
 %       details on how to use sets.
 
+error( nargchk( 1, Inf, nargin ) );
 [ temp, sz ] = cvx_check_dimlist( sz, false );
 if ~temp,
     error( 'First argument must be a valid dimension list.' );

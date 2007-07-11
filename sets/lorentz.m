@@ -1,4 +1,40 @@
 function cvx_optpnt = lorentz( sx, dim, iscplx )
+
+%LORENTZ   Real second-order cone.
+%   LORENTZ(N), where N is a positive integer, creates a column
+%   variable of length N and a scalar variable, and constrains them
+%   to lie in a second-order cone. That is, given the declaration
+%       variables x(n) y
+%   the constraint
+%       {x,y} == lorentz(n)
+%   is equivalent to
+%       norm(x,2) <= y
+%   The inequality form is more natural, and preferred in most cases. But
+%   in fact, the LORENTZ set form is used by CVX itself to convert NORM()-
+%   based constraints to solvable form.
+%
+%   LORENTZ(SX,DIM), where SX is a valid size vector and DIM is a positive
+%   integer, creates an array variable of size SX and an array
+%   variable of size SY (see below) and applies the second-order cone
+%   constraint along dimension DIM. That is, given the declarations
+%       sy = sx; sy(min(dim,length(sx)+1))=1;
+%       variables x(sx) y(sy)
+%   the constraint
+%       {x,y} == lorentz(sx,dim)
+%   is equivalent to
+%       norms(x,2,dim) <= y
+%   Again, the inequality form is preferred, but CVX uses the set form
+%   internally. DIM is optional; if it is omitted, the first non-singleton
+%   dimension is used.
+%
+%   LORENTZ(SX,DIM,CPLX) creates real second-order cones if CPLX is FALSE,
+%   and complex second-order cones if CPLX is TRUE. The latter case is
+%   equivalent to COMPLEX_LORENTZ(SX,DIM).
+%
+%   Disciplined convex programming information:
+%       LORENTZ is a cvx set specification. See the user guide for
+%       details on how to use sets.
+
 error( nargchk( 1, 3, nargin ) );
 
 %
