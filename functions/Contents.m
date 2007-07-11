@@ -1,4 +1,4 @@
-% CVX: Additional functions
+% CVX: Additional nonlinear functions added by CVX
 %   berhu             - Reverse Huber penalty function.
 %   det_root2n        - 2nth-root of the determinant of an SPD matrix.
 %   det_rootn         - nth-root of the determinant of an SPD matrix.
