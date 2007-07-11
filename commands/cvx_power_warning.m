@@ -1,6 +1,6 @@
 function sout = cvx_power_warning( flag )
 
-%CVX_POWER_WARNING   Warning message control for power->SOCP conversion.
+%CVX_POWER_WARNING   Controls the CVX warning message for x.^p expressions.
 %   CVX converts power functions like x.^p, for variable x and fixed p, into
 %   solvable form using an SOCP transformation. For quadratics x.^2 and square
 %   roots x.^(1/2), a single second-order cone is required; for other powers,

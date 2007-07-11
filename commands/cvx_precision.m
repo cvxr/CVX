@@ -1,6 +1,6 @@
 function sout = cvx_precision( flag )
 
-%CVX_PRECISION    CVX solver precision.
+%CVX_PRECISION    Controls CVX solver precision.
 %   The CVX_PRECISION command controls the precision-related stopping criteria
 %   for the numerical solver. Up to 3 precision levels can be specified:
 %       0 <= PBEST <= PHIGH <= PLOW << 1.

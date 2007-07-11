@@ -1,6 +1,6 @@
 function sout = cvx_gp_precision( flag )
 
-%CVX_GP_PRECISION    Geometric programming approximation precision.
+%CVX_GP_PRECISION    Changes the precision of CVX's GP approximation.
 %   CVX cannot solve geometric programs exactly, so it constructs semidefinite
 %   approximations to them. Specifically, the LOG(SUM(EXP(X))) function is
 %   approximated by a function LOGSUMEXP_SDP(X). CVX_GP_PRECISION( TOL )

@@ -1,6 +1,6 @@
 function cvx_begin_set
 
-% CVX_BEGIN_SET    Starts a new cvx set specification.
+% CVX_BEGIN_SET    Starts a new cvx CVX specification.
 %
 % The command
 %    CVX_BEGIN_SET

@@ -1,7 +1,7 @@
 function cvx_begin( varargin )
 
-%CVX_BEGIN    Starts a new cvx specification.
-%   CVX_BEGIN marks the beginning of a new cvx model. Following this command
+%CVX_BEGIN    Starts a new CVX specification.
+%   CVX_BEGIN marks the beginning of a new CVX model. Following this command
 %   may be variable declarations, objective functions, and constraints, and
 %   a CVX_END to mark the completion of the model.
 %

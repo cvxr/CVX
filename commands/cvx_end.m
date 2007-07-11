@@ -1,5 +1,11 @@
 function cvx_end
 
+%CVX_END  Completes a cvx specification.
+%   CVX_BEGIN marks the end of a new cvx model, and instructs cvx to
+%   complete its processing. For standard, complete models, cvx will send
+%   a transformed version of the problem to a solver to obtain numeric
+%   results, and replace references to cvx variables with numeric values.
+
 global cvx___
 prob = evalin( 'caller', 'cvx_problem', '[]' );
 if isempty( prob ) | ~isa( prob, 'cvxprob' ),

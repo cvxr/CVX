@@ -2,10 +2,10 @@ function cvx_cd( subdir )
 
 %CVX_CD   Change current working directory to a CVX subdirectory. 
 %   CVX_CD executes CD <cvx_dir>, where <cvx_dir> is the root directory of the
-%   cvx package.
+%   CVX package.
 %
 %   CVX_CD <subdir> executes CD <cvx_dir>/<subdir>. Useful subdirectories of the
-%   cvx package include:
+%   CVX package include:
 %        functions/    new functions
 %        examples/     sample cvx models
 %   So for example, 
