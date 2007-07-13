@@ -42,16 +42,18 @@
 
 \cvx is a modeling system for \emph{disciplined convex programming}. 
 Disciplined convex programs, or DCPs, are convex optimization problems 
-that adhere to a limited set of construction rules that 
-enable them to be analyzed and solved efficiently. The set of 
+that adhere to a limited set of construction rules, which
+enables them to be analyzed and solved efficiently. The set of 
 DCPs includes most well-known classes of convex programs, including
 linear programs (LPs), quadratic programs (QPs), second-order
 cone programs (SOCPs), and semidefinite programs (SDPs). 
-\cvx can solve problems from all of these problem classes and others as well.
+\cvx can solve problems from all of these problem classes,
+and many others as well.
 For background on convex optimization,
 see the book \emph{Convex Optimization} \cite{BV:04}.
 
-\cvx also provides special modes to simplify the construction of problems
+\cvx also provides special modes to simplify 
+the construction of problems
 from two specific problem classes. In \emph{SDP mode}, \cvx applies
 a matrix interpretation to the inequality operator, so that
 \emph{linear matrix inequalities} (LMIs) and SDPs may be expressed
@@ -67,7 +69,7 @@ so that they can be solved efficiently.
 turning Matlab into an optimization modeling language.
 Model specifications are constructed using common Matlab
 operations and functions, and standard Matlab code can be
-freely mixed with those specifications. This combination
+freely mixed with these specifications. This combination
 makes it simple to perform the calculations
 needed to form optimization problems, or to process the
 results obtained from their solution. For example, it is easy
@@ -92,7 +94,8 @@ Wu and Boyd \cite{SDPSOL},
 and many others.
 The modeling language follows
 the spirit of AMPL \cite{AMPL} or GAMS \cite{GAMS}; unlike
-these packages, however, \cvx is designed to fully exploit convexity.
+these packages, however, \cvx was designed from the beginning 
+to fully exploit convexity.
 The specific method for implementing \cvx in Matlab
 draws heavily from YALMIP \cite{YALMIP}. We also hope
 to develop versions of \cvx for other platforms in the future.
@@ -117,22 +120,21 @@ Disciplined convex programming imposes a limited
 set of conventions or rules, which we call the \emph{DCP ruleset}.
 Problems which adhere to the ruleset can be rapidly and automatically
 verified as convex and converted to solvable form.
-Problems that violate the ruleset are rejected, even when
-convexity of the problem is obvious to the user.
+Problems that violate the ruleset are rejected, even 
+when the problem is convex.
 That is not to say that such problems cannot be solved; they
-just need to be rewritten in a conforming manner.
+just need to be rewritten in a way that conforms to the DCP ruleset.
 
 A detailed description of the DCP ruleset is given in \S\ref{sec:rules},
-and it is important for anyone who wishes to actively use
+and it is important for anyone who intends to actively use
 \cvx to understand it.
 The ruleset is simple 
-to learn, drawn from basic principles of convex analysis,
-and resembles the practices of those who study and use
-convex optimization. In addition, the ruleset actually \emph{enables}
-considerable benefits, such as the automatic conversion of
-problems to solvable
-form and full support for nondifferentiable
-functions. In practice, we have found that
+to learn, and is drawn from basic principles of convex analysis.
+In return for accepting the restrictions imposed by the ruleset,
+we obtain considerable benefits, such as automatic conversion of
+problems to solvable form, and full support for nondifferentiable 
+functions. 
+In practice, we have found that
 disciplined convex programs closely resemble
 their natural mathematical forms.
 
@@ -159,7 +161,8 @@ version of \cvx can only handle functions and sets that can be represented
 using these problem types. Despite this limitation, the current version
 of \cvx includes a wide variety of functions, such as minimums and
 maximums, absolute values and $\ell_p$ norms, quadratic forms and square roots,
-forms of the power function $x^p$, the minimum and maximum eigenvalues
+some forms of the power function $x^p$, and 
+the minimum and maximum eigenvalues
 of a symmetric matrix. A few obscure functions have also been included, 
 such as  the sum of the $k$ largest entries of a vector, and the
 convex envelopes of nonconvex polynomials.
@@ -244,7 +247,7 @@ optimization variables and specifying constraints and
 objective functions.
 
 Within a \cvx specification, optimization variables have no numerical
-value, but are special Matlab objects.   
+value; instead, they are special Matlab objects.   
 This enables Matlab to distinguish
 between ordinary commands and \cvx objective
 functions and constraints. As Matlab reads a \cvx specification,
@@ -257,7 +260,7 @@ When Matlab reaches
 the \verb@cvx_end@ command, it completes the conversion of
 the \cvx specification to a canonical form,
 and calls the underlying solver 
-(which is SeDuMi, in this first version).
+(SeDuMi or SDPT3, in this version).
 
 If the optimization is successful,
 the optimization variables declared in the \cvx specification
@@ -641,14 +644,15 @@ is a declared variable, the expression \verb@C*x==d@ in line~\ref{line:cnstr1}
 above causes a constraint to be included in the \cvx specification,
 and returns no value at all. 
 On the other hand, outside of a \cvx specification,
-if \verb@x@ has an appropriate numeric value---including immediately after
-the \verb@cvx_end@ command---that same expression would return a vector of
+if \verb@x@ has an appropriate numeric value---for example immediately 
+after the \verb@cvx_end@ command---that same expression would return a vector of
 \verb@1@s and \verb@0@s, corresponding to the truth or falsity of each 
 equality.\footnote{In fact, immediately after the
 \texttt{cvx\_end} command above, you would likely find that most if not
 all of the values returned would be \texttt{0}. This
 is because, as is the case with many numerical algorithms, solutions 
-are determined to within a nonzero numeric tolerance. So the equality constraints
+are determined only 
+to within some nonzero numeric tolerance. So the equality constraints
 will be satisfied closely, but often not exactly.} Likewise, within
 a \cvx specification, the statement \verb@norm(x,Inf)<=1@ adds a
 nonlinear constraint to the specification; outside of it, it
@@ -877,9 +881,14 @@ sides are affine functions of the optimization variables.
 expression is convex, and the right-hand expression is concave.
 \item Greater-than \verb@>=@, \verb@>@ constraints, where the left-hand
 expression is concave, and the right-hand expression is convex.
-In \cvx, \verb@<@ is the same as \verb@<=@, but we encourage you to
-use the longer form \verb@<=@, since it is mathematically correct.
 \end{itemize}
+In \cvx, the strict inequalities \verb@<@ and \verb@>@ are accepted,
+but interpreted as the associated nonstrict inequalities, \verb@<=@
+and \verb@>=@, respectively.   We encourage you to
+use the nonstrict forms \verb@<=@ and \verb@>=@, since they are
+mathematically correct.
+(Future versions of \cvx might assign a slightly different meaning
+to strict inequalities.)
 
 These equality and inequality operators work for arrays.
 When both sides of the constraint are arrays of the same size,
@@ -901,7 +910,8 @@ assignment, and \verb@==@, which imposes an equality constraint
 (inside a \cvx specification); for more on this distinction,
 see \S\ref{sec:eqass}.
 Also note that the non-equality operator \verb@~=@ may \emph{not}
-be used in a constraint, because such a constraint is rarely convex.
+be used in a constraint; in any case, such constraints are 
+rarely convex.
 Inequalities cannot be used if either side is complex.
 
 \cvx also supports a \emph{set membership} constraint; 
@@ -947,9 +957,15 @@ and \verb@c@ are vectors, and \verb@d@ is a scalar.
 function, since it is
 the composition of a convex function (the quadratic-over-linear
 function) with an affine function.
+
 You can also use the function \verb@quad_over_lin@ \emph{outside}
 a \cvx specification.   In this case, it just computes its (numerical)
 value, given (numerical) arguments.
+It's not quite the same as the expression 
+\verb@((A*x-b)'*(A*x-b))/(c'*x+d)@,
+however.  This expression makes sense, and returns a real number, 
+when $c^Tx+d$ is negative; but \verb@quad_over_lin(A*x-b,c'*x+d)@
+returns \verb@+Inf@ if $c^Tx+d \not > 0$.
 
 \subsection{Sets}
 \label{sec:sets}
@@ -989,7 +1005,7 @@ As an example, consider the constraint
 that a (matrix) variable \verb@X@ is a correlation
 matrix, \ie, it is symmetric, has unit diagonal elements, and 
 is positive semidefinite.  In \cvx we can declare such a variable
-and constraints using
+and impose such constraints using
 \begin{code}
 	variable X(n,n) symmetric;
 	X == semidefinite(n);
@@ -1437,7 +1453,8 @@ The function $\sqrt{x^2+1}$, written as the expression
 function that cannot be verified 
 as convex using the \cvx ruleset.
 (It is recognized as convex when it is written as \verb@norm([x,1])@,
-since \verb@norm@ is in the \cvx base library of convex functions.)
+since \verb@norm@ is in the \cvx base library of convex functions,
+and \verb@[x 1]@ is recognized as an affine expression.)
 
 \subsection{Functions}
 \label{sec:functions}
@@ -1480,7 +1497,8 @@ straightforward.  As examples, we have:
 \begin{tabular}{lll}
 	\verb@sum( x )@ & $\sum_i x_i$ & affine, nondecreasing \\
 	\verb@abs( x )@ & $|x|$ & convex, nonmonotonic \\
-	\verb@log( x )@ & $\log x$ & concave, nondecreasing
+	%\verb@log( x )@ & $\log x$ & concave, nondecreasing
+	\verb@sqrt( x )@ & $\sqrt x$ & concave, nondecreasing
 \end{tabular}
 \end{center}
 Convexity and monotonicity are always determined in an 
@@ -1517,13 +1535,15 @@ which is convex and nonincreasing,
 has been included in the atom library,
 so it can be used freely in constraints
 and objective functions.
+For background on composition rules for convex functions, 
+see \cite[\S 3.2.4]{BV:04}.
 
 For functions that have multiple arguments, additional considerations must
 be made. First of all, curvature is always considered \emph{jointly}, but monotonicity
 can be considered on an argument-by-argument basis. For example,
 \begin{center}
 \begin{tabular}{lll}
-	\verb@quad_over_lin( x, y )@ & $\Cases{|x|^2/y&y> 0\\+\infty&y\leq 0}$ & convex, nonincreasing in \verb@y@
+	\verb@quad_over_lin( x, y )@ & $\Cases{|x|^2/y&y> 0\\+\infty&y\leq 0}$ & convex, nonincreasing in $y$
 \end{tabular}
 \end{center}
 is jointly convex in both arguments, but it is monotonic 
@@ -1533,7 +1553,7 @@ In addition, some functions are convex, concave, or affine only for
 a \emph{subset} of its arguments. For example, the function
 \begin{center}
 \begin{tabular}{lll}
-	\verb@norm( x, p )@ & $\|x\|_p~~(1<p<+\infty)$ & convex in \verb@x@, nonmonotonic
+	\verb@norm( x, p )@ & $\|x\|_p~~(1<p<+\infty)$ & convex in $x$, nonmonotonic
 \end{tabular}
 \end{center}
 is convex only in its first argument. Whenever this function is used
@@ -1541,7 +1561,7 @@ in a \cvx specification, then, the remaining
 arguments must be constant, or \cvx will issue an error message. Such arguments
 correspond to a function's parameters in mathematical terminology; \eg,
 \begin{equation*}
-	f_p(x):\R^n\rightarrow\R, \quad f_p(x) \triangleq \|x\|
+	f_p(x):\R^n\rightarrow\R, \quad f_p(x) \triangleq \|x\|_p
 \end{equation*}
 So it seems fitting that we should refer to such arguments as \emph{parameters}
 in this context as well. Henceforth, whenever we speak of a \cvx function
@@ -1614,7 +1634,9 @@ the expressions
 	sum( sqrt( x ) )
 \end{code}
 are both valid nonlinear compositions in \cvx, according to the 
-convex/nondecreasing and concave/nondecreasing rules, respectively.
+convex/nondecreasing and concave/nondecreasing rules, respectively,
+since \verb@sum@ is both convex and nondecreasing, and concave and 
+nondecreasing.
 
 Let us consider a more complex example in depth. Suppose
 \verb@x@ is a vector variable, and
@@ -1654,53 +1676,64 @@ Monotonicity is a critical aspect of the rules for nonlinear compositions.
 This has some consequences that are not so obvious, as we shall demonstrate here
 by example. Consider the expression
 \begin{code}
-	square( square( A * x + b ) )
+	square( square( A * x + b ) + 1 )
 \end{code}
-where \verb@square( A * x + b )@ was defined in the previous section.
-This expression effectively raises each element of \verb@A*x+b@ to the fourth
-power, and it is clearly elementwise convex. But
+where \verb@x@ is a variable, and \verb@A@ and \verb@b@ are a constant 
+matrix and vector of appropriate size.
+This expression applies to each element of \verb@A*x+b@ the function
+$z \mapsto (z^2+1)^2 = z^4+2z^2+1$, which is convex,
+so this expression is elementwise convex. 
+But
 \cvx will not recognize it as such, because a convex function of a convex
 expression is \emph{not} necessarily convex: for example,
 \begin{code}
 	square( square( A * x + b ) - 1 )
 \end{code}
-is not convex. The problem is that \verb@square@ is not monotonic,
+is not convex. The problem here is that \verb@square@ is not monotonic,
 so the composition rules cannot be applied.
 
-Examination of these examples reveals a key difference:
+Examination of the two expressions above reveals a key difference:
 in the first, the argument to the outer \verb@square@ is nonnegative;
-in the second, it is not. If \cvx had access to this information, it could
-indeed conclude that the first composition is convex by applying a
+in the second, it is not.
+In the first case, the composition rule could in principle be 
+applied since \verb@square@ \emph{is} nondecreasing, as long as its 
+argument is nonnegative.
+If \cvx knew that the argument to the outer \verb@square@ function,
+\ie, \verb@square(A*x+b)+1@, were nonnegative, it
+could conclude that the first composition is convex by applying a
 modified form of the first nonlinear composition rule.
-Alas, for now, \cvx does not have such access; so it cannot make
-such conclusions.
-It must instead require
-that outer functions be \emph{globally} monotonic.
+For now, however, \cvx does not keep track of the sign of expressions,
+so it cannot make such a conclusion.
+Instead, \cvx requires that outer functions be 
+\emph{globally} monotonic.
 
-There are many ways to modify this example that it complies with the ruleset.
-The simplest is to take advantage of a recent addition to \cvx that allows
-affine expressions to be raised
-to a positive even integer power using the \verb@.^@ operator:
+There are several ways to modify this example so 
+that it complies with the ruleset.
+One way is to write
 \begin{code}
-	( A * x + b ).^4 <= 1
+	( A * x + b ).^4 + 2*( A * x + b ).^2 + ( A * x + b )
 \end{code}
-But let us look at some alternatives for further illustration.
-One is to recognize that a constraint such as
-\begin{code}
-	square( square( A * x + b ) ) <= 1
-\end{code}
-is equivalent to
-\begin{code}
-	square( A * x + b ) <= z
-	square( z ) <= 1
-\end{code}
-where \verb@z@ is a new variable of the same size as \verb@A*x+b@.
-The equivalence of this decomposition
-is a direct consequence of the monotonicity of 
-\verb@square@ when \verb@z@
-is nonnegative. In fact, \cvx performs this decomposition itself for
-those nonlinear compositions that it accepts; \ie, those that
-satisfy the DCP ruleset.
+which \cvx recognizes as convex, since
+\cvx allows positive even integer powers using the \verb@.^@ operator.
+(Note that the same technique, applied to the second example, will fail,
+since the second term is \verb@-2*(A*x+b).^2@, which is concave.)
+%But let us look at an alternative for further illustration.
+%One is to recognize that a constraint such as
+%\begin{code}
+	%square( square( A * x + b ) ) <= 1
+%\end{code}
+%is equivalent to
+%\begin{code}
+	%square( A * x + b ) <= z
+	%square( z ) <= 1
+%\end{code}
+%where \verb@z@ is a new variable of the same size as \verb@A*x+b@.
+%The equivalence of this decomposition
+%is a direct consequence of the monotonicity of 
+%\verb@square@ when \verb@z@
+%is nonnegative. In fact, \cvx performs this decomposition itself for
+%those nonlinear compositions that it accepts; \ie, those that
+%satisfy the DCP ruleset.
 
 Another approach is to use an alternate outer function 
 \verb@square_pos@,
@@ -1710,13 +1743,15 @@ the following function $f$:
 	f(x) \triangleq (\max\{x,0\})^2 = \Cases{ x^2 & x \geq 0 \\ 0 & x \leq 0 }
 \end{equation*}
 Obviously, \verb@square@ and \verb@square_pos@ coincide when their
-inputs are nonnegative. But \verb@square_pos@ is globally nondecreasing, so it
-can be used as the outer function in a nonlinear composition. Thus, the expression
+arguments are nonnegative. 
+But \verb@square_pos@ is \emph{globally} nondecreasing, so it
+can be used as the outer function in a nonlinear composition. 
+Thus, the expression
 \begin{code}
-	square_pos( square( A * x + b ) )
+	square_pos( square( A * x + b ) + 1 )
 \end{code}
 is mathematically equivalent to the rejected version, but satisfies the DCP
-ruleset and is therefore acceptable to \cvx.
+ruleset and is therefore accepted by \cvx.
 This is the reason several functions in the \cvx atom library come in two
 forms: the ``natural'' form, and one that is modified in such a way 
 that it is monotonic, and can therefore 
@@ -1725,16 +1760,17 @@ include \verb@sum_square_pos@ and \verb@quad_pos_over_lin@. If you are
 implementing a new function yourself, you might wish to consider if
 a monotonic extension of that function would be a useful addition as well.
 
-Yet another approach is to use one of the above techniques within
-a \emph{new} function, say \verb@power4@, that enables the original
-expression to be rewritten
+By the way, if you're going to encounter the same function with several
+different arguments, you might want to define a new function, say,
+\verb@square_of_square_plus_one@,
+using any of the above techniques
+(see \S\ref{s-new-fcts} for how to do this.)
+This allows us to write the original expression as
 \begin{code}
-	power4( A * x + b )
+	square_of_square_plus_one( A * x + b )
 \end{code}
-and new expressions can now take advantage of the effort.
-In \S\ref{s-new-fcts}, we show how to accomplish this. (Of course,
-in this particular case, it is no longer necessary, since \cvx
-supports positive even powers natively.)
+This new function \verb@square_of_square_plus_one@ can now be used 
+in any other expression, as long as its argument is affine.
 
 \subsection{Scalar quadratic forms}
 \label{sec:quadforms}
@@ -1744,7 +1780,8 @@ supports positive even powers natively.)
 
 In its original form described in \cite{Gra:04,GBY},
 the DCP ruleset forbids even the use of simple
-quadratic expressions such as \verb@x * x@ (assuming \verb@x@ is a variable).
+quadratic expressions such as \verb@x * x@ 
+(assuming \verb@x@ is a scalar variable).
 For practical reasons, we have chosen to make an exception to the ruleset to 
 allow for the recognition of certain specific quadratic forms that map
 directly to certain convex quadratic functions (or their concave negatives)
@@ -1972,7 +2009,7 @@ and powers. In addition, \cvx supports the construction of \emph{generalized
 geometric programs} (GGPs), by permitting the use of \emph{generalized
 posynomials} wherever posynomials are permitted in standard GP \cite{BKVH:05}.
 
-The solver used in this version of \cvx, SeDuMi, does
+The solvers used in this version of \cvx, SeDuMi or SDPT3, do
 not support geometric programming natively. Therefore, we have developed an
 approximation method which allows \cvx to use SeDuMi to solve GPs and related
 problems. The method converts GPs to SDPs, and the approximation error can be bounded in advance.
@@ -2110,7 +2147,7 @@ use \verb@abs@, for example,
 because \cvx knows that it is a convex function.
 
 Let us emphasize that when defining a function this way, the
-the expressions you use \emph{must} conform to the DCP ruleset, just as
+expressions you use \emph{must} conform to the DCP ruleset, just as
 they would if they had been inserted directly into a \cvx model. For
 example, if we replace \verb@max@ with \verb@min@ above; \eg,
 \begin{code}
@@ -2120,13 +2157,13 @@ example, if we replace \verb@max@ with \verb@min@ above; \eg,
 then the modified function fails to meet the DCP ruleset. The
 function will work \emph{outside} of a \cvx specification,
 happily computing
-the $\min \{|x|-1,0\}$ for a \emph{numerical}
+the value $\min \{|x|-1,0\}$ for a \emph{numerical}
 argument $x$. But inside a \cvx specification, invoked 
 with a nonconstant argument, it will not work, because
 it doesn't follow the DCP composition rules.
 
 A more advanced method for defining new functions in \cvx
-is also possible, and relies on the following basic result of conex
+is also possible, and relies on the following basic result of convex
 analysis.
 Suppose that $S\subset\R^n\times\R^m$ is a convex set and 
 $g:(\R^n\times\R^m)\rightarrow(\R\cup+\infty)$ is a convex function; then
@@ -2151,7 +2188,7 @@ A key feature of \cvx is the ability to define a convex
 function in this very manner: that is, in terms of a 
 parameterized family of disciplined convex programs. 
 We call the underlying convex program in such cases
-an \emph{incomplete specification}---so names because
+an \emph{incomplete specification}---so named because
 the parameters (that is, the function inputs)
 are unknown when the specification is
 constructed. The concept of incomplete 
@@ -2169,7 +2206,8 @@ Consider the unit-halfwidth Huber penalty function $h(x)$:
 \end{equation}
 The Huber penalty function cannot be used in an optimization algorithm
 utilizing Newton's method,
-because its Hessian is zero for $|x|\geq 1$. However,
+because its Hessian is discontiuous at $x = \pm 1$, and in
+any case zero for $|x|\geq 1$. However,
 it can be expressed in terms of the following family of convex QPs,
 parameterized by $x$:
 \begin{equation}
@@ -2179,8 +2217,8 @@ parameterized by $x$:
 		                  & w \leq 1
 	\end{array}
 \end{equation}
-Specifically, the optimal value of the this QP is equal to the Huber
-penalty function.
+Specifically, the optimal value of this simple QP is equal to the Huber
+penalty function of $x$.
 We can implement the Huber penalty function in \cvx as follows:
 \begin{code}
 	function cvx_optval = huber( x )
@@ -2575,9 +2613,9 @@ To see which solver is currently selected, simply type
 \begin{code2}
 	cvx_solver
 \end{code2}
-We have found that SDPT3 is strongly preferred for problems that 
-require the use of second-order cones, which include problems involving
-absolute values, quadratics, power functions, and norms. SDPT3 is
+We have found that SDPT3 is much more reliable for problems that 
+use second-order cones, which include problems involving
+absolute values, quadratics, power functions, and norms.  SDPT3 is
 currently in very active development; so if you
 encounter a problem that SDPT3 cannot solve but SeDuMi can, 
 please send us a bug report and we will forward the results to
@@ -2788,9 +2826,12 @@ as a formal variable, is numerically equivalent:
 \end{code}
 This is the approach we would recommend that you adopt instead. Declaring intermediate
 calculations as variables provides an extra measure of clarity in your models, in our
-opinion. You need not worry that these ``extra'' variables will make your models slower. 
+opinion. 
+You need not worry that these ``extra'' variables will slow down
+the solution of your models. 
 In fact, in many cases, this
-practice may \emph{improve} performance by exposing more of your problem's structure.
+practice may \emph{improve} performance by exposing 
+more of your problem's structure to the solver.
 Even when this is not the case, \cvx's presolve routine insures that it will perform
 no \emph{worse} than the first form.
 
