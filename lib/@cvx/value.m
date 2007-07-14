@@ -11,6 +11,7 @@ elseif nx > nb,
     data( nb + 1 : end, : ) = [];
 end
 v = cvx_reshape( data.' * x.basis_, x.size_ );
+if any( x.size_ == 1 ), v = full( v ); end
 
 % Copyright 2007 Michael C. Grant and Stephen P. Boyd.
 % See the file COPYING.txt for full copyright information.

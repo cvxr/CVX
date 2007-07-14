@@ -1,8 +1,9 @@
 function v = cvx_vexity( x )
 
 global cvx___
-if isempty( x ),
-    v = cvx_zeros( x.size_ );
+s = x.size_;
+if any( s == 0 ),
+    v = cvx_zeros( s );
     return
 end
 p  = cvx___.vexity;
@@ -11,18 +12,18 @@ n  = length( p );
 nb = size( b, 1 );
 if nb < n,
     p = p( 1 : nb, : );
-    b = b( p ~= 0, : );
 elseif n < nb,
-    p( n, : ) = 0;
-    b = b( p ~= 0, : );
-else
-    b = b( p ~= 0, : );
+    p( n+1:nb, : ) = 0;
 end
+b = b( p ~= 0, : );
 if isempty( b ),
     v = cvx_zeros( x.size_ );
     return
 end
-p = nonzeros( p ).';
+p = nonzeros(p).';
+if cvx___.nan_used,
+    b = sparse( b );
+end
 v = p * b;
 v( abs( v ) ~= abs( p ) * abs( b ) ) = NaN;
 v = sign( v );
