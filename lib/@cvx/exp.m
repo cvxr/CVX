@@ -76,6 +76,7 @@ for k = 1 : nv,
                 cvx___.vexity( n2 ) = 1;
                 n2 = n2( cvx___.vexity( n1 ) < 0 );
                 cvx___.vexity( n2 ) = NaN;
+                cvx___.nan_used = true;
                 cvx___.canslack( n2 ) = false;
                 exps = cvx___.exponential( rx, 1 );
             end
