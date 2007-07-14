@@ -8,7 +8,7 @@ function tf = cvx_use_sparse( sz, nz, isr )
 
 if nargin == 1,
     ss = size( sz );
-    if any( ss == 1 ) | length( ss ) > 2,
+    if length( ss ) > 2,
         tf = false;
         return
     end
@@ -19,7 +19,7 @@ if nargin == 1,
         nz = nnz( sz );
     end
     sz = ss;
-elseif any( sz == 1 ) | length( sz ) > 2,
+elseif length( sz ) > 2,
     tf = false;
     return
 elseif nargin < 3,
