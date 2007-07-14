@@ -47,7 +47,7 @@ if needLarge,
 else
     solvers = { 'sdpt3', 'sedumi' };
 end
-rmpaths = { 'sets', 'keywords', 'commands', 'functions', 'lib', 'structures', 'matlab6' };
+rmpaths = { 'sets', 'keywords', 'builtins', 'commands', 'functions', 'lib', 'structures', 'matlab6' };
 needpaths = {};
 delepaths = {};
 if ver >= 7.0,
