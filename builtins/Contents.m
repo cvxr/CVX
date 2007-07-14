@@ -1,7 +1,8 @@
 % CVX: Built-in operators and functions supported in CVX models.
 %   
 %    The following operators and functions are included with MATLAB but
-%    have been extended to be used in CVX models as well. Typing
+%    have either been verified to work properly within CVX models or have
+%    been extended with additional code to do so. In many cases, typing
 %       help cvx/<func>
 %    where <func> is one of the names listed below will provide specific
 %    help on the proper use of that item in CVX models---including any
@@ -14,8 +15,9 @@
 % Relational operators:
 %    eq (==), ge (>=), gt (>), le (<=), lt(<), ne (~=).
 % Linear/affine functions:
-%    blkdiag, cat, conj, ctranspose, cumsum, diag, find, hankel, horzcat,
-%    imag, kron, permute, polyval, real, reshape, sparse, sum, toeplitz,
+%    blkdiag, cat, conj, ctranspose, cumsum, diag, dot, find, flipdim,
+%    fliplr, flipud, hankel, horzcat, imag, ipermute, kron, permute, 
+%    polyval, real, repmat, reshape, rot90, sparse, sum, toeplitz,
 %    tril, triu, vertcat
 % Nonlinear functions:
 %    abs, max, min, norm, prod, sqrt
