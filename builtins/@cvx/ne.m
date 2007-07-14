@@ -1,6 +1,11 @@
 function a = ne( x, y )
-error( nargchk( 2, 2, nargin ) );
 
+%Disciplined convex/geometric programming information for NE (~=):
+%   Not-equal constraints violate both the DCP and DGP rulesets. Thus 
+%   not-equal expressions may only appear in CVX models when both sides
+%   are constant.
+
+error( nargchk( 2, 2, nargin ) );
 try
     newcnstr( evalin( 'caller', 'cvx_problem', '[]' ), x, y, '~=' );
 catch
