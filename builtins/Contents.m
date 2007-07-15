@@ -11,7 +11,8 @@
 % Computational operators:
 %    plus/uplus (+), minus/uminus (-), times (.*), mtimes (*), 
 %    ldivide (.\), mldivide (\), rdivide (./), mrdivide (/), 
-%    power (.^), mpower (^), subsref/subsasgn/end (())
+%    power (.^), mpower (^), subsref/subsasgn/end (()),
+%    transpose (.'), ctranspose (')
 % Relational operators:
 %    eq (==), ge (>=), gt (>), le (<=), lt(<), ne (~=).
 % Linear/affine functions:

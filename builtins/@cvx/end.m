@@ -1,4 +1,9 @@
 function y = end( x, k, n )
+
+%Disciplined convex/geometric programming information for END:
+%   The use of END as an array subscript (e.g., X(:,end)) is identical
+%   with CVX variables as it is for numeric vectors and arrays.
+
 sz = size( x );
 nz = length( sz );
 if k > nz,
