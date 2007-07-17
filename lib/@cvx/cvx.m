@@ -1,5 +1,20 @@
 function v = cvx( s, b, d, clean )
 
+%CVX   The CVX disciplined convex programming system.
+%   CVX is a modeling framework for building, constructing, and solving
+%   disciplined convex programs. CVX has online help for many functions and
+%   operations, divided into several subsection:
+%      cvx/commands   - Top-level commands to control CVX
+%      cvx/keywords   - Keywords for declaring variables and objectives
+%      cvx/builtins   - Built-in operators and functions supported in CVX models
+%      cvx/functions  - Additional functions added by CVX
+%      cvx/sets       - Definitions of common convex sets
+%      cvx/structures - Matrix structure definitions
+%   CVX also provides an extensive user guide in PDF format, which is found
+%   in its top directory. This directory can be found by typing
+%      cvx_where
+%   at the command prompt.
+
 switch nargin,
     case 2,
         d = [];
