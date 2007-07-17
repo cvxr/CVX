@@ -1,4 +1,26 @@
 function x = subsasgn( x, S, y )
+
+%Disciplined convex/geometric programming information for SUBSASGN ():
+%   Subscripting can be used to change values of elements or slices of CVX
+%   variables in the same manner as with numeric arrays. All conventions
+%   are preserved, including the colon ':' and 'end' notation, as well as
+%   the ability to "expand" a CVX variable by assigning a value to a
+%   location outside of its current dimensions (e.g., X(end+1)=0).
+%
+%   One notable exception is this: if the right-hand side is a CVX
+%   expression, then the left-hand side must be as well. So, for example,
+%   the following will fail:
+%      variable x;
+%      y = ones(3,1);
+%      y(2) = x;
+%   This is because MATLAB does not know how to automatically promote 'y'
+%   to a CVX variable so that it can accept 'x' as an element. If you want
+%   to accomplish something like this, you must manually convert y into a
+%   CVX variable first, as follows:
+%      variable x;
+%      y = cvx(ones(3,1));
+%      y(2) = x;
+
 error( nargchk( 3, 3, nargin ) );
 
 %

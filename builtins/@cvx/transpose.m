@@ -1,5 +1,9 @@
 function y = transpose( x )
 
+%Disciplined convex/geometric programming information for TRANSPOSE (.'):
+%   The transpose operation may be applied to CVX variables without
+%   restriction.
+
 %
 % Determine permutation
 %

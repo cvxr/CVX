@@ -1,5 +1,25 @@
 function z = power( x, y )
 
+%Disciplined convex programming information for POWER (.^):
+%   The CVX version of the power function Z=X.^Y is different than the
+%   numeric version in that only certain real branches are considered. 
+%   Currently, the only nondegenerate cases supported are these:
+%      --- Y is constant and 0 < Y < 1: the function f(X)=X.^Y is concave
+%          and nondecreasing in X. Therefore, X must be concave, and X is
+%          is effectively constrained to be nonnegative.
+%      --- Y is constant and a positive even integer (2,4,6,...): f(X)=X.^Y
+%          is convex and nonmonotonic in X. Therefore, X must be affine.
+%   Future versions of CVX will add a third case once the underlying
+%   solvers can support exponential nonlinearities:
+%      --- X is a positive constant: g(Y)=X.^Y is convex and nondecreasing
+%          in Y. Therefore, Y must be concave.
+%          
+%Disciplined convex programming information for POWER (.^):
+%   In disciplined geometric programs, the power operation Z=X.^Y is valid
+%   only if Y is a real constant. There are no restrictions on X. Note that
+%   a negative exponent Y reverses curvature; that is, Z is log-convex if X
+%   is log-concave, and vice versa.
+
 %
 % Check sizes
 %

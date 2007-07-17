@@ -1,5 +1,9 @@
 function y = ctranspose( x )
 
+%Disciplined convex/geometric programming information for CTRANSPOSE (.):
+%   The complex conjugate transpose operation may be applied to CVX
+%   variables without restriction.
+
 %
 % Determine permutation
 %

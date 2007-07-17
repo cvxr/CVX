@@ -9,17 +9,16 @@
 %    restrictions imposed by the DCP and DGP rulesets.
 %
 % Computational operators:
-%    plus/uplus (+), minus/uminus (-), times (.*), mtimes (*), 
-%    ldivide (.\), mldivide (\), rdivide (./), mrdivide (/), 
-%    power (.^), mpower (^), subsref/subsasgn/end (()),
+%    plus (+), uplus (unary +), minus (-), uminus (unary -), times (.*),
+%    mtimes (*), ldivide (.\), mldivide (\), rdivide (./), mrdivide (/), 
+%    power (.^), mpower (^), subsref/subsasgn/end (subscripting),
 %    transpose (.'), ctranspose (')
 % Relational operators:
 %    eq (==), ge (>=), gt (>), le (<=), lt(<), ne (~=).
 % Linear/affine functions:
-%    blkdiag, cat, conj, ctranspose, cumsum, diag, dot, find, flipdim,
-%    fliplr, flipud, hankel, horzcat, imag, ipermute, kron, permute, 
-%    polyval, real, repmat, reshape, rot90, sparse, sum, toeplitz,
-%    tril, triu, vertcat
+%    blkdiag, cat, conj, cumsum, diag, dot, find, flipdim, fliplr, flipud,
+%    hankel, horzcat, imag, ipermute, kron, permute, polyval, real, repmat, 
+%    reshape, rot90, sparse, sum, toeplitz, tril, triu, vertcat
 % Nonlinear functions:
 %    abs, max, min, norm, prod, sqrt
 % Query functions:
