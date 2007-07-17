@@ -1,5 +1,30 @@
-
 function z = times( x, y, oper )
+
+%Disciplined convex programming information for TIMES:
+%   In general, disciplined convex programs must obey the "no-product rule"
+%   which states that two non-constant expressions cannot be multiplied 
+%   together. Under this rule, the following combinations are allowed:
+%      {constant} .* {non-constant}  {non-constant} .* {constant}
+%   Furthermore, if the non-constant expression is nonlinear, then the
+%   constant term must be real.
+%
+%   A lone exception to the no-product rule is made for quadratic forms:
+%   two affine expressions may be multiplied together if the result is
+%   convex or concave. For example, the construction
+%      variable x(n)
+%      x.*x  <= 1;
+%   would be permitted because each element of x.*x is obviously convex.
+%
+%Disciplined geometric programming information for TIMES:
+%   Both terms in a multiplication must have the same log-curvature, so the
+%   following products are permitted:
+%      {log-convex} .* {log-convex}  {log-concave} .* {log-concave}
+%      {log-affine} .* {log-affine}
+%   Note that log-affine expressions are both log-convex and log-concave.
+%
+%For vectors, matrices, and arrays, these rules are verified indepdently
+%for each element.
+
 error( nargchk( 2, 3, nargin ) );
 if nargin < 3, oper = '.*'; end
 

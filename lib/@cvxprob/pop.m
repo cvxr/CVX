@@ -50,7 +50,7 @@ if ~isequal( clearmode, 'none' ),
         if ~isempty( cvx___.cones ),
             tt = true( 1, length( cvx___.cones ) );
             for k = 1 : length( cvx___.cones ),
-                cvx___.cones( k ).indices( :, any( cvx___.cones( k ).indices, 1 ) ) = [];
+                cvx___.cones( k ).indices( :, any( cvx___.cones( k ).indices >= nf, 1 ) ) = [];
                 if isempty( cvx___.cones( k ).indices ), tt( k ) = false; end
             end
             cvx___.cones = cvx___.cones( 1, tt );
@@ -59,21 +59,21 @@ if ~isequal( clearmode, 'none' ),
     if nf <= 2 | ne <= 1,
         cvx___.equalities = cvx( [ 0, 1 ], [] );
         cvx___.needslack = ( logical( zeros( 0, 1 ) ) );
-    elseif size( cvx___.equalities, 2 ) >= ne,
+    elseif length( cvx___.equalities ) >= ne,
         cvx___.equalities( ne : end ) = [];
         cvx___.needslack( ne : end ) = [];
     end
     if nf <= 2 | nl <= 1,
         cvx___.linforms = cvx( [ 0, 1 ], [] );
         cvx___.linrepls = cvx( [ 0, 1 ], [] );
-    elseif size( cvx___.linforms, 2 ) >= nl,
+    elseif length( cvx___.linforms ) >= nl,
         cvx___.linforms( nl : end ) = [];
         cvx___.linrepls( nl : end ) = [];
     end
     if nf <= 2 | nu <= 1,
         cvx___.uniforms = cvx( [ 0, 1 ], [] );
         cvx___.unirepls = cvx( [ 0, 1 ], [] );
-    elseif size( cvx___.uniforms, 2 ) >= nu,
+    elseif length( cvx___.uniforms ) >= nu,
         cvx___.uniforms( nu : end ) = [];
         cvx___.unirepls( nu : end ) = [];
     end
