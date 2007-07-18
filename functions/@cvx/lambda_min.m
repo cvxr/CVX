@@ -7,7 +7,7 @@ if ndims( x ) > 2 | size( x, 1 ) ~= size( x, 2 ),
 
     error( 'Input must be a square matrix.' );
 
-elseif cvx_constant( x ),
+elseif cvx_isconstant( x ),
 
     cvx_optval = lambda_min( cvx_constant( x ) );
 
