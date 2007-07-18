@@ -14,7 +14,7 @@
     dX = cell(size(blk,1),1); dZ = cell(size(blk,1),1); dy = [];
     if (any(isnan(xx)) | any(isinf(xx)))
        solve_ok = 0;
-       fprintf('\n  linsysolve: solution contains NaN or inf.');
+       fprintf('\n  linsysolve: solution contains NaN or inf');
        return;
     end
 %%
@@ -36,7 +36,7 @@
           dX{p} = EinvRc{p} - tmp;
        elseif strcmp(pblk{1},'s')
           %%dZ{p} = Rd{p} -smat(pblk,At{p}*dy(par.permA(p,:)),par.isspAy(p));
-          dZ(p) = ops(Rd(p),'-',Atyfun(pblk,At(p,:),par.permA(p,:),par.isspAy(p),dy)); 
+          dZ(p) = ops(Rd(p),'-',Atyfun(pblk,At(p,:),par.permA(p,:),par.isspAy(p),dy));
           tmp = Prod3(pblk,X{p},dZ{p},par.Zinv{p},0); 
           tmp = 0.5*(tmp+tmp'); 
           dX{p} = EinvRc{p}-tmp;

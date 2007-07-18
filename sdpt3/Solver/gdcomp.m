@@ -1,22 +1,28 @@
 %%*********************************************************************
-%% gdcomp: Compute gd = 1/td in Equation (15) of FOT's paper.
+%% gdcomp: Compute gd = 1/td in Equation (15) of the paper:
 %%
-%% [gd,info,blk2,At2,C2,b2] = gdcomp(blk,At,C,b,OPTIONS);
+%% R.M. Freund, F. Ordonez, and K.C. Toh,    
+%% Behavioral measures and their correlation with IPM iteration counts 
+%% on semi-definite programming problems,  
+%% Mathematical Programming, 109 (2007), pp. 445--475.
 %%
-%% info.y,info.Z: a dual feasible pair when gd is finite.
-%%                That is, if
-%%                Aty = Atyfun(blk,At,[],[],info.y); 
-%%                Rd = ops(C,'-',ops(info.Z,'+',Aty)); 
-%%                then
-%%                ops(Rd,'norm') should be small. 
+%% [gd,info,yfeas,Zfeas,blk2,At2,C2,b2] = gdcomp(blk,At,C,b,OPTIONS);
+%%
+%% yfeas,Zfeas: a dual feasible pair when gd is finite.
+%%              That is, if
+%%              Aty = Atyfun(blk,At,[],[],yfeas); 
+%%              Rd = ops(C,'-',ops(Zfeas,'+',Aty)); 
+%%              then
+%%              ops(Rd,'norm') should be small. 
 %%
 %%*********************************************************************
 
-  function [gd,info,blk2,At2,C2,b2] = gdcomp(blk,At,C,b,OPTIONS);
+  function [gd,info,yfeas,Zfeas,blk2,At2,C2,b2] = gdcomp(blk,At,C,b,OPTIONS);
 
   if (nargin == 4)
      OPTIONS = sqlparameters; 
-     OPTIONS.vers = 1; 
+     OPTIONS.vers   = 1; 
+     OPTIONS.gaptol = 1e-10;
      OPTIONS.printlevel = 3; 
   end
   if ~isfield(OPTIONS,'printlevel'); OPTIONS.printlevel = 3; end
@@ -45,9 +51,9 @@
      beta = beta + norm(C{p},'fro'); 
      alp = alp + sqrt(n); 
   end
-  alp = 1./alp;   
-  beta = 1./beta; 
-  dd = 1./dd;
+  alp  = 1./max(1,alp);   
+  beta = 1./max(1,beta); 
+  dd   = 1./max(1,dd);
 %%
 %% New multipliers in dual problem: 
 %% [v; tt; theta].
@@ -100,23 +106,24 @@
 		     zeros(1,m),   0,   beta;
 		     zeros(1,m),  alp, -beta
                      zeros(1,m), -alp,  0];
+   At2{numblk+1} = sparse(At2{numblk+1}); 
    b2 = [zeros(m,1); alp; 0];
 %%
 %% Solve SDP
 %%
-   OPTIONS.gaptol = 1e-10;
    [obj,X,y,Z,info] = sqlp(blk2,At2,C2,b2,OPTIONS); 
-   tt = alp*y(m+1); theta = beta*y(m+2); 
-   info.y = D*y(1:m)/theta; 
-   info.Z = ops(ops(Z(1:numblk),'+',EE,tt),'/',theta); 
+   tt = alp*abs(y(m+1)); theta = beta*abs(y(m+2)); 
+   yfeas = D*y(1:m)/theta; 
+   Zfeas = ops(ops(Z(1:numblk),'+',EE,tt),'/',theta); 
+   %%
    if (obj(2) > 0) | (abs(obj(2)) < 1e-8)
       gd = 1/abs(obj(2));
    elseif (obj(1) > 0)
       gd = 1/obj(1);
    else
-      gd = 1/mean(abs(obj));
+      gd = 1/exp(mean(log(abs(obj))));
    end
-   err = max([info.gap/(1+mean(abs(obj))), info.pinfeas, info.dinfeas]);
+   err = max(info.dimacs([1,3,6])); 
    if (OPTIONS.printlevel)
       fprintf('\n ******** gd = %3.1e, err = %3.1e\n',gd,err); 
       if (err > 1e-6);

@@ -15,42 +15,61 @@
    function [xx,coeff,L,resnrm] = linsysolve(par,schur,UU,Afree,EE,rhs); 
    
     global solve_ok existspcholsymb exist_analytic_term
-    global nnzmat nnzmatold matfct_options matfct_options_old use_LU
-    global Lsymb msg perturb_opt dd
+    global nnzmat nnzmatold matfct_options matfct_options_old use_LU 
+    global Lsymb msg diagR diagRold 
 
     spdensity  = par.spdensity;
     printlevel = par.printlevel; 
     iter       = par.iter; 
-    blkdim     = par.blkdim; 
+    err        = max([par.relgap,par.pinfeas,par.dinfeas]);  
 
     m = length(schur); 
     if (iter==1); 
        use_LU = 0; matfct_options_old = ''; 
-       perturb_opt = 0; 
+       diagR = ones(m,1); 
     end
     if isempty(nnzmatold); nnzmatold = 0; end
+    diagRold = diagR; 
 %%
 %% schur = schur + rho*diagschur + lam*AAt
 %%
-    diagschur = max(1e-16,full(diag(schur))); 
-    minrho(1) = max(1e-15, 1e-6/3.0^iter); 
-    minlam(1) = max(1e-10, 1e-4/2.0^iter); 
-    minrho(2) = max(1e-04, 1/1.5^iter);
-    rho = min(minrho(1),minrho(2)*(1+norm(rhs))/(1+norm(diagschur.*par.y)));
-    lam = min(minlam(1),0.1*rho*norm(diagschur)/par.normAAt);
+    diagschur = abs(full(diag(schur))); 
+    if (par.ublksize) 
+       minrho(1) = 1e-15; 
+    else
+       minrho(1) = 1e-17;
+    end
+    minrho(1) = max(minrho(1), 1e-6/3.0^iter); 
+    minrho(2) = max(1e-04, 0.7^iter);
+    minlam = max(1e-10, 1e-4/2.0^iter); 
+    rho = min(minrho(1), minrho(2)*(1+norm(rhs))/(1+norm(diagschur.*par.y)));
+    lam = min(minlam, 0.1*rho*norm(diagschur)/par.normAAt);
     if (exist_analytic_term); rho = 0; end
-    mexschurfun(schur,rho*diagschur); 
-    mexschurfun(schur,lam*par.AAt); 
-    %%if (printlevel); fprintf(' %2.1e %2.1e ',rho,lam); end
-    ratio = max(diagschur)/min(diagschur); 
-    if (ratio > 1e14) & (blkdim(2) == 0) 
+    ratio = max(diagR)/min(diagR); 
+    if (par.depconstr) | (ratio > 1e10) | (iter < 10)
+       %% important: do not perturb beyond certain threshold 
+       %% since it will adversely affect prim_infeas of fp43
+       %%
+       mexschurfun(schur,min(rho*diagschur,1e-4./max(1,abs(par.dy))));
+       %%if (printlevel>2); fprintf(' %2.1e',rho); end
+    end
+    if (par.depconstr) | (par.ZpATynorm > 1e10) | (par.ublksize) 
+       %% Note: do not add this perturbation even if ratio is large.
+       %% It adversely affects hinf15.
+       %%       
+       lam = min(lam,1e-4/max(1,norm(par.AAt*par.dy))); 
+       mexschurfun(schur,lam*par.AAt); 
+       %%if (printlevel>2); fprintf(' *%2.1e ',lam); end
+    end
+    if (max(diagschur)/min(diagschur) > 1e14) & (par.blkdim(2) == 0) ...
+       & (iter > 10)
        tol = 1e-8; 
        idx = find(diagschur < tol); len = length(idx);
-       pertdiag = zeros(m,1);  
+       pertdiagschur = zeros(m,1);  
        if (len > 0 & len < 5) & (norm(rhs(idx)) < tol) 
-          pertdiag(idx) = 1*ones(length(idx),1); 
-          mexschurfun(schur,pertdiag); 
-          if (printlevel); fprintf('#'); end
+          pertdiagschur(idx) = 1*ones(length(idx),1); 
+          mexschurfun(schur,pertdiagschur); 
+          if (printlevel>2); fprintf('#'); end
        end
     end
 %% 
@@ -66,11 +85,8 @@
     else
        coeff.mat22 = spconvert(EE);
     end
-    dd = sqrt(max(1,full(diagschur))); 
-    mexschurfun(schur,1./dd,3); 
-    rhs(1:m) = rhs(1:m)./dd;
-    if size(Afree,2) | size(UU,2) 
-       coeff.mat12 = spdiags(1./dd,0,m,m)*[Afree, UU]; 
+    if (size(Afree,2) | size(UU,2))
+       coeff.mat12 = [Afree, UU]; 
     else
        coeff.mat12 = []; 
     end
@@ -85,7 +101,7 @@
 %%
 %% Cholesky factorization
 %%
-    L = []; resnrm = []; xx = inf*ones(m,1);
+    L = []; resnrm = norm(rhs); xx = inf*ones(m,1);
     if (~use_LU)
        solve_ok = 1;  solvesys = 1;    
        nnzmat = mexnnz(coeff.mat11);
@@ -93,13 +109,13 @@
        if (nnzmat > spdensity*m^2) | (m < 500) 
           matfct_options = 'chol';
        else
-          if (par.matlabversion >= 7.3 & par.computer == 64)
-             matfct_options = 'spcholmatlab'; 
-	  else
+          if (par.matlabversion >= 7.3) %% & (par.computer == 64)
              matfct_options = 'spchol'; 
+	  else
+             matfct_options = 'myspchol'; 
           end
        end
-       if (printlevel>2); fprintf(' %s',matfct_options); end 
+       if (printlevel>2); fprintf(' %s ',matfct_options); end 
        if strcmp(matfct_options,'chol')
           if issparse(schur); schur = full(schur); end;
           if (iter<=5); %% to fix strange anonmaly in Matlab
@@ -108,22 +124,26 @@
           L.matfct_options = 'chol';
           L.perm = [1:m];
           [L.R,indef] = chol(schur); 
+          diagR = diag(L.R).^2; 
           if (indef)
- 	     solve_ok = -2; solvesys = 0;
-             msg = 'linsysolve: Schur complement matrix not pos. def.'; 
-             if (printlevel); fprintf('\n  %s',msg); end
-          end
-       elseif strcmp(matfct_options,'spcholmatlab')
-          if ~issparse(schur); schur = sparse(schur); end;
-          L.matfct_options = 'spcholmatlab'; 
-          [L.R,indef,L.perm] = chol(schur,'vector'); 
-          L.Rt = L.R';
-          if (indef)
+             diagR = diagRold; 
  	     solve_ok = -2; solvesys = 0;
              msg = 'linsysolve: Schur complement matrix not pos. def.'; 
              if (printlevel); fprintf('\n  %s',msg); end
           end
        elseif strcmp(matfct_options,'spchol')
+          if ~issparse(schur); schur = sparse(schur); end;
+          L.matfct_options = 'spchol'; 
+          [L.R,indef,L.perm] = chol(schur,'vector'); 
+          L.Rt = L.R';
+          diagR = full(diag(L.R)).^2; 
+          if (indef)
+             diagR = diagRold; 
+ 	     solve_ok = -2; solvesys = 0;
+             msg = 'linsysolve: Schur complement matrix not pos. def.'; 
+             if (printlevel); fprintf('\n  %s',msg); end
+          end
+       elseif strcmp(matfct_options,'myspchol')
           if ~issparse(schur), schur = sparse(schur); end;
           if (nnzmatdiff | ~strcmp(matfct_options,matfct_options_old))
              [Lsymb,flag] = symbcholfun(schur,par.cachesize);
@@ -139,7 +159,7 @@
           end 
           if (existspcholsymb)
              L = sparcholfun(Lsymb,schur);
-             L.matfct_options  = 'spchol';  
+             L.matfct_options  = 'myspchol';  
              L.d(find(L.skip)) = 1e20;  
              if any(L.skip) & (ncolU)
                 solve_ok = -3; solvesys = 0; 
@@ -164,19 +184,20 @@
              if ~isempty(idx) | (condest > 1e18); 
                 solvesys = 0; 
                 use_LU = 1; 
-                msg = 'SWM to ill-conditioned, switch to LU factor'; 
+                msg = 'SMW too ill-conditioned, switch to LU factor'; 
                 if (printlevel); fprintf('\n  %s.',msg); end
              end         
           end
-          [xx,resnrm,solve_ok] = symqmr(coeff,rhs,L);
-          if (solve_ok<=0) & (printlevel)
-             fprintf('\n  warning: symqmr fails: %3.1f.',solve_ok); 
+          [xx,resnrm,solve_ok] = symqmr(coeff,rhs,L,[],[],printlevel);
+          if (solve_ok<=0.3) & (printlevel)
+             fprintf('\n  warning: symqmr failed: %3.1f',solve_ok); 
           end
        end
-       if (solve_ok < 0) 
-          if (m < 6000 & strcmp(matfct_options,'chol')) | ...
-             (m < 1e5 & strcmp(matfct_options,'spchol')) | ...
-             (m < 1e5 & strcmp(matfct_options,'spcholmatlab'))
+       if (solve_ok <= 0.3) 
+          tol = 1e-10; 
+          if (m < 7e3 & strcmp(matfct_options,'chol') & (err > tol)) ...
+             | (m < 2e5 & strcmp(matfct_options,'spchol') & (err > tol)) ...
+             | (m < 2e5 & strcmp(matfct_options,'myspchol') & (err > tol)) 
              use_LU = 1;
              if (printlevel); fprintf('\n  switch to LU factor.'); end
           end
@@ -199,13 +220,13 @@
        else
           matfct_options = 'splu';
        end
-       if (printlevel > 2); fprintf(' %s ',matfct_options); end 
+       if (printlevel>2); fprintf(' %s ',matfct_options); end 
        if strcmp(matfct_options,'lu') 
           if issparse(raugmat); raugmat = full(raugmat); end
           [L.l,L.u,L.p] = lu(raugmat); 
           L.matfct_options = 'lu'; 
           L.p = sparse(L.p); 
-          idx = find(abs(diag(L.u)) < 1e-20); 
+          idx = find(abs(diag(L.u)) < 1e-30); 
           if ~isempty(idx)
              msg = 'linsysolve: matrix is singular'; 
              if (printlevel); fprintf('\n  %s',msg); end
@@ -229,8 +250,7 @@
           end
        end
     end
-    if (printlevel>=3); fprintf(' %2.0d',length(resnrm)-1); end
+    if (printlevel>2); fprintf('%2.0d ',length(resnrm)-1); end
 %%
     nnzmatold = nnzmat; matfct_options_old = matfct_options; 
-    xx(1:m)=xx(1:m)./dd; 
 %%***************************************************************

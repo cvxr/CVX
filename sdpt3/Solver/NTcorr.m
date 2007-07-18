@@ -10,18 +10,18 @@
   function [dX,dy,dZ] = NTcorr(blk,At,par,rp,Rd,sigmu,hRd,...
             dX,dZ,coeff,L,X,Z); 
 
-    global matfct_options solve_ok dd
+    global matfct_options solve_ok 
 
     printlevel = par.printlevel;
 %%
     [rhs,EinvRc] = NTrhsfun(blk,At,par,X,Z,rp,Rd,sigmu,hRd,dX,dZ);
     m = length(rp); ncolU = size(coeff.mat12,2); 
     rhs = [rhs; zeros(m+ncolU-length(rhs),1)]; 
-    rhs(1:m) = rhs(1:m)./dd;
 %%
     solve_ok = 1; resnrm = norm(rhs);
-    if strcmp(matfct_options,'chol') | strcmp(matfct_options,'spchol')
-       [xx,resnrm,solve_ok] = symqmr(coeff,rhs,L);
+    if strcmp(matfct_options,'chol') | strcmp(matfct_options,'spchol') ...
+       | strcmp(matfct_options,'myspchol')
+       [xx,resnrm,solve_ok] = symqmr(coeff,rhs,L,[],[],printlevel);
        if (solve_ok<=0) & (printlevel)
           fprintf('\n  warning: symqmr fails: %3.1f.',solve_ok); 
        end
@@ -31,9 +31,8 @@
           fprintf('\n  warning: bicgstab fails: %3.1f.',solve_ok); 
        end
     end
-    if (printlevel>=3); fprintf(' %2.0d',length(resnrm)-1); end
+    if (printlevel>=3); fprintf('%2.0d ',length(resnrm)-1); end
 %%   
-    xx(1:m) = xx(1:m)./dd;
     [dX,dy,dZ] = NTdirfun(blk,At,par,Rd,EinvRc,xx,m); 
 %%************************************************************************
 

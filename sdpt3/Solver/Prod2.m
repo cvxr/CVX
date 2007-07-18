@@ -6,20 +6,8 @@
 %% INPUT:  blk = a cell array describing the block structure of A and B
 %%         A,B = square matrices or column vectors.
 %%
-%%   options = 0     if no special structure 
-%%             1     if C is symmetric
-%%             21    if        B is upper triangular
-%%             211   if        B is upper triangular, C is symmetric
-%%             22    if        B is lower triangular
-%%             221   if        B is lower triangular, C is symmetric
-%%             31    if A is upper triangular
-%%             311   if A is upper triangular,        C is symmetric
-%%             32    if A is lower triangular
-%%             321   if A is lower triangular,        C is symmetric
-%%             41    if A is upper triangular, B is upper triangular
-%%             42    if A is upper triangular, B is lower triangualr
-%%             421   if A is upper triangular, B is lower triangualr
-%%                                                    C is symmetric      
+%%   options = 0  if no special structure 
+%%             1  if C is symmetric
 %%
 %% SDPT3: version 3.1
 %% Copyright (c) 1997 by
@@ -46,14 +34,14 @@
             if ~isspB; B=sparse(B); isspB=1; end
          end
          use_matlab = (options==0 & ~isspA & ~isspB) | (isspA & isspB); 
-         if use_matlab
+         if (use_matlab)
             C = A*B;  
             if (options==1); C = 0.5*(C+C'); end; 
          else 
             C = mexProd2(blk,A,B,options);
          end
          checksparse = (numblk==1) & (isspA | isspB); 
-         if checksparse
+         if (checksparse)
             n2 = sum(blk{2}.*blk{2}); 
             if (mexnnz(C) <= spdensity*n2);  
                if ~issparse(C); C = sparse(C); end; 

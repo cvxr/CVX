@@ -26,7 +26,7 @@
         numblk = length(pblk{2});  
         n = sum(pblk{2});  
         if strcmp(pblk{1},'l')
-           dd{p} = X{p}./Z{p};     
+           dd{p} = X{p}./Z{p}; %% do not add perturbation, it badly affects cre-a   
         elseif strcmp(pblk{1},'q');  
            gamx{p} = sqrt(qops(pblk,X{p},X{p},2)); 
            gamz{p} = sqrt(qops(pblk,Z{p},Z{p},2)); 

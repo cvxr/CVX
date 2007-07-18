@@ -134,7 +134,9 @@
          end
       end
       if any(convertyes)
-         if (par.printlevel); fprintf('\n sqlp: converting At into required format'); end
+         if (par.printlevel); 
+            fprintf('\n sqlp: converting At into required format'); 
+         end
          At = svec(blk,At,ones(size(blk,1),1));
       end
    end
@@ -146,21 +148,35 @@
    tstart = cputime; 
    [blk,At,C,b,blkdim,numblk,parbarrier] = validate(blk,At,C,b,par,parbarrier);
    [blk,At,C,b,iscmp] = convertcmpsdp(blk,At,C,b);
-   if (iscmp) & (par.printlevel>=2)
+   if (iscmp) & (par.printlevel>=2); 
       fprintf('\n SQLP has complex data'); 
    end 
    if (nargin <= 5) | (isempty(X0) | isempty(y0) | isempty(Z0)); 
-      [X0,y0,Z0] = infeaspt(blk,At,C,b); 
       par.startpoint = 1; 
+      [X0,y0,Z0] = infeaspt(blk,At,C,b); 
    else
       par.startpoint = 2; 
+      if ~iscell(X0);  X0 = {X0}; end;
+      if ~iscell(Z0);  Z0 = {Z0}; end;
+      y0 = real(y0); 
+      if (length(y0) ~= length(b));
+         error('sqlp: length of b and y0 not compatible'); 
+      end   
+      [X0,Z0] = validate_startpoint(blk,X0,Z0,par.spdensity,iscmp); 
    end
-   if ~iscell(X0);  X0 = {X0}; end;
-   if ~iscell(Z0);  Z0 = {Z0}; end;
-   if (length(y0) ~= length(b))
-      error('sqlp: length of b and y0 not compatible'); 
+   if (par.printlevel>=2)
+      fprintf('\n num. of constraints = %2.0d',length(b));      
+      if blkdim(1); 
+         fprintf('\n dim. of sdp    var  = %2.0d,',blkdim(1)); 
+         fprintf('   num. of sdp  blk  = %2.0d',numblk(1)); 
+      end
+      if blkdim(2); 
+         fprintf('\n dim. of socp   var  = %2.0d,',blkdim(2)); 
+         fprintf('   num. of socp blk  = %2.0d',numblk(2)); 
+      end
+      if blkdim(3); fprintf('\n dim. of linear var  = %2.0d',blkdim(3)); end
+      if blkdim(4); fprintf('\n dim. of free   var  = %2.0d',blkdim(4)); end
    end
-   [X0,Z0] = validate_startpoint(blk,X0,Z0,par.spdensity); 
 %%
 %%-----------------------------------------
 %% detect unrestricted blocks in linear blocks
@@ -168,7 +184,7 @@
 %%
    [blk2,At2,C2,ublkinfo,parbarrier2,X02,Z02] = ...
     detect_ublk(blk,At,C,parbarrier,X0,Z0,par.printlevel);
-   ublksize = 0; 
+   ublksize = blkdim(4); 
    for p = 1:size(ublkinfo,1)
       ublksize = ublksize + length(ublkinfo{p}); 
    end
@@ -192,19 +208,6 @@
 %%
    if (par.vers == 0); 
       if blkdim(1); par.vers = 1; else; par.vers = 2; end
-   end
-   if (par.printlevel>=2)
-      fprintf('\n num. of constraints = %2.0d',length(b));      
-      if blkdim(1); 
-         fprintf('\n dim. of sdp    var  = %2.0d,',blkdim(1)); 
-         fprintf('   num. of sdp  blk  = %2.0d',numblk(1)); 
-      end
-      if blkdim(2); 
-         fprintf('\n dim. of socp   var  = %2.0d,',blkdim(2)); 
-         fprintf('   num. of socp blk  = %2.0d',numblk(2)); 
-      end
-      if blkdim(3); fprintf('\n dim. of linear var  = %2.0d',blkdim(3)); end
-      if blkdim(4); fprintf('\n dim. of free   var  = %2.0d',blkdim(4)); end
    end
    par.blkdim = blkdim;
    par.ublksize = ublksize; 

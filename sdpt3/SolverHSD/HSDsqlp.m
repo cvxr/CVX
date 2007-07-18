@@ -182,8 +182,8 @@
          blk{p,2} = n;
          At{p} = [At{p}; -At{p}];       
          C{p} = [C{p}; -C{p}];
-         X{p} = ones(n,1); %% do not add a factor of n
-         Z{p} = ones(n,1); %%
+         X{p} = ones(n,1).*(1+rand(n,1)); %% do not add a factor of n
+         Z{p} = ones(n,1).*(1+rand(n,1)); %%
       end
    end
    rand('state',randstate); 
@@ -219,7 +219,7 @@
    kap = kap0; tau = tau0; theta = theta0; 
 %%
    normX0 = ops(X0,'norm')/tau; normZ0 = ops(Z0,'norm')/tau; 
-   bbar = (tau*b-AXfun(blk,At,[],X))/theta;
+   bbar  = (tau*b-AXfun(blk,At,[],X))/theta;
    ZpATy = ops(Z,'+',Atyfun(blk,At,[],[],y)); 
    Cbar = ops(ops(ops(tau,'*',C),'-',ZpATy),'/',theta);
    gbar = (blktrace(blk,C,X)-b'*y+kap)/theta; 
@@ -450,7 +450,7 @@
             end
          else 
             expon_used = max(1,min(expon,3*step_pred^2)); 
-         end 
+         end
          sigma = min( 1, (mupred/mu)^expon_used );
          sigmu = sigma*mu; 
 %%
@@ -544,8 +544,8 @@
             end 
             if (indef(1)); pstep = 0.8*pstep; else; break; end            
          end
-	     if (t > 1); pstep = gamused*pstep; end
-	     for t = 1:5
+	 if (t > 1); pstep = gamused*pstep; end
+	 for t = 1:5
             [Zchol,indef(2)] = blkcholfun(blk,ops(Z,'+',dZ,dstep)); time(9) = cputime; 
             if (predcorr); ttime.dchol = ttime.dchol + time(9)-time(8); 
             else;          ttime.dchol = ttime.dchol + time(9)-time(4); 
@@ -561,7 +561,7 @@
             if (printlevel); fprintf('\n  %s',msg); end
             termcode = -3;
             breakyes = 1;         
-         elseif (prim_infeasnew > max([rel_gap,10*prim_infeas,1e-8])) ...  	    
+         elseif (prim_infeasnew > max([1e-8,rel_gap,10*prim_infeas]) & iter > 10) ... 
 	    | (prim_infeasnew > max([1e-4,20*prim_infeas]) & (dual_infeas < 1e-2))
             if (stoplevel) & (max(pstep,dstep)<=1)
                msg = 'Stop: primal infeas has deteriorated too much'; 
@@ -674,7 +674,15 @@
             termcode = -5;
             breakyes = 1; 
          elseif (infeas_meas < 1e-8) & (gap > 1.2*mean(runhist.gap(idx)))
-            msg = 'Stop: progress is bad'; 
+            msg = 'Stop: progress is bad*'; 
+            if (printlevel); fprintf('\n  %s',msg); end
+            termcode = -5;
+            breakyes = 1;  
+         end
+         if (rel_gap < 1e-4) & (iter > 10) ...
+            & (runhist.pinfeas(iter+1) > 0.9*runhist.pinfeas(max(1,iter-10))) ...
+            & (runhist.dinfeas(iter+1) > 0.9*runhist.dinfeas(max(1,iter-10)))
+            msg = 'Stop: progress is bad**';
             if (printlevel); fprintf('\n  %s',msg); end
             termcode = -5;
             breakyes = 1;  

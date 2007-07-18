@@ -7,7 +7,7 @@
 %%                    or a CELL ARRAY consisting only of matrices 
 %%          operand = sym, transpose, triu, tril,
 %%                    real, imag, sqrt, abs, max, min, nnz,
-%%                    spdiags, ones, norm, sum, row-norm, 
+%%                    spdiags, ones, zeros, norm, sum, row-norm, 
 %%                    rank1, rank1inv, inv
 %%                    +,  -, *, .*,  ./, .^ 
 %%     Y (optional) = a matrix or a scalar 
@@ -23,9 +23,9 @@
 
    function Z = ops(X,operand,Y,alpha); 
 
-   global spdensity 
+   spdensity = 0.4;  
 
-   if nargin == 2; 
+   if (nargin == 2) 
       if strcmp(operand,'sym'); 
          if ~iscell(X); 
             [m,n] = size(X); 
@@ -100,35 +100,45 @@
             for p = 1:length(X); Z = Z + sum(sum(X{p}.*X{p})); end;
             Z = sqrt(Z); 
          end;
-      elseif strcmp(operand,'inv'); 
+      elseif strcmp(operand,'inv');
          if ~iscell(X);
-            [m,n] = size(X); n2 = n*n; 
-            Z = inv(X); 
-            if (nnz(Z) > spdensity*n2) & issparse(Z); 
-               Z = full(Z); 
+            [m,n] = size(X); n2 = n*n;
+            if (m==n) 
+               Z = inv(X); 
+               if (nnz(Z) > spdensity*n2) 
+                  Z = full(Z); 
+               else
+                  Z = sparse(Z); 
+               end
             elseif (m > 1 & n == 1);
                Z = 1./X; 
-               if (nnz(Z) > spdenssity*n) & issparse(Z); 
+               if (nnz(Z) > spdensity*n) 
                   Z = full(Z); 
-               end;
-            end;
+	       else
+	          Z = sparse(Z); 
+               end
+            end
          else
             Z = cell(size(X)); 
             for p = 1:length(X); 
                [m,n] = size(X{p}); n2 = n*n;
-               if (m == n); 
+               if (m==n) 
                   Z{p} = inv(X{p}); 
-                  if (nnz(Z{p}) > spdensity*n2) & issparse(Z{p}); 
+                  if (nnz(Z{p}) > spdensity*n2) 
                      Z{p} = full(Z{p});  
+		  else
+                     Z{p} = sparse(Z{p});  
                   end
                elseif (m > 1 & n == 1);
                   Z{p} = 1./X{p}; 
-                  if (nnz(Z{p}) > spdensity*n) & issparse(Z{p}); 
+                  if (nnz(Z{p}) > spdensity*n) 
                      Z{p} = full(Z{p}); 
-                  end;
-               end;
-            end; 
-         end;
+		  else
+                     Z{p} = sparse(Z{p}); 
+                  end
+               end
+            end 
+         end
       elseif strcmp(operand,'getM'); 
          if ~iscell(X); 
             Z = size(X,1);
@@ -148,31 +158,58 @@
       elseif strcmp(operand,'ones');
          if ~iscell(X); 
             Z = ones(size(X));
-         else; 
+         else 
             Z = cell(size(X)); 
             for p = 1:length(X);
                 Z{p} = ones(size(X{p}));
-            end;
-         end;
+            end
+         end
+      elseif strcmp(operand,'zeros');
+         if ~iscell(X); 
+            Z = zeros(size(X));
+         else 
+            Z = cell(size(X)); 
+            for p = 1:length(X);
+                Z{p} = zeros(size(X{p}));
+            end
+         end
+      elseif strcmp(operand,'identity');
+         blk = X; 
+         Z = cell(size(blk,1),1); 
+         for p = 1:size(blk,1)
+            pblk = blk(p,:); n = sum(pblk{2});  
+            if strcmp(pblk{1},'s')
+               Z{p} = speye(n,n);
+            elseif strcmp(pblk{1},'q')  
+               s = 1+[0, cumsum(pblk{2})];
+               len = length(pblk{2});
+               Z{p} = zeros(n,1);
+               Z{p}(s(1:len)) = ones(len,1);
+            elseif strcmp(pblk{1},'l')
+               Z{p} = ones(n,1); 
+            elseif strcmp(pblk{1},'u')
+               Z{p} = zeros(n,1);   
+            end
+         end
       elseif strcmp(operand,'row-norm'); 
          if ~iscell(X);
             if (size(X,2) == size(X,1)); 
                Z = sqrt(sum((X.*conj(X))'))';
             elseif (size(X,2) == 1);  
                Z = abs(X); 
-            end;
-         else; 
+            end
+         else 
             Z = cell(size(X)); 
             for p = 1:length(X);
                if (size(X{p},2) == size(X{p},1)); 
                   Z{p} = sqrt(sum((X{p}.*conj(X{p}))'))'; 
                elseif (size(X{p},2) == 1);  
                   Z{p} = abs(X{p}); 
-               end;
-            end;
-         end;        
-      end; 
-   end;
+               end
+            end
+         end        
+      end 
+   end
 %%
    if (nargin == 3)
       if strcmp(operand,'spdiags');
@@ -220,14 +257,16 @@
                end
             end 
          elseif (iscell(X) & ~iscell(Y)); 
+	    if (length(Y) == 1); Y = Y*ones(length(X),1); end
             Z = cell(size(X)); 
             for p = 1:length(X); 
-                eval(['Z{p} = X{p}',operand,'Y;']); 
+                eval(['Z{p} = X{p}',operand,'Y(p);']); 
             end
          elseif (~iscell(X) & iscell(Y)); 
             Z = cell(size(Y)); 
+	    if (length(X) == 1); X = X*ones(length(Y),1); end
             for p = 1:length(Y); 
-                eval(['Z{p} = X',operand,'Y{p};']); 
+                eval(['Z{p} = X(p)',operand,'Y{p};']); 
             end
          end
       else
@@ -284,8 +323,11 @@
             eval(['Z = X',operand,'alpha*Y;']); 
          elseif (iscell(X) & iscell(Y)); 
             Z = cell(size(X)); 
+	    if (length(alpha) == 1); 
+               alpha = alpha*ones(length(X),1); 
+            end
             for p = 1:length(X); 
-               eval(['Z{p} = X{p}',operand,'alpha*Y{p};']); 
+               eval(['Z{p} = X{p}',operand,'alpha(p)*Y{p};']); 
             end
          else
             error('X, Y are different objects'); 

@@ -65,7 +65,7 @@
         break;  
      end
      if (err > 10*minresnrm) 
-        if (printlevel); fprintf(' /^'); end
+        if (printlevel); fprintf('^'); end
         break;  
      end       
      if (abs(omega) < smtol)

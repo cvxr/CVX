@@ -55,7 +55,7 @@ void symmetrize(double *P, int n)
 
    for (j=0; j<n; j++){
        jn = j*n; 
-       for (k=0; k<j ; k++){ P[j+k*n] = P[k+jn]; }
+       for (k=0; k<j; k++){ P[j+k*n] = P[k+jn]; }
    }
    return;
 }
@@ -277,11 +277,11 @@ void mexFunction(int nlhs,  mxArray        *plhs[],
 /***** create return argument *****/   
 
     if (isspA & isspB & !(n1==1 & n2==1)){ 
-        plhs[0] = mxCreateSparse(m1,n2,NZmax,mxREAL); 
-        P = mxGetPr(plhs[0]); irP = mxGetIr(plhs[0]); jcP = mxGetJc(plhs[0]); }
+       plhs[0] = mxCreateSparse(m1,n2,NZmax,mxREAL); 
+       P = mxGetPr(plhs[0]); irP = mxGetIr(plhs[0]); jcP = mxGetJc(plhs[0]); }
     else { 
-        plhs[0] = mxCreateDoubleMatrix(m1,n2,mxREAL);
-        P = mxGetPr(plhs[0]); 
+       plhs[0] = mxCreateDoubleMatrix(m1,n2,mxREAL);
+       P = mxGetPr(plhs[0]); 
     }
     if (isspA & isspB & !(n1==1 & n2==1)) {  
        Ptmp = mxCalloc(cumblk[numblk],sizeof(double)); 

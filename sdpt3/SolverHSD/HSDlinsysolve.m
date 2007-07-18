@@ -23,7 +23,7 @@
     iter       = par.iter; 
 
     m = length(schur); 
-    if (iter==1); use_LU = 0; matfct_options_old = ''; diagR = ones(m,1); end
+    if (iter==1); use_LU = 0; matfct_options_old = ''; end
     if isempty(nnzmatold); nnzmatold = 0; end
 %%
 %% diagonal perturbation
@@ -31,6 +31,7 @@
     diagschur = max(1,full(diag(schur)));
     pertdiag = 1e-15*diagschur; 
     mexschurfun(schur,pertdiag); 
+    %%if (printlevel > 2); fprintf(' %2.1e',max(pertdiag)); end
 %%
 %%
 %%
@@ -40,9 +41,8 @@
     else
        len = 0;
     end
-    alpha = schur(m,m);
-    tmp = [len+1,len+3,1; len+2,len+4,1; len+3,len+1,-1; len+4,len+2,-1; 
-           len+5,len+5,-alpha];
+    tmp = [len+1,len+3,1; len+3,len+1,-1; len+2,len+4,1; len+4,len+2,-1; 
+           len+5,len+5,-par.addschur];
     EE = [EE; tmp]; 
     ncolU = size(UU,2);
 %%
@@ -72,10 +72,10 @@
        if (nnzmat > spdensity*m^2) | (m < 500) 
           matfct_options = 'chol';
        else
-          if (par.matlabversion >= 7.3 & par.computer == 64)
-             matfct_options = 'spcholmatlab'; 
-	  else
+          if (par.matlabversion >= 7.3) %% & (par.computer == 64)
              matfct_options = 'spchol'; 
+	  else
+             matfct_options = 'myspchol'; 
           end
        end
        if (printlevel > 2); fprintf(' %s',matfct_options); end 
@@ -87,15 +87,14 @@
           L.matfct_options = 'chol';    
           L.perm = [1:m];
           [L.R,indef] = chol(schur); 
-          diagR = diag(L.R).^2; 
           if (indef)
  	     solve_ok = -2; solvesys = 0; 
              msg = 'chol: Schur complement matrix not pos. def'; 
              if (printlevel); fprintf('\n  %s',msg); end
           end
-      elseif strcmp(matfct_options,'spcholmatlab')
+      elseif strcmp(matfct_options,'spchol')
           if ~issparse(schur); schur = sparse(schur); end;
-          L.matfct_options = 'spcholmatlab'; 
+          L.matfct_options = 'spchol'; 
           [L.R,indef,L.perm] = chol(schur,'vector'); 
           L.Rt = L.R'; 
           if (indef)
@@ -103,7 +102,7 @@
              msg = 'chol: Schur complement matrix not pos. def'; 
              if (printlevel); fprintf('\n  %s',msg); end
           end
-       elseif strcmp(matfct_options,'spchol')
+       elseif strcmp(matfct_options,'myspchol')
           if ~issparse(schur), schur = sparse(schur); end;
           if (nnzmatdiff | ~strcmp(matfct_options,matfct_options_old))
              [Lsymb,flag] = symbcholfun(schur,par.cachesize);
@@ -111,7 +110,7 @@
                 solve_ok = -2; solvesys = 0;
                 existspcholsymb = 0; 
                 use_LU = 1; 
-                msg = 'spchol: symbolic factorization fails';
+                msg = 'myspchol: symbolic factorization fails';
                 if (printlevel); fprintf('\n  %s',msg); end 
              else 
                 existspcholsymb = 1;
@@ -119,14 +118,14 @@
           end 
           if (existspcholsymb)
              L = sparcholfun(Lsymb,schur);
-             L.matfct_options  = 'spchol';  
+             L.matfct_options  = 'myspchol';  
              L.d(find(L.skip)) = 1e20;  
              if any(L.skip) & (ncolU)
                 solve_ok = -3; solvesys = 0;
                 existspcholsymb = 0; 
                 use_LU = 1; 
                 if (printlevel)
-                   fprintf('\n  spchol: L.skip exists but ncolU > 0.'); 
+                   fprintf('\n  myspchol: L.skip exists but ncolU > 0.'); 
                    fprintf('\n  switch to LU factor.');
                 end
              end          
@@ -143,7 +142,7 @@
              if ~isempty(idx) | (condest > 1e18); 
                 solvesys = 0; 
                 use_LU = 1; 
-                msg = 'SWM to ill-conditioned, switch to LU factor'; 
+                msg = 'SMW too ill-conditioned, switch to LU factor'; 
                 if (printlevel); fprintf('\n  %s.',msg); end
              end         
           end
@@ -157,7 +156,7 @@
        if (solve_ok < 0) 
           if (m < 6000 & strcmp(matfct_options,'chol')) | ...
              (m < 1e5 & strcmp(matfct_options,'spchol')) | ...
-             (m < 1e5 & strcmp(matfct_options,'spcholmatlab')) 
+             (m < 1e5 & strcmp(matfct_options,'myspchol')) 
              use_LU = 1;
              if (printlevel); fprintf('\n  switch to LU factor'); end
           end
@@ -186,7 +185,7 @@
           [L.l,L.u,L.p] = lu(raugmat); 
           L.matfct_options = 'lu'; 
           L.p = sparse(L.p); 
-          idx = find(abs(diag(L.u)) < 1e-20); 
+          idx = find(abs(diag(L.u)) < 1e-30); 
           if ~isempty(idx)
              msg = 'lu: matrix is singular'; 
              if (printlevel); fprintf('\n  %s',msg); end
@@ -206,7 +205,7 @@
           fprintf('\n  warning: HSDbicgstab fails: %3.1f,',solve_ok); 
        end
     end
-    if (printlevel>=3); fprintf(' %2.0d',length(resnrm)-1); end
+    if (printlevel>=3); fprintf('%2.0d ',length(resnrm)-1); end
 %%
     nnzmatold = nnzmat; matfct_options_old = matfct_options; 
 %%***************************************************************

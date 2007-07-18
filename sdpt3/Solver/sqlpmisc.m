@@ -13,7 +13,7 @@
    termcode    = param.termcode;
    iter        = param.iter; 
    obj         = param.obj;
-   rel_gap     = param.rel_gap; 
+   relgap      = param.relgap; 
    prim_infeas = param.prim_infeas;
    dual_infeas = param.dual_infeas;
    homRd       = param.homRd; 
@@ -36,7 +36,7 @@
       normA = 1; normC = 1; normb = 1;
    end
    Anorm = ops(At,'norm'); xnorm = ops(X,'norm'); ynorm = norm(y);
-   infeas_meas = max(prim_infeas,dual_infeas); 
+   infeas = max(prim_infeas,dual_infeas); 
 %%
    if (iter >= maxit) 
       termcode = -6;
@@ -48,22 +48,22 @@
       %% To detect near-infeasibility when the algorithm provides 
       %% a "better" certificate of infeasibility than of optimality.
       %%
-      err = max(infeas_meas,rel_gap);
+      err = max(infeas,relgap);
       iflag = 0;
       if (obj(2) > 0)
-         if (homRd < 0.1*sqrt(err*inftol))
+         if (homRd < 0.1*sqrt(err*inftol))  
             iflag = 1;
-            msg = sprintf('prim_inf,dual_inf,rel_gap = %3.2e, %3.2e, %3.2e',...
-		  prim_infeas,dual_infeas,rel_gap); 
+            msg = sprintf('prim_inf,dual_inf,relgap = %3.2e, %3.2e, %3.2e',...
+		  prim_infeas,dual_infeas,relgap); 
             if (printlevel); fprintf('\n  %s',msg); end
             termcode = 1;
          end
       elseif (obj(1) < 0)
          if (homrp < 0.1*sqrt(err*inftol)) 
-            msg = sprintf('prim_inf,dual_inf,rel_gap = %3.2e, %3.2e, %3.2e',...
-                  prim_infeas,dual_infeas,rel_gap); 
-            if (printlevel); fprintf('\n  %s',msg); end
             iflag = 1; 
+            msg = sprintf('prim_inf,dual_inf,relgap = %3.2e, %3.2e, %3.2e',...
+                  prim_infeas,dual_infeas,relgap); 
+            if (printlevel); fprintf('\n  %s',msg); end
             termcode = 2;
          end
       end

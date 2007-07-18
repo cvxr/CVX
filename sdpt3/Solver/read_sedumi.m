@@ -42,7 +42,7 @@
      if exist([fname,'.mat']) | exist(fname) 
         eval(['load ', fname]);
      else
-        fprintf('** Problem not found, please specify the correct path or problem. \n');
+        fprintf('*** Problem not found, please specify the correct path or problem. \n');
         blk = []; Avec = []; C = []; b = [];
         return;
      end

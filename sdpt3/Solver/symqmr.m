@@ -25,19 +25,24 @@
 %% Last Modified: 16 Sep 2004
 %%*************************************************************************
 
-   function  [xx,resnrm,solve_ok] = symqmr(A,b,L,tol,maxit) 
+   function  [xx,resnrm,solve_ok] = symqmr(A,b,L,tol,maxit,printlevel) 
 
    N = length(b); 
-   if (nargin < 5); maxit = max(50,length(A.mat22)); end;
-   if (nargin < 4); tol = 1e-10; end; 
+   if (nargin < 6); printlevel = 1; end
+   if (nargin < 5) | isempty(maxit); maxit = max(50,length(A.mat22)); end;
+   if (nargin < 4) | isempty(tol); tol = 1e-10; end; 
    tolb = min(1e-4,tol*norm(b));
 
    solve_ok = 1; 
    x = zeros(N,1);
-   if isstruct(A); Aq = matvec(A,x); else; Aq=A*x; end;     
-   r = b-Aq;  
+   if (norm(x))
+      if isstruct(A); Aq = matvec(A,x); else; Aq=A*x; end;
+      r = b-Aq;  
+   else
+      r = b; 
+   end
    err = norm(r); resnrm(1) = err; minres = err; xx = x; 
-   if (err < 1e-2*tolb); return; end         
+   if (err < 1e-3*tolb); return; end         
 
    q = precond(A,L,r); 
    tau_old   = norm(q);      
@@ -54,7 +59,9 @@
        if isstruct(A); Aq = matvec(A,q); else; Aq=A*q; end;     
        sigma = q'*Aq; 
        if (abs(sigma) < tiny)
-          solve_ok = 2; break;
+          solve_ok = 2; 
+          if (printlevel); fprintf('*'); end;
+          break;
        else
           alpha = rho_old/sigma; 
           r = r - alpha*Aq;
@@ -79,7 +86,9 @@
        end
 %% 
        if (abs(rho_old) < tiny)
-          solve_ok = 2; break;
+          solve_ok = 2; 
+          if (printlevel); fprintf('*'); end;
+          break;
        else
           rho  = r'*u; 
           beta = rho/rho_old; 
@@ -89,7 +98,7 @@
        tau_old = tau; 
        theta_old = theta; 
    end
-   %%if (iter == maxit); solve_ok = 0; end; 
+   if (iter == maxit); solve_ok = 0.3; end; 
 %%
 %%*************************************************************************
 %% precond: 

@@ -20,7 +20,8 @@
 %% Last Modified: 16 Sep 2004
 %%*****************************************************************************
 
-   function  [At,b,y,idxB,neardepconstr,feasible,AAt] = checkdepconstr(blk,At,b,y,rmdepconstr);
+   function  [At,b,y,idxB,neardepconstr,feasible,AAt] = ...
+              checkdepconstr(blk,At,b,y,rmdepconstr);
    
    global existlowrank printlevel
    global Lsymb nnzmatold existspcholsymb
@@ -103,21 +104,25 @@
    feasible = 1; neardepconstr = 0; 
    if ~issparse(AAt); AAt = sparse(AAt); end 
    nnzmatold = mexnnz(AAt);
-   if (matlabversion >= 7.3 & computer_model == 64) 
+   if (matlabversion >= 7.3)  %% & (computer_model == 64) 
       diagAAt = diag(AAt); rho = 1e-13;
-      mexschurfun(AAt,rho*diagAAt); 
+      mexschurfun(AAt,rho*max(diagAAt,1)); 
       [L.R,indef,L.perm] = chol(AAt,'vector'); 
       L.d = full(diag(L.R)).^2; 
-      if (indef) 
-         msg = 'AAt is not pos. def.'; 
-         idxB = [1:m]; 
-         if (printlevel); fprintf('\n checkdepconstr: %s',msg); end
-         return; 
-      end
    else
       [Lsymb,flag] = symbcholfun(AAt,cachesize);
       if (flag); existspcholsymb = 0; else; existspcholsymb = 1; end
-      L = sparcholfun(Lsymb,AAt);   
+      if (flag==0)
+         L = sparcholfun(Lsymb,AAt);
+         if ~any(L.skip); indef = 1; end
+      end
+   end
+   if (indef) 
+      msg = 'AAt is not pos. def.'; 
+      idxB = [1:m]; 
+      neardepconstr = 1; 
+      if (printlevel); fprintf('\n checkdepconstr: %s',msg); end
+      return; 
    end
 %%
 %% find independent rows of A
@@ -125,7 +130,7 @@
    dd = zeros(m,1); 
    idxB = [1:m]';
    dd(L.perm) = abs(L.d); 
-   idxN = find(dd < 1e-13);
+   idxN = find(dd < 1e-13*mean(L.d));
    ddB = dd(setdiff([1:m],idxN));
    ddN = dd(idxN);
    if ~isempty(ddN) & ~isempty(ddB) & (min(ddB)/max(ddN) < 10) 
@@ -144,7 +149,7 @@
             if (printlevel)
                fprintf('\n checkdepconstr: removing dependent constraints...');
             end
-            [W,resnorm] = findcoeff(blk,At,idxB,idxN);
+            [W,resnorm] = findcoeffsub(blk,At,idxB,idxN);
    	    tol = 1e-8;
             if (resnorm > sqrt(tol))
                idxB = [1:m]'; 
@@ -184,11 +189,10 @@
          end
       end
    end
-%%
 %%*****************************************************************************
-%% findcoeff: 
+%% findcoeffsub: 
 %%
-%% [W,resnorm] = findcoeff(blk,At,idXB,idXN);
+%% [W,resnorm] = findcoeffsub(blk,At,idXB,idXN);
 %% 
 %% idXB = indices of independent columns of At. 
 %% idxN = indices of   dependent columns of At.
@@ -201,9 +205,8 @@
 %% Last modified: 2 Feb 01
 %%*****************************************************************************
 
-   function [W,resnorm] = findcoeff(blk,At,idxB,idxN);
+   function [W,resnorm] = findcoeffsub(blk,At,idxB,idxN);
 
-   tol = 1e-8; 
    AB = []; AN = [];
    for p = 1:size(blk,1) 
       AB = [AB; At{p,1}(:,idxB)];

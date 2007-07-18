@@ -19,7 +19,11 @@
   flag = 1;
  
   x = zeros(N,1); 
-  if isstruct(A); r = b-matvec(A,x); else; r = b-mexMatvec(A,x); end;     
+  if (norm(x)) 
+     if isstruct(A); r = b-matvec(A,x); else; r = b-mexMatvec(A,x); end; 
+  else
+     r =b; 
+  end
   err = norm(r); resnrm(1) = err;  minresnrm = err; xx = x;  
   %%if (err < 1e-3*tolb); return; end
 
@@ -28,6 +32,7 @@
 %%
 %%
 %%
+  breakyes = 0; 
   smtol = 1e-40; 
   for iter = 1:maxit,           
 
@@ -35,6 +40,7 @@
      if (abs(rho) < smtol)
         flag = 2;  
         if (printlevel); fprintf('*'); end;
+        breakyes = 1; 
         break; 
      end
      if (iter > 1)
@@ -65,15 +71,18 @@
         break;  
      end
      if (err > 10*minresnrm) 
-        if (printlevel); fprintf(' /^'); end
+        if (printlevel); fprintf('^'); end
+        breakyes = 2; 
         break;  
      end       
      if (abs(omega) < smtol)
         flag = 2; 
         if (printlevel); fprintf('*'); end
+        breakyes = 1; 
         break; 
      end
   end
+  if (~breakyes) & (printlevel >=3); fprintf(' '); end
 %%
 %%*************************************************************************
 %%*************************************************************************

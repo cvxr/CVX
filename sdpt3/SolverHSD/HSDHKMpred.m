@@ -76,8 +76,9 @@
 %%
 %% solve linear system
 %%
+    par.addschur   = 1; 
     schur(m+1,m+1) = schur(m+1,m+1) + par.kap/par.tau;
-    schur(m+2,m+2) = schur(m+2,m+2) + par.kap/par.tau; 
+    schur(m+2,m+2) = schur(m+2,m+2) + par.addschur; 
     [xx,coeff,L] = HSDlinsysolve(par,schur,UU,EE,par.Umat,rhs); 
 %%
 %% compute (dX,dZ)

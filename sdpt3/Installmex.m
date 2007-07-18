@@ -9,9 +9,11 @@
 %%
 %% generate mex files in Mexfun
 %% 
-   ispc  = strncmp(computer,'PCWIN',5);
-   ishp  = strncmp(computer,'HP',2);
-   isibm = strncmp(computer,'IBM_RS',6);
+   if strcmp(computer,'PCWIN64') | strcmp(computer,'GLNXA64')
+      computer_model = 64; 
+   else
+      computer_model = 32; 
+   end
    matlabversion = sscanf(version,'%f');
    matlabversion = matlabversion(1);
    fsp = filesep;
@@ -52,7 +54,7 @@
 %%
 %% generate mex files in spchol
 %%
-   if 1, % (matlabversion < 7.3) 
+   if (matlabversion < 7.3) 
       clear fname
       src = [curdir,fsp,'Linsysolver',fsp,'spchol']; 
       eval(['cd ','Linsysolver',fsp,'spchol']); 

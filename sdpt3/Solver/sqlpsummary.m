@@ -12,7 +12,7 @@
    iter        = info.iter; 
    obj         = info.obj; 
    gap         = info.gap; 
-   rel_gap     = info.relgap;  
+   relgap      = info.relgap;  
    prim_infeas = info.pinfeas;
    dual_infeas = info.dinfeas;  
    termcode    = info.termcode; 
@@ -36,7 +36,7 @@
          fprintf(' primal objective value = %- 9.8e\n',obj(1));
          fprintf(' dual   objective value = %- 9.8e\n',obj(2));
          fprintf(' gap := trace(XZ)       = %3.2e\n',gap);
-         fprintf(' relative gap           = %3.2e\n',rel_gap);
+         fprintf(' relative gap           = %3.2e\n',relgap);
          fprintf(' actual relative gap    = %3.2e\n',-diff(obj)/(1+sum(abs(obj))));
          if norm(infeas_org)
             fprintf(' rel. primal infeas (scaled problem)   = %3.2e\n',prim_infeas);

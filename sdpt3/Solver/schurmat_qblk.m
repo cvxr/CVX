@@ -26,7 +26,7 @@
 
    function [schur,UU,EE] = schurmat_qblk(blk,At,par,schur,UU,EE,p,dd,ee,xx);
    
-   global idxdenAq
+   global idxdenAq nnzschur_qblk
 
    if (nargin == 10); options = 0; else; options = 1; end; 
    iter = par.iter; 
@@ -77,10 +77,11 @@
       end
    else
       if (options == 0)
-         tmp = Ax*Ae';
+         tmp = Ax*Ae'; 
          schur = schur + (tmp+tmp');
       else 
-         schur = schur + Ae*Ae';
+         tmp = Ae*Ae'; 
+         schur = schur + tmp; 
       end
    end
    if (iter==1)

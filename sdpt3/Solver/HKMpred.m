@@ -22,7 +22,7 @@
       numblk = length(pblk{2}); 
       if strcmp(pblk{1},'l')
          Zinv{p} = 1./Z{p};
-         dd{p} = X{p}./Z{p};
+         dd{p} = X{p}./Z{p}; %% do not add perturbation, it badly affects cre-a
       elseif strcmp(pblk{1},'q')
          gaptmp  = qops(pblk,X{p},Z{p},1); 
          gamz2   = qops(pblk,Z{p},Z{p},2); 
@@ -32,9 +32,13 @@
       elseif strcmp(pblk{1},'s')
          if (numblk == 1)
             Zinv{p} = Prod2(pblk,full(invZchol{p}),invZchol{p}',1);
+            %% to fix the anonmaly when Zinv has very small elements 
+            if (par.iter==2 | par.iter==3) & ~issparse(Zinv{p}); 
+               Zinv{p} = Zinv{p} + 1e-16; 
+            end
          else
             Zinv{p} = Prod2(pblk,invZchol{p},invZchol{p}',1);            
-         end   
+         end
       end
    end
    par.Zinv = Zinv; par.gamx = gamx; par.gamz = gamz; par.dd = dd; 
@@ -61,7 +65,7 @@
                 Zpinv = Zinv{p}(par.permZ{p},par.permZ{p}); 
                 Xp = X{p}(par.permZ{p},par.permZ{p}); 
              else
-                Xp = X{p};
+                Xp = X{p}; 
                 Zpinv = Zinv{p};
              end
              eval(['schurtmp = ',schurfun{p},'(Xp,Zpinv,schurfun_par(p,:));']); 

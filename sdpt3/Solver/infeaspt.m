@@ -31,7 +31,6 @@
          end
       end
       if any(convertyes)
-         %%fprintf(' sqlp: converting At into required format...\n'); 
          At = svec(blk,At,ones(size(blk,1),1));
       end
    end; 
@@ -78,8 +77,9 @@
                pos = [ss(i)+1 : ss(i+1)];  ni = length(pos);
                tmp = C{p}(pos,pos);
                normCni = 1+sqrt(sum(sum(tmp.*tmp)));
-               X0{p}(pos,pos) = max([sqrt(ni),ni*(b2./normAni)]) *speye(ni);
-               Z0{p}(pos,pos) = max([sqrt(ni),normAni,normCni]) *speye(ni);
+               const = 1; 
+               X0{p}(pos,pos) = max([const,sqrt(ni),ni*(b2./normAni)]) *speye(ni);
+               Z0{p}(pos,pos) = max([const,sqrt(ni),normAni,normCni]) *speye(ni);
             end
          elseif strcmp(pblk{1},'q');
             s = 1+[0, cumsum(blktmp)];
@@ -97,8 +97,9 @@
          elseif strcmp(pblk{1},'l');
             normC = 1+norm(C{p});
             normA = 1+sqrt(sum(At{p,1}.*At{p,1}));
-            X0{p} = max([sqrt(n),sqrt(n)*b2./normA]) *ones(n,1);
-            Z0{p} = max([sqrt(n),normA,normC]) *ones(n,1);
+            const = 1; 
+            X0{p} = max([const,sqrt(n),sqrt(n)*b2./normA]) *ones(n,1);
+            Z0{p} = max([const,sqrt(n),normA,normC]) *ones(n,1);
             X0{p} = X0{p}.*(1+1e-10*rand(n,1)); 
             Z0{p} = Z0{p}.*(1+1e-10*rand(n,1)); 
          elseif strcmp(pblk{1},'u');
@@ -112,7 +113,7 @@
             X0{p} = scalefac*speye(sum(blktmp));
             Z0{p} = scalefac*speye(sum(blktmp));
          elseif strcmp(pblk{1},'q');
-            s = 1+[0 cumsum(blktmp)];
+            s = 1+[0, cumsum(blktmp)];
             len = length(blktmp);
             idenq = zeros(sum(blktmp),1);
             idenq(s(1:len)) = ones(len,1);

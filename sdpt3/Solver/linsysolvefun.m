@@ -17,9 +17,9 @@
      if strcmp(L.matfct_options,'chol')
         x(L.perm,k) = mextriang(L.R, mextriang(L.R,b(L.perm,k),2) ,1); 
         %%x(L.perm,k) = L.R \ (b(L.perm,k)' / L.R)';
-     elseif strcmp(L.matfct_options,'spcholmatlab')
-        x(L.perm,k) = mextriangsp(L.Rt,mextriangsp(L.R,b(L.perm,k),2),1);
      elseif strcmp(L.matfct_options,'spchol')
+        x(L.perm,k) = mextriangsp(L.Rt,mextriangsp(L.R,b(L.perm,k),2),1);
+     elseif strcmp(L.matfct_options,'myspchol')
         x(:,k) = bwblkslvfun(L, fwblkslvfun(L,b(:,k)) ./ L.d);
      elseif strcmp(L.matfct_options,'lu')
         x(:,k) = L.u \ (L.l \ b(L.perm,k));

@@ -64,7 +64,8 @@
                end
                if (nargin >= 6)
                   parbarrier2{p} = parbarrier{p}(i1); 
-                  X2{p} = X{p}(i1); Z2{p} = Z{p}(i1); 
+                  X2{p} = X{p}(i1)-X{p}(i2); 
+                  Z2{p} = zeros(length(i1),1); 
                end
                i3 = setdiff([1:n],union(i1,i2));
                if ~isempty(i3)

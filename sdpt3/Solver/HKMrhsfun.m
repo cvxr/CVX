@@ -76,7 +76,7 @@
              EinvRc{p} = sigmu*par.Zinv{p} -X{p};
           end
           Rq = sparse(n,n);
-          if (corrector) 
+          if (corrector)
              Rq = Prod3(pblk,dX{p},dZ{p},par.Zinv{p},0); 
 	     Rq = 0.5*(Rq+Rq');
           else

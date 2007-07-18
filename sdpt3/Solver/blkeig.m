@@ -42,8 +42,8 @@
                    V(pos,pos) = sparse(evec); 
                 end; 
                 d(pos,1) = lam;
-             end;
-          end;
+             end
+          end
           n2 = sum(blktmp.*blktmp); 
           if (nargout == 2); 
              if (nnz(V) <= spdensity*n2);
@@ -57,8 +57,8 @@
              V = ones(size(X)); d = X; 
           elseif (nargout == 1); 
              d = X; 
-          end;
-       end;
+          end
+       end
     else
        if (nargout == 2); 
           V = cell(size(X));  d = cell(size(X));  
@@ -69,7 +69,7 @@
           d = cell(size(X));  
           for p = 1:size(blk,1); 
 	     d{p} = blkeig(blk(p,:),X{p}); 
-          end;
-       end;
-    end;
-%%===========================================================================
+          end
+       end
+    end
+%%***************************************************************************

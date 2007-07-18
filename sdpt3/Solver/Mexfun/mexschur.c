@@ -58,9 +58,9 @@ return;
 *  A,B are assumed to be real,sparse,symmetric.
 *  U  is assumed to be real,dense,symmetric. 
 **********************************************************/
-void schurij1( int n, 
-               double *Avec, int *idxstart, int *nzlistAi, int *nzlistAj,
-               double *U, int col, double *schurcol)
+void schurij1(int n, double *Avec, 
+              mwIndex *idxstart, mwIndex *nzlistAi, mwIndex *nzlistAj,
+              double *U, int col, double *schurcol)
 
 { int    i, ra, ca, rb, cb, rbn, cbn, l, k, kstart, kend, lstart, lend; 
   double tmp1, tmp2, tmp3, tmp4; 
@@ -99,8 +99,8 @@ return;
 *  A,B are assumed to be real,sparse,symmetric.
 *  U,V are assumed to be real,dense,symmetric. 
 **********************************************************/
-void schurij3(int n,  
-              double *Avec, int *idxstart, int *nzlistAi, int *nzlistAj,
+void schurij3(int n,  double *Avec, 
+              mwIndex *idxstart, mwIndex *nzlistAi, mwIndex *nzlistAj,
               double *U, double *V, int col, double *schurcol)
 
 { int    ra, ca, rb, cb, rbn, cbn, l, k, idx1, idx2, idx3, idx4;
@@ -141,7 +141,7 @@ return;
 /**********************************************************
 * stack multiple blocks into a long column vector
 **********************************************************/
-void vec(int numblk, int *cumblksize, int *blknnz, 
+void vec(int numblk, mwIndex *cumblksize, mwIndex *blknnz, 
          double *A, mwIndex *irA, mwIndex *jcA, double *B) 
 
 {  int idx0, idx, i, j, l, jstart, jend, istart, blksize;
@@ -169,10 +169,11 @@ return;
 *  A,B are assumed to be real,sparse,symmetric.
 *  U  is assumed to be real,sparse,symmetric. 
 **********************************************************/
-void schurij2( double *Avec, 
-               int *idxstart, int *nzlistAi, int *nzlistAj, double *Utmp,
-               int *nzlistAr, int *nzlistAc, int *cumblksize, 
-               int *blkidx, int col, double *schurcol)
+void schurij2(double *Avec, 
+              mwIndex *idxstart, mwIndex *nzlistAi, mwIndex *nzlistAj, 
+              double *Utmp,
+              mwIndex *nzlistAr, mwIndex *nzlistAc, mwIndex *cumblksize, 
+              mwIndex *blkidx, int col, double *schurcol)
 
 { int    r, ra, ca, rb, cb, l, k, kstart, kend, kstartnew, lstart, lend;
   int    colcb1, idxrb, idxcb, idx1, idx2, idx3, idx4;
@@ -227,10 +228,10 @@ return;
 *  U,V are assumed to be real,sparse,symmetric. 
 **********************************************************/
 void schurij4( double *Avec, 
-               int *idxstart, int *nzlistAi, int *nzlistAj,
+               mwIndex *idxstart, mwIndex *nzlistAi, mwIndex *nzlistAj,
                double *Utmp, double *Vtmp, 
-               int *nzlistAr, int *nzlistAc, int *cumblksize, 
-               int *blkidx, int col, double *schurcol)
+               mwIndex *nzlistAr, mwIndex *nzlistAc, mwIndex *cumblksize, 
+               mwIndex *blkidx, int col, double *schurcol)
 
 { int    r, ra, ca, rb, cb, l, k, kstart, kend, kstartnew, lstart, lend;
   int    colcb1, idxrb, idxcb, idx1, idx2, idx3, idx4; 
@@ -289,8 +290,9 @@ void mexFunction(int nlhs,   mxArray  *plhs[],
      double   *Avec, *idxstarttmp, *nzlistAtmp, *permAtmp, *U, *V, *schur;
      double   *blksizetmp, *Utmp, *Vtmp, *schurcol, *nzschur, *P;  
      mwIndex  *irP, *jcP, *irU, *jcU, *irV, *jcV;
-     int      *idxstart, *colm, *permA, *nzlistAr, *nzlistAc;
-     int      *nzlistAi, *nzlistAj, *blksize, *cumblksize, *blknnz, *blkidx; 
+     mwIndex  *idxstart, *colm, *permA, *nzlistAr, *nzlistAc;
+     mwIndex  *nzlistAi, *nzlistAj; 
+     mwIndex  *blksize, *cumblksize, *blkidx, *blknnz; 
 
      mwIndex  subs[2];
      mwSize   nsubs=2; 
@@ -313,7 +315,7 @@ void mexFunction(int nlhs,   mxArray  *plhs[],
     blk_cell_pr = mxGetCell(prhs[0],index); 
     numblk  = mxGetN(blk_cell_pr);
     blksizetmp = mxGetPr(blk_cell_pr); 
-    blksize = mxCalloc(numblk,sizeof(int)); 
+    blksize = mxCalloc(numblk,sizeof(mwIndex)); 
     for (k=0; k<numblk; k++) { 
         blksize[k] = (int)blksizetmp[k];
     }
@@ -324,21 +326,21 @@ void mexFunction(int nlhs,   mxArray  *plhs[],
        mexErrMsgTxt("mexschur: Avec must be sparse"); }
     idxstarttmp = mxGetPr(prhs[2]);  
     len = MAX(mxGetM(prhs[2]),mxGetN(prhs[2])); 
-    idxstart = mxCalloc(len,sizeof(int)); 
+    idxstart = mxCalloc(len,sizeof(mwIndex)); 
     for (k=0; k<len; k++) { 
         idxstart[k] = (int)idxstarttmp[k]; 
     }
     nzlistAtmp = mxGetPr(prhs[3]); 
     len = mxGetM(prhs[3]);
-    nzlistAi = mxCalloc(len,sizeof(int)); 
-    nzlistAj = mxCalloc(len,sizeof(int)); 
+    nzlistAi = mxCalloc(len,sizeof(mwIndex)); 
+    nzlistAj = mxCalloc(len,sizeof(mwIndex)); 
     for (k=0; k<len; k++) { 
         nzlistAi[k] = (int)nzlistAtmp[k] -1; /* -1 to adjust for matlab index */
         nzlistAj[k] = (int)nzlistAtmp[k+len] -1; 
     }
     permAtmp = mxGetPr(prhs[4]); 
     m1 = mxGetN(prhs[4]); 
-    permA = mxCalloc(m1,sizeof(int)); 
+    permA = mxCalloc(m1,sizeof(mwIndex)); 
     for (k=0; k<m1; k++) {
         permA[k] = (int)permAtmp[k]-1; /* -1 to adjust for matlab index */
     }
@@ -380,8 +382,8 @@ void mexFunction(int nlhs,   mxArray  *plhs[],
 * initialization 
 ************************************/
     if (isspU & isspV) { 
-       cumblksize = mxCalloc(numblk+1,sizeof(int)); 
-       blknnz = mxCalloc(numblk+1,sizeof(int)); 
+       cumblksize = mxCalloc(numblk+1,sizeof(mwIndex)); 
+       blknnz = mxCalloc(numblk+1,sizeof(mwIndex)); 
        cumblksize[0] = 0; blknnz[0] = 0; 
        n1 = 0; n2 = 0; 
        for (k=0; k<numblk; ++k) {
@@ -396,13 +398,13 @@ void mexFunction(int nlhs,   mxArray  *plhs[],
        vec(numblk,cumblksize,blknnz,U,irU,jcU,Utmp); 
        Vtmp = mxCalloc(n2,sizeof(double)); 
        vec(numblk,cumblksize,blknnz,V,irV,jcV,Vtmp); 
-       blkidx = mxCalloc(nU,sizeof(int));
+       blkidx = mxCalloc(nU,sizeof(mwIndex));
        for (l=0; l<numblk; l++) {  
  	   kstart=cumblksize[l]; kend=cumblksize[l+1];
            for (k=kstart; k<kend; k++) { blkidx[k] = l; }           
        }
-       nzlistAc = mxCalloc(len,sizeof(int)); 
-       nzlistAr = mxCalloc(len,sizeof(int)); 
+       nzlistAc = mxCalloc(len,sizeof(mwIndex)); 
+       nzlistAr = mxCalloc(len,sizeof(mwIndex)); 
        for (k=0; k<len; k++) {
           rb = nzlistAi[k]; 
 	  cb = nzlistAj[k]; 
@@ -415,7 +417,7 @@ void mexFunction(int nlhs,   mxArray  *plhs[],
 * compute schur(i,j)
 ************************************/
 
-    colm = mxCalloc(colend,sizeof(int));     
+    colm = mxCalloc(colend,sizeof(mwIndex));     
     for (k=0; k<colend; k++) { colm[k] = permA[k]*m; } 
 
     n = nU; 
