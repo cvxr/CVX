@@ -74,7 +74,7 @@ if ~cvx___.path.formed,
     end
     temp = strfind( s, fs );
     s( temp(end-1) + 1 : end ) = [];
-    solvers = { 'sdpt3/Solver', 'sdpt3/SolverHSD', 'sdpt3/Solver/Mexfun', 'sdpt3/Linsysolver/spchol', 'sdpt3/Linsysolver/MA47', 'sedumi' };
+    solvers = { 'sdpt3/Solver', 'sdpt3/SolverHSD', 'sdpt3/Solver/Mexfun', 'sdpt3/Linsysolver/spchol', 'sedumi' };
     subs = solvers;
     miss_solv = 0;
     if cvx___.mversion >= 6.5,
