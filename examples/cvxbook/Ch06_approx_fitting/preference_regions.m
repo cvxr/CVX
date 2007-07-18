@@ -38,7 +38,6 @@
 
 clear
 cvxq = cvx_quiet(true);
-cvxs = cvx_solver('sedumi');
 
 data= [...
    4.5e-01   9.6e-01
@@ -175,4 +174,3 @@ end;
 xlabel('x_1');  ylabel('x_2');
 
 cvx_quiet(cvxq);
-cvx_solver(cvxs);
