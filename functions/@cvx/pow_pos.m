@@ -95,7 +95,7 @@ for k = 1 : nv,
     switch vk,
         case 0,
             % Invalid
-            error( sprintf( 'Disciplined convex programming error:\n    Illegal operation: pow_pos( {%s}, p )', cvx_class( xt ), pclass ) ); 
+            error( sprintf( 'Disciplined convex programming error:\n    Illegal operation: pow_pos( {%s}, p )', cvx_class( xt, true, true ), pclass ) ); 
         case 1,
             % Nonpositive constant .^ (p<0)
             yt = +Inf * ones( sz );

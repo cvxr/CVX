@@ -114,7 +114,7 @@ for k = 1 : nv,
     switch vu( k ),
         case 0,
             % Invalid
-            error( sprintf( 'Disciplined convex programming error:\n    Cannot perform the operation {%s}.^{%s}', cvx_class( xt ), cvx_class( yt ) ) );
+            error( sprintf( 'Disciplined convex programming error:\n    Cannot perform the operation {%s}.^{%s}', cvx_class( xt, true, true, true ), cvx_class( yt, true, true, true ) ) );
         case 1,
             % constant .^ constant
             cvx_optval = cvx_constant( xt ) .^ cvx_constant( yt );

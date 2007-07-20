@@ -56,7 +56,7 @@ for k = 1 : nv,
     switch vk,
         case 0,
             % Invalid
-            error( sprintf( 'Disciplined convex programming error:\n    Illegal operation: sqrt( {%s} ).', cvx_class( xt, true ) ) );
+            error( sprintf( 'Disciplined convex programming error:\n    Illegal operation: sqrt( {%s} ).', cvx_class( xt, true, true ) ) );
         case 1,
             % Constant
             cvx_optval = builtin( 'sqrt', cvx_constant( xt ) );

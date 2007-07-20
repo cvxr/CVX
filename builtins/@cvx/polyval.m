@@ -67,7 +67,7 @@ if cvx_isconstant( p ),
 			p = reshape( p, n, 1 );
 			t0 = vu == 0;
 			if any( t0 ),
-                error( sprintf( 'Disciplined convex programming error:\n    Illegal operation: polyval( p, {%s} ).', cvx_class( cvx_subsref( x, t0 ) ) ) );
+                error( sprintf( 'Disciplined convex programming error:\n    Illegal operation: polyval( p, {%s} ).', cvx_class( cvx_subsref( x, t0 ), false, true ) ) );
             end
             t1 = vu == 1;
             if any( t1 ),

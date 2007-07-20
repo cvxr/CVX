@@ -14,11 +14,10 @@ function y = inv_pos( x )
 error( nargchk( 1, 1, nargin ) );
 persistent remap
 if isempty( remap ),
-    remap_1 = cvx_remap( 'complex' );
-    remap_2 = cvx_remap( 'real' );
-    remap_3 = cvx_remap( 'concave' ) & ~remap_2;
-    remap_4 = cvx_remap( 'monomial', 'posynomial' );
-    remap = remap_1 + 2 * remap_2 + 3 * remap_3 + 4 * remap_4;
+    remap_1 = cvx_remap( 'real' );
+    remap_2 = cvx_remap( 'concave' ) & ~remap_2;
+    remap_3 = cvx_remap( 'monomial', 'posynomial' );
+    remap = remap_1 + 2 * remap_2 + 3 * remap_3;
 end
 v = remap( cvx_classify( x ) );
 
@@ -53,21 +52,18 @@ for k = 1 : nv,
     switch vk,
         case 0,
             % Invalid
-            error( sprintf( 'Disciplined convex programming error:\n    Illegal operation: inv_pos( {%s} )', cvx_class( xt ) ) ); 
+            error( sprintf( 'Disciplined convex programming error:\n    Illegal operation: inv_pos( {%s} )', cvx_class( xt, false, true ) ) ); 
         case 1,
-            % Complex
-            error( 'The argument to inv_pos must be real.' );
-        case 2,
             % Constant
             yt = inv_pos( cvx_constant( xt ) );
-        case 3,
+        case 2,
             % Concave
             cvx_begin
                 epigraph variable yt( size( xt ) )
                 quad_over_lin( 1, xt ) <= yt;
             cvx_end
             yt = cvx_optval;
-        case 4,
+        case 3,
             % Monomial / psosynomial
             yt = exp( -log( xt ) );
         otherwise,

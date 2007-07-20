@@ -53,7 +53,7 @@ for k = 1 : nv,
     switch vk,
         case 0,
             % Invalid
-            error( sprintf( 'Disciplined convex programming error:\n    Illegal operation: log( {%s} ).', cvx_class( xt ) ) );
+            error( sprintf( 'Disciplined convex programming error:\n    Illegal operation: log( {%s} ).', cvx_class( xt, true, true, true ) ) );
         case 1,
             % Constant
             yt = log( cvx_constant( xt ) );

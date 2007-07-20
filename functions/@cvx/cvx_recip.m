@@ -9,10 +9,9 @@ function y = cvx_recip( x )
 error( nargchk( 1, 1, nargin ) );
 persistent remap
 if isempty( remap ),
-    remap_1 = cvx_remap( 'zero' );
-    remap_2 = cvx_remap( 'constant' );
-    remap_3 = cvx_remap( 'log-valid' );
-    remap = remap_1 + 2 * ( remap_2 & ~remap_1 ) + 3 * ( remap_3 & ~remap_2 );
+    remap_1 = cvx_remap( 'constant' ) & ~cvx_remap( 'zero' );
+    remap_2 = cvx_remap( 'log-valid' ) & ~remap_1;
+    remap = remap_1 + 2 * remap_2;
 end
 vr = remap( cvx_classify( x ) );
 vu = unique( vr );
@@ -45,14 +44,11 @@ for k = 1 : nv,
     switch vu( k ),
         case 0,
             % Invalid
-            error( sprintf( 'Disciplined convex programming error:\n    Cannot perform the operation recip( {%s} )', cvx_class( xt ) ) );
+            error( sprintf( 'Disciplined convex programming error:\n    Cannot perform the operation recip( {%s} )', cvx_class( x, false, false, true ) ) );
         case 1,
-            % Zero
-            error( sprintf( 'Disciplined convex programming error:\n    Division by zero.' ) );
-        case 2,
             % Non-zero constant
             yt = 1.0 ./ xt;
-        case 3,
+        case 2,
             % Monomial, posynomial
             yt = exp( -log( xt ) );
         otherwise,

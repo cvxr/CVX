@@ -1,8 +1,7 @@
-function v = cvx_class( x, needsign, needreal )
-if nargin < 3,
-    if nargin < 2, needsign = false; end
-    needreal = false;
-end
+function v = cvx_class( x, needsign, needreal, needzero )
+if nargin < 2, needsign = false; end
+if nargin < 3, needreal = false; end
+if nargin < 4, needzero = needsign; end
 
 % Classifications:
 % 1  - negative constant
@@ -18,15 +17,20 @@ end
 % 11 - log convex monomial
 % 12 - log convex posynomial
 % 13 - invalid
+% ---
+% 14 - constant
+% 15 - affine
+% 16 - real constant
 
 if isempty( x ),
     v = 'empty';
     return
 end
-persistent remap_1 remap_2 strs
+persistent remap_s remap_r remap_z strs
 if isempty( strs ),
-    remap_1 = [ 14,2,14,14,5,6,7,15,9,10,11,12,13 ];
-    remap_2 = [ 16,2,16,4,5,6,7,8,9,10,11,12,13 ];
+    remap_s = [16,2,16,4,5,6,7,8,9,10,11,12,13,14,15,16];
+    remap_r = [1,2,3,14,5,15,7,15,9,10,11,12,13,14,15,14];
+    remap_z = [1,14,3,4,5,6,7,8,9,10,11,12,13,14,15,16];
     strs = { 'negative constant', 'zero', 'positive constant', 'complex constant', ...
              'concave', 'real affine', 'convex', 'complex affine', ...
              'log-concave', 'log-affine', 'log-convex', 'log-convex', ...
@@ -34,9 +38,13 @@ if isempty( strs ),
 end
 x = cvx_classify( x );
 if ~needsign,
-    x = remap_1( x );
-elseif ~needreal,
-    x = remap_2( x );
+    x = remap_s( x );
+end
+if ~needreal,
+    x = remap_r( x );
+end
+if ~needzero,
+    x = remap_z( x );
 end
 v = sparse( x, 1, 1, 16, 1 ) ~= 0;
 if nnz( v ) ~= v( 2 ),

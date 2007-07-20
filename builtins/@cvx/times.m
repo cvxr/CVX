@@ -166,7 +166,7 @@ for k = 1 : nv,
     case 0,
 
         % Invalid
-        error( sprintf( 'Disciplined convex programming error:\n    Cannot perform the operation: {%s} %s {%s}', cvx_class( xt, true, true ), oper, cvx_class( yt, true, true ) ) );
+        error( sprintf( 'Disciplined convex programming error:\n    Cannot perform the operation: {%s} %s {%s}', cvx_class( xt, true, true, true ), oper, cvx_class( yt, true, true, true ) ) );
         
     case 1,
         

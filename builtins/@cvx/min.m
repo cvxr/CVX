@@ -83,7 +83,7 @@ if nargin == 2,
         switch vu( k ),
         case 0,
             % Invalid
-            error( sprintf( 'Disciplined convex programming error:\n    Cannot perform the operation min( {%s}, {%s} )', cvx_class( xt ), cvx_class( yt ) ) );
+            error( sprintf( 'Disciplined convex programming error:\n    Cannot perform the operation min( {%s}, {%s} )', cvx_class( xt, false, true ), cvx_class( yt, false, true ) ) );
         case 1,
             % constant
             cvx_optval = min( cvx_constant( xt ), cvx_constant( yt ) );
@@ -219,7 +219,7 @@ else
 
         switch nu( k ),
             case 0,
-                error( sprintf( 'Disciplined convex programming error:\n   Invalid computation: min( {%s} )', cvx_class( xt, true, true ) ) );
+                error( sprintf( 'Disciplined convex programming error:\n   Invalid computation: min( {%s} )', cvx_class( xt, false, true ) ) );
             case 1,
                 cvx_optval = min( cvx_constant( xt ), dim );
             case 2,
