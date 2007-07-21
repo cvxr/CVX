@@ -117,7 +117,7 @@ end;
 data = [data; 0.5 0.5];
 bounds = zeros(m,2);
 for k = 1:m
-    fprintf(1,'Deciding on bundle %d of %d\n',k,m);
+    fprintf(1,'Deciding on bundle %d of %d: ',k,m);
 
     % Check for u(k) >= u(0.5,0.5)
     cvx_begin
@@ -132,6 +132,7 @@ for k = 1:m
             (u*ones(1,m+1)).*Pweak >= (ones(m+1,1)*u').*Pweak;
     cvx_end
     bounds(k,1) = cvx_optval;
+    fprintf( 1,'%g', round(cvx_optval) );
 
     % Check for u(0.5,0.5) >= u(k)
     cvx_begin
@@ -146,7 +147,8 @@ for k = 1:m
             (u*ones(1,m+1)).*Pweak >= (ones(m+1,1)*u').*Pweak;
     cvx_end
     bounds(k,2) = cvx_optval;
-
+    fprintf( 1,' %g\n', round(cvx_optval) );
+    
 end
 
 figure(2);

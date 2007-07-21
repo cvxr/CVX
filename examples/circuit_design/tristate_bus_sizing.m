@@ -88,7 +88,7 @@ for i = 1 : npts  + xnpts,
         xi = i - npts;
         delay = xdelays(xi);
         disp( sprintf( 'Particular solution %d of %d (Tmax = %g)', xi, xnpts, delay ) );
-    else,
+    else
         delay = delays(i);
         disp( sprintf( 'Point %d of %d on the tradeoff curve (Tmax = %g)', i, npts, delay ) );
     end
@@ -113,7 +113,7 @@ for i = 1 : npts  + xnpts,
 
     if i <= npts,
         areas(i) = cvx_optval;
-    else,
+    else
         xareas(xi) = cvx_optval;
         sizes(:,xi) = x;
 

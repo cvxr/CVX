@@ -28,8 +28,10 @@ disp( 'The original matrix, P: ' );
 disp( P )
 disp( 'The optimal point, Z:' );
 disp( Z )
-disp( 'min( eig( Z ) ) (should be nonnegative):' );
-disp( min( eig( Z ) ) )
+disp( 'The optimal dual variable, Q:' );
+disp( Q )
+disp( 'min( eig( Z ) ), min( eig( Q ) ) (both should be nonnegative, or close):' );
+disp( sprintf( '   %g   %g\n', min( eig( Z ) ), min( eig( Q ) ) ) );
 disp( 'The optimal value, || Z - P ||_F:' );
 disp( norm( Z - P, 'fro' ) );
 disp( 'Complementary slackness: Z * Q, should be near zero:' );

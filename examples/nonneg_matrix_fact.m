@@ -23,9 +23,9 @@ Y = rand(m,k);
 % Perform alternating minimization
 MAX_ITERS = 30;
 residual = zeros(1,MAX_ITERS);
-cvx_q = cvx_quiet(true);
 for iter = 1:MAX_ITERS
     cvx_begin
+        cvx_quiet(true);
         if mod(iter,2) == 1
             variable X(k,n)
         else
@@ -38,7 +38,6 @@ for iter = 1:MAX_ITERS
     fprintf(1,'Iteration %d, residual norm %g\n',iter,cvx_optval);
     residual(iter) = cvx_optval;
 end
-cvx_quiet(cvx_q);
 
 % Plot residuals
 plot(residual); 
