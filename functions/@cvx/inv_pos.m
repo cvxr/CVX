@@ -15,7 +15,7 @@ error( nargchk( 1, 1, nargin ) );
 persistent remap
 if isempty( remap ),
     remap_1 = cvx_remap( 'real' );
-    remap_2 = cvx_remap( 'concave' ) & ~remap_2;
+    remap_2 = cvx_remap( 'concave' ) & ~remap_1;
     remap_3 = cvx_remap( 'monomial', 'posynomial' );
     remap = remap_1 + 2 * remap_2 + 3 * remap_3;
 end

@@ -19,7 +19,7 @@ pstr = cvx___.problems( p );
 if isempty( pstr.objective ) & isempty( pstr.variables ) & isempty( pstr.duals ) & nnz( pstr.t_variable ) == 1,
 
     warning( 'Empty cvx model; no action taken.' );
-    evalin( 'caller', 'pop( cvx_problem, ''none'' )' );
+    evalin( 'caller', 'cvx_pop( cvx_problem, ''none'' )' );
 
 elseif pstr.complete & nnz( pstr.t_variable ) == 1,
 
@@ -93,6 +93,14 @@ elseif pstr.complete & nnz( pstr.t_variable ) == 1,
     % Copy the variable data to the workspace
     %
 
+    if numel( pstr.objective ) > 1,
+        if strfind( pstr.status, 'Solved' ),
+            pstr.result = value( pstr.objective );
+            if pstr.geometric, pstr.result = exp( pstr.result ); end
+        else
+            pstr.result = pstr.result * ones(size(pstr.objective));
+        end
+    end
     assignin( 'caller', 'cvx_optpnt', pstr.variables );
     assignin( 'caller', 'cvx_optdpt', pstr.duals );
     assignin( 'caller', 'cvx_status', pstr.status );
@@ -102,7 +110,7 @@ elseif pstr.complete & nnz( pstr.t_variable ) == 1,
     % Compute the numerical values and clear out
     %
 
-    evalin( 'caller', 'pop( cvx_problem, ''value'' )' );
+    evalin( 'caller', 'cvx_pop( cvx_problem, ''value'' )' );
 
 else
 
@@ -215,7 +223,7 @@ else
 
     clear pstr
     assignin( 'caller', 'cvx_status', 'Incorporated' );
-    evalin( 'caller', 'pop( cvx_problem, ''none'' )' );
+    evalin( 'caller', 'cvx_pop( cvx_problem, ''none'' )' );
 
 end
 

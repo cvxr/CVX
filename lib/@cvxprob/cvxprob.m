@@ -8,46 +8,15 @@ case 0,
 
     name = '';
     st = dbstack;
-    isver7 = isfield( st, 'file' );
-    for k = 2 : length( st ),
-        name = st(k).name;
-        if ~isver7,
-            if ispc, ds = '\'; else ds = '/'; end
-            name( 1 : max( find( name == ds ) ) ) = [];
-            tt = find( name == '(' );
-            if ~isempty( tt ),
-                name = name( tt + 1 : end - 1 );
-            else
-                tt = find( name == '.' );
-                name = name( 1 : tt( 1 ) - 1 );
-            end
-        end
-        switch k,
-            case 2,
-                if ~strcmp( name, 'cvx_create_problem' ),
-                    error( 'Creating a cvxprob object manually is not permitted.' );
-                else
-                    name = '';
-                end
-            case 3,
-                if ~any( strcmp( name, { 'cvx_begin', 'cvx_begin_set' } ) ),
-                    error( 'Calling cvx_create_problem manually is not permitted.' );
-                else
-                    name = '';
-                end
-            otherwise,
-                break;
-        end
-    end
+    depth = length( st ) - 3;
 
     if ~isempty( cvx___.problems ),
-        ndx = [ cvx___.problems.depth ];
-        ndx = min( find( ndx >= length( st ) - 3 ) );
+        ndx = find( [ cvx___.problems.depth ] >= depth );
         if ~isempty( ndx ),
-            pop( cvx___.problems( ndx ).self, 'reset' );
+            cvx_pop( cvx___.problems( ndx(1) ).self, 'reset' );
         end
     end
-
+    
     if ~isempty( cvx___.problems ),
         nprec  = cvx___.problems( end ).precision;
         ngprec = cvx___.problems( end ).gptol;

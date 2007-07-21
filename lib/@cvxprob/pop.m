@@ -10,25 +10,29 @@ p = index( prob );
 if p <= length( cvx___.problems ) & cvx___.problems( p ).self == prob,
     pid  = cvx_id( prob );
     prob = cvx___.problems( p );
-    nf   = length( prob.t_variable ) + 1;
-    ne   = prob.n_equality + 1;
-    nl   = prob.n_linform + 1;
-    nu   = prob.n_uniform + 1;
+    if p > 1,
+        nf   = length( prob.t_variable ) + 1;
+        ne   = prob.n_equality + 1;
+        nl   = prob.n_linform + 1;
+        nu   = prob.n_uniform + 1;
+    end
 else
-    p          = 1;
-    pid        = -1;
-    nf         = 0;
-    ne         = 1;
-    nl         = 1;
-    nu         = 1;
-    clearmode  = 'clear';
+    p = 1;
+    clearmode = 'clear';
+end
+if p == 1,
+    pid = -1;
+    nf = 0;
+    ne = 1;
+    nl = 1;
+    nu = 1;
 end
 
 %
 % Clear the corresponding and equality constraints and variables
 %
 
-if ~isequal( clearmode, 'none' ),
+if ~isequal( clearmode, 'none' ) & ~isequal( clearmode, 'value' ),
     if nf <= 2,
         cvx___.reserved    = 0;
         cvx___.geometric   = sparse( 1, 1 );
@@ -77,13 +81,14 @@ if ~isequal( clearmode, 'none' ),
         cvx___.uniforms( nu : end ) = [];
         cvx___.unirepls( nu : end ) = [];
     end
+    cvx___.nan_used = any( isnan( cvx___.vexity ) );
 end
 
 %
 % Clear the workspace
 %
 
-if ~isequal( clearmode, 'reset' ),
+if ~isequal( clearmode, 'reset' ) & ~isequal( clearmode, 'extract' ),
     evalin( 'caller', 'clear cvx___' );
     s1 = evalin( 'caller', 'who' );
     if cvx___.mversion < 7.1,
@@ -127,6 +132,8 @@ end
 % Clear the problem stack and value vectors
 %
 
-cvx___.problems( p : end ) = [];
-cvx___.x = [];
-cvx___.y = [];
+if ~isequal( clearmode, 'extract' ),
+    cvx___.problems( p : end ) = [];
+    cvx___.x = [];
+    cvx___.y = [];
+end

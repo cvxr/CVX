@@ -74,46 +74,49 @@ void mexFunction(
             *candidates  = row_counts + m;
     double  *row_flags   = mxGetPr( plhs[0] = mxCreateNumericMatrix( m, 1, mxDOUBLE_CLASS, mxREAL ) ),
             *col_flags   = mxGetPr( plhs[1] = mxCreateNumericMatrix( 1, n, mxDOUBLE_CLASS, mxREAL ) ),
-            *reserved    = mxGetPr( prhs[2] );
+            *reserved    = mxGetPr( prhs[2] ),
+            *c_reserved  = mxGetPr( prhs[3] );
 
     for ( j = 0 ; j != nnzA ; ++j )
         ++row_counts[row_index_A[j]];
     nQ = nnzQ = 0;
     for ( j = nobj ; j != n ; ++j ) {
-        mwIndex kBeg = col_count_A[j],
-			    kEnd = col_count_A[j+1],
-                nc   = kEnd - kBeg - 1, k, rb;
-        mwSize  rr   = nnzA1;
-		for ( k = kBeg ; k != kEnd ; ++k ) {
-			mwIndex tr = row_index_A[k];
-			if ( reserved[tr] == 0 ) {
-				mwSize nr = row_counts[tr],
-                       n1 = ( nr - 1 ) * nc,
-				       n2 = nr + nc;
-				if ( n1 <= n2 ) {
-					if ( row_flags[tr] <= 0 && ( n1 < rr || n1 == rr && row_flags[rb] && !row_flags[tr] ) ) {
-						rb = tr;
-						rr = n1;
-					}
-				}
-			}
-		}
-		if ( rr != nnzA1 ) {
-			for ( k = kBeg ; k != kEnd ; ++k ) {
-				mwIndex tr = row_index_A[k];
-                int32_T fg = row_flags[tr];
-				if ( fg > 0 ) {
-					++fg;
-					++nnzQ;
-				} else
-					--fg;
-				row_flags[tr] = fg;
-			}
-			col_flags[j] = rb + 1;
-			nnzQ += ( row_flags[rb] = - row_flags[rb] );
-			candidates[nQ++] = j;
-		}
-	}
+        if ( c_reserved[j] == 0 ) {
+            mwIndex kBeg = col_count_A[j],
+                    kEnd = col_count_A[j+1],
+                    nc   = kEnd - kBeg, k, rb;
+            mwSize  rr   = nnzA1;
+            for ( k = kBeg ; k != kEnd ; ++k ) {
+                mwIndex tr = row_index_A[k];
+                if ( reserved[tr] == 0 ) {
+                    mwSize nr = row_counts[tr],
+                           n1 = ( nr - 1 ) * ( nc - 1 ),
+                           n2 = nr + nc - 1;
+                    if ( n1 <= n2 ) {
+                        if ( row_flags[tr] <= 0 && ( n1 < rr || n1 == rr && row_flags[rb] && !row_flags[tr] ) ) {
+                            rb = tr;
+                            rr = n1;
+                        }
+                    }
+                }
+            }
+            if ( rr != nnzA1 ) {
+                for ( k = kBeg ; k != kEnd ; ++k ) {
+                    mwIndex tr = row_index_A[k];
+                    int32_T fg = row_flags[tr];
+                    if ( fg > 0 ) {
+                        ++fg;
+                        ++nnzQ;
+                    } else
+                        --fg;
+                    row_flags[tr] = fg;
+                }
+                col_flags[j] = rb + 1;
+                nnzQ += ( row_flags[rb] = - row_flags[rb] );
+                candidates[nQ++] = j;
+            }
+        }
+    }
     for ( j = 0 ; j != m ; ++j )
         if ( row_flags[j] < 0 )
             row_flags[j] = 0;

@@ -1,43 +1,23 @@
-function [ dbcA, cones, objsize, dir, Q, P, esrc, edst ] = extract( p, destructive )
-if nargin < 2, destructive = false; end
+function [ dbcA, cones, dir, Q, P, esrc, edst ] = extract( pp, destructive )
+if nargin < 2 | nargout < 7, destructive = false; end
 
 global cvx___
-p = cvx___.problems( index( p ) );
-
-%
-% Sizes
-%
-
-nb = length( cvx___.reserved );
-nres = length( p.t_variable );
-if nres == 1 | all( p.t_variable ),
-    need_used = false;
-    n = nb;
-else
-    need_used = true;
-    used = p.t_variable;
-    used( end + 1 : nb, : ) = true;
-    offset = cumsum( used );
-    n = offset( end );
-end
+p = cvx___.problems( index( pp ) );
+n = length( cvx___.reserved );
 
 %
 % Objective
 %
 
-dbcA    = p.objective;
-objsize = size( dbcA );
-nobj    = prod( objsize );
-if nobj == 0,
-    nobj = 1;
+dbcA = p.objective;
+if isempty(p.objective),
     dir = 1;
-    objsize = [ 1, 1 ];
     dbcA = cvx( [ 1, 1 ], [] );
 elseif strcmp( p.direction, 'minimize' ) | strcmp( p.direction, 'epigraph' ),
-    dbcA = vec( dbcA );
+    dbcA = sum(vec( dbcA ));
     dir = 1;
 else
-    dbcA = -vec( dbcA );
+    dbcA = -sum(vec( dbcA ));
     dir = -1;
 end
 
@@ -47,6 +27,8 @@ end
 
 AA = cvx___.equalities;
 ineqs = cvx___.needslack;
+npre = p.n_equality;
+ntot = length( AA );
 if p.n_equality > 0,
     AA = AA( p.n_equality + 1 : end, : );
     ineqs = ineqs( p.n_equality + 1 : end, : );
@@ -59,7 +41,7 @@ elseif destructive,
     cvx___.needslack = logical( zeros( 0, 1 ) );
 end
 if ~isempty( AA ),
-    ineqs = [ logical(zeros(nobj,1)) ; ineqs ];
+    ineqs = [ false ; ineqs ];
     dbcA = [ dbcA ; AA ];
     clear AA
 end
@@ -124,14 +106,14 @@ end
 
 dbcA = cvx_basis( dbcA );
 nA = size( dbcA, 1 );
-if nA < nb,
-    dbcA( end + 1 : nb, : ) = 0;
-elseif nb < nA,
-    dbcA = dbcA( 1 : nb, : );
+if nA < n,
+    dbcA( n, end ) = 0;
+elseif n < nA,
+    dbcA = dbcA( 1 : n, : );
 end
 
 %
-% Convert inequalities to equalities if they have available slack
+% Determine which inequalities need slack variables
 %
 
 if any( ineqs ),
@@ -139,7 +121,7 @@ if any( ineqs ),
     if any( slacks ),
         ndxs   = find( ineqs );
         sterms = dbcA( slacks, ineqs );
-        oterms = dbcA( slacks, 1 : nobj );
+        oterms = dbcA( slacks, 1 );
         if nnz( sterms ),
             sdirec = cvx___.vexity( slacks );
             pslack = sum( sterms < 0, 2 ) == 1 & sdirec >= 0 & ~any( oterms > 0, 2 );
@@ -161,131 +143,81 @@ if any( ineqs ),
 end
 
 %
-% Eliminate unused variables
+% Select the cones used
 %
 
-if need_used,
-    dbcA = dbcA( used, : );
+ocones = [];
+cones = cvx___.cones;
+used = full( any( dbcA, 2 ) );
+if all( used ),
+    cones = cvx___.cones;
+else
+    cones = [];
+    for k = 1 : length( cvx___.cones ),
+        cone = cvx___.cones( k );
+        temp = any( reshape( used( cone.indices ), size( cone.indices ) ), 1 );
+        if any( temp ),
+            ncone = cone;
+            ncone.indices = ncone.indices( :, temp );
+            if isempty( cones ),
+                cones = ncone;
+            else
+                cones = [ cones, ncone ];
+            end
+        end
+        if destructive & ~all( temp ),
+            cone.indices( :, temp ) = [];
+            if isempty( ocones ),
+                ocones = cone;
+            else
+                ocones = [ ocones, cone ];
+            end
+        end
+    end
+end
+if destructive,
+    cvx___.cones = ocones;
 end
 
 %
-% Add slack variables, part 1
+% Add the slack variables
 %
 
 nsl = nnz( ineqs );
 if nsl ~= 0,
-    sndxs = size( dbcA, 1 ) + [ 1 : nsl ];
     dbcA = [ dbcA ; sparse( 1 : nsl, find( ineqs ), -1, nsl, length( ineqs ) ) ];
-end
-
-%
-% Cones
-%
-
-if nargout < 3 & ~destructive,
-    return
-end
-if need_used,
-    cones = [];
-    ocones = [];
-    for k = 1 : length( cvx___.cones ),
-        cone = cvx___.cones( k );
-        temp = reshape( used( cone.indices ), size( cone.indices ) );
-        temp = any( temp, 1 );
-        if any( temp ),
-            ncone = cone;
-            ncone.indices = ncone.indices( :, temp );
-            if need_used,
-                ncone.indices = reshape( offset( ncone.indices ), size( ncone.indices ) );
-            end
-            if isempty( cones ),
-                cones = ncone;
-            elseif isequal( ncone.type, 'nonnegative' ),
-                cones = [ ncone, cones ];
-            else
-                cones = [ cones, ncone ];
-            end
-            if destructive,
-                temp = ~temp;
-                if any( temp ),
-                    ncone = cone;
-                    ncone.indices = ncone.indices( :, temp );
-                    if isempty( ocones ),
-                        ocones = ncone;
-                    else
-                        ocones = [ ocones, ncone ];
-                    end
-                end
-            end
-        end
-    end
-    if destructive,
-        cvx___.cones = ocones;
-    end
-else
-    cones = cvx___.cones;
-    if destructive,
-        cvx___.cones = [];
-    end
-end
-
-%
-% Add slack variables, part 2
-%
-
-if nsl ~= 0,
-    ncone = struct( 'type', 'nonnegative', 'indices', sndxs );
+    ncone = struct( 'type', 'nonnegative', 'indices', n+1:n+nsl );
     if isempty( cones ),
         cones = ncone;
-    elseif isequal( cones( 1 ).type, 'nonnegative' ),
-        cones( 1 ).indices = [ cones( 1 ).indices, ncone.indices ];
     else
-        cones = [ ncone, cones ];
+        tt = find(strcmp([cones.type],'nonnnegative'));
+        if ~isempty( tt ),
+            cones(tt(1)).indices = [ cones(tt(1)).indices, ncone.indices ];
+        else
+            cones = [ ncone, cones ];
+        end
     end
-end
-
-%
-% Exponential and logarithm indices
-%
-
-if nargout > 6 | destructive,
-    esrc = find( cvx___.exponential );
-    edst = full( cvx___.exponential( esrc ) );
-    if need_used,
-        tt = ~( used( esrc ) & used( edst ) );
-        esrc( tt ) = [];
-        edst( tt ) = [];
-    end
-end
-
-%
-% Reserved flags
-%
-
-if destructive,
-    cvx___.reserved( nres + 1 : end ) = [];
-    cvx___.geometric( nres + 1 : end ) = [];
-    cvx___.exponential( nres + 1 : end ) = [];
-    cvx___.logarithm( nres + 1 : end )   = [];
-    cvx___.exponential( cvx___.exponential > nres ) = 0;
-    cvx___.logarithm( cvx___.logarithm > nres ) = 0;
 end
 
 %
 % Q and P matrices
 %
 
-if nargout > 4,
-    if need_used,
-        Q = sparse( find( used ), 1 : n, 1, nb, n + nsl );
-    else
-        Q = speye( nb, nb + nsl );
-    end
-end
+used = find( used );
+Q = sparse( used, used, 1, n, n + nsl );
+P = sparse( [ 1, npre + 2 : ntot + 1 ], 1 : ntot - npre + 1, 1, ntot + 1, size( dbcA, 2 ) );
 
-if nargout > 5,
-    npre = p.n_equality;
-    ntot = length( cvx___.equalities );
-    P    = sparse( npre + 1 : ntot, nobj + 1 : nobj + ( ntot - npre ), ...
-                   1, ntot, size( dbcA, 2 ) );
+%
+% Exponential and logarithm indices
+%
+
+esrc = find( cvx___.exponential );
+edst = full( cvx___.exponential( esrc ) );
+
+%
+% Reserved flags
+%
+
+if destructive,
+    cvx_pop( pp, 'extract' );
 end

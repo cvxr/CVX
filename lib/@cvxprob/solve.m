@@ -2,20 +2,21 @@ function solve( prob )
 
 global cvx___
 p = index( prob );
-quiet = cvx___.problems(p).quiet;
-[ At, cones, objsize, sgn, Q, P, esrc ] = eliminate( prob );
-nobj = prod( objsize );
-
-if nobj == 0,
-    error( 'Shouldn''t have an empty objective here.' );
-elseif nobj > 1 & ~cvx___.problems( p ).separable,
+pr = cvx___.problems(p);
+nobj = numel(pr);
+if nobj > 1 & ~pr.separable,
     error( 'Non-separable multiobjective problems are not supported.' );
-elseif ~isempty( esrc ),
+end
+quiet = cvx___.problems(p).quiet;
+[ At, cones, sgn, Q, P, esrc, edst, dualized ] = eliminate( prob, true );
+if ~isempty( esrc ),
     error( 'Non-GP exp() and log() constraints are not supported.' );
 end
+clear pr
 
-c = At( :, 1 : nobj );
-At( :, 1 : nobj ) = [];
+dbca = At;
+c = At( :, 1 );
+At( :, 1 ) = [];
 d = c( 1, : );
 c( 1, : ) = [];
 [ n1, m ] = size( At );
@@ -26,18 +27,14 @@ else
     At( 1, : ) = [];
 end
 n = n1 - 1;
-lambda = ones( nobj, 1 );
-tot_ineqs = 0;
 for k = 1 : length( cones ),
     cones(k).indices = cones(k).indices - 1;
-    tot_ineqs = tot_ineqs + length(cones(k).indices);
 end
 
 %
 % Ferret out the degenerate and overdetermined problems
 %
 
-found = true;
 tt = ( b' ~= 0 ) & ~any( At, 1 );
 infeas = any( tt );
 if m > n & n > 0,
@@ -75,37 +72,40 @@ elseif n ~= 0 & ~infeas & ( any( b ) | any( c ) ),
     if ~quiet,
         disp( ' ' );
         disp( sprintf( 'Calling %s: %d variables, %d equality constraints', solv, n, m ) );
+        if dualized,
+            disp( sprintf( 'Note: for improved efficiency, %s is solving the dual problem.', solv ) );
+        end
         disp( spacer );
     end
     opath = path;
-%    try
+    try
         path( [ getfield( cvx___.path.solvers, lsolv ), opath ] );
         if cvx___.profile,
             profile off
         end
-        [ x, y, status ] = feval( sfunc, At, b, c * lambda, sgn, cones, quiet, prec );
+        [ x, y, status ] = feval( sfunc, At, b, c, sgn, cones, quiet, prec );
         if cvx___.profile,
             profile resume
         end
-%    catch
-%        path( opath );
-%        rethrow( lasterror );
-%    end
+    catch
+        path( opath );
+        rethrow( lasterror );
+    end
     switch status,
     case { 'Solved', 'Inaccurate/Solved' },
-        value = sgn * reshape( c' * x + d', objsize );
+        value = sgn * ( c' * x + d' );
         pval = 1;
         dval = 1;
     case { 'Infeasible', 'Inaccurate/Infeasible' },
-        value = sgn * Inf * ones( objsize );
+        value = sgn * Inf;
         pval = NaN;
         dval = 0;
     case { 'Unbounded', 'Inaccurate/Unbounded' },
-        value = -sgn * Inf * ones( objsize );
+        value = -sgn * Inf;
         pval = 0;
         dval = NaN;
     otherwise,
-        value = NaN * ones( objsize );
+        value = NaN;
         pval = NaN;
         dval = NaN;
     end
@@ -148,6 +148,15 @@ else
     
 end
 
+if dualized,
+    switch status,
+        case 'Infeasible', status = 'Unbounded';
+        case 'Unbounded',  status = 'Infeasible';
+        case 'Inaccurate/Infeasible', status = 'Inaccurate/Unbounded';
+        case 'Inaccurate/Unbounded',  status = 'Inaccurate/Infeasible';
+    end
+end
+
 gvec = cvx___.problems( p ).geometric;
 if nnz( gvec ),
     value( gvec ) = exp( value( gvec ) );
@@ -167,8 +176,15 @@ end
 %
 
 global cvx___
-cvx___.x = full( Q * [ pval ; x ] );
-cvx___.y = full( P * [ dval * lambda ; y ] );
+x = full( Q * [ pval ; x ] );
+y = full( P * [ dval ; y ] );
+if dualized,
+    cvx___.x = y;
+    cvx___.y = x(2:end);
+else
+    cvx___.x = x;
+    cvx___.y = y(2:end);
+end
 cvx___.problems( p ).result = value;
 cvx___.problems( p ).status = status;
 if nnz( cvx___.exponential ),

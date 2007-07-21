@@ -45,8 +45,7 @@ if isa( cvx_problem, 'cvxprob' ),
     if ~isempty( cvx_problem.objective ) | ~isempty( cvx_problem.variables ) | ~isempty( cvx_problem.duals ) | nnz( cvx_problem.t_variable ) > 1,
         warning( sprintf( 'A cvx problem already existed in this scope.\n   It is being overwritten.' ) );
     end
-    evalin( 'caller', 'pop( cvx_problem, ''clear'' );' );
-    cvx_problem = [];
+    cvx_pop( cvx_problem );
 end
 cvx_setpath( 1 );
 global cvx___

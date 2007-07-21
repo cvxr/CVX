@@ -95,8 +95,8 @@ if nargin == 2,
             cvx_optval = yt;
         case 4,
             % posy
-            cvx_begin
-                geometric epigraph variable zt( sz );
+            cvx_begin gp
+                epigraph variable zt( sz );
                 xt <= zt;
                 yt <= zt;
             cvx_end
@@ -223,8 +223,8 @@ else
             case 1,
                 cvx_optval = max( cvx_constant( xt ), dim );
             case 2,
-                cvx_begin
-                    geometric epigraph variable zt( 1, nv )
+                cvx_begin gp
+                    epigraph variable zt( 1, nv )
                     xt <= ones(nx,1) * zt;
                 cvx_end
             case 3,

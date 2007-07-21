@@ -95,8 +95,8 @@ if nargin == 2,
             cvx_optval = xt;
         case 4,
             % posy
-            cvx_begin
-                geometric hypograph variable zt( sz )
+            cvx_begin gp
+                 hypograph variable zt( sz )
                 xt >= zt;
                 yt >= zt;
             cvx_end
@@ -223,8 +223,8 @@ else
             case 1,
                 cvx_optval = min( cvx_constant( xt ), dim );
             case 2,
-                cvx_begin
-                    geometric hypograph variable zt( 1, nv )
+                cvx_begin gp
+                    hypograph variable zt( 1, nv )
                     xt >= ones(nx,1) * zt;
                 cvx_end
             case 3,

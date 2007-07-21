@@ -14,7 +14,7 @@ if nargin > 0,
         if isempty( mode ),
             continue;
         elseif ~ischar( mode ) | size( mode, 1 ) ~= 1,
-            pop( cvx_problem, 'clear' );
+            cvx_pop( cvx_problem, 'clear' );
             error( 'Arguments must be strings.' );
         end
         switch lower( mode ),
@@ -25,13 +25,13 @@ if nargin > 0,
                 cvx___.problems( p ).direction = 'find';
             case 'sdp',
                 if cvx___.problems( p ).gp,
-                    pop( cvx_problem, 'clear' );
+                    cvx_pop( cvx_problem, 'clear' );
                     error( 'The GP and SDP modifiers cannot be used together.' );
                 end
                 cvx___.problems( p ).sdp = true;
             case 'gp',
                 if cvx___.problems( p ).sdp,
-                    pop( cvx_problem, 'clear' );
+                    cvx_pop( cvx_problem, 'clear' );
                     error( 'The GP and SDP modifiers cannot be used together.' );
                 end
                 cvx___.problems( p ).gp = true;

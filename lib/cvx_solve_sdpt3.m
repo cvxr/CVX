@@ -212,7 +212,7 @@ OPTIONS = sqlparameters;
 OPTIONS.gaptol = prec(1);
 OPTIONS.printlevel = 3 * ~quiet;
 OPTIONS.vers = 2;
-[ obj, xx, y, z, info ] = sqlp( blk, Avec, Cvec, b, OPTIONS );
+[ obj, xx, y, z, info ] = HSDsqlp( blk, Avec, Cvec, b, OPTIONS );
 
 %
 % Interpret the output
@@ -233,7 +233,7 @@ switch info.termcode,
         if err > prec(3),
             status = 'Failed';
         elseif err <= prec(2),
-            status = 'Solved',
+            status = 'Solved';
             info.termcode = 0;
         else
             status = 'Inaccurate/Solved';
