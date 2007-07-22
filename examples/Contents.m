@@ -7,6 +7,7 @@
 %  sparse_heuristics/          - Sparse solution heuristics
 %  quickstart.m                - Examples from the CVX User's guide
 %  regularized_norm_tradeoff.m - Builds a norm minimization tradeoff curve
+%  simple_LP2.m                - Builds and solves a simple inequality-constrained linear program
 %  simple_LS.m                 - Builds and solves a simple least-squares problem using cvx
 %  simple_LP.m                 - Builds and solves a simple linear program
 %  closest_toeplitz_psd.m      - Closest Toeplitz SDP search.

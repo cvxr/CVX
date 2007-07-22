@@ -11,7 +11,7 @@ To make changes, update the M-file and republish this document.
       -->
       <title>Section 4.5.4: Frobenius norm diagonal scaling (GP)</title>
       <meta name="generator" content="MATLAB 7.4">
-      <meta name="date" content="2007-06-26">
+      <meta name="date" content="2007-07-21">
       <meta name="m-file" content="frob_norm_diag_scaling"><style>
 
 body {
@@ -104,13 +104,13 @@ disp(norm(D*M*inv(D),<span class="string">'fro'</span>));
 disp(<span class="string">'while the Frobunius norm of the original matrix M is: '</span>);
 disp(norm(M,<span class="string">'fro'</span>));
 </pre><pre class="codeoutput"> 
-Calling SDPT3: 373 variables, 209 equality constraints
+Calling SDPT3: 368 variables, 164 equality constraints
+Note: for improved efficiency, SDPT3 is solving the dual problem.
 ------------------------------------------------------------
 
- num. of constraints = 209
+ num. of constraints = 164
  dim. of sdp    var  = 96,   num. of sdp  blk  = 16
  dim. of linear var  = 32
- dim. of free   var  =  5 *** convert ublk to linear blk
 *******************************************************************
    SDPT3: homogeneous self-dual path-following algorithms
 *******************************************************************
@@ -118,49 +118,46 @@ Calling SDPT3: 373 variables, 209 equality constraints
     NT      1      0.000   1
 it  pstep dstep p_infeas d_infeas  gap     mean(obj)    cputime
 -------------------------------------------------------------------
- 0  0.000 0.000 2.8e+00 7.8e+00  1.4e+02  0.000000e+00  0:0:00 chol  1  1
- 1  0.323 0.323 2.8e+00 8.0e+00  2.0e+02 -1.541635e+01  0:0:00 chol  1  1
- 2  1.000 1.000 1.7e+00 4.9e+00  2.5e+02 -2.850290e+01  0:0:00 chol  1  1
- 3  1.000 1.000 6.1e-01 1.7e+00  1.0e+02 -1.128959e+01  0:0:00 chol  1  1
- 4  0.901 0.901 6.8e-02 1.9e-01  9.6e+00  1.748721e+00  0:0:00 chol  1  1
- 5  0.792 0.792 3.6e-02 1.0e-01  4.6e+00  1.129991e+00  0:0:00 chol  1  1
- 6  0.916 0.916 1.1e-02 3.1e-02  1.3e+00  1.378590e+00  0:0:00 chol  1  1
- 7  1.000 1.000 6.3e-03 1.8e-02  7.3e-01  1.260919e+00  0:0:00 chol  1  1
- 8  0.892 0.892 1.4e-03 3.9e-03  1.5e-01  1.214880e+00  0:0:00 chol  1  1
- 9  1.000 1.000 6.3e-04 1.8e-03  6.7e-02  1.198525e+00  0:0:00 chol  1  1
-10  0.900 0.900 7.7e-05 2.2e-04  7.7e-03  1.182470e+00  0:0:00 chol  1  1
-11  1.000 1.000 3.3e-05 9.5e-05  3.4e-03  1.180885e+00  0:0:00 chol  1  1
-12  0.945 0.945 2.2e-06 6.3e-06  2.1e-04  1.179720e+00  0:0:01 chol  1  1
-13  0.965 0.965 1.1e-07 3.2e-07  9.1e-06  1.179640e+00  0:0:01 chol
-  SWM to ill-conditioned, switch to LU factor. lu   1  1
-14  1.000 1.000 6.8e-09 1.9e-08  6.2e-07  1.179636e+00  0:0:01 lu   1  1
-15  1.000 1.000 4.9e-10 1.0e-09  3.4e-08  1.179636e+00  0:0:01 lu   1  1
-16  0.999 0.999 7.7e-11 3.7e-11  1.2e-09  1.179636e+00  0:0:01
+ 0  0.000 0.000 2.9e+01 2.3e+00  1.3e+02  2.322045e+01  0:0:00 chol 1  1 
+ 1  0.632 0.632 2.8e+01 2.2e+00  2.3e+02  4.467994e+01  0:0:00 chol 1  1 
+ 2  1.000 1.000 7.1e+00 5.6e-01  8.6e+01  1.483546e+01  0:0:00 chol 1  1 
+ 3  0.905 0.905 1.2e+00 9.7e-02  1.4e+01  2.481161e-01  0:0:00 chol 1  1 
+ 4  0.980 0.980 2.9e-01 2.3e-02  2.9e+00 -1.330825e+00  0:0:00 chol 1  1 
+ 5  0.823 0.823 1.7e-01 1.3e-02  1.7e+00 -1.158523e+00  0:0:00 chol 1  1 
+ 6  0.924 0.924 5.8e-02 4.6e-03  5.6e-01 -1.258777e+00  0:0:00 chol 1  1 
+ 7  1.000 1.000 2.8e-02 2.2e-03  2.6e-01 -1.215837e+00  0:0:00 chol 1  1 
+ 8  0.930 0.930 4.3e-03 3.4e-04  3.7e-02 -1.189451e+00  0:0:00 chol 1  1 
+ 9  1.000 1.000 9.1e-04 7.3e-05  7.8e-03 -1.181935e+00  0:0:01 chol 1  1 
+10  0.926 0.926 1.5e-04 1.2e-05  1.2e-03 -1.180070e+00  0:0:01 chol 1  1 
+11  1.000 1.000 1.8e-05 1.4e-06  1.5e-04 -1.179686e+00  0:0:01 chol 1  1 
+12  0.981 0.981 4.7e-07 3.7e-08  2.7e-06 -1.179637e+00  0:0:01 chol 1  1 
+13  1.000 1.000 1.5e-08 1.2e-09  1.0e-07 -1.179636e+00  0:0:01 chol 1  1 
+14  1.000 1.000 5.9e-10 4.5e-11  4.2e-09 -1.179636e+00  0:0:01
   Stop: max(relative gap, infeasibilities) &lt; 1.49e-08
 -------------------------------------------------------------------
- number of iterations   = 16
- primal objective value =  1.17963604e+00
- dual   objective value =  1.17963604e+00
- gap := trace(XZ)       = 1.23e-09
- relative gap           = 5.67e-10
- actual relative gap    = 1.38e-10
- rel. primal infeas     = 7.73e-11
- rel. dual   infeas     = 3.75e-11
- norm(X), norm(y), norm(Z) = 2.6e+01, 3.1e+00, 2.8e+00
- norm(A), norm(b), norm(C) = 2.2e+01, 3.4e+01, 7.1e-01
- Total CPU time (secs)  = 0.7  
- CPU time per iteration = 0.0  
+ number of iterations   = 14
+ primal objective value = -1.17963604e+00
+ dual   objective value = -1.17963604e+00
+ gap := trace(XZ)       = 4.23e-09
+ relative gap           = 1.94e-09
+ actual relative gap    = 7.27e-10
+ rel. primal infeas     = 5.94e-10
+ rel. dual   infeas     = 4.48e-11
+ norm(X), norm(y), norm(Z) = 2.8e+00, 3.4e+00, 2.5e+01
+ norm(A), norm(b), norm(C) = 6.5e+01, 5.0e-01, 3.1e+01
+ Total CPU time (secs)  = 0.8  
+ CPU time per iteration = 0.1  
  termination code       =  0
- DIMACS: 7.7e-11  0.0e+00  3.7e-11  0.0e+00  1.4e-10  3.7e-10
+ DIMACS: 5.9e-10  0.0e+00  4.5e-11  0.0e+00  7.3e-10  1.3e-09
 -------------------------------------------------------------------
 ------------------------------------------------------------
 Status: Solved
 Optimal value (cvx_optval): +3.25319
 The matrix D that minimizes ||DMD^{-1}||_F is: 
-    0.9733         0         0         0
-         0    0.8171         0         0
-         0         0    0.8722         0
-         0         0         0    1.4570
+    0.9448         0         0         0
+         0    0.7932         0         0
+         0         0    0.8467         0
+         0         0         0    1.4144
 
 The minimium Frobenius norm achieved is: 
     3.2523

@@ -11,7 +11,7 @@ To make changes, update the M-file and republish this document.
       -->
       <title>Polynomial discrimination</title>
       <meta name="generator" content="MATLAB 7.4">
-      <meta name="date" content="2007-06-26">
+      <meta name="date" content="2007-07-21">
       <meta name="m-file" content="poly3_discr"><style>
 
 body {
@@ -151,12 +151,12 @@ disp(<span class="string">'-----------------------------------------------------
 disp(<span class="string">'As seen on the figure, the 2 sets of points are not separated.   '</span>);
 disp(<span class="string">'There exists no cubic polynomial that can separate these 2 sets.'</span>);
 </pre><pre class="codeoutput">Finding the optimal polynomial of order 4 that separates the 2 classes... 
-Calling SDPT3: 222 variables, 211 equality constraints
+Calling SDPT3: 211 variables, 11 equality constraints
+Note: for improved efficiency, SDPT3 is solving the dual problem.
 ------------------------------------------------------------
 
- num. of constraints = 211
+ num. of constraints = 11
  dim. of linear var  = 211
- dim. of free   var  = 11 *** convert ublk to linear blk
 *******************************************************************
    SDPT3: homogeneous self-dual path-following algorithms
 *******************************************************************
@@ -164,41 +164,40 @@ Calling SDPT3: 222 variables, 211 equality constraints
     NT      1      0.000   1
 it  pstep dstep p_infeas d_infeas  gap     mean(obj)    cputime
 -------------------------------------------------------------------
- 0  0.000 0.000 1.5e+01 7.7e+00  2.3e+02  0.000000e+00  0:0:00 chol  1  1
- 1  1.000 1.000 7.9e+00 4.2e+00  2.6e+02  7.310424e-01  0:0:00 chol  1  1
- 2  0.950 0.950 4.4e-01 2.3e-01  1.5e+01  8.995015e-01  0:0:00 chol  1  1
- 3  0.938 0.938 1.3e-01 6.8e-02  4.6e+00  4.775467e-01  0:0:00 chol  1  1
- 4  0.791 0.791 8.9e-02 4.7e-02  5.8e+00  4.807386e-01  0:0:00 chol  1  1
- 5  0.982 0.982 4.8e-02 2.5e-02  3.4e+00  3.538361e-01  0:0:00 chol  1  1
- 6  1.000 1.000 2.1e-02 1.1e-02  1.2e+00  1.621797e-01  0:0:00 chol  1  1
- 7  1.000 1.000 6.5e-03 3.4e-03  2.7e-01  5.083278e-02  0:0:01 chol  1  1
- 8  1.000 1.000 2.3e-03 1.2e-03  6.3e-02  1.850929e-02  0:0:01 chol  1  1
- 9  1.000 1.000 4.7e-04 2.5e-04  9.3e-03  3.654915e-03  0:0:01 chol  1  1
-10  0.990 0.990 2.3e-05 1.2e-05  3.8e-04  1.683983e-04  0:0:01 chol  1  1
-11  0.987 0.987 3.8e-07 2.0e-07  4.7e-06  2.027741e-06  0:0:01 chol
-  SWM to ill-conditioned, switch to LU factor. lu   1  1
-12  0.990 0.990 1.1e-08 5.7e-09  1.5e-07  6.422022e-08  0:0:01 lu   1  1
-13  1.000 1.000 5.3e-09 1.1e-10  3.3e-09  1.487464e-09  0:0:01
+ 0  0.000 0.000 1.6e+02 1.5e+01  2.1e+02  0.000000e+00  0:0:00 chol 1  1 
+ 1  0.976 0.976 5.3e+00 4.9e-01  7.9e+00 -4.637865e-01  0:0:00 chol 1  1 
+ 2  1.000 1.000 1.4e+00 1.3e-01  2.8e+00 -3.479011e-01  0:0:00 chol 1  1 
+ 3  0.755 0.755 9.9e-01 9.0e-02  3.4e+00 -3.139960e-01  0:0:00 chol 1  1 
+ 4  0.863 0.863 7.1e-01 6.5e-02  3.3e+00 -3.452483e-01  0:0:00 chol 1  1 
+ 5  0.970 0.970 3.1e-01 2.8e-02  1.4e+00 -1.849443e-01  0:0:00 chol 1  1 
+ 6  1.000 1.000 1.2e-01 1.1e-02  4.1e-01 -7.498924e-02  0:0:00 chol 1  1 
+ 7  0.927 0.927 4.0e-02 3.7e-03  9.8e-02 -2.615076e-02  0:0:00 chol 1  1 
+ 8  1.000 1.000 2.2e-02 2.0e-03  4.1e-02 -1.451863e-02  0:0:00 chol 1  1 
+ 9  0.980 0.980 3.8e-03 3.5e-04  5.6e-03 -2.488500e-03  0:0:00 chol 1  1 
+10  0.987 0.987 1.6e-04 1.4e-05  1.9e-04 -9.218731e-05  0:0:00 chol 1  1 
+11  0.988 0.988 2.5e-06 2.3e-07  2.2e-06 -1.072203e-06  0:0:00 chol 1  1 
+12  0.991 0.991 7.2e-08 6.6e-09  7.0e-08 -3.477071e-08  0:0:00 chol 1  1 
+13  0.997 0.997 1.6e-09 1.5e-10  1.7e-09 -8.318664e-10  0:0:00
   Stop: max(relative gap, infeasibilities) &lt; 1.49e-08
 -------------------------------------------------------------------
  number of iterations   = 13
- primal objective value =  2.97492746e-09
- dual   objective value =  0.00000000e+00
- gap := trace(XZ)       = 3.33e-09
- relative gap           = 3.33e-09
- actual relative gap    = 2.97e-09
- rel. primal infeas     = 5.27e-09
- rel. dual   infeas     = 1.08e-10
- norm(X), norm(y), norm(Z) = 2.2e-06, 4.8e-01, 4.8e-01
- norm(A), norm(b), norm(C) = 8.9e+01, 0.0e+00, 1.4e+00
- Total CPU time (secs)  = 0.9  
- CPU time per iteration = 0.1  
+ primal objective value =  0.00000000e+00
+ dual   objective value = -1.66373280e-09
+ gap := trace(XZ)       = 1.67e-09
+ relative gap           = 1.67e-09
+ actual relative gap    = 1.66e-09
+ rel. primal infeas     = 1.64e-09
+ rel. dual   infeas     = 1.51e-10
+ norm(X), norm(y), norm(Z) = 4.8e-01, 7.9e-08, 1.2e-06
+ norm(A), norm(b), norm(C) = 6.3e+01, 1.0e+00, 0.0e+00
+ Total CPU time (secs)  = 0.2  
+ CPU time per iteration = 0.0  
  termination code       =  0
- DIMACS: 5.3e-09  0.0e+00  1.1e-10  0.0e+00  3.0e-09  3.3e-09
+ DIMACS: 1.6e-09  0.0e+00  1.5e-10  0.0e+00  1.7e-09  1.7e-09
 -------------------------------------------------------------------
 ------------------------------------------------------------
 Status: Solved
-Optimal value (cvx_optval): +2.97493e-09
+Optimal value (cvx_optval): -0
 Done! 
 -----------------------------------------------------------------
 As seen on the figure, the 2 sets of points are not separated.   

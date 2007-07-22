@@ -11,7 +11,7 @@ To make changes, update the M-file and republish this document.
       -->
       <title>Example 6.9: Bounding consumer preference</title>
       <meta name="generator" content="MATLAB 7.4">
-      <meta name="date" content="2007-07-18">
+      <meta name="date" content="2007-07-21">
       <meta name="m-file" content="preference_regions"><style>
 
 body {
@@ -189,7 +189,7 @@ Pweak = zeros(m+1,m+1);
 data = [data; 0.5 0.5];
 bounds = zeros(m,2);
 <span class="keyword">for</span> k = 1:m
-    fprintf(1,<span class="string">'Deciding on bundle %d of %d\n'</span>,k,m);
+    fprintf(1,<span class="string">'Deciding on bundle %d of %d: '</span>,k,m);
 
     <span class="comment">% Check for u(k) &gt;= u(0.5,0.5)</span>
     cvx_begin
@@ -204,6 +204,7 @@ bounds = zeros(m,2);
             (u*ones(1,m+1)).*Pweak &gt;= (ones(m+1,1)*u').*Pweak;
     cvx_end
     bounds(k,1) = cvx_optval;
+    fprintf( 1,<span class="string">'%g'</span>, round(cvx_optval) );
 
     <span class="comment">% Check for u(0.5,0.5) &gt;= u(k)</span>
     cvx_begin
@@ -218,6 +219,7 @@ bounds = zeros(m,2);
             (u*ones(1,m+1)).*Pweak &gt;= (ones(m+1,1)*u').*Pweak;
     cvx_end
     bounds(k,2) = cvx_optval;
+    fprintf( 1,<span class="string">' %g\n'</span>, round(cvx_optval) );
 
 <span class="keyword">end</span>
 
@@ -246,46 +248,46 @@ hold <span class="string">on</span>
 xlabel(<span class="string">'x_1'</span>);  ylabel(<span class="string">'x_2'</span>);
 
 cvx_quiet(cvxq);
-</pre><pre class="codeoutput">Deciding on bundle 1 of 40
-Deciding on bundle 2 of 40
-Deciding on bundle 3 of 40
-Deciding on bundle 4 of 40
-Deciding on bundle 5 of 40
-Deciding on bundle 6 of 40
-Deciding on bundle 7 of 40
-Deciding on bundle 8 of 40
-Deciding on bundle 9 of 40
-Deciding on bundle 10 of 40
-Deciding on bundle 11 of 40
-Deciding on bundle 12 of 40
-Deciding on bundle 13 of 40
-Deciding on bundle 14 of 40
-Deciding on bundle 15 of 40
-Deciding on bundle 16 of 40
-Deciding on bundle 17 of 40
-Deciding on bundle 18 of 40
-Deciding on bundle 19 of 40
-Deciding on bundle 20 of 40
-Deciding on bundle 21 of 40
-Deciding on bundle 22 of 40
-Deciding on bundle 23 of 40
-Deciding on bundle 24 of 40
-Deciding on bundle 25 of 40
-Deciding on bundle 26 of 40
-Deciding on bundle 27 of 40
-Deciding on bundle 28 of 40
-Deciding on bundle 29 of 40
-Deciding on bundle 30 of 40
-Deciding on bundle 31 of 40
-Deciding on bundle 32 of 40
-Deciding on bundle 33 of 40
-Deciding on bundle 34 of 40
-Deciding on bundle 35 of 40
-Deciding on bundle 36 of 40
-Deciding on bundle 37 of 40
-Deciding on bundle 38 of 40
-Deciding on bundle 39 of 40
-Deciding on bundle 40 of 40
+</pre><pre class="codeoutput">Deciding on bundle 1 of 40: NaN Inf
+Deciding on bundle 2 of 40: -Inf NaN
+Deciding on bundle 3 of 40: -Inf NaN
+Deciding on bundle 4 of 40: -Inf NaN
+Deciding on bundle 5 of 40: -Inf 0
+Deciding on bundle 6 of 40: -Inf 0
+Deciding on bundle 7 of 40: -Inf NaN
+Deciding on bundle 8 of 40: NaN Inf
+Deciding on bundle 9 of 40: NaN Inf
+Deciding on bundle 10 of 40: -Inf 0
+Deciding on bundle 11 of 40: NaN Inf
+Deciding on bundle 12 of 40: -Inf NaN
+Deciding on bundle 13 of 40: -Inf NaN
+Deciding on bundle 14 of 40: NaN Inf
+Deciding on bundle 15 of 40: NaN Inf
+Deciding on bundle 16 of 40: -Inf NaN
+Deciding on bundle 17 of 40: NaN Inf
+Deciding on bundle 18 of 40: -Inf NaN
+Deciding on bundle 19 of 40: NaN Inf
+Deciding on bundle 20 of 40: -Inf NaN
+Deciding on bundle 21 of 40: NaN Inf
+Deciding on bundle 22 of 40: NaN Inf
+Deciding on bundle 23 of 40: -Inf NaN
+Deciding on bundle 24 of 40: NaN Inf
+Deciding on bundle 25 of 40: NaN Inf
+Deciding on bundle 26 of 40: -Inf 0
+Deciding on bundle 27 of 40: -Inf NaN
+Deciding on bundle 28 of 40: -Inf NaN
+Deciding on bundle 29 of 40: -Inf NaN
+Deciding on bundle 30 of 40: -Inf NaN
+Deciding on bundle 31 of 40: -Inf NaN
+Deciding on bundle 32 of 40: -Inf NaN
+Deciding on bundle 33 of 40: NaN Inf
+Deciding on bundle 34 of 40: -Inf NaN
+Deciding on bundle 35 of 40: -Inf NaN
+Deciding on bundle 36 of 40: -Inf NaN
+Deciding on bundle 37 of 40: -Inf NaN
+Deciding on bundle 38 of 40: -Inf NaN
+Deciding on bundle 39 of 40: NaN Inf
+Deciding on bundle 40 of 40: NaN Inf
 </pre><img vspace="5" hspace="5" src="preference_regions_01.png"> <img vspace="5" hspace="5" src="preference_regions_02.png"> <p class="footer"><br>
             Published with MATLAB&reg; 7.4<br></p>
       </div>
@@ -411,7 +413,7 @@ end;
 data = [data; 0.5 0.5];
 bounds = zeros(m,2);
 for k = 1:m
-    fprintf(1,'Deciding on bundle %d of %d\n',k,m);
+    fprintf(1,'Deciding on bundle %d of %d: ',k,m);
 
     % Check for u(k) >= u(0.5,0.5)
     cvx_begin
@@ -426,6 +428,7 @@ for k = 1:m
             (u*ones(1,m+1)).*Pweak >= (ones(m+1,1)*u').*Pweak;
     cvx_end
     bounds(k,1) = cvx_optval;
+    fprintf( 1,'%g', round(cvx_optval) );
 
     % Check for u(0.5,0.5) >= u(k)
     cvx_begin
@@ -440,7 +443,8 @@ for k = 1:m
             (u*ones(1,m+1)).*Pweak >= (ones(m+1,1)*u').*Pweak;
     cvx_end
     bounds(k,2) = cvx_optval;
-
+    fprintf( 1,' %g\n', round(cvx_optval) );
+    
 end
 
 figure(2);

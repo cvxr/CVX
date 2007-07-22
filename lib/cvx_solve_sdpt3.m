@@ -212,7 +212,7 @@ OPTIONS = sqlparameters;
 OPTIONS.gaptol = prec(1);
 OPTIONS.printlevel = 3 * ~quiet;
 OPTIONS.vers = 2;
-[ obj, xx, y, z, info ] = HSDsqlp( blk, Avec, Cvec, b, OPTIONS );
+[ obj, xx, y, z, info ] = HSDsqlp( blk, Avec, Cvec, full(b), OPTIONS );
 
 %
 % Interpret the output

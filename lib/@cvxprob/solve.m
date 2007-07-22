@@ -78,7 +78,7 @@ elseif n ~= 0 & ~infeas & ( any( b ) | any( c ) ),
         disp( spacer );
     end
     opath = path;
-    try
+%    try
         path( [ getfield( cvx___.path.solvers, lsolv ), opath ] );
         if cvx___.profile,
             profile off
@@ -87,10 +87,10 @@ elseif n ~= 0 & ~infeas & ( any( b ) | any( c ) ),
         if cvx___.profile,
             profile resume
         end
-    catch
-        path( opath );
-        rethrow( lasterror );
-    end
+ %   catch
+ %       path( opath );
+ %       rethrow( lasterror );
+ %   end
     switch status,
     case { 'Solved', 'Inaccurate/Solved' },
         value = sgn * ( c' * x + d' );

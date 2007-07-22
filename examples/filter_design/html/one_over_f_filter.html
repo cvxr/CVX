@@ -11,7 +11,7 @@ To make changes, update the M-file and republish this document.
       -->
       <title>Design a 1/f spectrum shaping (pink-noise) filter</title>
       <meta name="generator" content="MATLAB 7.4">
-      <meta name="date" content="2007-06-26">
+      <meta name="date" content="2007-07-21">
       <meta name="m-file" content="one_over_f_filter"><style>
 
 body {
@@ -140,14 +140,14 @@ xlabel(<span class="string">'freq w'</span>)
 ylabel(<span class="string">'mag H(w) and D(w)'</span>)
 legend(<span class="string">'optimized'</span>,<span class="string">'desired'</span>)
 </pre><pre class="codeoutput"> 
-Calling SDPT3: 2440 variables, 2399 equality constraints
+Calling SDPT3: 3000 variables, 641 equality constraints
+Note: for improved efficiency, SDPT3 is solving the dual problem.
 ------------------------------------------------------------
 
- num. of constraints = 2399
+ num. of constraints = 641
  dim. of sdp    var  = 1200,   num. of sdp  blk  = 600
  dim. of linear var  = 600
- dim. of free   var  = 40 *** convert ublk to linear blk
- number of dense column in A = 80
+ dim. of free   var  = 600 *** convert ublk to linear blk
 *******************************************************************
    SDPT3: homogeneous self-dual path-following algorithms
 *******************************************************************
@@ -155,49 +155,48 @@ Calling SDPT3: 2440 variables, 2399 equality constraints
     NT      1      0.000   1
 it  pstep dstep p_infeas d_infeas  gap     mean(obj)    cputime
 -------------------------------------------------------------------
- 0  0.000 0.000 3.9e+02 1.6e+00  1.9e+03  1.591549e+01  0:0:01 spchol  1  1
- 1  0.833 0.833 5.9e+02 2.5e+00  9.7e+03 -5.004361e+02  0:0:02 spchol  1  1
- 2  0.948 0.948 1.6e+02 6.8e-01  4.1e+03  1.330745e+02  0:0:04 spchol  1  1
- 3  0.944 0.944 1.6e+01 6.8e-02  4.5e+02  3.611333e+01  0:0:05 spchol  1  1
- 4  0.946 0.946 1.1e+00 4.5e-03  3.6e+01  6.818585e+00  0:0:07 spchol  1  1
- 5  0.520 0.520 5.5e-01 2.3e-03  1.3e+01  3.778856e+00  0:0:08 spchol  1  1
- 6  0.735 0.735 2.6e-01 1.1e-03  4.9e+00  2.275126e+00  0:0:09 spchol  1  1
- 7  0.976 0.976 5.6e-02 2.3e-04  9.8e-01  1.419298e+00  0:0:11 spchol  1  1
- 8  1.000 1.000 4.1e-02 1.7e-04  7.5e-01  1.352438e+00  0:0:12 spchol  1  1
- 9  0.892 0.892 1.7e-02 7.0e-05  3.0e-01  1.209003e+00  0:0:13 spchol  1  1
-10  0.715 0.715 1.3e-02 5.6e-05  2.4e-01  1.224710e+00  0:0:15 spchol  1  1
-11  1.000 1.000 4.6e-03 1.9e-05  8.2e-02  1.192914e+00  0:0:16 spchol  1  1
-12  1.000 1.000 2.0e-03 8.2e-06  3.5e-02  1.186595e+00  0:0:17 spchol  1  1
-13  0.996 0.996 9.1e-04 3.8e-06  1.6e-02  1.186323e+00  0:0:19 spchol  1  1
-14  1.000 1.000 3.9e-04 1.6e-06  7.0e-03  1.186746e+00  0:0:20 spchol
-  SWM to ill-conditioned, switch to LU factor. splu   1  1
-15  0.955 0.955 2.1e-04 8.7e-07  3.8e-03  1.186992e+00  0:0:23 splu   1  1
-16  1.000 1.000 5.5e-05 2.3e-07  9.9e-04  1.187232e+00  0:0:25 splu   1  1
-17  1.000 1.000 9.3e-06 3.9e-08  1.7e-04  1.187313e+00  0:0:27 splu   1  1
-18  1.000 1.000 1.7e-06 7.0e-09  3.0e-05  1.187328e+00  0:0:29 splu   1  1
-19  1.000 1.000 4.2e-08 1.7e-10  7.3e-07  1.187331e+00  0:0:31 splu   1  1
-  Stop: primal infeas has deteriorated too much, 1.0e-05
-20  1.000 1.000 4.2e-08 1.7e-10  7.3e-07  1.187331e+00  0:0:33
+ 0  0.000 0.000 5.1e+02 3.8e+01  4.5e+03  0.000000e+00  0:0:00 spchol 1  1 
+ 1  0.558 0.558 6.9e+02 5.2e+01  1.5e+04  3.700032e+02  0:0:00 spchol 1  1 
+ 2  1.000 1.000 4.0e+02 3.0e+01  1.7e+04 -1.115950e+00  0:0:01 spchol 1  1 
+ 3  0.923 0.923 4.7e+01 3.6e+00  2.2e+03 -5.426970e+01  0:0:01 spchol 1  1 
+ 4  0.976 0.976 1.7e+00 1.3e-01  8.7e+01 -7.833887e+00  0:0:01 spchol 1  1 
+ 5  0.604 0.604 6.1e-01 4.6e-02  2.4e+01 -4.233300e+00  0:0:02 spchol 1  1 
+ 6  0.764 0.764 3.0e-01 2.2e-02  9.9e+00 -2.410818e+00  0:0:02 spchol 1  1 
+ 7  0.917 0.917 5.2e-02 3.9e-03  1.5e+00 -1.361425e+00  0:0:02 spchol 1  1 
+ 8  1.000 1.000 2.3e-02 1.8e-03  7.1e-01 -1.198325e+00  0:0:03 spchol 1  1 
+ 9  1.000 1.000 1.6e-02 1.2e-03  5.0e-01 -1.229022e+00  0:0:03 spchol 1  1 
+10  0.902 0.902 5.6e-03 4.3e-04  1.7e-01 -1.182873e+00  0:0:03 spchol 1  1 
+11  0.746 0.746 4.0e-03 3.1e-04  1.2e-01 -1.183194e+00  0:0:04 spchol 1  1 
+12  1.000 1.000 1.4e-03 1.1e-04  4.4e-02 -1.183712e+00  0:0:04 spchol 1  1 
+13  1.000 1.000 6.1e-04 4.6e-05  1.9e-02 -1.185308e+00  0:0:04 spchol 1  1 
+14  0.921 0.921 3.6e-04 2.7e-05  1.1e-02 -1.186099e+00  0:0:05 spchol 1  1 
+15  0.962 0.962 1.0e-04 7.9e-06  3.2e-03 -1.186938e+00  0:0:05 spchol 1  1 
+16  1.000 1.000 3.0e-05 2.2e-06  9.1e-04 -1.187215e+00  0:0:05 spchol 1  1 
+17  1.000 1.000 6.0e-06 4.5e-07  1.8e-04 -1.187307e+00  0:0:06 spchol 1  1 
+18  1.000 1.000 5.6e-07 4.2e-08  1.7e-05 -1.187329e+00  0:0:06 spchol 1  1 
+19  1.000 1.000 1.9e-08 7.2e-10  2.9e-07 -1.187331e+00  0:0:06 spchol 1  1 
+20  1.000 1.000 1.2e-08 7.9e-12  3.2e-09 -1.187331e+00  0:0:07
+  Stop: max(relative gap, infeasibilities) &lt; 1.49e-08
 -------------------------------------------------------------------
  number of iterations   = 20
- primal objective value =  1.18733110e+00
- dual   objective value =  1.18733091e+00
- gap := trace(XZ)       = 7.33e-07
- relative gap           = 3.35e-07
- actual relative gap    = 5.58e-08
- rel. primal infeas     = 4.19e-08
- rel. dual   infeas     = 1.73e-10
- norm(X), norm(y), norm(Z) = 2.7e+02, 9.8e-01, 1.2e+01
- norm(A), norm(b), norm(C) = 8.8e+02, 2.4e+01, 3.2e+01
- Total CPU time (secs)  = 32.7  
- CPU time per iteration = 1.6  
- termination code       = -7
- DIMACS: 4.2e-08  0.0e+00  1.7e-10  0.0e+00  5.6e-08  2.2e-07
+ primal objective value = -1.18733108e+00
+ dual   objective value = -1.18733108e+00
+ gap := trace(XZ)       = 3.23e-09
+ relative gap           = 1.48e-09
+ actual relative gap    = 2.48e-10
+ rel. primal infeas     = 1.22e-08
+ rel. dual   infeas     = 7.94e-12
+ norm(X), norm(y), norm(Z) = 1.2e+01, 2.6e+02, 2.7e+02
+ norm(A), norm(b), norm(C) = 3.2e+02, 1.0e+00, 3.5e+01
+ Total CPU time (secs)  = 6.7  
+ CPU time per iteration = 0.3  
+ termination code       =  0
+ DIMACS: 1.2e-08  0.0e+00  7.9e-12  0.0e+00  2.5e-10  9.6e-10
 -------------------------------------------------------------------
 ------------------------------------------------------------
-Status: Inaccurate/Solved
+Status: Solved
 Optimal value (cvx_optval): +1.18733
-Problem is Inaccurate/Solved
+Problem is Solved
 </pre><img vspace="5" hspace="5" src="one_over_f_filter_01.png"> <p class="footer"><br>
             Published with MATLAB&reg; 7.4<br></p>
       </div>

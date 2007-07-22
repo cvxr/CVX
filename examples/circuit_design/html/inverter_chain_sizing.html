@@ -11,7 +11,7 @@ To make changes, update the M-file and republish this document.
       -->
       <title>Digital circuit sizing for an inverter chain (GP)</title>
       <meta name="generator" content="MATLAB 7.4">
-      <meta name="date" content="2007-06-26">
+      <meta name="date" content="2007-07-21">
       <meta name="m-file" content="inverter_chain_sizing"><style>
 
 body {
@@ -212,14 +212,14 @@ subplot(2,1,2); stem([1:N],x);
 ylabel(<span class="string">'scale factor x'</span>)
 xlabel(<span class="string">'inverter stage'</span>)
 </pre><pre class="codeoutput"> 
-Calling SDPT3: 486 variables, 267 equality constraints
+Calling SDPT3: 476 variables, 219 equality constraints
+Note: for improved efficiency, SDPT3 is solving the dual problem.
 ------------------------------------------------------------
 
- num. of constraints = 267
+ num. of constraints = 219
  dim. of sdp    var  = 117,   num. of sdp  blk  = 22
  dim. of socp   var  = 44,   num. of socp blk  = 22
  dim. of linear var  = 60
- dim. of free   var  = 10 *** convert ublk to linear blk
 *******************************************************************
    SDPT3: homogeneous self-dual path-following algorithms
 *******************************************************************
@@ -227,42 +227,41 @@ Calling SDPT3: 486 variables, 267 equality constraints
     NT      1      0.000   1
 it  pstep dstep p_infeas d_infeas  gap     mean(obj)    cputime
 -------------------------------------------------------------------
- 0  0.000 0.000 4.2e+00 4.7e+00  2.2e+02  1.610134e+00  0:0:00 chol  1  1
- 1  0.597 0.597 3.7e+00 4.1e+00  3.4e+02 -3.418059e+01  0:0:00 chol  1  1
- 2  0.945 0.945 2.6e+00 2.9e+00  3.9e+02 -4.456834e+01  0:0:00 chol  1  1
- 3  0.927 0.927 8.2e-01 9.1e-01  1.4e+02 -1.045644e+01  0:0:00 chol  1  1
- 4  0.884 0.884 2.4e-01 2.7e-01  4.4e+01  6.194230e-01  0:0:00 chol  1  1
- 5  0.829 0.829 6.1e-02 6.8e-02  9.7e+00  3.281905e+00  0:0:00 chol  1  1
- 6  0.787 0.787 3.1e-02 3.5e-02  4.6e+00  3.534284e+00  0:0:00 chol  1  1
- 7  0.917 0.917 1.8e-02 2.1e-02  2.6e+00  3.536514e+00  0:0:00 chol  1  1
- 8  0.891 0.891 4.1e-03 4.6e-03  5.4e-01  3.542328e+00  0:0:01 chol  1  1
- 9  1.000 1.000 2.3e-03 2.6e-03  3.0e-01  3.519900e+00  0:0:01 chol  1  1
-10  0.950 0.950 3.6e-04 4.0e-04  4.4e-02  3.487034e+00  0:0:01 chol  1  1
-11  0.986 0.986 2.2e-05 2.5e-05  2.5e-03  3.479290e+00  0:0:01 chol  1  1
-12  0.969 0.969 7.7e-07 8.6e-07  7.6e-05  3.478614e+00  0:0:01 chol  1  1
-13  0.992 0.992 2.9e-08 3.3e-08  3.0e-06  3.478588e+00  0:0:01 chol
-  SWM to ill-conditioned, switch to LU factor. lu   1  1
-14  1.000 1.000 1.0e-09 1.0e-09  1.0e-07  3.478587e+00  0:0:01 lu   1  1
-  Stop: primal infeas has deteriorated too much, 2.6e-08
-15  0.257 0.257 1.0e-09 1.0e-09  1.0e-07  3.478587e+00  0:0:01
+ 0  0.000 0.000 6.8e+00 1.9e+00  2.0e+02  6.566011e+01  0:0:00 chol 1  1 
+ 1  0.601 0.601 5.9e+00 1.7e+00  3.0e+02  9.273707e+01  0:0:00 chol 1  1 
+ 2  0.949 0.949 4.1e+00 1.2e+00  3.3e+02  8.044895e+01  0:0:00 chol 1  1 
+ 3  0.925 0.925 1.2e+00 3.5e-01  1.1e+02  1.958273e+01  0:0:00 chol 1  1 
+ 4  0.871 0.871 4.1e-01 1.2e-01  3.9e+01  3.267211e+00  0:0:00 chol 1  1 
+ 5  0.814 0.814 1.0e-01 3.0e-02  8.8e+00 -2.252955e+00  0:0:00 chol 1  1 
+ 6  0.768 0.768 5.5e-02 1.6e-02  4.3e+00 -2.936912e+00  0:0:00 chol 1  1 
+ 7  0.951 0.951 3.1e-02 8.8e-03  2.3e+00 -3.179708e+00  0:0:00 chol 1  1 
+ 8  0.851 0.851 7.5e-03 2.1e-03  5.2e-01 -3.401368e+00  0:0:00 chol 1  1 
+ 9  1.000 1.000 4.3e-03 1.2e-03  2.9e-01 -3.412950e+00  0:0:00 chol 1  1 
+10  0.961 0.961 7.1e-04 2.0e-04  4.6e-02 -3.414066e+00  0:0:01 chol 1  1 
+11  0.989 0.989 4.5e-05 1.3e-05  2.7e-03 -3.411691e+00  0:0:01 chol 1  1 
+12  0.968 0.968 1.6e-06 4.6e-07  8.3e-05 -3.411329e+00  0:0:01 chol 1  1 
+13  0.992 0.992 6.5e-08 1.8e-08  3.5e-06 -3.411313e+00  0:0:01 chol 1  1 
+14  1.000 1.000 1.9e-09 5.2e-10  1.0e-07 -3.411312e+00  0:0:01 chol 1  1 
+15  1.000 1.000 1.5e-10 3.3e-11  6.5e-09 -3.411312e+00  0:0:01
+  Stop: max(relative gap, infeasibilities) &lt; 1.49e-08
 -------------------------------------------------------------------
  number of iterations   = 15
- primal objective value =  3.47858706e+00
- dual   objective value =  3.47858702e+00
- gap := trace(XZ)       = 1.03e-07
- relative gap           = 2.29e-08
- actual relative gap    = 4.42e-09
- rel. primal infeas     = 1.05e-09
- rel. dual   infeas     = 1.03e-09
- norm(X), norm(y), norm(Z) = 2.3e+01, 1.4e+01, 8.6e+00
- norm(A), norm(b), norm(C) = 2.9e+01, 2.2e+01, 3.3e+00
- Total CPU time (secs)  = 1.0  
+ primal objective value = -3.41131241e+00
+ dual   objective value = -3.41131241e+00
+ gap := trace(XZ)       = 6.53e-09
+ relative gap           = 1.48e-09
+ actual relative gap    = 6.46e-10
+ rel. primal infeas     = 1.54e-10
+ rel. dual   infeas     = 3.32e-11
+ norm(X), norm(y), norm(Z) = 8.6e+00, 1.3e+01, 2.3e+01
+ norm(A), norm(b), norm(C) = 8.6e+02, 1.8e+00, 2.4e+02
+ Total CPU time (secs)  = 0.8  
  CPU time per iteration = 0.1  
- termination code       = -7
- DIMACS: 1.0e-09  0.0e+00  1.0e-09  0.0e+00  4.4e-09  1.3e-08
+ termination code       =  0
+ DIMACS: 1.5e-10  0.0e+00  3.3e-11  0.0e+00  6.5e-10  8.3e-10
 -------------------------------------------------------------------
 ------------------------------------------------------------
-Status: Inaccurate/Solved
+Status: Solved
 Optimal value (cvx_optval): +32.4139
  
 Note: there is an extra capacitance between the 4th and 5th inverter in the chain.
@@ -274,11 +273,11 @@ x =
     3.0525
     2.6620
     4.3604
-   12.5014
+   12.5015
     1.0000
     1.3272
     2.2519
-    5.2445
+    5.2446
 
 </pre><img vspace="5" hspace="5" src="inverter_chain_sizing_01.png"> <p class="footer"><br>
             Published with MATLAB&reg; 7.4<br></p>

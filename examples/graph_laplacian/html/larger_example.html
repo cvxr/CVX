@@ -11,7 +11,7 @@ To make changes, update the M-file and republish this document.
       -->
       <title>FDLA and FMMC solutions for a 50-node, 200-edge graph</title>
       <meta name="generator" content="MATLAB 7.4">
-      <meta name="date" content="2007-06-26">
+      <meta name="date" content="2007-07-21">
       <meta name="m-file" content="larger_example"><style>
 
 body {
@@ -248,12 +248,13 @@ title(<span class="string">'Subgraph with positive transition prob.'</span>)
 hold <span class="string">off</span>;
 </pre><pre class="codeoutput">WARNING: The optimal weight computations take some time...
  
-Calling SDPT3: 2551 variables, 2350 equality constraints
+Calling SDPT3: 2598 variables, 249 equality constraints
+Note: for improved efficiency, SDPT3 is solving the dual problem.
 ------------------------------------------------------------
 
- num. of constraints = 2350
+ num. of constraints = 249
  dim. of sdp    var  = 100,   num. of sdp  blk  =  2
- dim. of free   var  =  1 *** convert ublk to linear blk
+ dim. of free   var  = 48 *** convert ublk to linear blk
 *******************************************************************
    SDPT3: homogeneous self-dual path-following algorithms
 *******************************************************************
@@ -261,54 +262,60 @@ Calling SDPT3: 2551 variables, 2350 equality constraints
     NT      1      0.000   1
 it  pstep dstep p_infeas d_infeas  gap     mean(obj)    cputime
 -------------------------------------------------------------------
- 0  0.000 0.000 9.8e+00 5.1e+00  1.0e+02  0.000000e+00  0:0:01 spchol  1  1
- 1  1.000 1.000 9.6e+00 5.0e+00  3.0e+02 -7.531187e+00  0:0:02 chol  1  1
- 2  0.992 0.992 6.1e-01 3.2e-01  2.0e+01  1.181506e+00  0:0:04 chol  1  1
- 3  0.547 0.547 2.6e-01 1.3e-01  5.6e+00  8.025284e-01  0:0:06 chol  1  1
- 4  1.000 1.000 8.6e-02 4.5e-02  2.1e+00  9.696273e-01  0:0:08 chol  1  1
- 5  1.000 1.000 3.5e-02 1.8e-02  7.5e-01  9.514326e-01  0:0:11 chol  1  1
- 6  0.965 0.965 6.5e-03 3.4e-03  1.2e-01  8.892281e-01  0:0:13 chol  1  1
- 7  1.000 1.000 3.4e-03 1.8e-03  6.8e-02  8.897543e-01  0:0:15 chol  1  1
- 8  1.000 1.000 1.4e-03 7.4e-04  2.8e-02  8.966459e-01  0:0:17 chol  1  1
- 9  1.000 1.000 2.8e-04 1.4e-04  5.3e-03  9.011252e-01  0:0:20 chol  1  1
-10  1.000 1.000 6.7e-05 3.5e-05  1.3e-03  9.018513e-01  0:0:22 chol  1  1
-11  1.000 1.000 1.6e-05 8.4e-06  3.1e-04  9.020278e-01  0:0:24 chol  1  1
-12  0.920 0.920 2.5e-06 1.3e-06  4.6e-05  9.020718e-01  0:0:26 chol  1  1
-13  1.000 1.000 1.1e-06 6.0e-07  2.3e-05  9.020749e-01  0:0:29 chol  1  1
-14  1.000 1.000 2.1e-07 1.1e-07  4.0e-06  9.020781e-01  0:0:31 chol  1  1
-15  1.000 1.000 5.7e-08 2.9e-08  1.1e-06  9.020785e-01  0:0:33 chol
-  SWM to ill-conditioned, switch to LU factor. lu   1  1
-16  1.000 1.000 1.2e-08 6.1e-09  2.2e-07  9.020786e-01  0:0:38 lu   1  1
-17  1.000 1.000 2.6e-09 1.3e-09  4.7e-08  9.020787e-01  0:0:41 lu   1  1
-18  1.000 1.000 2.4e-09 2.8e-10  1.0e-08  9.020787e-01  0:0:45
-  Stop: max(relative gap, infeasibilities) &lt; 1.49e-08
+ 0  0.000 0.000 5.0e+01 9.8e+00  3.2e+02 -3.277548e-01  0:0:00 chol 1  1 
+ 1  1.000 1.000 5.4e+01 1.0e+01  1.1e+03  5.596394e+00  0:0:00 chol 1  1 
+ 2  0.963 0.963 2.9e+00 5.7e-01  5.9e+01 -1.860311e+00  0:0:00 chol 1  1 
+ 3  0.641 0.641 9.5e-01 1.9e-01  1.4e+01 -1.132933e+00  0:0:01 chol 1  1 
+ 4  0.895 0.895 1.8e-01 3.5e-02  2.1e+00 -5.951331e-01  0:0:01 chol 1  1 
+ 5  0.214 0.214 1.8e-01 3.5e-02  2.3e+00 -7.722597e-01  0:0:01 chol 1  1 
+ 6  1.000 1.000 9.5e-02 1.9e-02  1.5e+00 -1.043606e+00  0:0:01 chol 1  1 
+ 7  0.868 0.868 1.6e-02 3.1e-03  2.3e-01 -9.016199e-01  0:0:02 chol 1  1 
+ 8  0.993 0.993 8.6e-03 1.7e-03  1.3e-01 -8.832453e-01  0:0:02 chol 1  1 
+ 9  0.943 0.943 2.2e-03 4.4e-04  3.3e-02 -8.965589e-01  0:0:02 chol 1  1 
+10  1.000 1.000 1.1e-03 2.0e-04  1.6e-02 -8.994523e-01  0:0:02 chol 1  1 
+11  0.925 0.925 1.3e-04 2.5e-05  1.8e-03 -9.018185e-01  0:0:03 chol 1  1 
+12  1.000 1.000 5.5e-05 1.1e-05  8.4e-04 -9.019443e-01  0:0:03 chol 1  1 
+13  0.904 0.904 6.6e-06 1.3e-06  9.6e-05 -9.020651e-01  0:0:03 chol 1  1 
+14  1.000 1.000 3.0e-06 5.9e-07  4.6e-05 -9.020717e-01  0:0:03 chol 1  1 
+15  1.000 1.000 5.2e-07 1.0e-07  7.9e-06 -9.020775e-01  0:0:04 chol 1  1 
+16  1.000 1.000 1.3e-07 2.5e-08  1.9e-06 -9.020784e-01  0:0:04 chol 1  1 
+17  1.000 1.000 1.5e-07 3.0e-09  2.3e-07 -9.020786e-01  0:0:04 chol 1  1 
+18  1.000 1.000 1.3e-07 2.6e-10  2.0e-08 -9.020787e-01  0:0:04 chol 1  1 
+19  1.000 1.000 1.1e-07 6.2e-12  4.7e-10 -9.020787e-01  0:0:04 chol
+  chol: Schur complement matrix not pos. def
+  switch to LU factor lu  1  1 
+20  1.000 1.000 1.8e-07 1.1e-12  8.5e-11 -9.020787e-01  0:0:05 lu  1  1 
+  Stop: lack of progress in corrector: mucorr/mu = 0.89, corr_convg_rate = 0.14
+21  0.342 0.342 1.8e-07 1.1e-12  8.5e-11 -9.020787e-01  0:0:05
+  Stop: relative gap &lt; infeasibility
 -------------------------------------------------------------------
- number of iterations   = 18
- primal objective value =  9.02078659e-01
- dual   objective value =  9.02078654e-01
- gap := trace(XZ)       = 1.01e-08
- relative gap           = 5.31e-09
- actual relative gap    = 1.71e-09
- rel. primal infeas     = 2.39e-09
- rel. dual   infeas     = 2.80e-10
- norm(X), norm(y), norm(Z) = 1.1e+01, 1.2e+00, 9.4e-01
- norm(A), norm(b), norm(C) = 4.7e+01, 6.0e+00, 1.4e+00
- Total CPU time (secs)  = 45.1  
- CPU time per iteration = 2.5  
- termination code       =  0
- DIMACS: 2.4e-09  0.0e+00  2.8e-10  0.0e+00  1.7e-09  3.6e-09
+ number of iterations   = 21
+ primal objective value = -9.02078725e-01
+ dual   objective value = -9.02078679e-01
+ gap := trace(XZ)       = 8.53e-11
+ relative gap           = 4.48e-11
+ actual relative gap    = -1.66e-08
+ rel. primal infeas     = 1.83e-07
+ rel. dual   infeas     = 1.11e-12
+ norm(X), norm(y), norm(Z) = 9.6e-01, 7.0e+00, 1.1e+01
+ norm(A), norm(b), norm(C) = 5.0e+01, 1.0e+00, 8.4e+00
+ Total CPU time (secs)  = 5.0  
+ CPU time per iteration = 0.2  
+ termination code       = -1
+ DIMACS: 1.8e-07  0.0e+00  1.1e-12  0.0e+00  -1.7e-08  3.0e-11
 -------------------------------------------------------------------
 ------------------------------------------------------------
-Status: Solved
+Status: Inaccurate/Solved
 Optimal value (cvx_optval): +0.902079
  
-Calling SDPT3: 2801 variables, 2600 equality constraints
+Calling SDPT3: 2849 variables, 250 equality constraints
+Note: for improved efficiency, SDPT3 is solving the dual problem.
 ------------------------------------------------------------
 
- num. of constraints = 2600
+ num. of constraints = 250
  dim. of sdp    var  = 100,   num. of sdp  blk  =  2
  dim. of linear var  = 250
- dim. of free   var  =  1 *** convert ublk to linear blk
+ dim. of free   var  = 49 *** convert ublk to linear blk
 *******************************************************************
    SDPT3: homogeneous self-dual path-following algorithms
 *******************************************************************
@@ -316,45 +323,44 @@ Calling SDPT3: 2801 variables, 2600 equality constraints
     NT      1      0.000   1
 it  pstep dstep p_infeas d_infeas  gap     mean(obj)    cputime
 -------------------------------------------------------------------
- 0  0.000 0.000 3.2e+01 9.4e+00  3.5e+02  0.000000e+00  0:0:01 spchol  1  1
- 1  1.000 1.000 2.9e+01 8.5e+00  8.0e+02 -2.729493e+01  0:0:02 chol  1  1
- 2  0.721 0.721 7.8e+00 2.3e+00  1.8e+02 -1.795458e+01  0:0:04 chol  1  1
- 3  0.710 0.710 2.9e+00 8.5e-01  5.2e+01 -8.347256e+00  0:0:07 chol  1  1
- 4  0.898 0.898 4.0e-01 1.2e-01  5.4e+00 -7.786050e-01  0:0:10 chol  1  1
- 5  0.550 0.550 3.1e-01 9.2e-02  4.6e+00 -4.912603e-01  0:0:12 chol  1  1
- 6  1.000 1.000 1.0e-01 3.0e-02  1.6e+00  4.332717e-01  0:0:15 chol  1  1
- 7  0.885 0.885 2.0e-02 5.8e-03  2.9e-01  8.427312e-01  0:0:17 chol  1  1
- 8  0.759 0.759 1.2e-02 3.4e-03  1.7e-01  8.681870e-01  0:0:20 chol  1  1
- 9  0.884 0.884 8.0e-03 2.4e-03  1.2e-01  8.845624e-01  0:0:22 chol  1  1
-10  0.903 0.903 2.6e-03 7.6e-04  3.8e-02  9.073754e-01  0:0:25 chol  1  1
-11  0.797 0.797 2.1e-03 6.1e-04  3.1e-02  9.095280e-01  0:0:28 chol  1  1
-12  1.000 1.000 1.0e-03 2.9e-04  1.5e-02  9.126575e-01  0:0:30 chol  1  1
-13  1.000 1.000 4.3e-04 1.3e-04  6.3e-03  9.143580e-01  0:0:33 chol  1  1
-14  1.000 1.000 1.3e-04 3.8e-05  1.9e-03  9.149808e-01  0:0:35 chol  1  1
-15  1.000 1.000 6.0e-05 1.8e-05  8.8e-04  9.150990e-01  0:0:38 chol  1  1
-16  1.000 1.000 1.8e-05 5.4e-06  2.7e-04  9.151403e-01  0:0:41 chol  1  1
-17  1.000 1.000 4.1e-06 1.2e-06  6.1e-05  9.151500e-01  0:0:43 chol  1  1
-18  1.000 1.000 1.6e-06 4.7e-07  2.3e-05  9.151511e-01  0:0:46 chol  1  1
-19  1.000 1.000 2.9e-07 8.7e-08  4.3e-06  9.151515e-01  0:0:48 chol
-  SWM to ill-conditioned, switch to LU factor. lu   1  1
-20  1.000 1.000 3.8e-08 1.1e-08  5.5e-07  9.151515e-01  0:0:54 lu   1  1
-21  1.000 1.000 1.6e-09 4.6e-10  2.2e-08  9.151515e-01  0:0:58
+ 0  0.000 0.000 5.0e+01 1.3e+01  5.7e+02 -1.127879e-01  0:0:00 chol 1  1 
+ 1  0.892 0.892 5.5e+01 1.4e+01  1.6e+03  3.053104e+01  0:0:00 chol 1  1 
+ 2  0.808 0.808 1.1e+01 2.9e+00  3.1e+02  2.528728e+01  0:0:00 chol 1  1 
+ 3  0.700 0.700 4.4e+00 1.1e+00  9.5e+01  1.236639e+01  0:0:01 chol 1  1 
+ 4  0.985 0.985 4.6e-01 1.2e-01  8.0e+00  1.231836e+00  0:0:01 chol 1  1 
+ 5  1.000 1.000 2.4e-01 6.1e-02  4.3e+00  3.080226e-01  0:0:01 chol 1  1 
+ 6  1.000 1.000 6.4e-02 1.6e-02  1.1e+00 -6.062549e-01  0:0:01 chol 1  1 
+ 7  0.992 0.992 1.4e-02 3.5e-03  2.4e-01 -8.641932e-01  0:0:02 chol 1  1 
+ 8  0.661 0.661 9.7e-03 2.5e-03  1.7e-01 -8.756928e-01  0:0:02 chol 1  1 
+ 9  0.939 0.939 5.3e-03 1.4e-03  9.2e-02 -8.941536e-01  0:0:02 chol 1  1 
+10  1.000 1.000 3.4e-03 8.7e-04  5.9e-02 -9.034423e-01  0:0:02 chol 1  1 
+11  1.000 1.000 1.4e-03 3.5e-04  2.4e-02 -9.111921e-01  0:0:03 chol 1  1 
+12  1.000 1.000 6.4e-04 1.6e-04  1.1e-02 -9.135920e-01  0:0:03 chol 1  1 
+13  1.000 1.000 2.2e-04 5.5e-05  3.7e-03 -9.147340e-01  0:0:03 chol 1  1 
+14  1.000 1.000 9.6e-05 2.4e-05  1.7e-03 -9.150102e-01  0:0:03 chol 1  1 
+15  1.000 1.000 2.8e-05 7.2e-06  4.9e-04 -9.151181e-01  0:0:04 chol 1  1 
+16  1.000 1.000 1.1e-05 2.9e-06  2.0e-04 -9.151413e-01  0:0:04 chol 1  1 
+17  1.000 1.000 3.0e-06 7.6e-07  5.1e-05 -9.151491e-01  0:0:04 chol 1  1 
+18  1.000 1.000 7.2e-07 1.8e-07  1.2e-05 -9.151510e-01  0:0:04 chol 1  1 
+19  1.000 1.000 1.2e-07 3.0e-08  2.0e-06 -9.151515e-01  0:0:05 chol 1  1 
+20  1.000 1.000 8.2e-09 2.0e-09  1.4e-07 -9.151515e-01  0:0:05 chol 1  1 
+21  1.000 1.000 1.2e-09 4.5e-11  3.0e-09 -9.151515e-01  0:0:05
   Stop: max(relative gap, infeasibilities) &lt; 1.49e-08
 -------------------------------------------------------------------
  number of iterations   = 21
- primal objective value =  9.15151544e-01
- dual   objective value =  9.15151529e-01
- gap := trace(XZ)       = 2.15e-08
- relative gap           = 1.13e-08
- actual relative gap    = 5.53e-09
- rel. primal infeas     = 1.62e-09
- rel. dual   infeas     = 4.57e-10
- norm(X), norm(y), norm(Z) = 1.1e+01, 1.3e+00, 9.3e-01
- norm(A), norm(b), norm(C) = 5.3e+01, 7.3e+00, 1.4e+00
- Total CPU time (secs)  = 58.4  
- CPU time per iteration = 2.8  
+ primal objective value = -9.15151536e-01
+ dual   objective value = -9.15151537e-01
+ gap := trace(XZ)       = 3.03e-09
+ relative gap           = 1.58e-09
+ actual relative gap    = 4.33e-10
+ rel. primal infeas     = 1.21e-09
+ rel. dual   infeas     = 4.51e-11
+ norm(X), norm(y), norm(Z) = 9.4e-01, 2.9e+00, 1.1e+01
+ norm(A), norm(b), norm(C) = 5.4e+01, 1.0e+00, 1.0e+01
+ Total CPU time (secs)  = 5.2  
+ CPU time per iteration = 0.2  
  termination code       =  0
- DIMACS: 1.6e-09  0.0e+00  4.6e-10  0.0e+00  5.5e-09  7.6e-09
+ DIMACS: 1.2e-09  0.0e+00  4.5e-11  0.0e+00  4.3e-10  1.1e-09
 -------------------------------------------------------------------
 ------------------------------------------------------------
 Status: Solved
