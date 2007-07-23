@@ -53,7 +53,6 @@ end;
 A = sparse(A);
 
 % Compute edge weights: some optimal, some based on heuristics
-fprintf(1,'WARNING: The optimal weight computations take some time...\n');
 [n,m] = size(A);
 
 [ w_fdla, rho_fdla ] = fdla(A);
