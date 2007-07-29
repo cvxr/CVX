@@ -17,7 +17,7 @@
 %   lambda_max        - Maximum eigenvalue of a symmetric matrix.
 %   lambda_min        - Minimum eigenvalue of a symmetric matrix.
 %   logsumexp_sdp     - SDP-based approximation of log(sum(exp(x))).
-%   matrix_frac       - SDP matrix fractional function.
+%   matrix_frac       - Matrix fractional function.
 %   norm_largest      - Sum of the k largest magnitudes of a vector.
 %   norms             - Computation of multiple vector norms.
 %   norms_largest     - Computation of multiple norm_largest() norms.
