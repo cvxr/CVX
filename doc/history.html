@@ -170,7 +170,7 @@
     and return an invalid result flag, a permanent fix is
     forthcoming.</dd>
 
-    <dt>Version 1.1beta, July 2007:</dt>
+    <dt>Version 1.1beta, August 2007:</dt>
 
     <dd>Support for the solver SDPT3 has been added; in fact, SDPT3
     is now the default solver. This provides support for later
@@ -178,6 +178,12 @@
     directory structure has been rearranged considerably, and a
     couple of minor bugs have been fixed, but no major
     functionality has been added.</dd>
+
+    <dd>Automatic dualization added. CVX now analyzes problem structure
+    to determine if a model is more efficiently solved in dual standard
+    form instead of primal standard form; and if so, it sends the dual
+    problem to the solver instead. For models with far more inequalities
+    than variables, this approach can improve both speed and accuracy.
   </dl>
   <hr />
 

@@ -3,20 +3,21 @@
 # Key directories
 SRCBASE=/home/boyd/src
 CPYDIR=$SRCBASE/cvx.dist
-ARCHIVE=file://$SRCBASE/svn/cvx/trunk
-EXAMPLES=file://$SRCBASE/svn/cvx/examples
-DOCDIR=file://$SRCBASE/svn/cvx/doc
+SVNBASE=file://$SRCBASE/svn/cvx
+SOURCE=$SVNBASE/trunk
+EXAMPLES=$SVNBASE/examples
+DOC=$SVNBASE/doc
 DSTDIR=/home/boyd/WWW/cvx
 
 # Grab a clean copy of the current version
 rm -rf $CPYDIR
 mkdir $CPYDIR
-svn export $ARCHIVE $CPYDIR/cvx
+svn export $SOURCE   $CPYDIR/cvx
 svn export $EXAMPLES $CPYDIR/cvx/examples
-svn export $DOCDIR $CPYDIR/cvx/doc
+svn export $DOC      $CPYDIR/doc
 
 # Compile the documentation
-cd $CPYDIR/cvx/doc
+cd $CPYDIR/doc
 latex  cvx_usrguide
 latex  cvx_usrguide
 bibtex cvx_usrguide
@@ -26,34 +27,38 @@ latex  cvx_usrguide
 latex  cvx_usrguide
 dvips  cvx_usrguide
 ps2pdf cvx_usrguide.ps
+cp cvx_usrguide.pdf $CPYDIR/cvx
 
 # Set the permissions
-chgrp -fR research $CPYDIR 
-chmod -fR a+r,gu+w $CPYDIR
-find $CPYDIR -type d -exec chmod g+s {} \;
+chgrp -fR research $CPYDIR/cvx 
+chmod -fR a+r,gu+w $CPYDIR/cvx
+find $CPYDIR/cvx -type d -exec chmod g+s {} \;
 
 # Create the archives
 cd $CPYDIR
 rm $DSTDIR/cvx.{tar.gz,zip}
-tar cvfz $DSTDIR/cvx.tar.gz cvx/*.{m,txt} cvx/doc/*.pdf cvx/{commands,examples,functions,keywords,lib,matlab6,sdpt3,sedumi,sets,structures}
-zip -r -9 $DSTDIR/cvx.zip cvx/*.{m,txt} cvx/doc/*.pdf cvx/{commands,examples,functions,keywords,lib,matlab6,sdpt3,sedumi,sets,structures}
+tar cvfz $DSTDIR/cvx.tar.gz cvx
+zip -r -9 $DSTDIR/cvx.zip cvx
 cd cvx
 tar cvf $DSTDIR/cvx-examples.tar examples
 
 # Copy the documentation over and extract examples
 cd $DSTDIR
-cp $CPYDIR/cvx/doc/*.pdf .
+cp $CPYDIR/doc/cvx_usrguide.pdf .
 rm -rf examples
 tar xvf cvx-examples.tar
 rm -rf cvx-examples.tar
 
 # Update the index file and history file
 MYDATE=`date`
+MYTDATE=`date +"%B %Y"`
+MYBUILD=`svn info $SVNBASE | grep ^Revision | sed "s/[^0-9]*//"`
 MYZIP=`du --si $DSTDIR/cvx.zip | sed 's@\s.*@@'`
 MYTAR=`du --si $DSTDIR/cvx.tar.gz | sed 's@\s.*@@'`
 MYPDF=`du --si $DSTDIR/cvx_usrguide.pdf | sed 's@\s.*@@'`
-sed "s@___DATE___@$MYDATE@;s@___ZIP___@$MYZIP@;s@___TAR___@$MYTAR@;s@___PDF___@$MYPDF@" $CPYDIR/cvx/doc/index.html > $DSTDIR/index.html
-sed "s@___DATE___@$MYDATE@" $CPYDIR/cvx/doc/history.html > $DSTDIR/history.html
+SEDSTR="s@___BUILD___@$MYBUILD@;s@___TDATE___@$MYTDATE@;s@___DATE___@$MYDATE@;s@___ZIP___@$MYZIP@;s@___TAR___@$MYTAR@;s@___PDF___@$MYPDF@"
+sed "$SEDSTR" $CPYDIR/cvx/doc/index.html > $DSTDIR/index.html
+sed "$SEDSTR" $CPYDIR/cvx/doc/history.html > $DSTDIR/history.html
 cp -f $CPYDIR/cvx/doc/*.{gif,png} $DSTDIR
 
 # Set the permissons at the destination
