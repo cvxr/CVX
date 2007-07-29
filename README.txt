@@ -1,5 +1,5 @@
 CVX: A system for disciplined convex programming
-Copyright (C) 2005 Michael C. Grant and Stephen P. Boyd.
+Copyright (C) 2007 Michael C. Grant and Stephen P. Boyd.
 --------------------------------------------------------
 
 Thank you for downloading cvx. Please see Appendix A of the
@@ -8,7 +8,7 @@ on how to install this software.
 
 Files of interest:
     COPYING.txt, GPL.txt: copyright information
-    doc/cvx_usrguide.pdf: documentation
+    /cvx_usrguide.pdf:    documentation
     examples/:            usage examples
 
 	
