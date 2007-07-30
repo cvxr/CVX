@@ -29,7 +29,7 @@ sed "$VERSED" cvx_version.m > cvx_version.m.new
 mv -f cvx_version.m.new cvx_version.m
 cd $CPYDIR/doc
 sed "$TEXSED" cvx_usrguide.tex > cvx_usrguide.tex.new
-mf -f cvx_usrguide.tex.new cvx_usrguide.tex
+mv -f cvx_usrguide.tex.new cvx_usrguide.tex
 
 # Compile the documentation
 latex  cvx_usrguide
