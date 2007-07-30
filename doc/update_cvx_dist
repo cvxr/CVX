@@ -1,5 +1,16 @@
 #!/bin/sh
 
+# Version number
+MYVERSION=1.1
+MYDATE=`date`
+MYTDATE=`date +"%B %Y"`
+MYBUILD=`svn info $SVNBASE | grep ^Revision | sed "s/[^0-9]*//"`
+MYZIP=`du --si $DSTDIR/cvx.zip | sed 's@\s.*@@'`
+MYTAR=`du --si $DSTDIR/cvx.tar.gz | sed 's@\s.*@@'`
+MYPDF=`du --si $DSTDIR/cvx_usrguide.pdf | sed 's@\s.*@@'`
+SEDSTR="s@___VERSION___@$MYVERSION@;s@___BUILD___@$MYBUILD@;s@___TDATE___@$MYTDATE@;s@___DATE___@$MYDATE@;s@___ZIP___@$MYZIP@;s@___TAR___@$MYTAR@;s@___PDF___@$MYPDF@"
+TEXSED="s@cvxver{...@cvxver{$MYVERSION@;s@cvxbuild{...@cvxbuild{$MYBUILD@"
+
 # Key directories
 SRCBASE=/home/boyd/src
 CPYDIR=$SRCBASE/cvx.dist
@@ -16,8 +27,15 @@ svn export $SOURCE   $CPYDIR/cvx
 svn export $EXAMPLES $CPYDIR/cvx/examples
 svn export $DOC      $CPYDIR/doc
 
-# Compile the documentation
+# Insert version information into the version file and docs
+cd $CPYDIR/cvx
+sed "$SEDSTR" cvx_version.m > cvx_version.m.new
+mv -f cvx_version.m.new cvx_version.m
 cd $CPYDIR/doc
+sed "$TEXSED" cvx_usrguide.tex > cvx_usrguide.tex.new
+mf -f cvx_usrguide.tex.new cvx_usrguide.tex
+
+# Compile the documentation
 latex  cvx_usrguide
 latex  cvx_usrguide
 bibtex cvx_usrguide
@@ -56,7 +74,7 @@ MYBUILD=`svn info $SVNBASE | grep ^Revision | sed "s/[^0-9]*//"`
 MYZIP=`du --si $DSTDIR/cvx.zip | sed 's@\s.*@@'`
 MYTAR=`du --si $DSTDIR/cvx.tar.gz | sed 's@\s.*@@'`
 MYPDF=`du --si $DSTDIR/cvx_usrguide.pdf | sed 's@\s.*@@'`
-SEDSTR="s@___BUILD___@$MYBUILD@;s@___TDATE___@$MYTDATE@;s@___DATE___@$MYDATE@;s@___ZIP___@$MYZIP@;s@___TAR___@$MYTAR@;s@___PDF___@$MYPDF@"
+SEDSTR="s@___VERSION___@$MYVERSION@;s@___BUILD___@$MYBUILD@;s@___TDATE___@$MYTDATE@;s@___DATE___@$MYDATE@;s@___ZIP___@$MYZIP@;s@___TAR___@$MYTAR@;s@___PDF___@$MYPDF@"
 sed "$SEDSTR" $CPYDIR/doc/index.html > $DSTDIR/index.html
 sed "$SEDSTR" $CPYDIR/doc/history.html > $DSTDIR/history.html
 cp -f $CPYDIR/doc/*.{gif,png} $DSTDIR
