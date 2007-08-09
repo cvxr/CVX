@@ -45,9 +45,9 @@ else
     cvx_begin
         epigraph variable z( sy )
         variables xp( sx ) yp( sy )
-        xp >= 0;
-        k * yp == sum( xp, dim ) - z;
+        z == sum( xp, dim ) - k * yp;
         xp >= cvx_subsref( yp, ndxs{:} ) + x;
+        xp >= 0;
     cvx_end
 
 end

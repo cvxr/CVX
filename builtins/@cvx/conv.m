@@ -9,11 +9,12 @@ function z = conv(x,y)
 %   real, and all of the elements must have the same sign.
 %
 %Disciplined geometric programming information for TIMES:
-%   CONV() requires that either X or Y be constant, and that the
+%   CONV(X,Y) requires that either X or Y be constant, and that the
 %   non-constant term be log-convex or log-affine. Strictly speaking,
 %   CONV(X,Y) where X and Y are both log-convex satisfies the DGP rulest,
 %   but this version does not support that scenario.
 
+error(nargchk(2,2,nargin));
 sx = size(x);
 sy = size(y);
 if sum(sx~=1)>1 | sum(sy~=1)>1,
@@ -23,12 +24,8 @@ if sum(sx~=1)>1 | sum(sy~=1)>1,
 elseif any(sx==0) & any(sy==0),
     
     error( 'At least one argument must be non-empty.' );
-
-elseif ~cvx_isconstant(x) & ~cvx_isconstant(y),
     
-    error( 'At least one argument must be constant.' );
-    
-else
+elseif cvx_constant(x) | cvx_isconstant(y),    
     
     sz = sy;
     sx = prod(sx);
@@ -52,5 +49,9 @@ else
     if nnz( cvx_classify( z ) == 13 ),
         error( sprintf( 'Disciplined convex programming error:\n   Illegal affine combination of convex/concave terms in convolution.' ) );
     end
+    
+else
+    
+    error( 'At least one argument must be constant.' );
     
 end

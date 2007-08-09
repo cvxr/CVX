@@ -113,7 +113,7 @@ for pass = 1 : 2,
         if size( xR, 1 ) ~= size( xR, 2 ), 
             success = true;
             P = P * cvx_invert_structure( xR );
-            if use_slv, rcnt = sum( dbCA ~= 0, 2 ); end
+            rcnt = sum( dbCA ~= 0, 2 );
         end
         while true,
             %
