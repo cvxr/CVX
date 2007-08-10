@@ -46,18 +46,19 @@
     lam = min(minlam, 0.1*rho*norm(diagschur)/par.normAAt);
     if (exist_analytic_term); rho = 0; end
     ratio = max(diagR)/min(diagR); 
-    if (par.depconstr) | (ratio > 1e10) | (iter < 10)
+    if (par.depconstr) | (ratio > 1e10) | (iter < 5)
        %% important: do not perturb beyond certain threshold 
        %% since it will adversely affect prim_infeas of fp43
        %%
        mexschurfun(schur,min(rho*diagschur,1e-4./max(1,abs(par.dy))));
        %%if (printlevel>2); fprintf(' %2.1e',rho); end
     end
-    if (par.depconstr) | (par.ZpATynorm > 1e10) | (par.ublksize) 
+    if (par.depconstr) | (par.ZpATynorm > 1e10) | (par.ublksize) | (iter < 10)
        %% Note: do not add this perturbation even if ratio is large.
        %% It adversely affects hinf15.
        %%       
-       lam = min(lam,1e-4/max(1,norm(par.AAt*par.dy))); 
+       lam = min(lam,1e-4/max(1,norm(par.AAt*par.dy)));
+       if (exist_analytic_term); lam = 0; end
        mexschurfun(schur,lam*par.AAt); 
        %%if (printlevel>2); fprintf(' *%2.1e ',lam); end
     end
@@ -182,15 +183,15 @@
              condest = max(abs(diag(L.Mu)))/min(abs(diag(L.Mu))); 
              idx = find(abs(diag(L.Mu)) < tol);
              if ~isempty(idx) | (condest > 1e18); 
-                solvesys = 0; 
+                solvesys = 0; solve_ok = -4;  
                 use_LU = 1; 
                 msg = 'SMW too ill-conditioned, switch to LU factor'; 
                 if (printlevel); fprintf('\n  %s.',msg); end
              end         
           end
           [xx,resnrm,solve_ok] = symqmr(coeff,rhs,L,[],[],printlevel);
-          if (solve_ok<=0.3) & (printlevel)
-             fprintf('\n  warning: symqmr failed: %3.1f',solve_ok); 
+          if (solve_ok <= 0.3) & (printlevel)
+             fprintf('\n  warning: symqmr failed: %3.1f ',solve_ok); 
           end
        end
        if (solve_ok <= 0.3) 

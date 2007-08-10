@@ -56,6 +56,8 @@
    warning off; 
    matlabversion = sscanf(version,'%f');
    matlabversion = matlabversion(1);
+   randstate = rand('state'); 
+   rand('state',0);
    
    vers        = 1; 
    predcorr    = 1; 
@@ -138,7 +140,11 @@
       fprintf('\n SQLP has complex data'); 
    end 
    if (nargin <= 5) | (isempty(X0) | isempty(y0) | isempty(Z0)); 
-      [X0,y0,Z0] = infeaspt(blk,At,C,b,2,1);
+      if (max([ops(At,'norm'),ops(C,'norm'),norm(b)]) > 1e2)
+         [X0,y0,Z0] = infeaspt(blk,At,C,b,1);
+      else
+         [X0,y0,Z0] = infeaspt(blk,At,C,b,2,1);
+      end
    end
    if ~iscell(X0);  X0 = {X0}; end;
    if ~iscell(Z0);  Z0 = {Z0}; end;
@@ -169,9 +175,6 @@
 %% convert unrestricted blk to linear blk. 
 %%-----------------------------------------
 %%
-   randstate = rand('state'); 
-   rand('state',0);
-%%
    ublkidx = zeros(size(blk,1),1); 
    for p = 1:size(blk,1) 
       if strcmp(blk{p,1},'u') 
@@ -182,11 +185,10 @@
          blk{p,2} = n;
          At{p} = [At{p}; -At{p}];       
          C{p} = [C{p}; -C{p}];
-         X{p} = ones(n,1).*(1+rand(n,1)); %% do not add a factor of n
-         Z{p} = ones(n,1).*(1+rand(n,1)); %%
+         X{p} = 1+rand(n,1); %% do not add a factor of n
+         Z{p} = 1+rand(n,1); %%
       end
    end
-   rand('state',randstate); 
 %%
 %%-----------------------------------------
 %% check if the matrices Ak are 
@@ -204,8 +206,6 @@
    par.diagAAt   = full(diag(AAt));    
    par.normAAt   = norm(AAt,'fro');
    par.depconstr = depconstr; 
-%%
-%%
 %%
    normC = zeros(length(C),1); 
    for p = 1:length(C); normC(p) = max(max(abs(C{p}))); end
@@ -235,7 +235,7 @@
    Bmat = [sparse(m,m), -b, bbar; b', 0, gbar; -bbar', -gbar, 0];   
    em1 = zeros(m+2,1); em1(m+1) = 1;
    em2 = zeros(m+2,1); em2(m+2) = 1;
-   par.Umat = [[b;0;0], [bbar;gbar;0], -em1, em2, em2];
+   par.Umat = [[b;0;0], [bbar;gbar;0], em1, em2];
    par.m = m;
 %%
 %%-----------------------------------------
@@ -259,11 +259,11 @@
    mu  = (trXZ+kap*tau)/(n+1);   
    obj = [blktrace(blk,C,X), b'*y]/tau;
    gap = trXZ/tau^2;  
-   rel_gap = gap/(1+mean(abs(obj)));
+   relgap = gap/(1+mean(abs(obj)));
    ZpATy = ops(Z,'+',Atyfun(blk,At,par.permA,par.isspAy,[y;0;0]));
    prim_infeas = norm(b - AX(1:m)/tau)/normb;
    dual_infeas = ops(ops(C,'-',ops(ZpATy,'/',tau)),'norm')/normC;
-   infeas_meas = max(prim_infeas,dual_infeas); 
+   infeas = max(prim_infeas,dual_infeas); 
    pstep = 0; dstep = 0; pred_convg_rate = 1; corr_convg_rate = 1;
    prim_infeas_bad = 0;
    termcode  = -6; 
@@ -271,10 +271,10 @@
    runhist.pobj = obj(1);
    runhist.dobj = obj(2); 
    runhist.gap  = gap;
-   runhist.relgap  = rel_gap;
+   runhist.relgap  = relgap;
    runhist.pinfeas = prim_infeas;
    runhist.dinfeas = dual_infeas;
-   runhist.infeas  = infeas_meas;  
+   runhist.infeas  = infeas;  
    runhist.step    = 0; 
    runhist.cputime = cputime-tstart; 
    ttime.preproc   = runhist.cputime; 
@@ -310,6 +310,8 @@
 %% start main loop
 %%---------------------------------------------------------------
 %%
+   EE = ops(blk,'identity');
+   normE = ops(EE,'norm'); Zpertold = 1; 
    [Xchol,indef(1)] = blkcholfun(blk,X); 
    [Zchol,indef(2)] = blkcholfun(blk,Z); 
    if any(indef)
@@ -320,9 +322,10 @@
       return;
    end 
 %%
+   breakyes = 0;
    for iter = 1:maxit;  
 
-       update_iter = 0; breakyes = 0; pred_slow = 0; corr_slow = 0; step_short = 0; 
+       update_iter = 0; pred_slow = 0; corr_slow = 0; step_short = 0; 
        tstart = cputime;  
        time = zeros(1,11); 
        time(1) = cputime;
@@ -421,7 +424,7 @@
          pred_slow = pred_slow + (mupred/mu > 5*pred_convg_rate);
       end 
       if (~predcorr)
-         if (max(mu,infeas_meas) < 1e-6) & (pred_slow) & (stoplevel)
+         if (max(mu,infeas) < 1e-6) & (pred_slow) & (stoplevel)
             msg = 'Stop: lack of progress in predictor'; 
             if (printlevel) 
                fprintf('\n  %s',msg);
@@ -516,7 +519,8 @@
             corr_convg_rate = mean(runhist.gap(idx)./runhist.gap(idx-1));
             corr_slow = corr_slow + (mucorr/mu > max(min(1,5*corr_convg_rate),0.8)); 
          end 
-	 if (max(mu,infeas_meas) < 1e-6) & (iter > 10) & (corr_slow) & (stoplevel)
+	 if (max(mu,infeas) < 1e-6) & (iter > 10) & (stoplevel) ...
+            & (corr_slow & mucorr/mu > 0.7) 
             msg = 'Stop: lack of progress in corrector'; 
    	    if (printlevel) 
                fprintf('\n  %s',msg);
@@ -561,7 +565,7 @@
             if (printlevel); fprintf('\n  %s',msg); end
             termcode = -3;
             breakyes = 1;         
-         elseif (prim_infeasnew > max([1e-8,rel_gap,10*prim_infeas]) & iter > 10) ... 
+         elseif (prim_infeasnew > max([1e-8,relgap,10*prim_infeas]) & iter > 10) ... 
 	    | (prim_infeasnew > max([1e-4,20*prim_infeas]) & (dual_infeas < 1e-2))
             if (stoplevel) & (max(pstep,dstep)<=1)
                msg = 'Stop: primal infeas has deteriorated too much'; 
@@ -569,12 +573,38 @@
                termcode = -7; 
                breakyes = 1; 
             end
-         else
+	 else
             X = ops(X,'+',dX,pstep);  
-            y = y + dstep*dy;  Z = ops(Z,'+',dZ,dstep);  
-            kap = kap + pstep*par.dkap; tau = tau + pstep*par.dtau; 
+            y = y + dstep*dy;  Z = ops(Z,'+',dZ,dstep);
             theta = theta + pstep*par.dtheta; 
+            kap = kap + pstep*par.dkap; 
+            if (tau + pstep*par.dtau > theta)
+               tau = tau + pstep*par.dtau; 
+            end
          end
+      end
+%%
+%%--------------------------------------------------
+%% perturb Z: do this step before checking for break
+%%--------------------------------------------------
+      if (~breakyes) 
+         trXZtmp = blktrace(blk,X,Z);
+         trXE  = blktrace(blk,X,EE);
+         Zpert = max(1e-12,0.2*min(relgap,prim_infeas)).*normC./normE;
+         Zpert = min(Zpert,0.1*trXZtmp./trXE);
+         Zpert = min([1,Zpert,1.5*Zpertold]); 
+         if (infeas < 1e-2) 
+            Z = ops(Z,'+',EE,Zpert); 
+            [Zchol,indef(2)] = blkcholfun(blk,Z);
+            if any(indef(2))
+               msg = 'sqlp stop: Z not positive definite';      
+               if (printlevel); fprintf('\n  %s',msg); end
+               termcode = -3;
+               breakyes = 1; 
+            end
+            %%if (printlevel > 2); fprintf(' %2.1e',Zpert); end
+         end
+         Zpertold = Zpert;        
       end
 %%
 %%---------------------------------------------------------------
@@ -589,18 +619,18 @@
       mu  = (trXZ+kap*tau)/(n+1);   
       obj = [blktrace(blk,C,X), b'*y]/tau;
       gap = trXZ/tau^2;  
-      rel_gap = gap/(1+mean(abs(obj)));
+      relgap = gap/(1+mean(abs(obj)));
       ZpATy = ops(Z,'+',Atyfun(blk,At,par.permA,par.isspAy,[y;0;0]));
       prim_infeas = norm(b-AX(1:m)/tau)/normb;
       dual_infeas = ops(ops(C,'-',ops(ZpATy,'/',tau)),'norm')/normC;
-      infeas_meas = max(prim_infeas,dual_infeas);
+      infeas = max(prim_infeas,dual_infeas);
       runhist.pobj(iter+1) = obj(1); 
       runhist.dobj(iter+1) = obj(2); 
       runhist.gap(iter+1)  = gap;
-      runhist.relgap(iter+1)  = rel_gap;
+      runhist.relgap(iter+1)  = relgap;
       runhist.pinfeas(iter+1) = prim_infeas;
       runhist.dinfeas(iter+1) = dual_infeas;
-      runhist.infeas(iter+1)  = infeas_meas;
+      runhist.infeas(iter+1)  = infeas;
       runhist.step(iter+1)    = min(pstep,dstep); 
       runhist.cputime(iter+1) = cputime-tstart; 
       time(10) = cputime;
@@ -610,7 +640,7 @@
          fprintf('\n%2.0f  %4.3f %4.3f',iter,pstep,dstep);
          fprintf(' %2.1e %2.1e  %2.1e',prim_infeas,dual_infeas,gap);
          fprintf(' %- 7.6e  %s:%s:%s',mean(obj),hh,mm,ss);
-         %%fprintf(' %2.1e, %2.1e, %2.1e',kap,tau,theta); 
+         fprintf(' %2.1e %2.1e %2.1e',kap,tau,theta); 
       end
 %%
 %%--------------------------------------------------
@@ -632,7 +662,7 @@
          termcode = 2;
          breakyes = 1;
       end
-      if (max(rel_gap,infeas_meas) < gaptol)
+      if (max(relgap,infeas) < gaptol)
          msg = sprintf('Stop: max(relative gap, infeasibilities) < %3.2e',gaptol);
          if (printlevel); fprintf('\n  %s',msg); end
          termcode = 0;
@@ -653,10 +683,10 @@
          gap_ratio2 = runhist.gap(idx2+1)./runhist.gap(idx2);
          gap_slowrate = min(0.8,max(0.6,2*mean(gap_ratio2)));
          gap_ratio = runhist.gap(idx+1)./runhist.gap(idx); 
-         if (infeas_meas < 1e-4 | prim_infeas_bad) & (rel_gap < 1e-3) ...
+         if (infeas < 1e-4 | prim_infeas_bad) & (relgap < 1e-3) ...
             & (iter > 5) & (prim_infeas > (1-pstep/2)*runhist.pinfeas(iter)) 
-            gap_slow = all(gap_ratio > gap_slowrate) & (rel_gap < 1e-3);
-            if (rel_gap < 1e-2*max(prim_infeas,dual_infeas)) ...
+            gap_slow = all(gap_ratio > gap_slowrate) & (relgap < 1e-3);
+            if (relgap < 1e-2*max(prim_infeas,dual_infeas)) ...
                & (runhist.step(iter+1) < 0.5)
                msg = 'Stop: relative gap < infeasibility'; 
                if (printlevel); fprintf('\n  %s',msg); end
@@ -666,20 +696,20 @@
                msg = 'Stop: progress is too slow'; 
                if (printlevel); fprintf('\n  %s',msg); end
                termcode = -5; 
-               breakyes = 1;
+               breakyes = breakyes + 0.5;
             end  
          elseif (prim_infeas_bad) & (iter >50) & all(gap_ratio > gap_slowrate)
             msg = 'Stop: progress is bad';
             if (printlevel); fprintf('\n  %s',msg); end
             termcode = -5;
             breakyes = 1; 
-         elseif (infeas_meas < 1e-8) & (gap > 1.2*mean(runhist.gap(idx)))
+         elseif (infeas < 1e-8) & (gap > 1.2*mean(runhist.gap(idx)))
             msg = 'Stop: progress is bad*'; 
             if (printlevel); fprintf('\n  %s',msg); end
             termcode = -5;
             breakyes = 1;  
          end
-         if (rel_gap < 1e-4) & (iter > 10) ...
+         if (relgap < 1e-4) & (iter > 10) ...
             & (runhist.pinfeas(iter+1) > 0.9*runhist.pinfeas(max(1,iter-10))) ...
             & (runhist.dinfeas(iter+1) > 0.9*runhist.dinfeas(max(1,iter-10)))
             msg = 'Stop: progress is bad**';
@@ -689,10 +719,10 @@
          end
          if (min(runhist.infeas) < 1e-4 | prim_infeas_bad) ...
             & (max(runhist.infeas) > 1e-4) & (iter > 5)
-            rel_gap2 = abs(diff(obj))/(1+mean(abs(obj))); 
-            if (rel_gap2 < 1e-3); 
+            relgap2 = abs(diff(obj))/(1+mean(abs(obj))); 
+            if (relgap2 < 1e-3); 
                step_short = all(runhist.step([iter:iter+1]) < 0.1) ;
-            elseif (rel_gap2 < 1) 
+            elseif (relgap2 < 1) 
                idx = [max(1,iter-3): iter+1];
                step_short = all(runhist.step(idx) < 0.05); 
             else
@@ -705,9 +735,9 @@
                breakyes = 1;      
             end
          end
-	 if (infeas_meas > 100*max(1e-12,min(runhist.infeas)))
+	 if (infeas > 100*max(1e-12,min(runhist.infeas)) & relgap < 1e-2)
             msg = 'Stop: infeas has deteriorated too much'; 
-            if (printlevel); fprintf('\n  %s, %3.1e',msg,infeas_meas); end
+            if (printlevel); fprintf('\n  %s, %3.1e',msg,infeas); end
             X = ops(X,'-',dX,pstep);  
             y = y - dstep*dy;  Z = ops(Z,'-',dZ,dstep);  
             kap = kap - pstep*par.dkap; tau = tau - pstep*par.dtau; 
@@ -719,7 +749,7 @@
             breakyes = 1; 
          end
          if (iter > 3 & iter < 20) & (max(runhist.step(max(1,iter-3):iter+1)) < 1e-3) ...
-            & (infeas_meas > 1) & (min(homrp,homRd) > 1000*inftol) 
+            & (infeas > 1) & (min(homrp,homRd) > 1000*inftol) 
             if (stoplevel == 2) 
                msg = 'Stop: steps too short consecutively'; 
                if (printlevel)
@@ -742,7 +772,7 @@
             end
          end
       end
-      if (breakyes); break; end
+      if (breakyes>0.5); break; end
    end
 %%---------------------------------------------------------------
 %% end of main loop
@@ -760,7 +790,7 @@
    X = ops(X,'/',tau); y = y/tau; Z = ops(Z,'/',tau); 
    if (iter >= 1) 
       param.obj         = obj;
-      param.rel_gap     = rel_gap; 
+      param.relgap     = relgap; 
       param.prim_infeas = prim_infeas;
       param.dual_infeas = dual_infeas;
       param.ZpATynorm   = ZpATynorm/tau;
@@ -800,7 +830,7 @@
    info.iter     = iter; 
    info.obj      = obj; 
    info.gap      = gap; 
-   info.relgap   = rel_gap;
+   info.relgap   = relgap;
    info.pinfeas  = prim_infeas;
    info.dinfeas  = dual_infeas;
    info.cputime  = sum(runhist.cputime); 
@@ -816,4 +846,5 @@
    info.msg2     = msg2; 
 %%
    sqlpsummary(info,ttime,[],printlevel);
+   rand('state',randstate); 
 %%*****************************************************************************

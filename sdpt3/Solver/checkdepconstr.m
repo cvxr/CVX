@@ -104,17 +104,19 @@
    feasible = 1; neardepconstr = 0; 
    if ~issparse(AAt); AAt = sparse(AAt); end 
    nnzmatold = mexnnz(AAt);
-   if (matlabversion >= 7.3)  %% & (computer_model == 64) 
-      diagAAt = diag(AAt); rho = 1e-13;
-      mexschurfun(AAt,rho*max(diagAAt,1)); 
+   rho = 1e-15;
+   diagAAt = diag(AAt);  
+   mexschurfun(AAt,rho*max(diagAAt,1));
+   if (matlabversion >= 7.3)  %% & (computer_model == 64)       
       [L.R,indef,L.perm] = chol(AAt,'vector'); 
       L.d = full(diag(L.R)).^2; 
    else
+      indef = 0;
       [Lsymb,flag] = symbcholfun(AAt,cachesize);
       if (flag); existspcholsymb = 0; else; existspcholsymb = 1; end
       if (flag==0)
          L = sparcholfun(Lsymb,AAt);
-         if ~any(L.skip); indef = 1; end
+         if (norm(L.skip) > 1e-16); indef = 1; end
       end
    end
    if (indef) 

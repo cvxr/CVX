@@ -53,7 +53,7 @@
   end
   alp  = 1./max(1,alp);   
   beta = 1./max(1,beta); 
-  dd   = 1./max(1,dd);
+  dd   = 1./max(1,dd);  
 %%
 %% New multipliers in dual problem: 
 %% [v; tt; theta].
@@ -111,7 +111,8 @@
 %%
 %% Solve SDP
 %%
-   [obj,X,y,Z,info] = sqlp(blk2,At2,C2,b2,OPTIONS); 
+   [X0,y0,Z0] = infeaspt(blk2,At2,C2,b2,2,100);    
+   [obj,X,y,Z,info] = sqlp(blk2,At2,C2,b2,OPTIONS,X0,y0,Z0); 
    tt = alp*abs(y(m+1)); theta = beta*abs(y(m+2)); 
    yfeas = D*y(1:m)/theta; 
    Zfeas = ops(ops(Z(1:numblk),'+',EE,tt),'/',theta); 

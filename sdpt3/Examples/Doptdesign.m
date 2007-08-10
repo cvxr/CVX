@@ -42,7 +42,9 @@
    At{3,1} = ones(1,p); 
    C{3,1} = 1; 
 
-   OPTIONS.parbarrier = [1; 0; 0]; 
+   OPTIONS.parbarrier{1} = 1; 
+   OPTIONS.parbarrier{2} = 0; 
+   OPTIONS.parbarrier{3} = 0; 
 %%
    if (solve)
       [obj,X,y,Z] = sqlp(blk,At,C,b,OPTIONS);

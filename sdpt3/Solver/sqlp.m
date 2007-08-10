@@ -40,6 +40,15 @@
 %%*************************************************************************
 
   function [obj,X,y,Z,info,runhist] = sqlp(blk,At,C,b,OPTIONS,X0,y0,Z0);
+
+%%
+    if isempty(At) & isempty(b);
+       b = 0; 
+       At = ops(ops(blk,'identity'),'*',-1);  
+       numblk = size(blk,1); 
+       blk{numblk+1,1} = 'l'; blk{numblk+1,2} = 1;  
+       At{numblk+1,1} = 1; C{numblk+1,1} = 0; 
+    end
 %%                                      
 %%-----------------------------------------
 %% get parameters from the OPTIONS structure. 

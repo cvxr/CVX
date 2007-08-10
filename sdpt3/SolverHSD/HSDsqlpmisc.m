@@ -11,7 +11,7 @@
    function [X,y,Z,resid,reldist,param,msg] = misc(blk,At,C,b,X,y,Z,permZ,param);
 
    obj         = param.obj;
-   rel_gap     = param.rel_gap; 
+   relgap     = param.relgap; 
    prim_infeas = param.prim_infeas;
    dual_infeas = param.dual_infeas;
    ZpATynorm   = param.ZpATynorm; 
@@ -34,7 +34,7 @@
       %% To detect near-infeasibility when the algorithm provides 
       %% a "better" certificate of infeasibility than of optimality.
       %%
-      err = max(infeas_meas,rel_gap);
+      err = max(infeas_meas,relgap);
       iflag = 0;
       if (obj(2) > 0)
          homRd = ZpATynorm/obj(2);
@@ -42,8 +42,8 @@
             iflag = 1;
             termcode = 1;
             param.termcode = 1;
-            msg = sprintf('prim_inf,dual_inf,rel_gap = %3.2e, %3.2e, %3.2e',...
-                  prim_infeas,dual_infeas,rel_gap); 
+            msg = sprintf('prim_inf,dual_inf,relgap = %3.2e, %3.2e, %3.2e',...
+                  prim_infeas,dual_infeas,relgap); 
             if (printlevel); fprintf('\n  %s',msg); end
          end
       elseif (obj(1) < 0)
@@ -52,8 +52,8 @@
             iflag = 1; 
             termcode = 2;
             param.termcode = 2;
-            msg = sprintf('prim_inf,dual_inf,rel_gap = %3.2e, %3.2e, %3.2e',...
-                  prim_infeas,dual_infeas,rel_gap); 
+            msg = sprintf('prim_inf,dual_inf,relgap = %3.2e, %3.2e, %3.2e',...
+                  prim_infeas,dual_infeas,relgap); 
             if (printlevel); fprintf('\n  %s',msg); end
          end
       end

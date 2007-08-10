@@ -20,9 +20,9 @@
       homrp       = param.homrp;
       homRd       = param.homRd;
       prim_infeas_bad = param.prim_infeas_bad; 
-      prim_infeas_min = min(param.prim_infeas_min, max(prim_infeas,1e-9)); 
+      prim_infeas_min = min(param.prim_infeas_min, max(prim_infeas,1e-10)); 
       dual_infeas_bad = param.dual_infeas_bad; 
-      dual_infeas_min = min(param.dual_infeas_min, max(dual_infeas,1e-9)); 
+      dual_infeas_min = min(param.dual_infeas_min, max(dual_infeas,1e-10)); 
       printlevel  = param.printlevel;
       stoplevel   = param.stoplevel; 
       ublksize    = param.ublksize; 
@@ -50,7 +50,7 @@
             + (prim_infeas > max(1e-10,1e2*prim_infeas_min) & (prim_infeas_min < 1e-2)) ...
             + (prim_infeas > prod(1.5-runhist.step(iter+1:iter-1))*runhist.pinfeas(iter-2));
          dual_infeas_bad = ... 
-            + (dual_infeas > max(1e-8,1e3*dual_infeas_min) & (dual_infeas_min < 1e-2)); 
+            + (dual_infeas > max(1e-8,1e3*dual_infeas_min) & (dual_infeas_min < 1e-2));
          if (mu < 1e-8) | (use_LU)
             idx = [max(1,iter-1): iter];
          elseif (mu < 1e-4);
@@ -101,7 +101,8 @@
             breakyes = 1; 
          end
 	 if (iter > 30) & (dual_infeas_bad) & (relgap < 1e-3) ...
-            & (dual_infeas < 1e-5) & ~(min(runhist.step(idx)) > 0.2 & ublksize)
+	    & (dual_infeas < 1e-5) ...
+            & ~(min(runhist.step(idx)) > 0.2 & ublksize)
             msg = 'sqlp stop: dual infeas has deteriorated too much'; 
             if (printlevel); fprintf('\n  %s',msg); end
             termcode = -5;

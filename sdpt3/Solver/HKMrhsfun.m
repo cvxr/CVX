@@ -31,7 +31,7 @@
              EinvRc{p} = sigmu./Z{p} -X{p};
           end
           Rq = sparse(n,1); 
-          if (corrector)
+          if (corrector) & (norm(par.parbarrier{p})==0)
              Rq = dX{p}.*dZ{p}./Z{p};
           else
              tmp  = par.dd{p}.*Rd{p};
@@ -48,7 +48,7 @@
              EinvRc{p} = sigmu*par.Zinv{p} -X{p};
           end
           Rq = sparse(n,1); 
-          if (corrector)
+          if (corrector) & (norm(par.parbarrier{p})==0)
   	     ff{p} = qops(pblk,1./par.gamz{p},Z{p},3);
              hdx = qops(pblk,par.gamz{p},ff{p},5,dX{p}); 
              hdz = qops(pblk,par.gamz{p},ff{p},6,dZ{p}); 
@@ -76,7 +76,7 @@
              EinvRc{p} = sigmu*par.Zinv{p} -X{p};
           end
           Rq = sparse(n,n);
-          if (corrector)
+          if (corrector) & (norm(par.parbarrier{p})==0)
              Rq = Prod3(pblk,dX{p},dZ{p},par.Zinv{p},0); 
 	     Rq = 0.5*(Rq+Rq');
           else

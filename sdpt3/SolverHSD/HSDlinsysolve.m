@@ -41,8 +41,8 @@
     else
        len = 0;
     end
-    tmp = [len+1,len+3,1; len+3,len+1,-1; len+2,len+4,1; len+4,len+2,-1; 
-           len+5,len+5,-par.addschur];
+    tmp = [len+1,len+3,-1; len+2,len+4,1; len+3,len+1,1; len+4,len+2,-1; 
+           len+2,len+2,par.addschur];  %% this is the -inverse
     EE = [EE; tmp]; 
     ncolU = size(UU,2);
 %%
@@ -133,17 +133,17 @@
        end    
        if (solvesys)
           if (ncolU)
-             tmp = coeff.mat12'*linsysolvefun(L,coeff.mat12)-coeff.mat22; 
+             tmp = coeff.mat12'*linsysolvefun(L,coeff.mat12)-coeff.mat22;
 	     if issparse(tmp); tmp = full(tmp); end
              [L.Ml,L.Mu,L.Mp] = lu(tmp);
              tol = 1e-16;
              condest = max(abs(diag(L.Mu)))/min(abs(diag(L.Mu))); 
              idx = find(abs(diag(L.Mu)) < tol);
-             if ~isempty(idx) | (condest > 1e18); 
-                solvesys = 0; 
+             if ~isempty(idx) | (condest > 1e20); 
+                solvesys = 0; solve_ok = -4; 
                 use_LU = 1; 
                 msg = 'SMW too ill-conditioned, switch to LU factor'; 
-                if (printlevel); fprintf('\n  %s.',msg); end
+                if (printlevel); fprintf('\n  %s, %2.1e.',msg,condest); end
              end         
           end
           if (solvesys)

@@ -32,7 +32,7 @@
               EinvRc{p} = sigmu./Z{p} -X{p};
            end
            Rq = sparse(n,1); 
-           if (corrector)
+           if (corrector) & (norm(par.parbarrier{p})==0)
               Rq = dX{p}.*dZ{p}./Z{p}; 
            else
               tmp  = par.dd{p}.*Rd{p};
@@ -49,7 +49,7 @@
               EinvRc{p} = qops(pblk,-sigmu./(par.gamz{p}.*par.gamz{p}),Z{p},4) -X{p};
            end
            Rq = sparse(n,1); 
-   	   if (corrector)
+   	   if (corrector) & (norm(par.parbarrier{p})==0)
               w = sqrt(par.gamz{p}./par.gamx{p}); 
               hdx = qops(pblk,w,par.ff{p},5,dX{p}); 
               hdz = qops(pblk,w,par.ff{p},6,dZ{p}); 
@@ -79,7 +79,7 @@
            end
            EinvRc{p} = Prod3(pblk,par.G{p}',tmp,par.G{p},1);
            Rq = sparse(n,n); 
-           if (corrector)
+           if (corrector) & (norm(par.parbarrier{p})==0)
               hdZ = Prod3(pblk,par.G{p},dZ{p},par.G{p}',1); 
               hdX = spdiags(qops(pblk,par.parbarrier{p}',1./par.sv{p},3)-par.sv{p},0,n,n)-hdZ; 
               tmp = Prod2(pblk,hdX,hdZ,0);  

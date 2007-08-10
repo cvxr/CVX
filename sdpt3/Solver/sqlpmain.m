@@ -433,7 +433,7 @@
          sigmu = cell(size(blk,1),1); 
          for p = 1:size(blk,1)
             sigmu{p} = max(sigma*mu, parbarrier{p}'); 
-         end
+         end	 
          if (vers == 1)
             [dX,dy,dZ] = HKMcorr(blk,At,par,rp,Rd,sigmu,hRd,...
              dX,dZ,coeff,L,X,Z);
@@ -535,7 +535,8 @@
             | (prim_infeasnew > alpha*max([1e-9,param.prim_infeas_min]) ...
                & (prim_infeasnew > max([3*prim_infeas,0.1*relgap])) ...
                & (iter > 25) & (dual_infeas < 1e-6) & (relgap < 0.1)) ...
-            | ((prim_infeasnew > 1e3*prim_infeas) & (max(relgap,dual_infeas) < 1e-8))
+            | ((prim_infeasnew > 1e3*prim_infeas & prim_infeasnew > 1e-12) ...
+               & (max(relgap,dual_infeas) < 1e-8))
             if (stoplevel) 
                msg = 'sqlp stop: primal infeas has deteriorated too much'; 
                if (printlevel); fprintf('\n  %s, %2.1e',msg,prim_infeasnew); end
@@ -571,8 +572,7 @@
                if (mu < 1e-4) %% old: (mu < 1e-7)
                   Z{p} = 0.5*mu./max(1,X{p}); %% good to keep this step
                else
-                  ztmp = min(1,max(Z{p}([1:len]),Z{p}(len+[1:len]))); 
-                  %%if (dual_infeas > 1e-2) | (dual_infeas > 1e-4 & dstep < 0.3)
+                  ztmp = min(1,max(Z{p}([1:len]),Z{p}(len+[1:len])));
                   if (dual_infeas > 1e-4 & dstep < 0.2)
                      beta = 0.3; 
                   else  
@@ -588,23 +588,22 @@
 %%--------------------------------------------------
 %% perturb Z: do this step before checking for break
 %%--------------------------------------------------
-      if (~breakyes) 
+      if (~breakyes) & (~exist_analytic_term)
          trXZtmp = blktrace(blk,X,Z);
          trXE  = blktrace(blk,X,EE);
          Zpert = max(1e-12,0.2*min(relgap,prim_infeas)).*normC2./normE2;
          Zpert = min(Zpert,0.1*trXZtmp./trXE);
          Zpert = min([1,Zpert,1.5*Zpertold]); 
-         if (infeas < 0.1)
+         if (infeas < 0.1) 
             Z = ops(Z,'+',EE,Zpert); 
-            %%if (printlevel) & (~breakyes); fprintf(' !%3.1e',max(Zpert)); end
             [Zchol,indef(2)] = blkcholfun(blk,Z);
             if any(indef(2))
                msg = 'sqlp stop: Z not positive definite';      
                if (printlevel); fprintf('\n  %s',msg); end
                termcode = -3;
                breakyes = 1; 
-            end 
-   	    Rd = ops(Rd,'-',ops(EE,'*',Zpert)); 
+            end
+            %%if (printlevel > 2); fprintf(' %2.1e',Zpert); end
          end
          Zpertold = Zpert; 
       end
@@ -752,7 +751,7 @@
          Z{p} = Z{p}(1:n); 
       end
    end
-   for p = 1:size(blk,1) 
+   for p = 1:size(ublkidx,1) 
       if ~isempty(ublkidx{p,2})
          n0 = ublkidx{p,1}; idxB = setdiff([1:n0]',ublkidx{p,2});
          tmp = zeros(n0,1); tmp(idxB) = X{p}; X{p} = tmp; 

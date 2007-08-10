@@ -32,9 +32,11 @@
   b2 = zeros(m,1);
 %%
 %% 
-%%
+%%  
+  dd = ones(1,m); 
   ee = zeros(1,m); EE = cell(size(blk,1),1);
-  exist_ublk = 0; 
+  exist_ublk = 0;
+  nn = zeros(size(blk,1),1); 
   for p = 1:size(blk,1)
      pblk = blk(p,:); 
      n = sum(pblk{2}); 
@@ -42,6 +44,7 @@
         ee = ee + svec(pblk,speye(n),1)'*At{p}; 
         C2{p,1} = sparse(n,n); 
         EE{p} = speye(n); 
+        nn(p) = n; 
      elseif strcmp(pblk{1},'q')
         eq = zeros(n,1); 
         idx1 = 1+[0,cumsum(pblk{2})]; 
@@ -49,16 +52,31 @@
         eq(idx1) = ones(length(idx1),1);
         ee = ee + 2*eq'*At{p}; 
         C2{p,1} = zeros(n,1);
-        EE{p} = eq; 
+        EE{p} = eq;
+        nn(p) = length(pblk{2});  
      elseif strcmp(pblk{1},'l')
         ee = ee + ones(1,n)*At{p}; 
         C2{p,1} = zeros(n,1); 
         EE{p} = ones(n,1); 
+        nn(p) = n; 
      elseif strcmp(pblk{1},'u')
         C2{p,1} = zeros(n,1);         
         exist_ublk = 1; 
         EE{p} = sparse(n,1); 
+        nn(p) = n; 
      end
+     dd = dd + sqrt(sum(At{p}.*At{p}));
+  end
+  dd = 1./min(1e4,max(1,dd));
+  ee = ee.*dd; 
+  b  = b.*dd'; 
+%%
+%% scale data
+%%
+  D = spdiags(dd',0,m,m); 
+  for p = 1:size(blk,1)   
+     pblk = blk(p,:); 
+     At2{p} = At2{p}*D;
   end
 %%
 %% New variables in primal problem: 
@@ -104,7 +122,8 @@
 %%
 %% Solve SDP
 %%
-   [obj,X,y,Z,info] = sqlp(blk2,At2,C2,b2,OPTIONS); 
+   [X0,y0,Z0] = infeaspt(blk2,At2,C2,b2,2,100);    
+   [obj,X,y,Z,info] = sqlp(blk2,At2,C2,b2,OPTIONS,X0,y0,Z0); 
    obj = -obj;
    tt = X{numblk+1}(1); theta = X{numblk+1}(2); 
    Xfeas = ops(ops(X(1:numblk),'+',EE(1:numblk),tt),'/',theta); 

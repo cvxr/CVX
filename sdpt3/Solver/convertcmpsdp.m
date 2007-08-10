@@ -20,30 +20,18 @@
   if (pp ~= size(blk,1)) 
      error('blk and A not compatible'); 
   end
-  if (mm == m)
-     Atype = 1; 
-  elseif (size(A{1},2) == m)
-     Atype = 2; 
-  else
-     error('data format of A is not compatible')
-  end
   numblk = size(blk,1); 
-  if (Atype == 1) 
-     iscmp = zeros(numblk,m); 
-     for p = 1:size(blk,1)
-        pblk = blk(p,:); 
-        for k = 1:m
-           iscmp(p,k) = 1-isreal(A{p,k}); 
-        end
+  iscmp = zeros(numblk,m); 
+  for p = 1:size(blk,1)
+     pblk = blk(p,:);
+     len = size(A(p),2); 
+     for k = 1:len
+     if ~isempty(A{p,k})
+            iscmp(p,k) = 1-isreal(A{p,k}); 
+         end
      end
-     iscmp = norm(iscmp,'fro');
-  elseif (Atype == 2) 
-     iscmp = zeros(numblk,1); 
-     for p = 1:size(blk,1)
-        iscmp(p) = 1-isreal(A{p}); 
-     end
-     iscmp = norm(iscmp,'fro');
   end
+  iscmp = norm(iscmp,'fro');
 %%
   if (iscmp == 0) 
      %% data is real
