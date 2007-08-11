@@ -7,7 +7,7 @@
 %% Last Modified: 16 Sep 2004
 %%************************************************************************
 
-  function [par,dX,dy,dZ] = HSDNTcorr(blk,At,par,rp,Rd,sigmu,hRd,...
+  function [par,dX,dy,dZ,resnrm] = HSDNTcorr(blk,At,par,rp,Rd,sigmu,hRd,...
             dX,dZ,coeff,L,X,Z); 
 
     global printlevel 
@@ -22,7 +22,7 @@
     if (solve_ok<=0) & (printlevel)
        fprintf('\n  warning: iterative solver fails: %3.1f.',solve_ok); 
     end
-    if (printlevel>=3); fprintf('%2.0d ',length(resnrm)-1); end
+    if (printlevel>=3); fprintf(' %2.0d',length(resnrm)-1); end
 %%   
     [par,dX,dy,dZ] = HSDNTdirfun(blk,At,par,Rd,EinvRc,xx); 
 %%************************************************************************

@@ -58,7 +58,8 @@
             if (printlevel); fprintf('\n  %s',msg); end
             termcode = 1;
          end
-      elseif (obj(1) < 0)
+      end	 
+      if (obj(1) < 0)
          if (homrp < 0.1*sqrt(err*inftol)) 
             iflag = 1; 
             msg = sprintf('prim_inf,dual_inf,relgap = %3.2e, %3.2e, %3.2e',...

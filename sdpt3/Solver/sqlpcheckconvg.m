@@ -135,7 +135,7 @@
 	    else
                step_short = 0; 
             end
-            if (step_short) 
+            if (step_short) & (relgap2 < 1e-2)
                msg = 'sqlp stop: steps too short consecutively'; 
                if (printlevel); fprintf('\n  %s',msg); end
                termcode = -5; 
@@ -146,7 +146,7 @@
             & (min(param.homrp,param.homRd) > min(1e-8,param.inftol)) ...
             & (max(runhist.step(max(1,iter-3):iter+1)) < 1e-3) 
             if (stoplevel == 2)
-               msg = 'sqlp stop: steps too short consecutively'; 
+               msg = 'sqlp stop: steps too short consecutively*'; 
                if (printlevel)
                   fprintf('\n *** Too many tiny steps, advisable to restart sqlp'); 
                   fprintf(' with the following iterate.')
@@ -156,7 +156,7 @@
                termcode = -5; 
                breakyes = 1;             
             elseif (stoplevel == 3)
-               msg = 'sqlp stop: steps too short consecutively'; 
+               msg = 'sqlp stop: steps too short consecutively*'; 
                if (printlevel)
                   fprintf('\n *** Too many tiny steps even')
                   fprintf(' after restarting sqlp');                
