@@ -11,7 +11,7 @@ To make changes, update the M-file and republish this document.
       -->
       <title>Separating ellipsoids in 2D</title>
       <meta name="generator" content="MATLAB 7.4">
-      <meta name="date" content="2007-07-21">
+      <meta name="date" content="2007-08-10">
       <meta name="m-file" content="separate_ell_2D"><style>
 
 body {
@@ -133,39 +133,38 @@ Note: for improved efficiency, SDPT3 is solving the dual problem.
  dim. of socp   var  =  9,   num. of socp blk  =  3
  dim. of linear var  =  2
 *******************************************************************
-   SDPT3: homogeneous self-dual path-following algorithms
+   SDPT3: Infeasible path-following algorithms
 *******************************************************************
- version  predcorr  gam  expon
-    NT      1      0.000   1
-it  pstep dstep p_infeas d_infeas  gap     mean(obj)    cputime
+ version  predcorr  gam  expon  scale_data
+    NT      1      0.000   1        0    
+it pstep dstep pinfeas dinfeas  gap      mean(obj)   cputime
 -------------------------------------------------------------------
- 0  0.000 0.000 1.0e+00 1.2e+00  9.0e+00  2.000000e+00  0:0:00 chol 1  1 
- 1  0.882 0.882 5.2e-01 6.3e-01  7.5e+00  1.037935e-01  0:0:00 chol 1  1 
- 2  0.973 0.973 1.7e-01 2.0e-01  3.1e+00 -6.897986e-01  0:0:00 chol 1  1 
- 3  1.000 1.000 2.1e-02 2.6e-02  2.6e-01 -1.115704e+00  0:0:00 chol 1  1 
- 4  0.987 0.987 1.6e-03 1.9e-03  4.0e-03 -1.187851e+00  0:0:00 chol 1  1 
- 5  0.989 0.989 1.2e-04 1.4e-04  5.8e-05 -1.192121e+00  0:0:00 chol 1  1 
- 6  0.994 0.994 7.8e-06 9.3e-06  1.2e-06 -1.192420e+00  0:0:00 chol 1  1 
- 7  1.000 1.000 4.9e-07 5.9e-07  1.1e-07 -1.192440e+00  0:0:00 chol 1  1 
- 8  1.000 1.000 5.3e-08 6.3e-08  5.0e-07 -1.192441e+00  0:0:00 chol 1  1 
- 9  1.000 1.000 5.7e-09 6.8e-09  5.4e-08 -1.192441e+00  0:0:00 chol 1  1 
-10  1.000 1.000 6.0e-10 7.2e-10  5.4e-09 -1.192441e+00  0:0:00
-  Stop: max(relative gap, infeasibilities) &lt; 1.49e-08
+ 0|0.000|0.000|2.4e+00|1.9e+00|7.7e+01| 8.000000e+00| 0:0:00| chol  1  1 
+ 1|1.000|0.896|5.3e-07|2.4e-01|1.1e+01| 1.509951e+00| 0:0:00| chol  1  1 
+ 2|1.000|1.000|5.9e-07|5.3e-03|1.4e+00|-1.484357e+00| 0:0:00| chol  1  1 
+ 3|1.000|0.933|6.9e-07|8.5e-04|2.5e-01|-1.151523e+00| 0:0:00| chol  1  1 
+ 4|0.978|0.985|1.3e-07|6.4e-05|4.8e-03|-1.191366e+00| 0:0:00| chol  1  1 
+ 5|0.927|0.983|4.3e-08|6.3e-06|2.6e-04|-1.192359e+00| 0:0:00| chol  1  1 
+ 6|0.924|0.971|4.9e-08|1.9e-07|3.9e-05|-1.192442e+00| 0:0:00| chol  1  1 
+ 7|0.789|0.797|1.4e-08|4.9e-08|9.1e-06|-1.192442e+00| 0:0:00| chol  1  1 
+ 8|1.000|1.000|1.1e-09|2.7e-09|2.1e-06|-1.192442e+00| 0:0:00| chol  1  1 
+ 9|1.000|0.995|1.8e-11|2.2e-10|4.6e-08|-1.192441e+00| 0:0:00|
+  sqlp stop: max(relative gap, infeasibilities) &lt; 1.49e-08
 -------------------------------------------------------------------
- number of iterations   = 10
- primal objective value = -1.19244136e+00
- dual   objective value = -1.19244136e+00
- gap := trace(XZ)       = 5.44e-09
- relative gap           = 2.48e-09
- actual relative gap    = -8.00e-11
- rel. primal infeas     = 5.97e-10
- rel. dual   infeas     = 7.16e-10
+ number of iterations   =  9
+ primal objective value = -1.19244134e+00
+ dual   objective value = -1.19244139e+00
+ gap := trace(XZ)       = 4.62e-08
+ relative gap           = 1.36e-08
+ actual relative gap    = 1.28e-08
+ rel. primal infeas     = 1.76e-11
+ rel. dual   infeas     = 2.23e-10
  norm(X), norm(y), norm(Z) = 2.9e+00, 2.4e+00, 3.9e+00
- norm(A), norm(b), norm(C) = 8.6e+00, 1.0e+00, 4.7e+00
- Total CPU time (secs)  = 0.3  
+ norm(A), norm(b), norm(C) = 6.4e+00, 2.0e+00, 5.7e+00
+ Total CPU time (secs)  = 0.2  
  CPU time per iteration = 0.0  
  termination code       =  0
- DIMACS: 6.0e-10  0.0e+00  7.2e-10  0.0e+00  -8.0e-11  1.6e-09
+ DIMACS: 1.8e-11  0.0e+00  3.2e-10  0.0e+00  1.3e-08  1.4e-08
 -------------------------------------------------------------------
 ------------------------------------------------------------
 Status: Solved

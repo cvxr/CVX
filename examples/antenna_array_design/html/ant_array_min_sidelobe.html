@@ -11,7 +11,7 @@ To make changes, update the M-file and republish this document.
       -->
       <title>Minimize sidelobe level of an array with arbitrary 2-D geometry</title>
       <meta name="generator" content="MATLAB 7.4">
-      <meta name="date" content="2007-07-21">
+      <meta name="date" content="2007-08-10">
       <meta name="m-file" content="ant_array_min_sidelobe"><style>
 
 body {
@@ -270,53 +270,60 @@ Note: for improved efficiency, SDPT3 is solving the dual problem.
 
  num. of constraints = 81
  dim. of socp   var  = 1023,   num. of socp blk  = 341
- dim. of free   var  =  2 *** convert ublk to linear blk
+ dim. of free   var  =  2 *** convert ublk to lblk
 *******************************************************************
-   SDPT3: homogeneous self-dual path-following algorithms
+   SDPT3: Infeasible path-following algorithms
 *******************************************************************
- version  predcorr  gam  expon
-    NT      1      0.000   1
-it  pstep dstep p_infeas d_infeas  gap     mean(obj)    cputime
+ version  predcorr  gam  expon  scale_data
+    NT      1      0.000   1        0    
+it pstep dstep pinfeas dinfeas  gap      mean(obj)   cputime
 -------------------------------------------------------------------
- 0  0.000 0.000 1.7e+02 9.4e+00  3.5e+02 -1.716434e-01  0:0:00 chol 1  1 
- 1  0.951 0.951 1.3e+01 7.3e-01  3.0e+01 -4.918456e-01  0:0:00 chol 1  1 
- 2  0.913 0.913 1.1e+00 6.0e-02  2.9e+00 -4.499387e-01  0:0:00 chol 1  1 
- 3  0.586 0.586 3.8e-01 2.1e-02  6.7e-01 -1.862379e-01  0:0:00 chol 1  1 
- 4  0.651 0.651 1.3e-01 7.1e-03  1.8e-01 -7.518001e-02  0:0:01 chol 1  1 
- 5  0.472 0.472 7.3e-02 4.1e-03  1.1e-01 -6.123208e-02  0:0:01 chol 1  1 
- 6  0.407 0.407 4.8e-02 2.7e-03  7.3e-02 -6.735664e-02  0:0:01 chol 1  1 
- 7  0.800 0.800 1.4e-02 7.9e-04  2.5e-02 -6.917322e-02  0:0:01 chol 1  1 
- 8  0.760 0.760 4.9e-03 2.7e-04  9.3e-03 -6.922614e-02  0:0:01 chol 1  1 
- 9  0.744 0.744 1.8e-03 9.7e-05  3.5e-03 -6.962669e-02  0:0:01 chol 1  1 
-10  0.799 0.799 5.6e-04 3.1e-05  1.2e-03 -6.999415e-02  0:0:01 chol 1  1 
-11  0.910 0.910 1.3e-04 7.0e-06  2.7e-04 -7.021411e-02  0:0:01 chol 1  1 
-12  0.902 0.902 2.8e-05 1.5e-06  6.1e-05 -7.028071e-02  0:0:02 chol 1  1 
-13  0.958 0.958 3.5e-06 1.9e-07  7.7e-06 -7.029924e-02  0:0:02 chol 1  1 
-14  0.882 0.882 5.5e-07 3.0e-08  1.5e-06 -7.030165e-02  0:0:02 chol 1  1 
-15  0.921 0.921 1.2e-07 6.4e-09  2.9e-07 -7.030199e-02  0:0:02 chol 1  1 
-16  0.948 0.948 1.7e-08 9.5e-10  4.3e-08 -7.030208e-02  0:0:02 chol 1  1 
-17  0.568 0.568 9.3e-09 5.0e-10  2.3e-08 -7.030208e-02  0:0:02 chol 1  1 
-18  0.572 0.572 4.9e-09 2.7e-10  1.2e-08 -7.030209e-02  0:0:02
-  Stop: max(relative gap, infeasibilities) &lt; 1.49e-08
+ 0|0.000|0.000|2.9e+02|1.5e+02|1.2e+04|-1.373142e-10| 0:0:00| chol  1  1 
+ 1|0.990|0.990|3.0e+00|1.6e+00|1.4e+02|-9.597558e+00| 0:0:00| chol  1  1 
+ 2|1.000|1.000|1.3e-06|1.0e-02|1.4e+01|-7.117487e+00| 0:0:00| chol  1  1 
+ 3|1.000|0.975|2.0e-06|1.2e-03|3.6e-01|-1.804629e-01| 0:0:00| chol  1  1 
+ 4|1.000|0.391|7.2e-06|7.9e-04|2.4e-01|-1.246850e-01| 0:0:01| chol  2  2 
+ 5|1.000|0.266|9.0e-06|5.8e-04|1.8e-01|-1.029434e-01| 0:0:01| chol  2  2 
+ 6|1.000|0.346|2.7e-06|3.8e-04|1.2e-01|-8.539203e-02| 0:0:01| chol  2  2 
+ 7|1.000|0.365|7.5e-07|2.4e-04|7.1e-02|-8.043076e-02| 0:0:01| chol  2  3 
+ 8|1.000|0.444|3.7e-07|1.4e-04|3.4e-02|-7.711619e-02| 0:0:01| chol  2  2 
+ 9|0.980|0.819|5.3e-08|2.8e-05|6.8e-03|-6.968323e-02| 0:0:01| chol  2  2 
+10|0.732|0.773|2.1e-08|6.2e-06|2.4e-03|-6.978234e-02| 0:0:01| chol  2  2 
+11|0.675|0.835|1.2e-08|1.3e-06|8.5e-04|-7.001296e-02| 0:0:01| chol  2  2 
+12|0.761|0.859|4.0e-09|3.7e-07|2.3e-04|-7.021114e-02| 0:0:02| chol  2  2 
+13|0.956|0.894|4.2e-10|9.6e-08|2.3e-05|-7.029424e-02| 0:0:02| chol  3  3 
+14|0.927|0.906|3.2e-10|9.4e-09|3.1e-06|-7.030099e-02| 0:0:02| chol  3  4 
+15|0.933|0.883|1.6e-08|1.3e-09|3.9e-07|-7.030362e-02| 0:0:02| chol  5  4 
+16|0.571|0.944|2.0e-08|2.0e-10|1.8e-07|-7.030405e-02| 0:0:02| chol  5  6 
+17|0.546|0.943|2.2e-08|1.7e-10|9.6e-08|-7.030432e-02| 0:0:02| chol  7  8 
+18|0.537|0.943|2.5e-08|2.3e-10|5.3e-08|-7.030434e-02| 0:0:02| chol 
+  warning: symqmr failed: 0.3 
+  switch to LU factor. lu   4   3 
+19|0.540|0.943|3.0e-08|3.4e-10|2.9e-08|-7.030402e-02| 0:0:03| lu   2   2 
+20|0.542|0.943|2.4e-08|5.1e-10|1.6e-08|-7.030377e-02| 0:0:03| lu   3  10 
+21|0.545|0.943|2.4e-08|7.7e-10|8.8e-09|-7.030341e-02| 0:0:03| lu   4   3 
+22|0.546|0.943|1.7e-08|1.1e-09|4.9e-09|-7.030308e-02| 0:0:03| lu   2   4 
+23|0.551|0.934|1.3e-08|9.3e-10|2.7e-09|-7.030266e-02| 0:0:03|
+  sqlp stop: max(relative gap, infeasibilities) &lt; 1.49e-08
 -------------------------------------------------------------------
- number of iterations   = 18
- primal objective value = -7.03020813e-02
- dual   objective value = -7.03020909e-02
- gap := trace(XZ)       = 1.20e-08
- relative gap           = 1.12e-08
- actual relative gap    = 8.37e-09
- rel. primal infeas     = 4.92e-09
- rel. dual   infeas     = 2.67e-10
+ number of iterations   = 23
+ primal objective value = -7.03032224e-02
+ dual   objective value = -7.03020901e-02
+ gap := trace(XZ)       = 2.70e-09
+ relative gap           = 2.37e-09
+ actual relative gap    = -9.93e-07
+ rel. primal infeas     = 1.27e-08
+ rel. dual   infeas     = 9.30e-10
  norm(X), norm(y), norm(Z) = 4.6e-01, 1.1e+02, 1.6e+00
- norm(A), norm(b), norm(C) = 1.7e+02, 1.0e+00, 1.4e+00
- Total CPU time (secs)  = 2.4  
+ norm(A), norm(b), norm(C) = 1.7e+02, 2.0e+00, 2.4e+00
+ Total CPU time (secs)  = 3.1  
  CPU time per iteration = 0.1  
  termination code       =  0
- DIMACS: 4.9e-09  0.0e+00  2.7e-10  0.0e+00  8.4e-09  1.0e-08
+ DIMACS: 1.3e-08  0.0e+00  1.1e-09  0.0e+00  -9.9e-07  2.4e-09
 -------------------------------------------------------------------
 ------------------------------------------------------------
 Status: Solved
-Optimal value (cvx_optval): +0.0703021
+Optimal value (cvx_optval): +0.0703032
 Problem is Solved
 The minimum sidelobe level is -23.06 dB.
 

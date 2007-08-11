@@ -11,7 +11,7 @@ To make changes, update the M-file and republish this document.
       -->
       <title>Section 5.2.5: Mixed strategies for matrix games (LP formulation)</title>
       <meta name="generator" content="MATLAB 7.4">
-      <meta name="date" content="2007-07-21">
+      <meta name="date" content="2007-08-10">
       <meta name="m-file" content="matrix_games_LP"><style>
 
 body {
@@ -128,42 +128,46 @@ Calling SDPT3: 25 variables, 13 equality constraints
 
  num. of constraints = 13
  dim. of linear var  = 24
- dim. of free   var  =  1 *** convert ublk to linear blk
+ dim. of free   var  =  1 *** convert ublk to lblk
 *******************************************************************
-   SDPT3: homogeneous self-dual path-following algorithms
+   SDPT3: Infeasible path-following algorithms
 *******************************************************************
- version  predcorr  gam  expon
-    NT      1      0.000   1
-it  pstep dstep p_infeas d_infeas  gap     mean(obj)    cputime
+ version  predcorr  gam  expon  scale_data
+    NT      1      0.000   1        0    
+it pstep dstep pinfeas dinfeas  gap      mean(obj)   cputime
 -------------------------------------------------------------------
- 0  0.000 0.000 7.0e+00 2.8e+00  2.9e+01  3.594954e-01  0:0:00 chol 1  1 
- 1  1.000 1.000 9.1e-01 3.6e-01  4.6e+00  1.745264e-02  0:0:00 chol 1  1 
- 2  0.732 0.732 2.3e-01 8.9e-02  7.3e-01 -2.517797e-02  0:0:00 chol 1  1 
- 3  0.862 0.862 4.2e-02 1.6e-02  1.3e-01 -3.913009e-02  0:0:00 chol 1  1 
- 4  1.000 1.000 1.4e-02 5.4e-03  6.5e-02 -4.417788e-02  0:0:00 chol 1  1 
- 5  0.907 0.907 2.1e-03 8.3e-04  8.0e-03 -4.436510e-02  0:0:00 chol 1  1 
- 6  0.931 0.931 4.8e-04 1.9e-04  1.9e-03 -4.484759e-02  0:0:00 chol 1  1 
- 7  0.985 0.985 2.5e-05 9.8e-06  3.2e-05 -4.483882e-02  0:0:00 chol 1  1 
- 8  0.987 0.987 1.2e-06 4.8e-07  5.8e-07 -4.484032e-02  0:0:00 chol 1  1 
- 9  1.000 1.000 9.9e-08 3.9e-08  2.8e-07 -4.484041e-02  0:0:00 chol 1  1 
-10  1.000 1.000 8.1e-09 3.2e-09  2.3e-08 -4.484042e-02  0:0:00 chol 1  1 
-11  1.000 1.000 6.8e-10 2.3e-10  1.9e-09 -4.484042e-02  0:0:00
-  Stop: max(relative gap, infeasibilities) &lt; 1.49e-08
+ 0|0.000|0.000|3.6e+01|1.0e+01|6.0e+02| 1.437979e-10| 0:0:00| chol  1  1 
+ 1|0.917|0.853|3.0e+00|1.6e+00|8.6e+01| 5.803096e-02| 0:0:00| chol  1  1 
+ 2|1.000|0.986|8.8e-07|3.3e-02|8.7e+00| 2.061331e-01| 0:0:00| chol  1  1 
+ 3|1.000|0.935|1.7e-06|3.1e-03|2.4e+00|-1.806437e-01| 0:0:00| chol  1  1 
+ 4|0.870|0.665|4.1e-06|1.1e-03|6.9e-01|-2.077128e-01| 0:0:00| chol  1  1 
+ 5|1.000|0.088|1.9e-06|1.0e-03|6.3e-01|-2.050085e-01| 0:0:00| chol  1  1 
+ 6|1.000|0.554|6.9e-07|4.6e-04|3.5e-01|-1.112454e-01| 0:0:00| chol  1  1 
+ 7|0.985|0.650|3.2e-07|1.6e-04|1.1e-01|-7.743436e-02| 0:0:00| chol  1  1 
+ 8|0.924|0.351|7.4e-08|1.1e-04|6.6e-02|-7.001485e-02| 0:0:00| chol  1  1 
+ 9|1.000|0.428|3.1e-08|6.0e-05|3.7e-02|-5.993379e-02| 0:0:00| chol  1  1 
+10|1.000|0.497|5.8e-09|3.0e-05|1.9e-02|-5.270502e-02| 0:0:00| chol  1  1 
+11|1.000|0.414|1.5e-09|1.8e-05|1.1e-02|-4.968381e-02| 0:0:00| chol  1  1 
+12|0.983|0.858|4.5e-10|2.5e-06|1.5e-03|-4.555801e-02| 0:0:00| chol  1  1 
+13|0.988|0.985|2.5e-11|1.7e-05|2.5e-05|-4.485120e-02| 0:0:00| chol  1  1 
+14|1.000|0.989|3.4e-14|2.8e-07|5.3e-07|-4.484054e-02| 0:0:00| chol  1  1 
+15|1.000|0.989|1.1e-14|5.9e-09|9.8e-09|-4.484042e-02| 0:0:00|
+  sqlp stop: max(relative gap, infeasibilities) &lt; 1.49e-08
 -------------------------------------------------------------------
- number of iterations   = 11
- primal objective value = -4.48404217e-02
- dual   objective value = -4.48404229e-02
- gap := trace(XZ)       = 1.86e-09
- relative gap           = 1.78e-09
- actual relative gap    = 1.09e-09
- rel. primal infeas     = 6.75e-10
- rel. dual   infeas     = 2.30e-10
+ number of iterations   = 15
+ primal objective value = -4.48404196e-02
+ dual   objective value = -4.48404289e-02
+ gap := trace(XZ)       = 9.85e-09
+ relative gap           = 9.04e-09
+ actual relative gap    = 8.60e-09
+ rel. primal infeas     = 1.14e-14
+ rel. dual   infeas     = 5.92e-09
  norm(X), norm(y), norm(Z) = 9.7e-01, 4.0e-01, 7.4e-01
- norm(A), norm(b), norm(C) = 1.4e+01, 1.0e+00, 1.4e+00
- Total CPU time (secs)  = 0.1  
+ norm(A), norm(b), norm(C) = 1.4e+01, 2.0e+00, 2.4e+00
+ Total CPU time (secs)  = 0.2  
  CPU time per iteration = 0.0  
  termination code       =  0
- DIMACS: 6.8e-10  0.0e+00  2.3e-10  0.0e+00  1.1e-09  1.7e-09
+ DIMACS: 1.1e-14  0.0e+00  7.1e-09  0.0e+00  8.6e-09  9.0e-09
 -------------------------------------------------------------------
 ------------------------------------------------------------
 Status: Solved
@@ -175,42 +179,46 @@ Calling SDPT3: 25 variables, 13 equality constraints
 
  num. of constraints = 13
  dim. of linear var  = 24
- dim. of free   var  =  1 *** convert ublk to linear blk
+ dim. of free   var  =  1 *** convert ublk to lblk
 *******************************************************************
-   SDPT3: homogeneous self-dual path-following algorithms
+   SDPT3: Infeasible path-following algorithms
 *******************************************************************
- version  predcorr  gam  expon
-    NT      1      0.000   1
-it  pstep dstep p_infeas d_infeas  gap     mean(obj)    cputime
+ version  predcorr  gam  expon  scale_data
+    NT      1      0.000   1        0    
+it pstep dstep pinfeas dinfeas  gap      mean(obj)   cputime
 -------------------------------------------------------------------
- 0  0.000 0.000 8.0e+00 2.8e+00  2.9e+01 -3.594954e-01  0:0:00 chol 1  1 
- 1  1.000 1.000 2.0e+00 7.0e-01  9.6e+00 -8.596442e-02  0:0:00 chol 1  1 
- 2  0.703 0.703 5.3e-01 1.8e-01  1.8e+00  1.965617e-02  0:0:00 chol 1  1 
- 3  0.887 0.887 7.9e-02 2.8e-02  2.2e-01  4.385572e-02  0:0:00 chol 1  1 
- 4  1.000 1.000 2.6e-02 8.9e-03  1.1e-01  5.137061e-02  0:0:00 chol 1  1 
- 5  0.920 0.920 3.6e-03 1.2e-03  1.2e-02  4.434172e-02  0:0:00 chol 1  1 
- 6  0.911 0.911 1.1e-03 4.0e-04  4.2e-03  4.490006e-02  0:0:00 chol 1  1 
- 7  0.984 0.984 6.1e-05 2.1e-05  7.5e-05  4.483765e-02  0:0:00 chol 1  1 
- 8  0.987 0.987 3.0e-06 1.0e-06  1.4e-06  4.484021e-02  0:0:00 chol 1  1 
- 9  0.989 0.989 1.4e-07 4.9e-08  3.8e-08  4.484041e-02  0:0:00 chol 1  1 
-10  1.000 1.000 1.1e-08 3.9e-09  2.8e-08  4.484042e-02  0:0:00 chol 1  1 
-11  1.000 1.000 9.4e-10 2.7e-10  2.3e-09  4.484042e-02  0:0:00
-  Stop: max(relative gap, infeasibilities) &lt; 1.49e-08
+ 0|0.000|0.000|3.8e+01|1.0e+01|6.0e+02|-1.437979e-10| 0:0:00| chol  1  1 
+ 1|0.915|0.847|3.2e+00|1.6e+00|8.8e+01| 1.352019e-01| 0:0:00| chol  1  1 
+ 2|1.000|0.986|9.2e-07|3.3e-02|8.8e+00| 2.751661e-01| 0:0:00| chol  1  1 
+ 3|1.000|0.899|1.7e-06|4.2e-03|2.5e+00|-1.502898e-01| 0:0:00| chol  1  1 
+ 4|0.887|0.352|4.3e-06|2.8e-03|1.3e+00|-2.907480e-01| 0:0:00| chol  1  1 
+ 5|1.000|0.227|4.4e-06|2.2e-03|1.1e+00|-2.153276e-01| 0:0:00| chol  1  1 
+ 6|1.000|0.596|1.5e-06|8.7e-04|4.1e-01|-9.555833e-02| 0:0:00| chol  1  1 
+ 7|1.000|0.277|2.2e-07|6.3e-04|3.1e-01|-5.906355e-02| 0:0:00| chol  1  1 
+ 8|1.000|0.371|1.2e-07|4.0e-04|2.0e-01|-2.566743e-02| 0:0:00| chol  1  1 
+ 9|1.000|0.499|3.8e-08|2.0e-04|9.9e-02| 5.671373e-03| 0:0:00| chol  1  1 
+10|1.000|0.661|7.0e-09|6.7e-05|3.2e-02| 3.014456e-02| 0:0:00| chol  1  1 
+11|1.000|0.811|6.9e-10|1.3e-05|6.0e-03| 4.196714e-02| 0:0:00| chol  1  1 
+12|0.989|0.970|6.0e-11|3.8e-07|1.8e-04| 4.475275e-02| 0:0:00| chol  1  1 
+13|0.989|0.988|3.6e-12|2.0e-06|2.3e-06| 4.483941e-02| 0:0:00| chol  1  1 
+14|1.000|0.989|1.9e-14|2.5e-08|4.7e-08| 4.484041e-02| 0:0:00| chol  1  1 
+15|1.000|0.989|5.6e-16|5.3e-10|8.9e-10| 4.484042e-02| 0:0:00|
+  sqlp stop: max(relative gap, infeasibilities) &lt; 1.49e-08
 -------------------------------------------------------------------
- number of iterations   = 11
- primal objective value =  4.48404227e-02
- dual   objective value =  4.48404214e-02
- gap := trace(XZ)       = 2.25e-09
- relative gap           = 2.16e-09
- actual relative gap    = 1.25e-09
- rel. primal infeas     = 9.45e-10
- rel. dual   infeas     = 2.71e-10
+ number of iterations   = 15
+ primal objective value =  4.48404225e-02
+ dual   objective value =  4.48404216e-02
+ gap := trace(XZ)       = 8.93e-10
+ relative gap           = 8.20e-10
+ actual relative gap    = 7.80e-10
+ rel. primal infeas     = 5.65e-16
+ rel. dual   infeas     = 5.35e-10
  norm(X), norm(y), norm(Z) = 7.4e-01, 4.4e-01, 9.7e-01
- norm(A), norm(b), norm(C) = 1.4e+01, 1.0e+00, 1.4e+00
+ norm(A), norm(b), norm(C) = 1.4e+01, 2.0e+00, 2.4e+00
  Total CPU time (secs)  = 0.2  
  CPU time per iteration = 0.0  
  termination code       =  0
- DIMACS: 9.4e-10  0.0e+00  2.7e-10  0.0e+00  1.3e-09  2.1e-09
+ DIMACS: 5.6e-16  0.0e+00  6.5e-10  0.0e+00  7.8e-10  8.2e-10
 -------------------------------------------------------------------
 ------------------------------------------------------------
 Status: Solved

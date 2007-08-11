@@ -11,7 +11,7 @@ To make changes, update the M-file and republish this document.
       -->
       <title>Figure 7.1: Logistic regression</title>
       <meta name="generator" content="MATLAB 7.4">
-      <meta name="date" content="2007-07-21">
+      <meta name="date" content="2007-08-10">
       <meta name="m-file" content="logistics"><style>
 
 body {
@@ -140,40 +140,46 @@ Note: for improved efficiency, SDPT3 is solving the dual problem.
  dim. of socp   var  = 200,   num. of socp blk  = 100
  dim. of linear var  = 200
 *******************************************************************
-   SDPT3: homogeneous self-dual path-following algorithms
+   SDPT3: Infeasible path-following algorithms
 *******************************************************************
- version  predcorr  gam  expon
-    NT      1      0.000   1
-it  pstep dstep p_infeas d_infeas  gap     mean(obj)    cputime
+ version  predcorr  gam  expon  scale_data
+    NT      1      0.000   1        0    
+it pstep dstep pinfeas dinfeas  gap      mean(obj)   cputime
 -------------------------------------------------------------------
- 0  0.000 0.000 1.0e+00 7.9e+00  6.0e+02  2.008026e+02  0:0:00 spchol 1  1 
- 1  0.930 0.930 6.7e-01 5.2e+00  8.9e+02  2.312835e+02  0:0:00 spchol 1  1 
- 2  0.918 0.918 9.7e-02 7.6e-01  1.3e+02  2.725710e+00  0:0:00 spchol 1  1 
- 3  0.850 0.850 2.1e-02 1.6e-01  2.7e+01 -1.242618e+01  0:0:00 spchol 1  1 
- 4  0.942 0.942 5.6e-03 4.4e-02  6.8e+00 -1.435991e+01  0:0:00 spchol 1  1 
- 5  0.973 0.973 8.0e-04 6.2e-03  9.4e-01 -1.463305e+01  0:0:00 spchol 1  1 
- 6  0.942 0.942 8.5e-05 6.6e-04  9.8e-02 -1.463703e+01  0:0:00 spchol 1  1 
- 7  1.000 1.000 1.3e-05 1.0e-04  1.6e-02 -1.463593e+01  0:0:01 spchol 1  1 
- 8  0.943 0.943 1.0e-06 8.1e-06  1.2e-03 -1.463562e+01  0:0:01 spchol 1  1 
- 9  0.976 0.976 3.9e-08 3.0e-07  4.3e-05 -1.463560e+01  0:0:01 spchol 1  1 
-10  0.999 0.999 1.0e-09 7.8e-09  1.1e-06 -1.463560e+01  0:0:01 spchol 1  1 
-11  1.000 1.000 4.7e-11 2.8e-10  4.2e-08 -1.463560e+01  0:0:01
-  Stop: max(relative gap, infeasibilities) &lt; 1.49e-08
+ 0|0.000|0.000|3.2e+02|1.5e+01|1.1e+07| 2.778815e+05| 0:0:00| spchol  1  1 
+ 1|0.355|0.317|2.0e+02|1.0e+01|8.7e+06| 3.194958e+05| 0:0:00| spchol  1  1 
+ 2|0.598|0.484|8.2e+01|5.3e+00|4.9e+06| 3.118926e+05| 0:0:00| spchol  1  1 
+ 3|0.922|1.000|6.4e+00|8.6e-02|6.7e+05| 2.099095e+05| 0:0:00| spchol  1  1 
+ 4|0.930|1.000|4.5e-01|4.3e-02|5.0e+04| 1.353312e+04| 0:0:00| spchol  1  1 
+ 5|0.737|1.000|1.2e-01|1.3e-02|2.0e+04| 4.150697e+03| 0:0:00| spchol  1  1 
+ 6|0.929|0.870|8.4e-03|5.0e-03|2.2e+03|-1.845626e+02| 0:0:00| spchol  1  1 
+ 7|1.000|0.932|1.2e-09|2.4e-03|6.7e+02| 3.695486e-01| 0:0:01| spchol  1  1 
+ 8|0.916|0.915|4.1e-10|2.4e-04|7.9e+01|-2.091968e+01| 0:0:01| spchol  1  1 
+ 9|1.000|1.000|6.0e-11|3.9e-06|2.4e+01|-1.537218e+01| 0:0:01| spchol  1  1 
+10|0.887|0.954|6.8e-12|5.5e-07|2.7e+00|-1.447813e+01| 0:0:01| spchol  1  1 
+11|1.000|0.913|4.7e-14|8.3e-08|1.1e+00|-1.473779e+01| 0:0:01| spchol  1  1 
+12|0.934|0.942|1.5e-14|8.4e-09|9.3e-02|-1.464255e+01| 0:0:01| spchol  1  1 
+13|1.000|1.000|5.1e-14|3.9e-10|1.5e-02|-1.463679e+01| 0:0:01| spchol  1  1 
+14|0.929|0.983|2.2e-13|4.5e-11|9.9e-04|-1.463549e+01| 0:0:01| spchol  1  1 
+15|0.996|0.955|3.1e-13|3.0e-12|6.6e-05|-1.463561e+01| 0:0:01| spchol  1  1 
+16|1.000|0.993|2.1e-12|1.0e-12|1.5e-06|-1.463560e+01| 0:0:01| spchol  2  2 
+17|1.000|1.000|1.6e-12|1.0e-12|6.7e-08|-1.463560e+01| 0:0:01|
+  sqlp stop: max(relative gap, infeasibilities) &lt; 1.49e-08
 -------------------------------------------------------------------
- number of iterations   = 11
+ number of iterations   = 17
  primal objective value = -1.46355963e+01
  dual   objective value = -1.46355964e+01
- gap := trace(XZ)       = 4.23e-08
- relative gap           = 2.71e-09
- actual relative gap    = 1.12e-09
- rel. primal infeas     = 4.65e-11
- rel. dual   infeas     = 2.80e-10
+ gap := trace(XZ)       = 6.73e-08
+ relative gap           = 2.22e-09
+ actual relative gap    = 2.22e-09
+ rel. primal infeas     = 1.55e-12
+ rel. dual   infeas     = 1.00e-12
  norm(X), norm(y), norm(Z) = 1.3e+01, 1.6e+01, 3.1e+01
- norm(A), norm(b), norm(C) = 6.6e+01, 1.2e+02, 3.5e+01
- Total CPU time (secs)  = 0.8  
+ norm(A), norm(b), norm(C) = 4.7e+01, 1.2e+02, 3.6e+01
+ Total CPU time (secs)  = 1.3  
  CPU time per iteration = 0.1  
  termination code       =  0
- DIMACS: 4.7e-11  0.0e+00  2.8e-10  0.0e+00  1.1e-09  1.4e-09
+ DIMACS: 1.6e-12  0.0e+00  8.9e-12  0.0e+00  2.2e-09  2.2e-09
 -------------------------------------------------------------------
 ------------------------------------------------------------
 Status: Solved

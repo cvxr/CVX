@@ -11,7 +11,7 @@ To make changes, update the M-file and republish this document.
       -->
       <title>Section 4.3.1: Compute the Chebyshev center of a polyhedron</title>
       <meta name="generator" content="MATLAB 7.4">
-      <meta name="date" content="2007-07-21">
+      <meta name="date" content="2007-08-10">
       <meta name="m-file" content="chebyshev_center"><style>
 
 body {
@@ -109,60 +109,59 @@ Note: for improved efficiency, SDPT3 is solving the dual problem.
  num. of constraints = 11
  dim. of linear var  = 20
 *******************************************************************
-   SDPT3: homogeneous self-dual path-following algorithms
+   SDPT3: Infeasible path-following algorithms
 *******************************************************************
- version  predcorr  gam  expon
-    NT      1      0.000   1
-it  pstep dstep p_infeas d_infeas  gap     mean(obj)    cputime
+ version  predcorr  gam  expon  scale_data
+    NT      1      0.000   1        0    
+it pstep dstep pinfeas dinfeas  gap      mean(obj)   cputime
 -------------------------------------------------------------------
- 0  0.000 0.000 2.9e+01 1.7e+00  2.0e+01  6.442638e+00  0:0:00 chol 1  1 
- 1  1.000 1.000 2.3e+01 1.4e+00  3.9e+01  6.554914e+00  0:0:00 chol 1  1 
- 2  0.889 0.889 2.7e+00 1.7e-01  3.7e+00  7.154294e-01  0:0:00 chol 1  1 
- 3  0.858 0.858 4.0e-01 2.4e-02  3.2e-01  2.545183e-01  0:0:00 chol 1  1 
- 4  0.935 0.935 6.1e-02 3.7e-03  4.6e-02  2.192039e-01  0:0:00 chol 1  1 
- 5  0.723 0.723 4.9e-02 3.0e-03  6.2e-02  2.201621e-01  0:0:00 chol 1  1 
- 6  1.000 1.000 1.4e-02 8.5e-04  1.9e-02  2.255757e-01  0:0:00 chol 1  1 
- 7  0.958 0.958 1.3e-03 7.9e-05  9.6e-04  2.271057e-01  0:0:00 chol 1  1 
- 8  0.988 0.988 7.1e-05 4.3e-06  1.3e-05  2.271543e-01  0:0:00 chol 1  1 
- 9  0.989 0.989 3.9e-06 2.4e-07  1.6e-07  2.271628e-01  0:0:00 chol 1  1 
-10  1.000 1.000 3.9e-07 2.4e-08  3.1e-07  2.271633e-01  0:0:00 chol 1  1 
-11  1.000 1.000 4.0e-08 2.5e-09  3.1e-08  2.271633e-01  0:0:00 chol 1  1 
-12  1.000 1.000 4.1e-09 2.5e-10  3.2e-09  2.271634e-01  0:0:00
-  Stop: max(relative gap, infeasibilities) &lt; 1.49e-08
+ 0|0.000|0.000|1.3e+02|5.4e+00|1.2e+03| 4.024480e+01| 0:0:00| chol  1  1 
+ 1|0.959|1.000|5.3e+00|4.1e-02|5.6e+01|-3.038611e-01| 0:0:00| chol  1  1 
+ 2|0.919|1.000|4.3e-01|4.1e-03|6.7e+00|-1.081285e+00| 0:0:00| chol  1  1 
+ 3|0.829|0.790|7.4e-02|1.2e-03|1.8e+00|-2.034357e-01| 0:0:00| chol  1  1 
+ 4|0.959|0.907|3.0e-03|1.5e-02|2.4e-01| 2.323076e-01| 0:0:00| chol  1  1 
+ 5|1.000|0.830|1.1e-08|3.1e-03|4.2e-02| 3.143456e-01| 0:0:00| chol  1  1 
+ 6|0.479|0.779|3.9e-09|7.0e-04|3.8e-02| 3.072708e-01| 0:0:00| chol  1  1 
+ 7|1.000|1.000|1.7e-09|4.2e-08|1.3e-02| 3.190834e-01| 0:0:00| chol  1  1 
+ 8|1.000|0.940|5.9e-10|6.7e-09|1.2e-03| 3.226083e-01| 0:0:00| chol  1  1 
+ 9|0.980|0.982|7.0e-11|6.4e-10|2.5e-05| 3.227584e-01| 0:0:00| chol  1  1 
+10|0.989|0.989|7.9e-13|2.1e-11|2.8e-07| 3.227613e-01| 0:0:00| chol  1  1 
+11|0.996|0.995|2.1e-14|1.1e-12|4.4e-09| 3.227613e-01| 0:0:00|
+  sqlp stop: max(relative gap, infeasibilities) &lt; 1.49e-08
 -------------------------------------------------------------------
- number of iterations   = 12
- primal objective value =  2.27163356e-01
- dual   objective value =  2.27163355e-01
- gap := trace(XZ)       = 3.20e-09
- relative gap           = 2.61e-09
- actual relative gap    = 1.32e-09
- rel. primal infeas     = 4.08e-09
- rel. dual   infeas     = 2.50e-10
- norm(X), norm(y), norm(Z) = 1.6e-01, 3.7e+00, 7.8e+00
- norm(A), norm(b), norm(C) = 2.1e+01, 1.0e+00, 8.1e+00
+ number of iterations   = 11
+ primal objective value =  3.22761334e-01
+ dual   objective value =  3.22761329e-01
+ gap := trace(XZ)       = 4.42e-09
+ relative gap           = 2.69e-09
+ actual relative gap    = 2.69e-09
+ rel. primal infeas     = 2.12e-14
+ rel. dual   infeas     = 1.10e-12
+ norm(X), norm(y), norm(Z) = 1.5e-01, 3.3e+00, 5.6e+00
+ norm(A), norm(b), norm(C) = 1.9e+01, 2.0e+00, 1.1e+01
  Total CPU time (secs)  = 0.1  
  CPU time per iteration = 0.0  
  termination code       =  0
- DIMACS: 4.1e-09  0.0e+00  2.5e-10  0.0e+00  1.3e-09  2.2e-09
+ DIMACS: 2.1e-14  0.0e+00  2.3e-12  0.0e+00  2.7e-09  2.7e-09
 -------------------------------------------------------------------
 ------------------------------------------------------------
 Status: Solved
-Optimal value (cvx_optval): +0.227163
+Optimal value (cvx_optval): +0.322761
 Done! 
 The Chebyshev center coordinates are: 
-    1.3099
-   -0.2098
-    0.9695
-   -0.3175
-    2.1909
-    1.5115
-    0.1185
-    0.7041
-    1.6461
-    0.5200
+    0.8511
+   -0.6874
+    1.1205
+    0.3555
+    0.2573
+    0.3947
+    1.1970
+    1.4711
+    1.7486
+    1.0573
 
 The radius of the largest Euclidean ball is: 
-    0.2272
+    0.3228
 
 </pre><p class="footer"><br>
             Published with MATLAB&reg; 7.4<br></p>

@@ -11,7 +11,7 @@ To make changes, update the M-file and republish this document.
       -->
       <title>Minimize stopband ripple of a linear phase lowpass FIR filter</title>
       <meta name="generator" content="MATLAB 7.4">
-      <meta name="date" content="2007-07-21">
+      <meta name="date" content="2007-08-10">
       <meta name="m-file" content="fir_lin_phase_lowpass_min_ripple"><style>
 
 body {
@@ -177,47 +177,46 @@ Note: for improved efficiency, SDPT3 is solving the dual problem.
  dim. of socp   var  = 458,   num. of socp blk  = 229
  dim. of linear var  = 37
 *******************************************************************
-   SDPT3: homogeneous self-dual path-following algorithms
+   SDPT3: Infeasible path-following algorithms
 *******************************************************************
- version  predcorr  gam  expon
-    NT      1      0.000   1
-it  pstep dstep p_infeas d_infeas  gap     mean(obj)    cputime
+ version  predcorr  gam  expon  scale_data
+    NT      1      0.000   1        0    
+it pstep dstep pinfeas dinfeas  gap      mean(obj)   cputime
 -------------------------------------------------------------------
- 0  0.000 0.000 3.6e+01 1.0e+01  3.4e+02  3.620808e+00  0:0:00 chol 1  1 
- 1  0.812 0.812 2.2e+01 6.0e+00  3.9e+02  2.277326e+01  0:0:00 chol 1  1 
- 2  0.881 0.881 2.3e+00 6.4e-01  4.5e+01  4.706572e+00  0:0:00 chol 1  1 
- 3  0.619 0.619 8.7e-01 2.4e-01  1.2e+01  8.596231e-01  0:0:00 chol 1  1 
- 4  0.810 0.810 1.7e-01 4.6e-02  1.7e+00 -7.109198e-01  0:0:00 chol 1  1 
- 5  1.000 1.000 3.2e-02 8.7e-03  3.8e-01 -9.307903e-01  0:0:00 chol 1  1 
- 6  0.901 0.901 1.2e-02 3.4e-03  1.5e-01 -1.009858e+00  0:0:00 chol 1  1 
- 7  0.945 0.945 2.8e-03 7.6e-04  3.2e-02 -1.040614e+00  0:0:00 chol 1  1 
- 8  0.931 0.931 1.1e-03 2.9e-04  1.2e-02 -1.047606e+00  0:0:00 chol 1  1 
- 9  0.851 0.851 4.7e-04 1.3e-04  5.4e-03 -1.049826e+00  0:0:00 chol 1  1 
-10  0.854 0.854 1.3e-04 3.7e-05  1.6e-03 -1.051074e+00  0:0:00 chol 1  1 
-11  0.467 0.467 9.8e-05 2.7e-05  1.1e-03 -1.051208e+00  0:0:00 chol 1  1 
-12  0.929 0.929 2.6e-05 7.2e-06  3.1e-04 -1.051466e+00  0:0:00 chol 1  1 
-13  0.871 0.871 1.1e-05 3.1e-06  1.3e-04 -1.051531e+00  0:0:01 chol 1  1 
-14  0.984 0.984 2.3e-06 6.3e-07  2.7e-05 -1.051568e+00  0:0:01 chol 1  1 
-15  0.824 0.824 1.0e-06 2.9e-07  1.2e-05 -1.051573e+00  0:0:01 chol 1  1 
-16  0.986 0.986 1.7e-07 4.8e-08  2.0e-06 -1.051577e+00  0:0:01 chol 1  1 
-17  1.000 1.000 1.6e-08 4.5e-09  1.9e-07 -1.051578e+00  0:0:01 chol 1  1 
-18  0.960 0.960 1.6e-09 4.5e-10  1.9e-08 -1.051578e+00  0:0:01
-  Stop: max(relative gap, infeasibilities) &lt; 1.49e-08
+ 0|0.000|0.000|3.2e+02|3.7e+01|1.8e+04| 1.024119e+01| 0:0:00| chol  1  1 
+ 1|0.671|0.902|1.1e+02|3.7e+00|3.0e+03| 3.116202e+00| 0:0:00| chol  1  1 
+ 2|0.961|0.803|4.1e+00|7.4e-01|4.1e+02| 2.751446e+00| 0:0:00| chol  1  1 
+ 3|1.000|1.000|6.7e-05|1.0e-03|2.9e+01| 4.833601e+00| 0:0:00| chol  1  1 
+ 4|0.926|0.802|8.3e-05|2.9e-04|4.2e+00|-3.729851e-01| 0:0:00| chol  1  1 
+ 5|0.556|0.908|3.7e-05|5.2e-05|2.2e+00|-4.789203e-01| 0:0:00| chol  1  1 
+ 6|0.958|0.904|1.6e-06|1.3e-05|4.4e-01|-9.130729e-01| 0:0:00| chol  1  1 
+ 7|0.987|0.675|2.1e-08|4.7e-06|1.1e-01|-1.019320e+00| 0:0:00| chol  1  1 
+ 8|0.887|0.829|2.4e-09|8.2e-07|3.6e-02|-1.037472e+00| 0:0:00| chol  1  1 
+ 9|0.837|0.852|4.1e-10|1.2e-07|9.8e-03|-1.047766e+00| 0:0:00| chol  1  1 
+10|0.661|0.782|1.4e-10|2.7e-08|4.3e-03|-1.049801e+00| 0:0:00| chol  1  1 
+11|0.658|0.798|4.7e-11|5.5e-09|1.8e-03|-1.050788e+00| 0:0:00| chol  1  1 
+12|0.631|0.811|1.7e-11|1.0e-09|8.1e-04|-1.051209e+00| 0:0:00| chol  1  1 
+13|0.706|0.828|5.3e-12|1.8e-10|2.9e-04|-1.051443e+00| 0:0:01| chol  1  1 
+14|0.862|0.864|7.2e-13|2.6e-11|5.1e-05|-1.051554e+00| 0:0:01| chol  1  1 
+15|0.890|0.841|2.1e-13|5.1e-12|6.9e-06|-1.051575e+00| 0:0:01| chol  1  1 
+16|0.958|0.895|1.5e-13|1.5e-12|4.4e-07|-1.051578e+00| 0:0:01| chol  1  1 
+17|0.982|0.972|5.8e-13|1.0e-12|1.4e-08|-1.051578e+00| 0:0:01|
+  sqlp stop: max(relative gap, infeasibilities) &lt; 1.49e-08
 -------------------------------------------------------------------
- number of iterations   = 18
+ number of iterations   = 17
  primal objective value = -1.05157799e+00
  dual   objective value = -1.05157801e+00
- gap := trace(XZ)       = 1.87e-08
- relative gap           = 9.13e-09
- actual relative gap    = 4.88e-09
- rel. primal infeas     = 1.64e-09
- rel. dual   infeas     = 4.49e-10
+ gap := trace(XZ)       = 1.44e-08
+ relative gap           = 4.65e-09
+ actual relative gap    = 4.65e-09
+ rel. primal infeas     = 5.79e-13
+ rel. dual   infeas     = 1.04e-12
  norm(X), norm(y), norm(Z) = 1.1e+00, 1.1e+00, 1.2e+01
- norm(A), norm(b), norm(C) = 8.4e+01, 1.0e+00, 8.6e+00
+ norm(A), norm(b), norm(C) = 8.2e+01, 2.0e+00, 9.6e+00
  Total CPU time (secs)  = 0.7  
  CPU time per iteration = 0.0  
  termination code       =  0
- DIMACS: 1.6e-09  0.0e+00  4.5e-10  0.0e+00  4.9e-09  6.0e-09
+ DIMACS: 5.8e-13  0.0e+00  5.0e-12  0.0e+00  4.6e-09  4.6e-09
 -------------------------------------------------------------------
 ------------------------------------------------------------
 Status: Solved
