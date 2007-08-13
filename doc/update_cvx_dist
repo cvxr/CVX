@@ -5,11 +5,14 @@ MYVERSION=1.1
 
 # Key directories
 SRC=`pwd | sed 's@/doc$@@'`
+svn update $SRC
+SVN=`svn info | grep '^Repository Root: ' | sed 's/^Repository Root: *//'`
+
+# Key subdirectories / sub-repositories
 DST=$SRC/WWW
 CPY=$SRC/tmp
 CVX=$CPY/cvx
 TEX=$CPY/doc
-SVN=`svn info | grep '^Repository Root: ' | sed 's/^Repository Root: *//'`
 TRU=$SVN/trunk
 EXA=$SVN/examples
 DOC=$SVN/doc
@@ -75,7 +78,7 @@ echo done.
 
 echo -n Cleaning up...
 chmod -fR a+r,ug+w $DST
-rm -rf $CPY
+# rm -rf $CPY
 echo done.
 echo Staging directory $DST completed.
 
