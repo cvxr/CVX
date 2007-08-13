@@ -2,10 +2,6 @@
 
 # Version number
 MYVERSION=1.1
-MYBUILD=`svn info $SVN | grep ^Revision | sed "s/[^0-9]*//"`
-MYTDATE=`date +"%B %Y"`
-VERSED="s@___VERSION___@$MYVERSION@;s@___BUILD___@$MYBUILD@;s@___TDATE___@$MYTDATE@;"
-TEXSED="s@cvxver{...@cvxver{$MYVERSION@;s@cvxbuild{...@cvxbuild{$MYBUILD@"
 
 # Key directories
 SRC=`pwd | sed 's@/doc$@@'`
@@ -19,6 +15,12 @@ EXA=$SVN/examples
 DOC=$SVN/doc
 TAR=$DST/cvx.tar.gz
 ZIP=$DST/cvx.zip
+
+# Build number
+MYBUILD=`svn info $TRU | grep "^Last Changed" | sed "s/[^0-9]*//"`
+MYTDATE=`date +"%B %Y"`
+VERSED="s@___VERSION___@$MYVERSION@;s@___BUILD___@$MYBUILD@;s@___TDATE___@$MYTDATE@;"
+TEXSED="s@cvxver{...@cvxver{$MYVERSION@;s@cvxbuild{...@cvxbuild{$MYBUILD@"
 
 echo -n Preparing work and staging directories...
 rm -rf $DST $CPY
