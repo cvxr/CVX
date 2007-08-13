@@ -78,7 +78,7 @@ echo done.
 
 echo -n Cleaning up...
 chmod -fR a+r,ug+w $DST
-# rm -rf $CPY
+rm -rf $CPY
 echo done.
 echo Staging directory $DST completed.
 

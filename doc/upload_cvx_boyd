@@ -6,5 +6,5 @@ SRC=$SRCBASE/dist
 DST=kona.stanford.edu:~boyd/src/cvx
 
 echo Updating: $SRC --\> $DST
-rsync -rtv --delete -e ssh $SRC/ $DST/
+rsync -rlv --delete -e ssh $SRC/ $DST/
 

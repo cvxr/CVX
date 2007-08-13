@@ -7,7 +7,7 @@ DSTDIR=$SRCBASE/dist
 WWWDST=cardinal.stanford.edu:~boyd/WWW/cvx
 
 echo Updating: $WWWDIR --\> $WWWDST
-rsync -rtDv --delete -e ssh $WWWDIR/ $WWWDST/
+rsync -rlv --delete -e ssh $WWWDIR/ $WWWDST/
 
 echo -n Updating local distribution copy...
 rm -rf $DSTDIR
