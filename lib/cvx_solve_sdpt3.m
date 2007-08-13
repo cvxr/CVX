@@ -219,15 +219,10 @@ OPTIONS.vers = 2;
 %
 
 switch info.termcode,
-    case 0,
-        status = 'Solved';
-        scode = 0;
     case 1,
         status = 'Infeasible';
-        scode = 1;
     case 2,
         status = 'Unbounded';
-        scode = 2;
     otherwise,
         err = max([info.relgap,info.pinfeas,info.dinfeas]);
         if err > prec(3),
