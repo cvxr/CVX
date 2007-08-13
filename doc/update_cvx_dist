@@ -2,82 +2,78 @@
 
 # Version number
 MYVERSION=1.1
-MYBUILD=`svn info $SVNBASE | grep ^Revision | sed "s/[^0-9]*//"`
+MYBUILD=`svn info $SVN | grep ^Revision | sed "s/[^0-9]*//"`
 MYTDATE=`date +"%B %Y"`
 VERSED="s@___VERSION___@$MYVERSION@;s@___BUILD___@$MYBUILD@;s@___TDATE___@$MYTDATE@;"
 TEXSED="s@cvxver{...@cvxver{$MYVERSION@;s@cvxbuild{...@cvxbuild{$MYBUILD@"
 
 # Key directories
-SRCBASE=/home/boyd/src
-CPYDIR=$SRCBASE/cvx.dist
-SVNBASE=file://$SRCBASE/svn/cvx
-SOURCE=$SVNBASE/trunk
-EXAMPLES=$SVNBASE/examples
-DOC=$SVNBASE/doc
-DSTDIR=/home/boyd/WWW/cvx
+SRC=`pwd | sed 's@/doc$@@'`
+DST=$SRC/WWW
+CPY=$SRC/tmp
+CVX=$CPY/cvx
+TEX=$CPY/doc
+SVN=`svn info | grep '^Repository Root: ' | sed 's/^Repository Root: *//'`
+TRU=$SVN/trunk
+EXA=$SVN/examples
+DOC=$SVN/doc
+TAR=$DST/cvx.tar.gz
+ZIP=$DST/cvx.zip
 
-# Grab a clean copy of the current version
-rm -rf $CPYDIR
-mkdir $CPYDIR
-svn export $SOURCE   $CPYDIR/cvx
-svn export $EXAMPLES $CPYDIR/cvx/examples
-svn export $DOC      $CPYDIR/doc
+echo -n Preparing work and staging directories...
+rm -rf $DST $CPY
+mkdir -p $DST $CPY
+echo done.
 
+echo -n Retrieving latest sources...
+svn export $TRU $CVX          >/dev/null
+svn export $EXA $CVX/examples >/dev/null
+svn export $EXA $DST/examples >/dev/null
+svn export $DOC $TEX          >/dev/null
+echo done.
 # Insert version information into the version file and docs
-cd $CPYDIR/cvx
+cd $CVX
 sed "$VERSED" cvx_version.m > cvx_version.m.new
 mv -f cvx_version.m.new cvx_version.m
-cd $CPYDIR/doc
+cd $TEX
 sed "$TEXSED" cvx_usrguide.tex > cvx_usrguide.tex.new
 mv -f cvx_usrguide.tex.new cvx_usrguide.tex
 
-# Compile the documentation
-latex  cvx_usrguide
-latex  cvx_usrguide
-bibtex cvx_usrguide
-makeindex cvx_usrguide
-latex  cvx_usrguide
-latex  cvx_usrguide
-latex  cvx_usrguide
-dvips  cvx_usrguide
-ps2pdf cvx_usrguide.ps
-cp cvx_usrguide.pdf $CPYDIR/cvx
+echo -n Compiling the documentation...
+latex        cvx_usrguide >/dev/null </dev/null
+latex        cvx_usrguide >/dev/null </dev/null
+bibtex       cvx_usrguide >/dev/null
+makeindex -q cvx_usrguide >/dev/null
+latex        cvx_usrguide >/dev/null </dev/null
+latex        cvx_usrguide >/dev/null </dev/null
+dvips -q     cvx_usrguide >/dev/null
+ps2pdf       cvx_usrguide.ps
+cp cvx_usrguide.pdf $CVX
+cp cvx_usrguide.pdf $DST
+echo done.
 
-# Set the permissions
-chgrp -fR research $CPYDIR/cvx 
-chmod -fR a+r,gu+w $CPYDIR/cvx
-find $CPYDIR/cvx -type d -exec chmod g+s {} \;
+echo -n Creating the archives...
+cd $CPY
+chmod -fR a+r,gu+w cvx
+find cvx -type d -exec chmod g+s {} \;
+tar cfz $TAR cvx >/dev/null
+zip -r -9 $ZIP cvx >/dev/null
+echo done.
 
-# Create the archives
-cd $CPYDIR
-rm $DSTDIR/cvx.{tar.gz,zip}
-tar cvfz $DSTDIR/cvx.tar.gz cvx
-zip -r -9 $DSTDIR/cvx.zip cvx
-cd cvx
-tar cvf $DSTDIR/cvx-examples.tar examples
-
-# Copy the documentation over and extract examples
-cd $DSTDIR
-cp $CPYDIR/doc/cvx_usrguide.pdf .
-rm -rf examples
-tar xvf cvx-examples.tar
-rm -rf cvx-examples.tar
-
-# Update the index file and history file
+echo -n Updating the web pages...
 MYDATE=`date`
-MYZIP=`du --si $DSTDIR/cvx.zip | sed 's@\s.*@@'`
-MYTAR=`du --si $DSTDIR/cvx.tar.gz | sed 's@\s.*@@'`
-MYPDF=`du --si $DSTDIR/cvx_usrguide.pdf | sed 's@\s.*@@'`
+MYZIP=`du -h $ZIP | sed 's@\([0-9.]*.\).*@\1B@'`
+MYTAR=`du -h $TAR | sed 's@\([0-9.]*.\).*@\1B@'`
+MYPDF=`du -h $DST/cvx_usrguide.pdf | sed 's@\([0-9.]*.\).*@\1B@'`
 SEDSTR="$VERSED;s@___DATE___@$MYDATE@;s@___ZIP___@$MYZIP@;s@___TAR___@$MYTAR@;s@___PDF___@$MYPDF@"
-sed "$SEDSTR" $CPYDIR/doc/index.html > $DSTDIR/index.html
-sed "$SEDSTR" $CPYDIR/doc/history.html > $DSTDIR/history.html
-cp -f $CPYDIR/doc/*.{gif,png} $DSTDIR
+sed "$SEDSTR" $TEX/index.html > $DST/index.html
+sed "$SEDSTR" $TEX/history.html > $DST/history.html
+cp -f $TEX/*.{gif,png} $DST
+echo done.
 
-# Set the permissons at the destination
-chgrp -fR research $DSTDIR
-chmod -fR a+r,ug+w $DSTDIR
-
-# Remove the working directory
-cd $SRCBASE
-rm -rf $CPYDIR
+echo -n Cleaning up...
+chmod -fR a+r,ug+w $DST
+rm -rf $CPY
+echo done.
+echo Staging directory $DST completed.
 

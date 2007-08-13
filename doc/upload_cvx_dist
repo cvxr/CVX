@@ -1,23 +1,21 @@
 #! /bin/sh
 
 # Key directories
-SRCBASE=/home/boyd/src
-CPYDIR=$SRCBASE/cvx.dist
-DSTDIR=/home/boyd/WWW/cvx
+SRCBASE=`pwd | sed 's@/doc$@@'`
+WWWDIR=$SRCBASE/WWW
+DSTDIR=$SRCBASE/dist
+WWWDST=cardinal.stanford.edu:~boyd/WWW/cvx
 
-# Synchronize the remote web site
-cd $SRCBASE
-rsync -rtDv --delete -e ssh $DSTDIR mcgrant@cardinal:~boyd/WWW
+echo Updating: $WWWDIR --\> $WWWDST
+rsync -rtDv --delete -e ssh $WWWDIR/ $WWWDST/
 
-# Update the local distribution copy
-rm -rf $SRCBASE/cvx.dist
-mkdir $SRCBASE/cvx.dist
-cd $SRCBASE/cvx.dist
-tar xvfz $DSTDIR/cvx.tar.gz
+echo -n Updating local distribution copy...
+rm -rf $DSTDIR
+mkdir -p $DSTDIR
+cd $DSTDIR
+tar xfz $WWWDIR/cvx.tar.gz
 mv cvx cvx.foo
 mv cvx.foo/* .
 rmdir cvx.foo
-chmod -fR g+w .
-chgrp -fR research .
-find $SRCBASE/cvx.dist -type d -exec chmod g+s {} \;
+echo done.
 
