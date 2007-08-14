@@ -65,7 +65,6 @@ end
 
 xt = x;
 pt = p;
-sz = sy;
 vu = unique( v );
 nv = length( vu );
 if nv ~= 1,
@@ -84,9 +83,11 @@ for k = 1 : nv,
     vk = vu( k );
     if nv ~= 1,
         t = v == vk;
-        if ~xs, xt = cvx_subsref( x, t ); sz = size( xt ); end
+        if ~xs, xt = cvx_subsref( x, t ); end
         if ~ps, pt = cvx_subsref( p, min(find(t)) ); end
     end
+    sz = size(xt);
+    nd = length(sz)+1;
     
     %
     % Perform the computations
@@ -98,51 +99,44 @@ for k = 1 : nv,
             error( sprintf( 'Disciplined convex programming error:\n    Illegal operation: pow_pos( {%s}, p )', cvx_class( xt, true, true ), pclass ) ); 
         case 1,
             % Nonpositive constant .^ (p<0)
-            yt = +Inf * ones( sz );
+            yt = +Inf * ones(sz);
         case 2,
             % Negative constant .^ (0<p<1)
-            yt = -Inf * ones( sz );
+            yt = -Inf * ones(sz);
         case 3,
             % Zero result
-            yt = zeros( sz );
+            yt = zeros(sz);
         case 4,
             % Positive constant or log-valid .^ (anything)
             yt = xt .^ pt;
         otherwise,
             if pt < 0,
                 % Concave .^ (p<0)
-                nd = length( sz ) + 1;
-                if xs & any( sz > 1 ), 
-                    xs = xs * ones(sz); 
-                end
                 cvx_begin
-                    epigraph variable yt( sz )
-                    geomean( cat( nd, xt, yt ), nd, cvx_geomean_map( p ), true ) >= 1;
+                    epigraph variable yt(sz)
+                    geomean( cat( nd, xt, yt ), nd, cvx_geomean_map( pt ), true ) >= 1;
                 cvx_end
             elseif pt == 0,
                 % Concave .^ (p==0)
                 cvx_begin
-                    hypograph variable yt( sz )
+                    hypograph variable yt(sz)
                     yt == 1;
                     xt >= 0;
                 cvx_end
             elseif pt < 1,
-                % Concave .^ (0<=p<=1)
-                sxt = size(xt);
-                nd = length( sxt ) + 1;
+                % Concave .^ (0<p<1)
                 cvx_begin
-                    hypograph variable yt( sz )
-                    geomean( cat( nd, xt, ones(sxt) ), nd, cvx_geomean_map( p ), true ) >= yt;
+                    hypograph variable yt(sz)
+                    geomean( cat( nd, xt, ones(sz) ), nd, cvx_geomean_map( pt ), true ) >= yt;
                 cvx_end
-            elseif pt <= 1,
+            elseif pt == 1,
                 % Convex .^ (p==1)
                 yt = max( xt, 0 );
             else
                 % Convex .^ (p>1)
-                nd = length( sz ) + 1;
                 cvx_begin
-                    epigraph variable yt( sz )
-                    geomean( cat( nd, yt, ones(sz) ), nd, cvx_geomean_map( p ), true ) >= xt;
+                    epigraph variable yt(sz)
+                    geomean( cat( nd, yt, ones(sz) ), nd, cvx_geomean_map( pt ), true ) >= xt;
                 cvx_end
             end
     end
@@ -151,10 +145,12 @@ for k = 1 : nv,
     % Store the results
     %
     
-    if nv == 1,
+    if nv ~= 1,
+        y = cvx_subsasgn( y, t, yt );
+    elseif isequal(sz,sy),
         y = yt;
     else
-        y = cvx_subsasgn( y, t, yt );
+        y = yt * ones(sy);
     end
     
 end

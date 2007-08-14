@@ -145,10 +145,12 @@ for k = 1 : nv,
             elseif all( t2( : ) ),
                 cvx_optval = pow_pos( square( xt ), 0.5 * yt );
             else
-                if xs, xt = xt * ones( sz ); end
-                xt = cvx_subsasgn( xt, square( cvx_subsref( xt, t2 ) ) );
-                if ys, yt = yt * ones( sz ); end
-                yt = cvx_subsasgn( yt, 0.5 * cvx_subsref( yt, t2 ) );
+                if xs,
+                    xt = cvx_subsasgn( xt * ones( sz ), t2, square( xt ) );
+                else
+                    xt = cvx_subsasgn( xt, t2, square( cvx_subsref( xt, t2 ) ) );
+                end
+                yt( t2 ) = yt( t2 ) * 0.5;
                 cvx_optval = pow_pos( xt, yt );
             end
         case 5,
