@@ -126,7 +126,7 @@ elseif infeas,
     x = NaN * ones( n, 1 );
     b( ~tt ) = 0;
     y = - b / ( b' * b );
-    value = sgn * Inf * ones( objsize );
+    value = sgn * Inf;
     pval = NaN;
     dval = 0;
     
@@ -142,7 +142,7 @@ else
     status = 'Solved';
     x = zeros( n, 1 );
     y = zeros( m, 1 );
-    value = sgn * reshape( d, objsize );
+    value = sgn * d;
     pval = 1;
     dval = 1;
     

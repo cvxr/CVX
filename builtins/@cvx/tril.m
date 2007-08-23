@@ -16,22 +16,11 @@ elseif ~isnumeric( k ) | length( k ) ~= 1,
 end
 
 %
-% Determine the indices of the zeroed-out elements
-%
-
-rows = [ 1 : s( 1 ) ]';
-rows = rows( :, ones( 1, s( 2 ) ) );
-cols = [ 1 : s( 2 ) ];
-cols = cols( ones( 1, s( 1 ) ), : );
-ndxs = rows < cols + k;
-if ~any( ndxs ), return; end
-
-%
-% Zero them out
+% Zero out the elements outside of the desired triangle
 %
 
 b = x.basis_;
-b( :, ndxs ) = 0;
+b( :, ~tril(ones(s),k) ) = 0;
 x = cvx( s, b );
 
 % Copyright 2007 Michael C. Grant and Stephen P. Boyd.
