@@ -17,7 +17,7 @@ function y = geomean( x, dim, w )
 %   even if X is a matrix, and its length must be the same as SIZE(X,DIM).
 %
 %   Disciplined convex programming information:
-%       GEOMEAN is convex and nondecreasing; therefore, when used in CVX
+%       GEOMEAN is concave  and nondecreasing; therefore, when used in CVX
 %       specifications, its argument must be concave.
 
 %
