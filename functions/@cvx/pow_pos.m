@@ -46,10 +46,10 @@ if isempty( remap ),
     remap_x2 = cvx_remap( 'zero' );
     remap_x3 = cvx_remap( 'log-valid' );
     temp     = ~( remap_x1 | remap_x2 | remap_x3 );
-    remap_x4 = cvx_remap( 'convex' ) & temp;
+    remap_x4 = cvx_remap( 'convex'  ) & temp;
     remap_x5 = cvx_remap( 'concave' ) & temp;
     remap = [1;2;3] * remap_x1 + [1;3;3] * remap_x2 + ...
-            [4;4;4] * remap_x3 + [0;5;5] * remap_x4 + [5;0;0] * remap_x5;
+            [4;4;4] * remap_x3 + [0;0;5] * remap_x4 + [5;5;0] * remap_x5;
 end
 v = 1 + ( p >= 0 ) + ( p >= 1 );
 v = remap( v(:)' + 3 * ( cvx_classify( x ) - 1 ) );
@@ -96,7 +96,7 @@ for k = 1 : nv,
     switch vk,
         case 0,
             % Invalid
-            error( sprintf( 'Disciplined convex programming error:\n    Illegal operation: pow_pos( {%s}, p )', cvx_class( xt, true, true ), pclass ) ); 
+            error( sprintf( 'Disciplined convex programming error:\n    Illegal operation: pow_pos( {%s}, p )', cvx_class( xt, true, true ) ) ); 
         case 1,
             % Nonpositive constant .^ (p<0)
             yt = +Inf * ones(sz);
