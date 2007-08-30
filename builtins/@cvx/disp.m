@@ -5,7 +5,7 @@ end
 disp( [ prefix, 'cvx ', cvx_class( x, true, true, true ), ' expression (', type( x ), ')' ] );
 dual = getdual( x );
 if ~isempty( dual ),
-    disp( [ prefix, '   tied to dual variable: ', dual ] );
+    disp( [ prefix, '   tied to dual variable: ', dual.subs ] );
 end
 
 % Copyright 2007 Michael C. Grant and Stephen P. Boyd.

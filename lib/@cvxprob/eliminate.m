@@ -81,13 +81,21 @@ for pass = 1 : 2,
         % Unbounded variables cannot *all* be eliminated; one must be kept
         % in order to preserve the unbounded behavior. 
         %
-        rcnt = sum( dbCA ~= 0, 2 );
-        rows = ( rcnt == ( dbCA( :, 1 ) ~= 0 ) ) & ~rsv;
-        if any( rows ),
-            success = true;
+        while true,
+            rcnt = sum( dbCA ~= 0, 2 );
+            rows = ( rcnt == ( dbCA( :, 1 ) ~= 0 ) ) & ~rsv;
+            nnzr = nnz( rows );
+            if nnzr == 0, 
+                break; 
+            end
             celm = dbCA( rows, 1 );
+            nnzc = nnz( celm );
+            if nnzc & ( nnzr == 1 ), 
+                break; 
+            end
+            success = true;
             rowX = ~rows;
-            if nnz( celm ),
+            if nnzc,
                 cnrm = norm( celm );
                 keep = Q( :, rows ) * ( celm / cnrm );
                 ndxq = find( rows );
@@ -148,15 +156,15 @@ for pass = 1 : 2,
                 error( sprintf( 'There seems to be an error in the CVX presolver routine.\nPlease report this to the authors; and if possible, include the\ncvx model and data that gave you this error.' ) );
             end
             [ ii, jj, vv ] = find( A22 );
-            A22i = sparse( jj, ii, 1.0 ./ vv );
-            temp = - A22i * A21;
-            P    = P( :, colX ) + P( :, cols ) * temp;
-            temp = - A12 * A22i;
-            Q    = Q( :, rowX ) + Q( :, rows ) * temp';
-            dbCA = A11 + temp * A21;
-            rsv  =  rsv( rowX );
-            ndxs = ndxs( rowX );
-            ineqs = ineqs( colX );
+            A22i  = sparse( jj, ii, 1.0 ./ vv );
+            temp  = - A22i * A21;
+            P     = P( :, colX ) + P( :, cols ) * temp;
+            temp  = - A12 * A22i;
+            Q     = Q( :, rowX ) + Q( :, rows ) * temp';
+            dbCA  = A11 + temp * A21;
+            rsv   =   rsv( rowX, : );
+            ndxs  =  ndxs( rowX, : );
+            ineqs = ineqs( :, colX );
         end
         if ~success,
             break;
@@ -171,7 +179,7 @@ for pass = 1 : 2,
             esrc = esrc( tt );
             edst = edst( tt );
         end
-        if isempty( esrc ),
+        if 0, % isempty( esrc ),
             ineqs(:) = 0;
             [ rows, cols ] = cvx_eliminate_mex( dbCA, 1, rsv, ineqs );
             [n1,m1] = size(dbCA);
@@ -213,7 +221,7 @@ for pass = 1 : 2,
                 nold  = size( dbCA, 1 );
                 rsv   = full(sparse([1,m1+1:nold],1,1));
                 ineqs = zeros(1,size(dbCA,2));
-                ndxs  = 1 : nold;
+                ndxs  = [ 1 : nold ]';
                 Q(:,nold) = 0;
                 dualized = true;
             end

@@ -9,6 +9,7 @@
 %   monotonicty properties.
 %
 %   berhu             - Reverse Huber penalty function.
+%   det_inv           - Determinant of the inverse of an SPD matrix.
 %   det_root2n        - 2nth-root of the determinant of an SPD matrix.
 %   det_rootn         - nth-root of the determinant of an SPD matrix.
 %   geomean           - Geometric mean.
