@@ -7,7 +7,7 @@ HST=kona.stanford.edu
 DST=/home/boyd/src/cvx
 
 echo Updating: $SRC --\> $DST
-rsync -rlv --delete -e ssh $SRC/ $HST:$DST/
+rsync -rlv -e ssh $SRC/ $HST:$DST/
 ssh $HST chgrp -fR research $DST
 ssh $HST chmod -fR g+w $DST
 

@@ -179,7 +179,7 @@ for pass = 1 : 2,
             esrc = esrc( tt );
             edst = edst( tt );
         end
-        if 0, % isempty( esrc ),
+        if isempty( esrc ),
             ineqs(:) = 0;
             [ rows, cols ] = cvx_eliminate_mex( dbCA, 1, rsv, ineqs );
             [n1,m1] = size(dbCA);
