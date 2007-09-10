@@ -78,8 +78,8 @@ elseif m == 1 | n == 1 | isequal( p, 'fro' ),
         remap3 = cvx_remap( 'log-affine' );
     end
     xc = cvx_classify( x );
-    if ~all( remap2( xc ) ) & ~( isequal( p, 1 )& ~all( remap3( xc ) ) ),
-        error( sprintf( 'Disciplined convex programming error:\n    Cannot perform the operation norm( {%s}, %g )', cvx_class( xt ), p ) );
+    if ~all( remap2( xc ) ) & ~( isequal( p, 1 ) & ~all( remap3( xc ) ) ),
+        error( sprintf( 'Disciplined convex programming error:\n    Cannot perform the operation norm( {%s}, %g )', cvx_class( x ), p ) );
     end
     switch p,
         case 1,
