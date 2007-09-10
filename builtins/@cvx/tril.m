@@ -1,7 +1,7 @@
 function x = tril( x, k )
 
-%Disciplined convex/geometric programming information for TRIL:
-%   TRIL imposes no convexity restrictions on its arguments.
+%   Disciplined convex/geometric programming information for TRIL:
+%       TRIL imposes no convexity restrictions on its arguments.
 
 %
 % Check inputs

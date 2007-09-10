@@ -15,7 +15,8 @@ function x = subsasgn( x, S, y )
 %         y = ones(3,1);
 %         y(2) = x;
 %      This is because MATLAB does not know how to automatically promote
-%      'y' to a CVX variable so that it can accept 'x' as an element. If you want
+%      'y' to a CVX variable so that it can accept 'x' as an element. If
+%     you want
 %      to accomplish something like this, you must manually convert y into a
 %      CVX variable first, as follows:
 %         variable x;
