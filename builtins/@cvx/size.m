@@ -1,4 +1,9 @@
 function varargout = size( x, dim )
+
+%   Disciplined convex/geometric programming information for SIZE:
+%       SIZE imposes no convexity restrictions on its first argument.
+%       The second argument, if supplied, must be a positive integer.
+
 if nargin == 1,
     dim = [];
 end

@@ -1,10 +1,10 @@
 function t = toeplitz( c, r )
 
-%Disciplined convex/geometric programming information for TOEPLITZ:
-%   TOEPLITZ imposes no convexity restrictions on its arguments. Instead
-%   of using the TOEPLITZ function, however, consider creating a matrix
-%   variable using the 'toeplitz' keyword; e.g.
-%       variable X(5,5) toeplitz;
+%   Disciplined convex/geometric programming information for TOEPLITZ:
+%      TOEPLITZ imposes no convexity restrictions on its arguments. 
+%      Instead of using the TOEPLITZ function, however, consider 
+%      creating a matrix variable using the 'toeplitz' keyword; e.g.
+%          variable X(5,5) toeplitz;
 
 %
 % Check arguments

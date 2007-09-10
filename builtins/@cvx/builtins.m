@@ -16,9 +16,9 @@
 % Relational operators:
 %    eq (==), ge (>=), gt (>), le (<=), lt(<), ne (~=).
 % Linear/affine functions:
-%    blkdiag, cat, conj, cumsum, diag, dot, find, flipdim, fliplr, flipud,
-%    hankel, horzcat, imag, ipermute, kron, permute, polyval, real, repmat, 
-%    reshape, rot90, sparse, sum, toeplitz, tril, triu, vertcat
+%    blkdiag, cat, conj, conv, cumsum, diag, dot, find, flipdim, fliplr, 
+%    flipud, hankel, horzcat, imag, ipermute, kron, permute, polyval, real,
+%    repmat, reshape, rot90, sparse, sum, toeplitz, tril, triu, vertcat
 % Nonlinear functions:
 %    abs, max, min, norm, prod, sqrt
 % Query functions:

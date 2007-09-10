@@ -1,13 +1,14 @@
 function cvx_optval = sqrt( x )
-error( nargchk( 1, 1, nargin ) );
 
-%Discipined convex programming information for SQRT:
-%   SQRT(X) is log-concave and nondecreasing in X. Therefore, when used
-%   in DCPs, X must be concave (or affine).
-%
-%Disciplined geometric programming information for SQRT:
-%   SQRT(X) is log-log-affine and nondecreasing in X. Therefore, when
-%   used in DGPs, X may be log-affine, log-convex, or log-concave.
+%   Discipined convex programming information for SQRT:
+%      SQRT(X) is log-concave and nondecreasing in X. Therefore, when used
+%      in DCPs, X must be concave (or affine).
+%   
+%   Disciplined geometric programming information for SQRT:
+%      SQRT(X) is log-log-affine and nondecreasing in X. Therefore, when
+%      used in DGPs, X may be log-affine, log-convex, or log-concave.
+
+error( nargchk( 1, 1, nargin ) );
 
 %
 % Determine the expression types

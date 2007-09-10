@@ -1,27 +1,27 @@
 function z = mtimes( x, y, oper )
 
-%Disciplined convex programming information for MTIMES:
-%   True matrix multiplications Z = X * Y---that is, where neither X nor Y
-%   is a scalar---require both multiplications and additions. For example, 
-%   element (i,j) of Z is given by
-%      X(i,1) * Y(1,j) + X(i,2) * Y(2,j) + ... + X(i,k) * Y(k,j)
-%   Therefore, matrix multiplications must satisfy *both* the "no-product"
-%   rule of multiplication and the "same curvature" rule of addition. See
-%   the help for CVX/TIMES and CVX/PLUS, respectively, for individual
-%   descriptions of these rules.
-%
-%   An exception is made to these general rules for quadratic forms. That
-%   is, two affine expressions may be multiplied together if the result can
-%   immediately be verified as a convex quadratic form. For example, the
-%   construction
-%      variable x(n)
-%      x' * Q * x  <= 1;
-%   would be permitted if Q is *constant* and positive semidefinite.
-%
-%Disciplined geometric programming information for TIMES:
-%   As mentioned above, true matrix multiplies Z = X * Y require both
-%   multiplications and additions. Since only log-convex (and log-affine)
-%   terms can be summed, both X and Y must be elementwise log-convex.
+%   Disciplined convex programming information for MTIMES:
+%      True matrix multiplications Z = X * Y---that is, where neither X
+%      nor Y is a scalar---require both multiplications and additions. 
+%      For example, element (i,j) of Z is given by
+%         X(i,1) * Y(1,j) + X(i,2) * Y(2,j) + ... + X(i,k) * Y(k,j)
+%      Therefore, matrix multiplications must satisfy *both* the 
+%      "no-product" rule of multiplication and the "same curvature" rule
+%      of addition. See the help for CVX/TIMES and CVX/PLUS, 
+%      respectively, for individual descriptions of these rules.
+%   
+%      An exception is made to these general rules for quadratic forms.
+%      That is, two affine expressions may be multiplied together if the
+%      result can immediately be verified as a convex quadratic form. 
+%      For example, the construction
+%         variable x(n)
+%         x' * Q * x  <= 1;
+%      would be permitted if Q is *constant* and positive semidefinite.
+%   
+%   Disciplined geometric programming information for TIMES:
+%      As mentioned above, true matrix multiplies Z = X * Y require both
+%      multiplications and additions. Since only log-convex terms can be
+%      summed, both X and Y must be elementwise log-convex/affine.
 
 if nargin < 3, oper = 'times'; end
 

@@ -1,5 +1,8 @@
 function spy( x, mode )
 
+%   SPY is not a computational function, so it can be applied to any  
+%   CVX variables. 
+
 switch nargin,
     case 0,
         error( 'Not enough arguments.' );

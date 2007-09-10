@@ -1,19 +1,19 @@
 function y = polyval( p, x )
 
-%Disciplined convex/geometric programming information for POLYVAL:
-%   POLYVAL can be used with CVX variables in two ways:
-%   -- If P is constant and X is a variable, then POLYVAL(P,X) represents a
-%      polynomial function of X, p(X). If p(X) is affine, then the basic 
-%      DCP or DCP rules for sums and products apply. If P is nonlinear,
-%      then the treatment depends on the model type:
-%      -- For DCPs, the polynomial must be convex or concave, and X must
-%         affine (since such polynomials cannot be monotonic).
-%      -- For DGPs, the elements of P must be nonnegative, in which case 
-%         p(X) is nondecreasing, so X must be log-convex.
-%   -- If X is a constant and P is a variable, then POLYVAL(P,X) 
-%      performs a weighted sum of the elements of P. The weights are,
-%      of course, [X^N,X^(N-1),...,X,1]. As in the affine case above, then
-%      standard DCP or DGP rules for sums and products apply.
+%   Disciplined convex/geometric programming information for POLYVAL:
+%      POLYVAL can be used with CVX variables in two ways:
+%      -- If P is constant and X is a variable, then POLYVAL(P,X) 
+%         represents a polynomial function of X, p(X). If p(X) is affine
+%         then the basic  DCP or DCP rules for sums and products apply. 
+%         If P is nonlinear then:
+%         -- for DCPs, the polynomial must be convex or concave, and X 
+%            must be affine (such polynomials cannot be monotonic).
+%         -- for DGPs, the elements of P must be nonnegative, in which
+%            case p(X) is nondecreasing, so X must be log-convex.
+%      -- If X is a constant and P is a variable, then POLYVAL(P,X)
+%         performs a weighted sum of the elements of P. The weights are,
+%         of course, [X^N,X^(N-1),...,X,1]. As in the affine case above,
+%         then standard DCP or DGP rules for sums and products apply.
 
 sp = size( p );
 if isempty( p ),

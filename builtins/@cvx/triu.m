@@ -1,7 +1,7 @@
 function x = triu( x, k )
 
-%Disciplined convex/geometric programming information for TRIU:
-%   TRIU imposes no convexity restrictions on its arguments.
+%   Disciplined convex/geometric programming information for TRIU:
+%       TRIU imposes no convexity restrictions on its arguments.
 
 %
 % Check inputs

@@ -1,8 +1,8 @@
 function y = permute( x, order )
 
-%Disciplined convex/geometric programming information for PERMUTE:
-%   PERMUTE(A,ORDER) imposes no convexity restrictions on A. ORDER
-%   must be constant.
+%   Disciplined convex/geometric programming information for PERMUTE:
+%      PERMUTE(A,ORDER) imposes no convexity restrictions on A. ORDER
+%      must be constant.
 
 %
 % Determine the permutation

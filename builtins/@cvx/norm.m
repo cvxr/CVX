@@ -1,42 +1,15 @@
 function cvx_optval = norm( x, p )
-error( nargchk( 1, 2, nargin ) );
 
-%NORM   Matrix or vector norm.
-%
-%   CVX supports all of the  matrix and vector norms that MATLAB itself
-%   supports, with two caveats. First, norm(X,-Inf) does not compute a 
-%   true norm, so CVX does not support this mode. Second, for norm(X,p),
-%   1<p<+Inf, CVX approximates p with a rational value as computed by
-%   the RAT() function. The larger the numerator of this ratio, the more
-%   complex the computations that CVX initiates. See the CVX user guide
-%   under "rational powers" for more details.
-%
-%   For vectors...
-%     NORM(V,P)           = sum(abs(V).^P)^(1/P)
-%     NORM(V)             = norm(V,2).
-%     NORM(V,inf)         = max(abs(V)).
-%     NORM(V,-inf)        = min(abs(V)).
-%   Note that NORM(V,P) for -Inf<=P<1 is NOT, in fact, a valid norm. MATLAB
-%   allows them nonetheless, so CVX does as well---but for numeric vectors
-%   ONLY. Such "norms" cannot be used within disciplined convex programs.
-%
-%   For matrices...
-%     NORM(X)             = max(svd(X)).
-%     NORM(X,2)           = norm(X,2).
-%     NORM(X,1)           = max(sum(abs(X))).
-%     NORM(X,Inf)         = max(sum(abs(X'))).
-%     NORM(X,'fro')       = norm(X(:),2).
-%   NORM(X,P) is not implemented for matrices for any other values of P.
-%
 %   Disciplined convex programming information:
-%       NORM is convex, except when P<1, so an error will result if these
-%       non-convex "norms" are used within CVX expressions. NORM is
-%       nonmonotonic, so its input must be affine.
+%       NORM is convex, except when P<1, so an error will result if
+%       these non-convex "norms" are used within CVX expressions. NORM 
+%       is nonmonotonic, so its input must be affine.
 
 %
 % Check arguments
 %
 
+error( nargchk( 1, 2, nargin ) );
 if nargin < 2,
     p = 2;
 elseif ~isequal( p, 'fro' ) & ( ~isnumeric( p ) | ~isreal( p ) | p < 1 ),

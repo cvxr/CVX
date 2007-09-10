@@ -1,9 +1,9 @@
 function a = ne( x, y )
 
-%Disciplined convex/geometric programming information for NE (~=):
-%   Not-equal constraints violate both the DCP and DGP rulesets. Thus 
-%   not-equal expressions may only appear in CVX models when both sides
-%   are constant.
+%   Disciplined convex/geometric programming information for NE (~=):
+%      Not-equal constraints violate both the DCP and DGP rulesets. Thus
+%      not-equal expressions may only appear in CVX models when both 
+%      sides are constant.
 
 error( nargchk( 2, 2, nargin ) );
 try

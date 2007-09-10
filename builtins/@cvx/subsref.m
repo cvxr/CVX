@@ -1,9 +1,9 @@
 function x = subsref( x, S )
 
-%Disciplined convex/geometric programming information for SUBSREF ():
-%   The use of subscripts to extract elements or "slices" of any CVX
-%   variable is identical to their use with numeric arrays. All conventions
-%   are preserved, including the colon ':' and 'end' operators.
+%   Disciplined convex/geometric programming information for SUBSREF:
+%      The use of subscripts to extract elements or "slices" of any CVX
+%      variable is identical to their use with numeric arrays. All 
+%      conventions are preserved, including the colon ':' and 'end'.
 
 error( nargchk( 2, 2, nargin ) );
 

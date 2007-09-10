@@ -4,7 +4,7 @@ function y = log( x )
 %   LOG(X) is the natural logarithm of the elements of X.
 %   Complex results are produced if X is not positive.
 %
-%   Disciplined quadratic programming information:
+%   Disciplined geometric programming information:
 %       LOG(X) currently supports only constants, monomials, and
 %       posynomials. Support for affine and/or concave expressions
 %       will come in a later revision.

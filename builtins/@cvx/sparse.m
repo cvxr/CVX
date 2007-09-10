@@ -1,7 +1,21 @@
 function z = sparse( i, j, x, m, n )
 
-error( nargchk( 3, 5, nargin ) );
-if nargin == 4, error( 'Not enough arguments.' ); end
+%   Disciplined convex/geometric programming information for SPARSE:
+%       For a CVX variable X, SPARSE(X) just returns X. In the three-
+%       and five-argument versions SPARSE(I,J,V,[M,N]), the index
+%       arguments I and J and size arguments M and N must be constant.
+%       If any of the index pairs (I(k),J(k)) are repeated, then the
+%       corresponding elements V(k) will be added together. Therefore,
+%       those elements must be compatible with addition; i.e., they
+%       must have the same curvature.
+
+switch nargin,
+	case 1,
+		z = i;
+		return
+	case {2,4}
+		error( 'Not enough arguments.' );
+end
 
 %
 % Check sizes and indices

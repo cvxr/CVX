@@ -1,16 +1,16 @@
 function y = sum( x, dim )
 
-%Disciplined convex/geometric programming information for SUM:
-%   SUM(X) and SUM(X,DIM) is a vectorized version of addition. So when
-%   SUM is used in a DCP or DGP, elements in each subvector must satisfy
-%   the corresponding combination rules for addition (see PLUS). For 
-%   example, suppose that X looks like this:
-%      X = [ convex concave affine  ;
-%            affine concave concave ]
-%   Then SUM(X,1) would be permittted, but SUM(X,2) would not, because
-%   the top row contains the sum of convex and concave terms, in
-%   violation of the DCP ruleset. For DGPs, addition rules dictate that
-%   the elements of X must be log-convex or log-affine.
+%   Disciplined convex/geometric programming information for SUM:
+%      SUM(X) and SUM(X,DIM) is a vectorized version of addition. So 
+%      when SUM is used in a DCP or DGP, elements in each subvector must
+%      satisfy the corresponding combination rules for addition (see 
+%      PLUS). For example, suppose that X looks like this:
+%         X = [ convex concave affine  ;
+%               affine concave concave ]
+%      Then SUM(X,1) would be permittted, but SUM(X,2) would not, 
+%      because the top row contains the sum of convex and concave terms,
+%      in violation of the DCP ruleset. For DGPs, addition rules dictate
+%      that the elements of X must be log-convex or log-affine.
 
 %
 % Basic argument check

@@ -1,5 +1,8 @@
 function x = reshape( x, varargin )
 
+%   Disciplined convex/geometric programming information for RESHAPE:
+%       RESHAPE imposes no convexity restrictions on its arguments.
+
 %
 % Check size arguments
 %

@@ -1,7 +1,7 @@
 function z = uplus( x )
 
-%Disciplined convex/geometric programming information for UPLUS (+):
-%   Unary plus may be used in DCPs and DGPs without restrictions.
+%   Disciplined convex/geometric programming information for UPLUS (+):
+%      Unary plus may be used in DCPs and DGPs without restrictions.
 
 z = x;
 

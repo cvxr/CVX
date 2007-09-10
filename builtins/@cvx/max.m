@@ -1,10 +1,10 @@
 function z = max( x, y, dim )
 
-%Disciplined convex/geometric programming information:
-%    MAX is convex, log-log-convex, and nondecreasing in its first two
-%    arguments. Thus when used in disciplined convex programs, both
-%    arguments must be convex (or affine). In disciplined geometric
-%    programs, both arguments must be log-convex (or log-affine).
+%   Disciplined convex/geometric programming information:
+%       MAX is convex, log-log-convex, and nondecreasing in its first 
+%       two arguments. Thus when used in disciplined convex programs, 
+%       both arguments must be convex (or affine). In disciplined 
+%       geometric programs, both arguments must be log-convex/affine.
 
 error( nargchk( 1, 3, nargin ) );
 if nargin == 2,
