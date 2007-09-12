@@ -8,6 +8,9 @@
 %    help on the proper use of that item in CVX models---including any
 %    restrictions imposed by the DCP and DGP rulesets.
 %
+%    For a list of new functions created specifically for CVX, type
+%    "help cvx/functions".
+%
 % Computational operators:
 %    plus (+), uplus (unary +), minus (-), uminus (unary -), times (.*),
 %    mtimes (*), ldivide (.\), mldivide (\), rdivide (./), mrdivide (/), 

@@ -6,7 +6,10 @@
 %   text for each of these functions contains general information about the
 %   computations it performs, as well as specific information about its
 %   proper use in CVX models, as dictated by its convexity/concavity and
-%   monotonicty properties.
+%   monotonicity properties.
+%
+%   For a list of Matlab's built-in functions that have been extended to
+%   provide CVX support, type "help cvx/builtins".
 %
 %   berhu             - Reverse Huber penalty function.
 %   det_inv           - Determinant of the inverse of an SPD matrix.
