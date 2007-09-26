@@ -1,10 +1,25 @@
 function [ x, y, status ] = cvx_solve_sdpt3( At, b, c, sgn, nonls, quiet, prec )
 
 [n,m] = size(At);
+
+%
+% Add an extra row and column if needed---SDPT3 can't handle empty
+% equality constraints
+%
+
+mzero = isempty(At);
+if mzero,
+    n  = n + 1;
+    m  = m + 1;
+    c  = [ c ; 0 ];
+    At = sparse( n, 1, 1 );
+    b  = 0;
+end
+
 types = { nonls.type };
 indices = { nonls.indices };
 found = false(1,length(types));
-used = false(1,length(c));
+used = false(1,n);
 
 blk  = cell( 0, 2 );
 Avec = cell( 0, 1 );
@@ -213,6 +228,17 @@ OPTIONS.gaptol = prec(1);
 OPTIONS.printlevel = 3 * ~quiet;
 OPTIONS.vers = 2;
 [ obj, xx, y, z, info ] = sqlp( blk, Avec, Cvec, full(b), OPTIONS );
+
+%
+% Remove the extra row & column if needed
+%
+
+if mzero,
+    xx(end) = [];
+    y(end)  = [];
+    n = n - 1;
+    m = m - 1;
+end
 
 %
 % Interpret the output
