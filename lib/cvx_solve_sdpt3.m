@@ -8,12 +8,14 @@ function [ x, y, status ] = cvx_solve_sdpt3( At, b, c, sgn, nonls, quiet, prec )
 %
 
 mzero = isempty(At);
-if mzero,
+if mzero || isempty( nonls ),
     n  = n + 1;
     m  = m + 1;
     c  = [ c ; 0 ];
     At = sparse( n, 1, 1 );
     b  = 0;
+    nonls(end+1).type = 'nonnegative';
+    nonls(end).indices = n;
 end
 
 types = { nonls.type };
@@ -234,7 +236,6 @@ OPTIONS.vers = 2;
 %
 
 if mzero,
-    xx(end) = [];
     y(end)  = [];
     n = n - 1;
     m = m - 1;
@@ -263,11 +264,14 @@ switch info.termcode,
 end
 switch info.termcode,
     case { 0, 2 },
-        x = zeros(1,n);
+        x = zeros(1,n+mzero);
         for k = 1 : length(xx),
             x(1,tvec{k}) = x(1,tvec{k}) + vec(xx{k})' * xvec{k};
         end
         x = full( x )';
+        if mzero,
+            x(end) = [];
+        end
         if info.termcode == 2,
             y = NaN * ones( m, 1 );
         else
