@@ -232,16 +232,6 @@ OPTIONS.vers = 2;
 [ obj, xx, y, z, info ] = sqlp( blk, Avec, Cvec, full(b), OPTIONS );
 
 %
-% Remove the extra row & column if needed
-%
-
-if mzero,
-    y(end)  = [];
-    n = n - 1;
-    m = m - 1;
-end
-
-%
 % Interpret the output
 %
 
@@ -264,14 +254,11 @@ switch info.termcode,
 end
 switch info.termcode,
     case { 0, 2 },
-        x = zeros(1,n+mzero);
+        x = zeros(1,n);
         for k = 1 : length(xx),
             x(1,tvec{k}) = x(1,tvec{k}) + vec(xx{k})' * xvec{k};
         end
         x = full( x )';
-        if mzero,
-            x(end) = [];
-        end
         if info.termcode == 2,
             y = NaN * ones( m, 1 );
         else
@@ -283,6 +270,15 @@ switch info.termcode,
     otherwise,
         x = NaN * ones( n, 1 );
         y = NaN * ones( m, 1 );
+end
+
+%
+% Remove the extra row & column if needed
+%
+
+if mzero,
+    x(end) = [];
+    y(end) = [];
 end
 
 % Copyright 2007 Michael C. Grant and Stephen P. Boyd.
