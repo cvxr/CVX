@@ -116,9 +116,9 @@ for k = 1 : nk,
         case 2,
             if nx == 1,
                 cvx_begin
-                    variable z( sz )
+                    hypograph variable z( sz )
                     z <= xt;
-                    z <= 0;
+                    z >= 0;
                 cvx_end
                 yt = cvx_optval;
             else
