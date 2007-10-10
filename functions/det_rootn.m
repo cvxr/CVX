@@ -30,9 +30,8 @@ elseif nnz( X - X' ) ~= 0,
 
 else
 
-    n = size( X, 1 );
     [ R, p ] = chol( X );
-    if p < n,
+    if p > 0,
         eigs = eig( X );
         if any( eigs < 0 ),
             cvx_optval = -Inf;

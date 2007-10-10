@@ -53,7 +53,7 @@ end
 
 if nx == 1 | ( ~isempty( w ) & sumw == 0 ),
     sx( dim ) = 1;
-    y = ones( sx );
+    y = x;
 else
     if isempty( w ),
         y = exp( sum( log( max( x, realmin ) ), dim ) * ( 1 / nx ) );
