@@ -32,7 +32,7 @@ else
 
     [ R, p ] = chol( X );
     if p > 0,
-        eigs = eig( X );
+        eigs = eig( full( X ) );
         if any( eigs < 0 ),
             cvx_optval = -Inf;
         else
