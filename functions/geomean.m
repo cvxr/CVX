@@ -45,7 +45,7 @@ elseif numel( w ) ~= length( w ) | ~isnumeric( w ) | ~isreal( w ) | any( w < 0 )
     error( 'Third argument must be a vector of nonnegative integers.' );
 elseif length( w ) ~= nx,
     error( sprintf( 'Third argument must be a vector of length %d.', nx ) );
-elseif
+else
     w = reshape( w, 1, nx );
 end
 
