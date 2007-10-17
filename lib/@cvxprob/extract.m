@@ -14,10 +14,10 @@ if isempty(p.objective),
     dir = 1;
     dbcA = cvx( [ 1, 1 ], [] );
 elseif strcmp( p.direction, 'minimize' ) | strcmp( p.direction, 'epigraph' ),
-    dbcA = sum(vec( dbcA ));
+    dbcA = sum( vec( dbcA ) );
     dir = 1;
 else
-    dbcA = -sum(vec( dbcA ));
+    dbcA = - sum( vec( dbcA ) );
     dir = -1;
 end
 

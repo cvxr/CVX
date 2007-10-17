@@ -1,4 +1,4 @@
-function [ x, y, status ] = cvx_solve_sedumi( At, b, c, sgn, nonls, quiet, prec )
+function [ x, y, status ] = cvx_solve_sedumi( At, b, c, nonls, quiet, prec )
 
 n_in = 0;
 n_out = 0;
@@ -81,17 +81,7 @@ if add_row,
     b = 1;
 end
 
-global cvx___
-if cvx___.profile,
-    profile off
-end
-opath = path;
-path( [ cvx___.path.solvers.sedumi, opath ] );
 [ xx, yy, info ] = sedumi( At, b, c, K, pars );
-path( opath );
-if cvx___.profile,
-    profile resume
-end
 xx = full( xx );
 yy = full( yy );
 if info.numerr == 2,

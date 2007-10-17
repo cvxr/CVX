@@ -119,6 +119,9 @@ if ~cvx___.path.formed,
                 'The cvx distribution is corrupt; please reinstall.' ], temp ) );
         end
     end
+    if exist( 'mosekopt', 'file' ) == 3,
+        spaths.mosek = '';
+    end
     cvx___.path.solvers = spaths;
     cvx___.path.string = npath;
 end

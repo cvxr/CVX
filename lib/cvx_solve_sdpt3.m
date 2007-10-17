@@ -1,4 +1,4 @@
-function [ x, y, status ] = cvx_solve_sdpt3( At, b, c, sgn, nonls, quiet, prec )
+function [ x, y, status ] = cvx_solve_sdpt3( At, b, c, nonls, quiet, prec )
 
 [n,m] = size(At);
 
@@ -7,13 +7,24 @@ function [ x, y, status ] = cvx_solve_sdpt3( At, b, c, sgn, nonls, quiet, prec )
 % equality constraints
 %
 
-mzero = isempty(At);
-if mzero || isempty( nonls ),
-    n  = n + 1;
-    m  = m + 1;
-    c  = [ c ; 0 ];
-    At = sparse( n, 1, 1 );
-    b  = 0;
+mzero = m == 0 | isempty( nonls );
+if mzero,    
+    n = n + 1;
+    c = [ c ; 0 ];
+    if m == 0,
+        azero = true;
+        At = sparse( n, 1, 1 );
+        b  = 1;
+        m  = 1;
+    elseif m + 1 < n,
+        azero = true;
+        At(end+1,end+1) = 1;
+        b(end+1) = 1;
+        m = m + 1;
+    else
+        At(end+1,end) = 0;
+        azero = false;
+    end
     nonls(end+1).type = 'nonnegative';
     nonls(end).indices = n;
 end
@@ -241,7 +252,12 @@ switch info.termcode,
     case 2,
         status = 'Unbounded';
     otherwise,
-        err = max([info.relgap,info.pinfeas,info.dinfeas]);
+        err = [info.relgap,info.pinfeas,info.dinfeas];
+        if any(isnan(err)),
+            err = Inf;
+        else
+            err = max(err);
+        end
         if err > prec(3),
             status = 'Failed';
         elseif err <= prec(2),
@@ -278,7 +294,9 @@ end
 
 if mzero,
     x(end) = [];
-    y(end) = [];
+    if azero,
+        y(end) = [];
+    end
 end
 
 % Copyright 2007 Michael C. Grant and Stephen P. Boyd.

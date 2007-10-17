@@ -8,6 +8,8 @@ if nobj > 1 & ~pr.separable,
     error( 'Non-separable multiobjective problems are not supported.' );
 end
 quiet = cvx___.problems(p).quiet;
+obj = cvx___.problems(p).objective;
+gobj = cvx___.problems(p).geometric;
 [ At, cones, sgn, Q, P, esrc, edst, dualized ] = eliminate( prob, true );
 if ~isempty( esrc ),
     error( 'Non-GP exp() and log() constraints are not supported.' );
@@ -45,7 +47,7 @@ if m > n & n > 0,
     
     x      = NaN * ones( n, 1 );
     y      = NaN * ones( m, 1 );
-    value  = NaN * ones( objsize );
+    oval   = NaN;
     status = 'Overdetermined';
     estr = sprintf( 'Overdetermined equality constraints detected.\n   CVX cannot solve this problem; but it is likely infeasible.' );
     if ~quiet,
@@ -78,34 +80,29 @@ elseif n ~= 0 & ~infeas & ( any( b ) | any( c ) ),
         disp( spacer );
     end
     opath = path;
-%    try
-        path( [ getfield( cvx___.path.solvers, lsolv ), opath ] );
-        if cvx___.profile,
-            profile off
-        end
-        [ x, y, status ] = feval( sfunc, At, b, c, sgn, cones, quiet, prec );
-        if cvx___.profile,
-            profile resume
-        end
- %   catch
- %       path( opath );
- %       rethrow( lasterror );
- %   end
+    path( [ getfield( cvx___.path.solvers, lsolv ), opath ] );
+    if cvx___.profile,
+        profile off
+    end
+    [ x, y, status ] = feval( sfunc, At, b, c, cones, quiet, prec );
+    if cvx___.profile,
+        profile resume
+    end
     switch status,
     case { 'Solved', 'Inaccurate/Solved' },
-        value = sgn * ( c' * x + d' );
+        oval = sgn * ( c' * x + d' );
         pval = 1;
         dval = 1;
     case { 'Infeasible', 'Inaccurate/Infeasible' },
-        value = sgn * Inf;
+        oval = sgn * Inf;
         pval = NaN;
         dval = 0;
     case { 'Unbounded', 'Inaccurate/Unbounded' },
-        value = -sgn * Inf;
+        oval = -sgn * Inf;
         pval = 0;
         dval = NaN;
     otherwise,
-        value = NaN;
+        oval = NaN;
         pval = NaN;
         dval = NaN;
     end
@@ -157,25 +154,16 @@ if dualized,
     end
 end
 
-gvec = cvx___.problems( p ).geometric;
-if nnz( gvec ),
-    value( gvec ) = exp( value( gvec ) );
-end
-value = full( value );
 if ~quiet,
     disp( sprintf( 'Status: %s', status ) );
-    if length( value ) == 1,
-        disp( sprintf( 'Optimal value (cvx_optval): %+g', value ) );
-    else
-        disp( sprintf( 'Optimal value (cvx_optval): (multiobjective)' ) );
-    end
 end
+
+cvx___.problems( p ).status = status;
 
 %
 % Push the results into the master CVX workspace
 %
 
-global cvx___
 x = full( Q * [ pval ; x ] );
 y = full( P * [ dval ; y ] );
 if dualized,
@@ -185,12 +173,31 @@ else
     cvx___.x = x;
     cvx___.y = y(2:end);
 end
-cvx___.problems( p ).result = value;
-cvx___.problems( p ).status = status;
 if nnz( cvx___.exponential ),
     esrc = find( cvx___.exponential );
     edst = cvx___.exponential( esrc );
     cvx___.x( edst ) = exp( cvx___.x( esrc ) );
+end
+
+%
+% Compute the objective
+%
+
+if ~isempty( obj ),
+    if isinf( oval ) || isnan( oval ),
+        oval = oval * ones(size(obj));
+    else
+        oval = cvx_value( obj );
+    end
+    oval(gobj) = exp(oval(gobj));
+end
+cvx___.problems( p ).result = oval;
+if ~quiet,
+    if length( oval ) == 1,
+        disp( sprintf( 'Optimal value (cvx_optval): %+g', oval ) );
+    else
+        disp( sprintf( 'Optimal value (cvx_optval): (multiobjective)' ) );
+    end
 end
 
 % Copyright 2007 Michael C. Grant and Stephen P. Boyd.
