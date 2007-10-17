@@ -108,20 +108,26 @@ else
         
     end
     
-    if ~valid,
+    if valid,
+        Dmax = max(diag(R));
+        R = R / Dmax;
+        alpha = alpha * Dmax * Dmax;
+    else
         [ V, D ] = eig( full( Q ) );
         D = diag( D );
-        Derr = tol * max( D );
+        Dmax = max( D );
+        Derr = tol * Dmax;
         if min( D ) < - Derr,
             if nargout > 1,
                 success = false;
                 cvx_optval = [];
-            else,
+            else
                 error( 'The second argument must be positive or negative semidefinite.' );
             end
         end
         tt = find( D > Derr );
-        R = diag( sqrt( D( tt ) ) ) * V( :, tt )';
+        alpha = alpha * Dmax;
+        R = diag( sqrt( D( tt ) / Dmax ) ) * V( :, tt )';
     end
     
     cvx_optval = alpha * sum_square_abs( R * x );
