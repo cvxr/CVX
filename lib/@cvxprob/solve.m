@@ -184,7 +184,7 @@ end
 %
 
 if ~isempty( obj ),
-    if isinf( oval ) || isnan( oval ),
+    if isinf( oval ) | isnan( oval ),
         oval = oval * ones(size(obj));
     else
         oval = cvx_value( obj );
