@@ -21,7 +21,7 @@ ZIP=$DST/cvx.zip
 
 # Build number
 MYBUILD=`svn info $TRU | grep "^Last Changed Rev" | sed "s/[^0-9]*//"`
-MYTDATE=`date +"%B %Y"`
+MYDATE=`date +"%B %Y"`
 VERSED="s@___VERSION___@$MYVERSION@;s@___BUILD___@$MYBUILD@;s@___TDATE___@$MYTDATE@;"
 TEXSED="s@cvxver{...@cvxver{$MYVERSION@;s@cvxbuild{...@cvxbuild{$MYBUILD@"
 
