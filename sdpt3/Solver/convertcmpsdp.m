@@ -21,15 +21,16 @@
      error('blk and A not compatible'); 
   end
   numblk = size(blk,1); 
-  iscmp = zeros(numblk,m); 
+  iscmp = zeros(numblk,m+1); 
   for p = 1:size(blk,1)
      pblk = blk(p,:);
      len = size(A(p),2); 
      for k = 1:len
-     if ~isempty(A{p,k})
-            iscmp(p,k) = 1-isreal(A{p,k}); 
-         end
+        if ~isempty(A{p,k})
+           iscmp(p,k) = 1-isreal(A{p,k}); 
+        end
      end
+     iscmp(p,m+1) = 1-isreal(C{p});
   end
   iscmp = norm(iscmp,'fro');
 %%
@@ -49,16 +50,24 @@
      if strcmp(pblk{1},'s')
         ss = [0,cumsum(pblk{2})]; 
         ss2 = [0,cumsum(2*pblk{2})];
-        n = sum(pblk{2});
+        n = sum(pblk{2}); 
+        n2 = sum(pblk{2}.*(pblk{2}+1))/2; 
         AR = cell(1,m); Ctmp = sparse(2*n,2*n);  
+        if (size(A{p},1)==n2 & size(A{p},2)==m); 
+           Atype = 1; 
+        elseif (size(A(p),1)==1 & size(A(p),2)==m); 
+           Atype = 2; 
+        else
+           error('convertcmp: At is not properly coded');  
+        end
         for k = 0:m
            if (k == 0)
               Ak = C{p}; 
            else
-              if (Atype == 1) 
-                 Ak = A{p,k}; 
-              elseif (Atype == 2)
+              if (Atype == 1)
                  Ak = smat(pblk,A{p}(:,k),1); 
+              elseif (Atype == 2) 
+                 Ak = A{p,k}; 
               end
            end
            Atmp = sparse(2*n,2*n);
@@ -95,14 +104,14 @@
      elseif strcmp(pblk{1},'l');
         if isreal(A{p}) & isreal(C{p})
            bblk(p,:) = blk(p,:); 
-           AAt{p} = A{p}; CC{p} = C{p}; 
+           AAt{p,1} = A{p}; CC{p,1} = C{p}; 
         else
            error('data for linear block must be real'); 
         end
      elseif strcmp(pblk{1},'u');  
         if isreal(A{p}) & isreal(C{p})
            bblk(p,:) = blk(p,:); 
-           AAt{p} = A{p}; CC{p} = C{p}; 
+           AAt{p,1} = A{p}; CC{p,1} = C{p}; 
         else
            error('data for unrestricted block must be real'); 
         end

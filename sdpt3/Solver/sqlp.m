@@ -42,12 +42,15 @@
   function [obj,X,y,Z,info,runhist] = sqlp(blk,At,C,b,OPTIONS,X0,y0,Z0);
 
 %%
+    isemptyAtb = 0; 
     if isempty(At) & isempty(b);
+       %% Add redundant constraint: <-I,X> <= 0
        b = 0; 
        At = ops(ops(blk,'identity'),'*',-1);  
        numblk = size(blk,1); 
        blk{numblk+1,1} = 'l'; blk{numblk+1,2} = 1;  
        At{numblk+1,1} = 1; C{numblk+1,1} = 0; 
+       isemptyAtb = 1; 
     end
 %%                                      
 %%-----------------------------------------
@@ -298,5 +301,8 @@
             Z{p} = 0.5*(Z{p}+Z{p}');  
          end
       end
+   end
+   if (isemptyAtb)
+      X = X(1:end-1); Z = Z(1:end-1); 
    end
 %%*****************************************************************************

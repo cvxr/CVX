@@ -240,9 +240,14 @@
           L.perm = [1:length(raugmat)];     
           L.matfct_options = 'splu';  
           L.symmatrix = 1; 
-          [L.l,L.u,L.p,L.q] = lu(raugmat);
+          try,
+              [L.l,L.u,L.p,L.q] = lu(raugmat);
+              [ii,jj] = find(L.q); L.q = ii;
+          catch,
+              L.q = colamd(raugmat);
+              [L.l,L.u,L.p] = lu(raugmat(:,L.q));
+          end
           [ii,jj] = find(L.p); L.p = ii; 
-          [ii,jj] = find(L.q); L.q = ii;
        end
        if (solvesys)
           [xx,resnrm,solve_ok] = mybicgstab(coeff,rhs,L,[],[],printlevel);
