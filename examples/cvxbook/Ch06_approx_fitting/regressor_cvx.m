@@ -90,7 +90,6 @@ bestres = zeros(1,m);
 
 for k=1:m-1
   k
-
   % enumerate sparsity patterns with exactly k nonzeros
   bestres(k) = Inf;
   ind = 1:k
@@ -116,8 +115,6 @@ for k=1:m-1
   end;
   nocases
   factorial(n)/(factorial(n-k)*factorial(k))
-
-
 end;
 
 x = A\b;
