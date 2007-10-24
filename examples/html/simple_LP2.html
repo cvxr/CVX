@@ -10,8 +10,8 @@ This HTML is auto-generated from an M-file.
 To make changes, update the M-file and republish this document.
       -->
       <title>Builds and solves a simple inequality-constrained linear program</title>
-      <meta name="generator" content="MATLAB 7.4">
-      <meta name="date" content="2007-08-10">
+      <meta name="generator" content="MATLAB 7.5">
+      <meta name="date" content="2007-10-24">
       <meta name="m-file" content="simple_LP2"><style>
 
 body {
@@ -101,33 +101,34 @@ Note: for improved efficiency, SDPT3 is solving the dual problem.
     NT      1      0.000   1        0    
 it pstep dstep pinfeas dinfeas  gap      mean(obj)   cputime
 -------------------------------------------------------------------
- 0|0.000|0.000|1.7e+01|5.6e+00|5.6e+02|-5.740113e+00| 0:0:00| chol  1  1 
- 1|0.812|0.661|3.2e+00|1.9e+00|1.7e+02|-4.326341e+00| 0:0:00| chol  1  1 
- 2|0.783|0.691|7.0e-01|6.1e-01|5.0e+01|-7.886835e+00| 0:0:00| chol  1  1 
- 3|1.000|0.370|5.9e-06|3.8e-01|4.4e+01|-5.963806e+01| 0:0:00| chol  1  1 
- 4|0.710|0.080|7.3e-04|3.5e-01|3.6e+02|-8.043642e+02| 0:0:00| chol  1  1 
- 5|1.000|0.110|1.5e-06|3.1e-01|3.9e+03|-3.357007e+04| 0:0:00| chol  1  1 
- 6|1.000|0.041|9.0e-05|3.0e-01|2.9e+05|-1.192366e+07| 0:0:00| chol  2  2 
- 7|1.000|0.003|2.1e-04|3.0e-01|1.5e+09|-8.958027e+10| 0:0:00| chol  2  2 
-  sqlp stop: primal infeas has deteriorated too much, 1.4e+01
- 8|1.000|0.002|2.1e-04|3.0e-01|1.5e+09|-8.958027e+10| 0:0:00|
-  prim_inf,dual_inf,relgap = 2.05e-04, 2.99e-01, 8.19e-03
-  sqlp stop: dual problem is suspected of being infeasible
+ 0|0.000|0.000|1.2e+001|5.4e+000|5.3e+002|-6.174175e+000| 0:0:00| chol  1  1 
+ 1|0.689|0.729|3.9e+000|1.5e+000|1.8e+002|-6.392253e+000| 0:0:00| chol  1  1 
+ 2|0.619|0.777|1.5e+000|3.5e-001|7.8e+001|-4.927360e+000| 0:0:00| chol  1  1 
+ 3|0.649|1.000|5.2e-001|8.8e-004|2.9e+001|-7.393513e-001| 0:0:00| chol  1  1 
+ 4|0.176|0.303|4.3e-001|6.4e-004|3.4e+001| 2.188595e+001| 0:0:00| chol  1  1 
+ 5|0.211|1.000|3.4e-001|8.8e-006|9.4e+001| 3.148534e+002| 0:0:00| chol  1  1 
+ 6|0.035|0.512|3.3e-001|4.7e-006|2.3e+003| 1.340542e+004| 0:0:00| chol  2  2 
+ 7|0.071|1.000|3.0e-001|8.8e-008|4.3e+004| 2.110939e+006| 0:0:00| chol  2  2 
+ 8|0.009|1.000|3.0e-001|7.5e-006|1.6e+008| 2.162485e+010| 0:0:00| chol  2  2 
+ 9|0.072|1.000|3.5e-001|5.6e-001|1.3e+015| 1.450435e+015| 0:0:00| chol  2  2 
+10|0.196|1.000|2.8e-001|5.0e+000|5.2e+015| 1.434913e+016| 0:0:00|
+  prim_inf,dual_inf,relgap = 2.80e-001, 5.03e+000, 1.83e-001
+  sqlp stop: primal problem is suspected of being infeasible
 -------------------------------------------------------------------
- number of iterations   =  8
- residual of dual infeasibility        
- certificate X          = 1.72e-11
- reldist to infeas.    &lt;= 1.06e-12
+ number of iterations   = 10
+ residual of primal infeasibility      
+ certificate (y,Z)      = 8.86e-015
+ reldist to infeas.    &lt;= 5.39e-016
  Total CPU time (secs)  = 0.1  
  CPU time per iteration = 0.0  
- termination code       =  2
- DIMACS: 2.5e-04  0.0e+00  5.4e-01  0.0e+00  -1.0e+00  8.2e-03
+ termination code       =  1
+ DIMACS: 4.8e-001  0.0e+000  9.5e-001  0.0e+000  -1.0e+000  1.8e-001
 -------------------------------------------------------------------
 ------------------------------------------------------------
-Status: Infeasible
-Optimal value (cvx_optval): +Inf
+Status: Unbounded
+Optimal value (cvx_optval): -Inf
 </pre><p class="footer"><br>
-            Published with MATLAB&reg; 7.4<br></p>
+            Published with MATLAB&reg; 7.5<br></p>
       </div>
       <!--
 ##### SOURCE BEGIN #####
