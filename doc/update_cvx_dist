@@ -21,7 +21,7 @@ ZIP=$DST/cvx.zip
 
 # Build number
 MYBUILD=`svn info $TRU | grep "^Last Changed Rev" | sed "s/[^0-9]*//"`
-MYDATE=`date +"%B %Y"`
+MYTDATE=`date +"%B %Y"`
 VERSED="s@___VERSION___@$MYVERSION@;s@___BUILD___@$MYBUILD@;s@___TDATE___@$MYTDATE@;"
 TEXSED="s@cvxver{...@cvxver{$MYVERSION@;s@cvxbuild{...@cvxbuild{$MYBUILD@"
 
@@ -66,7 +66,7 @@ zip -r -9 $ZIP cvx >/dev/null
 echo done.
 
 echo -n Updating the web pages...
-MYDATE=`date`
+MYDATE=`date`;
 MYZIP=`du -h $ZIP | sed 's@\([0-9.]*.\).*@\1B@'`
 MYTAR=`du -h $TAR | sed 's@\([0-9.]*.\).*@\1B@'`
 MYPDF=`du -h $DST/cvx_usrguide.pdf | sed 's@\([0-9.]*.\).*@\1B@'`
