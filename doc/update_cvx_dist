@@ -25,17 +25,17 @@ MYTDATE=`date +"%B %Y"`
 VERSED="s@___VERSION___@$MYVERSION@;s@___BUILD___@$MYBUILD@;s@___TDATE___@$MYTDATE@;"
 TEXSED="s@cvxver{...@cvxver{$MYVERSION@;s@cvxbuild{...@cvxbuild{$MYBUILD@"
 
-echo -n Preparing work and staging directories...
+/bin/echo -n Preparing work and staging directories...
 rm -rf $DST $CPY
 mkdir -p $DST $CPY
-echo done.
+/bin/echo done.
 
-echo -n Retrieving latest sources...
+/bin/echo -n Retrieving latest sources...
 svn export $TRU $CVX          >/dev/null
 svn export $EXA $CVX/examples >/dev/null
 svn export $EXA $DST/examples >/dev/null
 svn export $DOC $TEX          >/dev/null
-echo done.
+/bin/echo done.
 # Insert version information into the version file and docs
 cd $CVX
 sed "$VERSED" cvx_version.m > cvx_version.m.new
@@ -44,7 +44,7 @@ cd $TEX
 sed "$TEXSED" cvx_usrguide.tex > cvx_usrguide.tex.new
 mv -f cvx_usrguide.tex.new cvx_usrguide.tex
 
-echo -n Compiling the documentation...
+/bin/echo -n Compiling the documentation...
 latex        cvx_usrguide >/dev/null </dev/null
 latex        cvx_usrguide >/dev/null </dev/null
 bibtex       cvx_usrguide >/dev/null
@@ -55,17 +55,17 @@ dvips -q     cvx_usrguide >/dev/null
 ps2pdf       cvx_usrguide.ps
 cp cvx_usrguide.pdf $CVX
 cp cvx_usrguide.pdf $DST
-echo done.
+/bin/echo done.
 
-echo -n Creating the archives...
+/bin/echo -n Creating the archives...
 cd $CPY
 chmod -fR a+r,gu+w cvx
 find cvx -type d -exec chmod g+s {} \;
 tar cfz $TAR cvx >/dev/null
 zip -r -9 $ZIP cvx >/dev/null
-echo done.
+/bin/echo done.
 
-echo -n Updating the web pages...
+/bin/echo -n Updating the web pages...
 MYDATE=`date`;
 MYZIP=`du -h $ZIP | sed 's@\([0-9.]*.\).*@\1B@'`
 MYTAR=`du -h $TAR | sed 's@\([0-9.]*.\).*@\1B@'`
@@ -74,11 +74,11 @@ SEDSTR="$VERSED;s@___DATE___@$MYDATE@;s@___ZIP___@$MYZIP@;s@___TAR___@$MYTAR@;s@
 sed "$SEDSTR" $TEX/index.html > $DST/index.html
 sed "$SEDSTR" $TEX/history.html > $DST/history.html
 cp -f $TEX/*.{gif,png} $DST
-echo done.
+/bin/echo done.
 
-echo -n Cleaning up...
+/bin/echo -n Cleaning up...
 chmod -fR a+r,ug+w $DST
 rm -rf $CPY
-echo done.
-echo Staging directory $DST completed.
+/bin/echo done.
+/bin/echo Staging directory $DST completed.
 
