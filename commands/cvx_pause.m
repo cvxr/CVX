@@ -1,4 +1,4 @@
-function s = cvx_pause( flag )
+function sout = cvx_pause( flag )
 
 %CVX_PAUSE   Pauses the processing of CVX models.
 %   CVX_PAUSE(TRUE) instructs CVX to pause and wait for user keypress before
@@ -7,14 +7,28 @@ function s = cvx_pause( flag )
 %
 %   CVX_PAUSE(FALSE) ends the pausing behavior.
 
-global cvx___
-if isempty( cvx___ ), cvx_setpath( 1 ); end
+cvx_global
 s = cvx___.pause;
 if nargin == 1,
-    if length( flag ) ~= 1,
-        error( 'Argument must be a numeric or logical scalar.' );
+    nflag = [];
+    if isnumeric(flag) | islogical(flag),
+        ns = double(flag) ~= 0;
+    elseif ischar(flag) & size(flag,1) == 1,
+        switch lower(flag),
+            case 'true',
+                ns = true;
+            case 'false',
+                ns = false;
+            otherwise,
+                error( 'String arugment must be ''true'' or ''false''.' );
+        end
+    else
+        error( 'Argument must be a numeric scalar or a string.' );
     end
-    cvx___.pause = double( flag ) ~= 0;
+    cvx___.pause = ns;
+end
+if nargin == 0 | nargout > 0,
+    sout = s;
 end
 
 % Copyright 2007 Michael C. Grant and Stephen P. Boyd.

@@ -36,20 +36,20 @@ if nargin > 0,
         error( 'Argument must be a scalar between 0 and 1.' );
     end
 end
-global cvx___
-if isempty( cvx___ ), 
-    cvx_setpath( 1 ); 
-end
-cvx_problem = evalin( 'caller', 'cvx_problem', '[]' );
-if isa( cvx_problem, 'cvxprob' ),
-    s = cvx_problem.gptol;
-    if nargin > 0,
-        cvx___.problems(index(cvx_problem)).gptol = flag;
-    end
-else
+cvx_global
+if isempty( cvx___.problems ),
     s = cvx___.gptol;
     if nargin > 0,
-        cvx___.gptol = flag;
+        cvx___.gptol = ns;
+    end
+else
+    s = cvx___.problems(end).gptol;
+    if nargin > 0,
+        if ~isequal( s, ns ) & isa( evalin( 'caller', 'cvx_problem', '[]' ), 'cvxprob' ),
+            warning( 'The global CVX GP precision setting cannot be changed while a model is being constructed.' );
+        else
+            cvx___.problems(end).gptol = ns;
+        end
     end
 end
 if nargin == 0 | nargout > 0,

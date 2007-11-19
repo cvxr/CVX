@@ -79,14 +79,12 @@ elseif n ~= 0 & ~infeas & ( any( b ) | any( c ) ),
         end
         disp( spacer );
     end
-    opath = path;
-    path( [ getfield( cvx___.path.solvers, lsolv ), opath ] );
-    if cvx___.profile,
-        profile off
-    end
+    cvx_setspath( solv );
+    if cvx___.profile, profile off; end
     [ x, y, status ] = feval( sfunc, At, b, c, cones, quiet, prec );
-    if cvx___.profile,
-        profile resume
+    if cvx___.profile, profile on; end
+    if ~cvx___.path.hold, 
+        cvx_setspath(''); 
     end
     switch status,
     case { 'Solved', 'Inaccurate/Solved' },

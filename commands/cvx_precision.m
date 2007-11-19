@@ -105,20 +105,20 @@ if nargin > 0,
         ns = reshape( sort(flag), 1, 3 );
     end
 end
-global cvx___
-if isempty( cvx___ ), 
-    cvx_setpath( 1 ); 
-end
-cvx_problem = evalin( 'caller', 'cvx_problem', '[]' );
-if isa( cvx_problem, 'cvxprob' ),
-    s = cvx_problem.precision;
-    if nargin > 0,
-        cvx___.problems(index(cvx_problem)).precision = ns;
-    end
-else
+cvx_global
+if isempty( cvx___.problems ),
     s = cvx___.precision;
     if nargin > 0,
         cvx___.precision = ns;
+    end
+else
+    s = cvx___.problems(end).precision;
+    if nargin > 0,
+        if ~isequal( s, ns ) & isa( evalin( 'caller', 'cvx_problem', '[]' ), 'cvxprob' ),
+            warning( 'The global CVX precision setting cannot be changed while a model is being constructed.' );
+        else
+            cvx___.problems(end).precision = ns;
+        end
     end
 end
 if nargin == 0 | nargout > 0,

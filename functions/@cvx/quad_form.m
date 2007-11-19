@@ -68,69 +68,113 @@ else
     % Constant matrix Q, affine x
     %
 
-    Q = cvx_constant( Q );
-    Q = 0.5 * ( Q + Q' );
-    tt = any( Q ~= 0, 2 );
-    if ~all( tt ),
-        nnzs = find( tt );
-        Q = Q( nnzs, nnzs );
-        x = cvx_subsref( x, nnzs, ':' );
-    end
-    
-    if all( diag( Q ) <= 0 ),
-        alpha = -1;
-        Q = -Q;
-    else
-        alpha = +1;
-    end
-    
-    if cvx_use_sparse( Q ),
+    cvx_optval = [];
+    while true,
+        Q = cvx_constant( Q );
         
-        Q = sparse( Q );
-        prm = symamd( Q );
-        if any( diff( prm ) ~= 1 ),
-            x = x( prm, : );
-            Q = Q( prm, prm );
+        %
+        % Quick exit for a zero Q
+        %
+
+        nnzQ = nnz( Q );
+        if nnzQ == 0,
+            cvx_optval = 0;
+            break
         end
-        R  = cholinc( Q, 'inf' );
-        tt = any( isinf( R ), 2 );
-        if any( tt ),
-            R( tt, : ) = [];
-            valid = normest( Q - R' * R ) < tol * normest( Q );
+        
+        %
+        % Remove zero rows and columns from Q. If a diagonal element of Q is
+        % zero but there are elements on that row or column that are not,
+        % then we know that neither Q nor -Q is PSD.
+        %
+        
+        dQ = diag( Q );
+        if ~all( dQ ),
+            tt = dQ ~= 0;
+            Q = Q( tt, tt );
+            if nnz( Q ) ~= nnzQ,
+                break
+            end
+            dQ = dQ( tt );
+            x = cvx_subsref( x, tt, ':' );
+        end
+        
+        %
+        % Determine the sign of the elements of Q. If they are not all of
+        % the same sign, then neither Q nor -Q is PSD.
+        %
+
+        dQ = dQ > 0;
+        if all( dQ ),
+            alpha = +1;
+        elseif any( dQ ),
+            break
         else
-            valid = true;
+            alpha = -1;
+            Q = -Q;
         end
         
-    else
-        
-        [ R, p ] = chol( full( Q ) );
-        valid = p == 0;
-        
-    end
-    
-    if valid,
-        Dmax = max(diag(R));
-        R = R / Dmax;
-        alpha = alpha * Dmax * Dmax;
-    else
-        [ V, D ] = eig( full( Q ) );
-        D = diag( D );
-        Dmax = max( D );
-        Derr = tol * Dmax;
-        if min( D ) < - Derr,
-            if nargout > 1,
-                success = false;
-                cvx_optval = [];
-            else
-                error( 'The second argument must be positive or negative semidefinite.' );
+        %
+        % Now perform a Cholesky factorization. If it succeeds then we
+        % know that alpha * Q is PSD.
+        %
+
+        Q = 0.5 * ( Q + Q' );
+        if cvx_use_sparse( Q ),
+            Q = sparse( Q );
+            prm = symamd( Q );
+            Q = Q( prm, prm );
+            R = cholinc( Q, 'inf' );
+            R( :, prm ) = R;
+            tt = any( isinf( R ), 2 );
+            valid = ~any( tt );
+            if ~valid,
+                R( tt, : ) = [];
+            end
+        else
+            [ R, p ] = chol( full( Q ) );
+            valid = p == 0;
+            if ~valid,
+                R = [ R, R' \ Q(1:p-1,p:end) ];
             end
         end
-        tt = find( D > Derr );
-        alpha = alpha * Dmax;
-        R = diag( sqrt( D( tt ) / Dmax ) ) * V( :, tt )';
+        if ~valid,
+            valid = normest( Q - R' * R ) < tol * normest( Q );
+        end
+        
+        %
+        % If more accuracy is needed, perform a Schur decomposition.
+        %
+        
+        if valid,
+            Dmax = max(R(:));
+            R = R / Dmax;
+            alpha = alpha * Dmax * Dmax;
+        else
+            [ V, D ] = eig( full( Q ) );
+            D = diag( D );
+            Dmax = max( D );
+            Derr = tol * Dmax;
+            if min( D ) < - Derr,
+                break
+            end
+            tt = find( D > Derr );
+            alpha = alpha * Dmax;
+            R = diag( sqrt( D( tt ) / Dmax ) ) * V( :, tt )';
+        end
+
+        cvx_optval = alpha * sum_square_abs( R * x );
+        success = true;
+        
     end
     
-    cvx_optval = alpha * sum_square_abs( R * x );
+    if isempty( cvx_optval ),
+        if nargout > 1,
+            success = false;
+        else
+            error( 'The second argument must be positive or negative semidefinite.' );
+        end
+    end
 
 end
 

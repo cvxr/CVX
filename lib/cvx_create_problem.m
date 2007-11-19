@@ -1,7 +1,7 @@
 function p = cvx_create_problem( varargin )
 error( nargchk( 0, 2, nargin ) );
 
-global cvx___
+cvx_global
 cvx_problem = evalin( 'caller', 'cvx_problem', '[]' );
 if isa( cvx_problem, 'cvxprob' ) & cvx___.problems( index( cvx_problem ) ).depth == length( dbstack ) - 2,
     error( sprintf( 'A cvx problem already exists in this scope.\n(To clear it and start a new one, use the command ''cvx_clear''.)' ) );

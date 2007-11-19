@@ -20,10 +20,7 @@ function sout = cvx_solver( flag )
 %
 %   CVX_SOLVER, with no arguments, returns the current solver.
 
-global cvx___
-if isempty( cvx___ ), 
-    cvx_setpath( 1 ); 
-end
+cvx_global
 if nargin > 0,
     if isempty( flag ),
         flag = 'SDPT3';
@@ -33,17 +30,23 @@ if nargin > 0,
         error( sprintf( 'Unknown, unusable, or missing solver: %s', flag ) );
     end
 end
-cvx_problem = evalin( 'caller', 'cvx_problem', '[]' );
-if isa( cvx_problem, 'cvxprob' ),
-    s = cvx_problem.solver;
-    if nargin > 0,
-        cvx___.problems(index(cvx_problem)).solver = flag;
-    end
-else
+if isempty( cvx___.problems ),
     s = cvx___.solver;
     if nargin > 0,
         cvx___.solver = flag;
     end
+else
+    s = cvx___.problems(end).solver;
+    if nargin > 0,
+        if ~strcmpi( s, flag ) & isa( evalin( 'caller', 'cvx_problem', '[]' ), 'cvxprob' ),
+            warning( 'The global CVX solver selection cannot be changed while a model is being constructed.' );
+        else
+            cvx___.problems(end).solver = flag;
+        end
+    end
+end
+if cvx___.path.hold,
+    cvx_setspath(flag);
 end
 if nargin == 0 | nargout > 0,
     sout = s;

@@ -5,10 +5,9 @@ if nargin < 2, clearmode = 'clear'; end
 % Determine the index of the problem to be cleaned up
 %
 
-global cvx___
-if isempty( cvx___.problems ),
-    p = 1;
-else
+p = 0;
+cvx_global
+if ~isempty( cvx___.problems ),
     if nargin < 1 | isempty( depth ),
         depth = evalin( 'caller', 'cvx_problem', '[]' );
         if isempty( depth ),
@@ -19,10 +18,8 @@ else
     if isa( depth, 'cvxprob' ),
         p = index( depth );
         if p < 1 | p > length( cvx___.problems ) | cvx___.problems( p ).self ~= depth,
-            p = 1;
+            p = 0;
         end
-    else
-        p = 1;
     end
 end
 
@@ -30,19 +27,20 @@ end
 % Determine the indices of the variables, constraints, etc.
 %
 
-if p == 1,
+if p < 1,
+    p   =  1;
     pid = -1;
-    nf = 0;
-    ne = 1;
-    nl = 1;
-    nu = 1;
+    nf  =  0;
+    ne  =  1;
+    nl  =  1;
+    nu  =  1;
 else
     prob = cvx___.problems( p );
-    pid = cvx_id( prob.self );
-    nf = length( prob.t_variable ) + 1;
-    ne = prob.n_equality + 1;
-    nl = prob.n_linform + 1;
-    nu = prob.n_uniform + 1;
+    pid  = cvx_id( prob.self );
+    nf   = length( prob.t_variable ) + 1;
+    ne   = prob.n_equality + 1;
+    nl   = prob.n_linform + 1;
+    nu   = prob.n_uniform + 1;
 end
 
 %
@@ -158,4 +156,8 @@ if ~isequal( clearmode, 'extract' ),
     cvx___.problems( p : end ) = [];
     cvx___.x = [];
     cvx___.y = [];
+    if p == 1,
+        cvx_clearpath( 1 );
+    end
+    
 end

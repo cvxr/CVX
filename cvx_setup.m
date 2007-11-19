@@ -71,8 +71,7 @@ for k = 1 : length(checkpaths),
 end
 msolv = 0;
 for k = 1 : length(solvers),
-    temp = [ mpath, fs, solvers{k} ];
-    if ~exist( temp, 'dir' ),
+    if ~exist( [ mpath, fs, solvers{k} ], 'dir' ),
         missing{end+1} = solvers{k};
         msolv = msolv + 1;
     end

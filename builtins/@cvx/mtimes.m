@@ -81,7 +81,7 @@ elseif cvx_isconstant( y ),
         vpos = false;
     end
     
-else,
+else
 
     persistent remap
     if isempty( remap ),
@@ -211,6 +211,9 @@ if quad,
     tt = ax( : ) & ay( : );
     xA = xA( :, tt ); xB = xA( 1, : ); xA( 1, : ) = 0;
     yA = yA( :, tt ); yB = yA( 1, : ); yA( 1, : ) = 0;
+    xM = size( xA, 1 ); yM = size( yA, 1 );
+    if xM < yM, xA( yM, end ) = 0;
+    elseif yM < xM, yA( xM, end ) = 0; end
     %
     % Quadratic form test 1: See if x == a conj( y ) + b for some real a, b,
     % so that the quadratic form involves a simple squaring (or sum of squares)

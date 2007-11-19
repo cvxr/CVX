@@ -47,9 +47,9 @@ if isa( cvx_problem, 'cvxprob' ),
     end
     cvx_pop( cvx_problem );
 end
+cvx_global
 cvx_setpath( 1 );
-global cvx___
-if isempty( cvx___.problems ) & cvx___.profile,
+if cvx___.profile & isempty( cvx___.problems ),
     profile resume
 end
 cvx_create_problem( varargin{:} );

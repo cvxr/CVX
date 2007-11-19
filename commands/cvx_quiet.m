@@ -46,26 +46,25 @@ if nargin == 1,
         error( 'Argument must be a numeric scalar or a string.' );
     end
 end
-global cvx___
-if isempty( cvx___ ), 
-    cvx_setpath( 1 ); 
-end
-cvx_problem = evalin( 'caller', 'cvx_problem', '[]' );
-if isa( cvx_problem, 'cvxprob' ),
-    s = cvx_problem.quiet;
-    if nargin > 0,
-        cvx___.problems(index(cvx_problem)).quiet = ns;
-    end
-else
+cvx_global
+if isempty( cvx___.problems ),
     s = cvx___.quiet;
     if nargin > 0,
         cvx___.quiet = ns;
+    end
+else
+    s = cvx___.problems(end).quiet;
+    if nargin > 0,
+        if s ~= ns & isa( evalin( 'caller', 'cvx_problem', '[]' ), 'cvxprob' ),
+            warning( 'The global CVX quiet setting cannot be changed while a model is being constructed.' );
+        else
+            cvx___.problems(end).quiet = ns;
+        end
     end
 end
 if nargin == 0 | nargout > 0,
     sout = s;
 end
-
 
 % Copyright 2007 Michael C. Grant and Stephen P. Boyd.
 % See the file COPYING.txt for full copyright information.

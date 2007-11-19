@@ -19,20 +19,20 @@ if nargin > 0,
         ns = flag;
     end
 end
-global cvx___
-if isempty( cvx___ ), 
-    cvx_setpath( 1 ); 
-end
-cvx_problem = evalin( 'caller', 'cvx_problem', '[]' );
-if isa( cvx_problem, 'cvxprob' ),
-    s = cvx_problem.rat_growth;
-    if nargin > 0,
-        cvx___.problems(index(cvx_problem)).rat_growth = ns;
-    end
-else
+cvx_global
+if isempty( cvx___.problems ),
     s = cvx___.rat_growth;
     if nargin > 0,
         cvx___.rat_growth = ns;
+    end
+else
+    s = cvx___.problems(end).rat_growth;
+    if nargin > 0,
+        if ~isequal( s, ns ) & isa( evalin( 'caller', 'cvx_problem', '[]' ), 'cvxprob' ),
+            warning( 'The global CVX x.^p warning setting cannot be changed while a model is being constructed.' );
+        else
+            cvx___.problems(end).rat_growth = ns;
+        end
     end
 end
 if nargin == 0 | nargout > 0,

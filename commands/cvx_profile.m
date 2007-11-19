@@ -1,4 +1,4 @@
-function s = cvx_profile( flag )
+function sout = cvx_profile( flag )
 
 % CVX_PROFILE	CVX-specific profiler control.
 %    This is a function used for internal CVX development to help determine 
@@ -6,25 +6,36 @@ function s = cvx_profile( flag )
 %    when the solver is being called. End users will likely not find this
 %    function to be useful.
 
-global cvx___
-if isempty( cvx___ ), 
-    cvx_setpath( 1 ); 
-end
+cvx_global
 s = cvx___.profile;
 if nargin == 1,
-    if length( flag ) ~= 1,
-        error( 'Argument must be a numeric or logical scalar.' );
+    nflag = [];
+    if isnumeric(flag) | islogical(flag),
+        ns = double(flag) ~= 0;
+    elseif ischar(flag) & size(flag,1) == 1,
+        switch lower(flag),
+            case 'true',
+                ns = true;
+            case 'false',
+                ns = false;
+            otherwise,
+                error( 'String arugment must be ''true'' or ''false''.' );
+        end
+    else
+        error( 'Argument must be a numeric scalar or a string.' );
     end
-    flag = double( flag ) ~= 0;
-    if cvx___.profile ~= flag,
-        cvx___.profile = flag;
+    if cvx___.profile ~= ns,
+        cvx___.profile = ns;
         stat = profile('status');
-        if flag & ~isempty( cvx___.problems ) & ~isequal( stat.ProfilerStatus, 'on' ),
+        if ns & ~isempty( cvx___.problems ) & ~isequal( stat.ProfilerStatus, 'on' ),
             profile on
-        elseif ~flag & isequal( stat.ProfilerStatus, 'on' ),
+        elseif ~ns & isequal( stat.ProfilerStatus, 'on' ),
             profile off
         end
     end
+end
+if nargin == 0 | nargout > 0,
+    sout = s;
 end
   
 % Copyright 2007 Michael C. Grant and Stephen P. Boyd.
