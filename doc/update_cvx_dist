@@ -77,7 +77,7 @@ sed "$SEDSTR" $TEX/download.jemdoc > $DST/download.jemdoc
 sed "$SEDSTR" $TEX/history.jemdoc  > $DST/history.jemdoc
 sed "$SEDSTR" $TEX/index.jemdoc    > $DST/index.jemdoc
 sed "$SEDSTR" $TEX/license.jemdoc  > $DST/license.jemdoc
-cp -f $TEX/*.{gif,png,conf,css} $DST
+cp -f $TEX/MENU $TEX/*.{gif,png,conf,css} $DST
 cd $DST
 jemdoc -c jemdoc.conf *.jemdoc
 /bin/echo done.
