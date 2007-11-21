@@ -1,0 +1,29 @@
+# jemdoc: menu{MENU}{citing.html}
+= +CVX+: Matlab Software for\nDisciplined Convex Programming
+Version ___VERSION___ (___TDATE___, Build ___BUILD___)\n
+[http://www.stanford.edu/~mcgrant Michael Grant],
+[http://www.stanford.edu/~boyd Stephen Boyd],
+[http://www.stanford.edu/~yyye Yinyu Ye]
+
+== Citing +CVX+
+
+Are you using +CVX+ in research work to be published? If so, please
+consider including an explicit mention of the software in your publication;
+for example,
+~~~
+To solve problem (17) we used \\\\texttt{CVX}, a package for specifying and
+solving convex programs \\cite{CVX,DCP}.
+~~~
+
+In addition, please include the following entries in your bibliography:
+- M. Grant and S. Boyd. +CVX+: Matlab software for
+    disciplined convex programming (web page and software).
+    [http://www.stanford.edu/~boyd/cvx], ___TDATE___.
+- M. Grant and S. Boyd. Graph implementations for nonsmooth
+  convex programs. To appear in /Recent Advances in Learning
+  and Control (a tribute to M. Vidyasagar)/, V. Blondel, S.
+  Boyd, and H. Kimura, editors. Springer, 2008.
+  [http://www.stanford.edu/~boyd/graph_dcp.html].
+  
+Thank you!
+

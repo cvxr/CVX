@@ -1,209 +1,185 @@
-<?xml version="1.0" encoding="iso-8859-1"?>
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
-    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-
-<html xmlns="http://www.w3.org/1999/xhtml">
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
 <head>
-  <meta name="generator" content=
-  "HTML Tidy for Mac OS X (vers 1st December 2004), see www.w3.org" />
-
-  <title>CVX version history</title>
+<meta name="generator" content="jemdoc, see http://jemdoc.jaboc.net/" />
+<meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+<link rel="stylesheet" href="jemdoc.css" type="text/css" />
+<link rel="stylesheet" href="index.css" type="text/css" />
+<title><tt>CVX</tt>: Matlab Software for<br />Disciplined Convex Programming</title>
 </head>
-
-<body>
-  <h1><tt>CVX</tt> version history</h1>
-
-  <dl>
-    <dt>Version 0.80, July 2005:</dt>
-
-    <dd>initial release.</dd>
-
-    <dt>Version 0.85, August 2005:</dt>
-
-    <dd>Support for Matlab 6.1 and 6.5; previous versions required
-    Matlab 7.0 or later.<br />
-    Added precompiled binaries for Solaris.<br />
-    Support for scalar quadratic forms (see Section 4.7 of the
-    <a href="cvx_usrguide.pdf">user guide</a>).<br />
-    Added the <tt>norms</tt> function to facilitate sum-of-norms
-    and max-of-norms problems.<br />
-    Various bug fixes incorporated.</dd>
-
-    <dt>Version 0.86, September 2005:</dt>
-
-    <dd>Fixes for Matlab 6.1 compatability.</dd>
-
-    <dd>Improved support for quadratic forms.</dd>
-
-    <dd>A bug that prevented some Euclidean norm constraints from
-    being declared was fixed.</dd>
-
-    <dt>Version 0.87/0.87.1, October 2005:</dt>
-
-    <dd>Improved the setup routine (<tt>cvx_setup</tt>).</dd>
-
-    <dd>Updated the documentation with a table of contents and a
-    new section explaining the status messages returned by
-    <tt>CVX</tt>.</dd>
-
-    <dd>Implemented workarounds for bugs in SeDuMi's handling of
-    certain degenerate problems.</dd>
-
-    <dd>Created a MEX file to improve presolve performance.</dd>
-
-    <dd>Miscellaneous bug fixes, performance improvements, and
-    documentation updates.</dd>
-
-    <dt>Version 0.88, December 2005:</dt>
-
-    <dd>Further improvements to the setup routine
-    (<tt>cvx_setup</tt>).</dd>
-
-    <dd>A bug with the potential to cause invalid numerical results
-    has been fixed. It is unlikely that this bug has caused anyone
-    problems, except for the person who reported it, because: 1) it
-    required a unique set of circumstances to exercise it; and 2)
-    even if it were exercised, it would likely produce
-    <i>obviously</i> invalid results.</dd>
-
-    <dd>Improvements have been made to prevent <tt>OUT OF
-    MEMORY</tt> errors for certain large problems.</dd>
-
-    <dt>Version 0.89, December 2005:</dt>
-
-    <dd>Official release of the expanded example library.</dd>
-
-    <dd>Added support for indexed dual variables; see the
-    documentation for details.</dd>
-
-    <dt>Version 0.90, January 2006:</dt>
-
-    <dd>Added support for the geometric mean function
-    <tt>geomean</tt> and the determinant function
-    <tt>det_root2n</tt>, enabling the solution of determinant
-    maximization problems. (Previous versions of <tt>cvx</tt>
-    provided the <tt>geomean</tt> function, but it was not
-    documented or supported because of its unreliability in
-    infeasible problems. This shortcoming has been addressed, so
-    now we have made it "official.")</dd>
-
-    <dt>Version 0.91, January 2006:</dt>
-
-    <dd>Added support for the determinant function
-    <tt>det_rootn</tt>.</dd>
-
-    <dd>Added a new semidefinite programming mode, which is
-    activated with the command <tt>cvx_begin sdp</tt>; see the user
-    guide for details.</dd>
-
-    <dd>Miscellaneous bug fixes related to the solution of complex
-    norm minimization problems, convex quadratic forms, and a
-    workaround for a SeDuMi bug.</dd>
-
-    <dt>Version 0.92, February 2006:</dt>
-
-    <dd>Fixes for feasibility problems and large matrix
-    multiplications</dd>
-
-    <dd>Added support for the approximate <tt>log(sum(exp()))</tt>
-    function <tt>logsumexp_sdp</tt>. This function allows geometric
-    programs, already transformed into convex form, to be solved
-    without the need for a dedicated solver: that is, SeDuMi (and
-    as of version 1.1, SDPT3) will
-    solve them! Type <tt>help logsumexp_sdp</tt> from the MATLAB
-    command line for details.</dd>
-
-    <dt>Version 0.93, March 2006:</dt>
-
-    <dd>Final release of the ``pre-GP'' version of the code.</dd>
-
-    <dt>Version 1.0 beta, March 2006:</dt>
-
-    <dd>Major revision. Much of the internal structure has been
-    reworked in order to improve performance and facilitate
-    geometric programming support.</dd>
-
-    <dt>Version 1.0 beta 2, April 2006:</dt>
-
-    <dd>Bug fix release.</dd>
-
-    <dt>Version 1.0 beta 3, June 2006:</dt>
-
-    <dd>Bug fix and performance improvement release. This release
-    incorporates quite a few fixes reported by students in Stephen
-    Boyd's <a href="http://www.stanford.edu/class/ee364/">convex
-    optimization class</a>. Many thanks to them <i>and</i> to all
-    of our faithful users for their testing and reports.</dd>
-
-    <dt>Version 1.0RC, October 2006:</dt>
-
-    <dd>Added support for Matlab R2006b.</dd>
-
-    <dd>Incorporated SeDuMi 1.1R3, and added an additional bug
-    fix.</dd>
-
-    <dd>The absolute value function is now represented using a
-    second-order cone to better exploit sparsity. This also impacts
-    1-norms and infinity-norms.</dd>
-
-    <dd>Added support for <i>p</i>-norms for values of <i>p</i>
-    other than 1, 2, and infinity; and added support for
-    expressions of the form <tt>x^p</tt> where <tt>p</tt> is a
-    positive even integer OR a real integer between 0 and 1. See
-    the user guide for a very mild caution on the use of powers and
-    <i>p</i>-norms.</dd>
-
-    <dd>New and/or improved functions: <tt>pow_pos(x,p)</tt>,
-    <tt>pow_abs(x,p)</tt>, <tt>norm(x,p)</tt>,
-    <tt>huber(x,M,t)</tt>, <tt>berhu(x,M,t)</tt>,
-    <tt>polyval(p,x)</tt>, <tt>polyenv(p,x)</tt>.</dd>
-
-    <dd>New sets: <tt>nonneg_poly_coeffs(deg)</tt> and
-    <tt>convex_poly_coeffs(deg)</tt>.</dd>
-
-    <dt>Version 1.0RC2, February 2007:</dt>
-
-    <dd>A bug has been discovered in SeDuMi that was producing
-    incorrect results for some, but not all, problems involving
-    second-order cones, norms, powers, and absolute values. A
-    temporary workaround has been provided to detect these cases
-    and return an invalid result flag, a permanent fix is
-    forthcoming.</dd>
-
-    <dt>Version 1.1beta, August 2007:</dt>
-
-    <dd>Support for the solver SDPT3 has been added; in fact, SDPT3
-    is now the default solver. This provides support for later
-    (&ge;7.3) versions of Matlab for 64-bit platforms. The
-    directory structure has been rearranged considerably, and a
-    couple of minor bugs have been fixed, but no major
-    functionality has been added.</dd>
-
-    <dd>Automatic dualization added. <tt>CVX</tt> now analyzes problem structure
-    to determine if a model is more efficiently solved in dual standard
-    form instead of primal standard form; and if so, it sends the dual
-    problem to the solver instead. For models with far more inequalities
-    than variables, this approach can improve both speed and accuracy.</dd>
-    
-    <dd>Lots of inline help added. Type "help" and look for the <tt>CVX</tt>
-    entries to begin.</dd>
-    
-    <dd>Support for the MATLAB built-in function <tt>conv</tt> added.</dd>
-  </dl>
-  <hr />
-
-  <p><a href="index.html">The <tt>CVX</tt> main page</a><br />
-  <a href="../research.html">Stephen Boyd's research group
-  page</a><br />
-  <a href="http://www.stanford.edu/~mcgrant">Michael Grant's home
-  page</a></p>
-
-  <p><a href="http://validator.w3.org/check?uri=referer"><img src=
-  "valid-xhtml10.png" alt="Valid XHTML 1.0 Transitional" border="0"
-  height="31" width="88" /></a> <a href=
-  "http://tidy.sourceforge.net"><img src="checked_by_tidy.gif" alt=
-  "Checked by Tidy!" border="0" height="32" width="32" /></a></p>
-
-  <p>Last updated: ___DATE___</p>
+</body>
+<script src="http://www.google-analytics.com/urchin.js" type="text/javascript">
+</script>
+<script type="text/javascript">
+_uacct = "UA-2779251-1";
+urchinTracker();
+</script>
+<table summary="Table for page layout.">
+<tr valign="top">
+<td id="layout-menu">
+<div class="menu-category"><tt>CVX</tt></div>
+<div><a href="index.html">Home</a></div>
+<div><a href="download.html">Download &amp; install</a></div>
+<div><a href="license.html">License &amp; copyright</a></div>
+<div><a href="examples/index.html">Example library</a></div>
+<div><a href="contact.html">Feedback</a></div>
+<div><a href="contact.html">Mailing list</a></div>
+<div><a href="citing.html">Citing CVX</a></div>
+<div><a href="history.html" class="current">Version history</a></div>
+<div class="menu-category">Related projects</div>
+<div><a href="http://abel.ee.ucla.edu/cvxopt">CVXOPT</a></div>
+<div><a href="http://cvxmod.net">CVXMOD</a></div>
+<div><a href="http://control.ee.ethz.ch/~joloef/yalmip.php">YALMIP</a></div>
+<div><a href="http://sedumi.mcmaster.ca">SeDuMi</a></div>
+<div><a href="http://www.math.nus.edu.sg/~mattohkc/sdpt3.html">SDPT3</a></div>
+</td>
+<td>
+<div id="layout-content">
+<div id="toptitle">
+<h1><tt>CVX</tt>: Matlab Software for<br />Disciplined Convex Programming</h1>
+<div id="subtitle">Version ___VERSION___ (___TDATE___, Build ___BUILD___)<br />
+<a href="http://www.stanford.edu/~mcgrant">Michael Grant</a>,
+<a href="http://www.stanford.edu/~boyd">Stephen Boyd</a>,
+<a href="http://www.stanford.edu/~yyye">Yinyu Ye</a></div>
+</div>
+<h2>Version history</h2>
+<dl>
+<dt>0.80, July 2005:</dt>
+<dd>
+initial release.</dd>
+<dt>0.85, August 2005:</dt>
+<dd>
+Support for Matlab 6.1 and 6.5; previous versions required Matlab 7.0 or later.<br />
+Added precompiled binaries for Solaris.<br />
+Support for scalar quadratic forms (see Section 4.7 of the users&rsquo; guide).<br />
+Added the <tt>norms</tt> function to facilitate sum-of-norms and max-of-norms problems.<br />
+Various bug fixes incorporated.</dd>
+<dt>0.86, September 2005:</dt>
+<dd>
+Fixes for Matlab 6.1 compatability.<br />
+Improved support for quadratic forms.<br />
+A bug that prevented some Euclidean norm constraints from being declared was fixed.</dd>
+<dt>0.87,0.87.1, October 2005:</dt>
+<dd>
+Improved the setup routine (<tt>cvx_setup</tt>).<br />
+Updated the documentation with a table of contents and a 
+new section explaining the status messages returned by <tt>CVX</tt>.<br />
+Implemented workarounds for bugs in SeDuMi&rsquo;s handling of certain degenerate problems.<br />
+Created a MEX file to improve presolve performance.<br />
+Miscellaneous bug fixes, performance improvements, and documentation updates.</dd>
+<dt>0.88, December 2005:</dt>
+<dd>
+Further improvements to the setup routine (<tt>cvx_setup</tt>).<br />
+A bug with the potential to cause invalid numerical results
+has been fixed. It is unlikely that this bug has caused anyone
+problems, except for the person who reported it, because: 1) it
+required a unique set of circumstances to exercise it; and 2)
+even if it were exercised, it would likely produce
+<i>obviously</i> invalid results.<br />
+Improvements have been made to prevent <tt>OUT OF
+MEMORY</tt> errors for certain large problems.<br /></dd>
+<dt>0.89, December 2005:</dt>
+<dd>
+Official release of the expanded example library.<br />
+Added support for indexed dual variables; see the documentation for details.<br /></dd>
+<dt>0.90, January 2006:</dt>
+<dd>
+Added support for the geometric mean function
+<tt>geomean</tt> and the determinant function
+<tt>det_root2n</tt>, enabling the solution of determinant
+maximization problems. (Previous versions of <tt>cvx</tt>
+provided the <tt>geomean</tt> function, but it was not
+documented or supported because of its unreliability in
+infeasible problems. This shortcoming has been addressed, so
+now we have made it &ldquo;official.&rdquo;)<br /></dd>
+<dt>0.91, January 2006:</dt>
+<dd>
+Added support for the determinant function <tt>det_rootn</tt>.<br />
+Added a new semidefinite programming mode, which is
+activated with the command <tt>cvx_begin sdp</tt>; see the user
+guide for details.<br />
+Miscellaneous bug fixes related to the solution of complex
+norm minimization problems, convex quadratic forms, and a
+workaround for a SeDuMi bug.</dd>
+<dt>0.92, February 2006:</dt>
+<dd>
+Fixes for feasibility problems and large matrix
+multiplications<br />
+Added support for the approximate <tt>log(sum(exp()))</tt>
+function <tt>logsumexp_sdp</tt>. This function allows geometric
+programs, already transformed into convex form, to be solved
+without the need for a dedicated solver: that is, SeDuMi (and
+as of version 1.1, SDPT3) will
+solve them! Type <tt>help logsumexp_sdp</tt> from the MATLAB
+command line for details.</dd>
+<dt>0.93, March 2006:</dt>
+<dd>
+Final release of the &lsquo;&lsquo;pre-GP&rsquo;&rsquo; version of the code.</dd>
+<dt>1.0 beta, March 2006:</dt>
+<dd>
+Major revision. Much of the internal structure has been
+reworked in order to improve performance and facilitate
+geometric programming support.</dd>
+<dt>1.0 beta 2, April 2006:</dt>
+<dd>
+Bug fix release.</dd>
+<dt>1.0 beta 3, June 2006:</dt>
+<dd>
+Bug fix and performance improvement release. This release
+incorporates quite a few fixes reported by students in Stephen
+Boyd&rsquo;s <a href="http://www.stanford.edu/class/ee364">convex optimization class</a>.
+Many thanks to them <i>and</i> to all
+of our faithful users for their testing and reports.</dd>
+<dt>1.0RC, October 2006:</dt>
+<dd>
+Added support for Matlab R2006b.<br />
+Incorporated SeDuMi 1.1R3, and added an additional bug fix.<br />
+The absolute value function is now represented using a
+second-order cone to better exploit sparsity. This also impacts
+1-norms and infinity-norms.<br />
+Added support for <i>p</i>-norms for values of <i>p</i>
+other than 1, 2, and infinity; and added support for
+expressions of the form <tt>x^p</tt> where <tt>p</tt> is a
+positive even integer OR a real integer between 0 and 1. See
+the user guide for a very mild caution on the use of powers and
+<i>p</i>-norms.<br />
+New and/or improved functions: <tt>pow_pos(x,p)</tt>,
+<tt>pow_abs(x,p)</tt>, <tt>norm(x,p)</tt>,
+<tt>huber(x,M,t)</tt>, <tt>berhu(x,M,t)</tt>,
+<tt>polyval(p,x)</tt>, <tt>polyenv(p,x)</tt>.<br />New sets: <tt>nonneg_poly_coeffs(deg)</tt> and
+<tt>convex_poly_coeffs(deg)</tt>.</dd>
+<dt>1.0RC2, February 2007:</dt>
+<dd>A bug has been discovered in SeDuMi that was producing
+incorrect results for some, but not all, problems involving
+second-order cones, norms, powers, and absolute values. A
+temporary workaround has been provided to detect these cases
+and return an invalid result flag, a permanent fix is
+forthcoming.</dd>
+<dt>1.1beta, August 2007:</dt>
+<dd>
+Support for the solver SDPT3 has been added; in fact, SDPT3
+is now the default solver. This provides support for later
+(&gt;7.3) versions of Matlab for 64-bit platforms. The
+directory structure has been rearranged considerably, and a
+couple of minor bugs have been fixed, but no major
+functionality has been added.<br />Automatic dualization added.<br />
+<tt>CVX</tt> now analyzes problem structure
+to determine if a model is more efficiently solved in dual standard
+form instead of primal standard form; and if so, it sends the dual
+problem to the solver instead. For models with far more inequalities
+than variables, this approach can improve both speed and accuracy.<br />Lots of inline help added. Type &ldquo;help&rdquo; and look for the <tt>CVX</tt>
+entries to begin.<br />
+Support for the MATLAB built-in function <tt>conv</tt> added.</dd>
+</dl>
+<div id="footer">
+<div id="footer-text">
+Page generated 2007-11-21 13:28:01 CST, by <a href="http://jemdoc.jaboc.net/">jemdoc</a>.
+</div>
+</div>
+</div>
+</td>
+</tr>
+</table>
 </body>
 </html>

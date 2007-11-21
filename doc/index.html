@@ -1,311 +1,98 @@
-<?xml version="1.0" encoding="iso-8859-1"?>
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
-    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-
-<html xmlns="http://www.w3.org/1999/xhtml">
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
 <head>
-  <meta name="generator" content=
-  "HTML Tidy for Mac OS X (vers 31 October 2006 - Apple Inc. build 13), see www.w3.org" />
-
-  <title>CVX -- Matlab Software for Disciplined Convex
-  Programming</title>
+<meta name="generator" content="jemdoc, see http://jemdoc.jaboc.net/" />
+<meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+<link rel="stylesheet" href="jemdoc.css" type="text/css" />
+<link rel="stylesheet" href="index.css" type="text/css" />
+<title><tt>CVX</tt>: Matlab Software for<br />Disciplined Convex Programming</title>
 </head>
-
-<body>
-  <h1><tt>CVX</tt>: Matlab Software for Disciplined Convex
-  Programming</h1>
-
-  <h2>Version ___VERSION___ (___TDATE___, Build ___BUILD___)</h2>
-
-  <h3><a href="http://www.stanford.edu/~mcgrant">Michael Grant</a>,
-  <a href="http://www.stanford.edu/~boyd">Stephen Boyd</a>, and
-  <a href="http://www.stanford.edu/~yyye">Yinyu Ye</a></h3>
-
-  <h3>Table of Contents</h3>
-
-  <ul>
-    <li><a href="#intro">Introduction</a></li>
-
-    <li><a href="#system">System requirements</a></li>
-
-    <li><a href="#examples">The example library</a></li>
-
-    <li><a href="#mail">The <tt>CVX</tt> mailing list</a></li>
-
-    <li><a href="#feed">Request for feedback</a></li>
-
-    <li><a href="#hist">Version history</a></li>
-
-    <li><a href="#plans">Future plans</a></li>
-
-    <li><a href="#copy">Copyright information</a></li>
-
-    <li><a href="#cite">Citing <tt>CVX</tt></a></li>
-
-    <li><a href="#down"><b>Download!</b></a></li>
-  </ul>
-
-  <h3><a id="intro" name="intro">Introduction</a></h3>
-
-  <p><tt>CVX</tt> is a Matlab-based modeling system for convex
-  optimization. <tt>CVX</tt> turns Matlab into a modeling language,
-  allowing constraints and objectives to be specified using
-  standard Matlab expression syntax. For example, the following
-  code segment randomly generates a constrained norm minimization
-  problem, and solves it:</p>
-
-  <table cellspacing="0" cellpadding="0" summary=
-  "CVX code example">
-    <tr>
-      <td width="10%"></td>
-
-      <td width="90%"><code>m = 20; n = 10; p = 4;<br />
-      A = randn(m,n); b = randn(m,1);<br />
-      C = randn(p,n); d = randn(p,1);<br />
-      cvx_begin<br />
-      &nbsp;&nbsp;&nbsp;&nbsp;variable x(n)<br />
-      &nbsp;&nbsp;&nbsp;&nbsp;minimize( norm( A * x - b, 2 )
-      )<br />
-      &nbsp;&nbsp;&nbsp;&nbsp;subject to<br />
-      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;C * x ==
-      d;<br />
-      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;norm( x, Inf
-      ) &lt;= 0.4;<br />
-      cvx_end</code></td>
-    </tr>
-  </table>
-
-  <p>In its default mode, <tt>CVX</tt> supports a particular
-  approach to convex optimization that we call <a href=
-  "http://www.stanford.edu/~boyd/disc_cvx_prog.html"><i>disciplined
-  convex programming</i></a>. Under this approach, convex functions
-  and sets are built up from a small set of rules from convex
-  analysis, starting from a base library of convex functions and
-  sets. Constraints and objectives that are expressed using these
-  rules are automatically transformed to a canonical form and
-  solved. For more information on disciplined convex programming,
-  see <a href=
-  "http://www.stanford.edu/~boyd/disc_cvx_prog.html">this
-  paper</a>; for the basics of convex analysis and convex
-  optimization, see the book <cite><a href=
-  "http://www.stanford.edu/~boyd/cvxbook">Convex
-  Optimization</a>.</cite></p>
-
-  <p><tt>CVX</tt> also supports <i>geometric programming</i> (GP)
-  through the use of a special GP mode. Geometric programs are not
-  convex, but can be made so by applying a certain transformation.
-  In this mode, <tt>CVX</tt> allows GPs to be constructed in their
-  native, nonconvex form, transforms them automatically to a
-  solvable convex form, and translates the numerical results back
-  to the original problem.</p>
-
-  <p>More information about <tt>CVX</tt> can be found in the
-  <cite><a href="cvx_usrguide.pdf"><tt>CVX</tt> Users'
-  Guide</a></cite> (pdf, ___PDF___).</p>
-
-  <h3><a id="examples" name="examples">The example library</a></h3>
-
-  <p>The <tt>CVX</tt> package includes a growing library of
-  examples to help get you started. A large number of examples have
-  been provided which reproduce figures or examples from the book
-  <cite><a href="http://www.stanford.edu/~boyd/cvxbook">Convex
-  Optimization</a>.</cite> We will continue to add to this library
-  over time, particularly as new capabilities are added to
-  <tt>CVX</tt>.</p>
-
-  <p>You can browse through this library now&mdash;without having
-  to download and install <tt>CVX</tt>&mdash;by <a href=
-  "examples/index.html">clicking here</a>. Of course, if you wish
-  to run any of the examples, please proceed to the <a href=
-  "#down">download section</a> below.</p>
-
-  <h3><a id="system" name="system">System requirements</a></h3>
-
-  <p>The <tt>CVX</tt> modeling system is built using <a href=
-  "http://www.mathworks.com/products/matlab/">Matlab</a>, and
-  requires version 6.1 or later of Matlab to run. It is built using
-  both native Matlab code and C MEX files. It currently supports
-  two solvers, <a href=
-  "http://www.math.nus.edu.sg/~mattohkc/sdpt3.html">SDPT3</a> and
-  <a href="http://sedumi.mcmaster.ca">SeDuMi</a>, with SDTP3 as the
-  default. Both solvers are also built using a combination of
-  Matlab and C MEX files. Precompiled binaries for Windows, Linux,
-  and Intel Mac OS X are supplied with the distribution, but it
-  should work fine on other platforms as well, as long as they
-  support both Matlab and at least one solver. See Appendix A of
-  the <a href="cvx_usrguide.pdf">user guide</a> for more detials,
-  and for installation instructions.</p>
-
-  <p><i>Note for 64-bit MATLAB users:</i> SeDuMi is currently not
-  supported for the 64-bit versions of Matlab 7.3 and later. This
-  is due to a change made to Matlab's internal data structures
-  between versions 7.2 and 7.3. When the SeDuMi authors release a
-  new version of SeDuMi with an appropriate fix, we will update the
-  <tt>CVX</tt> distribution accordingly. Until then, SDPT3 is the
-  only solver available for those platforms.</p>
-
-  <p><i>Note for users of MATLAB 7.0:</i> Versions 7.0.x of MATLAB
-  (R14, R14SP1, R14SP2) reject certain <tt>CVX</tt> models, issuing
-  syntax errors that are simply not correct. Numerical problems
-  with version 7.0.0 and SDPT3 have also been reported. See section
-  A.4 of the user's guide for more details; but in short we
-  recommend that versions 7.0.x be avoided, at least when using
-  <tt>CVX</tt>.</p>
-
-  <h3><a id="mail" name="mail">The <tt>CVX</tt> mailing
-  list</a></h3>
-
-  <p>This software is actively updated with bug fixes,
-  improvements, and new features. In addition, we will continue to
-  expand the <a href="examples/">example library</a>. The date at
-  the bottom of this web page indicates when this distribution was
-  last updated. If you would like to be notified when an update
-  occurs, we invite you to subscribe to the <tt>cvx-announce</tt>
-  mailing list. To do so, simply complete the subscription request
-  form at the <a href=
-  "https://mailman.stanford.edu/mailman/listinfo/cvx-announce">mailing
-  list home page</a>.</p>
-
-  <h3><a id="feed" name="feed">Feedback</a></h3>
-
-  <p>We welcome your feedback. Please contact <a href=
-  "mailto:mcgrant@stanford.edu">Michael Grant</a> or <a href=
-  "mailto:boyd@stanford.edu">Stephen Boyd</a> with your bug reports
-  and feature suggestions.</p>
-
-  <p>If you do send a bug report, please include the following
-  information if possible:</p>
-
-  <ul>
-    <li>The versions of <tt>CVX</tt>, Matlab, and operating system
-    you are using</li>
-
-    <li>A copy of the error messages, if any, produced by
-    Matlab</li>
-
-    <li>A Matlab program ( <tt>.m</tt>) or data ( <tt>.mat</tt>)
-    file that we can use to reproduce the problem</li>
-  </ul>
-
-  <p>Your help will be greatly appreciated.</p>
-
-  <h3><a id="hist" name="hist">Version history</a></h3>
-
-  <p>The first public release of <tt>CVX</tt> was in July of 2005
-  with version 0.80 alpha. Between July 2005 and March 2006, a
-  number of incremental improvements and bug fixes were made,
-  culminating in the release of 0.93 alpha in March 2006. The
-  system's internals were considerably reworked for Version 1.0, in
-  order to improve efficiency and performance, and to add support
-  for geometric programming. Version 1.1 adds support for a new
-  solver, SDPT3, and a new "automatic dualization" process which
-  improves performance and accuracy for many problems..</p>
-
-  <p>For a more detailed version history, <a href=
-  "history.html">click here</a>.</p>
-
-  <h3><a id="plans" name="plans">Future plans</a></h3>
-
-  <p>We intend to stabilize this version of <tt>CVX</tt> so that we
-  may focus on the next generation of the software. For that
-  reason, we do not anticipate adding a significant number of
-  additional functions to version 1.0, although we are considering
-  several: <tt>log()</tt>, <tt>exp()</tt>, <tt>entropy()</tt>, and
-  <tt>log(erfc())</tt>. We will continue to respond to bug reports,
-  however, and issue updates as needed.</p>
-
-  <p>In the longer term, we are in the planning stages of a
-  significant redesign of <tt>CVX</tt>. The primary goal of this
-  new design will be to make it portable to a variety of platforms,
-  including R, Octave, Python, Mathematica, and others. This
-  version will also include the long-desired support for smooth,
-  non-SDP-representable nonlinearities. Needless to say, this is an
-  ambitious undertaking and we cannot yet offer a predictions for
-  when this version will be available.</p>
-
-  <h3><a id="copy" name="copy">Copyright information</a></h3>
-
-  <p>Our intention is to make this software available for use
-  without encumbrance in both academic and commercial settings.
-  This version of <tt>CVX</tt> is distributed under the <a href=
-  "http://www.gnu.org/copyleft/gpl.html">GNU General Public License
-  2.0</a>. For commercial applications that may be incompatible
-  with this license, please do not hesitate to contact us to
-  discuss alternatives.</p>
-
-  <p>The example library (found in the <tt>examples/</tt>
-  subdirectory of the distribution) is public domain. You are free
-  to use the examples in any way you wish; but when you do, we
-  request that you give appropriate credit to their authors.</p>
-
-  <h3><a id="cite" name="cite">Citing <tt>CVX</tt></a></h3>If you
-  use <tt>CVX</tt> in work to be published, please consider
-  including the following entries in your bibliography:
-
-  <ul>
-    <li>M. Grant and S. Boyd. <tt>CVX</tt>: Matlab software for
-    disciplined convex programming [web page and software].
-    <tt>http://www.stanford.edu/~boyd/cvx</tt>, ___TDATE___.</li>
-
-    <li>M. Grant and S. Boyd. Graph implementations for nonsmooth
-    convex programs. To appear in <i>Recent Advances in Learning
-    and Control (a tribute to M. Vidyasagar)</i>, V. Blondel, S.
-    Boyd, and H. Kimura, editors. Springer, 2008.
-    <tt>http://www.stanford.edu/~boyd/graph_dcp.html</tt>.</li>
-  </ul>
-
-  <h3><a id="down" name="down">Download</a></h3>
-
-  <dl>
-    <dt>To obtain the <tt>CVX</tt> distribution, which includes the
-    program files, the users' guide, and the example library, use
-    one of the following links:</dt>
-
-    <dd>Windows <tt>.zip</tt> file: <a href="cvx.zip">cvx.zip
-    (___ZIP___)</a><br />
-    Unix <tt>.tar.gz</tt> file: <a href="cvx.tar.gz">cvx.tar.gz
-    (___TAR___)</a></dd>
-
-    <dt><tt>CVX</tt> requires Matlab 6.x or later, and should work
-    "out of the box" on Windows, 32-bit Linux, and Mac OSX. It
-    should work on other platforms as well as long as Matlab's MEX
-    facility has been configured properly. Installation is
-    relatively simple:</dt>
-
-    <dd>1. If you already have an earlier version of <tt>CVX</tt>
-    installed, <i>remove it or move it out of the way.</i> Do not
-    install this version on top of the old.<br />
-    2. Unpack the distribution wherever you like.<br />
-    3. Fire up Matlab, and <tt>cd</tt> to the <tt>cvx/</tt>
-    directory that was created<br />
-    4. <b>Important:</b> Run the command <tt>cvx_setup</tt> to
-    configure the software.</dd>
-
-    <dt>For more detailed system requirements and installation
-    instructions, see Appendix A of the user's guide, which is
-    included in the <tt>doc/</tt> subdirectory of the distribution,
-    or can be downloaded directly from here:</dt>
-
-    <dd>Users' guide: <a href="cvx_usrguide.pdf">cvx_usrguide.pdf
-    (___PDF___)</a></dd>
-  </dl>
-
-  <p><a href="../research.html">Stephen Boyd's research group
-  page</a><br />
-  <a href="http://www.stanford.edu/~mcgrant">Michael Grant's home
-  page</a></p>
-
-  <p><a href="http://validator.w3.org/check?uri=referer"><img src=
-  "valid-xhtml10.png" alt="Valid XHTML 1.0 Transitional" border="0"
-  height="31" width="88" /></a> <a href=
-  "http://tidy.sourceforge.net"><img src="checked_by_tidy.gif" alt=
-  "Checked by Tidy!" border="0" height="32" width="32" /></a></p>
-
-  <p>Last updated: ___DATE___</p>
-  <script src="http://www.google-analytics.com/urchin.js" type="text/javascript"></script>
-  <script type="text/javascript">
-   _uacct = "UA-2779251-1";
-  urchinTracker();
-  </script>
+</body>
+<script src="http://www.google-analytics.com/urchin.js" type="text/javascript">
+</script>
+<script type="text/javascript">
+_uacct = "UA-2779251-1";
+urchinTracker();
+</script>
+<table summary="Table for page layout.">
+<tr valign="top">
+<td id="layout-menu">
+<div class="menu-category"><tt>CVX</tt></div>
+<div><a href="index.html" class="current">Home</a></div>
+<div><a href="download.html">Download &amp; install</a></div>
+<div><a href="license.html">License &amp; copyright</a></div>
+<div><a href="examples/index.html">Example library</a></div>
+<div><a href="contact.html">Feedback</a></div>
+<div><a href="contact.html">Mailing list</a></div>
+<div><a href="citing.html">Citing CVX</a></div>
+<div><a href="history.html">Version history</a></div>
+<div class="menu-category">Related projects</div>
+<div><a href="http://abel.ee.ucla.edu/cvxopt">CVXOPT</a></div>
+<div><a href="http://cvxmod.net">CVXMOD</a></div>
+<div><a href="http://control.ee.ethz.ch/~joloef/yalmip.php">YALMIP</a></div>
+<div><a href="http://sedumi.mcmaster.ca">SeDuMi</a></div>
+<div><a href="http://www.math.nus.edu.sg/~mattohkc/sdpt3.html">SDPT3</a></div>
+</td>
+<td>
+<div id="layout-content">
+<div id="toptitle">
+<h1><tt>CVX</tt>: Matlab Software for<br />Disciplined Convex Programming</h1>
+<div id="subtitle">Version ___VERSION___ (___TDATE___, Build ___BUILD___)<br />
+<a href="http://www.stanford.edu/~mcgrant">Michael Grant</a>,
+<a href="http://www.stanford.edu/~boyd">Stephen Boyd</a>,
+<a href="http://www.stanford.edu/~yyye">Yinyu Ye</a></div>
+</div>
+<h2>Introduction</h2>
+<p><tt>CVX</tt> is a Matlab-based modeling system for convex optimization. <tt>CVX</tt> turns 
+Matlab into a modeling language, allowing constraints and objectives to 
+be specified using standard Matlab expression syntax. For example, the
+following code segment randomly generates a constrained norm
+minimization problem, and solves it:</p>
+<div class="codeblock">
+<div class="blockcontent"><pre>
+m = 20; n = 10; p = 4;
+A = randn(m,n); b = randn(m,1);
+C = randn(p,n); d = randn(p,1);
+cvx_begin
+    variable x(n)
+    minimize( norm( A * x - b, 2 ) )
+    subject to
+        C * x == d;
+        norm( x, Inf ) &lt;= 0.4;
+cvx_end
+</pre></div></div>
+<p>In its default mode, <tt>CVX</tt> supports a particular approach to convex 
+optimization that we call 
+<a href="http://www.stanford.edu/~mcgrant/dcp.html">disciplined convex programming</a>. 
+Under this approach, convex functions and sets are built up from a small 
+set of rules from convex analysis, starting from a base library of convex 
+functions and sets. Constraints and objectives that are expressed using 
+these rules are automatically transformed to a canonical form and solved.
+For more information on disciplined convex programming, see this paper;
+for the basics of convex analysis and convex optimization, see the 
+book <a href="http://www.stanford.edu/~boyd/cvxbook">Convex Optimization</a>.</p>
+<p><tt>CVX</tt> also supports 
+<a href="http://www.stanford.edu/~boyd/papers/gp_tutorial.html">geometric programming (GP)</a>
+through the use of a special
+GP mode. Geometric programs are not convex, but can be made so by applying
+a certain transformation. In this mode, <tt>CVX</tt> allows GPs to be constructed
+in their native, nonconvex form, transforms them automatically to a 
+solvable convex form, and translates the numerical results back to 
+the original problem.</p>
+<p>More information about <tt>CVX</tt> can be found in the <i><tt>CVX </tt>Users&rsquo; Guide</i> <a href="cvx_usrguide.pdf" onClick="javascript:urchinTracker('/downloads/doc');">(pdf, ___PDF___)</a>.</p>
+<p>The <tt>CVX</tt> package includes a growing library of examples to help get you started,
+including examples from the book <a href="http://www.stanford.edu/~boyd/cvxbook">Convex Optimization</a>
+and from a variety of applications. You can browse through this library now&mdash;without having
+to download and install <tt>CVX</tt>&mdash;by clicking <a href="examples/index.html">here</a>. </p>
+<div id="footer">
+<div id="footer-text">
+Page generated 2007-11-21 13:28:02 CST, by <a href="http://jemdoc.jaboc.net/">jemdoc</a>.
+</div>
+</div>
+</div>
+</td>
+</tr>
+</table>
 </body>
 </html>

@@ -1,0 +1,33 @@
+# jemdoc: menu{MENU}{contact.html}
+= +CVX+: Matlab Software for\nDisciplined Convex Programming
+Version ___VERSION___ (___TDATE___, Build ___BUILD___)\n
+[http://www.stanford.edu/~mcgrant Michael Grant],
+[http://www.stanford.edu/~boyd Stephen Boyd],
+[http://www.stanford.edu/~yyye Yinyu Ye]
+
+== Feedback
+
+We welcome your feedback! Please contact [mailto:mcgrant@stanford.edu Michael Grant]
+or [mailto:boyd@stanford.edu Stephen Boyd] with your bug reports and feature
+suggesstions.
+
+If you do send a bug report, please include the following information if possible:
+- A copy of the error messages, if any, produced by Matlab.
+- The versions of +CVX+, Matlab, and operating system you are using. +CVX+ provides
+  a command called +cvx_version+ that will print all of this information to the 
+  screen---just copy its output from Matlab and paste it into your email.
+- A Matlab program (+.m+) and\/or data (+.mat+) file that
+  we can use to reproduce the problem
+
+Your help will be greatly appreciated.
+
+== Mailing list
+
+This software is actively updated with bug fixes, improvements, and new features. 
+In addition, we will continue to expand the atom library. For minor improvements
+and fixes, we update the web site silently; that is, without making an announcement.
+Major updates are announced through our +cvx-announce+ mailing
+list. If you would like to be added to this list, we invite you to complete
+the subscription request form at that
+[https://mailman.stanford.edu/mailman/listinfo/cvx-announce +cvx-announce+ mailing list home page].
+

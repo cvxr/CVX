@@ -5,11 +5,14 @@ SRCBASE=`pwd | sed 's@/doc$@@'`
 WWWDIR=$SRCBASE/WWW
 DSTDIR=$SRCBASE/dist
 WWWDST=cardinal.stanford.edu:~boyd/WWW/cvx
+BYDDST=kona.stanford.edu:~boyd/WWW/cvx
 
 echo Updating: $WWWDIR --\> $WWWDST
 rsync -rlv --delete -e ssh $WWWDIR/ $WWWDST/
+echo Updating: $WWWDIR --\> $BYDDST
+rsync -rlv --delete -e ssh $WWWDIR/ $BYDDST/
 
-echo -n Updating local distribution copy...
+/bin/echo -n Updating local distribution copy...
 rm -rf $DSTDIR
 mkdir -p $DSTDIR
 cd $DSTDIR
