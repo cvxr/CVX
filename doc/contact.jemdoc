@@ -1,5 +1,5 @@
 # jemdoc: menu{MENU}{contact.html}
-= +CVX+: Matlab Software for\nDisciplined Convex Programming
+= CVX: Matlab Software for\nDisciplined Convex Programming
 Version ___VERSION___ (___TDATE___, Build ___BUILD___)\n
 [http://www.stanford.edu/~mcgrant Michael Grant],
 [http://www.stanford.edu/~boyd Stephen Boyd],
@@ -13,7 +13,7 @@ suggesstions.
 
 If you do send a bug report, please include the following information if possible:
 - A copy of the error messages, if any, produced by Matlab.
-- The versions of +CVX+, Matlab, and operating system you are using. +CVX+ provides
+- The versions of CVX, Matlab, and operating system you are using. CVX provides
   a command called +cvx_version+ that will print all of this information to the 
   screen---just copy its output from Matlab and paste it into your email.
 - A Matlab program (+.m+) and\/or data (+.mat+) file that

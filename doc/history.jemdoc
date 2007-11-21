@@ -1,5 +1,5 @@
 # jemdoc: menu{MENU}{history.html}
-= +CVX+: Matlab Software for\nDisciplined Convex Programming
+= CVX: Matlab Software for\nDisciplined Convex Programming
 Version ___VERSION___ (___TDATE___, Build ___BUILD___)\n
 [http://www.stanford.edu/~mcgrant Michael Grant],
 [http://www.stanford.edu/~boyd Stephen Boyd],
@@ -24,7 +24,7 @@ A bug that prevented some Euclidean norm constraints from being declared was fix
 :{0.87,0.87.1, October 2005:}
 Improved the setup routine (+cvx_setup+).\n
 Updated the documentation with a table of contents and a 
-new section explaining the status messages returned by +CVX+.\n
+new section explaining the status messages returned by CVX.\n
 Implemented workarounds for bugs in SeDuMi's handling of certain degenerate problems.\n
 Created a MEX file to improve presolve performance.\n
 Miscellaneous bug fixes, performance improvements, and documentation updates.
@@ -100,8 +100,7 @@ second-order cone to better exploit sparsity. This also impacts
 1-norms and infinity-norms.\n
 Added support for /p/-norms for values of /p/
 other than 1, 2, and infinity; and added support for
-expressions of the form +x^p+ where +p+ is a
-positive even integer OR a real integer between 0 and 1. See
+expressions of the form +x^p+ where +p+ is real. See
 the user guide for a very mild caution on the use of powers and
 /p/-norms.\n
     New and\/or improved functions: +pow_pos(x,p)+,
@@ -124,10 +123,10 @@ Support for the solver SDPT3 has been added; in fact, SDPT3
     directory structure has been rearranged considerably, and a
     couple of minor bugs have been fixed, but no major
     functionality has been added.\nAutomatic dualization added.\n
-    +CVX+ now analyzes problem structure
+    CVX now analyzes problem structure
     to determine if a model is more efficiently solved in dual standard
     form instead of primal standard form; and if so, it sends the dual
     problem to the solver instead. For models with far more inequalities
-    than variables, this approach can improve both speed and accuracy.\nLots of inline help added. Type "help" and look for the +CVX+
+    than variables, this approach can improve both speed and accuracy.\nLots of inline help added. Type "help" and look for the CVX
     entries to begin.\n
 	Support for the MATLAB built-in function +conv+ added.

@@ -1,5 +1,5 @@
 # jemdoc: menu{MENU}{index.html}
-= +CVX+: Matlab Software for\nDisciplined Convex Programming
+= CVX: Matlab Software for\nDisciplined Convex Programming
 Version ___VERSION___ (___TDATE___, Build ___BUILD___)\n
 [http://www.stanford.edu/~mcgrant Michael Grant],
 [http://www.stanford.edu/~boyd Stephen Boyd],
@@ -7,7 +7,7 @@ Version ___VERSION___ (___TDATE___, Build ___BUILD___)\n
 
 == Introduction
 
-+CVX+ is a Matlab-based modeling system for convex optimization. +CVX+ turns 
+CVX is a Matlab-based modeling system for convex optimization. CVX turns 
 Matlab into a modeling language, allowing constraints and objectives to 
 be specified using standard Matlab expression syntax. For example, the
 following code segment randomly generates a constrained norm
@@ -27,29 +27,30 @@ cvx_begin
 cvx_end
 ~~~
 
-In its default mode, +CVX+ supports a particular approach to convex 
+In its default mode, CVX supports a particular approach to convex 
 optimization that we call 
 [http://www.stanford.edu/~mcgrant/dcp.html disciplined convex programming]. 
 Under this approach, convex functions and sets are built up from a small 
 set of rules from convex analysis, starting from a base library of convex 
 functions and sets. Constraints and objectives that are expressed using 
 these rules are automatically transformed to a canonical form and solved.
-For more information on disciplined convex programming, see this paper;
+For more information on disciplined convex programming, see 
+[http://www.stanford.edu/~mcgrant/papers.html these resources];
 for the basics of convex analysis and convex optimization, see the 
 book [http://www.stanford.edu/~boyd/cvxbook Convex Optimization].
 
-+CVX+ also supports 
+CVX also supports 
 [http://www.stanford.edu/~boyd/papers/gp_tutorial.html geometric programming (GP)]
 through the use of a special
 GP mode. Geometric programs are not convex, but can be made so by applying
-a certain transformation. In this mode, +CVX+ allows GPs to be constructed
+a certain transformation. In this mode, CVX allows GPs to be constructed
 in their native, nonconvex form, transforms them automatically to a 
 solvable convex form, and translates the numerical results back to 
 the original problem.
 
-More information about +CVX+ can be found in the /+CVX +Users' Guide/ {{<a href="cvx_usrguide.pdf" onClick="javascript:urchinTracker('/downloads/doc');">(pdf, ___PDF___)</a>}}.
+More information about CVX can be found in the /CVX Users' Guide/ {{<a href="cvx_usrguide.pdf" onClick="javascript:urchinTracker('/downloads/doc');">(pdf, ___PDF___)</a>}}.
 
-The +CVX+ package includes a growing library of examples to help get you started,
+The CVX package includes a growing library of examples to help get you started,
 including examples from the book [http://www.stanford.edu/~boyd/cvxbook Convex Optimization]
 and from a variety of applications. You can browse through this library now---without having
-to download and install +CVX+---by clicking [examples/index.html here]. 
+to download and install CVX---by clicking [examples/index.html here]. 

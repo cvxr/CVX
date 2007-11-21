@@ -1,5 +1,5 @@
 # jemdoc: menu{MENU}{download.html}
-= +CVX+: Matlab Software for\nDisciplined Convex Programming
+= CVX: Matlab Software for\nDisciplined Convex Programming
 Version ___VERSION___ (___TDATE___, Build ___BUILD___)\n
 [http://www.stanford.edu/~mcgrant Michael Grant],
 [http://www.stanford.edu/~boyd Stephen Boyd],
@@ -7,7 +7,7 @@ Version ___VERSION___ (___TDATE___, Build ___BUILD___)\n
 
 == Downloads
 
-The +CVX+ package includes the program files, the users' guide, and the 
+The CVX package includes the program files, the users' guide, and the 
 complete example library. To download it, use one of these links.
 - Windows .zip file: {{<a href="cvx.zip" onClick="javascript:urchinTracker('/downloads/zip');">cvx.zip (___ZIP___)</a>}}
 - Unix .tar.gz file: {{<a href="cvx.tar.gz" onClick="javascript:urchinTracker('/downloads/tar');">cvx.tar.gz (___TAR___)</a>}}
@@ -34,7 +34,7 @@ For more detailed installation instructions, see Appendix A of the user's guide.
 
 == System requirements
 
-+CVX+ is built using Matlab, and requires version 6.1 or later of
+CVX is built using Matlab, and requires version 6.1 or later of
 Matlab to run. It is built using both native Matlab code and C MEX files. It currently
 supports two solvers, SDPT3 and SeDuMi, with SDTP3 as the default. Both solvers are 
 also built using a combination of Matlab and C MEX files. Precompiled binaries for
@@ -46,14 +46,14 @@ See Appendix A of the user's guide for more detials.
 *Note for 64-bit MATLAB users*: SeDuMi is currently not supported for the 64-bit
 versions of Matlab 7.3 and later. This is due to a change made to Matlab's internal
 data structures between versions 7.2 and 7.3. When the SeDuMi authors release a new 
-version of SeDuMi with an appropriate fix, we will update the +CVX+ distribution 
+version of SeDuMi with an appropriate fix, we will update the CVX distribution 
 accordingly. Until then, SDPT3 is the only solver available for those platforms.
 ~~~
 
 ~~~
 *Note for users of MATLAB 7.0*: Versions 7.0.x of MATLAB (R14, R14SP1, R14SP2) 
-reject certain +CVX+ models, issuing syntax errors that are simply not correct.
+reject certain CVX models, issuing syntax errors that are simply not correct.
 Numerical problems with version 7.0.0 and SDPT3 have also been reported. 
 See section A.4 of the user's guide for more details; but in short we 
-recommend that versions 7.0.x be avoided, at least when using +CVX+.
+recommend that versions 7.0.x be avoided, at least when using CVX.
 ~~~

@@ -1,5 +1,5 @@
 # jemdoc: menu{MENU}{license.html}
-= +CVX+: Matlab Software for\nDisciplined Convex Programming
+= CVX: Matlab Software for\nDisciplined Convex Programming
 Version ___VERSION___ (___TDATE___, Build ___BUILD___)\n
 [http://www.stanford.edu/~mcgrant Michael Grant],
 [http://www.stanford.edu/~boyd Stephen Boyd],
@@ -7,12 +7,12 @@ Version ___VERSION___ (___TDATE___, Build ___BUILD___)\n
 
 == License
 
-Our intention is to make +CVX+ available for use without encumbrance in
+Our intention is to make CVX available for use without encumbrance in
 both academic and commercial settings. 
 
-This version of +CVX+ is distributed under the
+This version of CVX is distributed under the
 [http://www.gnu.org/licenses/old-licenses/gpl-2.0.html GNU General Public License 2.0].
-This license places conditions on the distribution of +CVX+, but not on its use in research,
+This license places conditions on the distribution of CVX, but not on its use in research,
 development, and internal (undistributed) applications. For commercial applications that may be 
 incompatible with this license, please do not hesitate to contact us to discuss alternatives.
 
@@ -34,7 +34,7 @@ This copyright notice does not apply to the solvers
 [http://sedumi.mcmaster.ca SeDuMi] and 
 [http://www.math.nus.edu.sg/~mattohkc/sdpt3.html SDPT3], 
 whose code is included
-with +CVX+ in the subdirectories +sedumi\/+ and +sdpt3\/+, respectively. Please
+with CVX in the subdirectories +sedumi\/+ and +sdpt3\/+, respectively. Please
 refer to the separate copyright notices contained therein. 
 Both of these packages are also distributed under the
 [http://www.gnu.org/licenses/old-licenses/gpl-2.0.html GNU General Public License 2.0].

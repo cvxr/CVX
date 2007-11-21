@@ -6,7 +6,7 @@
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
 <link rel="stylesheet" href="jemdoc.css" type="text/css" />
 <link rel="stylesheet" href="index.css" type="text/css" />
-<title><tt>CVX</tt>: Matlab Software for<br />Disciplined Convex Programming</title>
+<title>CVX: Matlab Software for<br />Disciplined Convex Programming</title>
 </head>
 </body>
 <script src="http://www.google-analytics.com/urchin.js" type="text/javascript">
@@ -18,7 +18,7 @@ urchinTracker();
 <table summary="Table for page layout.">
 <tr valign="top">
 <td id="layout-menu">
-<div class="menu-category"><tt>CVX</tt></div>
+<div class="menu-category">CVX</div>
 <div><a href="index.html" class="current">Home</a></div>
 <div><a href="download.html">Download &amp; install</a></div>
 <div><a href="license.html">License &amp; copyright</a></div>
@@ -37,14 +37,14 @@ urchinTracker();
 <td>
 <div id="layout-content">
 <div id="toptitle">
-<h1><tt>CVX</tt>: Matlab Software for<br />Disciplined Convex Programming</h1>
+<h1>CVX: Matlab Software for<br />Disciplined Convex Programming</h1>
 <div id="subtitle">Version ___VERSION___ (___TDATE___, Build ___BUILD___)<br />
 <a href="http://www.stanford.edu/~mcgrant">Michael Grant</a>,
 <a href="http://www.stanford.edu/~boyd">Stephen Boyd</a>,
 <a href="http://www.stanford.edu/~yyye">Yinyu Ye</a></div>
 </div>
 <h2>Introduction</h2>
-<p><tt>CVX</tt> is a Matlab-based modeling system for convex optimization. <tt>CVX</tt> turns 
+<p>CVX is a Matlab-based modeling system for convex optimization. CVX turns 
 Matlab into a modeling language, allowing constraints and objectives to 
 be specified using standard Matlab expression syntax. For example, the
 following code segment randomly generates a constrained norm
@@ -62,32 +62,33 @@ cvx_begin
         norm( x, Inf ) &lt;= 0.4;
 cvx_end
 </pre></div></div>
-<p>In its default mode, <tt>CVX</tt> supports a particular approach to convex 
+<p>In its default mode, CVX supports a particular approach to convex 
 optimization that we call 
 <a href="http://www.stanford.edu/~mcgrant/dcp.html">disciplined convex programming</a>. 
 Under this approach, convex functions and sets are built up from a small 
 set of rules from convex analysis, starting from a base library of convex 
 functions and sets. Constraints and objectives that are expressed using 
 these rules are automatically transformed to a canonical form and solved.
-For more information on disciplined convex programming, see this paper;
+For more information on disciplined convex programming, see 
+<a href="http://www.stanford.edu/~mcgrant/papers.html">these resources</a>;
 for the basics of convex analysis and convex optimization, see the 
 book <a href="http://www.stanford.edu/~boyd/cvxbook">Convex Optimization</a>.</p>
-<p><tt>CVX</tt> also supports 
+<p>CVX also supports 
 <a href="http://www.stanford.edu/~boyd/papers/gp_tutorial.html">geometric programming (GP)</a>
 through the use of a special
 GP mode. Geometric programs are not convex, but can be made so by applying
-a certain transformation. In this mode, <tt>CVX</tt> allows GPs to be constructed
+a certain transformation. In this mode, CVX allows GPs to be constructed
 in their native, nonconvex form, transforms them automatically to a 
 solvable convex form, and translates the numerical results back to 
 the original problem.</p>
-<p>More information about <tt>CVX</tt> can be found in the <i><tt>CVX </tt>Users&rsquo; Guide</i> <a href="cvx_usrguide.pdf" onClick="javascript:urchinTracker('/downloads/doc');">(pdf, ___PDF___)</a>.</p>
-<p>The <tt>CVX</tt> package includes a growing library of examples to help get you started,
+<p>More information about CVX can be found in the <i>CVX Users&rsquo; Guide</i> <a href="cvx_usrguide.pdf" onClick="javascript:urchinTracker('/downloads/doc');">(pdf, ___PDF___)</a>.</p>
+<p>The CVX package includes a growing library of examples to help get you started,
 including examples from the book <a href="http://www.stanford.edu/~boyd/cvxbook">Convex Optimization</a>
 and from a variety of applications. You can browse through this library now&mdash;without having
-to download and install <tt>CVX</tt>&mdash;by clicking <a href="examples/index.html">here</a>. </p>
+to download and install CVX&mdash;by clicking <a href="examples/index.html">here</a>. </p>
 <div id="footer">
 <div id="footer-text">
-Page generated 2007-11-21 13:28:02 CST, by <a href="http://jemdoc.jaboc.net/">jemdoc</a>.
+Page generated 2007-11-21 14:54:03 CST, by <a href="http://jemdoc.jaboc.net/">jemdoc</a>.
 </div>
 </div>
 </div>

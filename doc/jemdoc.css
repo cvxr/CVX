@@ -1,11 +1,13 @@
 body {
 	background-color: white;
-	font-family: Georgia, serif;
+	font-family: "Georgia", "Palatino", "Times New Roman", "Times", serif;
 }
 
 #layout-menu {
 	background-color: #f4f4f4;
-	border: 1px solid #dddddd;
+	border-color: #aaaaaa;
+	border-style: solid;
+	border-width: 0px 2px 0px 0px;
 	padding-top: 0.5em;
 	padding-left: 8px;
 	padding-right: 8px;
@@ -18,13 +20,13 @@ body {
 	margin-left: 0.5em;
 }
 
-tt {
-	font-size: 130%;
-/*	color: green; */
+pre, tt {
+	font-family: "Courier New", "Courier";
 }
 
-pre, tt {
-	font-family: "Courier", "Courier New", monospace;
+tt {
+	font-weight: bold;
+/*	color: green; */
 }
 
 a, a > tt {
