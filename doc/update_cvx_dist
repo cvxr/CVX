@@ -71,15 +71,16 @@ MYZIP=`du -h $ZIP | sed 's@\([0-9.]*.\).*@\1B@'`
 MYTAR=`du -h $TAR | sed 's@\([0-9.]*.\).*@\1B@'`
 MYPDF=`du -h $DST/cvx_usrguide.pdf | sed 's@\([0-9.]*.\).*@\1B@'`
 SEDSTR="$VERSED;s@___DATE___@$MYDATE@;s@___ZIP___@$MYZIP@;s@___TAR___@$MYTAR@;s@___PDF___@$MYPDF@"
-sed "$SEDSTR" $TEX/citing.html     > $DST/citing.html
+sed "$SEDSTR" $TEX/citing.jemdoc   > $DST/citing.jemdoc
 sed "$SEDSTR" $TEX/contact.jemdoc  > $DST/contact.jemdoc
 sed "$SEDSTR" $TEX/download.jemdoc > $DST/download.jemdoc
 sed "$SEDSTR" $TEX/history.jemdoc  > $DST/history.jemdoc
 sed "$SEDSTR" $TEX/index.jemdoc    > $DST/index.jemdoc
 sed "$SEDSTR" $TEX/license.jemdoc  > $DST/license.jemdoc
-cp -f $TEX/MENU $TEX/*.{gif,png,conf,css} $DST
+cp -f $TEX/MENU $TEX/jemdoc.css $DST
 cd $DST
-jemdoc -c jemdoc.conf *.jemdoc
+jemdoc -c $TEX/jemdoc.conf *.jemdoc
+rm -f MENU *.jemdoc jemdoc.conf
 /bin/echo done.
 
 /bin/echo -n Cleaning up...
