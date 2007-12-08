@@ -126,73 +126,14 @@ end
 newpath = newpath(2:end-1);
 matlabpath(newpath);
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% Compile the SeDuMi MEX files %
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-newext = mexext;
-isw32 = strcmp( newext, 'mexw32' );
-sedpath = [ mpath, fs, 'sedumi' ];
-if ~needLarge & exist( sedpath, 'dir' ),
-    mexfiles = dir( [ sedpath, fs, '*.', newext ] );
-    if isempty( mexfiles ) & ispc & isw32,
-        mexfiles = dir( [ sedpath, fs, '*.dll' ] );
-    end
-    if isempty( mexfiles ),
-        cd( sedpath );
-        try
-            disp( 'Running the SeDuMi MEX compilation script in 5 seconds.' );
-            pause(5);
-            install_sedumi;
-        catch
-            disp( '-------------------------------------------------------------' );
-            disp( 'SeDuMi was NOT built successfully. Please try CVX on a supported' );
-            disp( 'platform, or manually run the ''install_sedumi'' command in the' );
-            disp( 'sedumi/ subdirectory to try and find and correct the error.' );
-            disp( 'Once the error has been fixed, please re-run cvx_setup.' );
-        cd( dd );
-        return
-        end
-        disp( '-------------------------------------------------------------' );
-        cd( dd );
-    end
-end
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% Compile the SDPT3 MEX files %
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-sedpath = [ mpath, fs, 'sdpt3' ];
-if exist( sedpath, 'dir' ),
-    mexfiles = dir( [ sedpath, fs, 'Linsysolver', fs, 'spchol', fs, '*.', newext ] );
-    if isempty( mexfiles ) & ispc & isw32,
-        newext = 'dll';
-        mexfiles = dir( [ sedpath, fs, 'Linsysolver', fs, 'spchol', fs, '*.', newext ] );
-    end
-    if isempty( mexfiles ),
-        cd( sedpath );
-        try
-            disp( 'Running the SDPT3 MEX compilation script in 5 seconds.' );
-            pause(5);
-            Installmex;
-        catch
-            disp( '-------------------------------------------------------------' );
-            disp( 'SDPT3 was NOT built successfully. Please try CVX on a supported' );
-            disp( 'platform, or manually run the ''Installmex'' command in the' );
-            disp( 'sdpt3/ subdirectory to try and find and correct the error.' );
-            disp( 'Once the error has been fixed, please re-run cvx_setup.' );
-        cd( dd );
-        return
-        end
-        disp( '-------------------------------------------------------------' );
-        cd( dd );
-    end
-end
-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Compile the CVX MEX files %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+newext = mexext;
+isw32 = strcmp( newext, 'mexw32' );
+isNewLinux = strcmp( newext, 'mexglx' ) & ver >= 7.5;
+fullRecompile = false;
 mexcmd = { '-O' };
 if needLarge,
     mexcmd{end+1} = '-largeArrayDims';
@@ -219,7 +160,10 @@ catch
     cd( dd );
     return
 end
-if ~has_mex,
+if has_mex & isNewLinux,
+    fullRecompile = ~eval('cvx_bcompress_mex(sparse(1,1))','0');
+end
+if ~has_mex | fullRecompile,
     disp( 'Attempting to generate the CVX MEX files...' );
     disp( '-------------------------------------------------------------' );
     has_mex = 1;
@@ -244,6 +188,69 @@ if ~has_mex,
     end
 end
 cd( dd );
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Compile the SeDuMi MEX files %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+newext = mexext;
+isw32 = strcmp( newext, 'mexw32' );
+sedpath = [ mpath, fs, 'sedumi' ];
+if ~needLarge & exist( sedpath, 'dir' ),
+    mexfiles = dir( [ sedpath, fs, '*.', newext ] );
+    if isempty( mexfiles ) & ispc & isw32,
+        mexfiles = dir( [ sedpath, fs, '*.dll' ] );
+    end
+    if fullRecompile | isempty( mexfiles ),
+        cd( sedpath );
+        try
+            disp( 'Running the SeDuMi MEX compilation script in 5 seconds.' );
+            pause(5);
+            install_sedumi;
+        catch
+            disp( '-------------------------------------------------------------' );
+            disp( 'SeDuMi was NOT built successfully. Please try CVX on a supported' );
+            disp( 'platform, or manually run the ''install_sedumi'' command in the' );
+            disp( 'sedumi/ subdirectory to try and find and correct the error.' );
+            disp( 'Once the error has been fixed, please re-run cvx_setup.' );
+            cd( dd );
+            return
+        end
+        disp( '-------------------------------------------------------------' );
+        cd( dd );
+    end
+end
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Compile the SDPT3 MEX files %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+sedpath = [ mpath, fs, 'sdpt3' ];
+if exist( sedpath, 'dir' ),
+    mexfiles = dir( [ sedpath, fs, 'Linsysolver', fs, 'spchol', fs, '*.', newext ] );
+    if isempty( mexfiles ) & ispc & isw32,
+        newext = 'dll';
+        mexfiles = dir( [ sedpath, fs, 'Linsysolver', fs, 'spchol', fs, '*.', newext ] );
+    end
+    if fullRecompile | isempty( mexfiles ),
+        cd( sedpath );
+        try
+            disp( 'Running the SDPT3 MEX compilation script in 5 seconds.' );
+            pause(5);
+            Installmex;
+        catch
+            disp( '-------------------------------------------------------------' );
+            disp( 'SDPT3 was NOT built successfully. Please try CVX on a supported' );
+            disp( 'platform, or manually run the ''Installmex'' command in the' );
+            disp( 'sdpt3/ subdirectory to try and find and correct the error.' );
+            disp( 'Once the error has been fixed, please re-run cvx_setup.' );
+            cd( dd );
+            return
+        end
+        disp( '-------------------------------------------------------------' );
+        cd( dd );
+    end
+end
 
 disp( 'Testing the cvx distribution. If this script aborts with' );
 disp( 'an error, please report the error to the authors.' );
