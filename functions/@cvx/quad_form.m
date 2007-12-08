@@ -165,6 +165,7 @@ else
 
         cvx_optval = alpha * sum_square_abs( R * x );
         success = true;
+        break;
         
     end
     

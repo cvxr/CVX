@@ -82,8 +82,8 @@ if isempty( cvx___ ),
     end
     temp = strfind( s, fs );
     s( temp(end-1) + 1 : end ) = [];
-    solvers = { 'sdpt3/Solver', 'sdpt3/SolverHSD', 'sdpt3/Solver/Mexfun', 'sdpt3/Linsysolver/spchol', 'sedumi' };
-    subs = solvers;
+    subs = { 'sdpt3/Solver', 'sdpt3/SolverHSD', 'sdpt3/Solver/Mexfun', 'sdpt3/Linsysolver/spchol', 'sedumi' };
+    nsolver = length( subs );
     miss_solv = 0;
     if cvx___.mversion >= 6.5,
         subs{end+1} = 'keywords';
@@ -106,10 +106,16 @@ if isempty( cvx___ ),
             temp2 = [ temp, ps ];
             ndxs = strfind( opath, temp2 );
             if ~isempty( ndxs ),
-                opath( ndxs(1) : ndxs(1) + length(temp2) - 1 ) = [];
+                if k > nsolver,
+                    cvx___.path.active = true;
+                elseif isempty( cvx___.path.solver ),
+                    cvx___.path.sactive = base;
+                else
+                    opath( ndxs(1) : ndxs(1) + length(temp2) - 1 ) = [];
+                end
                 needupd = true;
             end
-            if k > length(solvers),
+            if k > nsolver,
                 npath = [ npath, temp2 ];
             elseif isempty( spaths ),
                 spaths = struct( base, temp2 );
@@ -118,7 +124,7 @@ if isempty( cvx___ ),
             else
                 spaths = setfield( spaths, base, temp2 );
             end
-        elseif k > length(solvers),
+        elseif k > nsolver,
             error( sprintf( [ ...
                 'Cannot find the required cvx subdirectory: %s\n', ...
                 'The cvx distribution is corrupt; please reinstall.' ], temp ) );
@@ -132,8 +138,14 @@ if isempty( cvx___ ),
         spaths.mosek = '';
     end
     cvx___.path.solvers = spaths;
-    cvx___.path.string = npath;
+    cvx___.path.string  = npath;
     if needupd,
+        if cvx___.path.active,
+            opath = [ cvx___.path.string, opath ];
+        end
+        if ~isempty( cvx___.path.sactive ),
+            opath = [ getfield( spaths, cvx___path.sactive ), opath ];
+        end
         s = warning('off');
         matlabpath(opath);
         warning(s);
