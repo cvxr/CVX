@@ -108,7 +108,7 @@ if isempty( cvx___ ),
             if ~isempty( ndxs ),
                 if k > nsolver,
                     cvx___.path.active = true;
-                elseif isempty( cvx___.path.solver ),
+                elseif isempty( cvx___.path.sactive ) & strcmpi( cvx___.solver, base ),
                     cvx___.path.sactive = base;
                 else
                     opath( ndxs(1) : ndxs(1) + length(temp2) - 1 ) = [];
