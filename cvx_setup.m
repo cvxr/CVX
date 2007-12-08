@@ -252,6 +252,7 @@ if exist( sedpath, 'dir' ),
     end
 end
 
+matlabpath(newpath);
 disp( 'Testing the cvx distribution. If this script aborts with' );
 disp( 'an error, please report the error to the authors.' );
 disp( '-------------------------------------------------------------' );
