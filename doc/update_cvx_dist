@@ -80,7 +80,7 @@ sed "$SEDSTR" $TEX/license.jemdoc  > $DST/license.jemdoc
 cp -f $TEX/MENU $TEX/*.{css,png,gif} $DST
 cd $DST
 jemdoc -c $TEX/jemdoc.conf *.jemdoc
-rm -f MENU *.jemdoc jemdoc.conf
+rm -f MENU jemdoc.conf
 /bin/echo done.
 
 /bin/echo -n Cleaning up...

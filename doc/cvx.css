@@ -1,0 +1,14 @@
+body {
+	font-family: "Georgia", "Bookman Old Style", serif;
+}
+
+#layout-menu {
+	border-color: #888888;
+	border-style: solid;
+	border-width: 0px 2px 0px 0px;
+	width: auto;
+}
+
+dl {
+	margin-left: 0px;
+}
