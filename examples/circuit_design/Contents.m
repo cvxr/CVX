@@ -1,9 +1,12 @@
 % Circuit design
-% Relevant links:
-% http://www.stanford.edu/~boyd/rc.html
-% http://www.stanford.edu/~boyd/rc_iccad.html
-% http://www.stanford.edu/~boyd/date05.html
-% http://www.stanford.edu/~boyd/gp_digital_ckt.html
+% [http://stanford.edu/~boyd/papers/rc.html ...
+% Optimizing Dominant Time Constant in RC Circuits]
+% [http://stanford.edu/~boyd/papers/rc_iccad.html ...
+% Optimal Wire and Transistor Sizing for Circuits with Non-Tree Topology]
+% [http://stanford.edu/~boyd/papers/date05.html ...
+% Geometric Programming and its Applications to EDA Problems]
+% [http://stanford.edu/~boyd/papers/gp_digital_ckt.html ...
+% Digital Circuit Optimization via Geometric Programming]
 %
 %  wire_driver_sizing.m       - Combined sizing of drivers, repeaters, and wire
 %  wire_sizing_spacing.m      - Combined wire sizing and spacing

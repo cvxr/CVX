@@ -75,6 +75,9 @@ if force, args(temp) = []; end
 temp = strcmp( args, '-runonly' );
 runonly = any( temp );
 if runonly, args(temp) = []; end
+temp = strcmp( args, '-indexonly' );
+indexonly = any( temp );
+if indexonly, args(temp) = []; end
 if isempty( args ), args = { base }; end
 vernum = version;
 if vernum(1) < '7', runonly = 1; end
@@ -129,58 +132,48 @@ for k = 1 : length( args ),
 
         if ~runonly & isempty( file ) & strcmp( mpath, base ),
             cd( base );
-            [ fidr, message ] = fopen( 'index.html', 'r' );
+            [ fidr, message ] = fopen( 'index.jemdoc', 'r' );
             if fidr < 0,
-                error( 'Cannot open index.html\n   %s', message );
+                error( 'Cannot open index.jemdoc\n   %s', message );
             end
             t_head = fread( fidr, Inf, 'uint8=>char' )';
-            t_tail = strfind( t_head, '<!-- END TOC -->' );
+            t_tail = strfind( t_head, '{{</div>}}' );
             if length( t_tail ) ~= 1
-                error( 'Corrupt index.html file, cannot proceed.' );
+                error( 'Corrupt index.jemdoc file, cannot proceed.' );
             end
             t_tail = t_head( t_tail : end );
-            n_head = strfind( t_head, '<!-- BEGIN TOC -->' );
+            n_head = strfind( t_head, '{{<div class="mktree" id="tree1">}}' );
             if length( n_head ) ~= 1,
-                error( 'Corrupt index.html file, cannot proceed.' );
+                error( 'Corrupt index.jemdoc file, cannot proceed.' );
             end
-            t_head( n_head + length( '<!-- BEGIN TOC -->' ) + 1 : end ) = [];
+            t_head( n_head + length( '{{<div class="mktree" id="tree1">}}' ) + 1 : end ) = [];
             fclose( fidr );
-            [ fidw, message ] = fopen( 'index.html.new', 'w+' );
+            [ fidw, message ] = fopen( 'index.jemdoc.new', 'w+' );
             if fidw < 0,
-                error( 'Cannot open index.html.new\n   %s', message );
+                error( 'Cannot open index.jemdoc.new\n   %s', message );
             end
             fwrite( fidw, t_head, 'char' );
-            fprintf( fidw, '<h3>Last updated: %s</h3>\n', date );
-            fprintf( fidw, '<p><a href="#" onclick="expandTree(''tree1''); return false;">Expand all</a>&nbsp;&nbsp;\n' );
-            fprintf( fidw, '<a href="#" onclick="collapseTree(''tree1''); return false;">Collapse all</a></p>\n' );
         else
             fidw = -1;
         end
-
         if isempty( file ),
-            generate_directory( mpath, '', force, runonly, fidw, base );
+            generate_directory( mpath, '', force, runonly, indexonly, fidw, base );
         else
             cd( mpath );
-            generate_file( file, '', force, runonly );
+            generate_file( file, '', force, runonly, indexonly );
         end
         cd( odir );
-
         if fidw >= 0,
             fwrite( fidw, t_tail, 'char' );
             fclose( fidw );
             cd( mpath )
-            compare_and_replace( '', 'index.html' );
+            compare_and_replace( '', 'index.jemdoc' );
         end
     end
 end
 
-function [ title, files ] = generate_directory( mpath, prefix, force, runonly, fidc, base )
-
-persistent htmlsrc htmldst
-if isempty( htmlsrc ),
-    htmlsrc = { '&', '<', '>', 'http://www.stanford.edu/([^\s\),]*)' };
-    htmldst = { '&amp;', '&lt;', '&gt;', '<a href="http://www.stanford.edu/$1">$1</a>' };
-end
+function [ title, files ] = generate_directory( mpath, prefix, force, runonly, indexonly, fidc, base, depth )
+if nargin < 8, depth = 1; end
 
 disp( sprintf( '%sDirectory: %s', prefix, mpath ) );
 prefix = [ prefix, '   ' ];
@@ -202,13 +195,21 @@ if ~runonly,
             while ~feof( fidr ),
                 temp = fgetl( fidr );
                 if temp( 1 ) ~= '%' | ~any( temp ~= '%' & temp ~= ' ' ), break; end
-                comments{end+1} = temp( min( find( temp ~= '%' & temp ~= ' ' ) ) : end );
+                temp = temp( min( find( temp ~= '%' & temp ~= ' ' ) ) : end );
+                if strcmp(title(end-2:end),'...'),
+                    title = [ title(1:end-3), temp ];
+                else
+                    comments{end+1} = temp;
+                end
             end
         end
         fclose( fidr );
     elseif ~isempty( dir( 'Contents.m' ) ),
         error( 'Cannot open Contents.m for reading\n   %s', message );
     end
+end
+if isempty(title),
+    title = '(no title)';
 end
 
 %
@@ -230,7 +231,7 @@ for k = 1 : length( dd ),
         switch name(ndx+1:end),
             case 'm',
                 if strcmp( name, 'Contents.m' ) | strcmp( name, 'make.m' ), continue; end
-                [ temp, isfunc ] = generate_file( name, prefix, force, runonly );
+                [ temp, isfunc ] = generate_file( name, prefix, force, runonly, indexonly );
                 if isfunc, type = 'func'; else type = 'script'; end
                 files( end + 1 ) = struct( 'name', name, 'title', temp, 'type', type );
             case 'tex',
@@ -268,92 +269,71 @@ if ~isempty( files ),
 end
 
 %
-% Fill out the index.html file
+% Fill out the index.jemdoc file
 %
 
 if fidc >= 0,
-
+    
+    dots = '-';
+    dots = dots(ones(1,depth-1));
     dpath = mpath( length(base) + 2 : end );
     dpath(dpath=='\') = '/';
-    if ~isempty( dpath ),
-        dpath(end+1) = '/';
-        [ dpath2, dname ] = fileparts( mpath );
-        if ~isempty( files ) & any( tdir ),
-            mclass = 'liOpen';
-        else
-            mclass = 'liClosed';
-        end
-        if isempty( title ),
-            fprintf( fidc, '<li class="%s"><a href="%s">%s/</a>\n', mclass, dpath, dname ),
-        else
-            fprintf( fidc, '<li class="%s"><b>%s</b>\n', mclass, regexprep( title, htmlsrc, htmldst ) );
-        end
-        if ~isempty( comments ),
-            fprintf( fidc, '<blockquote>\n' );
-            for k = 1 : length( comments ),
-                fprintf( fidc, '%s\n', regexprep( comments{k}, htmlsrc, htmldst ) );
+    if ~isempty(dpath), dpath(end+1) = '/'; end
+    
+    % Directory title---skip for the top level
+    
+    if depth > 1,
+        fprintf( fidc, '%s *%s*\n', dots, title );
+    end
+    
+    if any( tdir ),
+        for k = 1 : length( files ),
+            if strcmp( files(k).type, 'dir' ),
+                files(k).title = generate_directory( files(k).name(1:end-1), prefix, force, runonly, indexonly, fidc, base, depth+1 );
+                cd(mpath);
             end
-            fprintf( fidc, '</blockquote>\n' );
         end
-        fprintf( fidc, '<ul>\n' );
-    else
-        fprintf( fidc, '<ul class="mktree" id="tree1">\n' );
+    end
+    
+    if depth==1,
+        dots(end+1) = '-';
+    end
+    
+    if any( tscr ),
+        if depth == 1,
+            fprintf( fidc, '%s *Miscellaneous examples*\n', dots );
+        end
+        for k = 1 : length( files ),
+            if strcmp( files(k).type, 'script' ),
+                name = files( k ).name;
+                temp = files( k ).title;
+                if isempty( temp ),
+                    fprintf( fidc, '%s- [%s%s %s]\n', dots, dpath, name, name );
+                else
+                    fprintf( fidc, '%s- [%shtml/%shtml %s] ([%s%s %s])\n', dots, dpath, name(1:end-1), temp, dpath, name, name );
+                end
+            end
+        end
     end
 
-    if isempty( files ),
-
-        fprintf( fidc, '<li>(no files)</li>\n' );
-
-    else
-
-        if any( tdir ),
-            for k = 1 : length( files ),
-                if strcmp( files(k).type, 'dir' ),
-                    files(k).title = generate_directory( files(k).name(1:end-1), prefix, force, runonly, fidc, base );
-                    cd(mpath);
+    if any( tfun ),
+        fprintf( fidc, '%s- Utility functions:\n', dots );
+        for k = 1 : length( files ),
+            if strcmp( files(k).type, 'func' ),
+                name = files( k ).name;
+                temp = files( k ).title;
+                if isempty( temp ),
+                    fprintf( fidc, '%s-- [%s%s %s]\n', dots, dpath, name, name );
+                else
+                    fprintf( fidc, '%s-- [%s%s %s (%s)]\n', dots, dpath, name, temp, name );
                 end
             end
         end
-
-        if any( tscr ),
-            need_misc = isempty( dpath ) & any( tdir );
-            if need_misc,
-                fprintf( fidc, '<li><b>Miscellaneous examples</b><ul>\n' );
-            end
-            for k = 1 : length( files ),
-                if strcmp( files(k).type, 'script' ),
-                    name = files( k ).name;
-                    temp = files( k ).title;
-                    if isempty( temp ),
-                        fprintf( fidc, '<li><a href="%s%s">%s</a></li>\n', dpath, name, name );
-                    else
-                        fprintf( fidc, '<li><a href="%shtml/%shtml">%s</a> (<a href="%s%s">%s</a>)</li>\n', dpath, name(1:end-1), regexprep( temp, htmlsrc, htmldst ), dpath, name, name );
-                    end
-                end
-            end
-            if need_misc,
-                fprintf( fidc, '</ul></li>\n' );
-            end
-        end
-
-        if any( tfun ),
-            fprintf( fidc, '<li class="liOpen">Utility functions:<ul>\n' );
-            for k = 1 : length( files ),
-                if strcmp( files(k).type, 'func' ),
-                    name = files( k ).name;
-                    temp = files( k ).title;
-                    if isempty( temp ),
-                        fprintf( fidc, '<li><a href="%s%s">%s</a></li>\n', dpath, name, name );
-                    else
-                        fprintf( fidc, '<li><a href="%s%s">%s (%s)</a></li>\n', dpath, name, regexprep( temp, htmlsrc, htmldst ), name );
-                    end
-                end
-            end
-            fprintf( fidc, '</ul></li>\n' );
-        end
-
+    end
+    
+    if any( tdoc ) | ~isempty( comments ),
+        fprintf( fidc, '%s- Documentation:\n', dots );
         if any( tdoc ),
-            fprintf( fidc, '<li class="liOpen">Documentation:<ul>\n' );
             for k = 1 : length( files ),
                 if strcmp( files(k).type, 'doc' ) | strcmp( files(k).type, 'tex' ),
                     name = files( k ).name;
@@ -362,27 +342,34 @@ if fidc >= 0,
                     end
                     temp = files( k ).title;
                     if isempty( temp ),
-                        fprintf( fidc, '<li><a href="%s%s">%s</a></li>\n', dpath, name, name );
+                        fprintf( fidc, '%s-- [%s%s %s]\n', dots, dpath, name, name );
                     else
-                        fprintf( fidc, '<li><a href="%s%s">%s (%s)</a></li>\n', dpath, name, regexprep( temp, htmlsrc, htmldst ), name );
+                        fprintf( fidc, '%s-- [%s%s %s (%s)]\n', dots, dpath, name, temp, name );
                     end
                 end
             end
-            fprintf( fidc, '</ul></li>\n' );
         end
-
-    end
-
-    fprintf( fidc, '</ul>\n' );
-    if ~isempty( dpath ),
-        fprintf( fidc, '</li>\n' );
+        if ~isempty( comments ),
+            k = 1;
+            while k <= length(comments),
+                temp = comments{k};
+                fprintf( fidc, '%s-- ', dots );
+                while k<length(comments) & length(temp)>=3 & strcmp(temp(end-2:end),'...'),
+                    fprintf( fidc, '%s ', temp(1:end-3) );
+                    k = k + 1;
+                    temp = comments{k};
+                end
+                fprintf( fidc, '%s\n', temp );
+                k = k + 1;
+            end
+        end
     end
 
 elseif any( tdir ),
     
     for k = 1 : length( files ),
         if strcmp( files(k).type, 'dir' ),
-            files(k).title = generate_directory( files(k).name(1:end-1), prefix, force, runonly, fidc, base );
+            files(k).title = generate_directory( files(k).name(1:end-1), prefix, force, runonly, indexonly, fidc, base, depth+1 );
             cd(mpath);
         end
     end
@@ -430,7 +417,7 @@ if fidw >= 0,
     compare_and_replace( prefix, 'Contents.m' );
 end
 
-function [ title, isfunc ] = generate_file( name, prefix, force, runonly )
+function [ title, isfunc ] = generate_file( name, prefix, force, runonly, indexonly )
 
 if length( name ) < 2 | ~strcmp( name(end-1:end), '.m' ),
     error( 'Not an m-file.' );
@@ -507,7 +494,9 @@ if exist( hdir, 'dir' ),
     end
     cd( odir );
 end
-if force | hdate <= ndate,
+if indexonly,
+    fprintf( 1, 'done.\n' );
+elseif force | hdate <= ndate,
     if runonly,
         fprintf( 1, 'running %s ...', name );
     elseif hdate == 0,

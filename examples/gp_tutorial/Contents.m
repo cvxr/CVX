@@ -1,6 +1,4 @@
-% Geometric programming
-% From Boyd, Kim, Vandenberghe, and Hassibi, "A Tutorial on Geometric Programming":
-% http://www.stanford.edu/~boyd/gp_tutorial.html
+% Examples from [http://stanford.edu/~boyd/papers/gp_tutorial.html A Tutorial on Geometric Programming]
 %
 %  max_volume_box.m             - Box volume maximization
 %  simple_dig_ckt_sizing.m      - Digital circuit sizing

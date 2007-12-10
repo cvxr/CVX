@@ -96,7 +96,9 @@ function expandCollapseList( ul, cName ) {
             if ( subLists ) {
                 item.className = cName;
             }
-        }
+        } else if ( item.nodeName == "UL" ) {
+        	var ret = expandCollapseList( item, cName );
+       	}
     }
 }
 
@@ -107,7 +109,11 @@ function convertTrees() {
     setDefault("nodeOpenClass","liOpen");
     setDefault("nodeBulletClass","liBullet");
     setDefault("nodeLinkClass","bullet");
+    setDefault("jsOnlyClass","jsonly");
     if ( !document.createElement ) { return; } // Without createElement, we can't do anything
+    var jso = document.getElementById( jsOnlyClass );
+    if ( jso != null )
+    	jso.className = jsOnlyClass;
     var cndx = 0;
     var cookie = get_cookie( treeClass );
     var uls = document.getElementsByTagName( "ul" );
@@ -115,6 +121,13 @@ function convertTrees() {
         var ul = uls[uli];
         if ( ul.nodeName == "UL" && ul.className == treeClass )
             cndx = processList( ul, cookie, cndx );
+        else {
+           var pn = ul.parentNode;
+           if ( pn.nodeName == "DIV" && pn.className == treeClass ) {
+           	   ul.className = treeClass;
+               cndx = processList( ul, cookie, cndx );
+           }
+        }
     }
 }
 
@@ -125,6 +138,11 @@ function saveTrees() {
         var ul = uls[uli];
         if ( ul.nodeName == "UL" && ul.className == treeClass )
             cookie += scanList( ul );
+        else {
+        	var pn = ul.parentNode;
+        	if ( pn.nodeName == "DIV" && pn.className == treeClass )
+        	    cookie += scanList( ul );
+       }
     }
     set_cookie( treeClass, cookie );
 }

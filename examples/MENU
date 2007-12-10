@@ -1,0 +1,16 @@
+CVX
+Home                [http://www.stanford.edu/~boyd/cvx/index.html]
+Download~&~install  [http://www.stanford.edu/~boyd/cvx/download.html]
+License~&~copyright [http://www.stanford.edu/~boyd/cvx/license.html]
+Example library	    [index.html]
+Feedback            [../contact.html]
+Mailing list        [../contact.html]
+Citing CVX          [../citing.html]
+Version history     [../history.html]
+
+Related projects
+CVXOPT              [http://abel.ee.ucla.edu/cvxopt]
+CVXMOD              [http://cvxmod.net]
+YALMIP              [http://control.ee.ethz.ch/~joloef/yalmip.php]
+SeDuMi              [http://sedumi.mcmaster.ca]
+SDPT3               [http://www.math.nus.edu.sg/~mattohkc/sdpt3.html]

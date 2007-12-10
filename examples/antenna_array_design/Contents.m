@@ -1,7 +1,8 @@
-% Antenna array design 
-% Relevant links:
-% http://www.stanford.edu/~boyd/ant-pat.html
-% http://www.stanford.edu/~boyd/magdes.html
+% Antenna array design
+% [http://stanford.edu/~boyd/papers/ant-pat.html ...
+% Antenna Array Pattern Synthesis via Convex Optimization]
+% [http://stanford.edu/~boyd/papers/magdes.html ...
+% FIR Filter Design via Spectral Factorization and Convex Optimization]
 %
 %  ant_array_min_beamwidth.m      - Minimize beamwidth of an array with arbitrary 2-D geometry
 %  line_array_spec_fact.m         - Minimize sidelobe level of a uniform linear array via spectral factorization

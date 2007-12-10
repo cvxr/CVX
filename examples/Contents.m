@@ -1,8 +1,10 @@
-%  antenna_array_design/       - Antenna array design 
+% CVX example library
+%
+%  antenna_array_design/       - Antenna array design
 %  circuit_design/             - Circuit design
-%  cvxbook/                    - Figures, examples, and exercises from Boyd & Vandenberghe, "Convex Optimization"
+%  cvxbook/                    - Figures, examples, and exercises from the book [http://stanford.edu/~boyd/cvxbook Convex Optimization]
 %  filter_design/              - Filter design
-%  gp_tutorial/                - Geometric programming
+%  gp_tutorial/                - Examples from [http://stanford.edu/~boyd/papers/gp_tutorial.html A Tutorial on Geometric Programming]
 %  graph_laplacian/            - Graph Laplacian eigenvalue optimization
 %  sparse_heuristics/          - Sparse solution heuristics
 %  quickstart.m                - Examples from the CVX User's guide
