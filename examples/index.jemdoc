@@ -17,7 +17,8 @@ just the source code itself.
 
 Of course, to run any examples yourself, you will need to have
 CVX installed; so if necessary, please proceed to the
-[../download.html CVX download page] to get it. The package
+[http://stanford.edu/~boyd/cvx/download.html CVX download page] to 
+get it. The package
 includes a complete copy of these examples---including this
 web page, which can then be browsed off-line.
 
