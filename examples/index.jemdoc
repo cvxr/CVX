@@ -1,9 +1,9 @@
 # jemdoc: menu{MENU}{index.html},addcss{cvx.css},addcss{mktree.css},showsource
 = CVX: Matlab Software for\nDisciplined Convex Programming
 Version ___VERSION___ (___TDATE___, Build ___BUILD___)\n
-[http://www.stanford.edu/~mcgrant Michael Grant],
-[http://www.stanford.edu/~boyd Stephen Boyd],
-[http://www.stanford.edu/~yyye Yinyu Ye]
+[http://stanford.edu/~mcgrant Michael Grant],
+[http://stanford.edu/~boyd Stephen Boyd],
+[http://stanford.edu/~yyye Yinyu Ye]
 
 == Example library
 
@@ -26,11 +26,11 @@ any way you wish; but when you do, we request that you give
 appropriate credit to the authors. A number of people have
 contributed to the examples in this library, including 
 [http://www.ee.ucla.edu/~vandenbe Lieven Vandenberghe],
-[http://www.stanford.edu/~jskaf Joëlle Skaf],
-[http://www.stanford.edu/~azymnis Argyris Zymnis],
-[http://www.stanford.edu/~almirm Almir Mutapcic],
-[http://www.stanford.edu/~mcgrant Michael Grant], and
-[http://www.stanford.edu/~boyd Stephen Boyd].
+[http://stanford.edu/~jskaf Joëlle Skaf],
+[http://stanford.edu/~azymnis Argyris Zymnis],
+[http://stanford.edu/~almirm Almir Mutapcic],
+[http://stanford.edu/~mcgrant Michael Grant], and
+[http://stanford.edu/~boyd Stephen Boyd].
 
 ~~~
 {}{raw}

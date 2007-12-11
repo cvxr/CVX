@@ -10,6 +10,7 @@ SVN=`svn info | grep '^Repository Root: ' | sed 's/^Repository Root: *//'`
 
 # Key subdirectories / sub-repositories
 DST=$SRC/WWW
+STG=$SRC/dist
 CPY=$SRC/tmp
 CVX=$CPY/cvx
 TEX=$CPY/doc
@@ -61,10 +62,13 @@ SEDSTR="$SEDSTR;s@___PDF___@$MYPDF@"
 cp cvx_usrguide.pdf $CVX
 cp cvx_usrguide.pdf $DST
 cd $EXC
-sed "$SEDSTR;s@menu{MENU}{index.html}@@" index.jemdoc > index.jemdoc.new
+sed "$SEDSTR;s@menu{MENU}{index.html},@@" index.jemdoc > index.jemdoc.new
 mv -f index.jemdoc.new index.jemdoc
 cp -f $TEX/*.css $EXC
 jemdoc index.jemdoc
+sed 's@<li></li>@@' index.html > index.html.new
+mv -f index.html.new index.html
+
 /bin/echo done.
 
 /bin/echo -n Creating the archives...
@@ -75,7 +79,7 @@ tar cfz $TAR cvx >/dev/null
 zip -r -9 $ZIP cvx >/dev/null
 MYZIP=`du -h $ZIP | sed 's@\([0-9.]*.\).*@\1B@'`
 MYTAR=`du -h $TAR | sed 's@\([0-9.]*.\).*@\1B@'`
-SEDSTR="$SEDSTR;;s@___ZIP___@$MYZIP@;s@___TAR___@$MYTAR@;s@___PDF___@$MYPDF@"
+SEDSTR="$SEDSTR;s@___ZIP___@$MYZIP@;s@___TAR___@$MYTAR@;s@___PDF___@$MYPDF@"
 /bin/echo done.
 
 /bin/echo -n Updating the web pages...
@@ -85,19 +89,32 @@ sed "$SEDSTR" $TEX/download.jemdoc > $DST/download.jemdoc
 sed "$SEDSTR" $TEX/history.jemdoc  > $DST/history.jemdoc
 sed "$SEDSTR" $TEX/index.jemdoc    > $DST/index.jemdoc
 sed "$SEDSTR" $TEX/license.jemdoc  > $DST/license.jemdoc
-sed "$SEDSTR" $EXD/index.jemdoc    > $EXD/index.jemdoc.new
+sed "$SEDSTR;s@<li></li>@@" $EXD/index.jemdoc    > $EXD/index.jemdoc.new
 mv -f $EXD/index.jemdoc.new $EXD/index.jemdoc
-cp -f $TEX/MENU $TEX/*.{conf,css,png,gif} $DST
+cp -f $TEX/MENU $TEX/*.{conf,css} $DST
 cp -f $TEX/*.css $EXD
 cd $DST
 jemdoc -c jemdoc.conf *.jemdoc
 cd $EXD
 jemdoc -c $DST/jemdoc.conf index.jemdoc
+sed 's@<li></li>@@' index.html > index.html.new
+mv -f index.html.new index.html
 /bin/echo done.
 
 /bin/echo -n Cleaning up...
 chmod -fR a+r,ug+w $DST
 rm -rf $CPY
 /bin/echo done.
-/bin/echo Staging directory $DST completed.
+
+/bin/echo -n Updating local distribution copy...
+rm -rf $STG
+mkdir -p $STG
+cd $STG
+tar xfz $DST/cvx.tar.gz
+mv cvx cvx.foo
+mv cvx.foo/* .
+rmdir cvx.foo
+echo done.
+
+/bin/echo Staging directories $DST and $STG completed.
 

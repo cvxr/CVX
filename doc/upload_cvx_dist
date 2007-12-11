@@ -12,13 +12,3 @@ rsync -rlv --delete -e ssh $WWWDIR/ $WWWDST/
 echo Updating: $WWWDIR --\> $BYDDST
 rsync -rlv --delete -e ssh $WWWDIR/ $BYDDST/
 
-/bin/echo -n Updating local distribution copy...
-rm -rf $DSTDIR
-mkdir -p $DSTDIR
-cd $DSTDIR
-tar xfz $WWWDIR/cvx.tar.gz
-mv cvx cvx.foo
-mv cvx.foo/* .
-rmdir cvx.foo
-echo done.
-

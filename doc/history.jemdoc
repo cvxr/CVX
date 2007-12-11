@@ -1,9 +1,9 @@
 # jemdoc: menu{MENU}{history.html},addcss{cvx.css},showsource
 = CVX: Matlab Software for\nDisciplined Convex Programming
 Version ___VERSION___ (___TDATE___, Build ___BUILD___)\n
-[http://www.stanford.edu/~mcgrant Michael Grant],
-[http://www.stanford.edu/~boyd Stephen Boyd],
-[http://www.stanford.edu/~yyye Yinyu Ye]
+[http://stanford.edu/~mcgrant Michael Grant],
+[http://stanford.edu/~boyd Stephen Boyd],
+[http://stanford.edu/~yyye Yinyu Ye]
 
 == Version history
 :{0.80, July 2005:}
@@ -88,7 +88,7 @@ Bug fix release.
 :{1.0 beta 3, June 2006:}
 Bug fix and performance improvement release. This release
 incorporates quite a few fixes reported by students in Stephen
-Boyd's [http://www.stanford.edu/class/ee364 convex optimization class].
+Boyd's [http://stanford.edu/class/ee364 convex optimization class].
 Many thanks to them /and/ to all
 of our faithful users for their testing and reports.
 
