@@ -187,6 +187,7 @@ mpath = cd;
 title = '';
 if ~runonly,
     comments = {};
+    fcomments = {};
     [ fidr, message ] = fopen( 'Contents.m', 'r' );
     if fidr >= 0,
         temp = fgetl( fidr );
@@ -199,6 +200,11 @@ if ~runonly,
                 if strcmp(title(end-2:end),'...'),
                     title = [ title(1:end-3), temp ];
                 else
+                    if ~isempty(fcomments) & strcmp( fcomments{end}(end-2:end),'...' ),
+                        fcomments{end} = [ fcomments{end}(1:end-3), temp ];
+                    else
+                        fcomments{end+1} = temp;
+                    end
                     comments{end+1} = temp;
                 end
             end
@@ -258,14 +264,24 @@ if ~isempty( files ),
     tdir  = strcmp( ftypes, 'dir' );
     tfun  = strcmp( ftypes, 'func' );
     tdoc  = strcmp( ftypes, 'doc' ) | strcmp( ftypes, 'tex' );
-    tscr  = ~( tdir | tfun | tdoc );
+    tdat  = strcmp( ftypes, 'dat' ) | strcmp( ftypes, 'mat' ) | strcmp( ftypes, 'txt' );
+    tscr  = ~( tdir | tfun | tdoc | tdat );
     t1    = strncmp( fnames, 'Exercise', 8 ) & tscr;
     t2    = strncmp( fnames, 'Example',  7 ) & tscr;
     t3    = strncmp( fnames, 'Section',  7 ) & tscr;
-    t4    = strncmp( fnames, 'Figure', 6 ) & tscr;
+    t4    = strncmp( fnames, 'Figure',   6 ) & tscr;
     t5    = ~( t1 | t2 | t3 | t4 ) & tscr;
-    ndxs  = [ find(tdir(:)); find(t3(:)); find(t2(:)); find(t4(:)); find(t5(:)); find(t1(:)) ; find(tfun(:)) ; find(tdoc(:)) ];
-    files = files(ndxs);
+    tdir  = find(tdir(:));
+    tscr  = [ find(t3(:)); find(t4(:)); find(t5(:)); find(t1(:)); ];
+    tfun  = find(tfun(:));
+    tdoc  = find(tdoc(:));
+    tdat  = find(tdat(:));
+    files = files( [ tdoc ; tdir ; tscr ; tfun ; tdat ] );
+    tdoc  = [ 1, length(tdoc) ];
+    tdir  = tdoc(end) + [ 1, length(tdir) ];
+    tscr  = tdir(end) + [ 1, length(tscr) ];
+    tfun  = tscr(end) + [ 1, length(tfun) ];
+    tdat  = tfun(end) + [ 1, length(tdat) ];
 end
 
 %
@@ -286,85 +302,72 @@ if fidc >= 0,
         fprintf( fidc, '%s *%s*\n', dots, title );
     end
     
-    if any( tdir ),
-        for k = 1 : length( files ),
-            if strcmp( files(k).type, 'dir' ),
-                files(k).title = generate_directory( files(k).name(1:end-1), prefix, force, runonly, indexonly, fidc, base, depth+1 );
-                cd(mpath);
+    if tdoc(2) >= tdoc(1) | ~isempty( fcomments ),
+        if 1, % tdoc(2) - tdoc(1) + length(fcomments) == 0,
+            pref = '- Reference: ';
+        else
+            fprintf( fidc, '%s- References:\n', dots );
+            pref = '-- ';
+        end
+        for k = tdoc(1) : tdoc(2),
+            name = files( k ).name;
+            if strcmp( files(k).type, 'tex' ),
+                name = [ name(1:end-4), 'pdf' ];
+            end
+            temp = files( k ).title;
+            if isempty( temp ),
+                fprintf( fidc, '%s%s[%s%s %s]\n', dots, pref, dpath, name, name );
+            else
+                fprintf( fidc, '%s%s[%s%s %s (%s)]\n', dots, pref, dpath, name, temp, name );
             end
         end
+        for k = 1 : length(fcomments),
+            fprintf( fidc, '%s%s%s\n', dots, pref, fcomments{k} );
+        end
+    end
+
+    for k = tdir(1) : tdir(2),
+        files(k).title = generate_directory( files(k).name(1:end-1), prefix, force, runonly, indexonly, fidc, base, depth+1 );
+        cd(mpath);
     end
     
     if depth==1,
         dots(end+1) = '-';
     end
     
-    if any( tscr ),
+    if tscr(2) >= tscr(1),
         if depth == 1,
             fprintf( fidc, '%s *Miscellaneous examples*\n', dots );
         end
-        for k = 1 : length( files ),
-            if strcmp( files(k).type, 'script' ),
-                name = files( k ).name;
-                temp = files( k ).title;
-                if isempty( temp ),
-                    fprintf( fidc, '%s- [%s%s %s]\n', dots, dpath, name, name );
-                else
-                    fprintf( fidc, '%s- [%shtml/%shtml %s] ([%s%s %s])\n', dots, dpath, name(1:end-1), temp, dpath, name, name );
-                end
+        for k = tscr(1) : tscr(2),
+            name = files( k ).name;
+            temp = files( k ).title;
+            if isempty( temp ),
+                fprintf( fidc, '%s- [%s%s %s]\n', dots, dpath, name, name );
+            else
+                fprintf( fidc, '%s- [%shtml/%shtml %s] ([%s%s %s])\n', dots, dpath, name(1:end-1), temp, dpath, name, name );
             end
         end
     end
 
-    if any( tfun ),
-        fprintf( fidc, '%s- Utility functions:\n', dots );
-        for k = 1 : length( files ),
-            if strcmp( files(k).type, 'func' ),
-                name = files( k ).name;
-                temp = files( k ).title;
-                if isempty( temp ),
-                    fprintf( fidc, '%s-- [%s%s %s]\n', dots, dpath, name, name );
-                else
-                    fprintf( fidc, '%s-- [%s%s %s (%s)]\n', dots, dpath, name, temp, name );
-                end
+    if tfun(2) >= tfun(1),
+        if 1, % tfun(1) == tfun(2),
+            pref = '- Utility: ';
+        else
+            fprintf( fidc, '%s- Utilities:\n', dots );
+            pref = '-- ';
+        end
+        for k = tfun(1) : tfun(2),
+            name = files( k ).name;
+            temp = files( k ).title;
+            if isempty( temp ),
+                fprintf( fidc, '%s%s[%s%s %s]\n', dots, pref, dpath, name, name );
+            else
+                fprintf( fidc, '%s%s[%s%s %s (%s)]\n', dots, pref, dpath, name, temp, name );
             end
         end
     end
     
-    if any( tdoc ) | ~isempty( comments ),
-        fprintf( fidc, '%s- Documentation:\n', dots );
-        if any( tdoc ),
-            for k = 1 : length( files ),
-                if strcmp( files(k).type, 'doc' ) | strcmp( files(k).type, 'tex' ),
-                    name = files( k ).name;
-                    if strcmp( files(k).type, 'tex' ),
-                        name = [ name(1:end-4), 'pdf' ];
-                    end
-                    temp = files( k ).title;
-                    if isempty( temp ),
-                        fprintf( fidc, '%s-- [%s%s %s]\n', dots, dpath, name, name );
-                    else
-                        fprintf( fidc, '%s-- [%s%s %s (%s)]\n', dots, dpath, name, temp, name );
-                    end
-                end
-            end
-        end
-        if ~isempty( comments ),
-            k = 1;
-            while k <= length(comments),
-                temp = comments{k};
-                fprintf( fidc, '%s-- ', dots );
-                while k<length(comments) & length(temp)>=3 & strcmp(temp(end-2:end),'...'),
-                    fprintf( fidc, '%s ', temp(1:end-3) );
-                    k = k + 1;
-                    temp = comments{k};
-                end
-                fprintf( fidc, '%s\n', temp );
-                k = k + 1;
-            end
-        end
-    end
-
 elseif any( tdir ),
     
     for k = 1 : length( files ),

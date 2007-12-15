@@ -2,9 +2,6 @@
 %
 %  separate_pt_poly.m           - Section 8.1.1: Separating a point from a polyhedron
 %  separate_poly_2D.m           - Section 8.2.2: Separating polyhedra in 2D
-%  ex_8_3.m                     - Example 8.3: Bounding correlation coefficients
-%  ex_8_4.m                     - Example 8.4: One free point localization
-%  test_floorplan.m             - Example 8.7: Floorplan generation test script
 %  svm_1.m                      - Figure 8.10: Approximate linear discrimination via linear programming
 %  svm_2.m                      - Figure 8.11: Approximate linear discrimination via support vector classifier
 %  placement_lin.m              - Figure 8.15: Linear placement problem

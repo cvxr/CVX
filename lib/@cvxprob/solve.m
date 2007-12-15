@@ -121,7 +121,7 @@ elseif infeas,
     x = NaN * ones( n, 1 );
     b( ~tt ) = 0;
     y = - b / ( b' * b );
-    value = sgn * Inf;
+    oval = sgn * Inf;
     pval = NaN;
     dval = 0;
     
@@ -137,7 +137,7 @@ else
     status = 'Solved';
     x = zeros( n, 1 );
     y = zeros( m, 1 );
-    value = sgn * d;
+    oval = sgn * d;
     pval = 1;
     dval = 1;
     
@@ -189,6 +189,7 @@ if ~isempty( obj ),
     end
     oval(gobj) = exp(oval(gobj));
 end
+oval = full(oval);
 cvx___.problems( p ).result = oval;
 if ~quiet,
     if length( oval ) == 1,
