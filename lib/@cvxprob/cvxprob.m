@@ -14,6 +14,7 @@ case 0,
         ndx = find( [ cvx___.problems.depth ] >= depth );
         if ~isempty( ndx ),
             cvx_pop( cvx___.problems( ndx(1) ).self, 'reset' );
+            if ndx == 1, cvx_setpath( 1 ); end
         end
     end
     

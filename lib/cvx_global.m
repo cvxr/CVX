@@ -144,7 +144,7 @@ if isempty( cvx___ ),
             opath = [ cvx___.path.string, opath ];
         end
         if ~isempty( cvx___.path.sactive ),
-            opath = [ getfield( spaths, cvx___path.sactive ), opath ];
+            opath = [ getfield( spaths, cvx___.path.sactive ), opath ];
         end
         s = warning('off');
         matlabpath(opath);

@@ -17,15 +17,17 @@ if ~cvx___.path.active,
     end
     cvx___.path.active = true;
 end
-if nargin == 0,
+if nargin == 0 | cvx___.path.hold,
     cvx___.path.hold = true;
     if isempty(cvx___.problems),
         nsolv = cvx___.solver;
     else
         nsolv = cvx___.problems(end).solver;
     end
-    cvx_setspath(nsolv);
+else
+    nsolv = '';
 end
+cvx_setspath(nsolv);
 
 % Copyright 2007 Michael C. Grant and Stephen P. Boyd.
 % See the file COPYING.txt for full copyright information.

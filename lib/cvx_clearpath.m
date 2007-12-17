@@ -9,7 +9,6 @@ function cvx_clearpath( arg )
 cvx_global
 if nargin == 0,
     cvx___.path.hold = false;
-    cvx_setspath('');
 end
 if cvx___.path.hold,
     if isempty( cvx___.problems ),
@@ -19,6 +18,7 @@ if cvx___.path.hold,
     end
     cvx_setspath( nsolv );
 elseif cvx___.path.active & isempty( cvx___.problems ),
+    cvx_setspath( '' );
     if ~isempty( cvx___.path.string ),
         cpath = matlabpath;
         temp = strfind( cpath, cvx___.path.string );
