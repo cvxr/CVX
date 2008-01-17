@@ -20,7 +20,7 @@ error( nargchk( 1, 1, nargin ) );
 persistent remap
 if isempty( remap ),
     remap_1 = cvx_remap( 'constant' );
-    remap_2 = cvx_remap( 'real-affine' );
+    remap_2 = cvx_remap( 'real-affine', 'concave' );
     remap_3 = cvx_remap( 'log-convex', 'log-concave' );
     remap = remap_1 + ( 2 * remap_2 + 3 * remap_3 ) .* ~remap_1;
 end
