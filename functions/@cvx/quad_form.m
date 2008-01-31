@@ -138,7 +138,7 @@ else
             end
         end
         if ~valid,
-            valid = normest( Q - R' * R ) < tol * normest( Q );
+            valid = false; % normest( Q - R' * R ) < tol * normest( Q );
         end
         
         %
@@ -151,6 +151,9 @@ else
             alpha = alpha * Dmax * Dmax;
         else
             [ V, D ] = eig( full( Q ) );
+            if cvx_use_sparse( V ),
+                V = sparse( V );
+            end
             D = diag( D );
             Dmax = max( D );
             Derr = tol * Dmax;
@@ -159,7 +162,7 @@ else
             end
             tt = find( D > Derr );
             alpha = alpha * Dmax;
-            R = diag( sqrt( D( tt ) / Dmax ) ) * V( :, tt )';
+            R = diag(sparse(sqrt(D(tt)/Dmax))) * V( :, tt )';
         end
 
         cvx_optval = alpha * sum_square_abs( R * x );
