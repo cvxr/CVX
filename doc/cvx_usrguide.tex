@@ -1448,7 +1448,6 @@ using the \cvx ruleset, so it is rejected by \cvx.
 We call this the \emph{no-product rule},
 and paying close attention to it will go a long way to insuring that the
 expressions you construct are valid.
-%XXX i bet we can add x^1.5 as a new fct via epigraphs, though.
 
 The function $\sqrt{x^2+1}$, written as the expression 
 \verb@sqrt(x^2+1)@, is another example of a convex 
@@ -1649,7 +1648,7 @@ expression
 sqrt(f'*x) + min(4,1.3-norm(A*x-b))
 \end{code}
 as concave. Consider the term \verb@sqrt(f'*x)@. \cvx
-recognizes that \verb@sqrt@ is convex and \verb@f'*x@ is affine,
+recognizes that \verb@sqrt@ is concave and \verb@f'*x@ is affine,
 so it concludes that \verb@sqrt(f'*x)@ is concave. Now consider
 the second term \verb@min(4,1.3-norm(A*x-b))@. \cvx
 recognizes that \verb@min@ is concave and nondecreasing, so

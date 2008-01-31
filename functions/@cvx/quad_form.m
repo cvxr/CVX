@@ -123,8 +123,7 @@ else
         if cvx_use_sparse( Q ),
             Q = sparse( Q );
             prm = symamd( Q );
-            Q = Q( prm, prm );
-            R = cholinc( Q, 'inf' );
+            R = cholinc( Q( prm, prm ), 'inf' );
             R( :, prm ) = R;
             tt = any( isinf( R ), 2 );
             valid = ~any( tt );
