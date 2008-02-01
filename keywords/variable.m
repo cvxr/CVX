@@ -89,7 +89,7 @@ for k = 1 : length( varargin ),
     if isempty( strs ),
         continue;
     elseif ~ischar( strs ) | size( strs, 1 ) ~= 1,
-        error( 'Structure modifiers must be strings.' );
+        error( 'Matrix structure modifiers must be strings.' );
     end
     switch strs,
         case 'geometric_',
@@ -109,22 +109,30 @@ for k = 1 : length( varargin ),
             filt( k ) = false;
             continue;
     end
+    valid = true;
     xt = find( strs == '(' );
     if isempty( xt ),
         nm = strs;
     elseif strs( end ) ~= ')',
-        error( sprintf( 'Invalid structure modifier: %s', strs ) );
+        valid = false;
     else
         nm = strs( 1 : xt(1) - 1 );
         strx.name = nm;
         strx.args = evalin( 'caller', [ '{', strs(xt(1)+1:xt(1)-1), '}' ], 'NaN' );
         if ~iscell( strx ),
-            error( sprintf( 'Invalid structure modifier: %s', strs ) );
+            valid = false;
         end
         varargin{k} = strx;
     end
-    if ~isvarname( nm ),
-        error( sprintf( 'Invalid structure modifier: %s', strs ) );
+    if valid,
+        valid = isvarname( nm ) & exist( [ 'cvx_s_', nm ] ) == 2;
+    end
+    if valid,
+        modifiers = [ modifiers, ' ', strs ];
+    elseif isvarname( nm ),
+        error( sprintf( 'Invalid matrix structure modifier: %s\nTrying to declare multiple variables? Use the VARIABLES keyword instead.', strs ) );
+    else
+        error( sprintf( 'Invalid matrix structure modifier: %s', strs ) );
     end
     modifiers = [ modifiers, ' ', strs ];
 end
@@ -137,10 +145,10 @@ else
     str = [];
 end
 if isgeo & islin,
-    error( 'GEOMETRIC and LINEAR keywords used simultaneously.' );
+    error( 'GEOMETRIC and LINEAR keywords cannot be used simultaneously.' );
 end
 if isepi & ishypo,
-    error( 'EPIGRAPH and HYPOGRAPH keywords used simultaneously.' );
+    error( 'EPIGRAPH and HYPOGRAPH keywords cannot be used simultaneously.' );
 end
 geo = isgeo | ( ~islin & cvx___.problems( p ).gp );
 v = newvar( prob, x.name, x.size, str, geo );
