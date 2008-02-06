@@ -6,7 +6,7 @@ function y = square_abs( x )
 %   a real array whose elements are the squares of the magnitudes of the
 %   elements of X; that is, SQUARE_ABS(X) = CONJ(X).*X.
 %
-%   Disciplined quadratic programming information:
+%   Disciplined convex programming information:
 %       SQUARE_ABS(X) is convex and nonmonotonic in X. Thus when used in 
 %       CVX expressions, X must be affine.
 

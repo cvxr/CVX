@@ -4,7 +4,7 @@ function y = exp( x )
 %   EXP(X) is the exponential of the elements of X, e to the X.
 %   For complex Z=X+i*Y, EXP(Z) = EXP(X)*(COS(Y)+i*SIN(Y)).
 %
-%   Disciplined quadratic programming information:
+%   Disciplined convex programming information:
 %       EXP(X) is convex and nondecreasing in X. When used in CVX
 %       expressions, X must be real. Typically, X must also be affine
 %       or convex; X can also be concave, but this produces a log-concave

@@ -13,10 +13,11 @@ function y = log( x )
 % Determine the expression types
 %
 
+global cvx___
 persistent remap
 if isempty( remap ),
     remap_1 = cvx_remap( 'constant' );
-    remap_2 = cvx_remap( 'real-affine' ) & ~remap_1;
+    remap_2 = cvx_remap( 'real-affine', 'concave' ) & ~remap_1;
     remap_3 = cvx_remap( 'monomial' );
     remap_4 = cvx_remap( 'posynomial' );
     remap   = remap_1 + 2 * remap_2 + 3 * remap_3 + 4 * remap_4;
@@ -58,21 +59,18 @@ for k = 1 : nv,
             % Constant
             yt = log( cvx_constant( xt ) );
         case 2,
-            % Affine (invalid)
-            error( sprintf( 'Disciplined convex programming error:\n    Logarithms of affine expressions are not yet supported.' ) );
+            % Affine, convex (invalid)
+            error( sprintf( 'Disciplined convex programming error:\n    Logarithms of affine and concave expressions are not yet supported.' ) );
         case 3,
             % Monomial
             nb = prod( xt.size_ );
             [ rx, cx, vx ] = find( xt.basis_ );
-            nx = length( rx );
-            global cvx___
             logs = cvx___.logarithm( rx, 1 );
             tt = vx ~= 1; nt = sum( tt );
             bx = sparse( [ ones( nt, 1 ) ; logs ], [ cx( tt ) ; cx ], [ log( vx( tt ) ) ; ones( nb, 1 ) ], max( logs ), size( xt.basis_, 2 ) );
             yt = cvx( xt.size_, bx );
         case 4,
             % Posynomial
-            global cvx___
             sx = xt.size_;
             xt = xt.basis_;
             rc = sum( xt ~= 0, 1 );
@@ -81,8 +79,8 @@ for k = 1 : nv,
             if nu ~= 1,
                 yt = cvx( sx, [] );
             end
-            for k = 1 : nu,
-                rk = ru( k );
+            for kk = 1 : nu,
+                rk = ru( kk );
                 if nu == 1,
                     xtt = xt;
                 else
@@ -90,7 +88,7 @@ for k = 1 : nv,
                     xtt = xt( :, tt );
                 end
                 [ rx, cx, vx ] = find( xtt );
-                rx = rx( : ); cx = cx( : ); vx = vx( : );
+                rx = rx( : ); vx = vx( : );
                 nq = length( vx );
                 vx = log( vx );
                 tz = rx ~= 1;

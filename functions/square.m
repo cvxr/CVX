@@ -4,7 +4,7 @@ function y = square( x )
 %   SQUARE(X) is an array of the same size as X, whose elements are the
 %   squares of the elements of X.
 %
-%   Disciplined quadratic programming information:
+%   Disciplined convex programming information:
 %       If X is real, then SQUARE(X) is convex and nonmonotonic in X. If X
 %       is complex, then SQUARE(X) is neither convex nor concave. Thus when
 %       when use in CVX expressions, X must be real and affine.

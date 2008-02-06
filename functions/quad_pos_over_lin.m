@@ -17,7 +17,7 @@ function z = quad_pos_over_lin( x, y, dim )
 %   In all cases, both X and Y must be real, and Y must either be a scalar 
 %   or a matrix of the same size as SUM(X,DIM).
 %
-%   Disciplined quadratic programming information:
+%   Disciplined convex programming information:
 %       QUAD_POS_OVER_LIN is convex, nondecreasing in X, and nonincreasing 
 %       in Y. Thus when used with CVX expressions, X must be convex (or 
 %       affine) and Y must be concave (or affine).

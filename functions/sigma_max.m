@@ -4,7 +4,7 @@ function z = sigma_max( x )
 %   SIGMA_MAX(X) returns the maximum singular value of X. X must be a 2-D
 %   matrix, real or complex. SIGMA_MAX(X) is synonymous with NORM(X).
 %
-%   Disciplined quadratic programming information:
+%   Disciplined convex programming information:
 %       SIGMA_MAX(X) is convex and nonmontonic in X, so X must be affine.
 
 error( nargchk( 1, 1, nargin ) );

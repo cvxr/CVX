@@ -4,7 +4,7 @@ function y = square_pos( x )
 %   SQUARE_POS(X) is the square of the postive parts of the elements of X;
 %   i.e., SQUARE_POS(X)=MAX(X,0).^2. X must be real.
 %
-%   Disciplined quadratic programming information:
+%   Disciplined convex programming information:
 %       SQUARE_POS(X) is convex and nondecreasing in X. Thus when used in
 %       CVX expressions, X must be convex (or affine).
 

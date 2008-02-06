@@ -16,7 +16,7 @@ function z = quad_over_lin( x, y, dim )
 %   In all cases, Y must be compatible in the same sense as ./ with the squared
 %   sum; that is, Y must be a scalar or the same size as SUM(ABS(X).^2,DIM).
 %
-%   Disciplined quadratic programming information:
+%   Disciplined convex programming information:
 %       QUAD_OVER_LIN is convex, nonmontonic in X, and nonincreasing in Y.
 %       Thus when used with CVX expressions, X must be convex (or affine)
 %       and Y must be concave (or affine).

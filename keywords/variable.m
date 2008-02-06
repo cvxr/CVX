@@ -1,4 +1,4 @@
-function varargout = matrix( nm, varargin )
+function varargout = variable( nm, varargin )
 
 %VARIABLE Declares a single CVX variable with optional matrix structure.
 %   VARIABLE x
@@ -56,6 +56,10 @@ if ~isvarname( x.name ),
     error( sprintf( 'Invalid variable specification: %s', nm ) );
 elseif x.name( end ) == '_',
     error( sprintf( 'Invalid variable specification: %s\n   Variables ending in underscores are reserved for internal use.', nm ) );
+elseif exist( [ 'cvx_s_', x.name ], 'file' ) == 2,
+    error( sprintf( [ 'Invalid variable specification: %s\n', ...
+        '   The name "%s" is reserved as a matrix structure modifier,\n', ...
+        '   which can be used only with the VARIABLE keyword.' ], nm, x.name ) );
 end
 
 %
@@ -125,12 +129,14 @@ for k = 1 : length( varargin ),
         varargin{k} = strx;
     end
     if valid,
-        valid = isvarname( nm ) & exist( [ 'cvx_s_', nm ] ) == 2;
+        valid = isvarname( nm ) & exist( [ 'cvx_s_', nm ], 'file' ) == 2;
     end
     if valid,
         modifiers = [ modifiers, ' ', strs ];
     elseif isvarname( nm ),
-        error( sprintf( 'Invalid matrix structure modifier: %s\nTrying to declare multiple variables? Use the VARIABLES keyword instead.', strs ) );
+        error( sprintf( [ 'Invalid matrix structure modifier: %s\n', ...
+            'Trying to declare multiple variables? Use the VARIABLES keyword instead.' ...
+            ], strs ) );
     else
         error( sprintf( 'Invalid matrix structure modifier: %s', strs ) );
     end

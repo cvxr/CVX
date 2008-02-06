@@ -6,7 +6,7 @@ function y = quad_form( x, Q )
 %   x must be a row or column vector, and Q must either be a scalar or
 %   a square matrix with the same number of rows as x(:).
 %
-%   Disciplined quadratic programming information:
+%   Disciplined convex programming information:
 %       QUAD_FORM(x,Q) is neither convex nor concave in x and Q jointly,
 %       so at least one of the two arguments must be constant.
 %
