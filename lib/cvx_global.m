@@ -85,7 +85,7 @@ if isempty( cvx___ ),
     subs = { 'sdpt3/Solver', 'sdpt3/SolverHSD', 'sdpt3/Solver/Mexfun', 'sdpt3/Linsysolver/spchol', 'sedumi' };
     nsolver = length( subs );
     miss_solv = 0;
-    if cvx___.mversion >= 6.5,
+    if cvx___.mversion >= 7.0,
         subs{end+1} = 'keywords';
         subs{end+1} = 'sets';
     end
