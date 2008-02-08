@@ -4,10 +4,10 @@ function [ x, y, status ] = cvx_solve_sdpt3( At, b, c, nonls, quiet, prec )
 
 %
 % Add an extra row and column if needed---SDPT3 can't handle empty
-% equality constraints
+% equality constraints or square systems
 %
 
-mzero = m == 0 | isempty( nonls );
+mzero = m == 0 | isempty( nonls ) | m == n;
 if mzero,    
     n = n + 1;
     c = [ c ; 0 ];
@@ -28,6 +28,7 @@ if mzero,
     nonls(end+1).type = 'nonnegative';
     nonls(end).indices = n;
 end
+    
 
 types = { nonls.type };
 indices = { nonls.indices };
