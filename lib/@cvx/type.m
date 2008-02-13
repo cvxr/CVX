@@ -13,16 +13,16 @@ isr = isreal( x.basis_ );
 
 if len == 1,
     isstruct = 0;
+    nzs = len;
     if ~isr,
         st = 'complex scalar';
     else
         st = 'scalar';
     end
 else
-    if isempty( df ),
-        isstruct = false;
-    else
-        isstruct = df < ( 2 - isr ) * len;
+    isstruct = ~isempty( df ) & ( sum( df ) < ( 2 - isr ) * len );
+    if ~isstruct,
+        nzs = nnz( any( x.basis_, 1 ) );
     end
     nd = length( s );
     st = sprintf( '%dx', s );
@@ -43,7 +43,13 @@ end
 %    st = [ st, ' constant' ];
 %end
 if isstruct,
-    st = sprintf( '%s: %d d.o.f.', st, df );
+    st = sprintf( '%s, %d d.o.f.', st, df );
+elseif nzs < len,
+    if nzs > 1,
+        st = sprintf( '%s, %d nonzeros', st, nzs );
+    else
+        st = sprintf( '%s, 1 nonzero', st );
+    end
 end
 if geo,
     st = [ st, ', geometric' ];

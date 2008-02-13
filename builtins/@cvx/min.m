@@ -6,6 +6,7 @@ function z = min( x, y, dim )
 %       both arguments must be concave (or affine). In disciplined 
 %       geometric programs, both arguments must be log-concave/affine.
 
+persistent remap remap_1 remap_2 remap_3
 error( nargchk( 1, 3, nargin ) );
 if nargin == 2,
 
@@ -29,19 +30,18 @@ if nargin == 2,
     % Determine the computation methods
     %
 
-    persistent remap
     if isempty( remap ),
-        remap_1 = cvx_remap( 'real' );
-        remap_1 = remap_1' * remap_1;
-        remap_2 = cvx_remap( 'log-concave' )' * cvx_remap( 'nonpositive' );
-        remap_3 = remap_2';
-        remap_4 = cvx_remap( 'log-concave', 'real' );
-        remap_4 = remap_4' * remap_4;
-        remap_5 = cvx_remap( 'concave' );
-        remap_5 = remap_5' * remap_5;
-        remap   = remap_1 + ~remap_1 .* ...
-            ( 2 * remap_2 + 3 * remap_3 + ~( remap_2 | remap_3 ) .* ...
-            ( 4 * remap_4 + ~remap_4 .* ( 5 * remap_5 ) ) );
+        remap1 = cvx_remap( 'real' );
+        remap1 = remap1' * remap1;
+        remap2 = cvx_remap( 'log-concave' )' * cvx_remap( 'nonpositive' );
+        remap3 = remap2';
+        remap4 = cvx_remap( 'log-concave', 'real' );
+        remap4 = remap4' * remap4;
+        remap5 = cvx_remap( 'concave' );
+        remap5 = remap5' * remap5;
+        remap   = remap1 + ~remap1 .* ...
+            ( 2 * remap2 + 3 * remap3 + ~( remap2 | remap3 ) .* ...
+            ( 4 * remap4 + ~remap4 .* ( 5 * remap5 ) ) );
     end
     vx = cvx_classify( x );
     vy = cvx_classify( y );
@@ -157,8 +157,7 @@ else
     % Type check
     %
 
-    persistent remap2
-    if isempty( remap2 ),
+    if isempty( remap_3 ),
         remap_1 = cvx_remap( 'real' );
         remap_2 = cvx_remap( 'log-concave', 'real' );
         remap_3 = cvx_remap( 'concave' );
@@ -221,7 +220,7 @@ else
             case 0,
                 error( sprintf( 'Disciplined convex programming error:\n   Invalid computation: min( {%s} )', cvx_class( xt, false, true ) ) );
             case 1,
-                cvx_optval = min( cvx_constant( xt ), dim );
+                cvx_optval = min( cvx_constant( xt ), [], dim );
             case 2,
                 cvx_begin gp
                     hypograph variable zt( 1, nv )

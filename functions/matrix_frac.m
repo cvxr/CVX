@@ -14,17 +14,14 @@ function z = matrix_frac( x,Y )
 
 error( nargchk( 2, 2, nargin ) );
 if ndims( Y ) > 2 | size( Y, 1 ) ~= size( Y, 2 ),
-
     error( 'Second argument must be a square matrix.' );
-
-elseif any( any( Y ~= Y' ) ) | min(eig(Y))<=0,
-
+end
+err = Y - Y';
+Y   = 0.5 * ( Y + Y' );
+if norm( err, 'fro' ) > 8 * eps * norm( Y, 'fro' ) | min(eig(Y)) <= 0,
     z = Inf;
-
 else
-
     z = x'*(Y\x);
-
 end
 
 % Copyright 2007 Michael C. Grant and Stephen P. Boyd.
