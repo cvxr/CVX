@@ -1,84 +1,126 @@
-function z = cvxprob( x )
+function z = cvxprob( varargin )
 
-global cvx___
+if ~iscellstr( varargin ),
+    error( 'Arguments must be strings.' );
+end
 
-switch nargin,
+%
+% Clear out any old problems left at this depth. These will be here due to
+% an error while constructing a CVX model, or due to the user deciding to
+% start over when constructing a model
+%
 
-case 0,
-
+cvx_global
+st = dbstack;
+depth = length( st ) - 2;
+if length(st) <= 2,
     name = '';
-    st = dbstack;
-    depth = length( st ) - 3;
-
-    if ~isempty( cvx___.problems ),
-        ndx = find( [ cvx___.problems.depth ] >= depth );
-        if ~isempty( ndx ),
-            cvx_pop( cvx___.problems( ndx(1) ).self, 'reset' );
-            if ndx == 1, cvx_setpath( 1 ); end
+else
+    name = st(3).name;
+end
+if ~isempty( cvx___.problems ),
+    ndx = find( [ cvx___.problems.depth ] >= depth );
+    if ~isempty( ndx ),
+        temp = cvx___.problems(ndx(1));
+        if temp.depth == depth & ( ~isempty(temp.objective) | ~isempty(temp.variables) | ~isempty(temp.duals) | nnz(temp.t_variable) > 1 );
+            warning( sprintf( 'A non-empty cvx problem already exists in this scope.\n   It is being overwritten.' ) );
         end
+        cvx_pop( temp.self, 'reset' );
     end
-    
-    if ~isempty( cvx___.problems ),
-        nprec  = cvx___.problems( end ).precision;
-        ngprec = cvx___.problems( end ).gptol;
-        nrprec = cvx___.problems( end ).rat_growth;
-        nsolv  = cvx___.problems( end ).solver;
-        nquiet = cvx___.problems( end ).quiet;
-    else
-        nprec  = cvx___.precision;
-        ngprec = cvx___.gptol;
-        nrprec = cvx___.rat_growth;
-        nsolv  = cvx___.solver;
-        nquiet = cvx___.quiet;
+end
+
+%
+% Grab the latest defaults to place in the new problem
+%
+
+if ~isempty( cvx___.problems ),
+    nprec  = cvx___.problems( end ).precision;
+    ngprec = cvx___.problems( end ).gptol;
+    nrprec = cvx___.problems( end ).rat_growth;
+    nsolv  = cvx___.problems( end ).solver;
+    nquiet = cvx___.problems( end ).quiet;
+else
+    nprec  = cvx___.precision;
+    ngprec = cvx___.gptol;
+    nrprec = cvx___.rat_growth;
+    nsolv  = cvx___.solver;
+    nquiet = cvx___.quiet;
+end
+
+%
+% Construct the object
+%
+
+z = class( struct( 'index_', length( cvx___.problems ) + 1 ), 'cvxprob', cvxobj );
+temp = struct( ...
+    'name',          name,   ...
+    'complete',      true,   ...
+    'sdp',           false,  ...
+    'gp',            false,  ...
+    'separable',     false,  ...
+    'locked',        false,  ...
+    'precision',     nprec,  ...
+    'solver',        nsolv,  ...
+    'gptol',         ngprec, ...
+    'quiet',         nquiet,  ... 
+    'rat_growth',    nrprec, ...
+    't_variable',    logical( sparse( length( cvx___.reserved ), 1 ) ), ...
+    'n_equality',    length(cvx___.equalities), ...
+    'n_linform',     length(cvx___.linforms), ...
+    'n_uniform',     length(cvx___.uniforms), ...
+    'variables',     [],         ...
+    'duals',         [],         ...
+    'dvars',         [],         ...
+    'direction',     '',         ...
+    'geometric',     [],         ...
+    'objective',     [],         ...
+    'status',        'unsolved', ...
+    'result',        [],         ...
+    'depth',         depth, ...
+    'self',          z );
+temp.t_variable( 1 ) = true;
+
+%
+% Process the argument strings
+%
+
+for k = 1 : nargin,
+    mode = varargin{k};
+    switch lower( mode ),
+        case 'quiet',
+            temp.quiet = true;
+        case 'set',
+            temp.complete  = false;
+            temp.direction = 'find';
+        case 'sdp',
+            if temp.gp,
+                error( 'The GP and SDP modifiers cannot be used together.' );
+            end
+            temp.sdp = true;
+        case 'gp',
+            if temp.sdp,
+                error( 'The GP and SDP modifiers cannot be used together.' );
+            end
+            temp.gp = true;
+        case 'separable',
+            temp.separable = true;
+        otherwise,
+            error( sprintf( 'Invalid CVX problem modifier: %s', mode ) );
     end
+end
 
-    if ~isvarname( name ), name = 'cvx_'; end
-    z = class( struct( 'index_', length( cvx___.problems ) + 1 ), 'cvxprob', cvxobj );
-    nres = length( cvx___.reserved );
-    neqs = length( cvx___.equalities );
-    temp = struct( ...
-        'name',          name,   ...
-        'complete',      true,   ...
-        'sdp',           false,  ...
-        'gp',            false,  ...
-        'separable',     false,  ...
-        'locked',        false,  ...
-        'precision',     nprec,  ...
-        'solver',        nsolv,  ...
-        'gptol',         ngprec, ...
-        'quiet',         nquiet,  ... 
-        'rat_growth',    nrprec, ...
-        't_variable',    logical( sparse( nres, 1 ) ), ...
-        'n_equality',    length(cvx___.equalities), ...
-        'n_linform',     length(cvx___.linforms), ...
-        'n_uniform',     length(cvx___.uniforms), ...
-        'variables',     [],         ...
-        'duals',         [],         ...
-        'dvars',         [],         ...
-        'direction',     '',         ...
-        'geometric',     [],         ...
-        'objective',     [],         ...
-        'status',        'unsolved', ...
-        'result',        [],         ...
-        'depth',         length( st ) - 3, ...
-        'self',          z );
-    temp.t_variable( 1 ) = true;
-    if isempty( cvx___.problems ),
-        cvx___.problems = temp;
-    else
-        cvx___.problems( end + 1 ) = temp;
+%
+% Add the problem to the stack
+%
+
+if isempty( cvx___.problems ),
+    cvx___.problems = temp;
+    cvx_setpath(1);
+    if cvx___.profile,
+        profile resume
     end
-
-case 1,
-
-    if ~isequal( x, 'current' ),
-        error( 'Argument must be the string ''current''.' );
-    elseif isempty( cvx___.problems ),
-        error( 'There is no problem in progress.' );
-    else
-        z = cvx___.problems( end ).self;
-    end
-
+else
+    cvx___.problems( end + 1 ) = temp;
 end
 
 % Copyright 2007 Michael C. Grant and Stephen P. Boyd.

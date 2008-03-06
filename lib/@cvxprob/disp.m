@@ -91,8 +91,8 @@ else
             if neqns > 1, plural = 'ies'; else plural = 'y'; end
             disp( sprintf( '%s   %d equalit%s', prefix, neqns, plural ) );
         end
-        if neqns > 0,
-            if neqns > 1, plural = 'ies'; else plural = 'y'; end
+        if nineqs > 0,
+            if nineqs > 1, plural = 'ies'; else plural = 'y'; end
             disp( sprintf( '%s   %d inequalit%s', prefix, nineqs, plural ) );
         end
     end
@@ -100,7 +100,7 @@ else
         disp( [ prefix, 'nonlinearities:' ] );
         if gfound > 0,
             if gfound > 1, plural = 'ies'; else plural = 'y'; end
-            disp( sprintf( '%s%d exponential nonlinearit%s', prefix, gfound, plural ) );
+            disp( sprintf( '%s   %d exponential nonlinearit%s', prefix, gfound, plural ) );
         end
         if cfound,
             for k = 1 : length( cvx___.cones ),
@@ -114,7 +114,7 @@ else
                         [ csize, ncones ] = size( ndxs );
                     end
                     if ncones == 1, plural = ''; else plural = 's'; end
-                    disp( sprintf( '%s%d order-%d %s cone%s', prefix, ncones, csize, cvx___.cones( k ).type, plural ) );
+                    disp( sprintf( '%s   %d order-%d %s cone%s', prefix, ncones, csize, cvx___.cones( k ).type, plural ) );
                 end
             end
         end
