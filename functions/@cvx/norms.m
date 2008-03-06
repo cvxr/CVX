@@ -65,16 +65,18 @@ switch p,
                 perm = [ dim, 1:dim-1, dim+1:length(sx) ];
                 x  = permute( x,  perm );
                 tt = permute( tt, perm );
-                sy = permute( sy, perm );
+                sy = sy( perm );
             else
                 perm = [];
             end
             nv = prod( sy );
             x  = reshape( x, nx, nv );
             y  = cvx( [ 1, nv ], [] );
-            y( :, tt ) = sum( abs(x(:,tt)) .^ p, 1 ) .^ (1/p);
+            xt = cvx_subsref( x, ':', tt );
+            y  = cvx_subsasgn( y, tt, sum( (abs(xt)).^p, 1 ) .^ (1/p) );
             tt = ~tt;
-            y( :, tt ) = norms( x(:,tt), p, 1 );
+            xt = cvx_subsref( x, ':', tt );
+            y  = cvx_subsasgn( y, tt, norms( xt, p, 1 ) );
             y  = reshape( y, sy );
             if ~isempty( perm ),
                 y = ipermute( y, perm );

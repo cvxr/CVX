@@ -189,9 +189,9 @@ else
     if dim > 1 & any( sx( 1 : dim - 1 ) > 1 ),
         perm = [ dim, 1 : dim - 1, dim + 1 : length( sx ) ];
         x   = permute( x,  perm );
-        sx  = permute( sx, perm );
-        sy  = permute( sy, perm );
         ta  = permute( ta, perm );
+        sx  = sx(perm);
+        sy  = sy(perm);
         dim = 1;
     else
         perm = [];
