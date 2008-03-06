@@ -1,4 +1,4 @@
-function [ map, pn, pd, cplx ] = cvx_geomean_map( w, isnorm )
+function [ map, pn, pd, cplx ] = cvx_geomean_map( w )
 
 %CVX_GEOMEAN_MAP    Helper function for geomean->SOCP conversion.
 %   This is an internal CVX function involved in the conversion of geomean()
@@ -9,18 +9,9 @@ function [ map, pn, pd, cplx ] = cvx_geomean_map( w, isnorm )
 
 w = reshape( w, 1, numel(w) );
 base = length( w );
-do_norm = 0;
 if base == 1,
     p = w;
     [ pn, pd ] = rat( w );
-    if nargin == 2 & isnorm,
-        if w < 1, 
-            error( 'Cannot use isnorm with w<1' );
-        elseif rem( w, 2 ) == 0,
-            pn = pn * 0.5;
-            do_norm = 1;
-        end
-    end
     if pn < 0,
         pnd  = pd - pn;
         pnd2 = pow2(ceil(log2(pnd)));
@@ -122,7 +113,7 @@ if ~isempty( map ),
 else
     map = zeros(3,0);
 end
-cplx = size( map, 2 ) + do_norm;
+cplx = size( map, 2 );
 if base == 1 & ( base * cplx > cvx_power_warning ),
     warning( sprintf( [ ...
         'Using x^%g = x^(%g/%g) in a CVX model is about %gx more\n',...
