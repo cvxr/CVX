@@ -125,9 +125,10 @@ if op(1) ~= '=' & cvx___.problems( p ).sdp & ( mx | my ),
 elseif ~cheat,
     
     if isempty( map_ge ),
-        map_ne  = cvx_remap; % ( 'constant' );
-        map_ne  = map_ne' * map_ne;
-        temp    = ~map_ne;
+        temp    = cvx_remap( 'constant' );
+        temp    = ~ ( temp' * temp );
+        
+        map_ne  = cvx_remap;
 
         map_eq2 = cvx_remap( 'log-affine' );
         map_eq2 = ( map_eq2' * map_eq2 ) & temp;
@@ -181,6 +182,8 @@ elseif ~cheat,
             x = log( x );
             y = log( y );
         else
+            if isscalar( x ), x = x * ones(size(y)); end
+            if isscalar( y ), y = y * ones(size(x)); end
             x( tt ) = log( x( tt ) );
             y( tt ) = log( y( tt ) );
         end
