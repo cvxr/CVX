@@ -1,4 +1,4 @@
-function cvx_optpnt = semidefinite( n, iscplx )
+function cvx_optpnt = semidefinite( sz, iscplx )
 
 %SEMIDEFINITE   Real symmetric positive semidefinite matrices.
 %    SEMIDEFINITE(N), where N is an integer, creates a symmetric matrix
@@ -38,10 +38,12 @@ function cvx_optpnt = semidefinite( n, iscplx )
 %
 
 error( nargchk( 1, 2, nargin ) );
-if ~isnumeric( n ) | isempty( n ) | any( n < 0 ) | any( n ~= floor( n ) ),
-    error( 'First argument must be a positive integer or a valid size vector.' );
-elseif length( n ) > 1 & n( 1 ) ~= n( 2 ),
-    error( 'If a size vector is supplied, the first two dimensions must be identical.' );
+if ~isnumeric( sz ) | isempty( sz ) | any( sz < 0 ) | any( sz ~= floor( sz ) ),
+    error( 'First argument must be a nonnegative integer or a valid size vector.' );
+elseif length( sz ) == 1,
+    sz = [ sz, sz ];
+elseif sz( 1 ) ~= sz( 2 ),
+    error( 'If a size vector is supplied, the first two dimensions must be equal.' );
 end
 
 %
@@ -58,38 +60,23 @@ end
 % Construct the cone
 %
 
-if length( n ) == 1,
-    sz = [ n, n ];
-    nv = 1;
-else
-    sz = n;
-    n = sz( 1 );
-    nv = prod( sz( 3 : end ) );
-end
-if iscplx,
-    ntri = n * n;
-else
-    ntri = n * ( n + 1 ) / 2;
-end
-if ntri == 0 | nv == 0,
-    cvx_optpnt = zeros( sz );
-    return
-end
 cvx_begin_set
-   if iscplx,
+   if any( sz == 0 ) | sz(1) == 1,
+       variable x( sz )
+       s = 'nonnegative';
+   elseif iscplx,
        variable x( sz ) hermitian
-   else
-       variable x( sz ) symmetric
-   end
-   global cvx___
-   p = index( cvx_problem );
-   if iscplx,
        s = 'hermitian-semidefinite';
    else
+       variable x( sz ) symmetric
        s = 'semidefinite';
    end
-   tx = reshape( find( any( cvx_basis( x ), 2 ) ), ntri, nv );
-   newnonl( cvx_problem, s, tx );
+   if all( sz ),
+       tx = find( any( cvx_basis( x ), 2 ) );
+       nv = prod( sz( 3 : end ) );
+       tx = reshape( tx, numel( tx ) / nv, nv );
+       newnonl( cvx_problem, s, tx );
+   end
 cvx_end_set
 
 % Copyright 2007 Michael C. Grant and Stephen P. Boyd.

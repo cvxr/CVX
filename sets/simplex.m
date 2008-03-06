@@ -35,7 +35,7 @@ function cvx_optpnt = simplex( sx, dim )
 error( nargchk( 1, 2, nargin ) );
 [ temp, sx ] = cvx_check_dimlist( sx, false );
 if ~temp,
-    error( 'First argument must be a non-empty dimension vector.' );
+    error( 'First argument must be a dimension vector.' );
 end
 nd = length( sx );
 
@@ -59,8 +59,8 @@ end
 
 cvx_begin_set
    variables x( sx )
-   sum( x, dim ) == 1
-   x >= 0
+   sum( x, dim ) == 1;
+   x >= 0;
 cvx_end_set
 
 % Copyright 2007 Michael C. Grant and Stephen P. Boyd. 

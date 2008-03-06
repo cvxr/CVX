@@ -43,7 +43,7 @@ error( nargchk( 1, 3, nargin ) );
 
 [ temp, sx ] = cvx_check_dimlist( sx, true );
 if ~temp,
-    error( 'First argument must be a non-empty dimension vector.' );
+    error( 'First argument must be a dimension vector.' );
 end
 
 %
@@ -78,30 +78,24 @@ else
 end
 
 %
-% Quick exit for the length-0 case
-%
-
-if nv == 0,
-    cvx_optpnt.y = cvx_collapse( nonnegative( sy ), false );
-    cvx_optpnt.x = zeros( sx );
-    return
-end
-
-%
 % Build the cone
 %
 
-nx = prod( sx );
-ny = nx / nv;
-if iscplx,
+ny = prod( sy );
+if nv == 0,
+    iscplx = false;
+elseif iscplx,
     nv = nv * 2;
-    nx = nx * 2;
 end
 cvx_begin_set
     variables x( nv, ny ) y( 1, ny )
-    [ tx, dummy ] = find( cvx_basis( x ) );
     [ ty, dummy ] = find( cvx_basis( y ) );
-    newnonl( cvx_problem, 'lorentz', [ reshape( tx, nv, ny ) ; reshape( ty, 1, ny ) ] );
+    if nv > 0,
+        [ tx, dummy ] = find( cvx_basis( x ) );
+        newnonl( cvx_problem, 'lorentz', [ reshape( tx, nv, ny ) ; reshape( ty, 1, ny ) ] );
+    else
+        newnonl( cvx_problem, 'nonnegative', ty );
+    end
 cvx_end_set
 
 %

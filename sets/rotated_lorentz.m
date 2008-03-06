@@ -37,9 +37,9 @@ function cvx_optpnt = rotated_lorentz( sx, dim, iscplx )
 %
 
 error( nargchk( 1, 3, nargin ) );
-[ temp, sx ] = cvx_check_dimlist( sx, false );
+[ temp, sx ] = cvx_check_dimlist( sx, true );
 if ~temp,
-    error( 'First argument must be a non-empty dimension vector.' );
+    error( 'First argument must be a dimension vector.' );
 end
 
 %
@@ -84,7 +84,12 @@ if iscplx,
     sx( dim ) = 2 * sx( dim );
 end
 
-if sx( dim ) == 1,
+if any( sx == 0 ),
+    cvx_optpnt.x = cvx( sx, [] );
+    sx( dim ) = 1;
+    cvx_optpnt.y = nonnegative( sx );
+    cvx_optpnt.z = nonnegative( sx );
+elseif sx( dim ) == 1,
     cone = semidefinite( [ 2, 2, sx ] );
     cvx_optpnt.x = reshape( cone( 2, 1, : ), sx );
     cvx_optpnt.y = reshape( cone( 1, 1, : ), sx );
