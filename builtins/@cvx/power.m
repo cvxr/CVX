@@ -144,15 +144,18 @@ for k = 1 : nv,
             elseif all( t1( : ) ),
                 cvx_optval = pow_pos( xt, yt );
             elseif all( t2( : ) ),
-                cvx_optval = pow_pos( square( xt ), 0.5 * yt );
-            else
-                if xs,
-                    xt = cvx_subsasgn( xt * ones( sz ), t2, square( xt ) );
+                cvx_optval = pow_abs( xt, yt );
+            else,
+                cvx_optval = cvx( size(yt), [] );
+                if xs, 
+                    xt1 = xt;
+                    xt2 = xt;
                 else
-                    xt = cvx_subsasgn( xt, t2, square( cvx_subsref( xt, t2 ) ) );
+                    xt1 = cvx_subsref( xt, t1 ); 
+                    xt2 = cvx_subsref( xt, t2 );
                 end
-                yt( t2 ) = yt( t2 ) * 0.5;
-                cvx_optval = pow_pos( xt, yt );
+                cvx_optval = cvx_subsasgn( cvx_optval, t1, pow_pos( xt1, cvx_subsref( yt, t1 ) ) );
+                cvx_optval = cvx_subsasgn( cvx_optval, t2, pow_abs( xt2, cvx_subsref( yt, t2 ) ) );
             end
         case 5,
             % { log concave, log affine, log convex } ^ zero

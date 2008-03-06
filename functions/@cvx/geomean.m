@@ -1,5 +1,6 @@
-function y = geomean( x, dim, w, ismap )
-error( nargchk( 1, 4, nargin ) );
+function y = geomean( x, dim, w, ismap, cmode )
+error( nargchk( 1, 5, nargin ) );
+if nargin < 5, cmode = ''; end
 
 %GEOMEAN   Internal cvx version.
 
@@ -32,7 +33,7 @@ end
 %
 
 map = [];
-if nargin == 4,
+if nargin >= 4 & ismap,
     map = w;
 elseif nargin < 3 | isempty( w ),
     w = [];
@@ -146,18 +147,43 @@ for k = 1 : nk,
                     end
                     map  = cvx_geomean_map( w );
                 end
-                nm   = size(map,2);
-                msiz = [ 1, nm, nv ];
+                nm = size(map,2);
+                mused = nnz( map == nm + nx ) > 1;
+                need_obj = false;
                 cvx_begin
-                    variable xw( nm, nv );
-                    xt = [ cvx_accept_concave( xt ) ; xw ];
-                    cone = rotated_lorentz( msiz, 0 );
-                    cone.y == reshape( cvx_subsref( xt, map(1,:), ':' ), msiz ); 
-                    cone.z == reshape( cvx_subsref( xt, map(2,:), ':' ), msiz );
-                    cone.x == reshape( cvx_subsref( xt, map(3,:), ':' ), msiz );
-                    maximize( cvx_subsref( xw, nm, ':' ) );
+                    variable xw( nm-1, nv );
+                    cone1 = rotated_lorentz( [1,nm-1,nv], 0 );
+                    if isequal( cmode, 'cabs' ) & ~mused,
+                        variable xa( 1, nv ) complex;
+                        cone2 = rotated_lorentz( [1,1,nv], 1 );
+                    else
+                        variable xa( 1, nv );
+                        cone2 = rotated_lorentz( [1,1,nv], 0 );
+                    end
+                    xt = [ cvx_accept_concave( xt ) ; xw ; xa ];
+                    cat( 2, cone1.y, cone2.y ) == reshape( cvx_subsref( xt, map(1,:), ':' ), [1,nm,nv] ); 
+                    cat( 2, cone1.z, cone2.z ) == reshape( cvx_subsref( xt, map(2,:), ':' ), [1,nm,nv] );
+                    cat( 2, cone1.x, cone2.x ) == reshape( cvx_subsref( xt, map(3,:), ':' ), [1,nm,nv] );
+                    yt = xa;
+                    switch cmode,
+                        case 'abs',
+                            if mused,
+                                variable yt( 1, nv );
+                                abs( yt ) <= xa;
+                            end
+                        case 'cabs',
+                            if mused,
+                                variable yt( 1, nv ) complex;
+                                abs( yt ) <= xa;
+                            end
+                        otherwise,
+                            need_obj = true;
+                            maximize( xa );
+                    end
                 cvx_end
-                yt = cvx_optval;
+                if need_obj,
+                    yt = cvx_optval;
+                end
             end
         case 3,
             if nx == 1,
