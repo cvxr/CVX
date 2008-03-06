@@ -47,7 +47,7 @@ if isstruct,
 elseif nzs < len,
     if nzs > 1,
         st = sprintf( '%s, %d nonzeros', st, nzs );
-    else
+    elseif nzs == 1,
         st = sprintf( '%s, 1 nonzero', st );
     end
 end
