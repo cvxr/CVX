@@ -37,23 +37,8 @@ function cvx_begin( varargin )
 %   one or more of the subproblems is infeasible or unbounded. The keyword is
 %   ignored for sets and incomplete specifications.
 
-if ~iscellstr( varargin ),
-    error( 'Arguments must be strings.' );
-end
-cvx_problem = evalin( 'caller', 'cvx_problem', '[]' );
-if isa( cvx_problem, 'cvxprob' ),
-    if ~isempty( cvx_problem.objective ) | ~isempty( cvx_problem.variables ) | ~isempty( cvx_problem.duals ) | nnz( cvx_problem.t_variable ) > 1,
-        warning( sprintf( 'A cvx problem already existed in this scope.\n   It is being overwritten.' ) );
-    end
-    cvx_pop( cvx_problem );
-end
-cvx_global
-cvx_setpath( 1 );
-if cvx___.profile & isempty( cvx___.problems ),
-    profile resume
-end
-cvx_create_problem( varargin{:} );
-assignin( 'caller', 'cvx_problem', cvx_problem );
+if ~iscellstr( varargin ), error( 'Arguments must be strings.' ); end
+assignin( 'caller', 'cvx_problem', cvxprob( varargin{:} ) );
 
 % Copyright 2007 Michael C. Grant and Stephen P. Boyd. 
 % See the file COPYING.txt for full copyright information.

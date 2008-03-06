@@ -8,7 +8,7 @@ function cvx_end
 
 global cvx___
 prob = evalin( 'caller', 'cvx_problem', '[]' );
-if isempty( prob ) | ~isa( prob, 'cvxprob' ),
+if ~isa( prob, 'cvxprob' ),
     error( 'No cvx problem exists in this scope.' );
 elseif index( prob ) ~= length( cvx___.problems ),
     error( 'Internal cvx data corruption.' );
