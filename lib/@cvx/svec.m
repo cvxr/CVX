@@ -1,4 +1,4 @@
-function y = svec( x, nrm )
+function z = svec( x, nrm )
 
 if nargin < 2 | isempty( nrm ) | isequal( nrm, 'fro' ),
     nrm = 2;
@@ -7,11 +7,15 @@ elseif ~isnumeric( nrm ) | length( nrm ) ~= 1 | nrm < 1,
 end
 
 if ~isreal( x ) & nrm ~= 2,
-    y = vec( x );
+    z = vec( x );
     return
 else
     [ xR, y ] = bcompress( x );
-    y = y .* norms( xR, nrm, 2 );
+    if isempty( y ),
+        z = 0;
+    else
+        z = y .* norms( xR, nrm, 2 );
+    end
 end
 
 % Copyright 2007 Michael C. Grant and Stephen P. Boyd.

@@ -9,7 +9,8 @@ function cvx_optval = norm( x, p )
 % Check arguments
 %
 
-error( nargchk( 1, 2, nargin ) );
+persistent remap1 remap2 remap3
+    error( nargchk( 1, 2, nargin ) );
 if nargin < 2,
     p = 2;
 elseif ~isequal( p, 'fro' ) & ( ~isnumeric( p ) | ~isreal( p ) | p < 1 ),
@@ -44,7 +45,10 @@ elseif m == 1 | n == 1 | isequal( p, 'fro' ),
 
     if isequal( p, 'fro' ), p = 2; end
     x = svec( x, p );
-    persistent remap1 remap2 remap3
+    if isempty( x ),
+        cvx_optval = 0;
+        return
+    end
     if isempty( remap2 ),
         remap1 = cvx_remap( 'log-convex' );
         remap2 = cvx_remap( 'affine', 'log-convex' );
@@ -77,17 +81,15 @@ elseif m == 1 | n == 1 | isequal( p, 'fro' ),
                         { x, z } == lorentz( n, [], ~isreal( x ) );
                     cvx_end
                 else
-                    map = cvx_geomean_map( p, true );
+                    if isreal( x ),
+                        cmode = 'abs';
+                    else
+                        cmode = 'cabs';
+                    end
                     cvx_begin
                         epigraph variable z
-                        if rem( p, 2 ) == 0,
-                            p = p * 0.5;
-                            x_abs = quad_over_lin( x, z, 0 );
-                        else
-                            x_abs = abs( x );
-                        end
                         variable y( n )
-                        geomean( [ y, z*ones(n,1) ], 2, map, true ) >= x_abs;
+                        geomean( [ y, z*ones(n,1) ], 2, cvx_geomean_map( p ), true, cmode ) == x;
                         sum( y ) == z;
                     cvx_end
                 end

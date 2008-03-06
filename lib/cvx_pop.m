@@ -75,7 +75,7 @@ if ~isequal( clearmode, 'none' ),
         end
         if ~isequal( clearmode, 'extract' ),
             cvx___.geometric(  temp, : ) = [];
-            cvx___.exponental( temp, : ) = [];
+            cvx___.exponential( temp, : ) = [];
             cvx___.logarithm(  temp, : ) = [];
         end
     end

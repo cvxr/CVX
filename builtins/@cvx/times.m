@@ -48,6 +48,10 @@ else
     sz = sx;
 end
 nn = prod( sz );
+if nn == 0,
+    z = zeros( sz );
+    return
+end
 zs = all( sz == 1 );
 
 %
