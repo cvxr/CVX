@@ -1,4 +1,4 @@
-function [ dbcA, cones, dir, Q, P, esrc, edst ] = extract( pp, destructive )
+function [ dbcA, cones, dir, Q, P ] = extract( pp, destructive )
 if nargin < 2 | nargout < 7, destructive = false; end
 
 global cvx___
@@ -190,7 +190,7 @@ if nsl ~= 0,
     if isempty( cones ),
         cones = ncone;
     else
-        tt = find(strcmp([cones.type],'nonnnegative'));
+        tt = find(strcmp({cones.type},'nonnnegative'));
         if ~isempty( tt ),
             cones(tt(1)).indices = [ cones(tt(1)).indices, ncone.indices ];
         else
@@ -213,6 +213,38 @@ P = sparse( [ 1, npre + 2 : ntot + 1 ], 1 : ntot - npre + 1, 1, ntot + 1, size( 
 
 esrc = find( cvx___.exponential );
 edst = full( cvx___.exponential( esrc ) );
+tt   = any(dbcA(esrc,:),2) & any(dbcA(edst,:),2);
+if any( tt ),
+    % Determine the indices of the exponentials
+    esrc = esrc(tt);
+    edst = edst(tt);
+    nexp = length(esrc);
+    lvar = n + nsl + 3 * nexp;
+    % Create the exponential cones
+    ncone.type = 'exponential';
+    ncone.indices = reshape( n+nsl+1:lvar, 3, nexp );
+    % Expand Q, P, dbCA
+    Q(end,lvar) = 0;
+    P(end,lvar) = 0;
+    dbcA(lvar,end) = 0;
+    % Add equality consraints to tie the exponential cones to esrc and edst
+    % and set the exponential perspective variable to 1
+    ndxc = reshape( 1 : 3 * nexp, 3, nexp );
+    dbcA = [ dbcA, sparse( ...
+        [ esrc(:)' ; ones(1,nexp) ; edst(:)' ; ncone.indices ], ...
+        [ ndxc ; ndxc ], ... 
+        [ ones(3,nexp) ; -ones(3,nexp) ] ) ];
+    if isempty( cones ),
+        cones = ncone;
+    else
+        tt = find(strcmp({cones.type},'exponential'));
+        if ~isempty( tt ),
+            cones(tt(1)).indices = [ cones(tt(1)).indices, ncone.indices ];
+        else
+            cones = [ cones, ncone ];
+        end
+    end
+end
 
 %
 % Reserved flags

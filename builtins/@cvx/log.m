@@ -9,11 +9,15 @@ function y = log( x )
 %       posynomials. Support for affine and/or concave expressions
 %       will come in a later revision.
 
+global cvx___
+if ~cvx___.expert & ~cvx___.problems( end ).gp,
+    error( sprintf( 'Disciplined convex programming error:\n    Logarithms are not yet supported.' ) );
+end
+
 %
 % Determine the expression types
 %
 
-global cvx___
 persistent remap
 if isempty( remap ),
     remap_1 = cvx_remap( 'constant' );
@@ -60,7 +64,11 @@ for k = 1 : nv,
             yt = log( cvx_constant( xt ) );
         case 2,
             % Affine, convex (invalid)
-            error( sprintf( 'Disciplined convex programming error:\n    Logarithms of affine and concave expressions are not yet supported.' ) );
+            sx = xt.size_;
+            cvx_begin
+                hypograph variable yt( sx )
+                exp( yt ) <= xt;
+            cvx_end
         case 3,
             % Monomial
             nb = prod( xt.size_ );
@@ -95,7 +103,11 @@ for k = 1 : nv,
                 rx = cvx___.logarithm( rx( tz ), 1 );
                 vx = vx + cvx( nq, sparse( rx, find( tz ), 1, max( rx ), nq ) );
                 vx = reshape( vx, rk, nq / rk );
-                vx = logsumexp_sdp( vx, 1, cvx___.gptol );
+                if cvx___.expert,
+                    vx = logsumexp( vx );
+                else
+                    vx = logsumexp_sdp( vx, 1, cvx___.gptol );
+                end
                 if nu == 1,
                     yt = reshape( vx, sx );
                 else

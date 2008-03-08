@@ -240,7 +240,7 @@ end
 OPTIONS = sqlparameters;
 OPTIONS.gaptol = prec(1);
 OPTIONS.printlevel = 3 * ~quiet;
-OPTIONS.vers = 2;
+% OPTIONS.vers = 2;
 [ obj, xx, y, z, info ] = sqlp( blk, Avec, Cvec, full(b), OPTIONS );
 
 %
@@ -248,6 +248,8 @@ OPTIONS.vers = 2;
 %
 
 switch info.termcode,
+    case 0,
+        status = 'Solved';
     case 1,
         status = 'Infeasible';
     case 2,

@@ -1,4 +1,4 @@
-function [ dbCA, cones, dir, Q, P, esrc, edst, dualized ] = eliminate( prob, destructive )
+function [ dbCA, cones, dir, Q, P, dualized ] = eliminate( prob, destructive )
 if nargin  < 2 | nargout < 8, destructive = false; end
 
 % For the problem
@@ -16,7 +16,7 @@ if nargin  < 2 | nargout < 8, destructive = false; end
 % from the reduced xx and yy by Q*[1;xx] and P*[1;-yy], respectively.
 
 global cvx___
-[ dbCA, cones, dir, Q, P, esrc, edst ] = extract( prob, destructive );
+[ dbCA, cones, dir, Q, P ] = extract( prob, destructive );
 dualized = false;
 
 if ~issparse( dbCA ),
@@ -29,13 +29,6 @@ for k = 1 : length( cones ),
     temp = cones(k).indices;
     n_tot = n_tot + numel(temp);
     rsv = rsv + sparse( temp, 1, 1, nn, 1 );
-end
-if ~isempty( esrc ),
-    tt = any( dbCA( esrc, : ), 2 ) & any( dbCA( edst, : ), 2 );
-    if any( tt ),
-        rsv( esrc( tt ) ) = rsv( esrc( tt ) ) + 1;
-        rsv( edst( tt ) ) = rsv( edst( tt ) ) + 1;
-    end
 end
 n_rsv = nnz( rsv ) - 1;
 rsv   = full( rsv );
@@ -173,14 +166,7 @@ for pass = 1 : 2,
     if pass == 1,
         n_ineq = nnz(ineqs);
         ineqs(:) = 0;
-        if ~isempty(esrc),
-            ndxe = full(sparse(ndxs,1,1:length(ndxs),nold,1));
-            tt = ndxe(esrc) & ndxe(edst);
-            esrc = esrc( tt );
-            edst = edst( tt );
-        end
-        if isempty( esrc ),
-            ineqs(:) = 0;
+        if ~isempty(cones) & ~any( strcmp( {cones.type}, 'exponential' ) ),
             [ rows, cols ] = cvx_eliminate_mex( dbCA, 1, rsv, ineqs );
             [n1,m1] = size(dbCA);
             m_pri  = m1 - nnz(rows) - 1;
@@ -204,13 +190,19 @@ for pass = 1 : 2,
                         case 'hermitian-semidefinite',
                             nt = sqrt(nn);
                             SS = 'hermitian';
+                        case 'exponential',
+                            SS = sparse(inv([0,-1,0;-1,0,0;0,0,exp(1)]));
+                            SS = cvx_replicate_structure(SS,nv);
                         otherwise,
                             SS = [];
                     end
                     PP{k} = sparse(1:numel(temp),temp,1,numel(temp),n1);
                     if ~isempty(SS),
-                        SS = cvx_create_structure([nt,nt,nv],SS);
-                        PP{k} = SS * SS' * PP{k};
+                        if ischar(SS),
+                            SS = cvx_create_structure([nt,nt,nv],SS);
+                            SS = SS * SS';
+                        end
+                        PP{k} = SS * PP{k};
                     end
                     cones(k).indices = reshape(n_cur+1:n_cur+nn*nv,nn,nv);
                     n_cur = cones(k).indices(end);
@@ -247,13 +239,6 @@ end
 ndxs = full( sparse( ndxs, 1, 1 : length( ndxs ), nold, 1 ) );
 for k = 1 : length( cones ),
     cones(k).indices = reshape( ndxs(cones(k).indices), size(cones(k).indices) );
-end
-if ~isempty( esrc ),
-    esrc = ndxs( esrc );
-    edst = ndxs( edst );
-    tt = esrc & edst;
-    esrc = esrc( tt );
-    edst = edst( tt );
 end
 
 % Copyright 2007 Michael C. Grant and Stephen P. Boyd.

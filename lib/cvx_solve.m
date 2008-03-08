@@ -1,7 +1,7 @@
 function cvx_solve( presolve )
 global cvx___
 prob = evalin( 'caller', 'cvx_problem', '[]' );
-if isempty( prob ) | ~isa( prob, 'cvxprob' ),
+if ~isa( prob, 'cvxprob' ),
     error( 'No cvx problem exists in this scope.' );
 else
     if nargin < 1 | presolve, eliminate( prob ); end

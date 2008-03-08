@@ -1,15 +1,16 @@
 function y = exp( x )
 
-% EXP    Exponential.
-%   EXP(X) is the exponential of the elements of X, e to the X.
-%   For complex Z=X+i*Y, EXP(Z) = EXP(X)*(COS(Y)+i*SIN(Y)).
-%
 %   Disciplined convex programming information:
 %       EXP(X) is convex and nondecreasing in X. When used in CVX
 %       expressions, X must be real. Typically, X must also be affine
 %       or convex; X can also be concave, but this produces a log-concave
 %       result with very limited usefulness.
 
+global cvx___
+if ~cvx___.expert & ~cvx___.problems( end ).gp,
+    error( sprintf( 'Disciplined convex programming error:\n    Exponentials are not yet supported.' ) );
+end
+            
 %
 % Determine the expression types
 %
@@ -64,7 +65,6 @@ for k = 1 : nv,
             tt = rx == 1;  rx( tt ) = [];
             cc = cx( tt ); cx( tt ) = [];
             vc = vx( tt ); vx( tt ) = [];
-            global cvx___
             exps = cvx___.exponential( rx, 1 );
             tt = exps == 0;
             if any( tt ),

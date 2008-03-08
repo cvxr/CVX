@@ -19,11 +19,11 @@ function a = le( x, y )
 %   strict inequality, but not all solvers do.
 
 error( nargchk( 2, 2, nargin ) );
-try
+%try
     newcnstr( evalin( 'caller', 'cvx_problem', '[]' ), x, y, '<=' );
-catch
-    error( cvx_lasterr );
-end
+%catch
+%    error( cvx_lasterr );
+%end
 if nargout > 0,
     a = 'Constraint accepted';
 end
