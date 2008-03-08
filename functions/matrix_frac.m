@@ -18,10 +18,23 @@ if ndims( Y ) > 2 | size( Y, 1 ) ~= size( Y, 2 ),
 end
 err = Y - Y';
 Y   = 0.5 * ( Y + Y' );
-if norm( err, 'fro' ) > 8 * eps * norm( Y, 'fro' ) | min(eig(Y)) <= 0,
+if norm( err, 'fro' ) > 8 * eps * norm( Y, 'fro' ),
     z = Inf;
 else
-    z = x'*(Y\x);
+    [R,p] = chol(Y);
+    if p > 0,
+        [V,D] = eig(full(Y));
+        D = diag(D);
+        if any( D <= 0 )
+            z = Inf;
+        else
+            z = V' * x;
+            z = z' * ( D .\ z );
+        end
+    else
+        z = R' \ x;
+        z = z' * z;
+    end
 end
 
 % Copyright 2007 Michael C. Grant and Stephen P. Boyd.

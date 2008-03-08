@@ -16,32 +16,20 @@ function cvx_optval = det_rootn( X )
 %       CVX specifications, its argument must be affine.
 
 error( nargchk( 1, 1, nargin ) );
-if ndims( X ) > 2,
-
-    error( 'N-D arrays are not supported.' );
-
-elseif diff( size( X ) ) ~= 0,
-
-    error( 'Matrix must be square.' );
-
-elseif nnz( X - X' ) ~= 0,
-
+if ndims( X ) > 2 | size( X, 1 ) ~= size( X, 2 ),
+    error( 'Second argument must be a square matrix.' );
+end
+err = X - X';
+X   = 0.5 * ( X + X' );
+if norm( err, 'fro' ) > 8 * eps * norm( X, 'fro' ),
     cvx_optval = -Inf;
-
 else
-
-    [ R, p ] = chol( X );
+    [R,p] = chol(X);
     if p > 0,
-        eigs = eig( full( X ) );
-        if any( eigs < 0 ),
-            cvx_optval = -Inf;
-        else
-            cvx_optval = geomean( eigs );
-        end
+        cvx_optval = geomean(eig(full(X)));
     else
-        cvx_optval = geomean( diag( R ) ) .^ 2;
+        cvx_optval = geomean(diag(R)).^2;
     end
-
 end
 
 % Copyright 2007 Michael C. Grant and Stephen P. Boyd. 
