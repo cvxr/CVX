@@ -166,7 +166,7 @@ for pass = 1 : 2,
     if pass == 1,
         n_ineq = nnz(ineqs);
         ineqs(:) = 0;
-        if ~isempty(cones) & ~any( strcmp( {cones.type}, 'exponential' ) ),
+        if ~isempty(cones), % & ~any( strcmp( {cones.type}, 'exponential' ) ),
             [ rows, cols ] = cvx_eliminate_mex( dbCA, 1, rsv, ineqs );
             [n1,m1] = size(dbCA);
             m_pri  = m1 - nnz(rows) - 1;
@@ -241,6 +241,6 @@ for k = 1 : length( cones ),
     cones(k).indices = reshape( ndxs(cones(k).indices), size(cones(k).indices) );
 end
 
-% Copyright 2007 Michael C. Grant and Stephen P. Boyd.
+% Copyright 2008 Michael C. Grant and Stephen P. Boyd.
 % See the file COPYING.txt for full copyright information.
 % The command 'cvx_where' will show where this file is located.

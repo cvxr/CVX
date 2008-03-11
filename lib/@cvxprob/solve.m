@@ -68,21 +68,27 @@ elseif n ~= 0 & ~infeas & ( any( b ) | any( c ) ),
     solv = prob.solver;
     lsolv = lower(solv);
     prec = prob.precision;
-    spacer = '-';
-    spacer = spacer(:,ones(1,60));
     sfunc  = [ 'cvx_solve_', lsolv ];
     tt = find( strcmp( { cones.type }, 'exponential' ) );
     need_iter = ~isempty( tt );
     if ~quiet,
         disp( ' ' );
-        disp( sprintf( 'Calling %s: %d variables, %d equality constraints', solv, n, m ) );
-        if dualized,
-            disp( sprintf( 'Note: for improved efficiency, %s is solving the dual problem.', solv ) );
-        end
+        spacer = '-';
         if need_iter,
-            disp( sprintf( 'Note: Successive approximation method to be employed;\n   %s will be called several times to refine the solution.', solv ) );
+            disp( 'Successive approximation method to be employed.' );
+            disp( sprintf( '   %s will be called several times to refine the solution.', solv ) );
+            disp( sprintf( '   Original size: %d variables, %d equality constraints', n, m ) );
+            spacer = spacer(:,ones(1,65));
+        else
+            disp( sprintf( 'Calling %s: %d variables, %d equality constraints', solv, n, m ) );
+            spacer = spacer(:,ones(1,60));
         end
-        disp( spacer );
+        if dualized,
+            disp( sprintf( '   For improved efficiency, %s is solving the dual problem.', solv ) );
+        end
+        if ~need_iter,
+            disp( spacer );
+        end
     end
     cvx_setspath( solv );
     if cvx___.profile, profile off; end
@@ -147,7 +153,8 @@ elseif n ~= 0 & ~infeas & ( any( b ) | any( c ) ),
         n_ndxs  = [ ndxs ; reshape( n + 1 : new_n, nQA-3, nc  ) ];
         n_ndxs  = n_ndxs(QAr,:);
         if ~quiet,
-            disp( sprintf( 'Approximation size: %d variables, %d equality constraints', new_n, new_m ) );
+            disp( sprintf( '   Approximation size: %d variables, %d equality constraints', new_n, new_m ) );
+            disp( spacer );
         end
         
         % Perform (x,y,z) ==> w transformation on A and C
@@ -183,7 +190,7 @@ elseif n ~= 0 & ~infeas & ( any( b ) | any( c ) ),
         rel_err = 1e-6;
         last_err = Inf;
         
-        prec_list = max( prec(3), 1e-2 );
+        prec_list = prec(3); % max( prec(3), 1e-2 );
         for k = 3: -1 : 1,
             if prec(k) > 0,
                 if 0, % prec(k) < 0.1 * prec_list(end),
@@ -194,137 +201,155 @@ elseif n ~= 0 & ~infeas & ( any( b ) | any( c ) ),
             end
         end
         if prec(1) == 0,
-            prec_list(end+1) = prec_list(end) / 8;
+            % prec_list(end+1) = prec_list(end) / 8;
             prec_list(end+1) = 0;
         end
         prec_ndx = 1;
-        best_ndx = 0;
         eshift   = 0;
         ninfeas  = 0;
         best_x   = [];
+        best_px  = Inf;
+        best_ox  = Inf;
+        best_py  = Inf;
+        best_oy  = -Inf;
         best_y   = [];
-        best_s   = [];
-        failed_flag = false;
-        prec_bump = false;
         solv_warn = false;
         use_init = false;
         nprec = prec_list(1) * [1,1,1];
         if ~quiet,
-            disp(sprintf('Target precision: %e', nprec(1)));
+            disp( ' Target     Forcing     Conic    Solver' );
+            disp( 'Precision    Bias       Error    Status' );
+            disp( '---------------------------------------' );
         end
-        XYZ = {};
+        best_x = NaN * ones(n,1);
+        best_y = NaN * ones(m,1);
+        dobj = -Inf;
+        pobj = +Inf;
+        stagnant = false;
+        last_slow = false;
+        dscale = blkdiag(speye(m,m),speye(new_m-m,new_m-m));
         for iter = 1 : 1000,
-            if prec_bump,
-                prec_bump = false;
+            dx0 = diag(sparse(x0));
+            At(yndxs,:) = yorig_A + dx0 * xorig_A;
+            c (yndxs,:) = yorig_C + dx0 * xorig_C;
+            At(endxs) = -exp(-(x0+eshift)/epow);
+            At(wndxs) = -1./xw;
+            [ x, y, status ] = feval( sfunc, At, b, c, cones, true, nprec );
+            x_good = ~isnan( x(1) );
+            y_good = ~isnan( y(1) );
+            tndx   = 2 + ( status(3) == 'a' );
+            tprec  = nprec(tndx);
+            if x_good,
+                xxx = x(xndxs,:);
+                yyy = x(yndxs,:);
+                zzz = x(zndxs,:);
+                nx0 = xxx ./ yyy;
+                nx1 = log( zzz ./ yyy ) - x0;
+                nxe = nx0 - nx1;
+                x_clean = all( nxe < 0 );
+                pob = c' * x;
+            elseif any( eshift > 0 ),
+                eshift = min( eshift, 0 );
+                x_clean = false;
+                nxe = 0;
             else
-                dx0 = diag(sparse(x0));
-                At(yndxs,:) = yorig_A + dx0 * xorig_A;
-                c (yndxs,:) = yorig_C + dx0 * xorig_C;
-                At(endxs) = -exp(-(x0+eshift)/epow);
-                At(wndxs) = -1./xw;
+                nxe = 0;
+                x_clean = true;
+                pob = Inf;
             end
-            XYZ = {};
-            use_init = ~isempty( XYZ );
-            [ x, y, status ] = feval( sfunc, At, b, c, cones, quiet, nprec );
-            % [ x, y, status, XYZ ] = feval( sfunc, At, b, c, cones, quiet, nprec, XYZ );
-            xxx = x(xndxs,:);
-            yyy = x(yndxs,:);
-            switch status,
-                case { 'Solved', 'Inaccurate/Solved', 'Unbounded', 'Inaccurate/Unbounded' },
-                    ninfeas = 0;
-                    nx0 = xxx ./ yyy;
-                    nx1 = log( x(zndxs,:) ./ yyy ) - x0;
-                    nxe = max( 0, nx0 - nx1 );
+            if y_good,
+                y(m+1:end) = 0;
+                z = c - At * y;
+                uuu = z( xndxs, : );
+                vvv = z( yndxs, : );
+                www = z( zndxs, : );
+                nx2 = 1 - vvv ./ uuu;
+                nx3 = log( - uuu ./ www ) - x0;
+                nxe = nx0 - nx1;
+                nxd = nx2 - nx3;
+                y_clean = all( nxd > 0 ) | ~any( eshift );
+                dob = b' * y;
+                if x_good, % Solved
+                    dx0 = 0.5 * ( nx0 + nx2 );
+                else       % Infeasible
+                    dx0 = 0.5 * ( nx2 + nx3 );
+                end
+            elseif any( eshift < 0 ),
+                eshift = max( eshift, 0 );
+                y_clean = false;
+                nxd = 0;
+            else
+                nxd = 0;
+                y_clean = true;
+                dob = -Inf;
+                if x_good, % Unbounded
                     dx0 = 0.5 * ( nx0 + nx1 );
-                    if nprec(1) == 0,
-                        sms = nxe ~= 0;
-                    else
-                        sms = abs( dx0 ) < 0.05 * nxe | eshift;
-                    end
-                    err = max( nxe );
-                    if ~quiet,
-                        disp(sprintf('Approxmation error: %e',err));
-                    end
-                    if err == 0 | nprec(1) > prec(2),
-                        if err == 0,
-                            best_y = y;
-                            best_x = x;
-                            best_x(xndxs,:) = xxx + x0 .* yyy;
-                            best_s = status;
-                            best_ndx = prec_ndx;
-                            if nprec(1) == prec(1), 
-                                break; 
-                            end
-                        end
-                        prec_ndx = prec_ndx + 1;
-                        nprec(1) = prec_list(prec_ndx);
-                        nprec(2:3) = max( nprec(1), prec(2) );
-                        last_err = Inf;
-                        if ~quiet,
-                            disp(sprintf('Target precision: %e',nprec(1)));
-                        end
-                        if any( eshift ),
-                            eshift = 0;
-                            XYZ = {};
-                        elseif 0, % err == 0,
-                            prec_bump = true;
-                            continue;
-                        end
-                    elseif any( sms ),
-                        if ~solv_warn,
-                            warning( ...
-                                sprintf( ...
-[ 'Your problem has activated a weakly tested section of the successive\n',...
-  'approximation code. Please let Michael Grant know that you have seen\n',...
-  'this message, and if possible provide him with the model that produced it.' ] ) );
-                            solv_warn = true;
-                        end
-                        eshift = eshift + nxe .* sms;
-                        last_err = 0;
-                    else
-                        last_err = err;
-                    end
-                    dx0 = 0.5 * ( nx0 + nx1 ); % max( min( nx0, nx1 ), 0 ) + min( max( nx0, nx1 ), 0 );
-                    xw  = max( ewid, 2 * abs( nx0 - nx1 ) );
-                    x0  = x0 + max( dx0, -epow );
-                case { 'Infeasible', 'Inaccurate/Infeasible' },
-                    ninfeas = ninfas + 1;
-                    if any( eshift ),
-                        eshift = eshift * ( 0.5 * ninfeas < 3 );
-                    elseif norm([x0-xw;x0+xw],Inf) > maxw,
-                        best_y = y;
-                        best_x = x;
-                        best_s = status;
-                        best_ndx = length(prec_list);
-                        break;
-                    end
-                    if ~quiet,
-                        disp(sprintf('Infeasible approximation; widening trust region'));
-                    end
-                    xw = xw * 8;
-                case 'Failed',
-                    if use_init,
-                        XYZ = {};
-                    else
-                        if best_ndx == 0,
-                            best_x = x;
-                            best_y = y;
-                        end
-                        break;
-                    end
+                else       % Failed
+                   break;
+                end
             end
+            if x_clean & ( tprec < best_px | tprec == best_px & pob < best_ox ),
+                best_x  = x(1:n);
+                best_x(xndxs,:) = xxx + x0 .* yyy;
+                best_px = tprec;
+                best_ox = pob;
+            end
+            if y_clean & ( tprec < best_py | tprec == best_py & dob > best_oy ),
+                best_y  = y(1:m);
+                best_py = tprec;
+                best_oy = dob;
+            end
+            err = 0;
+            if best_px > tprec,
+                err = max( err, max(nxe) );
+            end
+            if best_py > tprec,
+                err = max( err, -min(nxd) );
+            end
+            slow = err > 0.9 * last_err;
+            stagnant = stagnant | slow & last_slow;
+            if ~quiet,
+                if stagnant, stagc = 'S'; else stagc = ' '; end
+                disp( sprintf( '%9.3e  %9.3e%c %9.3e  %s', nprec(1), max(eshift), stagc, err, status ) );
+            end
+            if ( best_px == tprec & best_py == tprec ) | nprec(1) > prec(3),
+                if nprec(1) == prec(1) | tndx == 3,
+                    break;
+                end
+                prec_ndx = prec_ndx + 1;
+                nprec(1) = prec_list(prec_ndx);
+                nprec(2) = max( nprec(1), prec(2) );
+                nprec(3) = max( nprec(1), prec(3) );
+                stagnant = false;
+                err = Inf;
+                eshift = 0;
+            elseif stagnant & best_px > tprec,
+                eshift = eshift + 2 * max(nxe,0);
+            elseif stagnant & best_py > tprec,
+                eshift = 0;
+            elseif slow,
+                eshift = eshift + (nxe>0).*min(nxd,nxe) + (nxd<0).*max(nxd,nxe);
+            end
+            last_err = err;
+            last_slow = slow;
+            xw = max( abs( dx0 ), ewid );
+            x0 = x0 + max( dx0, -epow );
         end
-        if best_ndx == 0 | prec_list(best_ndx) > prec(3),
-            status = 'Failed';
-        elseif prec_list(best_ndx) > prec(2),
-            status = [ 'Inaccurate/', best_s ];
-        elseif strcmp( best_s(1:3), 'Ina' ),
-            status = best_s(12:end);
+        if isnan( best_x(1) ), 
+            status = 'Infeasible',
+        elseif isnan( best_y(1) ), 
+            status = 'Unbounded';
         else
-            status = best_s;
+            status = 'Solved';
         end
-        x = best_x(1:n,:);
-        y = best_y(1:m,:);
+        best_p = max( best_px, best_py );
+        if best_p > prec(3),
+            status = 'Failed';
+        elseif best_p > prec(2),
+            status = [ 'Inaccurate/', status ];
+        end
+        x = best_x;
+        y = best_y;
         c = c(1:n,:);
         c(yndxs,:) = yorig_C;
     else
@@ -447,6 +472,6 @@ if ~quiet,
     end
 end
 
-% Copyright 2007 Michael C. Grant and Stephen P. Boyd.
+% Copyright 2008 Michael C. Grant and Stephen P. Boyd.
 % See the file COPYING.txt for full copyright information.
 % The command 'cvx_where' will show where this file is located.
