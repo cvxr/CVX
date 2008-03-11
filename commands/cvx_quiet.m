@@ -55,7 +55,7 @@ if isempty( cvx___.problems ),
 else
     s = cvx___.problems(end).quiet;
     if nargin > 0,
-        if s ~= ns & isa( evalin( 'caller', 'cvx_problem', '[]' ), 'cvxprob' ),
+        if s ~= ns & ~isa( evalin( 'caller', 'cvx_problem', '[]' ), 'cvxprob' ),
             warning( 'The global CVX quiet setting cannot be changed while a model is being constructed.' );
         else
             cvx___.problems(end).quiet = ns;
@@ -66,7 +66,7 @@ if nargin == 0 | nargout > 0,
     sout = s;
 end
 
-% Copyright 2007 Michael C. Grant and Stephen P. Boyd.
+% Copyright 2008 Michael C. Grant and Stephen P. Boyd.
 % See the file COPYING.txt for full copyright information.
 % The command 'cvx_where' will show where this file is located.
 

@@ -111,6 +111,6 @@ if info.numerr == 1.5 | (info.numerr == 1 & prec(2) == prec(3))
     status = [ 'Inaccurate/', status ];
 end
 
-% Copyright 2007 Michael C. Grant and Stephen P. Boyd.
+% Copyright 2008 Michael C. Grant and Stephen P. Boyd.
 % See the file COPYING.txt for full copyright information.
 % The command 'cvx_where' will show where this file is located.

@@ -49,6 +49,6 @@ Q  = xi(ii,jj)\xi(ii,j2);
 [vn,vd] = rat(vv,tol);
 xi = sparse([[1:rr]';i3],[jj;j2(j3)],[ones(rr,1);vn./vd],rr,n);
 
-% Copyright 2007 Michael C. Grant and Stephen P. Boyd.
+% Copyright 2008 Michael C. Grant and Stephen P. Boyd.
 % See the file COPYING.txt for full copyright information.
 % The command 'cvx_where' will show where this file is located.
