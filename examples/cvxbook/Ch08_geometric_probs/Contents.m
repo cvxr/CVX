@@ -27,4 +27,6 @@
 %  separate_ell_2D.m            - Separating ellipsoids in 2D
 %  floor_plan_graphs.m          - Solve a floor planning problem given graphs H & V
 %  floorplan.m                  - Computes a minimum-perimeter bounding box subject to positioning constraints
+%  data_floorplan_32.mat        - (no title)
+%  data_floorplan_60.mat        - (no title)
 help Contents

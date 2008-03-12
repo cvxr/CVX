@@ -141,6 +141,8 @@ icons will expand/collapse directories to reveal/hide their contents.<br />
 --- [cvxbook/Ch08_geometric_probs/html/separate_ell_2D.html Separating ellipsoids in 2D] ([cvxbook/Ch08_geometric_probs/separate_ell_2D.m separate_ell_2D.m])
 --- [cvxbook/Ch08_geometric_probs/html/floor_plan_graphs.html Solve a floor planning problem given graphs H & V] ([cvxbook/Ch08_geometric_probs/floor_plan_graphs.m floor_plan_graphs.m])
 --- Utility: [cvxbook/Ch08_geometric_probs/floorplan.m Computes a minimum-perimeter bounding box subject to positioning constraints (floorplan.m)]
+--- Data: [cvxbook/Ch08_geometric_probs/data_floorplan_32.mat data_floorplan_32.mat]
+--- Data: [cvxbook/Ch08_geometric_probs/data_floorplan_60.mat data_floorplan_60.mat]
 - *Filter design*
 -- Reference: [http://stanford.edu/~boyd/papers/magdes.html FIR Filter Design via Spectral Factorization and Convex Optimization]
 -- Reference: [http://stanford.edu/class/ee364 EE364] lecture, [http://stanford.edu/class/ee364/lectures/filters.pdf Filter design and equalization]
@@ -181,6 +183,9 @@ icons will expand/collapse directories to reveal/hide their contents.<br />
 -- [sparse_heuristics/html/sparse_solution.html Computing a sparse solution of a set of linear inequalities] ([sparse_heuristics/sparse_solution.m sparse_solution.m])
 -- [sparse_heuristics/html/sparse_infeas_dual.html Detecting a small subset of infeasible linear inequalities] ([sparse_heuristics/sparse_infeas_dual.m sparse_infeas_dual.m])
 -- [sparse_heuristics/html/sparse_infeas.html Finding a point that satisfies many linear inequalities] ([sparse_heuristics/sparse_infeas.m sparse_infeas.m])
+- *Example from [http://stanford.edu/~boyd/papers/l1_trend_filter.html $\ell_1$ Trend Filtering]*
+-- [time_series_analysis/html/l1_trend_filter_snp500.html l1 trend filtering] ([time_series_analysis/l1_trend_filter_snp500.m l1_trend_filter_snp500.m])
+-- Data: [time_series_analysis/snp500.txt snp500.txt]
 - *Miscellaneous examples*
 -- [html/regularized_norm_tradeoff.html Builds a norm minimization tradeoff curve] ([regularized_norm_tradeoff.m regularized_norm_tradeoff.m])
 -- [html/simple_LP2.html Builds and solves a simple inequality-constrained linear program] ([simple_LP2.m simple_LP2.m])

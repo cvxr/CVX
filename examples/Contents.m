@@ -7,6 +7,7 @@
 %  gp_tutorial/                - Examples from [http://stanford.edu/~boyd/papers/gp_tutorial.html A Tutorial on Geometric Programming]
 %  graph_laplacian/            - Graph Laplacian eigenvalue optimization
 %  sparse_heuristics/          - Sparse solution heuristics
+%  time_series_analysis/       - Example from [http://stanford.edu/~boyd/papers/l1_trend_filter.html $\ell_1$ Trend Filtering]
 %  regularized_norm_tradeoff.m - Builds a norm minimization tradeoff curve
 %  simple_LP2.m                - Builds and solves a simple inequality-constrained linear program
 %  simple_LS.m                 - Builds and solves a simple least-squares problem using cvx

@@ -202,7 +202,7 @@ if ~runonly,
             title = temp( min( find( temp ~= '%' & temp ~= ' ' ) ) : end );
             while ~feof( fidr ),
                 temp = fgetl( fidr );
-                if temp( 1 ) ~= '%' | ~any( temp ~= '%' & temp ~= ' ' ), break; end
+                if isempty(temp) | temp( 1 ) ~= '%' | ~any( temp ~= '%' & temp ~= ' ' ), break; end
                 temp = temp( min( find( temp ~= '%' & temp ~= ' ' ) ) : end );
                 if strcmp(title(end-2:end),'...'),
                     title = [ title(1:end-3), temp ];
@@ -253,6 +253,8 @@ for k = 1 : length( dd ),
             case { 'pdf', 'ps' },
                 if any( strcmp( { dd.name }, [name(1:ndx+1),'tex'] ) ), continue; end
                 files( end + 1 ) = struct( 'name', name, 'title', '', 'type', 'doc' );
+            case { 'dat', 'mat', 'txt' },
+                files( end + 1 ) = struct( 'name', name, 'title', '', 'type', 'dat' );
             otherwise,
                 continue;
         end
@@ -271,7 +273,7 @@ if ~isempty( files ),
     tdir  = strcmp( ftypes, 'dir' );
     tfun  = strcmp( ftypes, 'func' );
     tdoc  = strcmp( ftypes, 'doc' ) | strcmp( ftypes, 'tex' );
-    tdat  = strcmp( ftypes, 'dat' ) | strcmp( ftypes, 'mat' ) | strcmp( ftypes, 'txt' );
+    tdat  = strcmp( ftypes, 'dat' );
     tscr  = ~( tdir | tfun | tdoc | tdat );
     t1    = strncmp( fnames, 'Exercise', 8 ) & tscr;
     t2    = strncmp( fnames, 'Example',  7 ) & tscr;
@@ -365,6 +367,24 @@ if fidc >= 0,
             pref = '-- ';
         end
         for k = tfun(1) : tfun(2),
+            name = files( k ).name;
+            temp = files( k ).title;
+            if isempty( temp ),
+                fprintf( fidc, '%s%s[%s%s %s]\n', dots, pref, dpath, name, name );
+            else
+                fprintf( fidc, '%s%s[%s%s %s (%s)]\n', dots, pref, dpath, name, temp, name );
+            end
+        end
+    end
+    
+    if tdat(2) >= tdat(1),
+        if 1, % tfun(1) == tfun(2),
+            pref = '- Data: ';
+        else
+            fprintf( fidc, '%s- Data:\n', dots );
+            pref = '-- ';
+        end
+        for k = tdat(1) : tdat(2),
             name = files( k ).name;
             temp = files( k ).title;
             if isempty( temp ),
