@@ -197,9 +197,11 @@ newext = mexext;
 isw32 = strcmp( newext, 'mexw32' );
 sedpath = [ mpath, fs, 'sedumi' ];
 if ~needLarge & exist( sedpath, 'dir' ),
-    mexfiles = dir( [ sedpath, fs, '*.', newext ] );
-    if isempty( mexfiles ) & ispc & isw32,
-        mexfiles = dir( [ sedpath, fs, '*.dll' ] );
+    if ~fullRecompile,
+        mexfiles = dir( [ sedpath, fs, '*.', newext ] );
+        if isempty( mexfiles ) & ispc & isw32,
+            mexfiles = dir( [ sedpath, fs, '*.dll' ] );
+        end
     end
     if fullRecompile | isempty( mexfiles ),
         cd( sedpath );
@@ -227,10 +229,12 @@ end
 
 sedpath = [ mpath, fs, 'sdpt3' ];
 if exist( sedpath, 'dir' ),
-    mexfiles = dir( [ sedpath, fs, 'Linsysolver', fs, 'spchol', fs, '*.', newext ] );
-    if isempty( mexfiles ) & ispc & isw32,
-        newext = 'dll';
-        mexfiles = dir( [ sedpath, fs, 'Linsysolver', fs, 'spchol', fs, '*.', newext ] );
+    if ~fullRecompile,
+        mexfiles = dir( [ sedpath, fs, 'Solver', fs, 'Mexfun', fs, '*.', newext ] );
+        if isempty( mexfiles ) & ispc & isw32,
+            newext = 'dll';
+            mexfiles = dir( [ sedpath, fs, 'Solver', fs, 'Mexfun', fs, '*.', newext ] );
+        end
     end
     if fullRecompile | isempty( mexfiles ),
         cd( sedpath );
