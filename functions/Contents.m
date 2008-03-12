@@ -11,15 +11,26 @@
 %   For a list of Matlab's built-in functions that have been extended to
 %   provide CVX support, type "help cvx/builtins".
 %
+%   Those functions marked with a (*), as well as the exponential and 
+%   logarithm functions, are supported using a "successive approximation"
+%   approach: that is, the solver is called multiple times to refine the 
+%   solution to the required accuracy. Thus models using these functions
+%   should be expected to run more slowly than models of comparable size
+%   that do not. See the CVX user guide for details.
+%
 %   berhu             - Reverse Huber penalty function.
 %   det_inv           - Determinant of the inverse of an SPD matrix.
 %   det_root2n        - 2nth-root of the determinant of an SPD matrix.
 %   det_rootn         - nth-root of the determinant of an SPD matrix.
-%   geomean           - Geometric mean.
+%   entr              - Scalar entropy. (*)
+%   geomean           - Geometric mean. (*)
 %   huber             - Huber penalty function.
 %   inv_pos           - Reciprocal of a positive quantity.
+%   kl_div            - Scalar Kullback-Liebler distance. (*)
 %   lambda_max        - Maximum eigenvalue of a symmetric matrix.
 %   lambda_min        - Minimum eigenvalue of a symmetric matrix.
+%   log_det           - Logarithm of the determinant. (*)
+%   logsumexp         - log(sum(exp(x))). (*)
 %   logsumexp_sdp     - SDP-based approximation of log(sum(exp(x))).
 %   matrix_frac       - Matrix fractional function.
 %   norm_largest      - Sum of the k largest magnitudes of a vector.
@@ -33,6 +44,7 @@
 %   quad_form         - Quadratic form.
 %   quad_over_lin     - Sum of squares over linear.
 %   quad_pos_over_lin - Sum of squares of positives over linear.
+%   rel_entr          - Scalar relative entropy. (*)
 %   sigma_max         - Maximum singular value.
 %   square            - Square.
 %   square_abs        - Square of absolute value.

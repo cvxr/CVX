@@ -69,3 +69,7 @@ v = cvx_vexity( z );
 if any( isnan( v( : ) ) ),
     error( 'Disciplined convex programming error:\n    Sparse matrix construction produced invalid sums of convex and concave terms.' );
 end
+
+% Copyright 2008 Michael C. Grant and Stephen P. Boyd.
+% See the file COPYING.txt for full copyright information.
+% The command 'cvx_where' will show where this file is located.
