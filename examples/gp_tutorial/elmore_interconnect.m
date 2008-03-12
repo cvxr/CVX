@@ -67,15 +67,13 @@ end
 %********************************************************************
 % optimization (generating optimal tradeoff curve)
 %********************************************************************
-% set the quiet flag (no solver reporting)
-cvxq = cvx_quiet(true);
-
 disp('Generating the tradeoff curve...')
 
 Darray = [];
 for Amax = [5.05 5.25 5.5 5.75 6:25]
   % formulate the GP problem and solve it
   cvx_begin gp
+    cvx_quiet true
     % optimization variables
     variable w(N-1)     % wire width
     variable T(N)       % arrival time (Elmore delay to node i)
@@ -136,6 +134,3 @@ figure, clf
 Amax = [5.05 5.25 5.5 5.75 6:25];
 plot(Darray,Amax);
 xlabel('Elmore delay D'); ylabel('Amax');
-
-% restore initial solver reporting state
-cvx_quiet(cvxq);

@@ -105,7 +105,14 @@ for k = 1 : length( args ),
             case 0,
                 error( sprintf( 'Cannot find file or directory: %s', file ) );
             case 2,
-                [ mpath, file, ext, versn ] = fileparts( which( file ) );
+                file = which( file );
+                if isempty( file ), 
+                    file = files{j};
+                    if file(1) ~= filesep,
+                        file = [ base, filesep, file ];
+                    end
+                end
+                [ mpath, file, ext, versn ] = fileparts( file );
                 file = [ file, ext, versn ];
                 if ~strcmp( ext, '.m' ),
                     error( sprintf( 'Must be an m-file: %s', file ) );
@@ -531,7 +538,7 @@ elseif force | hdate <= ndate,
         if runonly,
             out___ = run_clean( name(1:end-2) );
         else
-            publish( name2, struct( 'format', 'html', 'useNewFigure', 0, 'createThumbnail', 0 ) );
+            publish( name2, struct( 'format', 'html', 'useNewFigure', false, 'createThumbnail', false ) );
         end
         fprintf( 1, ' done.\n' );
         if runonly,

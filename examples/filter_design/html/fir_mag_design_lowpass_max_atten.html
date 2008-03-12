@@ -10,8 +10,8 @@ This HTML is auto-generated from an M-file.
 To make changes, update the M-file and republish this document.
       -->
       <title>Maximize stopband attenuation of a lowpass FIR filter (magnitude design)</title>
-      <meta name="generator" content="MATLAB 7.4">
-      <meta name="date" content="2007-08-10">
+      <meta name="generator" content="MATLAB 7.5">
+      <meta name="date" content="2008-03-11">
       <meta name="m-file" content="fir_mag_design_lowpass_max_atten"><style>
 
 body {
@@ -186,7 +186,7 @@ axis([0,pi,-pi,pi])
 xlabel(<span class="string">'w'</span>), ylabel(<span class="string">'phase H(w)'</span>)
 </pre><pre class="codeoutput"> 
 Calling SDPT3: 828 variables, 21 equality constraints
-Note: for improved efficiency, SDPT3 is solving the dual problem.
+   For improved efficiency, SDPT3 is solving the dual problem.
 ------------------------------------------------------------
 
  num. of constraints = 21
@@ -216,7 +216,7 @@ it pstep dstep pinfeas dinfeas  gap      mean(obj)   cputime
 14|0.893|0.964|3.4e-14|1.8e-12|3.4e-04|-9.521374e-05| 0:0:00| chol  1  1 
 15|0.545|0.599|2.0e-13|1.7e-12|2.1e-04|-8.125219e-05| 0:0:00| chol  1  1 
 16|0.678|0.974|8.7e-12|1.0e-12|1.0e-04|-7.776574e-05| 0:0:00| chol  1  2 
-17|0.645|0.736|4.1e-12|1.8e-12|5.7e-05|-9.103753e-05| 0:0:01| chol  1  1 
+17|0.645|0.736|4.1e-12|1.8e-12|5.7e-05|-9.103753e-05| 0:0:00| chol  1  1 
 18|0.821|1.000|1.3e-12|1.0e-12|1.9e-05|-9.749883e-05| 0:0:01| chol  2  2 
 19|0.854|0.922|1.0e-11|1.1e-12|4.4e-06|-1.029658e-04| 0:0:01| chol  2  2 
 20|0.881|0.910|5.6e-12|1.6e-12|7.1e-07|-1.045233e-04| 0:0:01| chol  1  2 
@@ -241,12 +241,12 @@ it pstep dstep pinfeas dinfeas  gap      mean(obj)   cputime
 -------------------------------------------------------------------
 ------------------------------------------------------------
 Status: Solved
-Optimal value (cvx_optval): +0.000104836
+Optimal value (cvx_optval): +0.000104837
 Problem is Solved
 The max attenuation in the stopband is -39.79 dB.
 
 </pre><img vspace="5" hspace="5" src="fir_mag_design_lowpass_max_atten_01.png"> <img vspace="5" hspace="5" src="fir_mag_design_lowpass_max_atten_02.png"> <p class="footer"><br>
-            Published with MATLAB&reg; 7.4<br></p>
+            Published with MATLAB&reg; 7.5<br></p>
       </div>
       <!--
 ##### SOURCE BEGIN #####

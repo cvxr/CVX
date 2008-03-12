@@ -10,8 +10,8 @@ This HTML is auto-generated from an M-file.
 To make changes, update the M-file and republish this document.
       -->
       <title>Digital circuit sizing</title>
-      <meta name="generator" content="MATLAB 7.4">
-      <meta name="date" content="2007-08-10">
+      <meta name="generator" content="MATLAB 7.5">
+      <meta name="date" content="2008-03-12">
       <meta name="m-file" content="simple_dig_ckt_sizing"><style>
 
 body {
@@ -112,14 +112,13 @@ Pmax = linspace(10,100,N);
 Amax = [25 50 100];
 min_delay = zeros(length(Amax),N);
 
-<span class="comment">% set the quiet flag (no solver reporting)</span>
-cvxq = cvx_quiet(true);
-
 disp(<span class="string">'Generating the optimal tradeoff curve...'</span>)
 
 <span class="keyword">for</span> k = 1:length(Amax)
   <span class="keyword">for</span> n = 1:N
     cvx_begin <span class="string">gp</span>
+      cvx_quiet <span class="string">true</span>
+
       <span class="comment">% optimization variables</span>
       variable <span class="string">x(m)</span>           <span class="comment">% scale factors</span>
 
@@ -176,15 +175,12 @@ disp(<span class="string">'Generating the optimal tradeoff curve...'</span>)
 plot(Pmax,min_delay(1,:), Pmax,min_delay(2,:), Pmax,min_delay(3,:));
 xlabel(<span class="string">'Pmax'</span>); ylabel(<span class="string">'Dmin'</span>);
 disp(<span class="string">'Optimal tradeoff curve plotted.'</span>)
-
-<span class="comment">% restore initial solver reporting state</span>
-cvx_quiet(cvxq);
 </pre><pre class="codeoutput">Generating the optimal tradeoff curve...
-  Amax =  25   Pmax =  10.00   delay = 12.22
-  Amax =  25   Pmax =  13.75   delay = 9.82
-  Amax =  25   Pmax =  17.50   delay = 8.52
+  Amax =  25   Pmax =  10.00   delay = 12.21
+  Amax =  25   Pmax =  13.75   delay = 9.81
+  Amax =  25   Pmax =  17.50   delay = 8.51
   Amax =  25   Pmax =  21.25   delay = 7.63
-  Amax =  25   Pmax =  25.00   delay = 6.99
+  Amax =  25   Pmax =  25.00   delay = 6.98
   Amax =  25   Pmax =  28.75   delay = 6.80
   Amax =  25   Pmax =  32.50   delay = 6.80
   Amax =  25   Pmax =  36.25   delay = 6.80
@@ -205,17 +201,17 @@ cvx_quiet(cvxq);
   Amax =  25   Pmax =  92.50   delay = 6.80
   Amax =  25   Pmax =  96.25   delay = 6.80
   Amax =  25   Pmax = 100.00   delay = 6.80
-  Amax =  50   Pmax =  10.00   delay = 12.22
-  Amax =  50   Pmax =  13.75   delay = 9.82
-  Amax =  50   Pmax =  17.50   delay = 8.52
+  Amax =  50   Pmax =  10.00   delay = 12.21
+  Amax =  50   Pmax =  13.75   delay = 9.81
+  Amax =  50   Pmax =  17.50   delay = 8.51
   Amax =  50   Pmax =  21.25   delay = 7.63
-  Amax =  50   Pmax =  25.00   delay = 6.99
-  Amax =  50   Pmax =  28.75   delay = 6.49
-  Amax =  50   Pmax =  32.50   delay = 6.09
-  Amax =  50   Pmax =  36.25   delay = 5.76
+  Amax =  50   Pmax =  25.00   delay = 6.98
+  Amax =  50   Pmax =  28.75   delay = 6.48
+  Amax =  50   Pmax =  32.50   delay = 6.08
+  Amax =  50   Pmax =  36.25   delay = 5.75
   Amax =  50   Pmax =  40.00   delay = 5.48
   Amax =  50   Pmax =  43.75   delay = 5.24
-  Amax =  50   Pmax =  47.50   delay = 5.04
+  Amax =  50   Pmax =  47.50   delay = 5.03
   Amax =  50   Pmax =  51.25   delay = 4.85
   Amax =  50   Pmax =  55.00   delay = 4.71
   Amax =  50   Pmax =  58.75   delay = 4.71
@@ -230,17 +226,17 @@ cvx_quiet(cvxq);
   Amax =  50   Pmax =  92.50   delay = 4.71
   Amax =  50   Pmax =  96.25   delay = 4.71
   Amax =  50   Pmax = 100.00   delay = 4.71
-  Amax = 100   Pmax =  10.00   delay = 12.22
-  Amax = 100   Pmax =  13.75   delay = 9.82
-  Amax = 100   Pmax =  17.50   delay = 8.52
+  Amax = 100   Pmax =  10.00   delay = 12.21
+  Amax = 100   Pmax =  13.75   delay = 9.81
+  Amax = 100   Pmax =  17.50   delay = 8.51
   Amax = 100   Pmax =  21.25   delay = 7.63
-  Amax = 100   Pmax =  25.00   delay = 6.99
-  Amax = 100   Pmax =  28.75   delay = 6.49
-  Amax = 100   Pmax =  32.50   delay = 6.09
-  Amax = 100   Pmax =  36.25   delay = 5.76
+  Amax = 100   Pmax =  25.00   delay = 6.98
+  Amax = 100   Pmax =  28.75   delay = 6.48
+  Amax = 100   Pmax =  32.50   delay = 6.08
+  Amax = 100   Pmax =  36.25   delay = 5.75
   Amax = 100   Pmax =  40.00   delay = 5.48
   Amax = 100   Pmax =  43.75   delay = 5.24
-  Amax = 100   Pmax =  47.50   delay = 5.04
+  Amax = 100   Pmax =  47.50   delay = 5.03
   Amax = 100   Pmax =  51.25   delay = 4.85
   Amax = 100   Pmax =  55.00   delay = 4.69
   Amax = 100   Pmax =  58.75   delay = 4.55
@@ -257,7 +253,7 @@ cvx_quiet(cvxq);
   Amax = 100   Pmax = 100.00   delay = 3.57
 Optimal tradeoff curve plotted.
 </pre><img vspace="5" hspace="5" src="simple_dig_ckt_sizing_01.png"> <p class="footer"><br>
-            Published with MATLAB&reg; 7.4<br></p>
+            Published with MATLAB&reg; 7.5<br></p>
       </div>
       <!--
 ##### SOURCE BEGIN #####
@@ -304,14 +300,13 @@ Pmax = linspace(10,100,N);
 Amax = [25 50 100];
 min_delay = zeros(length(Amax),N);
 
-% set the quiet flag (no solver reporting)
-cvxq = cvx_quiet(true);
-
 disp('Generating the optimal tradeoff curve...')
 
 for k = 1:length(Amax)
   for n = 1:N
     cvx_begin gp
+      cvx_quiet true
+      
       % optimization variables
       variable x(m)           % scale factors
 
@@ -368,9 +363,6 @@ end
 plot(Pmax,min_delay(1,:), Pmax,min_delay(2,:), Pmax,min_delay(3,:));
 xlabel('Pmax'); ylabel('Dmin');
 disp('Optimal tradeoff curve plotted.')
-
-% restore initial solver reporting state
-cvx_quiet(cvxq);
 
 ##### SOURCE END #####
 -->

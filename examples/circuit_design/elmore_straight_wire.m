@@ -116,12 +116,10 @@ for Amax = [10.05 10.5 11 12:2:20 22.5 25:5:60]
     w <= Wmax;
   cvx_end
 
-  if strfind(cvx_status,'Solved')
-    % display and store computed values
-    fprintf(1,'  Amax = %5.2f   delay = %3.2f\n',Amax,cvx_optval);
-    Darray = [Darray cvx_optval];
-    widths = [widths w];
-  end
+  % display and store computed values
+  fprintf(1,'  Amax = %5.2f   delay = %3.2f\n',Amax,cvx_optval);
+  Darray = [Darray cvx_optval];
+  widths = [widths w];
 end
 
 % restore initial solver reporting state

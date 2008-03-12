@@ -10,8 +10,8 @@ This HTML is auto-generated from an M-file.
 To make changes, update the M-file and republish this document.
       -->
       <title>Box volume maximization</title>
-      <meta name="generator" content="MATLAB 7.4">
-      <meta name="date" content="2007-08-10">
+      <meta name="generator" content="MATLAB 7.5">
+      <meta name="date" content="2008-03-12">
       <meta name="m-file" content="max_volume_box"><style>
 
 body {
@@ -86,9 +86,6 @@ p.footer {
 <span class="comment">%</span>
 <span class="comment">% where variables are the box height h, width w, and depth d.</span>
 
-<span class="comment">% set the quiet flag (no solver reporting)</span>
-cvxq = cvx_quiet(true);
-
 <span class="comment">% problem constants</span>
 alpha = 0.5; beta = 2; gamma = 0.5; delta = 2;
 
@@ -102,16 +99,18 @@ disp(<span class="string">'Computing optimal box volume for:'</span>)
 
 <span class="comment">% setup various GP problems with varying parameters</span>
 <span class="keyword">for</span> k = 1:length(Awall)
+  Awall_k = Awall(k);
   <span class="keyword">for</span> n = 1:N
     <span class="comment">% resolve the problem with varying parameters</span>
+    Afloor_n = Afloor(n);
     cvx_begin <span class="string">gp</span>
+      cvx_quiet <span class="string">true</span>
       variables <span class="string">h</span> <span class="string">w</span> <span class="string">d</span>
       <span class="comment">% objective function is the box volume</span>
       maximize( h*w*d )
       subject <span class="string">to</span>
-        2*(h*w + h*d) &lt;= Awall(k);
-        w*d &lt;= Afloor(n);
-
+        2*(h*w + h*d) &lt;= Awall_k;
+        w*d &lt;= Afloor_n;
         h/w &gt;= alpha;
         h/w &lt;= beta;
         d/w &gt;= gamma;
@@ -124,46 +123,43 @@ disp(<span class="string">'Computing optimal box volume for:'</span>)
   <span class="keyword">end</span>
 <span class="keyword">end</span>
 
-<span class="comment">% restore initial solver reporting state</span>
-cvx_quiet(cvxq);
-
 <span class="comment">% plot the tradeoff curve</span>
 figure, clf
 loglog(Afloor,opt_volumes(1,:), Afloor,opt_volumes(2,:), Afloor,opt_volumes(3,:));
 xlabel(<span class="string">'Afloor'</span>); ylabel(<span class="string">'V'</span>);
 </pre><pre class="codeoutput">Computing optimal box volume for:
   Awall =   100   Afloor =   10.00   max_volume = 77.46
-  Awall =   100   Afloor =   16.68   max_volume = 102.04
-  Awall =   100   Afloor =   27.83   max_volume = 131.79
-  Awall =   100   Afloor =   46.42   max_volume = 170.21
-  Awall =   100   Afloor =   77.43   max_volume = 192.34
-  Awall =   100   Afloor =  129.15   max_volume = 192.34
-  Awall =   100   Afloor =  215.44   max_volume = 192.34
-  Awall =   100   Afloor =  359.38   max_volume = 192.34
-  Awall =   100   Afloor =  599.48   max_volume = 192.34
-  Awall =   100   Afloor = 1000.00   max_volume = 192.34
+  Awall =   100   Afloor =   16.68   max_volume = 102.11
+  Awall =   100   Afloor =   27.83   max_volume = 131.87
+  Awall =   100   Afloor =   46.42   max_volume = 170.32
+  Awall =   100   Afloor =   77.43   max_volume = 192.45
+  Awall =   100   Afloor =  129.15   max_volume = 192.45
+  Awall =   100   Afloor =  215.44   max_volume = 192.45
+  Awall =   100   Afloor =  359.38   max_volume = 192.45
+  Awall =   100   Afloor =  599.48   max_volume = 192.45
+  Awall =   100   Afloor = 1000.00   max_volume = 192.45
   Awall =  1000   Afloor =   10.00   max_volume = 89.44
   Awall =  1000   Afloor =   16.68   max_volume = 192.70
   Awall =  1000   Afloor =   27.83   max_volume = 415.16
   Awall =  1000   Afloor =   46.42   max_volume = 894.43
   Awall =  1000   Afloor =   77.43   max_volume = 1926.98
-  Awall =  1000   Afloor =  129.15   max_volume = 2839.27
-  Awall =  1000   Afloor =  215.44   max_volume = 3667.06
-  Awall =  1000   Afloor =  359.38   max_volume = 4736.19
-  Awall =  1000   Afloor =  599.48   max_volume = 5998.44
-  Awall =  1000   Afloor = 1000.00   max_volume = 6082.35
+  Awall =  1000   Afloor =  129.15   max_volume = 2841.16
+  Awall =  1000   Afloor =  215.44   max_volume = 3669.50
+  Awall =  1000   Afloor =  359.38   max_volume = 4739.34
+  Awall =  1000   Afloor =  599.48   max_volume = 5998.71
+  Awall =  1000   Afloor = 1000.00   max_volume = 6085.81
   Awall = 10000   Afloor =   10.00   max_volume = 89.44
   Awall = 10000   Afloor =   16.68   max_volume = 192.70
   Awall = 10000   Afloor =   27.83   max_volume = 415.16
   Awall = 10000   Afloor =   46.42   max_volume = 894.43
-  Awall = 10000   Afloor =   77.43   max_volume = 1926.99
+  Awall = 10000   Afloor =   77.43   max_volume = 1926.98
   Awall = 10000   Afloor =  129.15   max_volume = 4151.56
   Awall = 10000   Afloor =  215.44   max_volume = 8944.27
   Awall = 10000   Afloor =  359.38   max_volume = 19269.85
-  Awall = 10000   Afloor =  599.48   max_volume = 41515.64
-  Awall = 10000   Afloor = 1000.00   max_volume = 77457.25
+  Awall = 10000   Afloor =  599.48   max_volume = 41515.63
+  Awall = 10000   Afloor = 1000.00   max_volume = 77459.66
 </pre><img vspace="5" hspace="5" src="max_volume_box_01.png"> <p class="footer"><br>
-            Published with MATLAB&reg; 7.4<br></p>
+            Published with MATLAB&reg; 7.5<br></p>
       </div>
       <!--
 ##### SOURCE BEGIN #####
@@ -184,9 +180,6 @@ xlabel(<span class="string">'Afloor'</span>); ylabel(<span class="string">'V'</s
 %
 % where variables are the box height h, width w, and depth d.
 
-% set the quiet flag (no solver reporting)
-cvxq = cvx_quiet(true);
-
 % problem constants
 alpha = 0.5; beta = 2; gamma = 0.5; delta = 2;
 
@@ -200,16 +193,18 @@ disp('Computing optimal box volume for:')
 
 % setup various GP problems with varying parameters
 for k = 1:length(Awall)
+  Awall_k = Awall(k);
   for n = 1:N
     % resolve the problem with varying parameters
+    Afloor_n = Afloor(n);
     cvx_begin gp
+      cvx_quiet true
       variables h w d
       % objective function is the box volume
       maximize( h*w*d )
       subject to
-        2*(h*w + h*d) <= Awall(k);
-        w*d <= Afloor(n);
-
+        2*(h*w + h*d) <= Awall_k;
+        w*d <= Afloor_n;
         h/w >= alpha;
         h/w <= beta;
         d/w >= gamma;
@@ -221,9 +216,6 @@ for k = 1:length(Awall)
     opt_volumes(k,n) = cvx_optval;
   end
 end
-
-% restore initial solver reporting state
-cvx_quiet(cvxq);
 
 % plot the tradeoff curve
 figure, clf

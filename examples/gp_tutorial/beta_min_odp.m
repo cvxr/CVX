@@ -16,9 +16,6 @@
 %
 % where variables are v_i, y_i, and w_i.
 
-% set the quiet flag (no solver reporting)
-cvxq = cvx_quiet(true);
-
 % problem size
 M = 20;
 
@@ -43,6 +40,7 @@ pwj = 1+g1-g2;
 v_array = [];
 for k = 1:length(beta_min_GE)
   cvx_begin gp
+    cvx_quiet true
     % optimization variables
     variables v(M) y(M) w(M)
 
@@ -86,6 +84,3 @@ ylabel('doping');
 text(0,Nmin,'Nmin ', 'HorizontalAlignment','right');
 text(0,Nmax,'Nmax ', 'HorizontalAlignment','right');
 hold off;
-
-% restore initial solver reporting state
-cvx_quiet(cvxq);

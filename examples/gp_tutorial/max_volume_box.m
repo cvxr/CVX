@@ -14,9 +14,6 @@
 %
 % where variables are the box height h, width w, and depth d.
 
-% set the quiet flag (no solver reporting)
-cvxq = cvx_quiet(true);
-
 % problem constants
 alpha = 0.5; beta = 2; gamma = 0.5; delta = 2;
 
@@ -30,16 +27,18 @@ disp('Computing optimal box volume for:')
 
 % setup various GP problems with varying parameters
 for k = 1:length(Awall)
+  Awall_k = Awall(k);
   for n = 1:N
     % resolve the problem with varying parameters
+    Afloor_n = Afloor(n);
     cvx_begin gp
+      cvx_quiet true
       variables h w d
       % objective function is the box volume
       maximize( h*w*d )
       subject to
-        2*(h*w + h*d) <= Awall(k);
-        w*d <= Afloor(n);
-
+        2*(h*w + h*d) <= Awall_k;
+        w*d <= Afloor_n;
         h/w >= alpha;
         h/w <= beta;
         d/w >= gamma;
@@ -51,9 +50,6 @@ for k = 1:length(Awall)
     opt_volumes(k,n) = cvx_optval;
   end
 end
-
-% restore initial solver reporting state
-cvx_quiet(cvxq);
 
 % plot the tradeoff curve
 figure, clf

@@ -10,8 +10,8 @@ This HTML is auto-generated from an M-file.
 To make changes, update the M-file and republish this document.
       -->
       <title>Figure 8.17: Fourth-order placement problem</title>
-      <meta name="generator" content="MATLAB 7.4">
-      <meta name="date" content="2007-08-10">
+      <meta name="generator" content="MATLAB 7.5">
+      <meta name="date" content="2008-03-11">
       <meta name="m-file" content="placement_quar"><style>
 
 body {
@@ -166,7 +166,7 @@ title(<span class="string">'Distribution of the 27 link lengths'</span>);
 <span class="comment">% print -deps placement-quartic-hist.eps</span>
 </pre><pre class="codeoutput">Computing the optimal locations of the 6 free points... 
 Calling SDPT3: 297 variables, 147 equality constraints
-Note: for improved efficiency, SDPT3 is solving the dual problem.
+   For improved efficiency, SDPT3 is solving the dual problem.
 ------------------------------------------------------------
 
  num. of constraints = 147
@@ -177,46 +177,47 @@ Note: for improved efficiency, SDPT3 is solving the dual problem.
    SDPT3: Infeasible path-following algorithms
 *******************************************************************
  version  predcorr  gam  expon  scale_data
-    NT      1      0.000   1        0    
+   HKM      1      0.000   1        0    
 it pstep dstep pinfeas dinfeas  gap      mean(obj)   cputime
 -------------------------------------------------------------------
  0|0.000|0.000|1.8e+01|6.6e+00|7.5e+03| 1.080000e+02| 0:0:00| chol  1  1 
  1|0.664|0.670|6.1e+00|2.2e+00|3.3e+03| 1.294055e+02| 0:0:00| chol  1  1 
- 2|0.758|0.762|1.5e+00|5.4e-01|1.4e+03| 2.498200e+01| 0:0:00| chol  1  1 
- 3|0.816|0.907|2.7e-01|5.1e-02|2.5e+02|-3.296841e+01| 0:0:00| chol  1  1 
- 4|1.000|0.444|1.5e-06|2.8e-02|1.9e+02|-5.853681e+00| 0:0:00| chol  1  1 
- 5|0.919|1.000|1.3e-07|1.0e-05|7.0e+01|-2.436980e+01| 0:0:00| chol  1  1 
- 6|1.000|0.943|1.6e-08|1.6e-06|9.4e+00|-2.235468e+01| 0:0:00| chol  1  1 
- 7|1.000|1.000|3.9e-09|1.0e-07|2.6e+00|-2.088292e+01| 0:0:00| chol  1  1 
- 8|0.978|0.940|1.7e-09|1.6e-08|3.9e-01|-2.071849e+01| 0:0:00| chol  1  1 
- 9|1.000|1.000|7.5e-10|1.3e-09|1.3e-01|-2.066359e+01| 0:0:00| chol  1  1 
-10|0.963|0.964|2.7e-11|2.9e-10|5.3e-03|-2.064706e+01| 0:0:00| chol  1  1 
-11|0.986|0.985|3.9e-13|2.0e-11|7.9e-05|-2.064634e+01| 0:0:01| chol  1  1 
-12|0.998|0.997|4.6e-14|1.1e-12|1.0e-06|-2.064632e+01| 0:0:01| chol  1  1 
-13|1.000|1.000|7.0e-12|1.0e-12|1.4e-08|-2.064632e+01| 0:0:01|
+ 2|0.754|0.748|1.5e+00|5.7e-01|1.5e+03| 2.859037e+01| 0:0:00| chol  1  1 
+ 3|0.816|0.927|2.8e-01|4.3e-02|2.4e+02|-3.240147e+01| 0:0:00| chol  1  1 
+ 4|1.000|0.311|1.8e-06|2.9e-02|2.1e+02|-5.084694e+00| 0:0:00| chol  1  1 
+ 5|0.767|1.000|4.4e-07|1.0e-05|9.8e+01|-2.477081e+01| 0:0:00| chol  1  1 
+ 6|1.000|0.846|1.7e-08|2.5e-06|3.3e+01|-2.405123e+01| 0:0:00| chol  1  1 
+ 7|0.821|0.907|6.7e-09|3.3e-07|5.2e+00|-2.069173e+01| 0:0:00| chol  1  1 
+ 8|0.951|1.000|1.7e-09|1.1e-08|1.8e+00|-2.081896e+01| 0:0:00| chol  1  1 
+ 9|0.972|0.930|7.1e-10|2.1e-09|1.8e-01|-2.068494e+01| 0:0:00| chol  1  1 
+10|1.000|1.000|4.1e-15|2.4e-10|2.8e-02|-2.065029e+01| 0:0:00| chol  1  1 
+11|0.964|0.991|7.2e-15|1.3e-11|1.1e-03|-2.064631e+01| 0:0:00| chol  1  1 
+12|0.982|0.985|1.6e-14|1.2e-12|1.9e-05|-2.064632e+01| 0:0:01| chol  1  1 
+13|0.999|1.000|1.9e-12|1.0e-12|9.0e-07|-2.064632e+01| 0:0:01| chol  1  2 
+14|0.994|1.000|4.3e-12|1.0e-12|2.9e-08|-2.064632e+01| 0:0:01|
   sqlp stop: max(relative gap, infeasibilities) &lt; 1.49e-08
 -------------------------------------------------------------------
- number of iterations   = 13
+ number of iterations   = 14
  primal objective value = -2.06463236e+01
  dual   objective value = -2.06463236e+01
- gap := trace(XZ)       = 1.42e-08
- relative gap           = 3.36e-10
- actual relative gap    = 3.34e-10
- rel. primal infeas     = 7.04e-12
+ gap := trace(XZ)       = 2.85e-08
+ relative gap           = 6.75e-10
+ actual relative gap    = 6.69e-10
+ rel. primal infeas     = 4.34e-12
  rel. dual   infeas     = 1.00e-12
  norm(X), norm(y), norm(Z) = 4.1e+01, 8.4e+00, 1.5e+01
  norm(A), norm(b), norm(C) = 2.2e+01, 6.2e+00, 1.0e+01
  Total CPU time (secs)  = 0.6  
  CPU time per iteration = 0.0  
  termination code       =  0
- DIMACS: 2.2e-11  0.0e+00  5.1e-12  0.0e+00  3.3e-10  3.4e-10
+ DIMACS: 1.3e-11  0.0e+00  5.1e-12  0.0e+00  6.7e-10  6.7e-10
 -------------------------------------------------------------------
 ------------------------------------------------------------
 Status: Solved
 Optimal value (cvx_optval): +20.6463
 Done! 
 </pre><img vspace="5" hspace="5" src="placement_quar_01.png"> <img vspace="5" hspace="5" src="placement_quar_02.png"> <p class="footer"><br>
-            Published with MATLAB&reg; 7.4<br></p>
+            Published with MATLAB&reg; 7.5<br></p>
       </div>
       <!--
 ##### SOURCE BEGIN #####

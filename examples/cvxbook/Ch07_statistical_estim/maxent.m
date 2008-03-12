@@ -35,26 +35,14 @@ A  = [ a   ; -a  ; a2 ; -a2  ; a3 ; -a3 ; ap ; -ap ];
 b  = [ 0.1 ; 0.1 ;0.5 ; -0.5 ; -0.2 ; 0.3 ; 0.4 ; -0.3 ];
 
 %
-% Compute the maximum entropy distribution, which is the solution to
-%     maximize    - sum_i p_i * log( p_i )
-%     subject to  A * p <= b
-%                 sum( p ) == 1
-%                 p >= 0
-% But since CVX does not support maxent, we shall solve the dual problem,
-% which can be shown to be equivalent to
-%     minimize    b' * z + log(sum(exp(y)))
-%     subject to  A * y + z == 0
-%                 z >= 0
-% The Lagrange multipliers for the equality constraints give p.
+% Compute the maximum entropy distribution
 %
 
 cvx_begin
-    cvx_gp_precision( 0.001 )
-    variables z(8) y(100)
-    dual variable pent
-    minimize( b' * z + logsumexp_sdp( y ) )
-    pent : y + A' * z == 0;
-    z >= 0;
+    variables pent(n)
+    maximize( sum(entr(pent)) )
+    sum(pent) == 1;
+    A * pent <= b;
 cvx_end
 
 %

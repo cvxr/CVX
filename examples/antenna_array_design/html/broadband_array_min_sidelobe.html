@@ -10,8 +10,8 @@ This HTML is auto-generated from an M-file.
 To make changes, update the M-file and republish this document.
       -->
       <title>Minimize sidelobe level of an FIR broadband far-field antenna array</title>
-      <meta name="generator" content="MATLAB 7.4">
-      <meta name="date" content="2007-08-10">
+      <meta name="generator" content="MATLAB 7.5">
+      <meta name="date" content="2008-03-11">
       <meta name="m-file" content="broadband_array_min_sidelobe"><style>
 
 body {
@@ -233,7 +233,7 @@ subplot(2,2,3); polar_plot_ant(abs( Atotal(:,:,4)*w ),theta_tar,bw,<span class="
 subplot(2,2,4); polar_plot_ant(abs( Atotal(:,:,5)*w ),theta_tar,bw,<span class="string">'f = 2500 (stop)'</span>);
 </pre><pre class="codeoutput"> 
 Calling SDPT3: 3184 variables, 145 equality constraints
-Note: for improved efficiency, SDPT3 is solving the dual problem.
+   For improved efficiency, SDPT3 is solving the dual problem.
 ------------------------------------------------------------
 
  num. of constraints = 145
@@ -261,19 +261,19 @@ it pstep dstep pinfeas dinfeas  gap      mean(obj)   cputime
 12|0.598|0.665|3.4e-10|4.3e-06|3.6e-03|-4.906491e-01| 0:0:12| chol  2  2 
 13|0.752|0.787|2.1e-10|1.0e-06|1.2e-03|-4.914282e-01| 0:0:13| chol  2  2 
 14|0.764|0.767|4.6e-10|2.7e-07|3.5e-04|-4.917374e-01| 0:0:14| chol  2  2 
-15|0.525|0.886|3.0e-10|5.7e-08|1.8e-04|-4.917958e-01| 0:0:15| chol  2  2 
-16|0.814|0.939|3.6e-10|2.7e-08|4.6e-05|-4.918576e-01| 0:0:16| chol  3  3 
-17|0.913|0.854|1.4e-09|6.9e-09|7.9e-06|-4.918758e-01| 0:0:17| chol  3  3 
-18|0.566|0.895|1.4e-09|1.2e-09|4.1e-06|-4.918774e-01| 0:0:18| chol  4  3 
-19|0.555|0.943|1.9e-09|6.4e-10|2.2e-06|-4.918783e-01| 0:0:19| chol  4  4 
-20|0.542|0.943|1.9e-09|4.2e-10|1.2e-06|-4.918787e-01| 0:0:20| chol  3  4 
-21|0.540|0.943|2.0e-09|4.3e-10|6.5e-07|-4.918790e-01| 0:0:21| chol  4  4 
-22|0.542|0.943|1.4e-09|4.4e-10|3.6e-07|-4.918791e-01| 0:0:22| chol  4  4 
-23|0.544|0.943|1.3e-09|3.2e-10|2.0e-07|-4.918792e-01| 0:0:23| chol  4  5 
-24|0.547|0.942|1.1e-09|2.8e-10|1.1e-07|-4.918793e-01| 0:0:24| chol  4  6 
-25|0.549|0.942|1.1e-09|2.5e-10|5.8e-08|-4.918793e-01| 0:0:25| chol  6  6 
-26|0.551|0.943|1.2e-09|2.4e-10|3.2e-08|-4.918793e-01| 0:0:26| chol  6  5 
-27|0.553|0.943|1.2e-09|2.5e-10|1.7e-08|-4.918793e-01| 0:0:27|
+15|0.525|0.886|3.0e-10|5.7e-08|1.8e-04|-4.917958e-01| 0:0:14| chol  2  2 
+16|0.814|0.939|3.6e-10|2.7e-08|4.6e-05|-4.918576e-01| 0:0:15| chol  3  3 
+17|0.913|0.854|1.4e-09|6.9e-09|7.9e-06|-4.918758e-01| 0:0:16| chol  3  3 
+18|0.566|0.895|1.4e-09|1.2e-09|4.1e-06|-4.918774e-01| 0:0:17| chol  4  3 
+19|0.555|0.943|1.9e-09|6.4e-10|2.2e-06|-4.918783e-01| 0:0:18| chol  4  4 
+20|0.542|0.943|1.9e-09|4.2e-10|1.2e-06|-4.918787e-01| 0:0:19| chol  3  4 
+21|0.540|0.943|2.0e-09|4.3e-10|6.5e-07|-4.918790e-01| 0:0:20| chol  4  4 
+22|0.542|0.943|1.4e-09|4.4e-10|3.6e-07|-4.918791e-01| 0:0:21| chol  4  4 
+23|0.544|0.943|1.3e-09|3.2e-10|2.0e-07|-4.918792e-01| 0:0:22| chol  4  5 
+24|0.547|0.942|1.1e-09|2.8e-10|1.1e-07|-4.918793e-01| 0:0:23| chol  4  6 
+25|0.549|0.942|1.1e-09|2.5e-10|5.8e-08|-4.918793e-01| 0:0:24| chol  6  6 
+26|0.551|0.943|1.2e-09|2.4e-10|3.2e-08|-4.918793e-01| 0:0:25| chol  6  5 
+27|0.553|0.943|1.2e-09|2.5e-10|1.7e-08|-4.918793e-01| 0:0:26|
   sqlp stop: max(relative gap, infeasibilities) &lt; 1.49e-08
 -------------------------------------------------------------------
  number of iterations   = 27
@@ -286,7 +286,7 @@ it pstep dstep pinfeas dinfeas  gap      mean(obj)   cputime
  rel. dual   infeas     = 2.51e-10
  norm(X), norm(y), norm(Z) = 6.7e-01, 7.0e+00, 2.0e+01
  norm(A), norm(b), norm(C) = 3.9e+02, 2.0e+00, 3.0e+00
- Total CPU time (secs)  = 26.9  
+ Total CPU time (secs)  = 26.1  
  CPU time per iteration = 1.0  
  termination code       =  0
  DIMACS: 1.2e-09  0.0e+00  3.8e-10  0.0e+00  6.9e-09  8.6e-09
@@ -298,7 +298,7 @@ Problem is Solved
 The minimum sidelobe level is -6.16 dB.
 
 </pre><img vspace="5" hspace="5" src="broadband_array_min_sidelobe_01.png"> <img vspace="5" hspace="5" src="broadband_array_min_sidelobe_02.png"> <img vspace="5" hspace="5" src="broadband_array_min_sidelobe_03.png"> <p class="footer"><br>
-            Published with MATLAB&reg; 7.4<br></p>
+            Published with MATLAB&reg; 7.5<br></p>
       </div>
       <!--
 ##### SOURCE BEGIN #####

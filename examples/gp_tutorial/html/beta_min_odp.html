@@ -10,8 +10,8 @@ This HTML is auto-generated from an M-file.
 To make changes, update the M-file and republish this document.
       -->
       <title>Optimal doping profile optimization with current gain constraint.</title>
-      <meta name="generator" content="MATLAB 7.4">
-      <meta name="date" content="2007-08-10">
+      <meta name="generator" content="MATLAB 7.5">
+      <meta name="date" content="2008-03-12">
       <meta name="m-file" content="beta_min_odp"><style>
 
 body {
@@ -88,9 +88,6 @@ p.footer {
 <span class="comment">%</span>
 <span class="comment">% where variables are v_i, y_i, and w_i.</span>
 
-<span class="comment">% set the quiet flag (no solver reporting)</span>
-cvxq = cvx_quiet(true);
-
 <span class="comment">% problem size</span>
 M = 20;
 
@@ -115,6 +112,7 @@ pwj = 1+g1-g2;
 v_array = [];
 <span class="keyword">for</span> k = 1:length(beta_min_GE)
   cvx_begin <span class="string">gp</span>
+    cvx_quiet <span class="string">true</span>
     <span class="comment">% optimization variables</span>
     variables <span class="string">v(M)</span> <span class="string">y(M)</span> <span class="string">w(M)</span>
 
@@ -158,9 +156,6 @@ ylabel(<span class="string">'doping'</span>);
 text(0,Nmin,<span class="string">'Nmin '</span>, <span class="string">'HorizontalAlignment'</span>,<span class="string">'right'</span>);
 text(0,Nmax,<span class="string">'Nmax '</span>, <span class="string">'HorizontalAlignment'</span>,<span class="string">'right'</span>);
 hold <span class="string">off</span>;
-
-<span class="comment">% restore initial solver reporting state</span>
-cvx_quiet(cvxq);
 </pre><pre class="codeoutput">Solving for beta_min_GE = 1e-11
 Solving for beta_min_GE = 1.4e-11
 Solving for beta_min_GE = 1.8e-11
@@ -170,7 +165,7 @@ Solving for beta_min_GE = 3e-11
 Solving for beta_min_GE = 3.4e-11
 Solving for beta_min_GE = 3.43e-11
 </pre><img vspace="5" hspace="5" src="beta_min_odp_01.png"> <p class="footer"><br>
-            Published with MATLAB&reg; 7.4<br></p>
+            Published with MATLAB&reg; 7.5<br></p>
       </div>
       <!--
 ##### SOURCE BEGIN #####
@@ -192,9 +187,6 @@ Solving for beta_min_GE = 3.43e-11
 %              beta => beta_min
 %
 % where variables are v_i, y_i, and w_i.
-
-% set the quiet flag (no solver reporting)
-cvxq = cvx_quiet(true);
 
 % problem size
 M = 20;
@@ -220,6 +212,7 @@ pwj = 1+g1-g2;
 v_array = [];
 for k = 1:length(beta_min_GE)
   cvx_begin gp
+    cvx_quiet true
     % optimization variables
     variables v(M) y(M) w(M)
 
@@ -263,9 +256,6 @@ ylabel('doping');
 text(0,Nmin,'Nmin ', 'HorizontalAlignment','right');
 text(0,Nmax,'Nmax ', 'HorizontalAlignment','right');
 hold off;
-
-% restore initial solver reporting state
-cvx_quiet(cvxq);
 
 ##### SOURCE END #####
 -->

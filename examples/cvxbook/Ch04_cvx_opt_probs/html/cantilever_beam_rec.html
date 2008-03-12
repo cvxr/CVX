@@ -10,8 +10,8 @@ This HTML is auto-generated from an M-file.
 To make changes, update the M-file and republish this document.
       -->
       <title>Section 4.5.4: Design of a cantilever beam: recursive formulation (GP)</title>
-      <meta name="generator" content="MATLAB 7.4">
-      <meta name="date" content="2007-08-10">
+      <meta name="generator" content="MATLAB 7.5">
+      <meta name="date" content="2008-03-11">
       <meta name="m-file" content="cantilever_beam_rec"><style>
 
 body {
@@ -149,7 +149,7 @@ Building recursive relations for index: 2
 Building recursive relations for index: 1
  
 Calling SDPT3: 576 variables, 242 equality constraints
-Note: for improved efficiency, SDPT3 is solving the dual problem.
+   For improved efficiency, SDPT3 is solving the dual problem.
 ------------------------------------------------------------
 
  num. of constraints = 242
@@ -160,46 +160,46 @@ Note: for improved efficiency, SDPT3 is solving the dual problem.
    SDPT3: Infeasible path-following algorithms
 *******************************************************************
  version  predcorr  gam  expon  scale_data
-    NT      1      0.000   1        0    
+   HKM      1      0.000   1        0    
 it pstep dstep pinfeas dinfeas  gap      mean(obj)   cputime
 -------------------------------------------------------------------
  0|0.000|0.000|3.4e+02|2.5e+01|1.7e+05| 1.077062e+03| 0:0:00| chol  1  1 
  1|0.274|0.145|2.4e+02|2.2e+01|1.6e+05| 1.891857e+03| 0:0:00| chol  1  1 
- 2|0.359|0.497|1.6e+02|1.1e+01|1.0e+05| 2.551313e+03| 0:0:00| chol  1  1 
- 3|0.650|0.569|5.5e+01|4.7e+00|5.4e+04| 3.359707e+03| 0:0:00| chol  1  1 
- 4|0.836|0.892|9.0e+00|5.1e-01|1.1e+04| 2.388990e+03| 0:0:00| chol  1  1 
- 5|0.884|0.928|1.0e+00|3.7e-02|2.1e+03| 7.239140e+02| 0:0:00| chol  1  1 
- 6|0.873|0.981|1.3e-01|7.3e-04|3.1e+02| 1.158811e+02| 0:0:00| chol  1  1 
- 7|0.908|1.000|1.2e-02|2.5e-06|5.7e+01| 1.348590e+01| 0:0:01| chol  1  1 
- 8|0.893|0.892|1.3e-03|2.4e-03|3.3e+01| 4.765995e+00| 0:0:01| chol  1  1 
- 9|0.955|1.000|5.8e-05|2.6e-04|8.2e+00|-3.273469e+00| 0:0:01| chol  1  1 
-10|0.879|0.568|7.0e-06|1.2e-04|5.8e+00|-3.054604e+00| 0:0:01| chol  1  1 
-11|1.000|1.000|7.4e-13|1.4e-06|3.3e+00|-3.367341e+00| 0:0:01| chol  1  1 
-12|0.963|1.000|1.7e-12|2.6e-11|1.2e+00|-3.665316e+00| 0:0:01| chol  1  1 
-13|1.000|1.000|3.1e-13|3.5e-12|6.3e-01|-3.696251e+00| 0:0:01| chol  1  1 
-14|1.000|1.000|4.0e-13|1.2e-12|2.1e-01|-3.693577e+00| 0:0:01| chol  1  1 
-15|0.972|1.000|2.5e-12|1.0e-12|9.5e-02|-3.689203e+00| 0:0:01| chol  1  1 
-16|0.978|0.958|2.3e-12|1.0e-12|1.0e-02|-3.681635e+00| 0:0:01| chol  1  1 
-17|0.963|0.967|2.1e-12|1.0e-12|3.9e-04|-3.680279e+00| 0:0:01| chol  1  1 
-18|0.984|0.981|1.2e-11|1.0e-12|7.2e-06|-3.680239e+00| 0:0:01| chol  1  1 
-19|0.994|0.992|2.4e-12|1.5e-12|2.4e-07|-3.680238e+00| 0:0:01| chol  1  2 
-20|1.000|1.000|3.9e-12|1.0e-12|8.4e-09|-3.680238e+00| 0:0:01|
+ 2|0.358|0.501|1.6e+02|1.1e+01|1.0e+05| 2.544087e+03| 0:0:00| chol  1  1 
+ 3|0.646|0.568|5.5e+01|4.7e+00|5.3e+04| 3.338058e+03| 0:0:00| chol  1  1 
+ 4|0.780|0.884|1.2e+01|5.4e-01|1.2e+04| 2.570667e+03| 0:0:00| chol  1  1 
+ 5|0.895|0.921|1.3e+00|4.3e-02|2.2e+03| 7.341649e+02| 0:0:00| chol  1  1 
+ 6|0.844|0.990|2.0e-01|4.6e-04|3.9e+02| 1.506718e+02| 0:0:00| chol  1  1 
+ 7|0.922|1.000|1.6e-02|2.5e-06|6.8e+01| 1.701428e+01| 0:0:00| chol  1  1 
+ 8|0.959|1.000|6.4e-04|3.1e-03|3.9e+01| 6.563963e+00| 0:0:01| chol  1  1 
+ 9|0.873|1.000|8.2e-05|1.3e-04|7.9e+00|-3.053064e+00| 0:0:01| chol  1  1 
+10|0.841|0.545|1.3e-05|7.5e-05|6.0e+00|-2.900055e+00| 0:0:01| chol  1  1 
+11|1.000|1.000|1.7e-13|2.6e-06|3.2e+00|-3.375037e+00| 0:0:01| chol  1  1 
+12|0.871|1.000|3.1e-12|2.6e-11|1.4e+00|-3.629481e+00| 0:0:01| chol  1  1 
+13|1.000|1.000|1.2e-13|3.5e-12|7.8e-01|-3.688473e+00| 0:0:01| chol  1  1 
+14|1.000|0.978|1.3e-12|1.3e-12|2.1e-01|-3.695292e+00| 0:0:01| chol  1  1 
+15|0.950|1.000|4.6e-12|1.0e-12|1.1e-01|-3.690302e+00| 0:0:01| chol  1  1 
+16|0.907|0.949|1.4e-12|1.1e-12|1.6e-02|-3.680671e+00| 0:0:01| chol  1  1 
+17|0.959|0.983|1.8e-12|1.0e-12|6.8e-04|-3.680187e+00| 0:0:01| chol  1  1 
+18|0.969|0.976|8.5e-13|1.0e-12|1.9e-05|-3.680236e+00| 0:0:01| chol  2  1 
+19|1.000|1.000|4.0e-11|1.0e-12|1.4e-06|-3.680239e+00| 0:0:01| chol  1  1 
+20|1.000|1.000|5.6e-11|1.5e-12|8.0e-08|-3.680238e+00| 0:0:01|
   sqlp stop: max(relative gap, infeasibilities) &lt; 1.49e-08
 -------------------------------------------------------------------
  number of iterations   = 20
- primal objective value = -3.68023833e+00
- dual   objective value = -3.68023834e+00
- gap := trace(XZ)       = 8.38e-09
- relative gap           = 1.00e-09
- actual relative gap    = 9.87e-10
- rel. primal infeas     = 3.95e-12
- rel. dual   infeas     = 1.00e-12
+ primal objective value = -3.68023830e+00
+ dual   objective value = -3.68023838e+00
+ gap := trace(XZ)       = 8.05e-08
+ relative gap           = 9.63e-09
+ actual relative gap    = 9.64e-09
+ rel. primal infeas     = 5.60e-11
+ rel. dual   infeas     = 1.50e-12
  norm(X), norm(y), norm(Z) = 6.1e+00, 8.8e+00, 3.8e+01
  norm(A), norm(b), norm(C) = 7.3e+02, 2.8e+00, 5.0e+01
- Total CPU time (secs)  = 1.5  
+ Total CPU time (secs)  = 1.3  
  CPU time per iteration = 0.1  
  termination code       =  0
- DIMACS: 5.4e-12  0.0e+00  3.7e-12  0.0e+00  9.9e-10  1.0e-09
+ DIMACS: 7.7e-11  0.0e+00  5.5e-12  0.0e+00  9.6e-09  9.6e-09
 -------------------------------------------------------------------
 ------------------------------------------------------------
 Status: Solved
@@ -231,7 +231,7 @@ h =
 
 The optimal minimum volume of the beam is 42.4078.
 </pre><img vspace="5" hspace="5" src="cantilever_beam_rec_01.png"> <p class="footer"><br>
-            Published with MATLAB&reg; 7.4<br></p>
+            Published with MATLAB&reg; 7.5<br></p>
       </div>
       <!--
 ##### SOURCE BEGIN #####

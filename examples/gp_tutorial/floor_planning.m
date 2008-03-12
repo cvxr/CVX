@@ -16,9 +16,6 @@
 %
 % where variables are rectangle widths w's and heights h's.
 
-% set the quiet flag (no solver reporting)
-cvxq = cvx_quiet(true);
-
 % constants
 a = 0.2;
 b = 0.5;
@@ -34,6 +31,7 @@ min_area = [];
 for n = 1:N
   % GP variables
   cvx_begin gp
+    cvx_quiet true
     variables wa wb wc wd ha hb hc hd
 
     % objective function is the area of the bounding box
@@ -49,9 +47,6 @@ for n = 1:N
 
   min_area(n,1) = cvx_optval;
 end
-
-% restore initial solver reporting state
-cvx_quiet(cvxq);
 
 figure, clf
 plot(alpha,min_area);

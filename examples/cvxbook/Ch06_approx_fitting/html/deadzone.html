@@ -10,8 +10,8 @@ This HTML is auto-generated from an M-file.
 To make changes, update the M-file and republish this document.
       -->
       <title>Section 6.1.2: Residual minimization with deadzone penalty</title>
-      <meta name="generator" content="MATLAB 7.4">
-      <meta name="date" content="2007-08-10">
+      <meta name="generator" content="MATLAB 7.5">
+      <meta name="date" content="2008-03-11">
       <meta name="m-file" content="deadzone"><style>
 
 body {
@@ -106,7 +106,7 @@ disp( <span class="string">' '</span> );
 </pre><pre class="codeoutput">Computing the optimal solution of the deadzone approximation problem: 
  
 Calling SDPT3: 48 variables, 24 equality constraints
-Note: for improved efficiency, SDPT3 is solving the dual problem.
+   For improved efficiency, SDPT3 is solving the dual problem.
 ------------------------------------------------------------
 
  num. of constraints = 24
@@ -150,13 +150,13 @@ it pstep dstep pinfeas dinfeas  gap      mean(obj)   cputime
 -------------------------------------------------------------------
 ------------------------------------------------------------
 Status: Solved
-Optimal value (cvx_optval): -9.47832e-09
+Optimal value (cvx_optval): +3.22539e-09
 Done! 
 
 Results:
 --------
 sum(max(abs(A*x-b)-1,0)): 0.0000
-cvx_optval: -0.0000
+cvx_optval: 0.0000
 cvx_status: Solved
 
 Optimal vector:
@@ -165,7 +165,7 @@ Residual vector:
    A*x-b = [  0.6014  0.3841 -0.8444 -0.3032  0.3440  0.4154 -0.6405 -0.6744 -0.4713  0.7752  0.1084 -0.1713  0.4948  0.7508  0.3017 -0.3906 ]
  
 </pre><p class="footer"><br>
-            Published with MATLAB&reg; 7.4<br></p>
+            Published with MATLAB&reg; 7.5<br></p>
       </div>
       <!--
 ##### SOURCE BEGIN #####

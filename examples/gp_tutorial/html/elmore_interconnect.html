@@ -10,8 +10,8 @@ This HTML is auto-generated from an M-file.
 To make changes, update the M-file and republish this document.
       -->
       <title>Elmore delay sizing for an interconnect network.</title>
-      <meta name="generator" content="MATLAB 7.4">
-      <meta name="date" content="2007-08-10">
+      <meta name="generator" content="MATLAB 7.5">
+      <meta name="date" content="2008-03-12">
       <meta name="m-file" content="elmore_interconnect"><style>
 
 body {
@@ -139,15 +139,13 @@ leafs = [];
 <span class="comment">%********************************************************************</span>
 <span class="comment">% optimization (generating optimal tradeoff curve)</span>
 <span class="comment">%********************************************************************</span>
-<span class="comment">% set the quiet flag (no solver reporting)</span>
-cvxq = cvx_quiet(true);
-
 disp(<span class="string">'Generating the tradeoff curve...'</span>)
 
 Darray = [];
 <span class="keyword">for</span> Amax = [5.05 5.25 5.5 5.75 6:25]
   <span class="comment">% formulate the GP problem and solve it</span>
   cvx_begin <span class="string">gp</span>
+    cvx_quiet <span class="string">true</span>
     <span class="comment">% optimization variables</span>
     variable <span class="string">w(N-1)</span>     <span class="comment">% wire width</span>
     variable <span class="string">T(N)</span>       <span class="comment">% arrival time (Elmore delay to node i)</span>
@@ -208,36 +206,33 @@ figure, clf
 Amax = [5.05 5.25 5.5 5.75 6:25];
 plot(Darray,Amax);
 xlabel(<span class="string">'Elmore delay D'</span>); ylabel(<span class="string">'Amax'</span>);
-
-<span class="comment">% restore initial solver reporting state</span>
-cvx_quiet(cvxq);
 </pre><pre class="codeoutput">Generating the tradeoff curve...
-  Amax =  5.05   delay = 107.98
-  Amax =  5.25   delay = 98.46
-  Amax =  5.50   delay = 90.23
-  Amax =  5.75   delay = 84.45
-  Amax =  6.00   delay = 80.19
-  Amax =  7.00   delay = 69.72
-  Amax =  8.00   delay = 63.03
-  Amax =  9.00   delay = 58.18
-  Amax = 10.00   delay = 54.33
-  Amax = 11.00   delay = 51.23
-  Amax = 12.00   delay = 48.68
-  Amax = 13.00   delay = 46.55
-  Amax = 14.00   delay = 44.76
-  Amax = 15.00   delay = 43.23
-  Amax = 16.00   delay = 41.93
-  Amax = 17.00   delay = 40.80
-  Amax = 18.00   delay = 39.82
-  Amax = 19.00   delay = 38.97
-  Amax = 20.00   delay = 38.22
-  Amax = 21.00   delay = 37.57
-  Amax = 22.00   delay = 36.99
-  Amax = 23.00   delay = 36.48
-  Amax = 24.00   delay = 36.04
-  Amax = 25.00   delay = 35.63
+  Amax =  5.05   delay = 106.48
+  Amax =  5.25   delay = 98.33
+  Amax =  5.50   delay = 90.12
+  Amax =  5.75   delay = 84.35
+  Amax =  6.00   delay = 80.10
+  Amax =  7.00   delay = 69.64
+  Amax =  8.00   delay = 62.95
+  Amax =  9.00   delay = 58.10
+  Amax = 10.00   delay = 54.27
+  Amax = 11.00   delay = 51.17
+  Amax = 12.00   delay = 48.62
+  Amax = 13.00   delay = 46.50
+  Amax = 14.00   delay = 44.71
+  Amax = 15.00   delay = 43.19
+  Amax = 16.00   delay = 41.88
+  Amax = 17.00   delay = 40.76
+  Amax = 18.00   delay = 39.78
+  Amax = 19.00   delay = 38.92
+  Amax = 20.00   delay = 38.18
+  Amax = 21.00   delay = 37.52
+  Amax = 22.00   delay = 36.94
+  Amax = 23.00   delay = 36.43
+  Amax = 24.00   delay = 35.98
+  Amax = 25.00   delay = 35.59
 </pre><img vspace="5" hspace="5" src="elmore_interconnect_01.png"> <p class="footer"><br>
-            Published with MATLAB&reg; 7.4<br></p>
+            Published with MATLAB&reg; 7.5<br></p>
       </div>
       <!--
 ##### SOURCE BEGIN #####
@@ -311,15 +306,13 @@ end
 %********************************************************************
 % optimization (generating optimal tradeoff curve)
 %********************************************************************
-% set the quiet flag (no solver reporting)
-cvxq = cvx_quiet(true);
-
 disp('Generating the tradeoff curve...')
 
 Darray = [];
 for Amax = [5.05 5.25 5.5 5.75 6:25]
   % formulate the GP problem and solve it
   cvx_begin gp
+    cvx_quiet true
     % optimization variables
     variable w(N-1)     % wire width
     variable T(N)       % arrival time (Elmore delay to node i)
@@ -380,9 +373,6 @@ figure, clf
 Amax = [5.05 5.25 5.5 5.75 6:25];
 plot(Darray,Amax);
 xlabel('Elmore delay D'); ylabel('Amax');
-
-% restore initial solver reporting state
-cvx_quiet(cvxq);
 
 ##### SOURCE END #####
 -->

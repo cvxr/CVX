@@ -10,8 +10,8 @@ This HTML is auto-generated from an M-file.
 To make changes, update the M-file and republish this document.
       -->
       <title>Maximum volume inscribed ellipsoid in a polyhedron</title>
-      <meta name="generator" content="MATLAB 7.4">
-      <meta name="date" content="2007-08-10">
+      <meta name="generator" content="MATLAB 7.5">
+      <meta name="date" content="2008-03-11">
       <meta name="m-file" content="max_vol_ellip_in_polyhedra"><style>
 
 body {
@@ -134,7 +134,7 @@ axis <span class="string">off</span>
 hold <span class="string">off</span>
 </pre><pre class="codeoutput"> 
 Calling SDPT3: 29 variables, 10 equality constraints
-Note: for improved efficiency, SDPT3 is solving the dual problem.
+   For improved efficiency, SDPT3 is solving the dual problem.
 ------------------------------------------------------------
 
  num. of constraints = 10
@@ -145,42 +145,41 @@ Note: for improved efficiency, SDPT3 is solving the dual problem.
    SDPT3: Infeasible path-following algorithms
 *******************************************************************
  version  predcorr  gam  expon  scale_data
-    NT      1      0.000   1        0    
+   HKM      1      0.000   1        0    
 it pstep dstep pinfeas dinfeas  gap      mean(obj)   cputime
 -------------------------------------------------------------------
  0|0.000|0.000|8.5e+00|2.6e+00|1.7e+02| 7.205107e+00| 0:0:00| chol  1  1 
  1|1.000|0.863|2.6e-06|4.3e-01|2.6e+01| 5.589753e+00| 0:0:00| chol  1  1 
- 2|1.000|1.000|4.2e-07|9.2e-03|3.0e+00| 1.702559e+00| 0:0:00| chol  1  1 
- 3|0.854|1.000|6.2e-08|9.2e-04|5.4e-01| 8.831641e-01| 0:0:00| chol  1  1 
- 4|0.993|0.901|1.3e-07|1.7e-04|5.6e-02| 9.483753e-01| 0:0:00| chol  1  1 
- 5|0.976|0.959|4.3e-09|1.6e-05|2.0e-03| 9.520014e-01| 0:0:00| chol  1  1 
- 6|0.983|0.952|6.3e-10|1.7e-06|7.7e-05| 9.522943e-01| 0:0:00| chol  1  1 
- 7|0.984|0.916|1.4e-10|1.4e-07|5.2e-06| 9.523069e-01| 0:0:00| chol  1  1 
- 8|1.000|0.923|2.4e-12|1.1e-08|1.1e-06| 9.523075e-01| 0:0:00| chol  1  1 
- 9|1.000|0.995|2.2e-13|5.8e-11|6.6e-08| 9.523075e-01| 0:0:00| chol  1  1 
-10|1.000|0.992|7.4e-16|1.5e-12|1.6e-09| 9.523075e-01| 0:0:00|
+ 2|1.000|1.000|4.3e-07|9.2e-03|3.0e+00| 1.701573e+00| 0:0:00| chol  1  1 
+ 3|0.847|1.000|6.3e-08|9.2e-04|5.5e-01| 8.852730e-01| 0:0:00| chol  1  1 
+ 4|1.000|0.902|1.3e-07|1.7e-04|6.3e-02| 9.476528e-01| 0:0:00| chol  1  1 
+ 5|0.971|0.977|4.9e-09|1.3e-05|1.7e-03| 9.522072e-01| 0:0:00| chol  1  1 
+ 6|0.974|0.978|5.9e-10|1.2e-06|4.1e-05| 9.523093e-01| 0:0:00| chol  1  1 
+ 7|0.944|0.976|6.7e-11|2.9e-08|1.7e-06| 9.523079e-01| 0:0:00| chol  1  1 
+ 8|1.000|1.000|4.0e-13|1.3e-11|1.8e-07| 9.523075e-01| 0:0:00| chol  1  1 
+ 9|0.998|1.000|4.2e-14|1.0e-12|7.3e-09| 9.523075e-01| 0:0:00|
   sqlp stop: max(relative gap, infeasibilities) &lt; 1.49e-08
 -------------------------------------------------------------------
- number of iterations   = 10
- primal objective value =  9.52307510e-01
- dual   objective value =  9.52307508e-01
- gap := trace(XZ)       = 1.65e-09
- relative gap           = 5.66e-10
- actual relative gap    = 5.64e-10
- rel. primal infeas     = 7.43e-16
- rel. dual   infeas     = 1.49e-12
+ number of iterations   =  9
+ primal objective value =  9.52307512e-01
+ dual   objective value =  9.52307505e-01
+ gap := trace(XZ)       = 7.34e-09
+ relative gap           = 2.53e-09
+ actual relative gap    = 2.53e-09
+ rel. primal infeas     = 4.19e-14
+ rel. dual   infeas     = 1.00e-12
  norm(X), norm(y), norm(Z) = 2.2e+00, 2.6e+00, 4.6e+00
  norm(A), norm(b), norm(C) = 6.7e+00, 2.4e+00, 3.7e+00
  Total CPU time (secs)  = 0.2  
  CPU time per iteration = 0.0  
  termination code       =  0
- DIMACS: 9.0e-16  0.0e+00  1.6e-12  0.0e+00  5.6e-10  5.7e-10
+ DIMACS: 5.1e-14  0.0e+00  1.1e-12  0.0e+00  2.5e-09  2.5e-09
 -------------------------------------------------------------------
 ------------------------------------------------------------
 Status: Solved
 Optimal value (cvx_optval): +0.952308
 </pre><img vspace="5" hspace="5" src="max_vol_ellip_in_polyhedra_01.png"> <p class="footer"><br>
-            Published with MATLAB&reg; 7.4<br></p>
+            Published with MATLAB&reg; 7.5<br></p>
       </div>
       <!--
 ##### SOURCE BEGIN #####

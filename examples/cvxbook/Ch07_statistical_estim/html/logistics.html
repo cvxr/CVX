@@ -10,8 +10,8 @@ This HTML is auto-generated from an M-file.
 To make changes, update the M-file and republish this document.
       -->
       <title>Figure 7.1: Logistic regression</title>
-      <meta name="generator" content="MATLAB 7.4">
-      <meta name="date" content="2007-08-10">
+      <meta name="generator" content="MATLAB 7.5">
+      <meta name="date" content="2008-03-12">
       <meta name="m-file" content="logistics"><style>
 
 body {
@@ -112,7 +112,7 @@ axis([-1,11,-0.1, 1.1]);
 U = [ones(m,1) u];
 cvx_begin
     variables <span class="string">x(2)</span>
-    maximize(y'*U*x-sum(logsumexp_sdp([zeros(1,m); x'*U'])))
+    maximize(y'*U*x-sum(logsumexp([zeros(1,m); x'*U'])))
 cvx_end
 
 <span class="comment">% Plot results and logistic function</span>
@@ -131,61 +131,25 @@ axis([-1, 11,-0.1,1.1]);
 xlabel(<span class="string">'x'</span>);
 ylabel(<span class="string">'y'</span>);
 </pre><pre class="codeoutput"> 
-Calling SDPT3: 1000 variables, 502 equality constraints
-Note: for improved efficiency, SDPT3 is solving the dual problem.
-------------------------------------------------------------
-
- num. of constraints = 502
- dim. of sdp    var  = 300,   num. of sdp  blk  = 100
- dim. of socp   var  = 200,   num. of socp blk  = 100
- dim. of linear var  = 200
-*******************************************************************
-   SDPT3: Infeasible path-following algorithms
-*******************************************************************
- version  predcorr  gam  expon  scale_data
-    NT      1      0.000   1        0    
-it pstep dstep pinfeas dinfeas  gap      mean(obj)   cputime
--------------------------------------------------------------------
- 0|0.000|0.000|3.2e+02|1.5e+01|1.1e+07| 2.778815e+05| 0:0:00| spchol  1  1 
- 1|0.355|0.317|2.0e+02|1.0e+01|8.7e+06| 3.194958e+05| 0:0:00| spchol  1  1 
- 2|0.598|0.484|8.2e+01|5.3e+00|4.9e+06| 3.118926e+05| 0:0:00| spchol  1  1 
- 3|0.922|1.000|6.4e+00|8.6e-02|6.7e+05| 2.099095e+05| 0:0:00| spchol  1  1 
- 4|0.930|1.000|4.5e-01|4.3e-02|5.0e+04| 1.353312e+04| 0:0:00| spchol  1  1 
- 5|0.737|1.000|1.2e-01|1.3e-02|2.0e+04| 4.150697e+03| 0:0:00| spchol  1  1 
- 6|0.929|0.870|8.4e-03|5.0e-03|2.2e+03|-1.845626e+02| 0:0:00| spchol  1  1 
- 7|1.000|0.932|1.2e-09|2.4e-03|6.7e+02| 3.695486e-01| 0:0:01| spchol  1  1 
- 8|0.916|0.915|4.1e-10|2.4e-04|7.9e+01|-2.091968e+01| 0:0:01| spchol  1  1 
- 9|1.000|1.000|6.0e-11|3.9e-06|2.4e+01|-1.537218e+01| 0:0:01| spchol  1  1 
-10|0.887|0.954|6.8e-12|5.5e-07|2.7e+00|-1.447813e+01| 0:0:01| spchol  1  1 
-11|1.000|0.913|4.7e-14|8.3e-08|1.1e+00|-1.473779e+01| 0:0:01| spchol  1  1 
-12|0.934|0.942|1.5e-14|8.4e-09|9.3e-02|-1.464255e+01| 0:0:01| spchol  1  1 
-13|1.000|1.000|5.1e-14|3.9e-10|1.5e-02|-1.463679e+01| 0:0:01| spchol  1  1 
-14|0.929|0.983|2.2e-13|4.5e-11|9.9e-04|-1.463549e+01| 0:0:01| spchol  1  1 
-15|0.996|0.955|3.1e-13|3.0e-12|6.6e-05|-1.463561e+01| 0:0:01| spchol  1  1 
-16|1.000|0.993|2.1e-12|1.0e-12|1.5e-06|-1.463560e+01| 0:0:01| spchol  2  2 
-17|1.000|1.000|1.6e-12|1.0e-12|6.7e-08|-1.463560e+01| 0:0:01|
-  sqlp stop: max(relative gap, infeasibilities) &lt; 1.49e-08
--------------------------------------------------------------------
- number of iterations   = 17
- primal objective value = -1.46355963e+01
- dual   objective value = -1.46355964e+01
- gap := trace(XZ)       = 6.73e-08
- relative gap           = 2.22e-09
- actual relative gap    = 2.22e-09
- rel. primal infeas     = 1.55e-12
- rel. dual   infeas     = 1.00e-12
- norm(X), norm(y), norm(Z) = 1.3e+01, 1.6e+01, 3.1e+01
- norm(A), norm(b), norm(C) = 4.7e+01, 1.2e+02, 3.6e+01
- Total CPU time (secs)  = 1.3  
- CPU time per iteration = 0.1  
- termination code       =  0
- DIMACS: 1.6e-12  0.0e+00  8.9e-12  0.0e+00  2.2e-09  2.2e-09
--------------------------------------------------------------------
-------------------------------------------------------------
+Successive approximation method to be employed.
+   SDPT3 will be called several times to refine the solution.
+   Original size: 600 variables, 202 equality constraints
+   For improved efficiency, SDPT3 is solving the dual problem.
+   Approximation size: 2400 variables, 1402 equality constraints
+-----------------------------------------------------------------
+ Target     Forcing     Conic    Solver
+Precision    Bias       Error    Status
+---------------------------------------
+1.221e-04  0.000e+00  2.452e+00  Solved
+1.221e-04  0.000e+00  1.700e-01  Solved
+1.221e-04  0.000e+00  2.452e-03  Solved
+1.221e-04  0.000e+00  0.000e+00  Solved
+1.490e-08  0.000e+00  0.000e+00  Solved
+-----------------------------------------------------------------
 Status: Solved
-Optimal value (cvx_optval): -33.1081
+Optimal value (cvx_optval): -32.9797
 </pre><img vspace="5" hspace="5" src="logistics_01.png"> <p class="footer"><br>
-            Published with MATLAB&reg; 7.4<br></p>
+            Published with MATLAB&reg; 7.5<br></p>
       </div>
       <!--
 ##### SOURCE BEGIN #####
@@ -232,7 +196,7 @@ axis([-1,11,-0.1, 1.1]);
 U = [ones(m,1) u];
 cvx_begin
     variables x(2)
-    maximize(y'*U*x-sum(logsumexp_sdp([zeros(1,m); x'*U'])))
+    maximize(y'*U*x-sum(logsumexp([zeros(1,m); x'*U'])))
 cvx_end
 
 % Plot results and logistic function
