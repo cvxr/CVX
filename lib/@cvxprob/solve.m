@@ -288,13 +288,13 @@ elseif n ~= 0 & ~infeas & ( any( b ) | any( c ) ),
                    break;
                 end
             end
-            if x_clean & ( tprec < best_px | tprec == best_px & pob < best_ox ),
+            if x_clean & ( tprec < best_px | ( tprec == best_px & pob < best_ox ) ),
                 best_x  = x(1:n);
                 best_x(xndxs,:) = xxx + x0 .* yyy;
                 best_px = tprec;
                 best_ox = pob;
             end
-            if y_clean & ( tprec < best_py | tprec == best_py & dob > best_oy ),
+            if y_clean & ( tprec < best_py | ( tprec == best_py & dob > best_oy ) ),
                 best_y  = y(1:m);
                 best_py = tprec;
                 best_oy = dob;
@@ -307,7 +307,7 @@ elseif n ~= 0 & ~infeas & ( any( b ) | any( c ) ),
                 err = max( err, -min(nxd) );
             end
             slow = err > 0.9 * last_err;
-            stagnant = stagnant | slow & last_slow;
+            stagnant = stagnant | ( slow & last_slow );
             if ~quiet,
                 if stagnant, stagc = 'S'; else stagc = ' '; end
                 disp( sprintf( '%9.3e  %9.3e%c %9.3e  %s', nprec(1), max(eshift), stagc, err, status ) );

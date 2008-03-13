@@ -17,6 +17,9 @@ if length(st) <= 2,
     name = '';
 else
     name = st(3).name;
+    if cvx___.mversion < 7,
+        name = name(max(find(name==filesep))+1:end-2);
+    end
 end
 if ~isempty( cvx___.problems ),
     ndx = find( [ cvx___.problems.depth ] >= depth );
