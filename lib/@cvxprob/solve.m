@@ -245,8 +245,8 @@ elseif n ~= 0 & ~infeas & ( any( b ) | any( c ) ),
             tprec  = nprec(tndx);
             if x_good,
                 xxx = x(xndxs,:);
-                yyy = x(yndxs,:);
-                zzz = x(zndxs,:);
+                yyy = max( x(yndxs,:), realmin );
+                zzz = max( x(zndxs,:), realmin );
                 nx0 = xxx ./ yyy;
                 nx1 = log( zzz ./ yyy ) - x0;
                 nxe = nx0 - nx1;
@@ -264,18 +264,17 @@ elseif n ~= 0 & ~infeas & ( any( b ) | any( c ) ),
             if y_good,
                 y(m+1:end) = 0;
                 z = c - At * y;
-                uuu = z( xndxs, : );
+                uuu = min( z( xndxs, : ), -realmin );
                 vvv = z( yndxs, : );
-                www = z( zndxs, : );
+                www = max( z( zndxs, : ), realmin );
                 nx2 = 1 - vvv ./ uuu;
                 nx3 = log( - uuu ./ www ) - x0;
-                nxe = nx0 - nx1;
                 nxd = nx2 - nx3;
-                y_clean = all( nxd > 0 ) | ~any( eshift );
+                y_clean = all( nxd > 0 );
                 dob = b' * y;
                 if x_good, % Solved
                     dx0 = 0.5 * ( nx0 + nx2 );
-                else       % Infeasible
+                else % Infeasible
                     dx0 = 0.5 * ( nx2 + nx3 );
                 end
             elseif any( eshift < 0 ),
@@ -294,7 +293,9 @@ elseif n ~= 0 & ~infeas & ( any( b ) | any( c ) ),
             end
             if x_clean & ( tprec < best_px | ( tprec == best_px & pob < best_ox ) ),
                 best_x  = x(1:n);
-                best_x(xndxs,:) = xxx + x0 .* yyy;
+                if x_good,
+                    best_x(xndxs,:) = xxx + x0 .* yyy;
+                end
                 best_px = tprec;
                 best_ox = pob;
             end
@@ -336,8 +337,8 @@ elseif n ~= 0 & ~infeas & ( any( b ) | any( c ) ),
             end
             last_err = err;
             last_slow = slow;
-            xw = max( abs( dx0 ), ewid );
-            x0 = x0 + max( dx0, -epow );
+            xw = min( maxw, max( abs( dx0 ), ewid ) );
+            x0 = x0 + min( epow, max( dx0, -epow ) );
         end
         if isnan( best_x(1) ), 
             status = 'Infeasible',

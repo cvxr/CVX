@@ -91,8 +91,9 @@ for k = 1 : nv,
     else
         t = v == vk;
         xt = cvx_subsref( x, cvx_expand_dim( t, dim, nx ) );
-        sz = size( xt );
-        sx( dim ) = 1;
+        sx = size( xt );
+        sz = sx;
+        sz( dim ) = 1;
     end
 
     %
@@ -106,8 +107,10 @@ for k = 1 : nv,
         case 1,
             % Affine, convex
             cvx_begin
+                variable w( sx )
                 epigraph variable z( sz )
-                sum( exp( cvx_accept_convex( x ) - cvx_expand_dim( z, dim, nx ) ), dim ) <= 1;
+                { cvx_accept_convex( x ) - cvx_expand_dim( z, dim, nx ), 1, w } == exponential( sx );
+                sum( w, dim ) == 1;
             cvx_end
         case 2,
             % Constant

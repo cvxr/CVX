@@ -141,12 +141,10 @@ elseif ~cheat,
         % Trivially infeasible constraints
         map_ge2 = ( cvx_remap( 'nonpositive' )' * cvx_remap( 'log-convex'  ) ) & temp;
         % Full geometric constraints
-        map_ge32 = ( cvx_remap( 'positive' )'    * cvx_remap( 'posynomial'  ) ) & temp;
         map_ge3  = ( cvx_remap( 'log-concave' )' * cvx_remap( 'log-convex'  ) ) & temp;
         % Linear constraints
         map_ge4 = ( cvx_remap( 'concave' )' * cvx_remap( 'convex' ) ) & ~map_ge3;
-        map_ge3 = map_ge3 & ~map_ge32;
-        map_ge = map_ge4 + 2 * map_ge3 + 3 * map_ge2 + 4 * map_ge1 + 5 * map_ge32;
+        map_ge = map_ge4 + 2 * map_ge3 + 3 * map_ge2 + 4 * map_ge1;
 
         map_le = map_ge';
     end
@@ -178,10 +176,6 @@ elseif ~cheat,
         error( [ sprintf( 'Disciplined convex programming error:' ), strs{:} ] );
     end
     tt = vr( : ) == 2;
-    if ~cvx___.expert,
-        tt = tt | vr( : ) == 5;
-    end
-    tt = tt( : );
     if any( tt ),
         if all( tt ),
             x = log( x );
@@ -194,13 +188,11 @@ elseif ~cheat,
         end
     end
     tt = vr( : ) == 3;
-    tt = tt( : );
     if any( tt ),
         x( tt ) = 0;
         y( tt ) = 1 - 2 * ( op(1) == '<' );
     end
     tt = vr( : ) == 4;
-    tt = tt( : );
     if any( tt ),
         x( tt ) = 0;
         y( tt ) = 1 - 2 * ( op(1) == '>' );
