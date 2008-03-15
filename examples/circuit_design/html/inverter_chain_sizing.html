@@ -11,7 +11,7 @@ To make changes, update the M-file and republish this document.
       -->
       <title>Digital circuit sizing for an inverter chain (GP)</title>
       <meta name="generator" content="MATLAB 7.5">
-      <meta name="date" content="2008-03-11">
+      <meta name="date" content="2008-03-15">
       <meta name="m-file" content="inverter_chain_sizing"><style>
 
 body {
@@ -212,62 +212,28 @@ subplot(2,1,2); stem([1:N],x);
 ylabel(<span class="string">'scale factor x'</span>)
 xlabel(<span class="string">'inverter stage'</span>)
 </pre><pre class="codeoutput"> 
-Calling SDPT3: 476 variables, 219 equality constraints
+Successive approximation method to be employed.
+   SDPT3 will be called several times to refine the solution.
+   Original size: 130 variables, 45 equality constraints
    For improved efficiency, SDPT3 is solving the dual problem.
-------------------------------------------------------------
-
- num. of constraints = 219
- dim. of sdp    var  = 117,   num. of sdp  blk  = 22
- dim. of socp   var  = 44,   num. of socp blk  = 22
- dim. of linear var  = 60
-*******************************************************************
-   SDPT3: Infeasible path-following algorithms
-*******************************************************************
- version  predcorr  gam  expon  scale_data
-   HKM      1      0.000   1        0    
-it pstep dstep pinfeas dinfeas  gap      mean(obj)   cputime
--------------------------------------------------------------------
- 0|0.000|0.000|6.9e+01|5.9e+00|1.6e+05| 9.637157e+02| 0:0:00| chol  1  1 
- 1|0.205|0.039|5.5e+01|5.6e+00|1.6e+05| 1.297221e+03| 0:0:00| chol  1  1 
- 2|0.296|0.462|3.8e+01|3.0e+00|1.1e+05| 1.102435e+03| 0:0:00| chol  1  1 
- 3|0.634|0.611|1.4e+01|1.2e+00|5.0e+04| 1.043339e+03| 0:0:00| chol  1  1 
- 4|0.770|0.774|3.2e+00|2.7e-01|1.4e+04| 9.571268e+02| 0:0:00| chol  1  1 
- 5|0.693|0.810|9.9e-01|5.1e-02|4.7e+03| 7.154288e+02| 0:0:00| chol  1  1 
- 6|0.499|0.463|5.0e-01|2.7e-02|3.1e+03| 4.842327e+02| 0:0:00| chol  1  1 
- 7|0.883|0.669|5.8e-02|9.0e-03|1.5e+03| 2.970050e+02| 0:0:00| chol  1  1 
- 8|0.951|0.953|2.9e-03|6.3e-04|2.3e+02| 6.164355e+01| 0:0:00| chol  1  1 
- 9|0.955|0.970|1.3e-04|2.1e-04|4.2e+01| 8.138612e+00| 0:0:00| chol  1  1 
-10|1.000|0.950|9.3e-09|3.6e-05|1.8e+01| 7.478796e-01| 0:0:00| chol  1  1 
-11|1.000|0.970|3.0e-09|1.1e-06|4.9e+00|-2.873068e+00| 0:0:01| chol  1  1 
-12|0.816|0.883|1.2e-09|1.3e-07|2.8e+00|-3.196736e+00| 0:0:01| chol  1  1 
-13|0.625|0.658|4.6e-10|4.4e-08|2.0e+00|-3.252640e+00| 0:0:01| chol  1  1 
-14|0.893|0.894|1.6e-10|4.7e-09|1.0e+00|-3.367682e+00| 0:0:01| chol  1  1 
-15|1.000|1.000|3.0e-11|3.1e-11|4.6e-01|-3.420588e+00| 0:0:01| chol  1  1 
-16|1.000|1.000|1.3e-11|6.0e-12|1.1e-01|-3.421964e+00| 0:0:01| chol  1  1 
-17|1.000|1.000|5.8e-12|2.7e-12|1.3e-02|-3.412938e+00| 0:0:01| chol  1  1 
-18|0.980|0.984|4.4e-12|1.2e-12|2.3e-04|-3.411333e+00| 0:0:01| chol  1  1 
-19|0.987|0.987|2.0e-12|1.0e-12|2.9e-06|-3.411313e+00| 0:0:01| chol  2  2 
-20|0.987|0.999|1.9e-11|1.0e-12|8.4e-08|-3.411312e+00| 0:0:01|
-  sqlp stop: max(relative gap, infeasibilities) &lt; 1.49e-08
--------------------------------------------------------------------
- number of iterations   = 20
- primal objective value = -3.41131237e+00
- dual   objective value = -3.41131246e+00
- gap := trace(XZ)       = 8.44e-08
- relative gap           = 1.08e-08
- actual relative gap    = 1.07e-08
- rel. primal infeas     = 1.91e-11
- rel. dual   infeas     = 1.00e-12
- norm(X), norm(y), norm(Z) = 9.0e+00, 1.3e+01, 2.3e+01
- norm(A), norm(b), norm(C) = 7.9e+02, 2.8e+00, 2.4e+02
- Total CPU time (secs)  = 0.9  
- CPU time per iteration = 0.0  
- termination code       =  0
- DIMACS: 2.6e-11  0.0e+00  1.9e-12  0.0e+00  1.1e-08  1.1e-08
--------------------------------------------------------------------
-------------------------------------------------------------
+   Approximation size: 472 variables, 273 equality constraints
+-----------------------------------------------------------------
+ Target     Forcing     Conic    Solver
+Precision    Bias       Error    Status
+---------------------------------------
+1.221e-04  0.000e+00  6.991e-01  Unbounded
+1.221e-04  0.000e+00  2.484e+00  Solved
+1.221e-04  2.174e+00  6.741e-03  Solved
+1.221e-04  2.174e+00  2.567e-05  Solved
+1.221e-04  2.174e+00  0.000e+00  Solved
+1.490e-08  0.000e+00  9.475e-02  Solved
+1.490e-08  0.000e+00  2.107e-03  Solved
+1.490e-08  0.000e+00  2.444e-05  Solved
+1.490e-08  0.000e+00  6.721e-08  Solved
+1.490e-08  0.000e+00  0.000e+00  Solved
+-----------------------------------------------------------------
 Status: Solved
-Optimal value (cvx_optval): +32.4139
+Optimal value (cvx_optval): +32.2496
  
 Note: there is an extra capacitance between the 4th and 5th inverter in the chain.
 
@@ -275,14 +241,14 @@ Optimal scale factors are:
 
 x =
 
-    3.0525
-    2.6620
-    4.3604
-   12.5013
-    1.0000
-    1.3272
-    2.2520
-    5.2446
+   3.046137972355965
+   2.655317424403565
+   4.332317598357734
+  12.439516844926066
+   1.000000000499161
+   1.318472181760604
+   2.235830652497240
+   5.221992878280638
 
 </pre><img vspace="5" hspace="5" src="inverter_chain_sizing_01.png"> <p class="footer"><br>
             Published with MATLAB&reg; 7.5<br></p>
