@@ -69,7 +69,11 @@ elseif n ~= 0 & ~infeas & ( any( b ) | any( c ) ),
     lsolv = lower(solv);
     prec = prob.precision;
     sfunc  = [ 'cvx_solve_', lsolv ];
-    tt = find( strcmp( { cones.type }, 'exponential' ) );
+    if isempty( cones ),
+        tt = [];
+    else
+        tt = find( strcmp( { cones.type }, 'exponential' ) );
+    end
     need_iter = ~isempty( tt );
     if ~quiet,
         disp( ' ' );
