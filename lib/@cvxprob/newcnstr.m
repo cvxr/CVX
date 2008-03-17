@@ -38,7 +38,7 @@ if ~cx | ~cy,
             newcnstr( prob, x{k}, y{k}, op );
         end
         if nargout,
-            outp = cvxcnstr( prob );
+            outp = cvxcnst( prob );
         end
         return
     end
