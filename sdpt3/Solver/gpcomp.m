@@ -14,9 +14,10 @@
 %%         should be small
 %%*********************************************************************
 
-  function [gp,info,Xfeas,blk2,At2,C2,b2] = gpcomp(blk,At,C,b,OPTIONS);
+  function [gp,info,Xfeas,blk2,At2,C2,b2] = gpcomp(blk,At,C,b,OPTIONS,solver);
 
-  if (nargin == 4)
+  if (nargin <= 5); solver = 'sqlp'; end
+  if (nargin <= 4)
      OPTIONS = sqlparameters; 
      OPTIONS.vers = 1; 
      OPTIONS.gaptol = 1e-10;
@@ -122,8 +123,12 @@
 %%
 %% Solve SDP
 %%
-   [X0,y0,Z0] = infeaspt(blk2,At2,C2,b2,2,100);    
-   [obj,X,y,Z,info] = sqlp(blk2,At2,C2,b2,OPTIONS,X0,y0,Z0); 
+   if strcmp(solver,'sqlp')
+      [X0,y0,Z0] = infeaspt(blk2,At2,C2,b2,2,100);    
+      [obj,X,y,Z,info] = sqlp(blk2,At2,C2,b2,OPTIONS,X0,y0,Z0); 
+   else
+      [obj,X,y,Z,info] = HSDsqlp(blk2,At2,C2,b2,OPTIONS); 
+   end
    obj = -obj;
    tt = X{numblk+1}(1); theta = X{numblk+1}(2); 
    Xfeas = ops(ops(X(1:numblk),'+',EE(1:numblk),tt),'/',theta); 
@@ -137,7 +142,7 @@
    end
    err = max(info.dimacs([1,3,6])); 
    if (OPTIONS.printlevel)
-      fprintf('\n ******** gp = %3.1e, err = %3.1e\n',gp,err); 
+      fprintf('\n ******** gp = %3.2e, err = %3.1e\n',gp,err); 
       if (err > 1e-6);
          fprintf('\n----------------------------------------------------')
          fprintf('\n gp problem is not solved to sufficient accuracy');

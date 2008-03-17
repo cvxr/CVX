@@ -7,7 +7,7 @@
 %%                    or a CELL ARRAY consisting only of matrices 
 %%          operand = sym, transpose, triu, tril,
 %%                    real, imag, sqrt, abs, max, min, nnz,
-%%                    spdiags, ones, zeros, norm, sum, row-norm, 
+%%                    spdiags, ones, zeros, norm, sum, row-norm, blk-norm
 %%                    rank1, rank1inv, inv
 %%                    +,  -, *, .*,  ./, .^ 
 %%     Y (optional) = a matrix or a scalar 
@@ -98,6 +98,14 @@
          else
             Z = 0; 
             for p = 1:length(X); Z = Z + sum(sum(X{p}.*X{p})); end;
+            Z = sqrt(Z); 
+         end;
+      elseif strcmp(operand,'blk-norm');
+         if ~iscell(X); 
+            Z = full(sqrt(sum(sum(X.*X))));
+         else
+            Z = zeros(length(X),1); 
+            for p = 1:length(X); Z(p) = sum(sum(X{p}.*X{p})); end;
             Z = sqrt(Z); 
          end;
       elseif strcmp(operand,'inv');

@@ -12,7 +12,7 @@
 
    function [At,C,X0,Z0,permA,permZ] = sortA(blk,At,C,b,X0,Z0);
 
-   global spdensity 
+   global spdensity smallblkdim
 %%
    numblk = size(blk,1); 
    m = length(b); 
@@ -24,7 +24,7 @@
       pblk = blk(p,:); 
       n = sum(pblk{2}); 
       numblk = length(pblk{2}); 
-      if strcmp(pblk{1},'s');
+      if strcmp(pblk{1},'s') & (max(pblk{2}) > smallblkdim)
          n2 = sum(pblk{2}.*pblk{2});  n22 = sum(pblk{2}.*(pblk{2}+1))/2; 
          m1 = size(At{p,1},2);   
          if (length(pblk{2}) == 1)  

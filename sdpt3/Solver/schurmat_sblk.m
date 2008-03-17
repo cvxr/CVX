@@ -115,11 +115,15 @@
       %% for SDP block where each sub-block is small dimensional
       if issparse(X{p}) & ~issparse(Y{p}); Y{p} = sparse(Y{p}); end
       if ~issparse(X{p}) & issparse(Y{p}); X{p} = sparse(X{p}); end
-      tmp  = mexskron(pblk,X{p},Y{p});
-      Perm = spconvert([(1:m)' par.permA(p,:)' ones(m,1)]); 
+      tmp = mexskron(pblk,X{p},Y{p});
       schurtmp = At{p,1}'*tmp*At{p,1};      
-      schurtmp = 0.5*(schurtmp + schurtmp');
-      schur = schur + Perm'*schurtmp*Perm;
+      %% schurtmp = 0.5*(schurtmp + schurtmp');
+      if (norm(par.permA(p,:)-[1:m]) > 0)
+         Perm = spconvert([(1:m)' par.permA(p,:)' ones(m,1)]); 
+         schur = schur + Perm'*schurtmp*Perm;
+      else
+         schur = schur + schurtmp;
+      end
    end
 %%*******************************************************************
 

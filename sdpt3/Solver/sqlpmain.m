@@ -10,7 +10,7 @@
 
   function [obj,X,y,Z,info,runhist] = sqlpmain(blk,At,C,b,par,parbarrier,X0,y0,Z0);
 
-   global spdensity  printlevel  msg
+   global spdensity smallblkdim  printlevel  msg
    global solve_ok  use_LU  exist_analytic_term  
    global schurfun  schurfun_par 
 %%
@@ -55,8 +55,9 @@
          n = 2*blk{p,2}; 
          blk{p,1} = 'l';  blk{p,2} = n;
          parbarrier{p} = zeros(1,n);
-         At{p} = [At{p}; -At{p}];       
-         C{p} = [C{p}; -C{p}];
+         At{p} = [At{p}; -At{p}];  
+         tau = max(1,norm(C{p})); 
+         C{p} = [C{p}; -C{p}]; 
          msg = '*** convert ublk to lblk'; 
          if (printlevel); fprintf(' %s',msg); end
          b2 = 1 + abs(b');  
@@ -176,7 +177,7 @@
    [Xchol,indef(1)] = blkcholfun(blk,X); 
    [Zchol,indef(2)] = blkcholfun(blk,Z); 
    if any(indef)
-      msg = 'sqlp stop: X or Z not positive definite'; 
+      msg = 'stop: X or Z not positive definite'; 
       if (printlevel); fprintf('\n  %s\n',msg); end
       info.termcode = -3;
       info.msg1 = msg;
@@ -215,13 +216,17 @@
 %%   
    termcode = 0; restart = 0; 
    pstep = 1; dstep = 1; pred_convg_rate = 1; corr_convg_rate = 1;
-   prim_infeas_bad = 0;  prim_infeas_min = prim_infeas; 
-   dual_infeas_bad = 0;  dual_infeas_min = dual_infeas; 
+   prim_infeas_min  = prim_infeas; 
+   dual_infeas_min  = dual_infeas; 
+   prim_infeas_best = prim_infeas; 
+   dual_infeas_best = dual_infeas; 
+   infeas_best = infeas; 
+   relgap_best = relgap; 
    homRd = inf; homrp = inf; dy = zeros(length(b),1);    
    msg = []; msg2 = []; msg3 = [];
-   runhist.pobj = obj(1);
-   runhist.dobj = obj(2); 
-   runhist.gap  = gap;
+   runhist.pobj    = obj(1);
+   runhist.dobj    = obj(2); 
+   runhist.gap     = gap;
    runhist.relgap  = relgap;
    runhist.pinfeas = prim_infeas;
    runhist.dinfeas = dual_infeas;
@@ -272,33 +277,34 @@
    param.normZ0      = normZ0; 
    param.m0          = m0;
    param.indeprows   = indeprows;
-   param.prim_infeas_bad = prim_infeas_bad; 
-   param.prim_infeas_min = prim_infeas_min; 
-   param.dual_infeas_bad = dual_infeas_bad; 
-   param.dual_infeas_min = dual_infeas_min; 
+   param.prim_infeas_bad = 0;
+   param.dual_infeas_bad = 0; 
+   param.prim_infeas_min = prim_infeas; 
+   param.dual_infeas_min = dual_infeas; 
    param.gaptol      = gaptol;
    param.inftol      = inftol; 
    param.maxit       = maxit;
    param.scale_data  = scale_data;
    param.printlevel  = printlevel; 
    param.ublksize    = ublksize; 
+   Xbest = X; ybest = y; Zbest = Z; 
 %%
    for iter = 1:maxit;
-  
       tstart  = cputime;  
       timeold = tstart;
-      update_iter = 0; breakyes = 0; pred_slow = 0; corr_slow = 0; step_short = 0; 
+      update_iter = 0; breakyes = 0; 
+      pred_slow = 0; corr_slow = 0; step_short = 0; 
       par.parbarrier = parbarrier; 
       par.iter    = iter; 
       par.obj     = obj; 
       par.relgap  = relgap; 
       par.pinfeas = prim_infeas; 
       par.dinfeas = dual_infeas;
+      par.rp      = rp; 
       par.y       = y; 
       par.dy      = dy; 
       par.normX   = normX; 
       par.ZpATynorm = ZpATynorm; 
-      Xold = X; yold = y; Zold = Z;
       %%if (printlevel > 2); fprintf(' %2.1e',par.normX); end
       if (iter == 1 | restart); Cpert = min(1,normC2/ops(EE,'norm')); end
       if (runhist.dinfeas(1) > 1e-3) & (~exist_analytic_term) ...
@@ -337,7 +343,7 @@
           NTpred(blk,At,par,rp,Rd,sigmu,X,Z,Zchol,invZchol);
       end
       if (solve_ok <= 0)
-         msg = 'sqlp stop: difficulty in computing predictor directions'; 
+         msg = 'stop: difficulty in computing predictor directions'; 
          if (printlevel); fprintf('\n  %s',msg); end
          runhist.pinfeas(iter+1) = runhist.pinfeas(iter); 
          runhist.dinfeas(iter+1) = runhist.dinfeas(iter); 
@@ -377,7 +383,7 @@
 %%-----------------------------------------
 %%
       if (min(pstep,dstep) < steptol) & (stoplevel) & (iter > 10)
-         msg = 'sqlp stop: steps in predictor too short';
+         msg = 'stop: steps in predictor too short';
          if (printlevel) 
             fprintf('\n  %s',msg);
             fprintf(': pstep = %3.2e,  dstep = %3.2e\n',pstep,dstep);
@@ -395,7 +401,7 @@
             pred_slow = pred_slow + (mupred/mu > 5*pred_convg_rate);
          end 
          if (max(mu,infeas) < 1e-6) & (pred_slow) & (stoplevel)
-            msg = 'sqlp stop: lack of progress in predictor'; 
+            msg = 'stop: lack of progress in predictor'; 
             if (printlevel) 
                fprintf('\n  %s',msg);
                fprintf(': mupred/mu = %3.2f, pred_convg_rate = %3.2f.',...
@@ -442,7 +448,7 @@
              dX,dZ,coeff,L,X,Z); 
          end
          if (solve_ok <= 0)
-            msg = 'sqlp stop: difficulty in computing corrector directions'; 
+            msg = 'stop: difficulty in computing corrector directions'; 
             if (printlevel); fprintf('\n  %s',msg); end
             runhist.pinfeas(iter+1) = runhist.pinfeas(iter); 
             runhist.dinfeas(iter+1) = runhist.dinfeas(iter); 
@@ -466,7 +472,7 @@
          Xstep = steplength(blk,X,dX,Xchol,invXchol);
          pstep = min(1,gamused*full(Xstep));
          timenew = cputime;
-         ttime.corr_pstep = ttime.corr_pstep + timenew-timeold; timeold = timenew;
+         ttime.corr_pstep = ttime.corr_pstep+timenew-timeold; timeold = timenew;
          Zstep = steplength(blk,Z,dZ,Zchol,invZchol);
          dstep = min(1,gamused*full(Zstep));
          trXZnew = trXZ + pstep*blktrace(blk,dX,Z,parbarrier) ...
@@ -474,7 +480,7 @@
                     + pstep*dstep*blktrace(blk,dX,dZ,parbarrier); 
          if (nn > 0); mucorr  = trXZnew/nn; else; mucorr = 1e-16; end
          timenew = cputime;
-         ttime.corr_dstep = ttime.corr_dstep + timenew-timeold; timeold = timenew;
+         ttime.corr_dstep = ttime.corr_dstep+timenew-timeold; timeold = timenew;
 %%
 %%-----------------------------------------
 %%  stopping criteria for corrector step
@@ -488,7 +494,7 @@
          end 
 	 if (max(relgap,infeas) < 1e-6) & (iter > 20) ...
             & (corr_slow > 1) & (stoplevel)
-            msg = 'sqlp stop: lack of progress in corrector'; 
+            msg = 'stop: lack of progress in corrector'; 
    	    if (printlevel) 
                fprintf('\n  %s',msg);
                fprintf(': mucorr/mu = %3.2f, corr_convg_rate = %3.2f',...
@@ -525,8 +531,8 @@
          prim_infeasnew = norm(b-AXtmp)/normb2;
          if (relgap < 5*infeas); alpha = 1e2; else; alpha = 1e3; end
          if any(indef)
-            if indef(1); msg = 'sqlp stop: X not positive definite'; end
-            if indef(2); msg = 'sqlp stop: Z not positive definite'; end
+            if indef(1); msg = 'stop: X not positive definite'; end
+            if indef(2); msg = 'stop: Z not positive definite'; end
             if (printlevel); fprintf('\n  %s',msg); end
             termcode = -3;
             breakyes = 1;         
@@ -538,7 +544,7 @@
             | ((prim_infeasnew > 1e3*prim_infeas & prim_infeasnew > 1e-12) ...
                & (max(relgap,dual_infeas) < 1e-8))
             if (stoplevel) 
-               msg = 'sqlp stop: primal infeas has deteriorated too much'; 
+               msg = 'stop: primal infeas has deteriorated too much'; 
                if (printlevel); fprintf('\n  %s, %2.1e',msg,prim_infeasnew); end
                termcode = -7; 
                breakyes = 1; 
@@ -547,7 +553,7 @@
 	    & ((infeas < 1e-5) & (relgap < 1e-4) & (iter > 20) ...
 	       | (max(infeas,relgap) < 1e-7) & (iter > 10)) 
             if (stoplevel) 
-               msg = 'sqlp stop: progress in duality gap has deteriorated'; 
+               msg = 'stop: progress in duality gap has deteriorated'; 
                if (printlevel); fprintf('\n  %s, %2.1e',msg,trXZnew); end
                termcode = -8; 
                breakyes = 1; 
@@ -564,9 +570,9 @@
       if (~breakyes)
          for p = 1:size(blk,1)
             if (u2lblk(p) == 1)
-               len = blk{p,2}/2;
-               alpha = 0.8; 
+               len = blk{p,2}/2;              
                xtmp = min(X{p}([1:len]),X{p}(len+[1:len])); 
+               alpha = 0.8; 
                X{p}([1:len])     = X{p}([1:len]) - alpha*xtmp;
                X{p}(len+[1:len]) = X{p}(len+[1:len]) - alpha*xtmp;
                if (mu < 1e-4) %% old: (mu < 1e-7)
@@ -598,7 +604,7 @@
             Z = ops(Z,'+',EE,Zpert); 
             [Zchol,indef(2)] = blkcholfun(blk,Z);
             if any(indef(2))
-               msg = 'sqlp stop: Z not positive definite';      
+               msg = 'stop: Z not positive definite';      
                if (printlevel); fprintf('\n  %s',msg); end
                termcode = -3;
                breakyes = 1; 
@@ -657,6 +663,9 @@
 %%--------------------------------------------------
 %% check convergence
 %%--------------------------------------------------
+      param.use_LU      = use_LU; 
+      param.stoplevel   = stoplevel; 
+      param.termcode    = termcode; 
       param.iter        = iter; 
       param.obj         = obj;
       param.gap         = gap; 
@@ -670,9 +679,6 @@
       param.ZpATynorm = ZpATynorm;
       param.normX     = ops(X,'norm'); 
       param.normZ     = ops(Z,'norm'); 
-      param.stoplevel = stoplevel; 
-      param.termcode  = termcode; 
-      param.use_LU    = use_LU; 
       if (~breakyes)
          [param,breakyes,restart,msg2] = sqlpcheckconvg(param,runhist); 
       end
@@ -694,26 +700,36 @@
 %%--------------------------------------------------
 %% check for break
 %%--------------------------------------------------
+      if ((prim_infeas < 1.5*prim_infeas_best) ...                
+         | (max(relgap,infeas) < 0.8*max(relgap_best,infeas_best))) ...
+         & (max(relgap,dual_infeas) < 0.8*max(relgap_best,dual_infeas_best)) 
+         Xbest = X; ybest = y; Zbest = Z; 
+         prim_infeas_best = prim_infeas; 
+         dual_infeas_best = dual_infeas; 
+         relgap_best = relgap; infeas_best = infeas; 
+         update_best(iter+1) = 1; 
+         %%fprintf('#')
+      else
+         update_best(iter+1) = 0; 
+      end   
+      if (max(relgap_best,infeas_best) < 1e-4 ...
+          & norm(update_best(iter-1:iter+1)) == 0)
+         msg = 'lack of progress in infeas'; 
+         if (printlevel); fprintf('\n  %s',msg); end
+         termcode = -3; 
+         breakyes = 1; 
+      end
       if (breakyes); break; end
    end
 %%---------------------------------------------------------------
 %% end of main loop
 %%---------------------------------------------------------------
 %%
-   use_olditer = 0; 
-   if (runhist.pinfeas(iter+1) > 3*runhist.pinfeas(iter)) ...
-      & (runhist.relgap(iter+1) > 0.3*runhist.relgap(iter))
-      X = Xold;
+   use_bestiter = 1; 
+   if (use_bestiter) & (param.termcode <= 0)
+      X = Xbest; y = ybest; Z = Zbest; 
       Xchol = blkcholfun(blk,X); 
-      use_olditer = 1; 
-   end
-   if (runhist.dinfeas(iter+1) > 3*runhist.dinfeas(iter)) ...
-      & (runhist.relgap(iter+1) > 0.3*runhist.relgap(iter))
-      Z = Zold; y = yold; 
-      Zchol = blkcholfun(blk,Z); 
-      use_olditer = 1;
-   end
-   if (use_olditer)
+      Zchol = blkcholfun(blk,Z);      
       AX = AXfun(blk,At,par.permA,X); 
       rp = b-AX;
       ZpATy = ops(Z,'+',Atyfun(blk,At,par.permA,par.isspAy,y));

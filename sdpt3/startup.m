@@ -15,7 +15,7 @@
    path(path,strcat(pwd,'/Linsysolver/spchol'));
    path(path,strcat(pwd,'/Linsysolver/MA47'));
    path(path,strcat(pwd,'/Examples'));
-   path(path,strcat(pwd,'/SolverHSD'));
+   path(path,strcat(pwd,'/HSDSolver'));
 
    path(path,strcat(pwd,'/testdir'));
 %%

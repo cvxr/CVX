@@ -16,7 +16,11 @@
 %% Last Modified: 16 Sep 2004
 %%******************************************************************
 
-  function [blk,Avec,C,b] = read_sedumi(fname,b,c,K);
+  function [blk,Avec,C,b] = read_sedumi(fname,b,c,K,smallblkdim);
+
+  if (nargin < 5) 
+     smallblkdim = 40; 
+  end
 
   A = 0;
   At = 0;
@@ -119,11 +123,10 @@
       rowidx = rowidx + len;
    end
    if ~(K.s == 0) 
-      smblkdim = 30; 
       blksize = K.s;  
       if size(blksize,2) == 1; blksize = blksize'; end
       blknnz = [0, cumsum(blksize.*blksize)];   
-      deblkidx = find(blksize > smblkdim); 
+      deblkidx = find(blksize > smallblkdim); 
       if ~isempty(deblkidx)
          for p = 1:length(deblkidx)
              idxblk = idxblk + 1; 
@@ -149,7 +152,7 @@
              C{idxblk,1} = 0.5*(Ctmp+Ctmp'); 
           end 
       end
-      spblkidx = find(blksize <= smblkdim);
+      spblkidx = find(blksize <= smallblkdim);
       if ~isempty(spblkidx)
          pos = []; len = 0;
          for p = 1:length(spblkidx)

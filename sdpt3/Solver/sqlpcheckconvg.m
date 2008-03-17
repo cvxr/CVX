@@ -73,13 +73,13 @@
    	    & ~(min(runhist.step(idx)) > 0.2 & ublksize)
             if (gap_slow & prim_infeas_bad & (relgap < 1e-3)) ...
 	       | (gap_slow2 & prim_infeas_bad & ublksize & (runhist.step(iter+1) > 0.2))
-               msg = 'sqlp stop: progress is too slow'; 
+               msg = 'stop: progress is too slow'; 
                if (printlevel); fprintf('\n  %s',msg); end
                termcode = -5; 
                %%breakyes = 1;
             elseif (max(infeas,relgap) < 1e-2) & (prim_infeas_bad) 
                if (relgap < max(0.2*prim_infeas,1e-2*dual_infeas)) 
-                  msg = 'sqlp stop: relative gap < infeasibility'; 
+                  msg = 'stop: relative gap < infeasibility'; 
                   if (printlevel); fprintf('\n  %s',msg); end
                   termcode = -1;
                   breakyes = 1; 
@@ -88,14 +88,14 @@
          end  
 	 if (iter > 20) & (gap_progress_bad) ...
             & (prim_infeas_bad | any(runhist.step(idx) > 0.5))
-            msg = 'sqlp stop: progress is bad'; 
+            msg = 'stop: progress is bad'; 
             if (printlevel); fprintf('\n  %s',msg); end
             termcode = -5;
             breakyes = 1;  
          end
 	 if (iter > 30) & (prim_infeas_bad) & (gap_slow) & (relgap < 1e-3) ...
             & (dual_infeas < 1e-5) & ~(min(runhist.step(idx)) > 0.2 & ublksize)
-            msg = 'sqlp stop: progress is bad*'; 
+            msg = 'stop: progress is bad*'; 
             if (printlevel); fprintf('\n  %s',msg); end
             termcode = -5;
             breakyes = 1; 
@@ -103,7 +103,7 @@
 	 if (iter > 30) & (dual_infeas_bad) & (relgap < 1e-3) ...
 	    & (dual_infeas < 1e-5) ...
             & ~(min(runhist.step(idx)) > 0.2 & ublksize)
-            msg = 'sqlp stop: dual infeas has deteriorated too much'; 
+            msg = 'stop: dual infeas has deteriorated too much'; 
             if (printlevel); fprintf('\n  %s',msg); end
             termcode = -5;
             breakyes = 1; 
@@ -111,7 +111,7 @@
 	 if (iter > 50) & (prim_infeas/runhist.pinfeas(1) < 1e-6) ...
 	    & (dual_infeas/runhist.dinfeas(1) > 1e-3) ...
 	    & (runhist.step(iter+1) > 0.2) & (relgap > 1e-3) 
-            msg = 'sqlp stop: lack of progress in dual infeas'; 
+            msg = 'stop: lack of progress in dual infeas'; 
             if (printlevel); fprintf('\n  %s, homrp=%2.1e',msg,param.homrp); end
             termcode = -5;
             breakyes = 1; 
@@ -119,7 +119,7 @@
 	 if (iter > 50) & (dual_infeas/runhist.dinfeas(1) < 1e-6) ...
 	    & (prim_infeas/runhist.pinfeas(1) > 1e-3) ...
 	    & (runhist.step(iter+1) > 0.2) & (relgap > 1e-3) 
-            msg = 'sqlp stop: lack of progress in primal infeas'; 
+            msg = 'stop: lack of progress in primal infeas'; 
             if (printlevel); fprintf('\n  %s, homRd=%2.1e',msg,param.homRd); end
             termcode = -5;
             breakyes = 1; 
@@ -136,7 +136,7 @@
                step_short = 0; 
             end
             if (step_short) & (relgap2 < 1e-2)
-               msg = 'sqlp stop: steps too short consecutively'; 
+               msg = 'stop: steps too short consecutively'; 
                if (printlevel); fprintf('\n  %s',msg); end
                termcode = -5; 
                breakyes = 1;      
@@ -146,9 +146,9 @@
             & (min(param.homrp,param.homRd) > min(1e-8,param.inftol)) ...
             & (max(runhist.step(max(1,iter-3):iter+1)) < 1e-3) 
             if (stoplevel == 2)
-               msg = 'sqlp stop: steps too short consecutively*'; 
+               msg = 'stop: steps too short consecutively*'; 
                if (printlevel)
-                  fprintf('\n *** Too many tiny steps, advisable to restart sqlp'); 
+                  fprintf('\n *** Too many tiny steps, advisable to restart'); 
                   fprintf(' with the following iterate.')
                   fprintf('\n *** Suggestion: [X0,y0,Z0] = infeaspt(blk,At,C,b,2,1e5);'); 
                   fprintf('\n  %s',msg); 
@@ -156,10 +156,10 @@
                termcode = -5; 
                breakyes = 1;             
             elseif (stoplevel == 3)
-               msg = 'sqlp stop: steps too short consecutively*'; 
+               msg = 'stop: steps too short consecutively*'; 
                if (printlevel)
                   fprintf('\n *** Too many tiny steps even')
-                  fprintf(' after restarting sqlp');                
+                  fprintf(' after restarting');                
                   fprintf('\n  %s',msg);
                end
                termcode = -5;
@@ -167,7 +167,7 @@
             else 
                if (printlevel)
                   fprintf('\n *** Too many tiny steps:')
-                  fprintf('  restarting sqlp with the following iterate.')
+                  fprintf('  restarting with the following iterate.')
                   fprintf('\n *** [X,y,Z] = infeaspt(blk,At,C,b,2,1e5);'); 
                end
 	       prim_infeas_min = 1e20; 
@@ -177,7 +177,7 @@
          end
       end
       if (max(relgap,infeas) < param.gaptol)
-         msg = sprintf('sqlp stop: max(relative gap, infeasibilities) < %3.2e',param.gaptol);
+         msg = sprintf('stop: max(relative gap, infeasibilities) < %3.2e',param.gaptol);
          if (printlevel); fprintf('\n  %s',msg); end
          termcode = 0;
          breakyes = 1;
