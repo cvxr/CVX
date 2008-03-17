@@ -27,11 +27,30 @@
     if isempty(nnzmatold); nnzmatold = 0; end
 %%
 %% diagonal perturbation
-%%
-    diagschur = max(1,full(diag(schur)));
-    pertdiag = 1e-15*diagschur; 
+%% old: pertdiag = 1e-15*max(1,diagschur);
+%% 
+    diagschur = abs(full(diag(schur)));
+    const = 1e-2/max(1,norm(par.dy2)); 
+    alpha = max(1e-14,min(1e-10,const*norm(par.rp))/(1+norm(diagschur.*par.dy2)));
+    pertdiag = alpha*max(1e-8,diagschur); %% Note: alpha is close to 1e-15.
     mexschurfun(schur,pertdiag); 
-    %%if (printlevel > 2); fprintf(' %2.1e',max(pertdiag)); end
+    %%if (printlevel); fprintf(' %3.1e ',alpha); end
+    if (par.depconstr) | (min(diagschur) < min([1e-20*max(diagschur), 1e-4])) 
+       lambda = 0.1*min(1e-14,const*norm(par.rp)/(1+norm(par.diagAAt.*par.dy2)));
+       mexschurfun(schur,lambda*par.diagAAt);  
+       %%if (printlevel); fprintf('#%'); end
+    end
+    if (max(diagschur)/min(diagschur) > 1e14) & (par.blkdim(2) == 0) ...
+       & (iter > 10)
+       tol = 1e-6; 
+       idx = find(diagschur < tol); len = length(idx);
+       pertdiagschur = zeros(m,1);  
+       if (len > 0 & len < 5) & (norm(rhs(idx)) < tol) 
+          pertdiagschur(idx) = 1*ones(length(idx),1); 
+          mexschurfun(schur,pertdiagschur); 
+          if (printlevel>2); fprintf('$'); end
+       end
+    end
 %%
 %%
 %%
@@ -119,7 +138,7 @@
           if (existspcholsymb)
              L = sparcholfun(Lsymb,schur);
              L.matfct_options  = 'myspchol';  
-             L.d(find(L.skip)) = 1e20;  
+             L.d(find(L.skip)) = 1e20; %% default=1e20  
              if any(L.skip) & (ncolU)
                 solve_ok = -3; solvesys = 0;
                 existspcholsymb = 0; 
@@ -139,7 +158,7 @@
              tol = 1e-16;
              condest = max(abs(diag(L.Mu)))/min(abs(diag(L.Mu))); 
              idx = find(abs(diag(L.Mu)) < tol);
-             if ~isempty(idx) | (condest > 1e20); 
+             if ~isempty(idx) | (condest > 1e30*sqrt(norm(par.diagAAt))); %% default=1e25 
                 solvesys = 0; solve_ok = -4; 
                 use_LU = 1; 
                 msg = 'SMW too ill-conditioned, switch to LU factor'; 

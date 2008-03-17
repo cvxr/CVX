@@ -1,6 +1,8 @@
 %%*****************************************************************************
-%% misc: 
+%% HSDsqlpmisc: 
 %% produce infeasibility certificates if appropriate
+%%
+%% Input: X,y,Z are the original variables, not the HSD variables. 
 %%
 %% SDPT3: version 3.1
 %% Copyright (c) 1997 by
@@ -8,10 +10,10 @@
 %% Last Modified: 16 Sep 2004.
 %%*****************************************************************************
 
-   function [X,y,Z,resid,reldist,param,msg] = misc(blk,At,C,b,X,y,Z,permZ,param);
+   function [X,y,Z,resid,reldist,param,msg] = HSDsqlpmisc(blk,At,C,b,X,y,Z,permZ,param);
 
    obj         = param.obj;
-   relgap     = param.relgap; 
+   relgap      = param.relgap; 
    prim_infeas = param.prim_infeas;
    dual_infeas = param.dual_infeas;
    ZpATynorm   = param.ZpATynorm; 
@@ -25,16 +27,14 @@
    printlevel  = param.printlevel; 
 %%
    resid = []; reldist = []; msg = []; 
-%%
    Anorm = ops(At,'norm'); xnorm = ops(X,'norm'); ynorm = norm(y);
-   infeas_meas = max(prim_infeas,dual_infeas);
 %% 
    if (termcode <= 0)
       %%
       %% To detect near-infeasibility when the algorithm provides 
       %% a "better" certificate of infeasibility than of optimality.
       %%
-      err = max(infeas_meas,relgap);
+      err = max([prim_infeas,dual_infeas,relgap]);
       iflag = 0;
       if (obj(2) > 0)
          homRd = ZpATynorm/obj(2);
@@ -42,9 +42,6 @@
             iflag = 1;
             termcode = 1;
             param.termcode = 1;
-            msg = sprintf('prim_inf,dual_inf,relgap = %3.2e, %3.2e, %3.2e',...
-                  prim_infeas,dual_infeas,relgap); 
-            if (printlevel); fprintf('\n  %s',msg); end
          end
       elseif (obj(1) < 0)
          homrp = norm(AX)/(-obj(1)); 
@@ -52,9 +49,6 @@
             iflag = 1; 
             termcode = 2;
             param.termcode = 2;
-            msg = sprintf('prim_inf,dual_inf,relgap = %3.2e, %3.2e, %3.2e',...
-                  prim_infeas,dual_infeas,relgap); 
-            if (printlevel); fprintf('\n  %s',msg); end
          end
       end
    end

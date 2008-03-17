@@ -1,4 +1,4 @@
-function [ x, y, status ] = cvx_solve_sedumi( At, b, c, nonls, quiet, prec )
+function [ x, y, status, XYZ ] = cvx_solve_sedumi( At, b, c, nonls, quiet, prec, XYZ )
 
 n_in = 0;
 n_out = 0;

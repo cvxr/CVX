@@ -83,7 +83,7 @@ if isempty( cvx___ ),
     end
     temp = strfind( s, fs );
     s( temp(end-1) + 1 : end ) = [];
-    subs = { 'sdpt3/Solver', 'sdpt3/SolverHSD', 'sdpt3/Solver/Mexfun', 'sdpt3/Linsysolver/spchol', 'sedumi' };
+    subs = { 'sdpt3', 'sdpt3/Solver', 'sdpt3/HSDSolver', 'sdpt3/Solver/Mexfun', 'sdpt3/Linsysolver/spchol', 'sedumi' };
     nsolver = length( subs );
     miss_solv = 0;
     if cvx___.mversion >= 7.0,

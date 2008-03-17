@@ -232,13 +232,14 @@ elseif n ~= 0 & ~infeas & ( any( b ) | any( c ) ),
         stagnant = false;
         last_slow = false;
         dscale = blkdiag(speye(m,m),speye(new_m-m,new_m-m));
+        XYZ = {};
         for iter = 1 : 1000,
             dx0 = diag(sparse(x0));
             At(yndxs,:) = yorig_A + dx0 * xorig_A;
             c (yndxs,:) = yorig_C + dx0 * xorig_C;
             At(endxs) = -exp(-(x0+eshift)/epow);
             At(wndxs) = -1./xw;
-            [ x, y, status ] = feval( sfunc, At, b, c, cones, true, nprec );
+            [ x, y, status, XYZ ] = feval( sfunc, At, b, c, cones, true, nprec, XYZ );
             x_good = ~isnan( x(1) );
             y_good = ~isnan( y(1) );
             tndx   = 2 + ( status(3) == 'a' );
@@ -328,6 +329,9 @@ elseif n ~= 0 & ~infeas & ( any( b ) | any( c ) ),
                 stagnant = false;
                 err = Inf;
                 eshift = 0;
+                if ~isempty( XYZ ),
+                    continue;
+                end
             elseif stagnant & best_px > tprec,
                 eshift = eshift + 2 * max(nxe,0);
             elseif stagnant & best_py > tprec,
@@ -339,6 +343,7 @@ elseif n ~= 0 & ~infeas & ( any( b ) | any( c ) ),
             last_slow = slow;
             xw = min( maxw, max( abs( dx0 ), ewid ) );
             x0 = x0 + min( epow, max( dx0, -epow ) );
+            XYZ = {};
         end
         if isnan( best_x(1) ), 
             status = 'Infeasible',

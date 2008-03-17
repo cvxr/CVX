@@ -712,7 +712,7 @@
       else
          update_best(iter+1) = 0; 
       end   
-      if (max(relgap_best,infeas_best) < 1e-4 ...
+      if (iter>1) & (max(relgap_best,infeas_best) < 1e-4 ...
           & norm(update_best(iter-1:iter+1)) == 0)
          msg = 'lack of progress in infeas'; 
          if (printlevel); fprintf('\n  %s',msg); end

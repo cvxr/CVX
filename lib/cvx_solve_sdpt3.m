@@ -1,4 +1,4 @@
-function [ x, y, status ] = cvx_solve_sdpt3( At, b, c, nonls, quiet, prec )
+function [ x, y, status, XYZ ] = cvx_solve_sdpt3( At, b, c, nonls, quiet, prec, XYZ )
 
 [n,m] = size(At);
 
@@ -237,11 +237,20 @@ end
 % Call SDPT3
 %
 
+b = full(b);
 OPTIONS = sqlparameters;
 OPTIONS.gaptol = prec(1);
 OPTIONS.printlevel = 3 * ~quiet;
 % OPTIONS.vers = 2;
-[ obj, xx, y, z, info ] = sqlp( blk, Avec, Cvec, full(b), OPTIONS );
+
+if nargin < 7 | isempty(XYZ),
+    [X0,y0,Z0] = infeaspt(blk,Avec,Cvec,b);
+    XYZ = { X0, y0, Z0 };
+end
+[ obj, xx, y, z, info ] = sqlp( blk, Avec, Cvec, b, OPTIONS, XYZ{1}, XYZ{2}, XYZ{3} );
+if nargout > 3,
+    XYZ = { xx, y, z };
+end
 
 %
 % Interpret the output
