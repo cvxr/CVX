@@ -37,6 +37,9 @@ if ~cx | ~cy,
         for k = 1 : nx,
             newcnstr( prob, x{k}, y{k}, op );
         end
+        if nargout,
+            outp = cvxcnstr( prob );
+        end
         return
     end
 end
@@ -255,7 +258,9 @@ end
 % Create the output object
 %
 
-outp = cvxcnst( prob );
+if nargout,
+    outp = cvxcnst( prob );
+end
 
 % Copyright 2008 Michael C. Grant and Stephen P. Boyd.
 % See the file COPYING.txt for full copyright information.
