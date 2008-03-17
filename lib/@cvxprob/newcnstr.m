@@ -1,6 +1,4 @@
-function newcnstr( prob, x, y, op, cheat )
-error( nargchk( 4, 5, nargin ) );
-if nargin < 5, cheat = false; end
+function outp = newcnstr( prob, x, y, op )
 persistent map_eq map_le map_ge map_ne
     
 %
@@ -111,18 +109,18 @@ if op(1) ~= '=' & cvx___.problems( p ).sdp & ( mx | my ),
     elseif ~cvx_isaffine( x ) | ~cvx_isaffine( y ),
         error( 'Both sides of an SDP constraint must be affine.' );
     elseif op( 1 ) == '>',
-        x = minus( x, y, cheat );
+        x = minus( x, y );
         y = semidefinite( size( x ), ~isreal( x ) );
         sz = size( x );
     else
-        y = minus( y, x, cheat );
+        y = minus( y, x );
         x = semidefinite( size( y ), ~isreal( y ) );
         sz = size( y );
     end
     op = '==';
     sdp_mode = true;
 
-elseif ~cheat,
+else
     
     if isempty( map_ge ),
         temp    = cvx_remap( 'constant' );
@@ -204,10 +202,10 @@ end
 %
 
 if op(1) == '<',
-    z = minus( y, x, cheat );
+    z = minus( y, x );
     op(1) = '>';
 else
-    z = minus( x, y, cheat );
+    z = minus( x, y );
 end
 if op( 1 ) == '=',
     cmode = 'full';
@@ -252,6 +250,12 @@ if ~isempty( dx ),
     duals = builtin( 'subsasgn', duals, dx, zI );
     cvx___.problems( p ).duals = duals;
 end
+
+%
+% Create the output object
+%
+
+outp = cvxcnst( prob );
 
 % Copyright 2008 Michael C. Grant and Stephen P. Boyd.
 % See the file COPYING.txt for full copyright information.

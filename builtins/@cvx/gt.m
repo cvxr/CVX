@@ -18,16 +18,8 @@ function a = gt( x, y )
 %Feasible interior-point solvers tend to return points which satisfy
 %strict inequality, but not all solvers do.
 
-error( nargchk( 2, 2, nargin ) );
-
-try
-    newcnstr( evalin( 'caller', 'cvx_problem', '[]' ), x, y, '>' );
-catch
-    error( cvx_lasterr );
-end
-if nargout > 0,
-    a = 'Constraint accepted';
-end
+b = newcnstr( evalin( 'caller', 'cvx_problem', '[]' ), x, y, '>' );
+if nargout, a = b; end
 
 % Copyright 2008 Michael C. Grant and Stephen P. Boyd.
 % See the file COPYING.txt for full copyright information.
