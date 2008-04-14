@@ -147,7 +147,7 @@ for k = 1 : nv,
             yt = cvx( feval( mode, cvx_constant( xt ), pt ) );
         case 2,
             % Log-convex/affine/concave
-            cvx_optval = exp( log( xt ) .* pt );
+            yt = exp( log( xt ) .* pt );
         case 3,
             % power( concave, p < 0 )
             % pow_p( concave, p < 0 )
