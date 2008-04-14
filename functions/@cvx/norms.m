@@ -87,22 +87,16 @@ switch p,
                 { cvx_accept_convex(x), y } == lorentz( sx, dim, ~isreal( x ) );
             cvx_end
         else
-            map = cvx_geomean_map( p, true );
+            sw = sx;
+            sw(nd+1) = 2;
             cvx_begin
                 variable z( sx )
                 epigraph variable y( sy )
-                yx = cvx_expand_dim( y, dim, nx );
-                x = cvx_accept_convex( x );
-                if rem( p, 2 ) == 0,
-                    p = p * 0.5;
-                    x_abs = quad_over_lin( x, yx, 0 );
-                else
-                    x_abs = abs( x );
-                end
-                geomean( cat( nd+1, z, yx ), nd+1, map, true ) >= x_abs;
+                if isreal(x), cmode = 'abs'; else, cmode = 'cabs'; end
+                { cat( nd+1, z, cvx_expand_dim( y, dim, nx ) ), cvx_accept_convex(x) } ...
+                    == geomean_cone( sw, nd+1, [1/p,1-1/p], cmode );
                 sum( z, dim ) == y;
             cvx_end
-            y = cvx_optval;
         end
 end
 

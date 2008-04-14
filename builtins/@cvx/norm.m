@@ -6,11 +6,20 @@ function cvx_optval = norm( x, p )
 %       is nonmonotonic, so its input must be affine.
 
 %
+% Argument map
+%
+
+persistent remap1 remap2
+if isempty( remap2 ),
+    remap1 = cvx_remap( 'log-convex' );
+    remap2 = cvx_remap( 'affine', 'log-convex' );
+end
+
+%
 % Check arguments
 %
 
-persistent remap1 remap2 remap3
-    error( nargchk( 1, 2, nargin ) );
+error( nargchk( 1, 2, nargin ) );
 if nargin < 2,
     p = 2;
 elseif ~isequal( p, 'fro' ) & ( ~isnumeric( p ) | ~isreal( p ) | p < 1 ),
@@ -20,42 +29,26 @@ if ndims( x ) > 2,
     error( 'norm is not defined for N-D arrays.' );
 end
 
-[ m, n ] = size( x );
-if m == 0 | n == 0,
-    
-    %
-    % Empty matrices
-    %
-    
-    cvx_optval = 0;
-    
-elseif m == 1 & n == 1,
-    
-    %
-    % Scalars
-    %
-    
-    cvx_optval = abs( x );
-    
-elseif m == 1 | n == 1 | isequal( p, 'fro' ),
+[m,n] = size(x);
+if m == 1 | n == 1 | isequal( p, 'fro' ),
     
     %
     % Vector norms
     %
-
-    if isequal( p, 'fro' ), p = 2; end
-    x = svec( x, p );
+    
     if isempty( x ),
-        cvx_optval = 0;
+        cvx_optval = cvx( 0 );
         return
     end
-    if isempty( remap2 ),
-        remap1 = cvx_remap( 'log-convex' );
-        remap2 = cvx_remap( 'affine', 'log-convex' );
-        remap3 = cvx_remap( 'log-affine' );
+    if isequal( p, 'fro' ),
+        p = 2;
+    end
+    x = svec( x, p );
+    if length( x ) == 1,
+        p = 1;
     end
     xc = cvx_classify( x );
-    if ~all( remap2( xc ) ) & ~( isequal( p, 1 ) & ~all( remap3( xc ) ) ),
+    if ~all( remap2( xc ) ),
         error( sprintf( 'Disciplined convex programming error:\n    Cannot perform the operation norm( {%s}, %g )', cvx_class( x ), p ) );
     end
     switch p,
@@ -89,7 +82,7 @@ elseif m == 1 | n == 1 | isequal( p, 'fro' ),
                     cvx_begin
                         epigraph variable z
                         variable y( n )
-                        geomean( [ y, z*ones(n,1) ], 2, cvx_geomean_map( p ), true, cmode ) == x;
+                        { [ y, z*ones(n,1) ], x } == geomean_cone( [n,2], 2, [1/p,1-1/p], cmode );
                         sum( y ) == z;
                     cvx_end
                 end

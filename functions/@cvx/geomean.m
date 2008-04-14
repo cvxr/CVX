@@ -77,11 +77,11 @@ perm = [];
 if nk > 1 | ( any( nu > 1 ) & nx > 1 ),
     if dim > 1 & any( sx( 1 : dim - 1 ) > 1 ),
         perm = [ dim, 1 : dim - 1, dim + 1 : length( sx ) ];
-        x   = permute( x,  perm );
-        sx  = sx( perm );
-        sy  = sy( perm );
-        ta  = permute( ta, perm );
-        dim = 1;
+        x    = permute( x,  perm );
+        sx   = sx( perm );
+        sy   = sy( perm );
+        ta   = permute( ta, perm );
+        dim  = 1;
     else
         perm = [];
     end
@@ -113,78 +113,12 @@ for k = 1 : nk,
         case 0,
             error( sprintf( 'Disciplined convex programming error:\n   Invalid computation: geomean( {%s} )', cvx_class( xt, true, true ) ) );
         case 1,
-            yt = geomean( cvx_constant( xt ), dim, w );
+            yt = cvx( geomean( cvx_constant( xt ), dim, w ) );
         case 2,
-            if nx == 1,
-                cvx_begin
-                    hypograph variable z( sz )
-                    z <= xt;
-                    z >= 0;
-                cvx_end
-                yt = cvx_optval;
-            else
-                %
-                % Construct the problem.
-                % --- For n == 2, we use the following equivalency
-                %     sqrt(x*y)>=z, x>=0, y>=0 <--> z^2/x <= y
-                % --- For n == 2^k, we can recursively apply this log(k,2) times.
-                % --- For other n, note that
-                %     x(1)*x(2)*...*x(n) <= y^n
-                %         <----> x(1)*x(2)*...*x(n)*y^m <= y^(n+m)
-                %     so by adding extra y's to the left-hand side we can use the same
-                %     recursion for lengths that are not powers of two.
-                % --- For integer-weighted geometric means, we effectively
-                %     replicate each x(i) w(i) times. However, because
-                %     sqrt(x(i)*x(i)) = x(i), we can prune away most of
-                %     the duplicated values very cheaply. The number of
-                %     non-trivial appearances of x(i) will be reduced from
-                %     w(i) to at most ceil(log2(w(i))), or more precisely
-                %     the number of 1's in a binary expansion of w(i).
-                %
-                if isempty( map ),
-                    if isempty( w ),
-                        w = ones( 1, nx );
-                    end
-                    map  = cvx_geomean_map( w );
-                end
-                nm = size(map,2);
-                mused = nnz( map == nm + nx ) > 1;
-                need_obj = false;
-                cvx_begin
-                    variable xw( nm-1, nv );
-                    cone1 = rotated_lorentz( [1,nm-1,nv], 0 );
-                    if isequal( cmode, 'cabs' ) & ~mused,
-                        variable xa( 1, nv ) complex;
-                        cone2 = rotated_lorentz( [1,1,nv], 1 );
-                    else
-                        variable xa( 1, nv );
-                        cone2 = rotated_lorentz( [1,1,nv], 0 );
-                    end
-                    xt = [ cvx_accept_concave( xt ) ; xw ; xa ];
-                    cat( 2, cone1.y, cone2.y ) == reshape( cvx_subsref( xt, map(1,:), ':' ), [1,nm,nv] ); 
-                    cat( 2, cone1.z, cone2.z ) == reshape( cvx_subsref( xt, map(2,:), ':' ), [1,nm,nv] );
-                    cat( 2, cone1.x, cone2.x ) == reshape( cvx_subsref( xt, map(3,:), ':' ), [1,nm,nv] );
-                    yt = xa;
-                    switch cmode,
-                        case 'abs',
-                            if mused,
-                                variable yt( 1, nv );
-                                abs( yt ) <= xa;
-                            end
-                        case 'cabs',
-                            if mused,
-                                variable yt( 1, nv ) complex;
-                                abs( yt ) <= xa;
-                            end
-                        otherwise,
-                            need_obj = true;
-                            maximize( xa );
-                    end
-                cvx_end
-                if need_obj,
-                    yt = cvx_optval;
-                end
-            end
+            cvx_begin
+                hypograph variable yt(sz);
+                { cvx_accept_concave(xt), yt } == geomean_cone( size(xt), dim,  w, 'func' );
+            cvx_end
         case 3,
             if nx == 1,
                 yt = xt;

@@ -1,10 +1,10 @@
-function y = inv_pos( x )
+function y = pow_p( x, p )
 
-%INV_POS   Internal cvx version.
+%POW_P   Internal cvx version.
 
-y = pow_cvx( x, -1, 'pow_p' );
+error(nargchk(2,2,nargin));
+y = pow_cvx( x, p, 'pow_p' );
 
 % Copyright 2008 Michael C. Grant and Stephen P. Boyd.
 % See the file COPYING.txt for full copyright information.
 % The command 'cvx_where' will show where this file is located.
-

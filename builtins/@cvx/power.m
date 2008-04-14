@@ -1,21 +1,32 @@
 function z = power( x, y )
 
 %   Disciplined convex programming information for POWER (.^):
-%      The CVX version of the power function Z = X.^Y is accepts only
-%      certain convex or concave branches as valid. Currently, the only
-%      nondegenerate cases supported are these:
-%         --- Y is constant and 0<Y<1: the function f(X)=X.^Y is concave
-%             and nondecreasing in X. Therefore, X must be concave, and
-%             X is effectively constrained to be nonnegative.
-%         --- Y is constant and a positive even integer (2,4,6,...): 
-%             f(X)=X.^Y is convex and nonmonotonic in X. Therefore, X 
-%             must be real affine.
-%      Future versions of CVX will add a third case once the underlying
-%      solvers can support exponential nonlinearities:
-%         --- X is a positive constant: g(Y)=X.^Y is convex and
-%             nondecreasing in Y. Therefore, Y must be concave.
+%      When used in CVX expressions, either X or Y must be constant. Only
+%      certain convex or concave branches are accepted as valid:
+%         --- if both X and Y are constant, then Z = X.^Y is interpreted
+%             precisely as the MATLAB built-in version.
+%         --- if Y is constant and 0 < Y < 1, then Z = X.^Y is concave and
+%             nondecreasing in X. Therefore, X must be concave, and is
+%             implicitly constrained to be nonnegative.
+%         --- if Y is constant and Y == 1, then Z = X.
+%         --- if Y is constant and a positive even integer, then Z = X.^Y
+%             is convex and nonmonotonic in X. Therefore, X must be affine.
+%         --- if Y is constant and Y > 1, but *not* an integer, then 
+%             Z = X.^Y is convex and nonmonotonic in X. Therefore, X must
+%             be affine (and real), and is implicitly constrained to be
+%             nonnegative.
+%      In expert mode, additional cases are handled:
+%         --- if X is constant and 0 < X < 1, then Z = X.^Y is convex and
+%             nonincreasing in X. Therefore, Y must be concave.
+%         --- if X is constant and X == 1, then Z = 1.
+%         --- if X is constant and X > 1, then Z = X.^Y is convex and
+%             nondecreasing in X. Therefore, Y must be convex.
+%      All other combinations are rejected as invalid. For instance, if Y
+%      is an odd integer, then X .^ Y is neither convex nor concave, so it
+%      is rejected. In such cases, consider using POW_P, POW_POS, or
+%      POW_ABS instead.
 %             
-%   Disciplined convex programming information for POWER (.^):
+%   Disciplined geometric programming information for POWER (.^):
 %      In disciplined geometric programs, the power operation Z=X.^Y is
 %      valid only if Y is a real constant. There are no restrictions on
 %      X. Note that a negative exponent Y reverses curvature; that is, Z
@@ -25,10 +36,8 @@ function z = power( x, y )
 % Check sizes
 %
 
-sx = size( x );
-sy = size( y );
-xs = all( sx == 1 );
-ys = all( sy == 1 );
+sx = size( x ); xs = all( sx == 1 );
+sy = size( y ); ys = all( sy == 1 );
 if xs,
     sz = sy;
 elseif ys | isequal( sx, sy ),
@@ -41,46 +50,35 @@ end
 % Determine the expression types
 %
 
-% Classifications:
-% 1  - negative constant
-% 2  - zero
-% 3  - positive constant
-% 4  - complex constant
-% 5  - concave
-% 6  - real affine
-% 7  - convex
-% 8  - complex affine
-% 9  - log concave
-% 10 - log affine
-% 11 - log convex monomial
-% 12 - log convex posynomial
-% 13 - invalid
+if cvx_isconstant( y ),
+    
+    z = pow_cvx( x, y, 'power' );
+    return
+    
+elseif ~cvx_isconstant( x ),
+    
+    error( sprintf( 'Disciplined convex programming error:\n   In an expression X .^ Y, either X or Y must be constant.' ) );
+    
+end
 
+%
+% Now handle constant .^ non-constant
+%
+    
 persistent remap
 if isempty( remap ),
-    % Constant .^ constant
-    remap_1 = cvx_remap( 'constant' );
-    remap_1 = remap_1' * remap_1;
-
-    % Zero .^ convex
-    remap_2 = cvx_remap( 'zero' )' * cvx_remap( 'convex' );
-
-    % Positive .^ convex
-    remap_3 = cvx_remap( 'positive' )' * cvx_remap( 'convex' );
-    
-    % Concave/affine ^ constant: potential quadratic form or root
-    remap_4 = cvx_remap( 'concave' )' * cvx_remap( 'positive' );
-
-    % log-concave/convex ^ zero
-    remap_5 = cvx_remap( 'log-convex', 'log-concave' )' * cvx_remap( 'zero' );
-
-    % log-concave/convex ^ nonzero
-    remap_6 = cvx_remap( 'log-convex', 'log-concave' )' * cvx_remap( 'nonzero' );
-
-    remap = remap_1 + ( 2 * remap_2 + 3 * remap_3 + 4 * remap_4 + 5 * remap_5 + 6 * remap_6 ) .* ~remap_1;
+	remap_y1 = cvx_remap( 'real-affine' );
+	remap_y2 = cvx_remap( 'convex' )    & ~remap_y1;
+	remap_y3 = cvx_remap( 'concave' )   & ~remap_y1;
+	remap_y4 = cvx_remap( 'log-valid' ) & ~( remap_y1 | remap_y2 | remap_y3 );
+	remap    = [0;0;2;2;2] * remap_y1 + ...
+	           [0;0;0;2;2] * remap_y2 + ...
+	           [0;0;2;2;0] * remap_y3 + ...
+	           [0;1;0;2;0] * remap_y4;
 end
-vx = cvx_classify( x );
+x  = cvx_constant( x );
 vy = cvx_classify( y );
+vx = 1 + isreal( x ) .* ( ( x >= 0 ) + ( x > 0 ) + ( x >= 1 ) + ( x > 1 ) );
 vr = remap( vx + size( remap, 1 ) * ( vy - 1 ) );
 vu = unique( vr );
 nv = length( vu );
@@ -89,10 +87,8 @@ nv = length( vu );
 % Perform the individual computations and combine
 %
 
-x  = cvx( x );
-y  = cvx( y );
-xt = x;
-yt = y;
+x = cvx( x ); xt = x;
+y = cvx( y ); yt = y;
 if nv ~= 1,
     z = cvx( sz, [] );
 end
@@ -117,52 +113,11 @@ for k = 1 : nv,
             % Invalid
             error( sprintf( 'Disciplined convex programming error:\n    Cannot perform the operation {%s}.^{%s}', cvx_class( xt, true, true, true ), cvx_class( yt, true, true, true ) ) );
         case 1,
-            % constant .^ constant
-            cvx_optval = cvx_constant( xt ) .^ cvx_constant( yt );
-        case 2,
             % zero .^ convex
-            cvx_optval = zeros( sz );
-        case 3,
-            % positive .^ convex
+            cvx_optval = cvx( zeros( sz ) );
+        case 2,
+            % (0<x<1) .^ concave, (x>1) .^ convex
             cvx_optval = exp( log( cvx_constant( xt ) ) .* yt );
-        case 4,
-            % concave/affine ^ positive constant --- potential quadratic form or root
-            yt = cvx_constant( yt );
-            t1 = ( yt > 0 ) & ( yt <= 1 );
-            t2 = ( yt > 1 ) & ( rem( yt, 2 ) == 0 );
-            t3 = ~t1 & ~t2;
-            if nnz( t3 ),
-                if ~cvx_isaffine( xt ),
-                    error( sprintf( ...
-                        [ 'Disciplined convex programming error:\n', ...
-                          '    Cannot perform {concave}.^k unless 0<k<=1.' ] ) );
-                else
-                    error( sprintf( ...
-                        [ 'Disciplined convex programming error:\n', ...
-                          '    Cannot perform {affine}.^k unless 0<k<=1 or k is even.' ] ) );
-                end
-            elseif all( t1( : ) ),
-                cvx_optval = pow_pos( xt, yt );
-            elseif all( t2( : ) ),
-                cvx_optval = pow_abs( xt, yt );
-            else,
-                cvx_optval = cvx( size(yt), [] );
-                if xs, 
-                    xt1 = xt;
-                    xt2 = xt;
-                else
-                    xt1 = cvx_subsref( xt, t1 ); 
-                    xt2 = cvx_subsref( xt, t2 );
-                end
-                cvx_optval = cvx_subsasgn( cvx_optval, t1, pow_pos( xt1, cvx_subsref( yt, t1 ) ) );
-                cvx_optval = cvx_subsasgn( cvx_optval, t2, pow_abs( xt2, cvx_subsref( yt, t2 ) ) );
-            end
-        case 5,
-            % { log concave, log affine, log convex } ^ zero
-            cvx_optval = ones( sz );
-        case 6,
-            % { log concave, log affine, log convex } ^ real
-            cvx_optval = exp( log( xt ) .* cvx_constant( yt ) );
         otherwise,
             error( 'Shouldn''t be here.' );
     end
