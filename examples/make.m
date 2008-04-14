@@ -235,7 +235,7 @@ files = struct( 'name', {}, 'title', {}, 'type', {} );
 for k = 1 : length( dd ),
     name = dd(k).name;
     if dd(k).isdir,
-        if name(1) == '.' | strcmp( name, 'html' ), continue; end
+        if name(1) == '.' | strcmp( name, 'eqs' ) | strcmp( name, 'html' ), continue; end
         name(end+1) = '/';
         files( end + 1 ) = struct( 'name', name, 'title', '', 'type', 'dir' );
     elseif length( name ) > 2,
