@@ -281,7 +281,7 @@ if ~isempty( files ),
     t4    = strncmp( fnames, 'Figure',   6 ) & tscr;
     t5    = ~( t1 | t2 | t3 | t4 ) & tscr;
     tdir  = find(tdir(:));
-    tscr  = [ find(t3(:)); find(t4(:)); find(t5(:)); find(t1(:)); ];
+    tscr  = [ find(t3(:)); find(t4(:)); find(t2(:)); find(t5(:)); find(t1(:)); ];
     tfun  = find(tfun(:));
     tdoc  = find(tdoc(:));
     tdat  = find(tdat(:));

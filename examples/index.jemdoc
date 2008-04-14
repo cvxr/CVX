@@ -91,6 +91,7 @@ icons will expand/collapse directories to reveal/hide their contents.<br />
 --- [cvxbook/Ch05_duality/html/qcqp.html Section 5.2.4: Solves a simple QCQP] ([cvxbook/Ch05_duality/qcqp.m qcqp.m])
 --- [cvxbook/Ch05_duality/html/matrix_games.html Section 5.2.5: Mixed strategies for matrix games] ([cvxbook/Ch05_duality/matrix_games.m matrix_games.m])
 --- [cvxbook/Ch05_duality/html/matrix_games_LP.html Section 5.2.5: Mixed strategies for matrix games (LP formulation)] ([cvxbook/Ch05_duality/matrix_games_LP.m matrix_games_LP.m])
+--- [cvxbook/Ch05_duality/html/norm_approx.html Examples 5.6,5.8: An l_p norm approximation problem] ([cvxbook/Ch05_duality/norm_approx.m norm_approx.m])
 --- [cvxbook/Ch05_duality/html/ex_5_19.html Exercise 5.19c: Markovitz portfolio optimization w/ diversification constraint] ([cvxbook/Ch05_duality/ex_5_19.m ex_5_19.m])
 --- [cvxbook/Ch05_duality/html/ex_5_1.html Exercise 5.1d: Sensitivity analysis for a simple QCQP] ([cvxbook/Ch05_duality/ex_5_1.m ex_5_1.m])
 --- [cvxbook/Ch05_duality/html/ex_5_33.html Exercise 5.33: Parametrized l1-norm approximation] ([cvxbook/Ch05_duality/ex_5_33.m ex_5_33.m])
@@ -105,11 +106,19 @@ icons will expand/collapse directories to reveal/hide their contents.<br />
 --- [cvxbook/Ch06_approx_fitting/html/tv_cvx.html Figures 6.11-6.14: Total variation reconstruction] ([cvxbook/Ch06_approx_fitting/tv_cvx.m tv_cvx.m])
 --- [cvxbook/Ch06_approx_fitting/html/basispursuit.html Figures 6.21-6.23: Basis pursuit using Gabor functions] ([cvxbook/Ch06_approx_fitting/basispursuit.m basispursuit.m])
 --- [cvxbook/Ch06_approx_fitting/html/smoothrec_cvx.html Figures 6.8-6.10: Quadratic smoothing] ([cvxbook/Ch06_approx_fitting/smoothrec_cvx.m smoothrec_cvx.m])
+--- [cvxbook/Ch06_approx_fitting/html/fig6_5.html Example 6.2: Robust regression using the Huber penalty] ([cvxbook/Ch06_approx_fitting/fig6_5.m fig6_5.m])
+--- [cvxbook/Ch06_approx_fitting/html/fig6_6.html Example 6.3: Optimal input design] ([cvxbook/Ch06_approx_fitting/fig6_6.m fig6_6.m])
+--- [cvxbook/Ch06_approx_fitting/html/regressor_cvx.html Example 6.4: Regressor selection problem] ([cvxbook/Ch06_approx_fitting/regressor_cvx.m regressor_cvx.m])
+--- [cvxbook/Ch06_approx_fitting/html/wcrobls.html Example 6.6: Comparison of worst-case robust, Tikhonov, and nominal least squares] ([cvxbook/Ch06_approx_fitting/wcrobls.m wcrobls.m])
+--- [cvxbook/Ch06_approx_fitting/html/fig6_20.html Example 6.8: Spline fitting] ([cvxbook/Ch06_approx_fitting/fig6_20.m fig6_20.m])
+--- [cvxbook/Ch06_approx_fitting/html/preference_regions.html Example 6.9: Bounding consumer preference] ([cvxbook/Ch06_approx_fitting/preference_regions.m preference_regions.m])
 -- *Chapter 7: Statistical estimation*
 --- [cvxbook/Ch07_statistical_estim/html/probbounds.html Section 7.4.3: Probability bounds example with Voronoi diagram] ([cvxbook/Ch07_statistical_estim/probbounds.m probbounds.m])
 --- [cvxbook/Ch07_statistical_estim/html/expdesign.html Section 7.5.2: Experiment design] ([cvxbook/Ch07_statistical_estim/expdesign.m expdesign.m])
 --- [cvxbook/Ch07_statistical_estim/html/logistics.html Figure 7.1: Logistic regression] ([cvxbook/Ch07_statistical_estim/logistics.m logistics.m])
 --- [cvxbook/Ch07_statistical_estim/html/logistics_gp.html Figure 7.1: Logistic regression (GP version)] ([cvxbook/Ch07_statistical_estim/logistics_gp.m logistics_gp.m])
+--- [cvxbook/Ch07_statistical_estim/html/maxent.html Example 7.2: Maximum entropy distribution] ([cvxbook/Ch07_statistical_estim/maxent.m maxent.m])
+--- [cvxbook/Ch07_statistical_estim/html/detector2.html Example 7.4: Binary hypothesis testing] ([cvxbook/Ch07_statistical_estim/detector2.m detector2.m])
 --- Utility: [cvxbook/Ch07_statistical_estim/cheb.m Computes Chebyshev lower bounds on probability vectors (cheb.m)]
 --- Utility: [cvxbook/Ch07_statistical_estim/cher.m Computes Chernoff upper bounds on probability (cher.m)]
 --- Utility: [cvxbook/Ch07_statistical_estim/montecarlo.m estimates probability than random vector x in R2 (montecarlo.m)]
@@ -123,6 +132,9 @@ icons will expand/collapse directories to reveal/hide their contents.<br />
 --- [cvxbook/Ch08_geometric_probs/html/placement_quar.html Figure 8.17: Fourth-order placement problem] ([cvxbook/Ch08_geometric_probs/placement_quar.m placement_quar.m])
 --- [cvxbook/Ch08_geometric_probs/html/linear_discr.html Figure 8.8: Simplest linear discrimination] ([cvxbook/Ch08_geometric_probs/linear_discr.m linear_discr.m])
 --- [cvxbook/Ch08_geometric_probs/html/robust_lin_discr.html Figure 8.9: Robust linear discrimination problem] ([cvxbook/Ch08_geometric_probs/robust_lin_discr.m robust_lin_discr.m])
+--- [cvxbook/Ch08_geometric_probs/html/ex_8_3.html Example 8.3: Bounding correlation coefficients] ([cvxbook/Ch08_geometric_probs/ex_8_3.m ex_8_3.m])
+--- [cvxbook/Ch08_geometric_probs/html/ex_8_4.html Example 8.4: One free point localization] ([cvxbook/Ch08_geometric_probs/ex_8_4.m ex_8_4.m])
+--- [cvxbook/Ch08_geometric_probs/html/test_floorplan.html Example 8.7: Floorplan generation test script] ([cvxbook/Ch08_geometric_probs/test_floorplan.m test_floorplan.m])
 --- [cvxbook/Ch08_geometric_probs/html/eucl_dist_poly.html Euclidean distance between polyhedra] ([cvxbook/Ch08_geometric_probs/eucl_dist_poly.m eucl_dist_poly.m])
 --- [cvxbook/Ch08_geometric_probs/html/eucl_dist_poly_2D.html Euclidean distance between polyhedra in 2D] ([cvxbook/Ch08_geometric_probs/eucl_dist_poly_2D.m eucl_dist_poly_2D.m])
 --- [cvxbook/Ch08_geometric_probs/html/eucl_proj_hlf.html Euclidean projection on a halfspace] ([cvxbook/Ch08_geometric_probs/eucl_proj_hlf.m eucl_proj_hlf.m])
@@ -187,6 +199,7 @@ icons will expand/collapse directories to reveal/hide their contents.<br />
 -- [time_series_analysis/html/l1_trend_filter_snp500.html l1 trend filtering] ([time_series_analysis/l1_trend_filter_snp500.m l1_trend_filter_snp500.m])
 -- Data: [time_series_analysis/snp500.txt snp500.txt]
 - *Miscellaneous examples*
+-- [html/quickstart.html Examples from the CVX User's guide] ([quickstart.m quickstart.m])
 -- [html/regularized_norm_tradeoff.html Builds a norm minimization tradeoff curve] ([regularized_norm_tradeoff.m regularized_norm_tradeoff.m])
 -- [html/simple_LP2.html Builds and solves a simple inequality-constrained linear program] ([simple_LP2.m simple_LP2.m])
 -- [html/simple_LS.html Builds and solves a simple least-squares problem using cvx] ([simple_LS.m simple_LS.m])

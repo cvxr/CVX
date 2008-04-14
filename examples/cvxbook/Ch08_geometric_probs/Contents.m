@@ -9,6 +9,9 @@
 %  placement_quar.m             - Figure 8.17: Fourth-order placement problem
 %  linear_discr.m               - Figure 8.8: Simplest linear discrimination
 %  robust_lin_discr.m           - Figure 8.9: Robust linear discrimination problem
+%  ex_8_3.m                     - Example 8.3: Bounding correlation coefficients
+%  ex_8_4.m                     - Example 8.4: One free point localization
+%  test_floorplan.m             - Example 8.7: Floorplan generation test script
 %  eucl_dist_poly.m             - Euclidean distance between polyhedra
 %  eucl_dist_poly_2D.m          - Euclidean distance between polyhedra in 2D
 %  eucl_proj_hlf.m              - Euclidean projection on a halfspace
