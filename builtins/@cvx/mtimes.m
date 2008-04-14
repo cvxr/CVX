@@ -50,7 +50,7 @@ nz = prod( sz );
 if cvx_isconstant( x ),
     
     if cvx_isconstant( y ),
-        z = feval( [ 'm', oper ], cvx_constant( x ), cvx_constant( y ) );
+        z = cvx( feval( [ 'm', oper ], cvx_constant( x ), cvx_constant( y ) ) );
         return
     elseif isequal( oper, 'rdivide' ),
         error( 'Disciplined convex programming error:\n    Matrix divisor must be constant.' );

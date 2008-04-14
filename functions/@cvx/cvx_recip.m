@@ -47,7 +47,7 @@ for k = 1 : nv,
             error( sprintf( 'Disciplined convex programming error:\n    Cannot perform the operation recip( {%s} )', cvx_class( x, false, false, true ) ) );
         case 1,
             % Non-zero constant
-            yt = 1.0 ./ xt;
+            yt = cvx( 1.0 ./ cvx_constant( xt ) );
         case 2,
             % Monomial, posynomial
             yt = exp( -log( xt ) );

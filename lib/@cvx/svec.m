@@ -12,7 +12,7 @@ if ~isreal( x ) & nrm ~= 2,
 else
     [ xR, y ] = bcompress( x );
     if isempty( y ),
-        z = 0;
+        z = cvx( 0 );
     else
         z = y .* norms( xR, nrm, 2 );
     end

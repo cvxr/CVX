@@ -114,7 +114,7 @@ for k = 1 : nv,
             cvx_end
         case 2,
             % Constant
-            cvx_optval = logsumexp( cvx_constant( xt ) );
+            cvx_optval = cvx( logsumexp( cvx_constant( xt ) ) );
         otherwise,
             error( 'Shouldn''t be here.' );
     end

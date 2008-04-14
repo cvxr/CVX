@@ -86,7 +86,7 @@ if nargin == 2,
             error( sprintf( 'Disciplined convex programming error:\n    Cannot perform the operation min( {%s}, {%s} )', cvx_class( xt, false, true ), cvx_class( yt, false, true ) ) );
         case 1,
             % constant
-            cvx_optval = min( cvx_constant( xt ), cvx_constant( yt ) );
+            cvx_optval = cvx( min( cvx_constant( xt ), cvx_constant( yt ) ) );
         case 2,
             % min( log-concave, nonpositive ) (no-op)
             cvx_optval = yt;

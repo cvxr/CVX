@@ -28,43 +28,24 @@
    end
    numblk = size(blk,1);
    ublkinfo = cell(size(blk,1),3);  
-   tol = 1e-16;
+   tol = 1e-17;
 %%
    numblknew = numblk; 
 %%
    for p = 1:numblk
       pblk = blk(p,:);
-      m = size(At{p},2);
-      n = pblk{2};        
+      m = size(At{p},2);        
       if strcmp(pblk{1},'l')
-         r = randn(m+1,1);
+         r = randn(1,m);
          stime = cputime;
-         Ap = At{p}'; Cp = C{p}; 
-	 ApTr = [At{p}, Cp]*r;
-         ApTr = ApTr/norm(ApTr); 
-         [tmp,tmperm] = sort(ApTr); %% detect repeated columns          
-         idxtmp  = find(abs(diff(tmp)) < tol);
-         if ~isempty(idxtmp)
-            idxsame = [tmperm(idxtmp); tmperm(idxtmp+1)];
-            ApTrsame = ApTr(idxsame); 
-            ApTr(idxsame) = 1e2 + [1:length(idxsame)]; 
-	 else
-            idxsame = [];
-         end
-	 [sortabsApTr,perm] = sort(abs(ApTr));
-         sortApTr = ApTr(perm); 
-         idx0 = find(abs(diff(sortabsApTr)) < tol);
+         Ap = At{p}'; Cp = C{p};
+	 ApTr = (r*Ap)';
+	 [sApTr,perm] = sort(abs(ApTr));
+	 idx0 = find(abs(diff(sApTr)) < tol);
          i1 = []; i2 = [];
-         if ~isempty(idx0) | ~isempty(idxsame)
+	 if ~isempty(idx0)
             n = pblk{2}; 
             i1 = perm(idx0); i2 = perm(idx0+1);
-            if ~isempty(idxsame)
-               [tmp,tmperm] = sort(ApTrsame);
-               len = length(idxsame); 
-               idxstart = n-len; 
-               i1 = [i1; perm(idxstart+tmperm([1:len/2]))];
-               i2 = [i2; perm(idxstart+tmperm([len:-1:len/2+1]))]; 
-            end
 	    Api1 = Ap(:,i1);
 	    Api2 = Ap(:,i2);
 	    Cpi1 = Cp(i1)';
@@ -77,9 +58,9 @@
                blk2{p,2} = length(i1); 
                At2{p} = Ap(:,i1)'; 
                C2{p}  = Cp(i1); 
-               if (printlevel)                 
-                  fprintf('\n %1.0d linear variables from unrestricted variable.\n',...
-                  2*length(i1)); 
+               if (printlevel)
+                   fprintf('\n %1.0d linear variables from unrestricted variable.\n',...
+                            2*length(i1)); 
                end
                if (nargin >= 6)
                   parbarrier2{p} = parbarrier{p}(i1); 

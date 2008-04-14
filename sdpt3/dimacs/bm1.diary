@@ -1,0 +1,52 @@
+
+matvers =
+
+    7.3000
+
+
+ans =
+
+25-May-2007
+
+
+hostname =
+
+bambi.math.nus.edu.sg
+
+
+** Problem not found, please specify the correct path or problem. 
+
+readtime =
+
+     0
+
+
+fname0 =
+
+bm1
+
+
+m =
+
+     0
+
+
+n =
+
+     0
+
+
+C =
+
+     []
+
+??? Output argument "y0" (and maybe others) not assigned during call to "/users/mattohkc/tohkc/SDPT3-4.0-beta/Solver/infeaspt.m (infeaspt)".
+
+Error in ==> <a href="error:/users/mattohkc/tohkc/SDPT3-4.0-beta/Solver/infeaspt.m,17,1">infeaspt at 17</a>
+   if (nargin < 5); options = 1; end;
+
+Error in ==> <a href="error:/users/mattohkc/tohkc/SDPT3-4.0-beta/testdir/sdpt3di6.m,29,1">sdpt3di6 at 29</a>
+      [X,y,Z] = infeaspt(blk,A,C,b);
+
+
+sdpt3di6('bm1');

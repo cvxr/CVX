@@ -48,8 +48,13 @@ if m > n & n > 0,
     x      = NaN * ones( n, 1 );
     y      = NaN * ones( m, 1 );
     oval   = NaN;
-    status = 'Overdetermined';
-    estr = sprintf( 'Overdetermined equality constraints detected.\n   CVX cannot solve this problem; but it is likely infeasible.' );
+    if dualized,
+        status = 'Underdetermined';
+        estr = sprintf( 'Underdetermined inequality constraints detected.\n   CVX cannot solve this problem; but it is likely unbounded.' );
+    else
+        status = 'Overdetermined';
+        estr = sprintf( 'Redundant equality constraints detected.\n   CVX cannot solve this problem; but it is likely infeasible.' );
+    end
     if ~quiet,
         disp( estr );
     else

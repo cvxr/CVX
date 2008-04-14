@@ -87,7 +87,7 @@ if nargin == 2,
             error( sprintf( 'Disciplined convex programming error:\n    Cannot perform the operation max( {%s}, {%s} )', cvx_class( xt, false, true ), cvx_class( yt, false, true ) ) );
         case 1,
             % constant
-            cvx_optval = max( cvx_constant( xt ), cvx_constant( yt ) );
+            cvx_optval = cvx( max( cvx_constant( xt ), cvx_constant( yt ) ) );
         case 2,
             % max( log-valid, nonpositive ) (no-op)
             cvx_optval = xt;

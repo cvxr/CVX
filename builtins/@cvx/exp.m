@@ -57,7 +57,7 @@ for k = 1 : nv,
             error( sprintf( 'Disciplined convex programming error:\n    Illegal operation: exp( {%s} ).', cvx_class( xt ) ) );
         case 1,
             % Constant
-            xt = exp( cvx_constant( xt ) );
+            xt = cvx( exp( cvx_constant( xt ) ) );
         case 2,
             % Affine, convex, concave
             xt = sparsify( xt, 'exponential' );

@@ -33,7 +33,7 @@ end
 if cvx_isconstant( p ),
     p = cvx_constant( p );
 	if cvx_isconstant( x ),
-		y = polyval( p, cvx_constant( x ) );
+		y = cvx( polyval( p, cvx_constant( x ) ) );
 		return
 	end
 	if any( isinf( p ) | isnan( p ) ),
@@ -58,7 +58,7 @@ if cvx_isconstant( p ),
     		y = zeros(sx);
   		case 1,
   			% Constant
-  			y = p(1) * ones(sx);
+  			y = cvx( p(1) * ones(sx) );
 		case 2,
 			% Affine
 			y = p(1) * x + p(2);

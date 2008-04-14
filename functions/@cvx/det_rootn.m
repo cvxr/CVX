@@ -18,7 +18,7 @@ elseif nnz( X ) <= n & nnz( diag( X ) ) == nnz( X ),
 
 elseif cvx_isconstant( X ),
 
-    cvx_optval = det_rootn( cvx_constant( X ) );
+    cvx_optval = cvx( det_rootn( cvx_constant( X ) ) );
 
 elseif isreal( X ),
 

@@ -17,7 +17,7 @@ elseif size( x, 1 ) ~= size( Y, 1 ),
 
 elseif cvx_isconstant( x ) & cvx_isconstant( Y ),
 
-    cvx_optval = matrix_frac( cvx_constant( x ), cvx_constant(Y) );
+    cvx_optval = cvx( matrix_frac( cvx_constant( x ), cvx_constant(Y) ) );
 
 elseif cvx_isaffine( x ) & cvx_isaffine( Y ),
 

@@ -57,7 +57,7 @@ for k = 1 : nv,
             error( sprintf( 'Disciplined convex programming error:\n    Illegal operation: abs( {%s} ).', cvx_class( xt ) ) );
         case 1,
             % Constant
-            cvx_optval = builtin( 'abs', cvx_constant( xt ) );
+            cvx_optval = cvx( builtin( 'abs', cvx_constant( xt ) ) );
         case 2,
             % Real affine
             st = size( xt );

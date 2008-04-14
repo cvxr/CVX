@@ -1,4 +1,4 @@
-function cvx_optval = quad_pos_over_lin( x, y, dim )
+function cvx_optval = quad_pos_over_lin( x, y, varargin )
 
 %QUAD_POS_OVER_LIN   Internal cvx version.
 
@@ -6,15 +6,9 @@ error( nargchk( 2, 3, nargin ) );
 if ~isreal( x ), 
     error( 'First input must be real.' ); 
 end
-
-sx = size( x );
-if nargin < 3,
-    dim = cvx_default_dimension( sx );
-end
-
 cvx_begin
-    variable x2( sx )
-    minimize quad_over_lin( x2, y, dim );
+    variable x2( size(x) )
+    minimize quad_over_lin( x2, y, varargin{:} );
     x2 >= x;
 cvx_end
 

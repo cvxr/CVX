@@ -50,7 +50,7 @@ for k = 1 : nv,
         case 1,
             % Constant
             yt = cvx_constant( xt );
-            yt = yt .* yt;
+            yt = cvx( yt .* yt );
         case 2,
             % Real affine
             yt = quad_over_lin( xt, 1, 0 );

@@ -186,6 +186,7 @@ for k = 1 : nv,
         else
             cvx_optval = xb .* yb;
         end
+        cvx_optval = cvx( cvx_optval );
 
     case 2,
 

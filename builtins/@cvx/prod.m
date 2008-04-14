@@ -113,7 +113,7 @@ for k = 1 : nk,
         case 0,
             error( sprintf( 'Disciplined convex programming error:\n   Invalid computation: prod( {%s} )', cvx_class( xt, true, true ) ) );
         case 1,
-            yt = prod( cvx_constant( xt ), dim );
+            yt = cvx( prod( cvx_constant( xt ), dim ) );
         case 2,
             yt = exp( sum( log( xt ), dim ) );
         otherwise,

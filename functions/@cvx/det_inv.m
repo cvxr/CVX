@@ -17,7 +17,7 @@ end
 w = [ ones(n,1) ; p ];
 if cvx_isconstant( X ),
     
-    cvx_optval = det_inv( cvx_constant( X ), p );
+    cvx_optval = cvx( det_inv( cvx_constant( X ), p ) );
 
 elseif nnz( X ) <= n & nnz( diag( X ) ) == nnz( X ),
     

@@ -9,7 +9,7 @@ if ndims( x ) > 2 | size( x, 1 ) ~= size( x, 2 ),
 
 elseif cvx_isconstant( x ),
 
-    cvx_optval = lambda_max( cvx_constant( x ) );
+    cvx_optval = cvx( lambda_max( cvx_constant( x ) ) );
 
 elseif cvx_isaffine( x ),
 

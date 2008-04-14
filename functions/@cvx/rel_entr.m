@@ -77,7 +77,7 @@ for k = 1 : nv,
             error( sprintf( 'Disciplined convex programming error:\n    Illegal operation: rel_entr( {%s}, {%s} ).', cvx_class( xt, true, true ), cvx_class( yt, true, true ) ) );
         case 1,
             % Constant
-            cvx_optval = rel_entr( cvx_constant( xt ), cvx_constant( yt ) );
+            cvx_optval = cvx( rel_entr( cvx_constant( xt ), cvx_constant( yt ) ) );
         case 2,
             % Real affine
             cvx_begin

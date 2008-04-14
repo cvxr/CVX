@@ -20,7 +20,7 @@ end
 
 persistent remap
 if isempty( remap ),
-    remap_1 = cvx_remap( 'constant' );
+    remap_1 = cvx_remap( 'positive' );
     remap_2 = cvx_remap( 'real-affine', 'concave' ) & ~remap_1;
     remap_3 = cvx_remap( 'monomial' );
     remap_4 = cvx_remap( 'posynomial' );
@@ -61,7 +61,7 @@ for k = 1 : nv,
             error( sprintf( 'Disciplined convex programming error:\n    Illegal operation: log( {%s} ).', cvx_class( xt, true, true, true ) ) );
         case 1,
             % Constant
-            yt = log( cvx_constant( xt ) );
+            yt = cvx( log( cvx_constant( xt ) ) );
         case 2,
             % Affine, convex (invalid)
             sx = xt.size_;

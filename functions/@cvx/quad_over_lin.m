@@ -61,7 +61,7 @@ end
 %
 
 if any( sz == 0 ),
-    cvx_optval = zeros( sz );
+    cvx_optval = cvx( zeros( sz ) );
 elseif any( sx == 0 ),
     cvx_begin
         y == nonnegative( sz );

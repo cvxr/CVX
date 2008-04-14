@@ -60,7 +60,7 @@ for k = 1 : nv,
             error( sprintf( 'Disciplined convex programming error:\n    Illegal operation: sqrt( {%s} ).', cvx_class( xt, true, true ) ) );
         case 1,
             % Constant
-            cvx_optval = builtin( 'sqrt', cvx_constant( xt ) );
+            cvx_optval = cvx( builtin( 'sqrt', cvx_constant( xt ) ) );
         case 2,
             % Real affine, concave
             st = size( xt );

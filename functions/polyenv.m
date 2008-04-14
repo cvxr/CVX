@@ -85,7 +85,7 @@ switch n,
     case 3,
         % Quadratic
         b2a = p(2) ./ ( 2 * p(1) );
-        y = p(1) * square( x + b2a ) + ( p(3) - b2a );
+        y = p(1) * ( square( x + b2a ) - b2a * b2a ) + p(3);
         return
     otherwise,
         if all( p(2:end) == 0 ),
