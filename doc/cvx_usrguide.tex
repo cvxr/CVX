@@ -1201,6 +1201,77 @@ a model (and, therefore, the number of dual variables) depends upon the
 parameters themselves. For more information on indexed dual variables,
 see \S\ref{sec:indexeddual}.
 
+\subsection{Expression holders}
+\label{sec:holders}
+\index{expression holder}
+\index{expression@\texttt{expression}}
+\index{expressions@\texttt{expressions}}
+
+Sometimes it is useful to store a \cvx expression into a Matlab variable for
+future use. For instance, consider the following \cvx script:
+\begin{code}
+	variables x y
+	z = 2 * x - y;
+	square( z ) <= 3;
+	quad_over_lin( x, z ) <= 1;
+\end{code}
+The construction \verb@z = 2 * x - y@ is \emph{not} an equality constraint; it
+is an assignment. It is storing an intermediate calculation \verb@2 * x - y@,
+so it can be used later in two different constraints. We call \verb@z@ an
+\emph{expression holder} to differentiate it from a formally declared \verb@cvx@
+variable. For more on the critical
+differences between assignment and equality, see Section \S\ref{sec:eqass}.
+
+Often it will be useful to accumulate an array of expressions into a single
+Matlab variable. Unfortunately, a somewhat technical detail of the Matlab object
+model can cause problems in such cases. Consider this construction:
+\begin{code}
+variable u(9);
+x(1) = 1;
+for k = 1 : 9,
+    x(k+1) = sqrt( x(k) + u(k) );
+end
+\end{code}
+This seems reasonable enough: \verb@x@ should be a vector whose first value is
+\verb@1@, and whose subsequent values are convex \cvx expressions. But if you
+try this in a \cvx model, Matlab will give you a rather cryptic error:
+\begin{code}
+??? The following error occurred converting from cvx to double:
+Error using ==> double
+Conversion to double from cvx is not possible.
+\end{code}
+The reason this occurs is that the Matlab variable \verb@x@ is initialized as
+a numeric array; and Matlab will not permit \cvx objects to be inserted into numeric
+arrays. 
+
+The solution is to explicitly \emph{declare} \verb@x@ to be an 
+expression holder assigning values to it. We have provided keywords \verb@expression@
+and \verb@expressions@ for just this purpose, for declaring a single or 
+multiple expression holders for future assignment. Once an expression holder
+has been declared, you may freely insert both numeric and \cvx expressions
+into it. For example, the previous
+example can be corrected as follows:
+\begin{code}
+variable u(9);
+expression x(10);
+x(1) = 1;
+for k = 1 : 9,
+    x(k+1) = sqrt( x(k) + u(k) );
+end
+\end{code}
+\cvx will accept this construction without error.
+
+The differences between a \verb@variable@ object and an \verb@expression@ object
+are quite significant. A \verb@variable@ object holds a unique set of optimization
+variables that were created for the problem when the object was created. An
+\verb@expression@ object, on the other hand, is initialized to zero, and has
+little use until values are assigned to it.
+
+Of course, as our first example
+shows, it is not always \emph{necessary} to declare an expression holder before
+it is created or used. But doing so provides an extra measure
+of clarity to models, so we strongly recommend it.
+
 \section{The DCP ruleset}
 \label{sec:rules}
 \index{DCP!ruleset}
@@ -1408,7 +1479,7 @@ evaluates to a finite value.
 \item a valid constant, affine, or log-convex expression 
 (\S\ref{sec:gpmode});
 \item a valid call to a function in the atom library with a convex result;
-\item an affine scalar raised to a power $p=2,4,6,8,...$;
+\item an affine scalar raised to a constant power $p\geq 1$, $p\neq 3,5,7,9,...$;
 \item a convex scalar quadratic form (\S\ref{sec:quadforms});
 \item the sum of two or more convex expressions;
 \item the difference between a convex expression and a concave expression;
@@ -2097,21 +2168,1149 @@ In this section we describe a number of the more advanced capabilities of \cvx.
 We recommend that you \emph{skip} this section at first, until you are comfortable
 with the basic capabilities described above.
 
-\subsection{Adding new functions to the \cvx atom library}
+
+\subsection{Solver selection}
+\label{sec:solver}
+\index{solver!changing}
+\index{SDPT3}
+\index{SeDuMi}
+\index{cvx_solver@\texttt{cvx\_solver}}
+
+As mentioned in \S\ref{sec:version}, \cvx currently supports two solvers: SeDuMi
+and SDPT3. SDTP3 is the newest addition to \cvx, and has been selected as the
+default solver. However, to select SeDuMi as your default solver, simply type
+\begin{code2}
+	cvx_solver sedumi
+\end{code2}
+at the command line, \emph{outside} of a \cvx model. To revert to SDPT3, type
+\begin{code2}
+	cvx_solver sdpt3
+\end{code2}
+To see which solver is currently selected, simply type
+\begin{code2}
+	cvx_solver
+\end{code2}
+We have found that SDPT3 is much more reliable for problems that 
+use second-order cones, which include problems involving
+absolute values, quadratics, power functions, and norms.  SDPT3 is
+currently in very active development; so if you
+encounter a problem that SDPT3 cannot solve but SeDuMi can, 
+please send us a bug report and we will forward the results to
+the authors of SDPT3.
+
+\subsection{Controlling solver precision}
+\label{sec:precision}
+\index{precision!changing}
+\index{cvx_precision@\texttt{cvx\_precision}}
+
+Numerical methods for convex optimization are not exact; they compute their results
+to within a predefined numerical precision or tolerance. The precision chosen by default in \cvx,
+which in turn is inherited from the defaults chosen by its solver SeDuMi, should
+be entirely acceptable for most applications. Nevertheless, you may wish to tighten
+or relax that precision in some applications.
+
+There are several ways to call the \verb@cvx_precision@ command. If you call it with no arguments,
+it simply returns a two-element vector of the current precision settings. The first element
+in that vector is the standard precision; the precision the solver must obtain to return
+\verb@Solved@, \verb@Unbounded@, or \verb@Infeasible@. The second element in the vector is
+the ``reduced'' precision, the precision that the solver must achieve in order to
+return \verb@Solved/Inaccurate@, \verb@Unbounded/Inaccurate@, \verb@Infeasible/Inaccurate@.
+
+Calling \verb@cvx_precision@ with an argument allows you to actually \emph{change} the
+precision level. One way is to supply a string as an argument, either in command mode
+or function mode, chosen from one of five values:
+\begin{itemize}
+	\item \verb@cvx_precision low@:      $\text{standard} = \text{reduced} = \epsilon^{1/4} \approx 1.2\times10^{-4}$.
+	\item \verb@cvx_precision medium@:   $\text{standard} = \epsilon^{3/8} \approx 1.3\times10^{-6}$, $\text{reduced} = \epsilon^{1/4}$.
+	\item \verb@cvx_precision default@:  $\text{standard} = \epsilon^{1/2} \approx 1.5\times10^{-8}$, $\text{reduced} = \epsilon^{1/4}$.
+	\item \verb@cvx_precision high@:     $\text{standard} = \epsilon^{3/4} \approx 1.1\times10^{-11}$, $\text{reduced} = \epsilon^{3/8}$.
+	\item \verb@cvx_precision best@:     $\text{standard} = 0$, $\text{``reduced''} = \epsilon^{1/2}$  (see below).
+\end{itemize}
+In function mode, these calls look like \verb@cvx_precision('low')@, etc.
+The \verb@best@ precision setting is special: it instructs the solver to continue until it is
+completely unable to make progress. Then, as long as it reaches at least the ``reduced'' precision
+of $\epsilon^{1/2}$, it may claim a successful solution; otherwise,
+it returns a \verb@cvx_status@ value of \verb@Failed@. An \verb@Inaccurate@ status value is 
+not possible in \verb@best@ mode (nor, for that matter, in \verb@low@ mode, which
+sets the standard and reduced precisions to be identical).
+
+The \verb@cvx_precision@ command can also be called with either a scalar or a
+length-two vector. If you pass it a scalar, it will assume that as the standard
+precision, and it will compute a default reduced precision value for you.
+Roughly speaking, that reduced precision will be the square root of the standard
+precision, with some bounds imposed to make sure that it stays reasonable. If
+you supply a vector of values, then the smallest value will be chosen as
+the standard precision, and the larger value as the reduced precision.
+
+The \verb@cvx_precision@ command can be used either \emph{within} a \cvx model or
+\emph{outside} of it; and its behavior differs in each case. If you call it from
+within a model, \eg,
+\begin{code}
+	cvx_begin
+	    cvx_precision high
+	    ...
+	cvx_end
+\end{code}
+then the setting you choose will apply only until \verb@cvx_end@ is reached. If you call it outside
+a model, \eg,
+\begin{code}
+	cvx_precision high
+	cvx_begin
+	    ...
+	cvx_end
+\end{code}
+then the setting you choose will apply \emph{globally}; that is, to any
+subsequent models that are created and solved. The local approach should be
+preferred in an application where multiple models are constructed and solved
+at different levels of precision.
+with multiple precision
+
+If you call \verb@cvx_precision@ in function mode, either with a string or a numeric
+value, it will return as its output the \emph{previous} precision vector---the same
+result you would obtain if you called it with no arguments. This may
+seem confusing at first, but this is done so that you can save the previous value
+in a variable, and restore it at the end of your calcuations; e.g.,
+\begin{code}
+	cvxp = cvx_precision( 'high' );
+	cvx_begin
+		...
+	cvx_end
+	cvx_precision( cvxp );
+\end{code}
+This is considered good coding etiquette in a larger application where multiple 
+\cvx models at multiple precision levels may be employed. Of course, a simpler but
+equally courteous approach is to call \verb@cvx_precision@ within the \cvx
+model, as described above, so that its effect lasts only for that model.
+
+\subsection{Miscellaneous \cvx commands}
+\index{cvx_problem@\texttt{cvx\_problem}}
+\index{cvx_clear@\texttt{cvx\_clear}}
+\index{cvx_quiet@\texttt{cvx\_quiet}}
+\index{cvx_pause@\texttt{cvx\_pause}}
+\index{cvx_where@\texttt{cvx\_where}}
+\index{cvx_version@\texttt{cvx\_version}}
+\index{output!suppressing}
+
+\begin{itemize}
+\item \verb+cvx_problem+: typing this within a \cvx specification provides a summary
+of the current problem. Note that this will contain a \emph{lot} of information
+that you may not recognize---\cvx performs its conversion to canonical form
+\emph{as the problem is entered}, generating extra temporary variables and
+constraints in the process.
+\item \verb+cvx_clear+: typing this resets the \cvx system, clearing any and all problems
+from memory, but without erasing any of your numeric data.
+This is useful if you make a mistake and need to start over. But note that in current
+versions of \cvx, you can simply start another model with \verb@cvx_begin@, and
+the previous model will be erased (with a warning).
+\item \verb@cvx_quiet@: typing \verb@cvx_quiet(true)@ suppresses screen
+output from the solver. Typing \verb@cvx_quiet(false)@ restores the screen
+output. In each case, it returns a logical value representing the \emph{previous}
+state of the quiet flag, so you can restore that state later if you wish---which
+is good practice if you wish to share your code with others.
+\item \verb@cvx_pause@: typing \verb@cvx_pause(true)@ causes \cvx to pause and
+wait for keyboard input before \emph{and} after the solver is called. Useful
+primarily for demo purposes. Typing \verb@cvx_pause(false)@ resets the behavior.
+In each case, it returns a logical value representing the \emph{previous} state
+of the pause flag, so you can restore that state later if you wish.
+\item \verb@cvx_where@: returns the directory where the \cvx distribution
+has been installed---assuming that the Matlab path has been set to include
+that distribution. Useful if you want to find certain helpful subdirectories,
+such as \verb@doc@, \verb@examples@, \emph{etc.}
+\item \verb@cvx_version@: returns a description of the \cvx version number,
+build number, and hardware platform you are currently using. If you encounter
+a bug in \cvx, please run this function and copy its output into 
+your email message along with a description of your problem.
+
+\end{itemize}
+
+\subsection{Assignments versus equality constraints}
+\label{sec:eqass}
+\index{assignment}
+\index{equality constraint}
+\index{constraint!equality} 
+
+Anyone who has used the C or Matlab languages for a sufficiently long time
+understands the differences between \emph{assignments}, which employ a single
+equals sign \verb@=@ operator, and an \emph{equality}, which employs the
+double equal \verb@==@ operator. In \cvx, this distinction is particularly
+important; confusing the two operators can have serious numerical consequences.
+Even when the distinction is well understood, there are important caveats to
+using assignments in \cvx that we address here as well.
+
+The consequences of inadvertently using assignments within a \cvx specification
+can cause subtle but critical problems. For example, let $A,C\in\Rnn$ and 
+$b\in\R$ be given, and consider the simple SDP
+\begin{equation}
+	\begin{array}{ll}
+		\text{minimize} & \Tr{CX} \\
+		\text{subject to} & \Tr{AX} = b \\
+		& X \succeq 0
+	\end{array}
+\end{equation}	
+Suppose that we tried to express this problem in \cvx as follows:
+\begin{code2}[firstnumber=1]
+	n = 5;
+	A = randn(n,n); C = randn(n,n); b = randn;
+	cvx_begin
+	    variable X(n,n) symmetric;
+	    minimize( trace( C * X ) );
+	    subject to
+	        trace( A * X ) == b;
+	        X = semidefinite(n);		!label{code:badass}
+	cvx_end
+\end{code2}
+At first glance, line~\ref{code:badass} may look like it constrains \verb@X@ to be positive
+semidefinite; but it is an assignment, not an equality constraint. So \verb@X@
+is actually \emph{overwritten} with an anonymous, positive semidefinite variable,
+and the original \verb@X@ is not constrained all!
+
+Fortunately, this particular error is easily caught and prevented by \cvx. When
+\verb@cvx_end@ is reached, \cvx examines each declared variable to verify that
+it still points to the variable object it was originally assigned upon declaration. If it does not, 
+it will issue an error like this:
+\begin{code}
+	??? Error using ==> cvx_end
+	The following cvx variable(s) have been overwritten:
+	   X
+	This is often an indication that an equality constraint was
+	written with one equals '=' instead of two '=='. The model
+	must be rewritten before cvx can proceed.
+\end{code}	
+We hope that this check will prevent at least some typographical errors from 
+having frustrating consequences in your models.
+
+Of course, this single check does not prevent you from using \emph{all} assignments 
+inside your \cvx specifications, only those that overwrite formally declared variables.
+As discussed in \S\ref{sec:holders}, other kinds of assignments are permitted,
+and may be genuinely useful. But in our view they should be used sparingly. For
+instance, consider the first example from \S\ref{sec:holders}:
+\begin{code}
+	variables x y
+	z = 2 * x - y;
+	square( z ) <= 3;
+	quad_over_lin( x, z ) <= 1;
+\end{code}
+The following alternative formulation, which declares \verb@z@
+as a formal variable, is numerically equivalent:
+\begin{code}
+	variables x y z
+	z == 2 * x - y;
+	square( z ) <= 3;
+	quad_over_lin( x, z ) <= 1;
+\end{code}
+We recommend taking this approach whenever possible. Declaring intermediate
+calculations as variables provides an extra measure of clarity in your models,
+and it exposes more of the model's structure to the solver,
+possibly improving performance.
+
+\subsection{Indexed dual variables}
+\label{sec:indexeddual}
+
+In some models, the \emph{number} of constraints depends on the model
+parameters---not just their sizes. It is
+straightforward to build such models in \cvx using, say, a
+Matlab \verb@for@ loop. In order to assign each of these constraints
+a separate dual variable, we must find a way to adjust the number of
+dual variables as well. For this reason, \cvx supports
+\emph{indexed dual variables}. In reality, they are simply standard
+Matlab cell arrays whose entries are \cvx dual variable objects.
+
+Let us illustrate by example how to declare and use indexed dual
+variables. Consider the following semidefinite program:
+\begin{equation}
+	\begin{array}{ll}
+		\text{minimize}   & \sum_{i=1}^n (n-i) X_{ii} \\
+		\text{subject to} & \sum_{i=1}^n X_{i,i+k} = b_k, ~ k = 1,2,\dots,n \\
+				  & X \succeq 0
+	\end{array}
+\end{equation}
+(\cite{Stu:99}). This problem minimizes a weighted sum of the main diagonal
+of a positive semidefinite matrix, while holding the sums along each diagonal
+constant. The parameters of the problem are
+the elements of the vector $b\in\Rn$, and the optimization variable is a
+symmetric matrix $X\in\Rnn$. The \cvx version of this model is
+\begin{code}
+	cvx_begin
+	    variable X( n, n ) symmetric
+	    minimize( ( n - 1 : -1 : 0 ) * diag( X ) );
+	    for k = 0 : n-1,
+	        sum( diag( X, k ) ) == b( k+1 );
+	    end
+	    X == semidefinite(n);
+	cvx_end
+\end{code}
+If we wish to obtain dual information for the $n$ simple equality constraints,
+we need a way to assign each constraint in the \verb@for@ loop a separate dual variable.
+This is accomplished as follows:
+\begin{code}
+	cvx_begin
+	    variable X( n, n ) symmetric
+	    dual variables y{n}
+	    minimize( ( n - 1 : -1 : 0 ) * diag( X ) );
+	    for k = 0 : n-1,
+	        sum( diag( X, k ) ) == b( k+1 ) : y{k+1};
+	    end
+	    X == semidefinite(n);
+	cvx_end
+\end{code}
+The statement
+\begin{code}
+	dual variables y{n}
+\end{code}
+allocates a cell array $n$ dual variables, and stores the result in the Matlab
+variable \verb@Z@. The equality constraint in the \verb@for@ loop has been augmented
+with a reference to \verb@y{k+1}@, so that each constraint is assigned a separate
+dual variable.
+When the \verb@cvx_end@ command is issued, \cvx will compute the optimal values
+of these dual variables, and deposit them into an $n$-element cell array \verb@y@.
+
+This example admittedly is a bit simplistic. With a bit of careful arrangement,
+it is possible to rewrite this model so that the $n$ equality constraints can be
+combined into a single vector constraint, which in turn would require only a single
+vector dual variable.\footnote{Indeed, a future version of \cvx will support the
+use of the Matlab function \texttt{spdiags}, which will reduce the entire for loop
+to the single constraint \texttt{spdiags(X,0:n-1)==b.}} For a more complex example
+that is not amenable to such a simplification, see the file
+\begin{code}
+	examples/cvxbook/Ch07_statistical_estim/cheb.m
+\end{code}
+in the \cvx distribution.
+In that problem, each constraint in the \verb@for@ loop is a linear matrix
+inequality, not a scalar linear equation;
+so the indexed dual variables are symmetric matrices, not scalars.
+
+\newpage
+\appendix
+
+\section{Installation and compatability}
+\label{s-installing}
+
+\index{installing \cvx}
+\index{platforms}
+\index{cvx@{\cvx}!installing}
+\cvx requires Matlab 6.1 or later.\footnote{Previous
+versions of this manual stated that \cvx required Matlab
+6.0 or later; we have since discovered that version 6.0
+is not sufficient.} Primary \cvx development is performed using
+an Intel-based Mac running Matlab 7.4, with additional
+development performed on the following platforms and MATLAB versions:
+\begin{itemize}
+\item Windows (32-bit): Matlab 6.1, 7.4
+\item Linux (32-bit): Matlab 6.1, 7.4
+\item Linux (64-bit): Matlab 7.1, 7.4
+\end{itemize}
+For purposes of testing and support, we have access to most
+other versions of Matlab for Windows, Linux, and Mac (both
+Intel and PowerPC). The one significant exception is version 7.0.0,
+so we cannot provide support for it. 
+
+Version 7.0.0 has exhibited numerical problems for at least one user;
+the problems were eliminated by upgrading.
+We have also identified another issue using \cvx
+with Matlab 7.0.1 and 7.0.4; workarounds
+are provided in \S\ref{sec:sevenprob} below. 
+
+Precompiled MEX files are included for Windows (32-bit), Linux (32-bit),
+and Intel Mac OS X.
+For other platforms, the MEX files will be compiled during the setup
+process; see
+\S\ref{sec:othersys}. For platforms other than those
+listed above (\eg, Solaris, HPUX), \cvx is quite likely to work,
+but we are unable to provide support.
+
+\subsection{Basic instructions}
+\label{sec:winlin}
+
+\begin{enumerate}
+\item Retrieve the latest version of cvx from \url{http://www.stanford.edu/~boyd/cvx}.
+You can download the package as either a \verb@.zip@ file or a \verb@.tar.gz@ 
+file.
+\item If you have been running a previous version of \cvx, \emph{remove it} or
+move it out of the way---say, by renaming it \verb@cvx_old@---before proceeding.
+\emph{DO NOT} allow the new version of \cvx to be unpacked on top of the old.
+\item Unpack the file anywhere you like; a directory called \verb@cvx@ will be created.
+There is one important exception: do not place \cvx in MATLAB's own
+\verb@toolbox@ directory. (If your previous installation of \cvx was placed
+there, you'll need to move it out of there.)
+\item Start Matlab.
+\item Change the current directory to the location of \cvx.
+For example, if you unpacked \verb@cvx.zip@ on your Windows machine into the
+directory \verb@C:\Matlab\personal@, then you would type
+\begin{code}
+		cd C:\Matlab\personal\cvx
+\end{code}
+at the Matlab command prompt. Alternatively, if you unpacked \verb@cvx.tar.gz@
+into the directory \verb@~/matlab@ on a Linux machine, then you would type
+\begin{code}
+		cd ~/matlab/cvx
+\end{code}
+at the Matlab command prompt.
+\item Type the command
+\begin{code}
+		cvx_setup
+\end{code}
+at the Matlab prompt. This does two things: 
+it sets the Matlab search path so it can find all of the \cvx program files,
+and it runs a simple test problem to verify the installation. On some
+platforms, it compiles MEX files as well (see \S\ref{sec:othersys} below).
+If all goes well, the command will output the line
+\begin{code}
+	No errors! cvx has been successfully installed.
+\end{code}
+(among others). If this message is not displayed, or any warnings or errors are generated,
+then there is a problem with the \cvx installation. Try installing the package
+again; and if that fails, send us a bug report and tell us about it.
+\item If you plan to use \cvx regularly, you will need to save the current
+Matlab path for subsequent Matlab sessions. Follow the instructions provided
+by \verb@cvx_setup@ to accomplish that.
+\end{enumerate}
+
+\subsection{MEX file compilaton}
+\label{sec:othersys}
+
+Precompiled MEX files are provided only for a handful of platforms;
+for others, they must be compiled by the user. The \verb@cvx_setup@ script will
+automatically detect the absence of compiled MEX files and compile them
+for SeDuMi, SDPT3, and \cvx. However, \verb@cvx_setup@ will succeed only
+if the MEX system is configured properly on your machine. If you have
+compiled MEX files before, this is likely the case; otherwise, run the command
+\begin{code}
+	mex -setup
+\end{code}
+at the MATLAB prompt and answer the questions that follow. If necessary, consult documentation for
+Matlab for details on this process.
+
+\subsection{About SeDuMi and SDPT3}
+
+The \cvx distribution includes copies of the solvers SeDuMi and SDPT3 in
+the directories \verb@cvx/sedumi@ and \verb@cvx/sdpt3@, respectively. 
+We strongly recommend that you use our versions of these solvers,
+and remove any other versions that you have in your Matlab path.
+The version of SeDuMi provided with \cvx incorporates some bug fixes
+and a slight modification that is not currently found in versions
+available from the authors. This is not the case with SDPT3; however,
+the author of SDPT3 frequently posts bug fixes to the software without
+updating the version number (currently 4.0 beta). Therefore, it is
+important to be sure that any newer version of SDPT3 that you might
+wish to use was downloaded \emph{after} you obtained \cvx.
+
+\subsection{A Matlab 7.0 issue}
+\label{sec:sevenprob}
+
+The techniques that \cvx use to embed a new modeling language inside Matlab
+seem to cause some confusion for Matlab 7.0, specifically version 7.0.4 (R14SP2). 
+We are reasonably confident
+that the issue is due to a bug in Matlab itself. It does not occur in versions
+6.5.2 and earlier, or 7.1 and later. It may occur in earlier versions of
+Matlab 7.0 as well (R14,R14SP1).
+
+The bug is this: in  some circumstances, a \verb@.m@-file containing a \cvx model will cause
+an error that looks like this:
+\begin{code}
+	??? Error: File: thrusters.m Line: 43 Column: 5
+	"p" was previously used as a variable,
+	conflicting with its use here as the name of a function.
+\end{code}
+The file name, line/column numbers, and variable name may differ, 
+but the error message remains the same. The example that produced this particular 
+error is a simple inequality constraint
+\begin{code}
+	p >= -5;
+\end{code}
+where \verb@p@ is a \cvx variable previously declared with a \verb@variable@ statement.
+Interestingly, a different inequality constraint
+\begin{code}
+	u >= 0
+\end{code}
+in the same model causes no complaint. So we cannot offer you a precise set
+of circumstances that cause the error.
+
+Fortunately, the workaround is very simple: simply remove all of the extra space
+in the constraint. In this example, changing the constraint to
+\begin{code}
+	p>=-5;
+\end{code}
+eliminates the error. You may still indent the constraint as you wish---just
+remove the intermediate spaces.
+
+We have no idea why this workaround works, but it does---reliably.
+
+\section{Operators, functions, and sets}
+\label{s-functions}
+\index{operators}
+\index{cvx@{\cvx}!operators}
+\index{cvx@{\cvx}!functions}
+\index{function!\cvx libary}
+
+\subsection{Basic operators and linear functions}
+
+Matlab's standard arithmetic operations for
+addition \verb@+@, subtraction \verb@-@, multiplication
+\verb@*@ \verb@.*@, division \verb@/@ \verb@\@ \verb@./@
+\verb@./@ \verb@.\@, and exponentiation \verb@^@ \verb@.^@
+have been overloaded to work in \cvx whenever appropriate---that
+is, whenever their use is consistent with both standard mathematical
+and Matlab conventions \emph{and} the DCP ruleset.
+For example:
+\begin{itemize}
+\item Two \cvx expressions can be added together if they are of the same
+      dimension (or one is scalar) and have the same curvature (\ie, 
+      both are convex, concave, or affine).
+\item A \cvx expression can be multiplied or divided by a scalar constant. If the
+      constant is positive, the curvature is preserved; if it is negative,
+      curvature is reversed.      
+\item An affine, column vector \cvx expression can be multiplied by a constant matrix
+      of appropriate dimensions; or it can be left-divided by a non-singular 
+      constant matrix of appropriate dimension.
+\end{itemize}
+Numerious other combinations are possible, of course.
+For example, the use of the exponentiation operators \verb@^@
+\verb@.^@ are somewhat limited; see \S\ref{sec:nonl} below.
+
+Matlab's basic matrix manipulation and arithmetic
+operations have been extended to work with
+\cvx expressions as well, including:
+\begin{itemize}
+\item Concatenation: \verb@[ A, B ; C, D ]@
+\item Indexing: \verb@x(n+1:end)@, \verb@X([3,4],:)@, \etc
+\item Indexed assignment, including deletion: \verb@y(2:4) = 1@, \verb@Z(1:4,:) = []@, \etc
+\item Transpose and conjugate transpose: \verb@Z.'@, \verb@y'@
+\end{itemize}
+A number of Matlab's basic functions have been extended to work with \verb@cvx@
+expressions as well:
+\begin{center}
+\verb@conj@\ \ \ \verb@cumsum@\ \ \ \verb@diag@\ \ \ \verb@dot@\ \ \ 
+\verb@find@\ \ \ \verb@fliplr@\ \ \ \verb@flipud@\ \ \ \verb@flipdim@\ \ \
+\verb@horzcat@\ \ \ \verb@hankel@\ \ \ \verb@ipermute@\ \ \ \verb@kron@\ \ \
+\verb@permute@\ \ \ \verb@repmat@\ \ \ \verb@reshape@\ \ \ \verb@rot90@\ \ \
+\verb@sparse@\ \ \ \verb@sum@\ \ \ \verb@trace@\ \ \ \verb@tril@\ \ \
+\verb@triu@\ \ \ \verb@toeplitz@\ \ \ \verb@vertcat@
+\end{center}
+Most should behave identically with \cvx expressions as they do with numeric expressions.
+Those that perform some sort of summation, such as \verb@cumsum@, \verb@sum@, or
+multiplication, such as \verb@dot@ or \verb@kron@, can
+only be used in accordance with the disciplined convex programming rules. For example,
+\verb@kron(X,Y)@ is valid only if either \verb@X@ or \verb@Y@ is constant; and 
+\verb@trace(Z)@ is valid only if the elements along the diagonal have the same curvature.
+
+\subsection{Nonlinear functions}
+\label{sec:nonl}
+
+What follows are two lists of nonlinear functions supported by \cvx: first, a
+list of standard MATLAB functions extended to work with \cvx; and second, a list
+of new functions created specifically for use in \cvx.
+
+In some cases, limitations of the underlying solvers place certain restrictions
+or caveats on their use:
+\begin{itemize}
+\item Functions marked with a dagger ($\dagger$) are not supported natively by
+      the solvers that \cvx uses. We have developed a novel successive approximation
+      method for solving models involving these functions. The same precision
+      is achieved, but multiple calls to the solver are made. These functions
+      are currently \emph{disabled by default}, and must be explcitly enabled
+      before your model is constructed. See \S\ref{sec:succ-approx} for details.
+\item Functions involving powers (\eg, \verb@x^p@) and $p$-norms (\eg, \verb@norm(x,p)@)
+      are marked with a star ($\star$). \cvx represents these functions exactly
+      when $p$ is a rational number. For irrational values of \verb@p@, a nearby
+      rational is selected using MATLAB's \verb@rat@ function. See 
+      \S\ref{sec:ratpow} for details.
+\end{itemize}      
+
+\subsubsection{Built-in functions}
+
+\begin{itemize}
+\item \verb@abs@: absolute value for real 
+and complex arrays.
+Convex.
+\item $\dagger$ \verb@exp@: exponential. Convex and nondecreasing.
+\item $\dagger$ \verb@log@: logarithm. Concave and nondecreasing.
+\item \verb@max@: maximum. Convex and nondecreasing.
+\item \verb@min@: minimum. Concave and nondecreasing.
+\item $\star$ \verb@norm@: norms for real and complex vectors and matrices. Convex. The 
+one-argument version \verb@norm(x)@ computes the 2-norm for vectors and induced
+2-norm for matrices. The two-argument version \verb@norm(x,p)@ is supported as follows:
+\begin{itemize}
+\item For vectors, all $\verb@p@\geq 1$ are accepted, but see
+Appendix \ref{sec:ratpow} for more details about how \cvx
+handles values other than \verb@1@, \verb@2@, and \verb@Inf@.
+\item For matrices, \verb@p@ must be \verb@1@, \verb@2@, \verb@Inf@, and
+\verb@'Fro'@.
+\end{itemize}
+\item \verb@polyval@: polynomial evaluation. \verb@polyval(p,x)@, 
+where \verb@p@ is a vector of length \verb@n@, computes
+\begin{center}
+	\verb@p(1) * x.^(n-1) + p(2) * x.^(n-2) + ... + p(n-1) * x + p(n)@
+\end{center}
+This function can be used in \cvx variables in two ways:
+\begin{itemize}
+\item If \verb@p@ is a variable and \verb@x@ is a constant, then \verb@polyval(x,p)@
+	  computes a linear combination of the elements of \verb@p@. The combination
+	  must satisfy the DCP rules for addition and scaling.
+\item If \verb@p@ is a constant and \verb@x@ is a variable, then \verb@polyval(x,p)@
+      constructs a polynomial function of the variable \verb@x@. The 
+      polynomial must be affine, convex, or concave, and 
+       \verb@x@ must be real and affine.
+\end{itemize}
+\item $\star$ \verb@power@: \verb@x^p@ and \verb@x.^p@, where \verb@x@ is a real variable and
+and \verb@p@ is a real constant. For \verb@x^p@, \verb@x@ and \verb@p@ must
+be scalars. Only those values of \verb@p@ which can reasonably and unambiguously
+interpreted as convex or concave are accepted:
+\begin{itemize}
+\item $\verb@p@=0$. Constant; that is, \verb@x.^p@ is identically 1.
+\item $0<\verb@p@<1$. Concave. \verb@x@ must be concave (or affine), and is
+      implicitly constrained to be nonnegative.
+\item $\verb@p@=1$. Affine; that is, \verb@x.^p@ is equivalent to \verb@x@.
+\item $\verb@p@\in\{2,4,6,8,...\}$. Convex. \verb@x@ must be affine.
+\item $\verb@p@>1$, $\verb@p@\not\in\{2,3,4,5,...\}$. Convex. \verb@x@ must be affine,
+and is implicitly constrained to be nonnegative.
+\end{itemize}
+Negative and odd integral values of \verb@p@ are not permitted, but functions
+but see the functions
+\verb@pow_p@, \verb@pow_pos@, and \verb@pow_abs@ in the next section
+for useful alternatives.
+\item $\dagger$ \verb@power@: \verb@p.^x@ and \verb@p^x@, where \verb@p@ is a real constant and 
+\verb@x@ is a real variable. For \verb@p^x@, \verb@p@ and \verb@x@ must
+be scalars. Valid values of \verb@p@ include:
+\begin{itemize}
+\item $\verb@p@\in\{0,1\}$. Constant.
+\item $0<\verb@p@<1$. Convex and nonincreasing; \verb@x@ must be concave.
+\item $\verb@p@>1$. Convex and nondecreasing; \verb@x@ must be convex.
+\end{itemize}
+Negative values of \verb@p@ are not permitted.
+\item \verb@sqrt@: square root. Implicitly constrains its argument to be
+nonnegative. Concave and nondereasing.
+\end{itemize}
+
+\subsubsection{New nonlinear functions}
+
+Even though these functions were developed specifically for \cvx, they work
+outside of a \cvx specification as well, when supplied with numeric arguments.
+\begin{itemize}
+\item \verb@berhu(x,M)@: The reversed Huber function (hence, Berhu), defined as
+$|x|$ for $|x|\leq M$, and $(|x|^2+M^2)/2M$ for $|x|\geq M$. Convex. If $M$
+is omitted, $M=1$ is assumed; but if supplied, it must be a positive constant.
+Also callable as \verb@berhu(x,M,t)@, which computes \verb@t+t*berhu(x/t,M)@,
+useful for concomitant scale estimation (see \cite{Owen}).
+\item \verb@geomean@: the geometric mean of a vector, $\left( \prod_{k=1}^n x_k \right)^{1/n}$. When
+used inside a \cvx specification, \verb@geomean@ constrains the elements of the vector
+to be nonnegative. When used with numerical arguments, \verb@geomean@ returns \verb@-Inf@
+if any element is negative.
+Concave and increasing.
+\item \verb@det_rootn@: $n$-th root of the determinant of a semidefinite matrix,
+$(\det X)^{1/n}$. When used inside a \cvx specification, \verb@det_rootn@ constrains
+the matrix to be symmetric (if real) or Hermitian (if complex) and positive semidefinite. 
+When used with numerical arguments, \verb@det_rootn@ returns \verb@-Inf@ if these
+constraints are not met. Concave.
+\item \verb@det_root2n@: the $2n$-th root of the determinant of a semidefinite
+matrix; \ie, \verb@det_root2n(X)=sqrt(det_rootn(X))@. Concave. Maintained
+solely for back-compatibility purposes.
+\item $\dagger$ \verb@entr@, the elementwise
+entropy function: \verb@entr(x)=\verb@x.*log(x)@. Concave.
+\item \verb@huber(x,M)@, defined as $2M|x|-M^2$ for $|x|\geq M$,
+and $|x|^2$ for $|x|\leq M$. Convex. If $M$ is omitted, then $M=1$ is
+assumed; but if it supplied, it must be a positive constant.
+Also callable as \verb@huber(x,M,t)@, which computes \verb@t+t*huber(x/t,M)@,
+useful for concomitant scale estimation
+(see \cite{Owen}).
+\item \verb@inv_pos@, inverse of the positive portion, $1/\max\{x,0\}$.
+Inside \cvx specification,
+imposes constraint that its argument is positive.
+Outside \cvx specificatiom, returns $+\infty$ if $x\leq 0$.
+Convex and decreasing.
+\item $\dagger$ \verb@kl_div@, elementwise Kullback-Liebler distance:
+\verb@kl_div(x,y)=x.*log(x./y)-x+y@. Convex.
+\item \verb@lambda_max@: maximum eigenvalue of a real symmetric 
+or complex Hermitian matrix.
+Inside \cvx, imposes constraint that its argument 
+is symmetric (if real) or Hermitian (if complex).
+Convex.
+\item \verb@lambda_min@: minimum eigenvalue of a real symmetric 
+or complex Hermitian matrix.
+Inside \cvx, imposes constraint that its argument 
+is symmetric (if real) or Hermitian (if complex).
+Concave.
+\item $\dagger$ \verb@logsumexp(x)@, \verb@log(sum(exp(x)))@: the
+logarithm of the sum of the elementwise exponentials of \verb@x@.
+Convex and nondecreasing.
+This is used internally in expert GP mode, but can also be used in standard
+DCPs.
+\item \verb@logsumexp_sdp@: a polynomial approximation to \verb@logsumexp@
+with global absolute accuracy. This approximation is used in default GP
+mode, but can also be used in standard DCPs.
+\item \verb@matrix_frac(x,Y)@: matrix fractional function,
+$x^TY^{-1}x$.  In \cvx, imposes constraint that $Y$ is 
+symmetric (or Hermitian) and positive definite; outside \cvx,
+returns $+\infty$ unless $Y=Y^T\succ 0$.
+Convex. 
+\item \verb@norm_largest( x, k )@, for real and complex vectors,
+returns the sum of the largest \verb@k@ \emph{magnitudes} in the
+vector \verb@x@.
+Convex.
+\item $\star$ \verb@norms( x, p, dim )@ and \verb@norms_largest( x, k, dim )@.
+Computes \emph{vector} norms along a specified dimension of a matrix
+or N-d array. Useful for sum-of-norms and max-of-norms problems.
+Convex.
+\item \verb@polyenv( p, x )@. 
+Computes the value of the \emph{convex or concave envelope} of the polynomial
+described by \verb@p@ (in the \verb@polyval@ sense). \verb@p@ must be
+a real constant vector whose length \verb@n@ is 0, 1, 2, 3, or some other
+\emph{odd} length; and \verb@x@ must be real and affine. The sign of the
+first nonzero element of \verb@p@ determines whether a convex (positive)
+or concave (negative) envelope is constructed.
+For example, consider the function $p(x)\eqbydef (x^2-1)^2=x^4-2x^2+1$,
+depicted along with its convex envelope in Figure~\ref{fig:envelope}.
+\begin{figure}
+\begin{center}
+\includegraphics[width=4.5in]{envelope.eps}
+\end{center}
+~\\[-48pt]
+\caption{The polynomial function $p(x)=x^4-2x^2+1$ and its convex envelope.}
+\label{fig:envelope}
+\end{figure}
+The two coincide when $|x|\geq 1$, but deviate when $|x|<1$. Attempting to call
+\verb@polyval([1,0,2,0,1],x)@ in a \cvx model would  yield an error,
+but a call to \verb@polyenv([1,0,2,0,1],x)@ yields a valid 
+representation of the envelope. For convex or concave polynomials,
+this function produces the same result as \verb@polyval@.
+\item \verb@pos@: $\max\{x,0\}$, for real $x$. 
+Convex and increasing.
+\item $\star$ \verb@pow_abs(x,p)@: $|x|^p$ for $x\in\R$ or $x\in\C$ and $p\geq 1$. Convex.
+If \verb@p@ is irrational, a nearby rational value is chosen;
+see Appendix \ref{sec:ratpow} for details.
+\item $\star$ \verb@pow_pos(x,p)@: $\max\{x,0\}^p$ for $x\in\R$ and $p\geq 1$. Convex and
+nondecreasing. If \verb@p@ is irrational, a nearby rational value is chosen;
+see Appendix \ref{sec:ratpow} for details.
+\item $\star$ \verb@pow_p(x,p)@, for $x\in\R$ and real constant $p$
+computes nonnegative convex and concave branches of the power function:
+\begin{equation*}
+	\begin{aligned}
+	&p \leq 0: \quad  
+	f_p(x) &&\eqbydef \Cases{ x^p & x > 0 \\ +\infty & x \leq 0 } 
+	&& \quad \text{convex, nonincreasing} \\
+	0 <  &p \leq 1: \quad
+	f_p(x) &&\eqbydef\Cases{ x^p & x \geq 0 \\ -\infty & x < 0 } 
+	&& \quad  \text{concave, nondecreasing} \\
+	&p \geq 1: \quad
+	f_p(x) && \eqbydef\Cases{ x^p & x \geq 0 \\ +\infty & x < 0 }
+	&& \quad \text{convex, nonmonotonic}
+	\end{aligned}
+\end{equation*}
+\item \verb@quad_form(x,P)@, $x^TPx$ for real $x$ and symmetric $P$,
+and $x^HPx$ for complex $x$ and Hermitian $P$.
+Convex in $x$ for $P$ constant and positive semidefinite;
+concave in $x$ for $P$ constant and negative semidefinite.
+This function is provided since \cvx will \emph{not}
+recognize \verb@x'*P*x@ as convex (even when \verb@P@ is 
+positive semidefinite).
+\item \verb@quad_over_lin@, $x^Tx/y$ for $x \in \R^n$, $y >0$;
+for $x \in \complex^n$, $y>0$: $x^*x/y$.  In \cvx specification,
+adds constraint that $y>0$.  Outside \cvx specification,
+returns $+\infty$ if $y\leq 0$.
+Convex, and decreasing in $y$.
+\item \verb@quad_pos_over_lin@: \verb@sum_square_pos( x ) / y@
+for $x\in\R^n$, $y>0$.
+Convex, increasing in $x$, and decreasing in $y$.
+%XXX \item \verb@rel_diff@, Relative (fractional) difference between 
+%two numbers, $\max\{x/y, y/x\} -1$.  Inside \cvx, imposes constraint
+%that $x$ and $y$ are positive.  Outside \cvx, returns $+\infty$
+%if $x \leq 0$ or $y\leq 0$. Convex.
+\item $\dagger$ \verb@rel_entr@: Scalar relative entropy: \verb@rel_entr(x,y)=x.*log(x/y)@. Convex.
+\item \verb@sigma_max@: maximum singular value of real or 
+complex matrix.  Same as \verb@norm@.  Convex.
+\item \verb@square@: $x^2$ for $x \in \R$.
+Convex.
+\item \verb@square_abs@: $|x|^2$ for $x\in\R$ or $x\in\C$.
+\item \verb@square_pos@: $\max\{x,0\}^2$ for $x\in\R$.
+Convex and increasing.
+\item \verb@sum_largest(x,k)@ sum of the largest $k$ values, for
+real vector $x$.
+Convex and increasing.
+\item \verb@sum_smallest(x,k)@, sum of the smallest $k$ values,
+\ie, \verb@-sum_smallest(-x,k)@.
+Concave and decreasing.
+\item \verb@sum_square@: \verb@sum( square( x ) )@. Convex.
+\item \verb@sum_square_abs@: \verb@sum( square_abs( x ) )@. Convex.
+\item \verb@sum_square_pos@: \verb@sum( square_pos( x ) )@; 
+works only for real values. Convex and increasing.
+\end{itemize}
+
+\iffalse
+Functions to be added when smooth function support is added: 
+\begin{itemize}
+\item \verb@log_tsqr_minus_xsqr@: $\log (t^2-x^Tx)$
+\item \verb@log_erf@: $\log \Phi$
+\end{itemize}
+\fi
+
+\subsection{Sets}
+
+\cvx currently supports the following sets; in each case, \verb@n@ is a positive
+integer constant.
+\begin{itemize}
+\item \verb@nonnegative(n)@:
+\begin{equation*}
+	\reals^n_+ \eqbydef \Condset{x\in\Rn}{x_i\geq 0,~i=1,2,\dots,n}
+\end{equation*}	
+\item \verb@simplex(n)@:
+\begin{equation*}
+	\reals^n_{1+} \eqbydef \Condset{x\in\Rn}{x_i\geq 0,~i=1,2,\dots,n,~\TS\sum_ix_i=1}
+\end{equation*}	
+\item \verb@lorentz(n)@:
+\begin{equation*}
+\lorentz^n \eqbydef \Condset{(x,y)\in\R^n\times\R}{\|x\|_2\leq y}
+\end{equation*}
+\item \verb@rotated_lorentz(n)@: 
+\begin{equation*}
+\lorentz^n_r \eqbydef \Condset{(x,y,z)\in\R^n\times\R\times\R}{\|x\|_2\leq yz,~y,z\geq 0}
+\end{equation*}
+\item \verb@complex_lorentz(n):@ 
+\begin{equation*}
+\lorentz^n_c \eqbydef \Condset{(x,y)\in\complex^n\times\R}{\|x\|_2\leq y}
+\end{equation*}
+\item \verb@rotated_complex_lorentz(n)@: 
+\begin{equation*}
+\lorentz^n_{rc} \eqbydef \Condset{(x,y,z)\in\complex^n\times\R\times\R}{\|x\|_2\leq yz,~y,z\geq 0}
+\end{equation*}
+\item \verb@semidefinite(n):@ 
+\begin{equation*}
+\symm^n_+ \eqbydef \Condset{X\in\R^{n\times n}}{X=X^T,~X\succeq 0}
+\end{equation*}
+\item \verb@hermitian_semidefinite(n):@ 
+\begin{equation*}
+\herm^n_+ \eqbydef \Condset{Z\in\complex^{n\times n}}{Z=Z^H,~X\succeq 0}
+\end{equation*}
+\item \verb@nonneg_poly_coeffs(n):@ The cone of all coefficients of nonnegative
+polynomials of degree $n$; $n$ must be even:
+\begin{equation*}
+\mathbf{P}_{+,n} \eqbydef \Condset{p\in\Rn[n+1]}{\sum_{i=0}^n p_{i+1} x^{n-i} \geq 0 ~ \forall x\in\R }
+\end{equation*}
+\item \verb@convex_poly_coeffs(n):@ The cone of all coefficients of convex
+polynomials of degree $n$; $n$ must be even:
+\begin{equation*}
+\mathbf{P}_{+,n} \eqbydef \Condset{p\in\Rn[n+1]}{\sum_{i=0}^{n-2} (n-i)(n-i-1) p_{i+1} x^{n-i-2} \geq 0 ~ \forall x\in\R }
+\end{equation*}
+\item \verb@exponential_cone:@
+\begin{equation*}
+\mathbf{E} \eqbydef \text{cl}\Condset{(x,y,z)\in\R\times\R\times\R}{y>0,~ye^{x/y}\leq z}
+\end{equation*}
+\item \verb@geomean_cone(n)@:
+\begin{equation*}
+\mathbf{G}_n \eqbydef \text{cl}\Condset{(x,y)\in\Rn\times\Rn\times\Rn}{x\geq 0,~(\prod_{i=1}^n x_i)^{1/n} \geq y}
+\end{equation*}
+\end{itemize}
+
+\section{\cvx status messages}
+\label{sec:status}
+\index{status messages}
+\index{cvx@{\cvx}!status messages}
+\index{cvx@{\cvx}!precision}
+\index{precision}
+
+After a complete \cvx specification has been entered and the \verb@cvx_end@ command 
+issued, the solver is called to generate a numerical result. The solver can produce
+one of five exit conditions, which are indicated by the value of the string variable
+\verb@cvx_status@. The nominal values of \verb@cvx_status@, and the resulting 
+values of the other variables, are as follows:
+\begin{itemize}
+	\item \verb@Solved@: A complementary solution has been found.
+	      The primal and dual variables are replaced with their computed values, and the
+	      the optimal value of the problem is placed in \verb@cvx_optval@ (which, by
+	      convention, is $0$ for feasibility problems).
+	\item \verb@Unbounded@: The problem has been proven to be unbounded below
+	      through the discovery of an unbounded primal direction. This direction
+	      is stored in the primal variables. The value of \verb@cvx_optval@
+	      is set to \verb@-Inf@ for minimizations, and
+	      \verb@-Inf@ for maximizations. Feasibility problems by construction
+	      cannot be unbounded below.
+	      
+	      It is important to understand that the unbounded primal direction is very
+	      likely \emph{not} a feasible point. If a feasible point is required, the 
+	      problem should be re-solved as a feasibility problem by omitting the objective.
+	\item \verb@Infeasible@: The problem has been proven to be infeasible
+	      through the discovery of an unbounded dual direction. Appropriate
+	      components of this direction are stored in the dual variables. The values of the
+	      primal variables are filled with \verb@NaN@s. The value of \verb@cvx_optval@
+	      is set to \verb@+Inf@ for minimizations and feasibility problems,
+	      and \verb@-Inf@ for maximizations.
+\end{itemize}
+In some cases, SeDuMi is unable to achieve the numerical certainty it requires to
+make one of the above determinations---but is able to draw a weaker conclusion
+by relaxing those tolerances somewhat. In such cases, one of the following
+results is returned:
+\begin{itemize}
+	\item \verb@Inaccurate/Solved@: The problem is likely to have a complementary solution.
+	\item \verb@Inaccurate/Unbounded@: The problem is likely to be unbounded.
+	\item \verb@Inaccurate/Infeasible@: The problem is likely to be infeasible.
+\end{itemize}
+The values of the primal and dual variables, and of \verb@cvx_optval@, are updated
+identically to the ``accurate'' cases. Two final results are also possible:
+\begin{itemize}
+	\item \verb@Failed@: The solver failed to make sufficient progress towards
+	      a solution. The values of \verb@cvx_optval@ and primal and dual
+	      variables are filled with \verb@NaN@s. This result can occur because
+	      of numerical problems within SeDuMi, often because the problem
+	      is particularly ``nasty'' in some way (\eg, a non-zero duality gap).
+	\item \verb@Overdetermined@: The presolver has determined that the problem
+	      has more equality constraints than variables, which means that the coefficient
+	      matrix of the equality constraints is singular. In practice, such problems are
+	      often, but not necessarily, infeasible. Unfortunately, solvers 
+	      typically cannot handle such problems, so a precise conclusion
+	      cannot be reached.
+\end{itemize}
+The situations that most commonly produce an \verb@Overdetermined@ result are discussed
+in \S\ref{sec:overdetermined} below.
+
+\section{Advanced solver topics}
+
+\subsection{The successive approximation method}
+\label{sec:succ-approx}
+\index{successive approximation}
+\index{cvx_expert@\texttt{cvx\_expert}}
+
+Prior to version 1.2, the functions requested most often to be added to the 
+\cvx function library were those from the exponential family,
+including \verb@exp@, \verb@log@, and various
+entropy functions. Unfortunately, \cvx utilizes symmetric primal/dual solvers 
+that simply cannot support those functions natively; and a variety of practical
+factors has delayed the use of other types of solvers with \cvx.
+
+For this reason, we have constructed a \emph{successive approximation} method
+that allows symmetric primal/dual solvers to support the exponential family
+of functions. The precise nature of the method will be published elsewhere, but
+we can provide a highly simplified description here. First, 
+we construct a global approximation for \verb@exp@ (or \verb@log@,
+\etc.) which is accurate within a neighborhood of some center point $x_0$.
+Solving this approximation yields an approximate optimal point $\bar{x}$. We
+shift the center point $x_0$ towards $\bar{x}$, construct a new approximation,
+and solve again. This process is repeated until $|\bar{x}-x_0|$ is small enough to conclude
+that our approximate is accurate enough to represent the orignal model.
+Again, this is a highly simplified description of the approach; for instance, we
+are also monitoring the dual problem as well to guide our judgements for shifting
+$x_0$ and terminating.
+
+So far, we have been quite pleased with the stability and accuracy of the successive 
+approximation method. Nevertheless, we believe that the approach needs to be
+tested further before it can be fully deployed, so \cvx ships with it
+deactivated by default. To activate it, and thereby enable the use of functions
+in the exponential family, insert the command
+\begin{code}
+cvx_expert true
+\end{code}
+into your model \emph{before} the \verb@cvx_begin@ command. 
+
+Once we accumulate
+wider experience with this approach, we will enable its use by default, and the
+\verb@cvx_expert@ command will no longer be necessary (though we will leave it
+in place for back-compatibility). In addition, we hope to find ways to integrate
+the successive approximation method more tightly with the underlying solvers to
+greatly improve its performance.
+
+\subsection{The GP/SDP approximation}
+\label{sec:gp-approx}
+\index{precision!for GPs}
+\index{cvx_gp_precision@\texttt{cvx\_gp\_precision}}
+
+The solvers currently employed by \cvx does not support geometric programs natively.
+Instead, \cvx \emph{approximates} the convex form of a DGP in an SDP-representable
+manner. Details of the approximation method will be published separately; but in short,
+it replaces each posynomial constraint with a series of polynomial
+approximations. (Equalities and monomial inequalities do not require approximation.)
+
+A key feature of this approximation method is that the error introduced at
+each posynomial can be bounded in advance. Specifically,
+given a constraint of the form
+\begin{equation}
+	\label{eq:constr-gp}
+	f_i(x) \leq h_i(x) \quad f_i(x)\text{ posynomial, }h_i(x)\text{ monomial}
+\end{equation}
+the approximation produced by \cvx satisfies
+\begin{equation}
+	\label{eq:constr-approx}
+	f_i(x) \cdot ( 1 + \delta_i ) \leq g_i(x), \quad \delta\in[0,\epsilon_{GP}]
+\end{equation}
+where $\delta_i$ is unknown but bounded as indicated.
+The approximation is applied to posynomial objective functions as well. Thus
+if the objective function is a posynomial $f_0(x)$, it will be perturbed to
+$f_0(x)(1+\delta_0)$, where $\delta_0\in[0,\epsilon_{GP}]$. 
+
+The approximations are \emph{conservative}, in that any value of $x$ that
+satisfies an approximated constraint (\ref{eq:constr-approx})
+will, in fact, satisfy the original (\ref{eq:constr-gp}) as well.
+Applied to an entire DGP, this means that if \cvx locates a feasible point for
+the approximated problem, that point is guaranteed to be feasible as well.
+Furthermore, if \cvx successfully obtains an optimal value for the approximate
+problem, that value will serve as an upper bound on the optimal value of
+the original problem (for a minimization; for a maximization, it will serve
+as a lower bound). 
+
+In its default setting, \cvx uses a tolerance value of $\epsilon_{GP}=0.001$.
+For most engineering applications, this is likely to be quite sufficient. However,
+if you wish to change it, you may do so using the command
+\verb@cvx_gp_precision(@\emph{tol}\verb@)@,
+where \emph{tol} is the new value of $\epsilon_{GP}$. As with the command
+\verb@cvx_precision@, you can place the call either within a model,
+\begin{code}[commandchars=\!\{\}]
+	cvx_begin gp
+	    cvx_gp_precision(!textrm{!emph{tol}});
+	    ...
+	cvx_end
+\end{code}
+to change the approximation quality for a single model; or outside of a model,
+\begin{code}[commandchars=\!\{\}]
+	cvx_gp_precision(!textrm{!emph{tol}});
+	cvx_begin gp
+	    ...
+	cvx_end
+\end{code}
+to make a global change. Consistent with
+\cvx's other control commands, the command returns the \emph{previous}
+value of the $\epsilon_{GP}$, so you can save it and restore it upon completion
+of your model, if you wish. You can query the value of $\epsilon_{GP}$ at any
+time by calling \verb@cvx_gp_precision@ with no arguments. 
+
+It is important to understand that the complexity of the approximation---the order of
+the polynomials used, as well as the number of them---increases as the
+number of terms in the posynomial increases, and as the value of $\epsilon_{GP}$
+decreases. Therefore, seeking high accuracies or solving problems involving 
+posynomials with a vary large number terms can easily produce very large, slow
+approximations.
+
+This approximation can actually be used in DCPs as well.
+Specifically, the function \verb@logsumexp_sdp@ uses this approximation
+method to implement the function
+\begin{equation}
+	f:\Rn\rightarrow\R, \quad f(x) \eqbydef \log(\TS\sum_{i=1}^n e^{x_i}) + [0,\delta(x)], \quad \delta(x)\in[0,\epsilon]
+\end{equation}
+If you call this function directly, it uses a default tolerance of $\epsilon=0.001$, regardless
+of the value set in \verb@cvx_gp_precision@. You can supply a different tolerance as a second
+argument; \ie, \verb@logsumexp_sdp( x, tol )@.
+
+\subsection{Irrational powers}
+\label{sec:ratpow}
+\index{powers}
+\index{cvx_power_warning@\texttt{cvx\_power\_warning}}
+
+In order to implement power expressions like $x^p$ and $p$-norms 
+$\|x\|_p$ for $1<p<\infty$, \cvx uses an SDP-compatible method
+described in \cite{Alizadeh}, and enhanced by the authors of \cvx.
+This approach is exact---as long as the
+exponent $p$ is rational. To determine integral values $p_n,p_d$ such
+that $p_n/p_d=p$, \cvx
+uses MATLAB's \verb@rat@ function with its default tolerance
+of $10^{-6}$. There is currently no way to change this tolerance.
+See the documentation for \verb@rat@  for more details.
+
+The complexity of the SDP implementation depends on roughly
+on the size of the values $p_n$ and $p_d$. Let us introduce
+a more precise measure of this complexity.
+For $p=2$, a constraint $x^p\leq y$ can be represented with exactly
+one $2\times 2$ LMI:
+\begin{equation*}
+	x^2 \leq y \quad\Longrightarrow\quad \bmat{ y & x \\ x & 1 } \succeq 0.
+\end{equation*}
+For other values of $p=p_n/p_d$, \cvx generates
+a number of $2\times 2$ LMIs that depends on 
+both $p_n$ and $p_d$; we denote this
+number by $k(p_n,p_d)$. (A number of internal variables and
+equality constraints are also
+generated, but we ignore them for this analysis.) 
+An empirical study has shown that for $p=p_n/p_d>1$, \cvx achieves
+\begin{equation*}
+k(p_n,p_d)\leq\log_2 p_n+\alpha(p_n),
+\end{equation*}
+where the  $\alpha(p_n)$ term
+grows very slowly compared to the $\log_2$ term.
+Indeed, for $p_n\leq 4096$, we have verified that $\alpha(p_n)$ is
+usually 1 or 2, but occasionally 0 or 3.
+Similar results are obtained for $0<p<1$ and $p<0$.
+
+The cost of this SDP representation
+is relatively small for nearly all useful values of $p$. Nevertheless,
+\cvx issues a warning whenever $k(p_n,p_d)>10$ to insure that the user
+is not surprised by any unexpected slowdown. In the event that this
+threshold does not suit you, you may change it using the command
+\verb@cvx_power_warning(@\emph{thresh}\verb@)@, where \emph{thresh}
+is the desired cutoff value. Setting the
+threshold to \verb@Inf@ disables it completely. 
+As with the command \verb@cvx_precision@, you can place a
+call to \verb@cvx_power_warning@ within a model
+to change the threshold for a single model; or
+outside of a model to make a global change. The command always
+returns the \emph{previous}
+value of the threshold, so you can save it and restore it upon completion
+of your model, if you wish. You can query the current value
+by calling \verb@cvx_power_warning@ with no arguments. 
+
+\subsection{Overdetermined problems}
+\label{sec:overdetermined}
+
+\index{overdetermined problem}
+\index{problem!overdetermined}
+This status message \verb@Overdetermined@ commonly occurs when structure
+in a variable or set is not properly recognized. For example, consider the problem
+of finding the smallest diagonal addition to a matrix $W\in\Rnn$ to make it positive semidefinite:
+\begin{equation}
+	\begin{array}{ll}
+		\text{minimize} & \mathop{\text{Trace}} D \\
+		\text{subject to} & W + D \succeq 0 \\
+		                  & D \text{~diagonal}
+	\end{array}
+\end{equation}
+In \cvx, this problem might be expressed as follows:
+\begin{code}
+	n = size(W,1);
+	cvx_begin
+	    variable D(n,n) diagonal;
+	    minimize( trace( D ) );
+	    subject to
+	        W + D == semidefinite(n);
+	cvx_end
+\end{code}
+If we apply this specification to the matrix \verb@W=randn(5,5)@, a warning is issued,
+\begin{code}
+	Warning: Overdetermined equality constraints;
+	    problem is likely infeasible.
+\end{code}
+and the variable \verb@cvx_status@ is set to \verb@Overdetermined@. 
+
+What has happened here
+is that the unnamed variable returned by statement \verb@semidefinite(n)@ is \emph{symmetric}, but
+$W$ is fixed and \emph{unsymmetric}. Thus the problem, as stated, is infeasible. But
+there are also $n^2$ equality constraints here, and only $n+n*(n+1)/2$ unique degrees
+of freedom---thus the problem is overdetermined. The following modified 
+version of the specification corrects this problem by extracting the symmetric part of $W$:
+\begin{code}
+	n = size(W,1);
+	cvx_begin
+	    variable D(n,n) diagonal;
+	    minimize( trace( D ) );
+	    subject to
+	        0.5 * ( W + W' ) + D == semidefinite(n);
+	cvx_end
+\end{code}
+
+\section{Adding new functions to the \cvx atom library}
 \label{s-new-fcts}
 \index{function!defining new}
 \index{defining new function}
 
 The restrictions imposed by the DCP ruleset imply that,
 for a fixed atom library, the variety of constraints and objective 
-functions that can be constructed is limited.
-Thus in order to preserve generality in
-disciplined convex programming, the atom library must be extensible.
-\cvx allows
-you to define new convex and concave functions
-that can be used in \cvx specifications.
+functions that can be constructed is limited. Thus in order to preserve 
+generality in disciplined convex programming, the atom library must be extensible;
+\cvx does allow new convex and concave functions to be added to the
+atom library. Indeed, we have steadily added new functions to the library over
+time, based on our own needs and those of users who have given us feedback.
+So if you encounter a useful convex or concave function that is not supported
+by \cvx, we invite you to tell us about it. Please understand, however, that not
+every such function can be added, due to limitations in the solver.
+
+It is also possible for a \emph{user} of \cvx to define
+new convex and concave functions to be be used in \cvx specifications.
 This can be accomplished in two ways, both of
-which we describe in this section.
+which we describe in this section. This should be considered a \emph{very}
+advanced topic, however---to be attempted only by those who are truly comfortable
+with disciplined convex programming and \cvx in its current state.
 
 The simplest way to construct a new function that works within \cvx
 is to construct it using expressions that fully conform to the DCP
@@ -2592,1064 +3791,6 @@ for example, \verb@sum@ is both nondecreasing and p-nondecreasing. The
 reverse implication is \emph{not} true; for example,
 \verb@norm( x, q )@ is p-nondecreasing in x, but nonmonotonic.
 \fi
-
-\subsection{Solver selection}
-\label{sec:solver}
-\index{solver!changing}
-\index{SDPT3}
-\index{SeDuMi}
-\index{cvx_solver@\texttt{cvx\_solver}}
-
-As mentioned in \S\ref{sec:version}, \cvx currently supports two solvers: SeDuMi
-and SDPT3. SDTP3 is the newest addition to \cvx, and has been selected as the
-default solver. However, to select SeDuMi as your default solver, simply type
-\begin{code2}
-	cvx_solver sedumi
-\end{code2}
-at the command line, \emph{outside} of a \cvx model. To revert to SDPT3, type
-\begin{code2}
-	cvx_solver sdpt3
-\end{code2}
-To see which solver is currently selected, simply type
-\begin{code2}
-	cvx_solver
-\end{code2}
-We have found that SDPT3 is much more reliable for problems that 
-use second-order cones, which include problems involving
-absolute values, quadratics, power functions, and norms.  SDPT3 is
-currently in very active development; so if you
-encounter a problem that SDPT3 cannot solve but SeDuMi can, 
-please send us a bug report and we will forward the results to
-the authors of SDPT3.
-
-\subsection{Controlling solver precision}
-\label{sec:precision}
-\index{precision!changing}
-\index{cvx_precision@\texttt{cvx\_precision}}
-
-Numerical methods for convex optimization are not exact; they compute their results
-to within a predefined numerical precision or tolerance. The precision chosen by default in \cvx,
-which in turn is inherited from the defaults chosen by its solver SeDuMi, should
-be entirely acceptable for most applications. Nevertheless, you may wish to tighten
-or relax that precision in some applications.
-
-There are several ways to call the \verb@cvx_precision@ command. If you call it with no arguments,
-it simply returns a two-element vector of the current precision settings. The first element
-in that vector is the standard precision; the precision the solver must obtain to return
-\verb@Solved@, \verb@Unbounded@, or \verb@Infeasible@. The second element in the vector is
-the ``reduced'' precision, the precision that the solver must achieve in order to
-return \verb@Solved/Inaccurate@, \verb@Unbounded/Inaccurate@, \verb@Infeasible/Inaccurate@.
-
-Calling \verb@cvx_precision@ with an argument allows you to actually \emph{change} the
-precision level. One way is to supply a string as an argument, either in command mode
-or function mode, chosen from one of five values:
-\begin{itemize}
-	\item \verb@cvx_precision low@:      $\text{standard} = \text{reduced} = \epsilon^{1/4} \approx 1.2\times10^{-4}$.
-	\item \verb@cvx_precision medium@:   $\text{standard} = \epsilon^{3/8} \approx 1.3\times10^{-6}$, $\text{reduced} = \epsilon^{1/4}$.
-	\item \verb@cvx_precision default@:  $\text{standard} = \epsilon^{1/2} \approx 1.5\times10^{-8}$, $\text{reduced} = \epsilon^{1/4}$.
-	\item \verb@cvx_precision high@:     $\text{standard} = \epsilon^{3/4} \approx 1.1\times10^{-11}$, $\text{reduced} = \epsilon^{3/8}$.
-	\item \verb@cvx_precision best@:     $\text{standard} = 0$, $\text{``reduced''} = \epsilon^{1/2}$  (see below).
-\end{itemize}
-In function mode, these calls look like \verb@cvx_precision('low')@, etc.
-The \verb@best@ precision setting is special: it instructs the solver to continue until it is
-completely unable to make progress. Then, as long as it reaches at least the ``reduced'' precision
-of $\epsilon^{1/2}$, it may claim a successful solution; otherwise,
-it returns a \verb@cvx_status@ value of \verb@Failed@. An \verb@Inaccurate@ status value is 
-not possible in \verb@best@ mode (nor, for that matter, in \verb@low@ mode, which
-sets the standard and reduced precisions to be identical).
-
-The \verb@cvx_precision@ command can also be called with either a scalar or a
-length-two vector. If you pass it a scalar, it will assume that as the standard
-precision, and it will compute a default reduced precision value for you.
-Roughly speaking, that reduced precision will be the square root of the standard
-precision, with some bounds imposed to make sure that it stays reasonable. If
-you supply a vector of values, then the smallest value will be chosen as
-the standard precision, and the larger value as the reduced precision.
-
-The \verb@cvx_precision@ command can be used either \emph{within} a \cvx model or
-\emph{outside} of it; and its behavior differs in each case. If you call it from
-within a model, \eg,
-\begin{code}
-	cvx_begin
-	    cvx_precision high
-	    ...
-	cvx_end
-\end{code}
-then the setting you choose will apply only until \verb@cvx_end@ is reached. If you call it outside
-a model, \eg,
-\begin{code}
-	cvx_precision high
-	cvx_begin
-	    ...
-	cvx_end
-\end{code}
-then the setting you choose will apply \emph{globally}; that is, to any
-subsequent models that are created and solved. The local approach should be
-preferred in an application where multiple models are constructed and solved
-at different levels of precision.
-with multiple precision
-
-If you call \verb@cvx_precision@ in function mode, either with a string or a numeric
-value, it will return as its output the \emph{previous} precision vector---the same
-result you would obtain if you called it with no arguments. This may
-seem confusing at first, but this is done so that you can save the previous value
-in a variable, and restore it at the end of your calcuations; e.g.,
-\begin{code}
-	cvxp = cvx_precision( 'high' );
-	cvx_begin
-		...
-	cvx_end
-	cvx_precision( cvxp );
-\end{code}
-This is considered good coding etiquette in a larger application where multiple 
-\cvx models at multiple precision levels may be employed. Of course, a simpler but
-equally courteous approach is to call \verb@cvx_precision@ within the \cvx
-model, as described above, so that its effect lasts only for that model.
-
-\subsection{Miscellaneous \cvx commands}
-\index{cvx_problem@\texttt{cvx\_problem}}
-\index{cvx_clear@\texttt{cvx\_clear}}
-\index{cvx_quiet@\texttt{cvx\_quiet}}
-\index{cvx_pause@\texttt{cvx\_pause}}
-\index{cvx_where@\texttt{cvx\_where}}
-\index{output!suppressing}
-
-\begin{itemize}
-\item \verb+cvx_problem+: typing this within a \cvx specification provides a summary
-of the current problem. Note that this will contain a \emph{lot} of information
-that you may not recognize---\cvx performs its conversion to canonical form
-\emph{as the problem is entered}, generating extra temporary variables and
-constraints in the process.
-\item \verb+cvx_clear+: typing this resets the \cvx system, clearing any and all problems
-from memory, but without erasing any of your numeric data.
-This is useful if you make a mistake and need to start over. But note that in current
-versions of \cvx, you can simply start another model with \verb@cvx_begin@, and
-the previous model will be erased (with a warning).
-\item \verb@cvx_quiet@: typing \verb@cvx_quiet(true)@ suppresses screen
-output from the solver. Typing \verb@cvx_quiet(false)@ restores the screen
-output. In each case, it returns a logical value representing the \emph{previous}
-state of the quiet flag, so you can restore that state later if you wish---which
-is good practice if you wish to share your code with others.
-\item \verb@cvx_pause@: typing \verb@cvx_pause(true)@ causes \cvx to pause and
-wait for keyboard input before \emph{and} after the solver is called. Useful
-primarily for demo purposes. Typing \verb@cvx_pause(false)@ resets the behavior.
-In each case, it returns a logical value representing the \emph{previous} state
-of the pause flag, so you can restore that state later if you wish.
-\item \verb@cvx_where@: returns the directory where the \cvx distribution
-has been installed---assuming that the Matlab path has been set to include
-that distribution. Useful if you want to find certain helpful subdirectories,
-such as \verb@doc@, \verb@examples@, \emph{etc.}
-\end{itemize}
-
-\subsection{Assignments versus equality constraints}
-\label{sec:eqass}
-\index{assignment}
-\index{equality constraint}
-\index{constraint!equality} 
-
-Anyone who has used the C or Matlab languages for a sufficiently long time
-understands the differences between \emph{assignments}, which employ a single
-equals sign \verb@=@ operator, and an \emph{equality}, which employs the
-double equal \verb@==@ operator. In \cvx, this distinction is particularly
-important, so let us address it for a moment.
-
-The consequences of using assignments within a \cvx specification, whether
-accidentally or inadvertently, can often cause subtle problems, so in certain
-instances, \cvx takes steps to prevent you from doing anything dangerous.
-For example, suppose $A,C\in\Rnn$ and $b\in\R$ are given, and
-consider the simple SDP
-\begin{equation}
-	\begin{array}{ll}
-		\text{minimize} & \Tr{CX} \\
-		\text{subject to} & \Tr{AX} = b \\
-		& X \succeq 0
-	\end{array}
-\end{equation}	
-Suppose that we tried to express this problem in \cvx as follows:
-\begin{code2}[firstnumber=1]
-	n = 5;
-	A = randn(n,n); C = randn(n,n); b = randn;
-	cvx_begin
-	    variable X(n,n) symmetric;
-	    minimize( trace( C * X ) );
-	    subject to
-	        trace( A * X ) == b;
-	        X = semidefinite(n);		!label{code:badass}
-	cvx_end
-\end{code2}
-At first glance, line~\ref{code:badass} looks like it constrains \verb@X@ to be positive
-semidefinite; but in fact, it is an assignment, not an equality constraint. So
-it actually \emph{overwrites} the
-variable \verb@X@ with an anonymous, positive semidefinite variable; and \verb@X@
-is \emph{not} constrained to be positive semidefinite. The numerical
-consequences are, of course, considerable---but Matlab (and previous versions of \cvx)
-would happily accept and process this problem without complaint, leaving you (perhaps)
-mystified why the results are not what you expect.
-
-No longer. From now on, when \verb@cvx_end@ is reached, \cvx will examine each 
-declared variable, primal and dual, and verify that it still points to the object it was originally
-assigned upon declaration. If it does not, 
-it will issue an error like this:
-\begin{code}
-	??? Error using ==> cvx_end
-	The following cvx variable(s) have been overwritten:
-	   X
-	This is often an indication that an equality constraint was
-	written with one equals '=' instead of two '=='. The model
-	must be rewritten before cvx can proceed.
-\end{code}	
-We hope that this check will prevent at least some typographical errors from 
-having frustrating consequences in your models.
-
-Of course, this single check does not prevent you from using \emph{all} assignments 
-inside your \cvx specifications, only those that overwrite formally declared variables.
-Other kinds of assignments are still permitted; and in some cases, they may be genuinely
-useful. For example, consider the following \cvx excerpt:
-\begin{code}
-	variables x y
-	z = 2 * x - y;
-	square( z ) <= 3;
-	quad_over_lin( x, z ) <= 1;
-\end{code}
-This excerpt uses a Matlab variable \verb@z@ to hold an
-intermediate calculation \verb@2 * x - y@ so that it can be used in two different constraints.
-It is technically correct, and \cvx will do the right thing with it. In fact, if the value
-of \verb@z@ is not altered for the remainder of the problem, \cvx will actually replace it
-with its proper \emph{numerical} value (\ie, \verb@2 * x - y@) after solving the problem.
-
-Having said that, the following alternative formulation, which declares \verb@z@
-as a formal variable, is numerically equivalent:
-\begin{code}
-	variables x y z
-	z == 2 * x - y;
-	square( z ) <= 3;
-	quad_over_lin( x, z ) <= 1;
-\end{code}
-This is the approach we would recommend that you adopt instead. Declaring intermediate
-calculations as variables provides an extra measure of clarity in your models, in our
-opinion. 
-You need not worry that these ``extra'' variables will slow down
-the solution of your models. 
-In fact, in many cases, this
-practice may \emph{improve} performance by exposing 
-more of your problem's structure to the solver.
-Even when this is not the case, \cvx's presolve routine insures that it will perform
-no \emph{worse} than the first form.
-
-What about assignments involving purely constant expressions, such as \verb@a=2@?
-We would simply recommend that for style reasons they be placed \emph{before}
-the \verb@cvx_begin@ command, as we do in the examples presented in this document.
-
-\subsection{Indexed dual variables}
-\label{sec:indexeddual}
-
-In some models, the \emph{number} of constraints depends on the model
-parameters---not just their sizes. It is
-straightforward to build such models in \cvx using, say, a
-Matlab \verb@for@ loop. In order to assign each of these constraints
-a separate dual variable, we must find a way to adjust the number of
-dual variables as well. For this reason, \cvx supports
-\emph{indexed dual variables}. In reality, they are simply standard
-Matlab cell arrays whose entries are \cvx dual variable objects.
-
-Let us illustrate by example how to declare and use indexed dual
-variables. Consider the following semidefinite program:
-\begin{equation}
-	\begin{array}{ll}
-		\text{minimize}   & \sum_{i=1}^n (n-i) X_{ii} \\
-		\text{subject to} & \sum_{i=1}^n X_{i,i+k} = b_k, ~ k = 1,2,\dots,n \\
-				  & X \succeq 0
-	\end{array}
-\end{equation}
-(\cite{Stu:99}). This problem minimizes a weighted sum of the main diagonal
-of a positive semidefinite matrix, while holding the sums along each diagonal
-constant. The parameters of the problem are
-the elements of the vector $b\in\Rn$, and the optimization variable is a
-symmetric matrix $X\in\Rnn$. The \cvx version of this model is
-\begin{code}
-	cvx_begin
-	    variable X( n, n ) symmetric
-	    minimize( ( n - 1 : -1 : 0 ) * diag( X ) );
-	    for k = 0 : n-1,
-	        sum( diag( X, k ) ) == b( k+1 );
-	    end
-	    X == semidefinite(n);
-	cvx_end
-\end{code}
-If we wish to obtain dual information for the $n$ simple equality constraints,
-we need a way to assign each constraint in the \verb@for@ loop a separate dual variable.
-This is accomplished as follows:
-\begin{code}
-	cvx_begin
-	    variable X( n, n ) symmetric
-	    dual variables y{n}
-	    minimize( ( n - 1 : -1 : 0 ) * diag( X ) );
-	    for k = 0 : n-1,
-	        sum( diag( X, k ) ) == b( k+1 ) : y{k+1};
-	    end
-	    X == semidefinite(n);
-	cvx_end
-\end{code}
-The statement
-\begin{code}
-	dual variables y{n}
-\end{code}
-allocates a cell array $n$ dual variables, and stores the result in the Matlab
-variable \verb@Z@. The equality constraint in the \verb@for@ loop has been augmented
-with a reference to \verb@y{k+1}@, so that each constraint is assigned a separate
-dual variable.
-When the \verb@cvx_end@ command is issued, \cvx will compute the optimal values
-of these dual variables, and deposit them into an $n$-element cell array \verb@y@.
-
-This example admittedly is a bit simplistic. With a bit of careful arrangement,
-it is possible to rewrite this model so that the $n$ equality constraints can be
-combined into a single vector constraint, which in turn would require only a single
-vector dual variable.\footnote{Indeed, a future version of \cvx will support the
-use of the Matlab function \texttt{spdiags}, which will reduce the entire for loop
-to the single constraint \texttt{spdiags(X,0:n-1)==b.}} For a more complex example
-that is not amenable to such a simplification, see the file
-\begin{code}
-	examples/cvxbook/Ch07_statistical_estim/cheb.m
-\end{code}
-in the \cvx distribution.
-In that problem, each constraint in the \verb@for@ loop is a linear matrix
-inequality, not a scalar linear equation;
-so the indexed dual variables are symmetric matrices, not scalars.
-
-\newpage
-\appendix
-
-\section{Installation and compatability}
-\label{s-installing}
-
-\index{installing \cvx}
-\index{platforms}
-\index{cvx@{\cvx}!installing}
-\cvx requires Matlab 6.1 or later.\footnote{Previous
-versions of this manual stated that \cvx required Matlab
-6.0 or later; we have since discovered that version 6.0
-is not sufficient.} Primary \cvx development is performed using
-an Intel-based Mac running Matlab 7.4, with additional
-development performed on the following platforms and MATLAB versions:
-\begin{itemize}
-\item Windows (32-bit): Matlab 6.1, 7.4
-\item Linux (32-bit): Matlab 6.1, 7.4
-\item Linux (64-bit): Matlab 7.1, 7.4
-\end{itemize}
-For purposes of testing and support, we have access to most
-other versions of Matlab for Windows, Linux, and Mac (both
-Intel and PowerPC). The one significant exception is version 7.0.0,
-so we cannot provide support for it. 
-
-Version 7.0.0 has exhibited numerical problems for at least one user;
-the problems were eliminated by upgrading.
-We have also identified another issue using \cvx
-with Matlab 7.0.1 and 7.0.4; workarounds
-are provided in \S\ref{sec:sevenprob} below. 
-
-Precompiled MEX files are included for Windows (32-bit), Linux (32-bit),
-and Intel Mac OS X.
-For other platforms, the MEX files will be compiled during the setup
-process; see
-\S\ref{sec:othersys}. For platforms other than those
-listed above (\eg, Solaris, HPUX), \cvx is quite likely to work,
-but we are unable to provide support.
-
-\subsection{Basic instructions}
-\label{sec:winlin}
-
-\begin{enumerate}
-\item Retrieve the latest version of cvx from \url{http://www.stanford.edu/~boyd/cvx}.
-You can download the package as either a \verb@.zip@ file or a \verb@.tar.gz@ 
-file.
-\item If you have been running a previous version of \cvx, \emph{remove it} or
-move it out of the way---say, by renaming it \verb@cvx_old@---before proceeding.
-\emph{DO NOT} allow the new version of \cvx to be unpacked on top of the old.
-\item Unpack the file anywhere you like; a directory called \verb@cvx@ will be created.
-There is one important exception: do not place \cvx in MATLAB's own
-\verb@toolbox@ directory. (If your previous installation of \cvx was placed
-there, you'll need to move it out of there.)
-\item Start Matlab.
-\item Change the current directory to the location of \cvx.
-For example, if you unpacked \verb@cvx.zip@ on your Windows machine into the
-directory \verb@C:\Matlab\personal@, then you would type
-\begin{code}
-		cd C:\Matlab\personal\cvx
-\end{code}
-at the Matlab command prompt. Alternatively, if you unpacked \verb@cvx.tar.gz@
-into the directory \verb@~/matlab@ on a Linux machine, then you would type
-\begin{code}
-		cd ~/matlab/cvx
-\end{code}
-at the Matlab command prompt.
-\item Type the command
-\begin{code}
-		cvx_setup
-\end{code}
-at the Matlab prompt. This does two things: 
-it sets the Matlab search path so it can find all of the \cvx program files,
-and it runs a simple test problem to verify the installation. On some
-platforms, it compiles MEX files as well (see \S\ref{sec:othersys} below).
-If all goes well, the command will output the line
-\begin{code}
-	No errors! cvx has been successfully installed.
-\end{code}
-(among others). If this message is not displayed, or any warnings or errors are generated,
-then there is a problem with the \cvx installation. Try installing the package
-again; and if that fails, send us a bug report and tell us about it.
-\item If you plan to use \cvx regularly, you will need to save the current
-Matlab path for subsequent Matlab sessions. Follow the instructions provided
-by \verb@cvx_setup@ to accomplish that.
-\end{enumerate}
-
-\subsection{MEX file compilaton}
-\label{sec:othersys}
-
-Precompiled MEX files are provided only for a handful of platforms;
-for others, they must be compiled by the user. The \verb@cvx_setup@ script will
-automatically detect the absence of compiled MEX files and compile them
-for SeDuMi, SDPT3, and \cvx. However, \verb@cvx_setup@ will succeed only
-if the MEX system is configured properly on your machine. If you have
-compiled MEX files before, this is likely the case; otherwise, run the command
-\begin{code}
-	mex -setup
-\end{code}
-at the MATLAB prompt and answer the questions that follow. If necessary, consult documentation for
-Matlab for details on this process.
-
-\subsection{About SeDuMi and SDPT3}
-
-The \cvx distribution includes copies of the solvers SeDuMi and SDPT3 in
-the directories \verb@cvx/sedumi@ and \verb@cvx/sdpt3@, respectively. 
-We strongly recommend that you use our versions of these solvers,
-and remove any other versions that you have in your Matlab path.
-The version of SeDuMi provided with \cvx incorporates some bug fixes
-and a slight modification that is not currently found in versions
-available from the authors. This is not the case with SDPT3; however,
-the author of SDPT3 frequently posts bug fixes to the software without
-updating the version number (currently 4.0 beta). Therefore, it is
-important to be sure that any newer version of SDPT3 that you might
-wish to use was downloaded \emph{after} you obtained \cvx.
-
-\subsection{A Matlab 7.0 issue}
-\label{sec:sevenprob}
-
-The techniques that \cvx use to embed a new modeling language inside Matlab
-seem to cause some confusion for Matlab 7.0, specifically version 7.0.4 (R14SP2). 
-We are reasonably confident
-that the issue is due to a bug in Matlab itself. It does not occur in versions
-6.5.2 and earlier, or 7.1 and later. It may occur in earlier versions of
-Matlab 7.0 as well (R14,R14SP1).
-
-The bug is this: in  some circumstances, a \verb@.m@-file containing a \cvx model will cause
-an error that looks like this:
-\begin{code}
-	??? Error: File: thrusters.m Line: 43 Column: 5
-	"p" was previously used as a variable,
-	conflicting with its use here as the name of a function.
-\end{code}
-The file name, line/column numbers, and variable name may differ, 
-but the error message remains the same. The example that produced this particular 
-error is a simple inequality constraint
-\begin{code}
-	p >= -5;
-\end{code}
-where \verb@p@ is a \cvx variable previously declared with a \verb@variable@ statement.
-Interestingly, a different inequality constraint
-\begin{code}
-	u >= 0
-\end{code}
-in the same model causes no complaint. So we cannot offer you a precise set
-of circumstances that cause the error.
-
-Fortunately, the workaround is very simple: simply remove all of the extra space
-in the constraint. In this example, changing the constraint to
-\begin{code}
-	p>=-5;
-\end{code}
-eliminates the error. You may still indent the constraint as you wish---just
-remove the intermediate spaces.
-
-We have no idea why this workaround works, but it does---reliably.
-
-\section{Operators, functions, and sets}
-\label{s-functions}
-\index{operators}
-\index{cvx@{\cvx}!operators}
-\index{cvx@{\cvx}!functions}
-\index{function!\cvx libary}
-
-\subsection{Basic operators and linear functions}
-
-Matlab's standard arithmetic operations for
-addition \verb@+@, subtraction \verb@-@, multiplication
-\verb@*@ \verb@.*@, division \verb@/@ \verb@\@ \verb@./@
-\verb@./@ \verb@.\@, and exponentiation \verb@^@ \verb@.^@
-have been overloaded to work in \cvx whenever appropriate---that
-is, whenever their use is consistent with both standard mathematical
-and Matlab conventions \emph{and} the DCP ruleset.
-For example:
-\begin{itemize}
-\item Two \cvx expressions can be added together if they are of the same
-      dimension (or one is scalar) and have the same curvature (\ie, 
-      both are convex, concave, or affine).
-\item A \cvx expression can be multiplied or divided by a scalar constant. If the
-      constant is positive, the curvature is preserved; if it is negative,
-      curvature is reversed.      
-\item An affine, column vector \cvx expression can be multiplied by a constant matrix
-      of appropriate dimensions; or it can be left-divided by a non-singular 
-      constant matrix of appropriate dimension.
-\end{itemize}
-Numerious other combinations are possible, of course.
-For example, the use of the exponentiation operators \verb@^@
-\verb@.^@ are somewhat limited; see \S\ref{sec:nonl} below.
-
-Matlab's basic matrix manipulation and arithmetic
-operations have been extended to work with
-\cvx expressions as well, including:
-\begin{itemize}
-\item Concatenation: \verb@[ A, B ; C, D ]@
-\item Indexing: \verb@x(n+1:end)@, \verb@X([3,4],:)@, \etc
-\item Indexed assignment, including deletion: \verb@y(2:4) = 1@, \verb@Z(1:4,:) = []@, \etc
-\item Transpose and conjugate transpose: \verb@Z.'@, \verb@y'@
-\end{itemize}
-A number of Matlab's basic functions have been extended to work with \verb@cvx@
-expressions as well:
-\begin{center}
-\verb@conj@\ \ \ \verb@cumsum@\ \ \ \verb@diag@\ \ \ \verb@dot@\ \ \ 
-\verb@find@\ \ \ \verb@fliplr@\ \ \ \verb@flipud@\ \ \ \verb@flipdim@\ \ \
-\verb@horzcat@\ \ \ \verb@hankel@\ \ \ \verb@ipermute@\ \ \ \verb@kron@\ \ \
-\verb@permute@\ \ \ \verb@repmat@\ \ \ \verb@reshape@\ \ \ \verb@rot90@\ \ \
-\verb@sparse@\ \ \ \verb@sum@\ \ \ \verb@trace@\ \ \ \verb@tril@\ \ \
-\verb@triu@\ \ \ \verb@toeplitz@\ \ \ \verb@vertcat@
-\end{center}
-Most should behave identically with \cvx expressions as they do with numeric expressions.
-Those that perform some sort of summation, such as \verb@cumsum@, \verb@sum@, or
-multiplication, such as \verb@dot@ or \verb@kron@, can
-only be used in accordance with the disciplined convex programming rules. For example,
-\verb@kron(X,Y)@ is valid only if either \verb@X@ or \verb@Y@ is constant; and 
-\verb@trace(Z)@ is valid only if the elements along the diagonal have the same curvature.
-
-\subsection{Standard Matlab nonlinear functions}
-\label{sec:nonl}
-
-The following standard Matlab nonlinear functions 
-are overloaded to work in \cvx:
-\begin{itemize}
-\item \verb@abs@, elementwise absolute value for real 
-and complex arrays.
-Convex.
-\item \verb@max@, \verb@min@,
-elementwise maximum and minimum, for real arrays only.
-The 1, 2, and 3-argument syntaxes are all supported.
-\verb@max@ is convex and increasing; \verb@min@ is concave and 
-decreasing.
-\item \verb@norm( x )@ for real and complex affine vectors/matrices.
-Convex.
-\item \verb@norm( x, p )@ for real and complex affine vectors/matrices:
-\begin{itemize}
-\item For vectors,
-all valid values of \verb@p@ are accepted, but see
-Appendix \ref{sec:ratpow} for more details about how \cvx
-handles values other than \verb@1@, \verb@2@, and \verb@Inf@. Convex.
-\item For matrices, \verb@p@ must be \verb@1@, \verb@2@, \verb@Inf@, and
-\verb@'Fro'@. Convex.
-\end{itemize}
-\item \verb@sqrt@, elementwise square root, for real arrays only.
-Adds the constraint that entries of \verb@x@ are nonnegative.
-Concave and increasing.
-\item \verb@x^p@ and \verb@x.^p@, where \verb@x@ is real and affine,
-and \verb@p@ is constant. For \verb@x^p@, \verb@x@ and \verb@p@ must
-be scalars. Valid values of \verb@p@ include:
-\begin{itemize}
-\item $\verb@p@ \in\{0,1\}$. Constant and affine, respectively.
-\item $0<\verb@p@<1$. Concave, and constrains \verb@x@ to be nonnegative.
-\item $\verb@p@\in\{2,4,6,8,...\}$. Convex.
-\end{itemize}
-Other values of \verb@p@ are not permitted, but see the function
-\verb@pow_pos@ in Appendix \ref{sec:ratpow} below for a useful alternative.
-Note also that irrational values of \verb@p@ are approximated
-by rational values; see Appendix \ref{sec:ratpow} for detail on this issue as well.
-\item \verb@polyval( p, x )@, where \verb@p@ is a vector of length
-\verb@n@, computes
-\begin{center}
-	\verb@p(1) * x.^(n-1) + p(2) * x.^(n-2) + ... + p(n-1) * x + p(n)@
-\end{center}
-This function can be used in \cvx variables in two ways:
-\begin{itemize}
-\item If \verb@p@ is a variable and \verb@x@ is a constant, then \verb@polyval(x,p)@
-	  computes a linear combination of the elements of \verb@p@. The combination
-	  must satisfy the DCP rules for addition and scaling.
-\item If \verb@p@ is a constant and \verb@x@ is a variable, then \verb@polyval(x,p)@
-      constructs a polynomial function of the variable \verb@x@. The 
-      polynomial must be affine, convex, or concave, and 
-       \verb@x@ must be real and affine.
-\end{itemize}
-\end{itemize}
-
-\subsection{New nonlinear functions}
-
-The following functions are part of the base \cvx library.
-These functions work both inside a \cvx specification,
-and outside a \cvx specification (with numerical arguments).
-\begin{itemize}
-\item \verb@berhu(x,M)@: The reversed Huber function (hence, Berhu), defined as
-$|x|$ for $|x|\leq M$, and $(|x|^2+M^2)/2M$ for $|x|\geq M$. Convex. If $M$
-is omitted, $M=1$ is assumed; but if supplied, it must be a positive constant.
-Also callable as \verb@berhu(x,M,t)@, which computes \verb@t+t*berhu(x/t,M)@,
-useful for concomitant scale estimation (see \cite{Owen}).
-\item \verb@geomean@: the geometric mean of a vector, $\left( \prod_{k=1}^n x_k \right)^{1/n}$. When
-used inside a \cvx specification, \verb@geomean@ constrains the elements of the vector
-to be nonnegative. When used with numerical arguments, \verb@geomean@ returns \verb@-Inf@
-if any element is negative.
-Concave and increasing.
-\item \verb@det_rootn@: $n$-th root of the determinant of a semidefinite matrix,
-$(\det X)^{1/n}$. When used inside a \cvx specification, \verb@det_rootn@ constrains
-the matrix to be symmetric (if real) or Hermitian (if complex) and positive semidefinite. 
-When used with numerical arguments, \verb@det_rootn@ returns \verb@-Inf@ if these
-constraints are not met. Concave.
-\item \verb@det_root2n@: the $2n$-th root of the determinant of a semidefinite
-matrix; \ie, \verb@det_root2n(X)=sqrt(det_rootn(X))@. Concave. Maintained
-solely for back-compatibility purposes.
-\item \verb@huber(x,M)@, defined as $2M|x|-M^2$ for $|x|\geq M$,
-and $|x|^2$ for $|x|\leq M$. Convex. If $M$ is omitted, then $M=1$ is
-assumed; but if it supplied, it must be a positive constant.
-Also callable as \verb@huber(x,M,t)@, which computes \verb@t+t*huber(x/t,M)@,
-useful for concomitant scale estimation
-(see \cite{Owen}).
-\item \verb@inv_pos@, inverse of the positive portion, $1/\max\{x,0\}$.
-Inside \cvx specification,
-imposes constraint that its argument is positive.
-Outside \cvx specificatiom, returns $+\infty$ if $x\leq 0$.
-Convex and decreasing.
-\item \verb@lambda_max@: maximum eigenvalue of a real symmetric 
-or complex Hermitian matrix.
-Inside \cvx, imposes constraint that its argument 
-is symmetric (if real) or Hermitian (if complex).
-Convex.
-\item \verb@lambda_min@: minimum eigenvalue of a real symmetric 
-or complex Hermitian matrix.
-Inside \cvx, imposes constraint that its argument 
-is symmetric (if real) or Hermitian (if complex).
-Concave.
-\item \verb@log(sum(exp(x)))@: the
-logarithm of the sum of the elementwise exponentials of \verb@x@.
-Convex and nondecreasing.
-This is used internally in GP mode, but can also be used in standard
-DCPs. This function is actually \emph{approximated} in the
-current version of \cvx; see \S\ref{sec:gp-approx} for details.
-\item \verb@matrix_frac(x,Y)@: matrix fractional function,
-$x^TY^{-1}x$.  In \cvx, imposes constraint that $Y$ is 
-symmetric (or Hermitian) and positive definite; outside \cvx,
-returns $+\infty$ unless $Y=Y^T\succ 0$.
-Convex. 
-\item \verb@norm_largest( x, k )@, for real and complex vectors,
-returns the sum of the largest \verb@k@ \emph{magnitudes} in the
-vector \verb@x@.
-Convex.
-\item \verb@norms( x, p, dim )@ and \verb@norms_largest( x, k, dim )@.
-Computes \emph{vector} norms along a specified dimension of a matrix
-or N-d array. Useful for sum-of-norms and max-of-norms problems.
-Convex.
-\item \verb@polyenv( p, x )@. 
-Computes the value of the \emph{convex or concave envelope} of the polynomial
-described by \verb@p@ (in the \verb@polyval@ sense). \verb@p@ must be
-a real constant vector whose length \verb@n@ is 0, 1, 2, 3, or some other
-\emph{odd} length; and \verb@x@ must be real and affine. The sign of the
-first nonzero element of \verb@p@ determines whether a convex (positive)
-or concave (negative) envelope is constructed.
-For example, consider the function $p(x)\eqbydef (x^2-1)^2=x^4-2x^2+1$,
-depicted along with its convex envelope in Figure~\ref{fig:envelope}.
-\begin{figure}
-\begin{center}
-\includegraphics[width=4.5in]{envelope.eps}
-\end{center}
-~\\[-48pt]
-\caption{The polynomial function $p(x)=x^4-2x^2+1$ and its convex envelope.}
-\label{fig:envelope}
-\end{figure}
-The two coincide when $|x|\geq 1$, but deviate when $|x|<1$. Attempting to call
-\verb@polyval([1,0,2,0,1],x)@ in a \cvx model would  yield an error,
-but a call to \verb@polyenv([1,0,2,0,1],x)@ yields a valid 
-representation of the envelope. For convex or concave polynomials,
-this function produces the same result as \verb@polyval@.
-\item \verb@pos@: $\max\{x,0\}$, for real $x$. 
-Convex and increasing.
-\item \verb@pow_abs(x,p)@: $|x|^p$ for $x\in\R$ or $x\in\C$ and $p\geq 1$. Convex.
-\item \verb@pow_pos(x,p)@, for real \verb@x@ and real constant \verb@p@,
-computes monotonic extensions of certain convex and concave branches of
-the power function:
-\begin{equation*}
-	\begin{aligned}
-	&p \leq 0: \quad  
-	f_p(x) &&\eqbydef \Cases{ x^p & x > 0 \\ +\infty & x \leq 0 } 
-	&& \quad \text{convex, nonincreasing} \\
-	0 <  &p < 1: \quad
-	f_p(x) &&\eqbydef\Cases{ x^p & x \geq 0 \\ -\infty & x < 0 } 
-	&& \quad  \text{concave, nondecreasing} \\
-	&p \geq 1: \quad
-	f_p(x) && \eqbydef\Cases{ x^p & x \geq 0 \\ 0 & x < 0 }
-	&& \quad \text{convex, nondecreasing}
-	\end{aligned}
-\end{equation*}
-If \verb@p@ is irrational, a nearby rational value is chosen;
-see Appendix \ref{sec:ratpow} for details.
-\item \verb@quad_form(x,P)@, $x^TPx$ for real $x$ and symmetric $P$,
-and $x^HPx$ for complex $x$ and Hermitian $P$.
-Convex in $x$ for $P$ constant and positive semidefinite;
-concave in $x$ for $P$ constant and negative semidefinite.
-This function is provided since \cvx will \emph{not}
-recognize \verb@x'*P*x@ as convex (even when \verb@P@ is 
-positive semidefinite).
-\item \verb@quad_over_lin@, $x^Tx/y$ for $x \in \R^n$, $y >0$;
-for $x \in \complex^n$, $y>0$: $x^*x/y$.  In \cvx specification,
-adds constraint that $y>0$.  Outside \cvx specification,
-returns $+\infty$ if $y\leq 0$.
-Convex, and decreasing in $y$.
-\item \verb@quad_pos_over_lin@: \verb@sum_square_pos( x ) / y@
-for $x\in\R^n$, $y>0$.
-Convex, increasing in $x$, and decreasing in $y$.
-%XXX \item \verb@rel_diff@, Relative (fractional) difference between 
-%two numbers, $\max\{x/y, y/x\} -1$.  Inside \cvx, imposes constraint
-%that $x$ and $y$ are positive.  Outside \cvx, returns $+\infty$
-%if $x \leq 0$ or $y\leq 0$. Convex.
-\item \verb@sigma_max@: maximum singular value of real or 
-complex matrix.  Same as \verb@norm@.  Convex.
-\item \verb@square@: $x^2$ for $x \in \R$.
-Convex.
-\item \verb@square_abs@: $|x|^2$ for $x\in\R$ or $x\in\C$.
-\item \verb@square_pos@: $\max\{x,0\}^2$ for $x\in\R$.
-Convex and increasing.
-\item \verb@sum_largest(x,k)@ sum of the largest $k$ values, for
-real vector $x$.
-Convex and increasing.
-\item \verb@sum_smallest(x,k)@, sum of the smallest $k$ values,
-\ie, \verb@-sum_smallest(-x,k)@.
-Concave and decreasing.
-\item \verb@sum_square@: \verb@sum( square( x ) )@. Convex.
-\item \verb@sum_square_abs@: \verb@sum( square_abs( x ) )@. Convex.
-\item \verb@sum_square_pos@: \verb@sum( square_pos( x ) )@; 
-works only for real values. Convex and increasing.
-\end{itemize}
-
-\iffalse
-Functions to be added when smooth function support is added: 
-\begin{itemize}
-\item \verb@exp@: $\exp$
-\item \verb@log@: $\log$
-\item \verb@log2@: $\log_2$
-\item \verb@a^x@: $a^x$.  requires $a>0$.
-\item \verb@x^a@: $x^a$.  requires $x>0$.
-\item \verb@entropy@: entropy $-x \log x$
-\item \verb@rel_entropy@: relative entropy
-\item \verb@kl_div@: Kullback-Leibler divergence
-\item \verb@log_sum_exp@: $\log(\sum_i \exp x_i)$
-\item \verb@norm( x, p )@
-\item \verb@log_det@
-\item \verb@nth_root_det@
-\item \verb@log_tsqr_minus_xsqr@: $\log (t^2-x^Tx)$
-\item \verb@log_erf@: $\log \Phi$
-\end{itemize}
-\fi
-
-\subsection{Sets}
-
-\cvx currently supports the following sets; in each case, \verb@n@ is a positive
-integer constant:
-\begin{itemize}
-\item \verb@nonnegative(n)@:
-\begin{equation*}
-	\reals^n_+ \eqbydef \Condset{x\in\Rn}{x_i\geq 0,~i=1,2,\dots,n}
-\end{equation*}	
-\item \verb@simplex(n)@:
-\begin{equation*}
-	\reals^n_{1+} \eqbydef \Condset{x\in\Rn}{x_i\geq 0,~i=1,2,\dots,n,~\TS\sum_ix_i=1}
-\end{equation*}	
-\item \verb@lorentz(n)@:
-\begin{equation*}
-\lorentz^n \eqbydef \Condset{(x,y)\in\R^n\times\R}{\|x\|_2\leq y}
-\end{equation*}
-\item \verb@rotated_lorentz(n)@: 
-\begin{equation*}
-\lorentz^n_r \eqbydef \Condset{(x,y,z)\in\R^n\times\R\times\R}{\|x\|_2\leq yz,~y,z\geq 0}
-\end{equation*}
-\item \verb@complex_lorentz(n):@ 
-\begin{equation*}
-\lorentz^n_c \eqbydef \Condset{(x,y)\in\complex^n\times\R}{\|x\|_2\leq y}
-\end{equation*}
-\item \verb@rotated_complex_lorentz(n)@: 
-\begin{equation*}
-\lorentz^n_{rc} \eqbydef \Condset{(x,y,z)\in\complex^n\times\R\times\R}{\|x\|_2\leq yz,~y,z\geq 0}
-\end{equation*}
-\item \verb@semidefinite(n):@ 
-\begin{equation*}
-\symm^n_+ \eqbydef \Condset{X\in\R^{n\times n}}{X=X^T,~X\succeq 0}
-\end{equation*}
-\item \verb@hermitian_semidefinite(n):@ 
-\begin{equation*}
-\herm^n_+ \eqbydef \Condset{Z\in\complex^{n\times n}}{Z=Z^H,~X\succeq 0}
-\end{equation*}
-\item \verb@nonneg_poly_coeffs(n):@ The cone of all coefficients of nonnegative
-polynomials of degree $n$; $n$ must be even:
-\begin{equation*}
-P_{+,n} \eqbydef \Condset{p\in\Rn[n+1]}{\sum_{i=0}^n p_{i+1} x^{n-i} \geq 0 ~ \forall x\in\R }
-\end{equation*}
-\item \verb@convex_poly_coeffs(n):@ The cone of all coefficients of convex
-polynomials of degree $n$; $n$ must be even:
-\begin{equation*}
-P_{+,n} \eqbydef \Condset{p\in\Rn[n+1]}{\sum_{i=0}^{n-2} (n-i)(n-i-1) p_{i+1} x^{n-i-2} \geq 0 ~ \forall x\in\R }
-\end{equation*}
-\end{itemize}
-
-\section{\cvx status messages}
-\label{sec:status}
-\index{status messages}
-\index{cvx@{\cvx}!status messages}
-\index{cvx@{\cvx}!precision}
-\index{precision}
-
-After a complete \cvx specification has been entered and the \verb@cvx_end@ command 
-issued, the solver is called to generate a numerical result. The solver can produce
-one of five exit conditions, which are indicated by the value of the string variable
-\verb@cvx_status@. The nominal values of \verb@cvx_status@, and the resulting 
-values of the other variables, are as follows:
-\begin{itemize}
-	\item \verb@Solved@: A complementary solution has been found.
-	      The primal and dual variables are replaced with their computed values, and the
-	      the optimal value of the problem is placed in \verb@cvx_optval@ (which, by
-	      convention, is $0$ for feasibility problems).
-	\item \verb@Unbounded@: The problem has been proven to be unbounded below
-	      through the discovery of an unbounded primal direction. This direction
-	      is stored in the primal variables. The value of \verb@cvx_optval@
-	      is set to \verb@-Inf@ for minimizations, and
-	      \verb@-Inf@ for maximizations. Feasibility problems by construction
-	      cannot be unbounded below.
-	      
-	      It is important to understand that the unbounded primal direction is very
-	      likely \emph{not} a feasible point. If a feasible point is required, the 
-	      problem should be re-solved as a feasibility problem by omitting the objective.
-	\item \verb@Infeasible@: The problem has been proven to be infeasible
-	      through the discovery of an unbounded dual direction. Appropriate
-	      components of this direction are stored in the dual variables. The values of the
-	      primal variables are filled with \verb@NaN@s. The value of \verb@cvx_optval@
-	      is set to \verb@+Inf@ for minimizations and feasibility problems,
-	      and \verb@-Inf@ for maximizations.
-\end{itemize}
-In some cases, SeDuMi is unable to achieve the numerical certainty it requires to
-make one of the above determinations---but is able to draw a weaker conclusion
-by relaxing those tolerances somewhat. In such cases, one of the following
-results is returned:
-\begin{itemize}
-	\item \verb@Inaccurate/Solved@: The problem is likely to have a complementary solution.
-	\item \verb@Inaccurate/Unbounded@: The problem is likely to be unbounded.
-	\item \verb@Inaccurate/Infeasible@: The problem is likely to be infeasible.
-\end{itemize}
-The values of the primal and dual variables, and of \verb@cvx_optval@, are updated
-identically to the ``accurate'' cases. Two final results are also possible:
-\begin{itemize}
-	\item \verb@Failed@: The solver failed to make sufficient progress towards
-	      a solution. The values of \verb@cvx_optval@ and primal and dual
-	      variables are filled with \verb@NaN@s. This result can occur because
-	      of numerical problems within SeDuMi, often because the problem
-	      is particularly ``nasty'' in some way (\eg, a non-zero duality gap).
-	\item \verb@Overdetermined@: The presolver has determined that the problem
-	      has more equality constraints than variables, which means that the coefficient
-	      matrix of the equality constraints is singular. In practice, such problems are
-	      often, but not necessarily, infeasible. Unfortunately, solvers 
-	      typically cannot handle such problems, so a precise conclusion
-	      cannot be reached.
-\end{itemize}
-The situations that most commonly produce an \verb@Overdetermined@ result are discussed
-in \S\ref{sec:overdetermined} below.
-
-\section{The GP/SDP approximation}
-\label{sec:gp-approx}
-\index{precision!for GPs}
-\index{cvx_gp_precision@\texttt{cvx\_gp\_precision}}
-
-The solver currently employed by \cvx does not support geometric programs natively.
-Instead, \cvx \emph{approximates} the convex form of a DGP in an SDP-representable
-manner. Details of the approximation method will be published separately; but in short,
-it replaces each posynomial constraint with a series of polynomial
-approximations. (Equalities and monomial inequalities do not require approximation.)
-
-A key feature of this approximation method is that the error introduced at
-each posynomial can be bounded in advance. Specifically,
-given a constraint of the form
-\begin{equation}
-	\label{eq:constr-gp}
-	f_i(x) \leq h_i(x) \quad f_i(x)\text{ posynomial, }h_i(x)\text{ monomial}
-\end{equation}
-the approximation produced by \cvx satisfies
-\begin{equation}
-	\label{eq:constr-approx}
-	f_i(x) \cdot ( 1 + \delta_i ) \leq g_i(x), \quad \delta\in[0,\epsilon_{GP}]
-\end{equation}
-where $\delta_i$ is unknown but bounded as indicated.
-The approximation is applied to posynomial objective functions as well. Thus
-if the objective function is a posynomial $f_0(x)$, it will be perturbed to
-$f_0(x)(1+\delta_0)$, where $\delta_0\in[0,\epsilon_{GP}]$. 
-
-The approximations are \emph{conservative}, in that any value of $x$ that
-satisfies an approximated constraint (\ref{eq:constr-approx})
-will, in fact, satisfy the original (\ref{eq:constr-gp}) as well.
-Applied to an entire DGP, this means that if \cvx locates a feasible point for
-the approximated problem, that point is guaranteed to be feasible as well.
-Furthermore, if \cvx successfully obtains an optimal value for the approximate
-problem, that value will serve as an upper bound on the optimal value of
-the original problem (for a minimization; for a maximization, it will serve
-as a lower bound). 
-
-In its default setting, \cvx uses a tolerance value of $\epsilon_{GP}=0.001$.
-For most engineering applications, this is likely to be quite sufficient. However,
-if you wish to change it, you may do so using the command
-\verb@cvx_gp_precision(@\emph{tol}\verb@)@,
-where \emph{tol} is the new value of $\epsilon_{GP}$. As with the command
-\verb@cvx_precision@, you can place the call either within a model,
-\begin{code}[commandchars=\!\{\}]
-	cvx_begin gp
-	    cvx_gp_precision(!textrm{!emph{tol}});
-	    ...
-	cvx_end
-\end{code}
-to change the approximation quality for a single model; or outside of a model,
-\begin{code}[commandchars=\!\{\}]
-	cvx_gp_precision(!textrm{!emph{tol}});
-	cvx_begin gp
-	    ...
-	cvx_end
-\end{code}
-to make a global change. Consistent with
-\cvx's other control commands, the command returns the \emph{previous}
-value of the $\epsilon_{GP}$, so you can save it and restore it upon completion
-of your model, if you wish. You can query the value of $\epsilon_{GP}$ at any
-time by calling \verb@cvx_gp_precision@ with no arguments. 
-
-It is important to understand that the complexity of the approximation---the order of
-the polynomials used, as well as the number of them---increases as the
-number of terms in the posynomial increases, and as the value of $\epsilon_{GP}$
-decreases. Therefore, seeking high accuracies or solving problems involving 
-posynomials with a vary large number terms can easily produce very large, slow
-approximations.
-
-This approximation can actually be used in DCPs as well.
-Specifically, the function \verb@logsumexp_sdp@ uses this approximation
-method to implement the function
-\begin{equation}
-	f:\Rn\rightarrow\R, \quad f(x) \eqbydef \log(\TS\sum_{i=1}^n e^{x_i}) + [0,\delta(x)], \quad \delta(x)\in[0,\epsilon]
-\end{equation}
-If you call this function directly, it uses a default tolerance of $\epsilon=0.001$, regardless
-of the value set in \verb@cvx_gp_precision@. You can supply a different tolerance as a second
-argument; \ie, \verb@logsumexp_sdp( x, tol )@. However, it turns out that \cvx admits a 
-particular exception to the DCP nonlinear composition rules: it allows the construction
-of expressions of the form \verb@log(sum(exp(x)))@. (This is not an exception so much
-as it is a byproduct of the unified approach to verifying DCPs and GPs.) 
-Such constructions are automatically recognized by \cvx, which utilizes the
-precision value $\epsilon_{GP}$ in determining the accuracy of their approximation.
-
-\section{The irrational power limitation}
-\label{sec:ratpow}
-\index{powers}
-\index{cvx_power_warning@\texttt{cvx\_power\_warning}}
-
-In order to implement power expressions like $x^p$ and $p$-norms 
-$\|x\|_p$ for $1<p<\infty$, \cvx uses an SDP-compatible method
-described in \cite{Alizadeh}, and enhanced by the authors of \cvx.
-This approach is exact---as long as the
-exponent $p$ is rational. To determine integral values $p_n,p_d$ such
-that $p_n/p_d=p$, \cvx
-uses MATLAB's \verb@rat@ function with its default tolerance
-of $10^{-6}$. There is currently no way to change this tolerance.
-See the documentation for \verb@rat@  for more details.
-
-The complexity of the SDP implementation depends on roughly
-on the size of the values $p_n$ and $p_d$. Let us introduce
-a more precise measure of this complexity.
-For $p=2$, a constraint $x^p\leq y$ can be represented with exactly
-one $2\times 2$ LMI:
-\begin{equation*}
-	x^2 \leq y \quad\Longrightarrow\quad \bmat{ y & x \\ x & 1 } \succeq 0.
-\end{equation*}
-For other values of $p=p_n/p_d$, \cvx generates
-a number of $2\times 2$ LMIs that depends on 
-both $p_n$ and $p_d$; we denote this
-number by $k(p_n,p_d)$. (A number of internal variables and
-equality constraints are also
-generated, but we ignore them for this analysis.) 
-An empirical study has shown that for $p=p_n/p_d>1$, \cvx achieves
-\begin{equation*}
-k(p_n,p_d)\leq\log_2 p_n+\alpha(p_n),
-\end{equation*}
-where the  $\alpha(p_n)$ term
-grows very slowly compared to the $\log_2$ term.
-Indeed, for $p_n\leq 4096$, we have verified that $\alpha(p_n)$ is
-usually 1 or 2, but occasionally 0 or 3.
-Similar results are obtained for $0<p<1$ and $p<0$.
-
-The cost of this SDP representation
-is relatively small for nearly all useful values of $p$. Nevertheless,
-\cvx issues a warning whenever $k(p_n,p_d)>10$ to insure that the user
-is not surprised by any unexpected slowdown. In the event that this
-threshold does not suit you, you may change it using the command
-\verb@cvx_power_warning(@\emph{thresh}\verb@)@, where \emph{thresh}
-is the desired cutoff value. Setting the
-threshold to \verb@Inf@ disables it completely. 
-As with the command \verb@cvx_precision@, you can place a
-call to \verb@cvx_power_warning@ within a model
-to change the threshold for a single model; or
-outside of a model to make a global change. The command always
-returns the \emph{previous}
-value of the threshold, so you can save it and restore it upon completion
-of your model, if you wish. You can query the current value
-by calling \verb@cvx_power_warning@ with no arguments. 
-
-\section{Overdetermined problems}
-\label{sec:overdetermined}
-
-\index{overdetermined problem}
-\index{problem!overdetermined}
-This status message \verb@Overdetermined@ commonly occurs when structure
-in a variable or set is not properly recognized. For example, consider the problem
-of finding the smallest diagonal addition to a matrix $W\in\Rnn$ to make it positive semidefinite:
-\begin{equation}
-	\begin{array}{ll}
-		\text{minimize} & \mathop{\text{Trace}} D \\
-		\text{subject to} & W + D \succeq 0 \\
-		                  & D \text{~diagonal}
-	\end{array}
-\end{equation}
-In \cvx, this problem might be expressed as follows:
-\begin{code}
-	n = size(W,1);
-	cvx_begin
-	    variable D(n,n) diagonal;
-	    minimize( trace( D ) );
-	    subject to
-	        W + D == semidefinite(n);
-	cvx_end
-\end{code}
-If we apply this specification to the matrix \verb@W=randn(5,5)@, a warning is issued,
-\begin{code}
-	Warning: Overdetermined equality constraints;
-	    problem is likely infeasible.
-\end{code}
-and the variable \verb@cvx_status@ is set to \verb@Overdetermined@. 
-
-What has happened here
-is that the unnamed variable returned by statement \verb@semidefinite(n)@ is \emph{symmetric}, but
-$W$ is fixed and \emph{unsymmetric}. Thus the problem, as stated, is infeasible. But
-there are also $n^2$ equality constraints here, and only $n+n*(n+1)/2$ unique degrees
-of freedom---thus the problem is overdetermined. The following modified 
-version of the specification corrects this problem by extracting the symmetric part of $W$:
-\begin{code}
-	n = size(W,1);
-	cvx_begin
-	    variable D(n,n) diagonal;
-	    minimize( trace( D ) );
-	    subject to
-	        0.5 * ( W + W' ) + D == semidefinite(n);
-	cvx_end
-\end{code}
 
 \section{Acknowledgements}
 

@@ -1,18 +1,19 @@
 body {
-	background-color: white;
-	font-family: "Georgia", "Palatino", "Times New Roman", "Times", serif;
+	background: white;
+	font-family: Georgia, serif;
+	padding-bottom: 8px;
+	margin: 0;
 }
 
 #layout-menu {
-	background-color: #f4f4f4;
-	border-color: #aaaaaa;
-	border-style: solid;
-	border-width: 0px 2px 0px 0px;
+	background: #f4f4f4;
+	border: 1px solid #dddddd;
 	padding-top: 0.5em;
 	padding-left: 8px;
 	padding-right: 8px;
 	font-size: 1.0em;
 	width: auto;
+	white-space: nowrap;
 }
 
 #layout-menu a {
@@ -20,13 +21,17 @@ body {
 	margin-left: 0.5em;
 }
 
-pre, tt {
-	font-family: "Courier New", "Courier";
+tt {
+	color: green;
 }
 
-tt {
-	font-weight: bold;
-/*	color: green; */
+tt.tthl {
+	color: black;
+}
+
+pre, tt {
+	font-size: 90%;
+	font-family: monaco, monospace;
 }
 
 a, a > tt {
@@ -58,6 +63,11 @@ div.menu-category {
 	font-weight: bold;
 }
 
+div.menu-item {
+	padding-left: 16px;
+	text-indent: -16px;
+}
+
 div#toptitle {
 	padding-bottom: 0.2em;
 	margin-bottom: 1.5em;
@@ -66,42 +76,20 @@ div#toptitle {
 
 /* Reduce space if we begin the page with a title. */
 div#toptitle + h2, div#toptitle + h3 {
-	margin-top: -0.5em;
-}
-
-div#toptitle h1 {
-	margin-bottom: 0.1em;
-	padding-bottom: 0.1em;
-	padding-top: 0;
-	margin-top: 0.5em;
-	border-bottom: none;
+	margin-top: -0.7em;
 }
 
 div#subtitle {
 	margin-top: 0.0em;
 	margin-bottom: 0.0em;
 	padding-top: 0em;
-	padding-bottom: 0.2em;
+	padding-bottom: 0.1em;
 }
 
 #layout-content {
 	padding-top: 0.0em;
 	padding-left: 1.0em;
 	padding-right: 1.0em;
-}
-
-@media print {
-	#layout-menu { display: none; }
-}
-/* Debug borders */
-p, li, dt, dd, div, pre, h1, h2, h3, h4, h5, h6 {
-
-	/*border: 1px solid red;*/
-
-}
-
-body {
-	margin: 0;
 }
 
 em {
@@ -113,9 +101,9 @@ strong {
 }
 
 
-h1, h2, h3, h4, h5, h6 {
+h1, h2, h3 {
 	color: #527bbd;
-	margin-top: 0.9em;
+	margin-top: 0.7em;
 	margin-bottom: 0.3em;
 	padding-bottom: 0.2em;
 	line-height: 1.0;
@@ -124,11 +112,11 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 h1 {
-	font-size: 170%;
+	font-size: 165%;
 }
 
 h2 {
-	padding-top: 0.5em;
+	padding-top: 0.8em;
 	font-size: 125%;
 }
 
@@ -136,14 +124,9 @@ h2 + h3 {
     padding-top: 0.2em;
 }
 
-
 h3 {
 	font-size: 110%;
 	border-bottom: none;
-}
-
-hr {
-	border: 1px solid gray;
 }
 
 p {
@@ -166,12 +149,13 @@ div#footer {
 }
 div#footer-text {
 	float: left;
-	padding-bottom: 0.5em;
+	padding-bottom: 8px;
 }
 
 ul, ol, dl {
-	margin-top: 0;
+	margin-top: 0.2em;
 	padding-top: 0;
+	margin-bottom: 0.8em;
 }
 
 dt {
@@ -180,7 +164,7 @@ dt {
 }
 
 dl {
-	margin-left: 0px;
+	margin-left: 20px;
 }
 
 dd {
@@ -191,18 +175,17 @@ dd > *:first-child {
 	margin-top: 0;
 }
 
-
 ul {
 	list-style-position: outside;
 	list-style-type: square;
 }
 
 p + ul, p + ol {
-	margin-top: -0.4em;
+	margin-top: -0.5em;
 }
 
 li ul, li ol {
-	margin-top: 0.4em;
+	margin-top: -0.3em;
 }
 
 ol {
@@ -210,9 +193,10 @@ ol {
 	list-style-type: decimal;
 }
 
-li {
-	margin-bottom: 0.5em;
+li p, dd p {
+	margin-bottom: 0.3em;
 }
+
 
 ol ol {
 	list-style-type: lower-alpha;
@@ -222,22 +206,26 @@ ol ol ol {
 	list-style-type: lower-roman;
 }
 
+p + div.codeblock {
+	margin-top: -0.6em;
+}
+
 div.codeblock, div.infoblock {
 	margin-right: 0%;
-	margin-top: 0.8em;
+	margin-top: 1.2em;
 	margin-bottom: 1.3em;
 }
 
 div.blocktitle {
 	font-weight: bold;
 	color: #cd7b62;
-	margin-top: 0.8em;
+	margin-top: 1.2em;
 	margin-bottom: 0.1em;
 }
 
 div.blockcontent {
 	border: 1px solid silver;
-	padding: 0.5em;
+	padding: 0.3em 0.5em;
 }
 
 div.infoblock > div.blockcontent {
@@ -252,18 +240,77 @@ div.infoblock p {
 	margin-bottom: 0em;
 }
 
+div.infoblock li p, div.infoblock dd p {
+	margin-bottom: 0.5em;
+}
+
 div.infoblock p + p {
 	margin-top: 0.8em;
 }
 
 div.codeblock > div.blockcontent {
-	background: #f4f4f4;
+	background: #f6f6f6;
 }
 
 span.pycommand {
-	color: #000080;
+	color: #000070;
 }
 
-span.comment {
-	color: #808080;
+span.statement {
+	color: #008800;
+}
+span.builtin {
+	color: #000088;
+}
+span.operator {
+	color: #880000;
+}
+span.error {
+	color: #aa0000;
+}
+span.comment, span.comment > *, span.string, span.string > * {
+	color: #606060;
+}
+
+@media print {
+	#layout-menu { display: none; }
+}
+
+#fwtitle {
+	margin: 2px;
+}
+
+#fwtitle #toptitle {
+	padding-left: 0.5em;
+	margin-bottom: 0.5em;
+}
+
+#layout-content h1:first-child, #layout-content h2:first-child, #layout-content h3:first-child {
+	margin-top: -0.7em;
+}
+
+div#toptitle h1, #layout-content div#toptitle h1 {
+	margin-bottom: 0.0em;
+	padding-bottom: 0.1em;
+	padding-top: 0;
+	margin-top: 0.5em;
+	border-bottom: none;
+}
+
+img {
+    border: none;
+}
+
+img.eq {
+	padding: 0;
+	padding-left: 0.1em;
+	padding-right: 0.1em;
+	margin: 0;
+}
+
+img.eqwl {
+	padding-left: 2em;
+	padding-top: 0.6em;
+	padding-bottom: 0.2em;
+	margin: 0;
 }
