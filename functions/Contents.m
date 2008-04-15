@@ -39,6 +39,7 @@
 %   polyenv           - Convex or concave envelope of a polynomial.
 %   polyval_trig      - Evaluate a trigonometric polynomial.
 %   pos               - Positive part.
+%   pow_p             - Nonnegative branches of the power function.
 %   pow_pos           - Convex/concave branches of the power function.
 %   pow_abs           - Absolute value raised to a fixed power.
 %   quad_form         - Quadratic form.

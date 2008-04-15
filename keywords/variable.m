@@ -61,6 +61,10 @@ elseif exist( [ 'cvx_s_', x.name ], 'file' ) == 2,
         '   The name "%s" is reserved as a matrix structure modifier,\n', ...
         '   which can be used only with the VARIABLE keyword.' ], nm, x.name ) );
 end
+tt = evalin( 'caller', x.name, '[]' );
+if isa( tt, 'cvxobj' ) & cvx_id( tt ) >= cvx_id( prob ),
+    error( sprintf( 'Invalid expression specification: %s\n   Name already used for another CVX object.', nm ) );
+end
 
 %
 % Step 2: Parse the size. In effect, all we do here is surround what is
