@@ -298,7 +298,7 @@ cvx_begin_set
     end
     variable xw( nm-1, nv );
     cone = [];
-    xa = y;
+    xa = [];
     switch mode,
         case 'func',
             if mused,
@@ -325,6 +325,9 @@ cvx_begin_set
             else
                 cone = hermitian_semidefinite( [2,2,1,nv] );
             end
+    end
+    if isempty( xa ),
+        xa = y;
     end
     if isempty( cone ),
         cone = semidefinite( [2,2,nm,nv] );

@@ -30,7 +30,7 @@
 %    flipud, hankel, horzcat, imag, ipermute, kron, permute, polyval, real,
 %    repmat, reshape, rot90, sparse, sum, toeplitz, tril, triu, vertcat
 % Nonlinear functions:
-%    abs, max, min, norm, prod, sqrt, log(*), exp(*)
+%    abs, exp(*), log (*), max, min, norm, prod, sqrt
 % Query functions:
 %    disp/display, end, isempty, isequal, length, isreal, ndims, nnz,
 %    numel, size, spy

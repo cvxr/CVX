@@ -8,15 +8,17 @@
 %   proper use in CVX models, as dictated by its convexity/concavity and
 %   monotonicity properties.
 %
-%   For a list of Matlab's built-in functions that have been extended to
-%   provide CVX support, type "help cvx/builtins".
-%
 %   Those functions marked with a (*), as well as the exponential and 
 %   logarithm functions, are supported using a "successive approximation"
 %   approach: that is, the solver is called multiple times to refine the 
 %   solution to the required accuracy. Thus models using these functions
 %   should be expected to run more slowly than models of comparable size
 %   that do not. See the CVX user guide for details.
+%
+%   A number of Matlab's built-in functions have been extended to provide
+%   CVX support; for example,
+%     abs, exp(*), log (*), max, min, norm, prod, sqrt
+%   For a full list, type "help cvx/builtins".
 %
 %   berhu             - Reverse Huber penalty function.
 %   det_inv           - Determinant of the inverse of an SPD matrix.
