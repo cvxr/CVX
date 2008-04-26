@@ -51,13 +51,13 @@ if nnz( cvx___.exponential ),
     tt = find( ( v == 13 | v == 7 ) & q == 1 );
     if ~isempty( tt ),
         [ rx, cx, vx ] = find( x.basis_( :, tt ) );
-        qq = cvx___.logarithm( rx ) ~= 0 & vx > 0;
+        qq = reshape( cvx___.logarithm( rx ), size( vx ) ) & ( vx > 0 );
         v( tt( cx( qq ) ) ) = 10 + cvx___.vexity( cvx___.logarithm( rx( qq ) ) );
     end
     tt = find( v == 7 & q > 1 );
     if ~isempty( tt ),
         [ rx, cx, vx ] = find( x.basis_( :, tt ) );
-        qq = ( cvx___.logarithm( rx ) ~= 0 | rx == 1 ) & vx > 0;
+        qq = ( reshape( cvx___.logarithm( rx ), size( vx ) ) | rx == 1 ) & vx > 0;
         v( tt( cx( qq ) ) ) = 12;
     end
 end
