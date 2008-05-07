@@ -30,7 +30,8 @@ v = remap( cvx_classify( x ) );
 % Perform the computations for each expression type separately
 %
 
-vu = unique( v );
+vu = sort( v );
+vu = vu([true,diff(vu)~=0]);
 nv = length( vu );
 sx = x.size_;
 if nv ~= 1,

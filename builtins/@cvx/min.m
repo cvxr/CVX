@@ -46,7 +46,8 @@ if nargin == 2,
     vx = cvx_classify( x );
     vy = cvx_classify( y );
     vr = remap( vx + size( remap, 1 ) * ( vy - 1 ) );
-    vu = unique( vr );
+    vu = sort( vr );
+    vu = vu([true,diff(vu)~=0]);
     nv = length( vu );
 
     %
@@ -169,7 +170,8 @@ else
     t3 = t3 & ~( t1 | t2 );
     t2 = t2 & ~t1;
     ta = t1 + ( 2 * t2 + 3 * t3 ) .* ~t1;
-    nu = unique( ta( : ) );
+    nu = sort( ta(:) );
+    nu = nu([true;diff(nu)~=0]);
     nk = length( nu );
 
     %

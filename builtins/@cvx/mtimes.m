@@ -23,6 +23,7 @@ function z = mtimes( x, y, oper )
 %      multiplications and additions. Since only log-convex terms can be
 %      summed, both X and Y must be elementwise log-convex/affine.
 
+persistent remap
 if nargin < 3, oper = 'times'; end
 
 %
@@ -49,11 +50,22 @@ nz = prod( sz );
 
 if cvx_isconstant( x ),
     
-    if cvx_isconstant( y ),
-        z = cvx( feval( [ 'm', oper ], cvx_constant( x ), cvx_constant( y ) ) );
+    xC = cvx_constant( x );
+    if nnz( isnan( xC ) ),
+        error( sprintf( 'Disciplined convex programming error:\n    Invalid numeric values (NaNs) may not be used in CVX expressions.' ) );
+    elseif cvx_isconstant( y ),
+        yC = cvx_constant( y );
+        if nnz( isnan( yC ) ),
+            error( sprintf( 'Disciplined convex programming error:\n    Invalid numeric values (NaNs) may not be used in CVX expressions.' ) );
+        end
+        z = feval( [ 'm', oper ], xC, yC );
+        if nnz( isnan( z ) ),
+            error( sprintf( 'Disciplined convex programming error:\n    This expression produced one or more invalid numeric values (NaNs).' ) );
+        end
+        z = cvx( z );
         return
     elseif isequal( oper, 'rdivide' ),
-        error( 'Disciplined convex programming error:\n    Matrix divisor must be constant.' );
+        error( sprintf( 'Disciplined convex programming error:\n    Matrix divisor must be constant.' ) );
     end
     xC   = cvx_constant( x );
     yA   = cvx_basis( y );
@@ -65,12 +77,15 @@ if cvx_isconstant( x ),
     vpos = false;
     
 elseif cvx_isconstant( y ),
-    
+
+    yC = cvx_constant( y );
+    if nnz( isnan( yC ) ),
+        error( sprintf( 'Disciplined convex programming error:\n    Invalid numeric values (NaNs) may not be used in CVX expressions.' ) );
+    end
     if isequal( oper, 'ldivide' ),
-        error( 'Disciplined convex programming error:\n    Matrix divisor must be constant.' );
+        error( sprintf( 'Disciplined convex programming error:\n    Matrix divisor must be constant.' ) );
     else
-        xA = cvx_basis( x );
-        yC = cvx_constant( y );
+        xA   = cvx_basis( x );
         cnst = false;
         raff = true;
         raff = true;
@@ -83,7 +98,6 @@ elseif cvx_isconstant( y ),
     
 else
 
-    persistent remap
     if isempty( remap ),
         remap_0 = cvx_remap( 'zero' );
         remap_1 = cvx_remap( 'nonzero', 'complex' );
@@ -148,6 +162,7 @@ else
 end
 
 first = true;
+check_inf = false;
 
 if cnst,
     switch oper,
@@ -177,6 +192,9 @@ if raff,
     otherwise,      z2 = z2 * yC;
     end
     z2 = cvx_reshape( z2, [ nA, nz ], tt );
+    if 0, first & nnz( isnan( z2 ) ),
+        error( sprintf( 'Disciplined convex programming error:\n    This expression produced one or more invalid numeric values (NaNs).' ) );
+    end
     z2 = cvx( sz, z2 );
     if first, z = z2; first = false; else z = z + z2; end
 end
@@ -286,7 +304,15 @@ end
 
 v = cvx_vexity( z );
 if any( isnan( v( : ) ) ),
-    error( sprintf( 'Disciplined convex programming error:\n   Illegal affine combination of convex and/or concave terms detected.' ) );
+    temp = 'Disciplined convex programming error:';
+    tt = isnan( cvx_constant( z ) );
+    if any( tt ),
+        temp = [ temp, '\n    This expression produced one or more invalid numeric values (NaNs).' ];
+    end
+    if any( isnan( v( ~tt ) ) ),
+        temp = [ temp, '\n   Illegal affine combination of convex and/or concave terms detected.' ];
+    end
+    error( sprintf( temp ) );
 end
 
 % Copyright 2008 Michael C. Grant and Stephen P. Boyd.

@@ -125,7 +125,8 @@ end
 vx = cvx_classify( x );
 vy = cvx_classify( y );
 vr = remap( vx + size( remap, 1 ) * ( vy - 1 ) );
-vu = unique( vr );
+vu = sort( vr );
+vu = vu([true,diff(vu)~=0]);
 nv = length( vu );
 if vu(1) == 1 & nv > 1,
     vr(vr==1) == vu(2);
@@ -185,6 +186,9 @@ for k = 1 : nv,
             cvx_optval = xb ./ yb;
         else
             cvx_optval = xb .* yb;
+        end
+        if nnz( isnan( cvx_optval ) ),
+            error( sprintf( 'Disciplined convex programming error:\n    This expression produced one or more invalid numeric values (NaNs).' ) );
         end
         cvx_optval = cvx( cvx_optval );
 
