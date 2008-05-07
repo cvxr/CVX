@@ -45,7 +45,7 @@ else
         end
     end
 end
-if cvx___.path.hold,
+if nargin > 0 & cvx___.path.hold,
     cvx_setspath(flag);
 end
 if nargin == 0 | nargout > 0,
