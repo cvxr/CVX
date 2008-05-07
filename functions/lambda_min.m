@@ -1,4 +1,4 @@
-function z = lambda_min( x )
+function z = lambda_min( Y )
 
 % LAMBDA_MIN   Minimum eigenvalue of a symmetric matrix.
 %     For square matrix X, LAMBDA_MIN(X) is MIN(EIG(X)) if X is Hermitian
@@ -11,18 +11,15 @@ function z = lambda_min( x )
 %         elementwise comparison), so its argument must be affine.
 
 error( nargchk( 1, 1, nargin ) );
-if ndims( x ) > 2 | size( x, 1 ) ~= size( x, 2 ),
-
+if ndims( Y ) > 2 | size( Y, 1 ) ~= size( Y, 2 ),
     error( 'Input must be a square matrix.' );
-
-elseif any( any( x ~= x' ) ),
-
+end
+err = Y - Y';
+Y   = 0.5 * ( Y + Y' );
+if norm( err, 'fro' )  > 8 * eps * norm( Y, 'fro' ),
     z = Inf;
-
 else
-
-    z = min( eig( full( x ) ) );
-
+    z = min( eig( full( Y ) ) );
 end
 
 % Copyright 2008 Michael C. Grant and Stephen P. Boyd.

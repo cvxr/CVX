@@ -14,7 +14,8 @@ if isempty( remap ),
     remap = remap_1 + 2 * remap_2;
 end
 vr = remap( cvx_classify( x ) );
-vu = unique( vr );
+vu = sort( vr );
+vu = vu([true,diff(vu)~=0]);
 nv = length( vu );
 
 %

@@ -66,7 +66,8 @@ t3 = all( reshape( remap_3( vx ), sx ), dim ) | ...
 % Valid combinations with zero or negative entries can be treated as constants
 t1 = t1 | ( ( t2 | t3 ) & any( vx == 1 | vx == 9, dim ) );
 ta = t1 + ( 2 * t2 + 3 * t3 ) .* ~t1;
-nu = unique( ta( : ) );
+nu = sort( ta(:) );
+nu = nu([true,diff(nu)~=0]);
 nk = length( nu );
 
 %

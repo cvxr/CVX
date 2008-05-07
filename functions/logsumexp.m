@@ -1,35 +1,11 @@
-function y = logsumexp( x, dim )
+function y = logsumexp( varargin )
 
 %LOGSUMEXP    log(sum(exp(x))).
-%   LOGSUMEXP(X) = LOG(SUM(EXP(X)).
-%
-%   When used in a CVX model, LOGSUMEXP(X) causes CVX's successive
-%   approximation method to be invoked, producing results exact to within
-%   the tolerance of the solver. This is in contrast to LOGSUMEXP_SDP,
-%   which uses a single SDP-representable global approximation.
-%
-%   If X is a matrix, LOGSUMEXP_SDP(X) will perform its computations
-%   along each column of X. If X is an N-D array, LOGSUMEXP_SDP(X)
-%   will perform its computations along the first dimension of size
-%   other than 1. LOGSUMEXP_SDP(X,DIM) will perform its computations
-%   along dimension DIM.
-%
-%   Disciplined convex programming information:
-%       LOGSUMEXP(X) is convex an nondecreasing in X; therefore, X
-%       must be convex (or affine).
+%   LOGSUMEXP(X) = LOG_SUM_EXP(X) = LOG(SUM(EXP(X)). We have replaced this
+%   function with LOG_SUM_EXP to better match our function naming
+%   conventions. Please start using it instead.
 
-global cvx___
-error( nargchk( 1, 2, nargin ) );
-if ~isreal( x ),
-    error( 'Argument must be real.' );
-end
-y = exp( x );
-if nargin == 1,
-    y = sum( y );
-else
-    y = sum( y, dim );
-end
-y = log( y );
+y = log_sum_exp( varargin{:} );
 
 % Copyright 2008 Michael C. Grant and Stephen P. Boyd. 
 % See the file COPYING.txt for full copyright information.

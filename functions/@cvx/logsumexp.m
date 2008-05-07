@@ -66,7 +66,8 @@ v = min( v, [], dim );
 % Process each type of expression one piece at a time
 %
 
-vu = unique( v );
+vu = sort( vr );
+vu = vu([true,diff(vu)~=0]);
 nv = length( vu );
 if nv > 1,
     y = cvx( sy, [] );

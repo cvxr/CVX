@@ -1,6 +1,7 @@
 % CVX: Definitions of common convex sets.
 %   complex_lorentz         - Complex second-order cone.                        {(x,y): norm(x)<=y}
 %   convex_poly_coeffs      - Coefficients of convex degree-n polynomials.      {p: p(x) convex}
+%   exp_cone                - The exponential cone.                             {(x,y,z): y>=0, y*exp(x/y) <= z }
 %   hermitian_semidefinite  - Hermitian positive semidefinite matrices.         {X: X==X', min(eig(X))>=0}
 %   lorentz                 - Real second-order cones.                          {(x,y): norm(x)<=y}
 %   nonneg_poly_coeffs      - Coefficients of nonnegative degree-n polynomials. {p: p(x)>=0 for all x}

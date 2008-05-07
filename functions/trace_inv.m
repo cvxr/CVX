@@ -1,13 +1,13 @@
-function z = lambda_max( x )
+function z = trace_inv( Y )
 
-% LAMBDA_MAX    Maximum eigenvalue of a symmetric matrix.
-%     For square matrix X, LAMBDA_MAX(X) is MAX(EIG(X)) if X is Hermitian
-%     or symmetric and real; and +Inf otherwise. 
+% TRACE_INV   Trace of the inverse of a PSD matrix.
+%     For square matrix X, TRACE_INV(X) is TRACE(INV(X)) if X is Hermitian
+%     or symmetric and positive definite; and +Inf otherwise. 
 %
 %     An error results if X is not a square matrix.
 %
 %     Disciplined convex programming information:
-%         LAMBDA_MAX is convex and nonmonotonic (at least with respect to
+%         TRACE_INV is convex and nonmonotonic (at least with respect to
 %         elementwise comparison), so its argument must be affine.
 
 error( nargchk( 1, 1, nargin ) );
@@ -19,7 +19,12 @@ Y   = 0.5 * ( Y + Y' );
 if norm( err, 'fro' )  > 8 * eps * norm( Y, 'fro' ),
     z = Inf;
 else
-    z = max( eig( full( Y ) ) );
+    z = eig( full( Y ) );
+    if any( z <= 0 ),
+        z = Inf;
+    else
+        z = sum(1.0./z);
+    end
 end
 
 % Copyright 2008 Michael C. Grant and Stephen P. Boyd.

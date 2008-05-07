@@ -27,6 +27,8 @@
 %   entr              - Scalar entropy. (*)
 %   geomean           - Geometric mean. (*)
 %   huber             - Huber penalty function.
+%   huber_circ        - Circularly symmetric version of the Huber penalty.
+%   huber_pos         - Monotonic Huber-style function.
 %   inv_pos           - Reciprocal of a positive quantity.
 %   kl_div            - Scalar Kullback-Liebler distance. (*)
 %   lambda_max        - Maximum eigenvalue of a symmetric matrix.
@@ -36,6 +38,7 @@
 %   logsumexp_sdp     - SDP-based approximation of log(sum(exp(x))).
 %   matrix_frac       - Matrix fractional function.
 %   norm_largest      - Sum of the k largest magnitudes of a vector.
+%   norm_nuc          - Nuclear norm of a matrix.
 %   norms             - Computation of multiple vector norms.
 %   norms_largest     - Computation of multiple norm_largest() norms.
 %   polyenv           - Convex or concave envelope of a polynomial.
@@ -57,6 +60,8 @@
 %   sum_square        - Sum of squares.
 %   sum_square_abs    - sum of squares of absolute values.
 %   sum_square_pos    - Sum of squares of positive parts.
+%   trace_inv         - Trace of the inverse of a PSD matrix.
+%   trace_sqrtm       - Trace of the square root of a PSD matrix.
 %   vec               - Vectorize.
 
 % Copyright 2008 Michael C. Grant and Stephen P. Boyd. 

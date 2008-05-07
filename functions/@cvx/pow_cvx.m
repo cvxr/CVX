@@ -101,7 +101,8 @@ end
 
 xt = x;
 pt = p;
-vu = unique( v );
+vu = sort( v );
+vu = vu([true,diff(vu)~=0]);
 nv = length( vu );
 if nv ~= 1,
     if cvx_isconstant( x ),
