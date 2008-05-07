@@ -18,6 +18,9 @@ end
 b = b( p ~= 0, : );
 if isempty( b ),
     v = cvx_zeros( x.size_ );
+    if x.slow_,
+        v( isnan( x.basis_( 1, : ) ) ) = NaN;
+    end
     return
 end
 p = nonzeros(p).';
@@ -25,7 +28,12 @@ if cvx___.nan_used,
     b = sparse( b );
 end
 v = p * b;
-v( abs( v ) ~= abs( p ) * abs( b ) ) = NaN;
+tt = abs( v ) ~= abs( p ) * abs( b );
+if x.slow_,
+    v( tt | isnan( x.basis_( 1, : ) ) ) = NaN;
+else
+    v( tt ) = NaN;
+end
 v = sign( v );
 v = cvx_reshape( v, x.size_ );
 

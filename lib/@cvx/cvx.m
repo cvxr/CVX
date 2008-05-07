@@ -25,14 +25,14 @@ switch nargin,
         if isa( s, 'cvx' ),
             v = s;
         else
-            v = class( struct( 'size_', size( s ), 'basis_', sparse( s(:).' ), 'dual_', '', 'dof_', [] ), 'cvx', cvxobj );
+            v = class( struct( 'size_', size( s ), 'basis_', sparse( s(:).' ), 'dual_', '', 'dof_', [], 'slow_', nnz( isinf( s ) | isnan( s ) ) ~= 0 ), 'cvx', cvxobj );
         end
         return
     case 0,
-        v = class( struct( 'size_', [ 0, 0 ], 'basis_', sparse( 1, 0 ), 'dual_', '', 'dof_', [] ), 'cvx', cvxobj );
+        v = class( struct( 'size_', [ 0, 0 ], 'basis_', sparse( 1, 0 ), 'dual_', '', 'dof_', [], 'slow_', false ), 'cvx', cvxobj );
         return
 end
-
+slow = false;
 if isempty( b ),
     b = sparse( 1, prod( s ) );
 elseif issparse( b ) & ~cvx_use_sparse( b ),
@@ -40,6 +40,12 @@ elseif issparse( b ) & ~cvx_use_sparse( b ),
 end
 if length( s ) == 1,
     s( 2 ) = 1;
+end
+if nnz( isnan( b ) | isnan( b ) ),
+    slow = true;
+    tt = any( isnan( b ), 1 ) | sum( isinf( b ), 1 ) > isinf( b( 1, : ) );
+    b( :, tt ) = 0;
+    b( 1, tt ) = NaN;
 end
 if clean,
     b1 = b( 1, : );
@@ -49,7 +55,7 @@ if clean,
     end
 end
 
-v = class( struct( 'size_', s, 'basis_', b, 'dual_', '', 'dof_', d ), 'cvx', cvxobj );
+v = class( struct( 'size_', s, 'basis_', b, 'dual_', '', 'dof_', d, 'slow_', slow ), 'cvx', cvxobj );
 
 % Copyright 2008 Michael C. Grant and Stephen P. Boyd.
 % See the file COPYING.txt for full copyright information.
