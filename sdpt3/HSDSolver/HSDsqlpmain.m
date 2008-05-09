@@ -661,7 +661,7 @@
          update_best(iter+1) = 0; 
       end   
       errbest = max(relgap_best,infeas_best); 
-      if (iter>1) & (errbest < 1e-4 & norm(update_best(iter-1:iter+1)) == 0)
+      if (errbest < 1e-4 & norm(update_best(iter-1:iter+1)) == 0)
          msg = 'lack of progess in infeas'; 
          if (printlevel); fprintf('\n  %s',msg); end
          termcode = -3; 
