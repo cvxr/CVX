@@ -101,9 +101,9 @@ if cvx_isconstant( p ),
                 end
             end
         	if all( t1 ),
-        		y = polyenv( p, x );
+        		y = poly_env( p, x );
         	elseif any( t1 ),
-                y = cvx_subsasgn( y, t1, polyenv( p, cvx_subsref( x, t1 ) ) );
+                y = cvx_subsasgn( y, t1, poly_env( p, cvx_subsref( x, t1 ) ) );
             end
     end
     

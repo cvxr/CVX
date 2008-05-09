@@ -82,7 +82,7 @@ if m == 1 | n == 1 | isequal( p, 'fro' ),
                     cvx_begin
                         epigraph variable z
                         variable y( n )
-                        { [ y, z*ones(n,1) ], x } == geomean_cone( [n,2], 2, [1/p,1-1/p], cmode );
+                        { [ y, z*ones(n,1) ], x } == geo_mean_cone( [n,2], 2, [1/p,1-1/p], cmode );
                         sum( y ) == z;
                     cvx_end
                 end

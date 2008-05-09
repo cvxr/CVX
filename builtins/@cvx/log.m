@@ -82,9 +82,9 @@ for k = 1 : nv,
             % Posynomial
             sx = xt.size_;
             xt = xt.basis_;
-            rc = sum( xt ~= 0, 1 );
+            rc = full( sum( xt ~= 0, 1 ) );
             ru = sort( rc );
-            ru = rc([true;diff(ru)~=0]);
+            ru = ru([true,diff(ru)~=0]);
             nu = length( ru );
             if nu ~= 1,
                 yt = cvx( sx, [] );
@@ -106,7 +106,7 @@ for k = 1 : nv,
                 vx = vx + cvx( nq, sparse( rx, find( tz ), 1, max( rx ), nq ) );
                 vx = reshape( vx, rk, nq / rk );
                 if cvx___.expert,
-                    vx = logsumexp( vx );
+                    vx = log_sum_exp( vx );
                 else
                     vx = logsumexp_sdp( vx, 1, cvx___.gptol );
                 end
