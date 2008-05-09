@@ -203,12 +203,12 @@ cvx_begin sdp separable
         abs( [0.5,-0.5]*xq ) <= w + v;
         w <= xoff;
         v >= 0;
-        polyenv( p, w / ( 0.5 * xoff ) - 1 ) + v + [0.5,0.5]*xq <= yq;
+        poly_env( p, w / ( 0.5 * xoff ) - 1 ) + v + [0.5,0.5]*xq <= yq;
     else
         xy = xq - ones(size(xq,1),1) * yq;
         xy = max( xy, - xoff );
         xy = cvx_accept_convex( xy );
-        sum( polyenv( p, xy / ( 0.5 * xoff ) + 1 ), 1 ) <= 1;
+        sum( poly_env( p, xy / ( 0.5 * xoff ) + 1 ), 1 ) <= 1;
     end
 cvx_end
 

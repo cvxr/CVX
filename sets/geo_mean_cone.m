@@ -1,61 +1,61 @@
-function [ cvx_optpnt, mode ] = geomean_cone( sx, dim, w, mode )
+function [ cvx_optpnt, mode ] = geo_mean_cone( sx, dim, w, mode )
 
-%GEOMEAN_CONE    Cones involving the geometric mean.
-%   GEOMEAN_CONE(N), where N is a positive integer, creates a column vector
+%GEO_MEAN_CONE    Cones involving the geometric mean.
+%   GEO_MEAN_CONE(N), where N is a positive integer, creates a column vector
 %   variable X of length N and a scalar variable Y, and constrains them to
-%   satisfy GEOMEAN(X) >= Y and X >= 0. That is, given the declaration
+%   satisfy GEO_MEAN(X) >= Y and X >= 0. That is, given the declaration
 %       variables x(n) y
 %   the constraint
-%       {x,y} == geomean_cone(n)
+%       {x,y} == geo_mean_cone(n)
 %   is equivalent to
-%       geomean(x) >= y
-%   CVX uses the GEOMEAN_CONE to implement the GEOMEAN function and a
+%       geo_mean(x) >= y
+%   CVX uses the GEO_MEAN_CONE to implement the GEO_MEAN function and a
 %   variety of others, including POW_POS, POW_P, POW_ABS, and NORM. For
 %   clarity, users should prefer these functions instead of using this cone
 %   directly.
 %
-%   GEOMEAN_CONE(SY,DIM), where SY is a valid size vector and DIM is a
+%   GEO_MEAN_CONE(SY,DIM), where SY is a valid size vector and DIM is a
 %   positive integer, creates an array variable of size SY and and an array
 %   variable of size SX (see below) and applies the geometric mean
 %   constraint along dimension DIM. That is, given the declarations
 %       sy = sx; sy(min(dim,length(sx)+1))=1;
 %       variables x(sx) y(sy)
 %   the constraint
-%       {x,y} == geomean_cone(sx,dim)
+%       {x,y} == geo_mean_cone(sx,dim)
 %   is equivalent to
-%       geomean(x,dim) >= y
+%       geo_mean(x,dim) >= y
 %   Again, the inequality form is preferred, but CVX uses the set form
 %   internally. DIM is optional; if it is omitted or empty, the first
 %   non-singleton dimension is used.
 %
-%   GEOMEAN_CONE(SX,DIM,W), where W is a vector of nonnegative numbers,
+%   GEO_MEAN_CONE(SX,DIM,W), where W is a vector of nonnegative numbers,
 %   replaces the standard geometric mean with a weighted geometric mean
-%       geomean(x,dim,w) >= y
+%       geo_mean(x,dim,w) >= y
 %   The standard geometric mean is equivalent to W=ones(SX(DIM),1). Due to
 %   the way CVX implements weighted geometric means, it rounds the elements
 %   of W to the "nearest" rationals according to the RAT function.
 %
-%   GEOMEAN_CONE(SX,MODE),
-%   GEOMEAN_CONE(SX,DIM,MODE), or
-%   GEOMEAN_CONE(SX,DIM,W,MODE), where MODE is a string, generates a number
+%   GEO_MEAN_CONE(SX,MODE),
+%   GEO_MEAN_CONE(SX,DIM,MODE), or
+%   GEO_MEAN_CONE(SX,DIM,W,MODE), where MODE is a string, generates a number
 %   of alternative cones:
-%       MODE = 'HYPO': geomean(x) >= y
-%       MODE = 'POS' : geomean(x) >= y, y >= 0
-%       MODE = 'ABS' : geomean(x) >= abs(y) 
-%       MODE = 'CABS': geomean(x) >= abs(y), y complex
+%       MODE = 'HYPO': geo_mean(x) >= y
+%       MODE = 'POS' : geo_mean(x) >= y, y >= 0
+%       MODE = 'ABS' : geo_mean(x) >= abs(y) 
+%       MODE = 'CABS': geo_mean(x) >= abs(y), y complex
 %       MODE = 'FUNC': select 'POS' or 'ABS', depending on which one is
 %          is cheaper to implement. This is useful when y can be guaranteed
 %          to be nonnegative in some other way; say, through an external
 %          constraint or a maximizing objective. The mode actually used
 %          will be returned as a second output argument.
-%       MODE = '' is the same as MODE = 'HYPO'. GEOMEAN_CONE is insensitive
+%       MODE = '' is the same as MODE = 'HYPO'. GEO_MEAN_CONE is insensitive
 %       to case; e.g., 'pos' is equivalent to 'POS'.
 %
 %   Disciplined convex programming information:
-%       GEOMEAN_CONE is a CVX set specification. See the user guide for
+%       GEO_MEAN_CONE is a CVX set specification. See the user guide for
 %       details on how to use sets. However, it is strongly recommended
 %       that users take advantage of this set by calling the functions that
-%       utilize it; i.e., GEOMEAN, POW_POS, POW_ABS, POW_P, NORM, etc.
+%       utilize it; i.e., GEO_MEAN, POW_POS, POW_ABS, POW_P, NORM, etc.
 %       Doing so will produce models that are simpler to understand.
 
 %
@@ -162,7 +162,7 @@ end
 
 %
 % Construct the cone.
-% --- For nx == 2, the geomean the following equivalency
+% --- For nx == 2, the geo_mean the following equivalency
 %        sqrt( x(1) * x(2) ) >= | y |, x >= 0 <--> [x(1),y;y,x(2)] psd
 % --- For nx == 2^k, we can recursively apply this k times. For example,
 %     for nx = 4, we have
@@ -241,7 +241,7 @@ if ~wbasic,
         % Greedy: select the largest overlap
         ee = ee(ndx2);
         [ wc_t, wnm ] = max( sum(dec2bin(ww(ndx2))-'0',2)+(1-ee/(max(ee)+1)) );
-        % Construct a 2-element geomean
+        % Construct a 2-element geo_mean
         wi_t     = ndx1(wi(ndx2(wnm)));
         wj_t     = ndx1(wj(ndx2(wnm)));
         n3       = n3 + 1;

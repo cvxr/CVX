@@ -94,7 +94,7 @@ switch p,
                 epigraph variable y( sy )
                 if isreal(x), cmode = 'abs'; else, cmode = 'cabs'; end
                 { cat( nd+1, z, cvx_expand_dim( y, dim, nx ) ), cvx_accept_convex(x) } ...
-                    == geomean_cone( sw, nd+1, [1/p,1-1/p], cmode );
+                    == geo_mean_cone( sw, nd+1, [1/p,1-1/p], cmode );
                 sum( z, dim ) == y;
             cvx_end
         end

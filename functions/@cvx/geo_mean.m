@@ -1,8 +1,8 @@
-function y = geomean( x, dim, w, ismap, cmode )
+function y = geo_mean( x, dim, w, ismap, cmode )
 error( nargchk( 1, 5, nargin ) );
 if nargin < 5, cmode = ''; end
 
-%GEOMEAN   Internal cvx version.
+%GEO_MEAN   Internal cvx version.
 
 %
 % Basic argument check
@@ -112,13 +112,13 @@ for k = 1 : nk,
 
     switch nu( k ),
         case 0,
-            error( sprintf( 'Disciplined convex programming error:\n   Invalid computation: geomean( {%s} )', cvx_class( xt, true, true ) ) );
+            error( sprintf( 'Disciplined convex programming error:\n   Invalid computation: geo_mean( {%s} )', cvx_class( xt, true, true ) ) );
         case 1,
-            yt = cvx( geomean( cvx_constant( xt ), dim, w ) );
+            yt = cvx( geo_mean( cvx_constant( xt ), dim, w ) );
         case 2,
             cvx_begin
                 hypograph variable yt(sz);
-                { cvx_accept_concave(xt), yt } == geomean_cone( size(xt), dim,  w, 'func' );
+                { cvx_accept_concave(xt), yt } == geo_mean_cone( size(xt), dim,  w, 'func' );
             cvx_end
         case 3,
             if nx == 1,

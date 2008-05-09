@@ -9,9 +9,9 @@ end
 
 error( nargchk( 1, 2, nargin ) );
 if nargin == 2,
-    y = size( x, dim ) * log( geomean( x, dim ) );
+    y = size( x, dim ) * log( geo_mean( x, dim ) );
 else
-    y = length( x ) * log( geomean( x ) );
+    y = length( x ) * log( geo_mean( x ) );
 end
 
 % Copyright 2008 Michael C. Grant and Stephen P. Boyd.

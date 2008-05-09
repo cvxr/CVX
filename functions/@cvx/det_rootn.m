@@ -14,7 +14,7 @@ elseif size( X, 2 ) ~= n,
 
 elseif nnz( X ) <= n & nnz( diag( X ) ) == nnz( X ),
 
-    cvx_optval = geomean( diag( X ) );
+    cvx_optval = geo_mean( diag( X ) );
 
 elseif cvx_isconstant( X ),
 
@@ -25,7 +25,7 @@ elseif isreal( X ),
     cvx_begin
         variable Z(n,n) lower_triangular
         D = diag( Z );
-        maximize geomean( D )
+        maximize( geo_mean( D ) );
         subject to
             [ diag( D ), Z' ; Z, X ] == semidefinite(2*n);
     cvx_end
@@ -35,7 +35,7 @@ else
     cvx_begin
         variable Z(n,n) lower_triangular complex
         D = diag( Z );
-        maximize geomean( real( D ) )
+        maximize( geo_mean( real( D ) ) );
         subject to
             [ diag( D ), Z' ; Z, X ] == hermitian_semidefinite(2*n);
     cvx_end

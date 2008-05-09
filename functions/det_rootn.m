@@ -26,9 +26,9 @@ if norm( err, 'fro' ) > 8 * eps * norm( X, 'fro' ),
 else
     [R,p] = chol(X);
     if p > 0,
-        cvx_optval = geomean(eig(full(X)));
+        cvx_optval = geo_mean(eig(full(X)));
     else
-        cvx_optval = geomean(diag(R)).^2;
+        cvx_optval = geo_mean(diag(R)).^2;
     end
 end
 

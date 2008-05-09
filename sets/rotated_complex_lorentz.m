@@ -12,7 +12,7 @@ function cvx_optpnt = rotated_complex_lorentz( sx, dim )
 %   the constraint
 %       {x,y,z} == rotated_complex_lorentz(n)
 %   is equivalent to
-%       norm(x,2) <= geomean([y,z])
+%       norm(x,2) <= geo_mean([y,z])
 %   except that using ROTATED_COMPLEX_LORENTZ is more efficient.
 %
 %   ROTATED_COMPLEX_LORENTZ(SX,DIM), where SX is a valid size vector and
@@ -26,7 +26,7 @@ function cvx_optpnt = rotated_complex_lorentz( sx, dim )
 %   the constraint
 %       {x,y,z} == rotated_complex_lorentz(sx,dim)
 %   is equivalent to
-%       norms(x,2,dim) <= geomean(cat(dim,y,z),dim)
+%       norms(x,2,dim) <= geo_mean(cat(dim,y,z),dim)
 %   except, again, ROTATED_LORENTZ is more efficient. DIM is optional; if
 %   it is omitted, the first non-singleton dimension is used.
 %

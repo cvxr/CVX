@@ -1,23 +1,10 @@
-function cvx_optval = logsumexp( x, dim )
+function cvx_optval = log_sum_exp( x, dim )
 
-%LOGSUMEXP    log(sum(exp(x))).
-%   LOGSUMEXP(X) = LOG(SUM(EXP(X)). Unlike LOGSUMEXP_SDP, LOGSUMEXP is
-%   computed using a successive approximation method, which provides
-%   results exact to within the tolerance of the solver.
-%
-%   If X is a matrix, LOGSUMEXP_SDP(X) will perform its computations
-%   along each column of X. If X is an N-D array, LOGSUMEXP_SDP(X)
-%   will perform its computations along the first dimension of size
-%   other than 1. LOGSUMEXP_SDP(X,DIM) will perform its computations
-%   along dimension DIM.
-%
-%   Disciplined convex programming information:
-%       LOGSUMEXP(X) is convex an nondecreasing in X; therefore, X
-%       must be convex (or affine).
+%LOG_SUM_EXP   CVX internal version.
 
 global cvx___
 if ~cvx___.expert,
-    error( sprintf( 'Disciplined convex programming error:\n    Exact logsumexp() distance is not yet supported.\n    Use LOGSUMEXP_SDP instead.' ) );
+    error( sprintf( 'Disciplined convex programming error:\n    Exact log_sum_exp() is not yet supported.\n    Use LOGSUMEXP_SDP instead.' ) );
 end
 
 error( nargchk( 1, 2, nargin ) );
@@ -66,7 +53,7 @@ v = min( v, [], dim );
 % Process each type of expression one piece at a time
 %
 
-vu = sort( vr );
+vu = sort( v );
 vu = vu([true,diff(vu)~=0]);
 nv = length( vu );
 if nv > 1,
@@ -104,7 +91,7 @@ for k = 1 : nv,
     switch vk,
         case 0,
             % Invalid
-            error( sprintf( 'Disciplined convex programming error:\n    Illegal operation: logsumexp( {%s} ).', cvx_class( xt ) ) );
+            error( sprintf( 'Disciplined convex programming error:\n    Illegal operation: log_sum_exp( {%s} ).', cvx_class( xt ) ) );
         case 1,
             % Affine, convex
             cvx_begin
@@ -115,7 +102,7 @@ for k = 1 : nv,
             cvx_end
         case 2,
             % Constant
-            cvx_optval = cvx( logsumexp( cvx_constant( xt ) ) );
+            cvx_optval = cvx( log_sum_exp( cvx_constant( xt ) ) );
         otherwise,
             error( 'Shouldn''t be here.' );
     end

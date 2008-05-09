@@ -25,7 +25,7 @@
 %   det_root2n        - 2nth-root of the determinant of an SPD matrix.
 %   det_rootn         - nth-root of the determinant of an SPD matrix.
 %   entr              - Scalar entropy. (*)
-%   geomean           - Geometric mean. (*)
+%   geo_mean          - Geometric mean. (*)
 %   huber             - Huber penalty function.
 %   huber_circ        - Circularly symmetric version of the Huber penalty.
 %   huber_pos         - Monotonic Huber-style function.
@@ -34,14 +34,14 @@
 %   lambda_max        - Maximum eigenvalue of a symmetric matrix.
 %   lambda_min        - Minimum eigenvalue of a symmetric matrix.
 %   log_det           - Logarithm of the determinant. (*)
-%   logsumexp         - log(sum(exp(x))). (*)
+%   log_sum_exp       - log(sum(exp(x))). (*)
 %   logsumexp_sdp     - SDP-based approximation of log(sum(exp(x))).
 %   matrix_frac       - Matrix fractional function.
 %   norm_largest      - Sum of the k largest magnitudes of a vector.
 %   norm_nuc          - Nuclear norm of a matrix.
 %   norms             - Computation of multiple vector norms.
 %   norms_largest     - Computation of multiple norm_largest() norms.
-%   polyenv           - Convex or concave envelope of a polynomial.
+%   poly_env          - Convex or concave envelope of a polynomial.
 %   polyval_trig      - Evaluate a trigonometric polynomial.
 %   pos               - Positive part.
 %   pow_p             - Nonnegative branches of the power function.

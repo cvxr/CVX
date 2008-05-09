@@ -23,7 +23,7 @@ elseif nnz( X ) <= n & nnz( diag( X ) ) == nnz( X ),
     
     cvx_begin
         epigraph variable y
-        geomean( [ diag(X) ; y ], w ) >= 1;
+        geo_mean( [ diag(X) ; y ], w ) >= 1;
     cvx_end
 
 elseif isreal( X ),
@@ -33,7 +33,7 @@ elseif isreal( X ),
         variable Z(n,n) lower_triangular
         D = diag( Z );
         [ diag( D ), Z' ; Z, X ] == semidefinite(2*n);
-        geomean( [ D ; y ], [], w ) >= 1;
+        geo_mean( [ D ; y ], [], w ) >= 1;
     cvx_end
 
 else
@@ -43,7 +43,7 @@ else
         variable Z(n,n) lower_triangular complex
         D = diag( Z );
         [ diag( D ), Z' ; Z, X ] == hermitian_semidefinite(2*n);
-        geomean( [ real( D ) ; y ], [], w ) >= 1;
+        geo_mean( [ real( D ) ; y ], [], w ) >= 1;
     cvx_end
 
 end

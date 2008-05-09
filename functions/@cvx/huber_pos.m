@@ -7,8 +7,8 @@ function cvx_optval = huber( x, M, t )
 %
 
 error( nargchk( 1, 3, nargin ) );
-if ~cvx_isaffine( x ),
-    error( sprintf( 'Disciplined convex programming error:\n    HUBER is nonmonotonic in X, so X must be affine.' ) );
+if ~cvx_isconvex( x ),
+    error( sprintf( 'Disciplined convex programming error:\n    HUBER_POS is convex and nondecreasing in X, so X must be convex.' ) );
 end
 if nargin < 2,
     M = 1;
@@ -24,7 +24,7 @@ elseif ~isreal( t ),
 elseif cvx_isconstant( t ) & nnz( cvx_constant( t ) <= 0 ),
     error( 'Third argument must be real and positive.' );
 elseif ~cvx_isconcave( t ),
-    error( sprintf( 'Disciplined convex programming error:\n    HUBER is convex and nonincreasing in T, so T must be concave.' ) );
+    error( sprintf( 'Disciplined convex programming error:\n    HUBER_POS is convex and nonincreasing in T, so T must be concave.' ) );
 end
 sz = cvx_size_check( x, M, t );
 if isempty( sz ),
@@ -38,7 +38,7 @@ end
 cvx_begin separable
     variables v( sz ) w( sz )
     minimize( quad_over_lin( w, t, 0 ) + 2 .* M .* v )
-    abs( x ) <= w + v;
+    x <= w + v;
     w <= M * t;
     v >= 0;
 cvx_end

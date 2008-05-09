@@ -5,6 +5,11 @@ function y = logsumexp( varargin )
 %   function with LOG_SUM_EXP to better match our function naming
 %   conventions. Please start using it instead.
 
+warning( ...
+    sprintf( [ ...
+    'The function "logsumexp" has been renamed "log_sum_exp". Please start\n', ...
+    'using the new name. The old name will be removed in a future release.' ] ) );
+
 y = log_sum_exp( varargin{:} );
 
 % Copyright 2008 Michael C. Grant and Stephen P. Boyd. 
