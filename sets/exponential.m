@@ -1,7 +1,7 @@
 function cvx_optpnt = exponential( sx )
 
-%EXP_CONE   Exponential cone.
-%   EXP_CONE, called with no arguments, creates three scalar variables X,
+%EXPONENTIAL   Exponential cone.
+%   EXPONENTIAL, called with no arguments, creates three scalar variables X,
 %   Y, and Z and constraints them to lie in an exponetial cone. That is,
 %   given the declaration
 %       variables x y z
@@ -17,7 +17,7 @@ function cvx_optpnt = exponential( sx )
 %   X, Y, and Z, each of size SX, which are constrained elementwise to
 %   satisfy EXP_P(X,Y) <= Z. If SX is empty, then SX=[1,1] is assumed.
 
-global cvx___
+cvx_expert_check( 'exponential' );
 error( nargchk( 0, 1, nargin ) );
 
 %
@@ -33,9 +33,6 @@ else
     end
 end
 
-if ~cvx___.expert,
-    error( sprintf( 'Disciplined convex programming error:\n    The exponential cone is not yet supported.' ) );
-end
 
 %
 % Build the cone

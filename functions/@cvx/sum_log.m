@@ -2,11 +2,7 @@ function y = sum_log( x, dim )
 
 %SUM_LOG Internal CVX version.
 
-global cvx___
-if ~cvx___.expert,
-    error( sprintf( 'Disciplined convex programming error:\n    Logarithms are not yet supported.' ) );
-end
-
+cvx_expert_check( 'sum_log', x );
 error( nargchk( 1, 2, nargin ) );
 if nargin == 2,
     y = size( x, dim ) * log( geo_mean( x, dim ) );

@@ -2,11 +2,7 @@ function cvx_optval = rel_entr( x, y )
 
 %REL_ENTR   Internal cvx version.
 
-global cvx___
-if ~cvx___.expert,
-    error( sprintf( 'Disciplined convex programming error:\n    Relative entropy is not yet supported.' ) );
-end
-
+cvx_expert_check( 'rel_entr', x, y );
 persistent remap_x remap_y remap_z
 error( nargchk( 2, 2, nargin ) );
 sx = size( x ); xs = all( sx == 1 );
@@ -17,9 +13,6 @@ elseif ys,
     sz = sx;
 elseif ~isequal( sx, sy ),
     error( 'Dimensions are not compatible.' );
-end
-if ~cvx___.expert,
-    error( sprintf( 'Disciplined convex programming error:\n    Entropy functions are not yet supported.' ) );
 end
 
 % 0 : invalid

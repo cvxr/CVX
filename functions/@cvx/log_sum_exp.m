@@ -3,10 +3,9 @@ function cvx_optval = log_sum_exp( x, dim )
 %LOG_SUM_EXP   CVX internal version.
 
 global cvx___
-if ~cvx___.expert,
-    error( sprintf( 'Disciplined convex programming error:\n    Exact log_sum_exp() is not yet supported.\n    Use LOGSUMEXP_SDP instead.' ) );
+if ~cvx___.problems(end).gp,
+    cvx_expert_check( 'log_sum_exp', x );
 end
-
 error( nargchk( 1, 2, nargin ) );
 sx = size( x );
 if nargin < 2 | isempty( dim ),
@@ -39,7 +38,6 @@ end
 % Determine the expression types
 %
 
-global cvx___
 persistent remap
 if isempty( remap ),
     remap_2 = cvx_remap( 'real' );

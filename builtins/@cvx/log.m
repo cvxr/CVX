@@ -10,8 +10,8 @@ function y = log( x )
 %       will come in a later revision.
 
 global cvx___
-if ~cvx___.expert & ~cvx___.problems( end ).gp,
-    error( sprintf( 'Disciplined convex programming error:\n    Logarithms are not yet supported.' ) );
+if ~cvx___.problems( end ).gp,
+    cvx_expert_check( 'log', x );
 end
 
 %

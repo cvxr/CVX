@@ -17,12 +17,8 @@ function z = kl_div( x, y )
 %       constrain both X and Y to be nonnegative, hence there is no need to
 %       add additional constraints X >= 0 or Y >= 0 to enforce this.
 
-global cvx___
-if isa( x, 'cvx' ) & ~cvx___.expert,
-    error( sprintf( 'Disciplined convex programming error:\n    Kullback-Liebler divergence is not yet supported.' ) );
-end
-
 error(nargchk(2,2,nargin));
+cvx_expert_check( 'kl_div', x, y );
 z = rel_entr( x, y ) - x + y;
 
 % Copyright 2008 Michael C. Grant and Stephen P. Boyd.

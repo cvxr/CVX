@@ -25,13 +25,15 @@ U = L + tmp*tmp';
 R = (L+U)/2; 
 y_sample = sqrtm(R)*randn(n,N); 
 Y = cov(y_sample'); 
+Ui = inv(U); Ui = 0.5*(Ui+Ui');
+Li = inv(L); Li = 0.5*(Li+Li');
 
 % Maximum likelihood estimate of R^{-1} 
 cvx_begin sdp
     variable S(n,n) symmetric 
-    maximize log_det(S) - trace(S*Y)
-    S >= inv(U)
-    S <= inv(L)
+    maximize( log_det(S) - trace(S*Y) );
+    S >= Ui;
+    S <= Li;
 cvx_end
 R_hat = inv(S);
 

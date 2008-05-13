@@ -9,8 +9,6 @@ function cvx_expert( flag )
 %
 %   CVX_EXPERT(FALSE) disables expert mode.
 %
-%   CVX_EXPERT must be called outside of a model.
-%
 %   On exit, CVX_EXPERT(TF) returns the *previous* value of the expert flag,
 %   so that it can be flag, so it can be saved and restored later.
 %
@@ -35,9 +33,6 @@ if nargin == 1,
     end
 end
 cvx_global
-if ~isempty( cvx___.problems ),
-    error( 'The expert setting cannot be changed while a model is being constructed.' );
-end
 cvx___.expert = ns;
 
 % Copyright 2008 Michael C. Grant and Stephen P. Boyd.

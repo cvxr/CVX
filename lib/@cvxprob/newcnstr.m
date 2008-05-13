@@ -210,7 +210,7 @@ if op(1) == '<',
 else
     z = minus( x, y );
 end
-if op( 1 ) == '=',
+if op( 1 ) == '=' | sdp_mode,
     cmode = 'full';
 else
     cmode = 'magnitude';

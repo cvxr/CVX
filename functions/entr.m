@@ -15,12 +15,8 @@ function y = entr( x )
 %       constrain X to be nonnegative: there is no need to add an
 %       additional X >= 0 to your model in order to enforce this.
 
-global cvx___
-if isa( x, 'cvx' ) & ~cvx___.expert,
-    error( sprintf( 'Disciplined convex programming error:\n    Entropy is not yet supported.' ) );
-end
-
 error(nargchk(1,1,nargin));
+cvx_expert_check( 'entr', x );
 y = -rel_entr( x, 1 );
 
 % Copyright 2008 Michael C. Grant and Stephen P. Boyd.

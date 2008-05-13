@@ -20,12 +20,8 @@ function cvx_optval = log_det( X )
 %       LOG_DET is concave and nonmonotonic; therefore, when used in
 %       CVX specifications, its argument must be affine.
 
-global cvx___
-if isa( X, 'cvx' ) & ~cvx___.expert,
-    error( sprintf( 'Disciplined convex programming error:\n    LOG(DET(X)) is not yet supported.\n    Use DET_ROOTN(X) if possible.' ) );
-end
-            
 error( nargchk( 1, 1, nargin ) );
+cvx_expert_check( 'log_det', X );
 if ndims( X ) > 2 | size( X, 1 ) ~= size( X, 2 ),
     error( 'Argument must be a square matrix.' );
 end
