@@ -160,7 +160,7 @@ icons will expand/collapse directories to reveal/hide their contents.<br />
 --- Utility: [cvxbook/Ch08_geometric_probs/floorplan.m Computes a minimum-perimeter bounding box subject to positioning constraints (floorplan.m)]
 --- Data: [cvxbook/Ch08_geometric_probs/data_floorplan_32.mat data_floorplan_32.mat]
 --- Data: [cvxbook/Ch08_geometric_probs/data_floorplan_60.mat data_floorplan_60.mat]
--- *Chapter 7: Interior-point methods*
+-- *Chapter 11: Interior-point methods*
 --- [cvxbook/Ch11_intpt_methods/html/log_utility_flow.html Section 11.8.4: Network rate optimization] ([cvxbook/Ch11_intpt_methods/log_utility_flow.m log_utility_flow.m])
 - *Filter design*
 -- Reference: [http://stanford.edu/~boyd/papers/magdes.html FIR Filter Design via Spectral Factorization and Convex Optimization]

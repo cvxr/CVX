@@ -5,5 +5,5 @@
 %  Ch06_approx_fitting/    - Chapter 6: Approximation and fitting
 %  Ch07_statistical_estim/ - Chapter 7: Statistical estimation
 %  Ch08_geometric_probs/   - Chapter 8: Geometric problems
-%  Ch11_intpt_methods/     - Chapter 7: Interior-point methods
+%  Ch11_intpt_methods/     - Chapter 11: Interior-point methods
 help Contents

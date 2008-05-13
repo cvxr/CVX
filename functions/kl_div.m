@@ -22,7 +22,7 @@ if isa( x, 'cvx' ) & ~cvx___.expert,
     error( sprintf( 'Disciplined convex programming error:\n    Kullback-Liebler divergence is not yet supported.' ) );
 end
 
-error(nargchk(1,1,nargin));
+error(nargchk(2,2,nargin));
 z = rel_entr( x, y ) - x + y;
 
 % Copyright 2008 Michael C. Grant and Stephen P. Boyd.
