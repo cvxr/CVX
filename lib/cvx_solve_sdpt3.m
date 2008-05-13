@@ -1,4 +1,4 @@
-function [ x, y, status, XYZ ] = cvx_solve_sdpt3( At, b, c, nonls, quiet, prec, XYZ )
+function [ x, y, status, z ] = cvx_solve_sdpt3( At, b, c, nonls, quiet, prec, XY0 )
 
 [n,m] = size(At);
 
@@ -40,6 +40,22 @@ Avec = cell( 0, 1 );
 Cvec = cell( 0, 1 );
 xvec = cell( 0, 1 );
 tvec = cell( 0, 1 );
+if nargin > 6 & ~isempty( XY0 ),
+    use_x0 = true;
+    xx0 = XY0{1};
+    y0  = XY0{2};
+    zz0 = XY0{3};
+    X0  = cell( 0, 1 );
+    Z0  = cell( 0, 1 );
+else
+    use_x0 = false;
+end
+if nargout > 3,
+    need_z = true;
+    zvec = cell( 0, 1 );
+else
+    need_z = false;
+end
 
 %
 % Nonnegative variables preserved as-is
@@ -59,6 +75,13 @@ if ~isempty( tt ),
     Cvec{end+1,1} = c(ti);
     tvec{end+1,1} = ti;
     xvec{end+1,1} = 1;
+    if use_x0,
+        X0{end+1,1} = xx0(ti,:);
+        Z0{end+1,1} = zz0(ti,:);
+    end
+    if need_z,
+        zvec{end+1,1} = 1;
+    end
     found(tt) = true;
     used(ti) = true;
 end
@@ -85,6 +108,13 @@ if ~isempty( tt ),
     Cvec{end+1,1} = c(ti);
     tvec{end+1,1} = ti;
     xvec{end+1,1} = 1;
+    if use_x0,
+        X0{end+1,1} = xx0(ti,:);
+        Z0{end+1,1} = zz0(ti,:);
+    end
+    if need_z,
+        zvec{end+1,1} = 1;
+    end
     found(tt) = true;
     used(ti) = true;
 end
@@ -97,6 +127,13 @@ if ~isempty( tt ),
     Cvec{end+1,1} = {};
     tvec{end+1,1} = {};
     xvec{end+1,1} = {};
+    if use_x0,
+        X0{end+1,1} = {};
+        Z0{end+1,1} = {};
+    end
+    if need_z,
+        zvec{end+1,1} = {};
+    end
     nnn = 0;
     for k = tt,
         ti = indices{k};
@@ -184,6 +221,20 @@ if ~isempty( tt ),
             cc = sparse( rr + floor((cc-1)/n2)*n2, cc, vv, n2 * nv, n2 * nv );
         end
         Cvec{end}{end+1} = cc;
+        if use_x0,
+            xx = reshape( str_1' * reshape( xx0(ti,:), nt, nv ), n2, n2 * nv );
+            if nv > 1,
+                [ rr, cc, vv ] = find( xx );
+                xx = sparse( rr + floor((cc-1)/n2)*n2, cc, vv, n2 * nv, n2 * nv );
+            end
+            X0{end}{end+1} = xx;
+            zz = reshape( str_2 * reshape( zz0(ti,:), nt, nv ), n2, n2 * nv );
+            if nv > 1,
+                [ rr, cc, vv ] = find( zz );
+                zz = sparse( rr + floor((cc-1)/n2)*n2, cc, vv, n2 * nv, n2 * nv );
+            end
+            Z0{end}{end+1} = zz;
+        end
         
         %
         % SDPT3 presents X in symmetric form. We must extract the lower
@@ -201,6 +252,18 @@ if ~isempty( tt ),
             vv = vv(:,ov);
         end
         xvec{end}{end+1} = sparse( cc, rr, vv, n2*nv*(nnn+1), nt*nv );
+        if need_z,
+            [ rr, cc, vv ] = find( str_1 );
+            cc = cc + floor((cc-1)/n2)*(nnn-n2);
+            if nv > 1,
+                ov = ones(1,nv); sv = [0:nv-1];
+                or = ones(length(rr),1);
+                rr = rr(:,ov) + or*(sv*nt);
+                cc = cc(:,ov) + or*(sv*(n2*(nnn+1)));
+                vv = vv(:,ov);
+            end
+            zvec{end}{end+1} = sparse( cc, rr, vv, n2*nv*(nnn+1), nt*nv );
+        end
         used(ti) = true;
     end
     blk{end,2} = horzcat( blk{end,2}{:} );
@@ -209,6 +272,14 @@ if ~isempty( tt ),
     tvec{end}  = vertcat( tvec{end}{:} );
     xvec{end}  = blkdiag( xvec{end}{:} );
     xvec{end}(nnn*nnn+1:end,:) = [];
+    if use_x0,
+        X0{end} = blkdiag( X0{end}{:} );
+        Z0{end} = blkdiag( Z0{end}{:} );
+    end
+    if need_z,
+        zvec{end} = blkdiag( zvec{end}{:} );
+        zvec{end}(nnn*nnn+1:end,:) = [];
+    end
     found(tt)  = true;
 end
 
@@ -229,6 +300,13 @@ if ~isempty(ti),
     Cvec{end+1,1} = c(ti);
     tvec{end+1,1} = ti;
     xvec{end+1,1} = 1;
+    if use_x0,
+        X0{end+1} = xx0(ti,:);
+        Z0{end+1} = zz0(ti,:);
+    end
+    if need_z,
+        zvec{end+1,1} = 1;
+    end
     found(tt) = true;
     used(ti) = true;
 end
@@ -243,13 +321,10 @@ OPTIONS.gaptol = prec(1);
 OPTIONS.printlevel = 3 * ~quiet;
 % OPTIONS.vers = 2;
 
-if nargin < 7 | isempty(XYZ),
-    [X0,y0,Z0] = infeaspt(blk,Avec,Cvec,b);
-    XYZ = { X0, y0, Z0 };
-end
-[ obj, xx, y, z, info ] = sqlp( blk, Avec, Cvec, b, OPTIONS, XYZ{1}, XYZ{2}, XYZ{3} );
-if nargout > 3,
-    XYZ = { xx, y, z };
+if use_x0,
+    [ obj, xx, y, zz, info ] = sqlp( blk, Avec, Cvec, b, OPTIONS, X0, y0, Z0 );
+else
+    [ obj, xx, y, zz, info ] = sqlp( blk, Avec, Cvec, b, OPTIONS );
 end
 
 %
@@ -259,11 +334,19 @@ end
 switch info.termcode,
     case 0,
         status = 'Solved';
+        x_good = true;
+        y_good = true;
     case 1,
         status = 'Infeasible';
+        x_good = false;
+        y_good = true;
     case 2,
         status = 'Unbounded';
+        x_good = true;
+        y_good = false;
     otherwise,
+        x_good = info.pinfeas <= prec(3);
+        y_good = info.dinfeas <= prec(3);
         err = [info.relgap,info.pinfeas,info.dinfeas];
         if any(isnan(err)),
             err = Inf;
@@ -280,24 +363,29 @@ switch info.termcode,
             info.termcode = 0;
         end
 end
-switch info.termcode,
-    case { 0, 2 },
-        x = zeros(1,n);
-        for k = 1 : length(xx),
-            x(1,tvec{k}) = x(1,tvec{k}) + vec(xx{k})' * xvec{k};
+if x_good,
+    x = zeros(1,n);
+    for k = 1 : length(xx),
+        x(1,tvec{k}) = x(1,tvec{k}) + vec(xx{k})' * xvec{k};
+    end
+    x = full( x )';
+else
+    x = NaN * ones(n,1);
+end
+if y_good,
+    y = full( y );
+    if need_z,
+        z = zeros(1,n);
+        for k = 1 : length(zz),
+            z(1,tvec{k}) = z(1,tvec{k}) + vec(zz{k})' * zvec{k};
         end
-        x = full( x )';
-        if info.termcode == 2,
-            y = NaN * ones( m, 1 );
-        else
-            y = full( y );
-        end
-    case 1,
-        x = NaN * ones( n, 1 );
-        y = full( y );
-    otherwise,
-        x = NaN * ones( n, 1 );
-        y = NaN * ones( m, 1 );
+        z = full( z )';
+    end
+else
+    y = NaN * ones( m, 1 );
+    if need_z,
+        z = NaN * ones( n, 1 );
+    end
 end
 
 %
@@ -310,6 +398,7 @@ if mzero,
         y(end) = [];
     end
 end
+
 
 % Copyright 2008 Michael C. Grant and Stephen P. Boyd.
 % See the file COPYING.txt for full copyright information.

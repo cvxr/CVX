@@ -75,11 +75,11 @@ elseif n ~= 0 & ~infeas & ( any( b ) | any( c ) ),
     prec = prob.precision;
     sfunc  = [ 'cvx_solve_', lsolv ];
     if isempty( cones ),
-        tt = [];
+        texp = [];
     else
-        tt = find( strcmp( { cones.type }, 'exponential' ) );
+        texp = find( strcmp( { cones.type }, 'exponential' ) );
     end
-    need_iter = ~isempty( tt );
+    need_iter = ~isempty( texp );
     if ~quiet,
         disp( ' ' );
         spacer = '-';
@@ -109,22 +109,21 @@ elseif n ~= 0 & ~infeas & ( any( b ) | any( c ) ),
         %   = cl { (x,y,z) | x <= -y*log(y/z), z > 0 }
         % Approximation: given a shift point x0,
         %    { (x,y,z) | y*exp(x0)*pos(1+(x/y-x0)/16)^16 <= z, y > 0 }
-        %    { (x,y,z) | y+(x-x0*y)/16 <= exp(-x0/16)*geomean([z,y],[],[1,15])
+        %    { (x,y,z) | y+(x-x0*y)/16 <= exp(-x0/16)*geo_mean([z,y],[],[1,15])
         % Transformed cone:
-        %   4 semidefinite cones, 1 lorentz cone, 1 slack
-        %   [ w1    ][ w4    ] [ w7    ] [ w10     ] [ w13 ]
-        %   [ w2 w3 ][ w5 w6 ] [ w8 w9 ] [ w11 w12 ] [ w14 ] w15
+        %   4 semidefinite cones, 1 free, 1 slack
+        %   [ w1    ][ w4    ] [ w7    ] [ w10     ] w13
+        %   [ w2 w3 ][ w5 w6 ] [ w8 w9 ] [ w11 w12 ] w14
         %   w2 = w4, w5 = w7, w8 = w10
-        %   w3 = w6, w6 = w9, w9 = w12, w12 = w14 / xw
-        %   exp(-x0/16) * w11 = w3 + w13 / 16 + w15
+        %   w3 = w6, w6 = w9, w9 = w12,
+        %   exp(-x0/16) * w11 = w3 ( 1 - x0 / 16 ) + w13 / 16 + w14
         % Recovery:
-        %   x = w13 + x0 * x3
+        %   x = w13
         %   y = w3
         %   z = w1
         %
         
-        ndxs  = cat( 2, cones(tt).indices );
-        cones(tt) = [];
+        ndxs  = cat( 2, cones(texp).indices );
         nc    = size(ndxs,2);
         xndxs = ndxs(1,:);
         yndxs = ndxs(2,:);
@@ -132,39 +131,47 @@ elseif n ~= 0 & ~infeas & ( any( b ) | any( c ) ),
         x0    = realmin * ones(nc,1);
         maxw  = log(realmax);
         
-        epow = 8;
+        epow = 16;
         switch epow,
             case 16,
-                QAi  = [ 2, 4, 3, 6, 5, 7, 6, 9, 8,10, 9,12,12,    14, 3,    11,  13, 15 ]';
-                QAj  = [ 1, 1, 2, 2, 3, 3, 4, 4, 5, 5, 6, 6, 7,     7, 8,     8,   8,  8 ]';
-                QAv  = [+1,-1,+1,-1,+1,-1,+1,-1,+1,-1,+1,-1,+1,-0.123, 1,-0.234,1/16,  1 ]';
-                QAr  = [3,4,2,5,6,7,8,9,10,11,12,13,1,14,15];
+                QAi  = [ 2, 4, 3, 6, 5, 7, 6, 9, 8,10, 9,12,3,        11,  13, 14 ]';
+                QAj  = [ 1, 1, 2, 2, 3, 3, 4, 4, 5, 5, 6, 6,7,         7,   7,  7 ]';
+                QAv  = [+1,-1,+1,-1,+1,-1,+1,-1,+1,-1,+1,-1,0.123,-0.234,1/16,  1 ]';
+                QAr  = [3,4,2,5,6,7,8,9,10,11,12,13,1,14];
                 ewid = 1.75;
             case 8,
-                QAi  = [ 2, 4, 3, 6, 5, 7, 6, 9, 9,    11, 3,     8,  10, 12 ]';
-                QAj  = [ 1, 1, 2, 2, 3, 3, 4, 4, 5,     5, 6,     6,   6,  6 ]';
-                QAv  = [+1,-1,+1,-1,+1,-1,+1,-1,+1,-0.123, 1,-0.234,1/8,   1 ]';
-                QAr  = [3,4,2,5,6,7,8,9,10,1,11,12];
+                QAi  = [ 2, 4, 3, 6, 5, 7, 6, 9,3,         8,  10, 11 ]';
+                QAj  = [ 1, 1, 2, 2, 3, 3, 4, 4,5,         5,   5,  5 ]';
+                QAv  = [+1,-1,+1,-1,+1,-1,+1,-1,0.123,-0.234,1/8,   1 ]';
+                QAr  = [3,4,2,5,6,7,8,9,10,1,11];
                 ewid = 1.22;
             case 4,
-                QAi  = [ 2, 4, 3, 6, 6,     8, 3,     5,   7,  9 ]';
-                QAj  = [ 1, 1, 2, 2, 3,     3, 4,     4,   4,  4 ]';
-                QAv  = [+1,-1,+1,-1,+1,-0.123, 1,-0.234, 1/4,  1 ]';
-                QAr  = [3,4,2,5,6,7,1,8,9];
+                QAi  = [ 2, 4, 3, 6,3,         5,   7,  8 ]';
+                QAj  = [ 1, 1, 2, 2,4,         4,   4,  4 ]';
+                QAv  = [+1,-1,+1,-1,0.123,-0.234, 1/4,  1 ]';
+                QAr  = [3,4,2,5,6,7,1,8];
                 ewid = 0.84;
         end
         
         nQA     = max(QAi);
         mQA     = max(QAj);
         nc      = size(ndxs,2);
-        new_n   = n + (nQA-3) * nc;
+        new_n   = n + (nQA-3) * nc + 1;
         new_m   = m + mQA * nc;
-        n_ndxs  = [ ndxs ; reshape( n + 1 : new_n, nQA-3, nc  ) ];
+        n_ndxs  = [ ndxs ; reshape( n + 1 : new_n - 1, nQA-3, nc  ) ];
         n_ndxs  = n_ndxs(QAr,:);
         if ~quiet,
             disp( sprintf( '   Approximation size: %d variables, %d equality constraints', new_n, new_m ) );
             disp( spacer );
         end
+
+        % Stuff free variables into a lorentz cone to preserve warm start
+        tfree = ones( 1, n );
+        for k = 1 : length(cones),
+            tfree(cones(k).indices) = 0;
+        end
+        tfree(xndxs) = 1;
+        tfree = find(tfree);
         
         % Perform (x,y,z) ==> w transformation on A and C
         c (new_n,end) = 0;
@@ -172,49 +179,30 @@ elseif n ~= 0 & ~infeas & ( any( b ) | any( c ) ),
         b (new_m,end) = 0;
         
         % Add new cone constraints
-        lQA = length(QAi);
-        nc0 = 0:mQA:mQA*(nc-1);
-        nc1 = ones(1,nc);
-        At = [ At, sparse( n_ndxs(QAi,:), ...
-            QAj(:,nc1) + nc0(ones(lQA,1),:), ...
-            QAv(:,nc1), new_n, mQA * nc ) ];
+        lQA  = length(QAi);
+        nc0  = 0:mQA:mQA*(nc-1);
+        nc1  = ones(1,nc);
+        At  = [ At, sparse( n_ndxs(QAi,:), ...
+                QAj(:,nc1) + nc0(ones(lQA,1),:), ...
+                QAv(:,nc1), new_n, mQA * nc ) ];
         
-        wndxs = n_ndxs(nQA-1,:) + (m+mQA-2+nc0) * new_n;
-        endxs = n_ndxs(nQA-4,:) + (m+mQA-1+nc0) * new_n;
-        yorig_A = At(yndxs,:);
-        yorig_C = c(yndxs,:);
-        xorig_A = At(xndxs,:);
-        xorig_C = c(xndxs,:);
-        xorig_A(:,m+1:end) = 0;
+        endxs = n_ndxs(nQA-3,:) + (m+mQA-1+nc0) * new_n;
+        fndxs = n_ndxs(3,:)     + (m+mQA-1+nc0) * new_n;
         
         ncone.type       = 'semidefinite';
-        ncone.indices    = reshape(n_ndxs(1:nQA-3,:),3,(nQA-3)*nc/3);
-        ncone(2).type    = 'lorentz';
-        ncone(2).indices = reshape(n_ndxs(nQA-2:nQA-1,:),2,nc);
-        ncone(3).type    = 'nonnegative';
-        ncone(3).indices = n_ndxs(nQA,:);
+        ncone.indices    = reshape(n_ndxs(1:nQA-2,:),3,(nQA-2)*nc/3);
+        ncone(2).type    = 'nonnegative';
+        ncone(2).indices = n_ndxs(nQA,:);
+        ncone(3).type    = 'lorentz';
+        ncone(3).indices = [ tfree(:) ; new_n ];
+        cones(texp) = [];
         cones = [ cones, ncone ];
 
-        xw = epow;
+        amult = 1;
         rel_err = 1e-6;
         last_err = Inf;
+        epow_i = 1 / epow;
         
-        prec_list = prec(3); % max( prec(3), 1e-2 );
-        for k = 3: -1 : 1,
-            if prec(k) > 0,
-                if 0, % prec(k) < 0.1 * prec_list(end),
-                    prec_list = [ prec_list, sqrt(prec(k)*prec_list(1)), prec(k) ];
-                elseif prec(k) < prec_list(end),
-                    prec_list = [ prec_list, prec(k) ];
-                end
-            end
-        end
-        if prec(1) == 0,
-            % prec_list(end+1) = prec_list(end) / 8;
-            prec_list(end+1) = 0;
-        end
-        prec_ndx = 1;
-        eshift   = 0;
         ninfeas  = 0;
         best_x   = [];
         best_px  = Inf;
@@ -224,11 +212,10 @@ elseif n ~= 0 & ~infeas & ( any( b ) | any( c ) ),
         best_y   = [];
         solv_warn = false;
         use_init = false;
-        nprec = prec_list(1) * [1,1,1];
         if ~quiet,
-            disp( ' Target     Forcing     Conic    Solver' );
-            disp( 'Precision    Bias       Error    Status' );
-            disp( '---------------------------------------' );
+            disp( ' Target     Conic    Solver' );
+            disp( 'Precision   Error    Status' );
+            disp( '---------------------------' );
         end
         best_x = NaN * ones(n,1);
         best_y = NaN * ones(m,1);
@@ -237,71 +224,85 @@ elseif n ~= 0 & ~infeas & ( any( b ) | any( c ) ),
         stagnant = false;
         last_slow = false;
         dscale = blkdiag(speye(m,m),speye(new_m-m,new_m-m));
-        XYZ = {};
+        XY0 = {};
+        nprec = prec(3) * [ 1, 1, 1 ];
         for iter = 1 : 1000,
-            dx0 = diag(sparse(x0));
-            At(yndxs,:) = yorig_A + dx0 * xorig_A;
-            c (yndxs,:) = yorig_C + dx0 * xorig_C;
-            At(endxs) = -exp(-(x0+eshift)/epow);
-            At(wndxs) = -1./xw;
-            [ x, y, status, XYZ ] = feval( sfunc, At, b, c, cones, true, nprec, XYZ );
-            x_good = ~isnan( x(1) );
-            y_good = ~isnan( y(1) );
-            tndx   = 2 + ( status(3) == 'a' );
-            tprec  = nprec(tndx);
-            if x_good,
-                xxx = x(xndxs,:);
-                yyy = max( x(yndxs,:), realmin );
-                zzz = max( x(zndxs,:), realmin );
-                nx0 = xxx ./ yyy;
-                nx1 = log( zzz ./ yyy ) - x0;
-                nxe = nx0 - nx1;
-                x_clean = all( nxe < 0 );
-                pob = c' * x;
-            elseif any( eshift > 0 ),
-                eshift = min( eshift, 0 );
-                x_clean = false;
-                nxe = 0;
+            x0e = x0 * epow_i;
+            qq1 = exp( -x0e );
+            qq2 = 1 - x0e;
+            At(endxs) = - amult * qq1;
+            At(fndxs) = amult * qq2;
+            [ x, y, status, z ] = feval( sfunc, At, b, c, cones, true, nprec );
+            if status(1) == 'F',
+                tprec   = Inf;
             else
-                nxe = 0;
-                x_clean = true;
-                pob = Inf;
+                tprec = nprec(2+(status(3)=='a'));
             end
-            if y_good,
-                y(m+1:end) = 0;
-                z = c - At * y;
-                uuu = min( z( xndxs, : ), -realmin );
+            x_valid = ~isnan(x(1));
+            y_valid = ~isnan(y(1));
+            x_clean = false;
+            y_clean = false;
+            tighten = false;
+            if x_valid,
+                xxx = x(xndxs,:);
+                yyy = x(yndxs,:);
+                zzz = x(zndxs,:);
+                x_valid = all( yyy >= 0 & zzz >= 0 );
+                if x_valid,
+                    nx0 = xxx ./ yyy;
+                    nx1 = log( zzz ./ yyy );
+                    nxe = nx0 - nx1;
+                    nx0 = 0.5 * ( nx0 + nx1 );
+                    ttt = yyy == 0;
+                    if any( ttt ),
+                        nxe( ttt ) = 0;
+                        nx0( ttt ) = x0( ttt );
+                    end
+                    x_clean = all( nxe <= 0 );
+                    pob = c' * x;
+                else
+                    tighten = true;
+                end
+            end
+            if y_valid,
+                z = z + At * [ zeros(m,1) ; y(m+1:end) ];
+                uuu = z( xndxs, : );
                 vvv = z( yndxs, : );
-                www = max( z( zndxs, : ), realmin );
-                nx2 = 1 - vvv ./ uuu;
-                nx3 = log( - uuu ./ www ) - x0;
-                nxd = nx2 - nx3;
-                y_clean = all( nxd > 0 );
-                dob = b' * y;
-                if x_good, % Solved
-                    dx0 = 0.5 * ( nx0 + nx2 );
-                else % Infeasible
-                    dx0 = 0.5 * ( nx2 + nx3 );
+                www = z( zndxs, : );
+                y_valid = all( uuu <= 0 & www >= 0 );
+                if y_valid,
+                    nx2 = 1 - vvv ./ uuu;
+                    nx3 = - log( - www ./ uuu );
+                    nxd = nx3 - nx2;
+                    nx2 = 0.5 * ( nx2 + nx3 );
+                    ttt = uuu == 0;
+                    if any( ttt ),
+                        nxd( ttt ) = 0;
+                        nx2( ttt ) = x0( ttt );
+                    end
+                    y_clean = all( nxd <= 0 );
+                    if y_clean,
+                        dob = b' * y;
+                        if x_clean,
+                            nx0 = 0.5 * ( nx0 + nx2 );
+                        else
+                            nx0 = nx2;
+                        end
+                    end
+                else
+                    tighten = true;
                 end
-            elseif any( eshift < 0 ),
-                eshift = max( eshift, 0 );
-                y_clean = false;
-                nxd = 0;
-            else
-                nxd = 0;
-                y_clean = true;
-                dob = -Inf;
-                if x_good, % Unbounded
-                    dx0 = 0.5 * ( nx0 + nx1 );
-                else       % Failed
-                   break;
-                end
+            end
+            switch status,
+                case { 'Infeasible', 'Inaccurate/Infeasible' },
+                    x_clean = y_valid;
+                    pob = Inf;
+                case { 'Unbounded', 'Inaccurate/Unbounded' },
+                    y_clean = x_valid;
+                    dob = -Inf;
             end
             if x_clean & ( tprec < best_px | ( tprec == best_px & pob < best_ox ) ),
                 best_x  = x(1:n);
-                if x_good,
-                    best_x(xndxs,:) = xxx + x0 .* yyy;
-                end
                 best_px = tprec;
                 best_ox = pob;
             end
@@ -310,48 +311,52 @@ elseif n ~= 0 & ~infeas & ( any( b ) | any( c ) ),
                 best_py = tprec;
                 best_oy = dob;
             end
-            err = 0;
-            if best_px > tprec,
+            if tighten,
+                err = Inf;
+            else
+                err = 0;
+            end
+            if x_valid & ~x_clean,
                 err = max( err, max(nxe) );
             end
-            if best_py > tprec,
-                err = max( err, -min(nxd) );
+            if y_valid & ~y_clean,
+                err = max( err, max(nxd) );
             end
-            slow = err > 0.9 * last_err;
-            stagnant = stagnant | ( slow & last_slow );
+            stagnant = ~isnan( x(1) ) & ~isnan( y(1) ) & ( err > 0.9 * last_err );
             if ~quiet,
                 if stagnant, stagc = 'S'; else stagc = ' '; end
-                disp( sprintf( '%9.3e  %9.3e%c %9.3e  %s', nprec(1), max(eshift), stagc, err, status ) );
+                disp( sprintf( '%9.3e%c %9.3e  %s', nprec(2), stagc, err, status ) );
             end
-            if ( best_px == tprec & best_py == tprec ) | nprec(1) > prec(3),
-                if nprec(1) == prec(1) | tndx == 3,
-                    break;
-                end
-                prec_ndx = prec_ndx + 1;
-                nprec(1) = prec_list(prec_ndx);
-                nprec(2) = max( nprec(1), prec(2) );
-                nprec(3) = max( nprec(1), prec(3) );
+            if err == 0,
+                if nprec(1) == prec(1), break; end
+                advance = true;
+            elseif ~stagnant,
+                advance = false;
+            elseif tprec == nprec(2) & amult < 100,
+                amult = amult * 100;
+                At(:,m+1:end) = At(:,m+1:end) * 100;
+            elseif nprec(1) == prec(1),
+                break;
+            else
+                advance = true;
+            end
+            if advance,
+                nprec(1:2) = prec(1:2);
                 stagnant = false;
                 err = Inf;
-                eshift = 0;
-                if ~isempty( XYZ ),
-                    continue;
-                end
-            elseif stagnant & best_px > tprec,
-                eshift = eshift + 2 * max(nxe,0);
-            elseif stagnant & best_py > tprec,
-                eshift = 0;
-            elseif slow,
-                eshift = eshift + (nxe>0).*min(nxd,nxe) + (nxd<0).*max(nxd,nxe);
+                At(:,m+1:end) = At(:,m+1:end) / amult;
+                amult = 1;
             end
             last_err = err;
-            last_slow = slow;
-            xw = min( maxw, max( abs( dx0 ), ewid ) );
-            x0 = x0 + min( epow, max( dx0, -epow ) );
-            XYZ = {};
+            if iter == 1,
+                x0 = nx0;
+            else
+                x0 = min( max( nx0, x0 - epow ), x0 + epow );
+            end
+            x0 = min( max( -maxw, x0 ), maxw );
         end
         if isnan( best_x(1) ), 
-            status = 'Infeasible',
+            status = 'Infeasible';
         elseif isnan( best_y(1) ), 
             status = 'Unbounded';
         else
@@ -366,11 +371,10 @@ elseif n ~= 0 & ~infeas & ( any( b ) | any( c ) ),
         x = best_x;
         y = best_y;
         c = c(1:n,:);
-        c(yndxs,:) = yorig_C;
     else
         [ x, y, status ] = feval( sfunc, At, b, c, cones, quiet, prec );
     end
-    if cvx___.profile, profile on; end
+    if cvx___.profile, profile resume; end
     if ~cvx___.path.hold, 
         cvx_setspath(''); 
     end
@@ -425,7 +429,7 @@ else
     status = 'Solved';
     x = zeros( n, 1 );
     y = zeros( m, 1 );
-    oval = sgn * d;
+    oval  = sgn * d;
     pval = 1;
     dval = 1;
     
@@ -437,6 +441,13 @@ if dualized,
         case 'Unbounded',  status = 'Infeasible';
         case 'Inaccurate/Infeasible', status = 'Inaccurate/Unbounded';
         case 'Inaccurate/Unbounded',  status = 'Inaccurate/Infeasible';
+    end
+end
+
+if gobj,
+    switch status,
+        case 'Unbounded', status = 'Solved';
+        case 'Inaccurate/Unbounded',  status = 'Inaccurate/Solved';
     end
 end
 
