@@ -38,9 +38,10 @@ axis([-1,11,-0.1, 1.1]);
 % minimize  -(sum_(y_i=1) ui)*a - b + sum log (1+exp(a*ui+b)
 
 U = [ones(m,1) u];
+cvx_expert true
 cvx_begin
     variables x(2)
-    maximize(y'*U*x-sum(logsumexp([zeros(1,m); x'*U'])))
+    maximize(y'*U*x-sum(log_sum_exp([zeros(1,m); x'*U'])))
 cvx_end
 
 % Plot results and logistic function

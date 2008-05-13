@@ -11,7 +11,7 @@ To make changes, update the M-file and republish this document.
       -->
       <title>Figure 7.1: Logistic regression</title>
       <meta name="generator" content="MATLAB 7.5">
-      <meta name="date" content="2008-03-12">
+      <meta name="date" content="2008-04-14">
       <meta name="m-file" content="logistics"><style>
 
 body {
@@ -110,6 +110,7 @@ axis([-1,11,-0.1, 1.1]);
 <span class="comment">% minimize  -(sum_(y_i=1) ui)*a - b + sum log (1+exp(a*ui+b)</span>
 
 U = [ones(m,1) u];
+cvx_expert <span class="string">true</span>
 cvx_begin
     variables <span class="string">x(2)</span>
     maximize(y'*U*x-sum(logsumexp([zeros(1,m); x'*U'])))
@@ -142,8 +143,9 @@ Precision    Bias       Error    Status
 ---------------------------------------
 1.221e-04  0.000e+00  2.452e+00  Solved
 1.221e-04  0.000e+00  1.700e-01  Solved
-1.221e-04  0.000e+00  2.452e-03  Solved
+1.221e-04  0.000e+00  2.455e-03  Solved
 1.221e-04  0.000e+00  0.000e+00  Solved
+1.490e-08  0.000e+00  1.155e-05  Solved
 1.490e-08  0.000e+00  0.000e+00  Solved
 -----------------------------------------------------------------
 Status: Solved
@@ -194,6 +196,7 @@ axis([-1,11,-0.1, 1.1]);
 % minimize  -(sum_(y_i=1) ui)*a - b + sum log (1+exp(a*ui+b)
 
 U = [ones(m,1) u];
+cvx_expert true
 cvx_begin
     variables x(2)
     maximize(y'*U*x-sum(logsumexp([zeros(1,m); x'*U'])))

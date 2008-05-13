@@ -38,6 +38,7 @@ b  = [ 0.1 ; 0.1 ;0.5 ; -0.5 ; -0.2 ; 0.3 ; 0.4 ; -0.3 ];
 % Compute the maximum entropy distribution
 %
 
+cvx_expert true
 cvx_begin
     variables pent(n)
     maximize( sum(entr(pent)) )
@@ -56,14 +57,16 @@ for t = 1 : n,
     cvx_begin
         variable p( n )
         minimize sum( p(1:t) )
-        p >= 0; sum( p ) == 1;
+        p >= 0; 
+        sum( p ) == 1;
         A * p <= b;
     cvx_end
     Lbnds(t) = cvx_optval;
     cvx_begin
         variable p( n )
         maximize sum( p(1:t) )
-        p >= 0; sum( p ) == 1;
+        p >= 0; 
+        sum( p ) == 1;
         A * p <= b;
     cvx_end
     Ubnds(t) = cvx_optval;
