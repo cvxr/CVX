@@ -11,6 +11,8 @@
 %  ex_4_38.m                   - Exercise 4.38(b): Linear matrix inequalities with one variable
 %  ex_4_3.m                    - Exercise 4.3: Solve a simple QP with inequality constraints
 %  max_det_psd_completion.m    - Exercise 4.47: Maximum determinant PSD matrix completion
+%  channel_capacity.m          - Exercise 4.57: Capacity of a communication channel
 %  ex_4_5.m                    - Exercise 4.5: Show the equivalence of 3 convex problem formations
+%  logopt_investment.m         - Exercise 4.60: Log-optimal investment strategy
 %  cantilever_beam_plot.m      - Plots a cantilever beam as a 3D figure.
 help Contents

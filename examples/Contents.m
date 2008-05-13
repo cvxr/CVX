@@ -6,6 +6,7 @@
 %  filter_design/              - Filter design
 %  gp_tutorial/                - Examples from [http://stanford.edu/~boyd/papers/gp_tutorial.html A Tutorial on Geometric Programming]
 %  graph_laplacian/            - Graph Laplacian eigenvalue optimization
+%  log_exp/                    - Examples employing logarithms, exponentials, and entropy functions
 %  sparse_heuristics/          - Sparse solution heuristics
 %  time_series_analysis/       - Example from [http://stanford.edu/~boyd/papers/l1_trend_filter.html $\ell_1$ Trend Filtering]
 %  quickstart.m                - Examples from the CVX User's guide

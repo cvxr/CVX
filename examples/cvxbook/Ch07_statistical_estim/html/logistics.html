@@ -11,7 +11,7 @@ To make changes, update the M-file and republish this document.
       -->
       <title>Figure 7.1: Logistic regression</title>
       <meta name="generator" content="MATLAB 7.5">
-      <meta name="date" content="2008-04-14">
+      <meta name="date" content="2008-05-13">
       <meta name="m-file" content="logistics"><style>
 
 body {
@@ -113,7 +113,7 @@ U = [ones(m,1) u];
 cvx_expert <span class="string">true</span>
 cvx_begin
     variables <span class="string">x(2)</span>
-    maximize(y'*U*x-sum(logsumexp([zeros(1,m); x'*U'])))
+    maximize(y'*U*x-sum(log_sum_exp([zeros(1,m); x'*U'])))
 cvx_end
 
 <span class="comment">% Plot results and logistic function</span>
@@ -136,17 +136,15 @@ Successive approximation method to be employed.
    SDPT3 will be called several times to refine the solution.
    Original size: 600 variables, 202 equality constraints
    For improved efficiency, SDPT3 is solving the dual problem.
-   Approximation size: 2400 variables, 1402 equality constraints
+   Approximation size: 2801 variables, 1602 equality constraints
 -----------------------------------------------------------------
- Target     Forcing     Conic    Solver
-Precision    Bias       Error    Status
----------------------------------------
-1.221e-04  0.000e+00  2.452e+00  Solved
-1.221e-04  0.000e+00  1.700e-01  Solved
-1.221e-04  0.000e+00  2.455e-03  Solved
-1.221e-04  0.000e+00  0.000e+00  Solved
-1.490e-08  0.000e+00  1.155e-05  Solved
-1.490e-08  0.000e+00  0.000e+00  Solved
+ Target     Conic    Solver
+Precision   Error    Status
+---------------------------
+1.221e-04  1.145e+00  Solved
+1.221e-04  2.135e-04  Solved
+1.221e-04  0.000e+00  Solved
+1.490e-08  0.000e+00  Solved
 -----------------------------------------------------------------
 Status: Solved
 Optimal value (cvx_optval): -32.9797
@@ -199,7 +197,7 @@ U = [ones(m,1) u];
 cvx_expert true
 cvx_begin
     variables x(2)
-    maximize(y'*U*x-sum(logsumexp([zeros(1,m); x'*U'])))
+    maximize(y'*U*x-sum(log_sum_exp([zeros(1,m); x'*U'])))
 cvx_end
 
 % Plot results and logistic function

@@ -2,6 +2,7 @@
 %
 %  separate_pt_poly.m           - Section 8.1.1: Separating a point from a polyhedron
 %  separate_poly_2D.m           - Section 8.2.2: Separating polyhedra in 2D
+%  analytic_center.m            - Section 8.5.3: Analytic center of a set of linear inequalities
 %  svm_1.m                      - Figure 8.10: Approximate linear discrimination via linear programming
 %  svm_2.m                      - Figure 8.11: Approximate linear discrimination via support vector classifier
 %  placement_lin.m              - Figure 8.15: Linear placement problem

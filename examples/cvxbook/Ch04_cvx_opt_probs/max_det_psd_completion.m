@@ -31,7 +31,8 @@ cvx_begin sdp
   A(2,3) == .75;
 
   % find the solution to the problem
-  maximize( det_rootn( A ) )
+  maximize( log_det( A ) )
+  % maximize( det_rootn( A ) )
 cvx_end
 
 % display solution
