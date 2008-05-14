@@ -30,14 +30,16 @@ elseif cvx_isconstant(x) | cvx_isconstant(y),
     sz = sy;
     sx = prod(sx);
     sy = prod(sy);
-    sz(sz>1) = sx + sy - 1;
+    nz = sx + sy - 1;
+    sz(sz>1) = nz;
     if cvx_isconstant(x),
         [xi,xj,xv] = find(cvx_constant(x));
-        [yi,yj,yv] = find(cvx_basis(y));
+        yb         = cvx_basis(y);
     else
         [xi,xj,xv] = find(cvx_constant(y));
-        [yi,yj,yv] = find(cvx_basis(x));
+        yb         = cvx_basis(x);
     end
+    [yi,yj,yv] = find(yb);
     nx = length(xv);
     ny = length(yv);
     ox = ones(1,nx);
@@ -45,7 +47,7 @@ elseif cvx_isconstant(x) | cvx_isconstant(y),
     xi = reshape( xi + xj - 2, 1, nx ); 
     yj = yj(:,ox) + xi(ones(ny,1),:);
     yv = yv * reshape( xv, 1, nx );
-    z  = sparse( yi, yj, yv );
+    z  = sparse( yi, yj, yv, size(yb,1), nz );
     z  = cvx( sz, z );
     if nnz( cvx_classify( z ) == 13 ),
         error( sprintf( 'Disciplined convex programming error:\n   Illegal affine combination of convex/concave terms in convolution.' ) );
