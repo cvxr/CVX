@@ -30,7 +30,7 @@
 %   huber_circ        - Circularly symmetric version of the Huber penalty.
 %   huber_pos         - Monotonic Huber-style function.
 %   inv_pos           - Reciprocal of a positive quantity.
-%   kl_div            - Scalar Kullback-Liebler distance. (*)
+%   kl_div            - Scalar Kullback-Leibler distance. (*)
 %   lambda_max        - Maximum eigenvalue of a symmetric matrix.
 %   lambda_min        - Minimum eigenvalue of a symmetric matrix.
 %   log_det           - Logarithm of the determinant. (*)

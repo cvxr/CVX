@@ -2,12 +2,12 @@ function z = kl_div( x, y )
 
 %KL_DIV   Scalar relative entropy.
 %   KL_DIV(X,Y) returns an array of the same size as X+Y with the Kullback-
-%   Liebler divergence function applied to each element:
+%   Leubler divergence function applied to each element:
 %                    { X.*LOG(X./Y)-X+Y if X >  0 & Y >  0,
 %      KL_DIV(X,Y) = { 0                if X == 0 & Y >= 0,
 %                    { +Inf             otherwise.
 %   X and Y must either be the same size, or one must be a scalar. If X and
-%   Y are vector PDFs, then SUM(KL_DIV(X,Y)) returns their Kullback-Liebler
+%   Y are vector PDFs, then SUM(KL_DIV(X,Y)) returns their Kullback-Leibler
 %   divergence, which in the case of PDFs is equal to SUM(REL_ENTR(X,Y)).
 %
 %   Disciplined convex programming information:
