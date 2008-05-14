@@ -42,11 +42,11 @@ vr = remap_z( vx + 3 * vy + 1 );
 vu = sort( vr );
 vu = vu([true,diff(vu)~=0]);
 nv = length( vu );
-sx = size( x );
+sz = size( x );
 xt = x;
 yt = y;
 if nv ~= 1,
-    y = cvx( sx, [] );
+    y = cvx( sz, [] );
 end
 for k = 1 : nv,
 
