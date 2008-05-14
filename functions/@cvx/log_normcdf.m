@@ -21,7 +21,13 @@ if isempty( a ),
     ob = ones(nb,1);
 end
 
+cx = cvx_isconstant( x );
 sx = size(x);
 nx = prod(sx);
-y  = b * ones(1,nx) - ob * reshape( x, 1, nx );
-y  = - reshape( sum_square_pos( a * y ), sx );
+y  = a * ( b * ones(1,nx) - ob * reshape( x, 1, nx ) );
+if cx,
+    y = cvx( sum( cvx_constant( max( y, 0 ) ) .^ 2 ) );
+else
+    y = sum_square_pos( y );
+end
+y = - reshape( y, sx );
