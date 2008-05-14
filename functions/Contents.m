@@ -34,6 +34,7 @@
 %   lambda_max        - Maximum eigenvalue of a symmetric matrix.
 %   lambda_min        - Minimum eigenvalue of a symmetric matrix.
 %   log_det           - Logarithm of the determinant. (*)
+%   log_normcdf       - Logarithm of the normal CDF. (approximation)
 %   log_sum_exp       - log(sum(exp(x))). (*)
 %   logsumexp_sdp     - SDP-based approximation of log(sum(exp(x))).
 %   matrix_frac       - Matrix fractional function.
