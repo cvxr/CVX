@@ -25,7 +25,7 @@ elseif any(sx==0) & any(sy==0),
     
     error( 'At least one argument must be non-empty.' );
     
-elseif cvx_constant(x) | cvx_isconstant(y),    
+elseif cvx_isconstant(x) | cvx_isconstant(y),    
     
     sz = sy;
     sx = prod(sx);
@@ -40,9 +40,10 @@ elseif cvx_constant(x) | cvx_isconstant(y),
     end
     nx = length(xv);
     ny = length(yv);
-    yi = yi(:,ones(1,nx));
-    xi = reshape( sx + 1 - ( xi + xj ), 1, nx );
-    yj = yj(:,ones(1,nx)) + xi(ones(ny,1),:);
+    ox = ones(1,nx);
+    yi = yi(:,ox);
+    xi = reshape( xi + xj - 2, 1, nx ); 
+    yj = yj(:,ox) + xi(ones(ny,1),:);
     yv = yv * reshape( xv, 1, nx );
     z  = sparse( yi, yj, yv );
     z  = cvx( sz, z );
