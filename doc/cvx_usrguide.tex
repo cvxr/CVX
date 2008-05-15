@@ -190,22 +190,22 @@ specified problem to one that can be handled by a combined
 LP, SOCP, and SDP solver.
 For example, when a power function or $\ell_p$-norm is used, with 
 non-rational exponent $p$, \cvx replaces $p$ with a nearby rational.
-The log-sum-exp function $\log (\exp x_1+ \cdots + \exp x_n)$ and the
-log of the normal cumulative distribution $\log \Phi(x)$ are
-replaced with SDP-compatible approximations
-(described in Appendix \ref{sec:gp-approx}).
+The log of the normal cumulative distribution $\log \Phi(x)$ is
+replaced with an SDP-compatible approximation.
 
 \paragraph{Problems handled with successive approximation.}
-This version of \cvx adds support for a number of functions that cannot
+This version of \cvx adds support for a number functions that cannot
 be exactly represented using via LP, SOCP, or SDP, including 
-log, exp, entropy, and Kullback-Leibler divergence.
+log, exp, log-sum-exp $\log (\exp x_1+ \cdots + \exp x_n)$,
+entropy, and Kullback-Leibler divergence.
 These problems are handled by solving a sequence (typically just a handful)
 of SDPs, and yield the solution to the full accuracy of the core solver.
-On the other hand, this successive approximation technique can be 
+On the other hand, this technique can be 
 \emph{substantially slower}
 than if the core solver directly handled such functions.
 The successive approximation method is briefly described in
-Appendix \ref{sec:succ-approx}.
+Appendix \ref{sec:succ-approx}. Geometric problems are now solved in
+this manner as well; in previous versions, an approximation was made.
 
 Ultimately, we will interface \cvx to a solver with native support for 
 such functions, which result in a large speedup in solving problems
@@ -230,19 +230,24 @@ or \verb+help cvx/functions+
 \index{feedback}
 \index{bug report}
 
-Please contact Michael Grant or Stephen Boyd 
-(\texttt{mcgrant@stanford.edu}, \texttt{boyd@stanford.edu}) with 
-your comments. If
-you discover what you think is a bug, 
+Please contact Michael Grant (\texttt{mcgrant@stanford.edu}) 
+or Stephen Boyd (\texttt{boyd@stanford.edu}) with 
+your comments. If you discover what you think is a bug, 
 please include the following in your communication,
 so we can reproduce and fix the problem:
 \begin{itemize}
 \item the \cvx model and supporting data that caused the error
 \item a copy of any error messages that it produced
-\item the \cvx build number
+\item the \cvx version number and build number
 \item the version number of Matlab that you are running
 \item the name and version of the operating system you are using
 \end{itemize}
+The latter three items can all be discovered by typing
+\begin{code}
+	cvx_version
+\end{code}
+at the MATLAB command prompt; simply copy its output
+into your email message.
 
 \subsection{What \cvx is \emph{not}}
 
@@ -322,7 +327,7 @@ an equivalent formulation that \cvx can process more efficiently.
 \index{cvx_end@\texttt{cvx\_end}}
 \index{examples}
 Once you have installed \cvx (see \S\ref{s-installing}), you can
-start using \cvx by entering a \cvx \emph{specification} into a
+start using it by entering a \cvx \emph{specification} into a
 Matlab script or function, or directly from the command prompt.
 To delineate \cvx specifications from surrounding Matlab code,
 they are preceded with the statement
@@ -3612,6 +3617,7 @@ the successive approximation method more tightly with the underlying solvers to
 greatly improve its performance.
 \fi
 
+\iffalse
 \subsection{The GP/SDP approximation}
 \label{sec:gp-approx}
 \index{precision!for GPs}
@@ -3691,6 +3697,7 @@ method to implement the function
 If you call this function directly, it uses a default tolerance of $\epsilon=0.001$, regardless
 of the value set in \verb@cvx_gp_precision@. You can supply a different tolerance as a second
 argument; \ie, \verb@logsumexp_sdp( x, tol )@.
+\fi
 
 \subsection{Irrational powers}
 \label{sec:ratpow}
