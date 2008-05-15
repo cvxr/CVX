@@ -348,11 +348,7 @@ elseif n ~= 0 & ~infeas & ( any( b ) | any( c ) ),
                 amult = 1;
             end
             last_err = err;
-            if iter == 1,
-                x0 = nx0;
-            else
-                x0 = min( max( nx0, x0 - epow ), x0 + epow );
-            end
+            x0 = min( max( nx0, x0 - epow ), x0 + epow );
             x0 = min( max( -maxw, x0 ), maxw );
         end
         if isnan( best_x(1) ), 
