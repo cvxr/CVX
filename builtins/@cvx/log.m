@@ -10,9 +10,8 @@ function y = log( x )
 %       will come in a later revision.
 
 global cvx___
-if ~cvx___.problems( end ).gp,
-    cvx_expert_check( 'log', x );
-end
+error(nargchk(1,1,nargin));
+cvx_expert_check( 'log', x );
 
 %
 % Determine the expression types
@@ -105,11 +104,7 @@ for k = 1 : nv,
                 rx = cvx___.logarithm( rx( tz ), 1 );
                 vx = vx + cvx( nq, sparse( rx, find( tz ), 1, max( rx ), nq ) );
                 vx = reshape( vx, rk, nq / rk );
-                if cvx___.expert,
-                    vx = log_sum_exp( vx );
-                else
-                    vx = logsumexp_sdp( vx, 1, cvx___.gptol );
-                end
+                vx = log_sum_exp( vx );
                 if nu == 1,
                     yt = reshape( vx, sx );
                 else

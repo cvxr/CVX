@@ -2,11 +2,9 @@ function cvx_optval = log_sum_exp( x, dim )
 
 %LOG_SUM_EXP   CVX internal version.
 
-global cvx___
-if ~cvx___.problems(end).gp,
-    cvx_expert_check( 'log_sum_exp', x );
-end
 error( nargchk( 1, 2, nargin ) );
+cvx_expert_check( 'log_sum_exp', x );
+
 sx = size( x );
 if nargin < 2 | isempty( dim ),
     dim = cvx_default_dimension( sx );

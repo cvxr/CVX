@@ -136,6 +136,9 @@ if ~isequal( clearmode, 'extract' ),
     cvx___.problems( p : end ) = [];
     cvx___.x = [];
     cvx___.y = [];
+    if p == 1 & cvx___.expert < 0,
+        cvx___.expert = 0;
+    end
 end
 
 % Copyright 2008 Michael C. Grant and Stephen P. Boyd.

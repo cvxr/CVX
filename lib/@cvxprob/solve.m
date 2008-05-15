@@ -131,7 +131,7 @@ elseif n ~= 0 & ~infeas & ( any( b ) | any( c ) ),
         x0    = realmin * ones(nc,1);
         maxw  = log(realmax);
         
-        epow = 16;
+        epow = 8;
         switch epow,
             case 16,
                 QAi  = [ 2, 4, 3, 6, 5, 7, 6, 9, 8,10, 9,12,3,        11,  13, 14 ]';
@@ -147,7 +147,7 @@ elseif n ~= 0 & ~infeas & ( any( b ) | any( c ) ),
                 ewid = 1.22;
             case 4,
                 QAi  = [ 2, 4, 3, 6,3,         5,   7,  8 ]';
-                QAj  = [ 1, 1, 2, 2,4,         4,   4,  4 ]';
+                QAj  = [ 1, 1, 2, 2,3,         3,   3,  3 ]';
                 QAv  = [+1,-1,+1,-1,0.123,-0.234, 1/4,  1 ]';
                 QAr  = [3,4,2,5,6,7,1,8];
                 ewid = 0.84;

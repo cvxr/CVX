@@ -18,7 +18,6 @@ function y = log_sum_exp( x, dim )
 %       LOG_SUM_EXP(X) is convex and nondecreasing in X; therefore, X
 %       must be convex (or affine).
 
-global cvx___
 error( nargchk( 1, 2, nargin ) );
 if ~isreal( x ),
     error( 'Argument must be real.' );

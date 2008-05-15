@@ -27,7 +27,7 @@ p = nonzeros(p).';
 if cvx___.nan_used,
     b = sparse( b );
 end
-v = p * b;
+v = full( p * b );
 tt = abs( v ) ~= abs( p ) * abs( b );
 if x.slow_,
     v( tt | isnan( x.basis_( 1, : ) ) ) = NaN;
@@ -35,7 +35,7 @@ else
     v( tt ) = NaN;
 end
 v = sign( v );
-v = cvx_reshape( v, x.size_ );
+v = reshape( v, x.size_ ); % cvx_reshape( v, x.size_ );
 
 % Copyright 2008 Michael C. Grant and Stephen P. Boyd.
 % See the file COPYING.txt for full copyright information.

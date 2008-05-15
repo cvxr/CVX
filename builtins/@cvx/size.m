@@ -4,32 +4,30 @@ function varargout = size( x, dim )
 %       SIZE imposes no convexity restrictions on its first argument.
 %       The second argument, if supplied, must be a positive integer.
 
-if nargin == 1,
-    dim = [];
-end
 s = x.size_;
-if ~isempty( dim ),
+if nargin > 1,
     if nargout > 1,
         error( 'Too many output arguments.' );
     elseif ~isnumeric( dim ) | length( dim ) ~= 1 | dim <= 0 | dim ~= floor( dim ),
         error( 'Dimension argument must be a positive integer scalar.' );
     elseif dim > length( s ),
-        s = 1;
+        varargout{1} = 1;
     else
-        s = s( dim );
+        varargout{1} = s(dim);
     end
-end
-if nargout <= 1,
-    varargout{1} = s;
-else
-    if nargout > length( s ),
-        s( nargout ) = 1;
-    elseif nargout < length( s ),
-        s( nargout ) = prod( s( nargout + 1 : end ) );
+elseif nargout > 1,
+    ns = length( s );
+    no = nargout;
+    if no > ns,
+        s( end+1:no ) = 1;
+    elseif no < ns,
+        s( no ) = prod( s( no : end ) );
     end
-    for k = 1 : nargout,
+    for k = 1 : no,
         varargout{k} = s(k);
     end
+else
+    varargout{1} = s;
 end
 
 % Copyright 2008 Michael C. Grant and Stephen P. Boyd.

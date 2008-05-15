@@ -7,9 +7,8 @@ function y = exp( x )
 %       result with very limited usefulness.
 
 global cvx___
-if ~cvx___.problems( end ).gp,
-    cvx_expert_check( 'exp', x );
-end
+error(nargchk(1,1,nargin));
+cvx_expert_check( 'log', x );
             
 %
 % Determine the expression types

@@ -105,6 +105,9 @@ for k = 1 : nargin,
                 error( 'The GP and SDP modifiers cannot be used together.' );
             end
             temp.gp = true;
+            if cvx___.expert == 0,
+                cvx___.expert = -1;
+            end
         case 'separable',
             temp.separable = true;
         otherwise,
