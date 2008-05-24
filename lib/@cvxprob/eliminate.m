@@ -18,25 +18,8 @@ if nargin  < 2 | nargout < 8, destructive = false; end
 global cvx___
 [ dbCA, cones, dir, Q, P ] = extract( prob, destructive );
 dualized = false;
-
-if ~issparse( dbCA ),
-    dbCA = sparse( dbCA );
-end
-n_tot = 0;
-nn = size( dbCA, 1 );
-rsv = sparse( 1, 1, 1, nn, 1 );
-for k = 1 : length( cones ),
-    temp = cones(k).indices;
-    n_tot = n_tot + numel(temp);
-    rsv = rsv + sparse( temp, 1, 1, nn, 1 );
-end
-n_rsv = nnz( rsv ) - 1;
-rsv   = full( rsv );
-ndxs  = [ 1 : nn ]';
-nold  = nn;
-
-if size( dbCA, 1 ) == 1,
-    return
+if size( dbCA, 1 ) == 1, 
+    return; 
 end
 
 %
@@ -45,63 +28,80 @@ end
 %
 
 dbCA(:,1) = -dbCA(:,1);
-
-%
-% Locate inequalities, and don't eliminate them in the first go-round, so
-% that we can make the best decision as to whether we should dualize.
-%
-
-ineqs = rsv ~= 0;
-ineqs(1) = false;
-ineqs(ineqs) = sum( dbCA(ineqs,:) ~= 0, 2 ) == 1;
-ineqs = +full(any(dbCA(ineqs,:),1));
-
-%
-% Check for variables that are either completely unused or are found only
-% in the objective (and therefore are unbounded). The unused variables are
-% eliminated completely. All but *one* of the variables found in the
-% objective is eliminated. One is kept around to make sure that the
-% unbounded behavior of the problem is preserved.
-%
+if ~issparse( dbCA ),
+    dbCA = sparse( dbCA );
+end
 
 for pass = 1 : 2,
+
+    if pass == 1 | dualized,
+        n_tot = 0;
+        nn  = size(dbCA,1);
+        rsv = sparse( 1, 1, 1, nn, 1 );
+        nng = sparse( nn, 1 );
+        for k = 1 : length( cones ),
+            temp = cones(k).indices;
+            n_tot = n_tot + numel(temp);
+            temp = sparse( temp, 1, 1, nn, 1 );
+            rsv = rsv + temp;
+            if isequal( cones(k).type, 'nonnegative' ),
+                nng = nng + temp;
+            end
+        end
+        n_rsv = nnz( rsv ) - 1;
+        rsv   = full( rsv );
+        nng   = full( nng );
+        ndxs  = [ 1 : nn ]';
+        nold  = nn;
+    end
+
+    % In the first pass, we don't eliminate columns which have inequality
+    % structure to them, so that we can make the best decision as to
+    % whether or not to convert the problem to dual standard form.
+    if pass == 1,
+        ineqs = rsv ~= 0;
+        ineqs(1) = false;
+        ineqs(ineqs) = sum( dbCA(ineqs,:) ~= 0, 2 ) == 1;
+        ineqs = +full(any(dbCA(ineqs,:),1));
+    elseif dualized,
+        ineqs = zeros(1,size(dbCA,2));
+    end
+    
     while true,
         success = false;
         %
-        % Look for rows which are completely empty---which implies that the
-        % variables are unused---or rows which occur only in an objective
-        % (and no constraints)---which are trivially unbounded.
-        % Unbounded variables cannot *all* be eliminated; one must be kept
-        % in order to preserve the unbounded behavior. 
+        % Look for variables which are not involved in any constraints.
+        % If they appear in the objective, they are unbounded; otherwise,
+        % their value does not matter and might as well be zero. Unused
+        % nonnegative variables are considered here as well. If they appear
+        % in the objective, they are either unbounded or zero depending
+        % upon the sign of the objective coefficient.
         %
-        while true,
-            rcnt = sum( dbCA ~= 0, 2 );
-            rows = ( rcnt == ( dbCA( :, 1 ) ~= 0 ) ) & ~rsv;
-            nnzr = nnz( rows );
-            if nnzr == 0, 
-                break; 
-            end
-            celm = dbCA( rows, 1 );
+        cc   = dbCA( :, 1 );
+        rcnt = sum( dbCA ~= 0, 2 );
+        rows = ( rcnt == ( cc ~= 0 ) ) & ( ~rsv | nng );
+        nnzr = nnz( rows );
+        if nnzr > 0,
+            celm = cc( rows, 1 );
+            celm( nng(rows) & ( 1 - 2 * dualized ) * celm < 0 ) = 0;
             nnzc = nnz( celm );
-            if nnzc & ( nnzr == 1 ), 
-                break; 
-            end
-            success = true;
-            rowX = ~rows;
-            if nnzc,
-                cnrm = norm( celm );
-                keep = Q( :, rows ) * ( celm / cnrm );
-                ndxq = find( rows );
-                ndxq = ndxq( 1 );
-                rowX( ndxq ) = 1;
-            end
-            dbCA = dbCA( rowX, : );
-            rsv  = rsv ( rowX, : );
-            ndxs = ndxs( rowX, : );
-            Q    = Q( :, rowX );
-            if nnz( celm ),
-                dbCA( ndxq, 1 ) = cnrm;
-                Q( :, ndxq ) = keep;
+            if ~nnzc | nnzr > 1,
+                success = true;
+                if nnzc,
+                    cnrm = norm( celm );
+                    ndxq = find( rows );
+                    ndxq = ndxq( celm ~= 0 );
+                    ndxq = ndxq( 1 );
+                    Q( :, ndxq ) = Q( :, rows ) * ( celm / cnrm );
+                    dbCA( ndxq, 1 ) = cnrm;
+                    rows( ndxq ) = 0;
+                end
+                rowX = ~rows;
+                dbCA = dbCA( rowX, : );
+                rsv  = rsv ( rowX, : );
+                nng  = nng ( rowX, : );
+                ndxs = ndxs( rowX, : );
+                Q    =    Q( :, rowX );
             end
         end
         %
@@ -156,6 +156,7 @@ for pass = 1 : 2,
             Q     = Q( :, rowX ) + Q( :, rows ) * temp';
             dbCA  = A11 + temp * A21;
             rsv   =   rsv( rowX, : );
+            nng   =   nng( rowX, : );
             ndxs  =  ndxs( rowX, : );
             ineqs = ineqs( :, colX );
         end
@@ -163,62 +164,65 @@ for pass = 1 : 2,
             break;
         end
     end
-    if pass == 1,
-        n_ineq = nnz(ineqs);
-        ineqs(:) = 0;
-        if ~isempty(cones), % & ~any( strcmp( {cones.type}, 'exponential' ) ),
-            [ rows, cols ] = cvx_eliminate_mex( dbCA, 1, rsv, ineqs );
-            [n1,m1] = size(dbCA);
-            m_pri  = m1 - nnz(rows) - 1;
-            n_pri  = n1 - nnz(cols) - 1;
-            n_pri  = n_pri + ( n_rsv ~= n_pri );
-            n_eq   = m1 - 1 - n_ineq;
-            m_dua  = n1 - n_ineq - 1;
-            n_dua  = nnz(rsv) + n_eq + ( n_eq ~= 0 );
-            if ( ( m_pri > n_pri ) | ( ( m_pri * n_pri > m_dua * n_dua ) ) & ( m_dua <= n_dua ) ), 
-                ndxs = full(sparse(ndxs,1,1:n1));
-                PP = cell(2,length(cones));
-                n_cur = m1;
-                for k = 1 : length(cones),
-                    temp = cones(k).indices;
-                    [nn,nv] = size(temp);
-                    temp = reshape(ndxs(temp),size(temp));
-                    switch cones(k).type,
-                        case 'semidefinite',
-                            nt = 0.5*(sqrt(8*nn+1)-1);
-                            SS = 'symmetric';
-                        case 'hermitian-semidefinite',
-                            nt = sqrt(nn);
-                            SS = 'hermitian';
-                        case 'exponential',
-                            SS = sparse(inv([0,-1,0;-1,0,0;0,0,exp(1)]));
-                            SS = cvx_replicate_structure(SS,nv);
-                        otherwise,
-                            SS = [];
-                    end
-                    PP{k} = sparse(1:numel(temp),temp,1,numel(temp),n1);
-                    if ~isempty(SS),
-                        if ischar(SS),
-                            SS = cvx_create_structure([nt,nt,nv],SS);
-                            SS = SS * SS';
-                        end
-                        PP{k} = SS * PP{k};
-                    end
-                    cones(k).indices = reshape(n_cur+1:n_cur+nn*nv,nn,nv);
-                    n_cur = cones(k).indices(end);
-                end
-                dbCA  = vertcat(dbCA',PP{:});
-                dir   = -dir;
-                tmp   = Q; Q = P; P = tmp;
-                nold  = size( dbCA, 1 );
-                rsv   = full(sparse([1,m1+1:nold],1,1));
-                ineqs = zeros(1,size(dbCA,2));
-                ndxs  = [ 1 : nold ]';
-                Q(:,nold) = 0;
-                dualized = true;
-            end
-        end
+    
+    if pass == 2 | isempty(cones),
+        break;
     end
+    
+    %
+    % Check to see if dualization will result in smaller problem
+    %
+    
+    n_ineq   = nnz(ineqs);
+    ineqs(:) = 0;
+    [ rows, cols ] = cvx_eliminate_mex( dbCA, 1, rsv, ineqs );
+    [n1,m1] = size(dbCA);
+    m_pri  = m1 - nnz(rows) - 1;
+    n_pri  = n1 - nnz(cols) - 1;
+    n_pri  = n_pri + ( n_rsv ~= n_pri );
+    n_eq   = m1 - 1 - n_ineq;
+    m_dua  = n1 - n_ineq - 1;
+    n_dua  = nnz(rsv) + n_eq + ( n_eq ~= 0 );
+    if ( ( m_pri > n_pri ) | ( ( m_pri * n_pri > m_dua * n_dua ) ) & ( m_dua <= n_dua ) ), 
+        ndxs = full(sparse(ndxs,1,1:n1));
+        PP = cell(2,length(cones));
+        n_cur = m1;
+        for k = 1 : length(cones),
+            temp = cones(k).indices;
+            [nn,nv] = size(temp);
+            temp = reshape(ndxs(temp),size(temp));
+            switch cones(k).type,
+                case 'semidefinite',
+                    nt = 0.5*(sqrt(8*nn+1)-1);
+                    SS = 'symmetric';
+                case 'hermitian-semidefinite',
+                    nt = sqrt(nn);
+                    SS = 'hermitian';
+                case 'exponential',
+                    SS = sparse(inv([0,-1,0;-1,0,0;0,0,exp(1)]));
+                    SS = cvx_replicate_structure(SS,nv);
+                otherwise,
+                    SS = [];
+            end
+            PP{k} = sparse(1:numel(temp),temp,1,numel(temp),n1);
+            if ~isempty(SS),
+                if ischar(SS),
+                    SS = cvx_create_structure([nt,nt,nv],SS);
+                    SS = SS * SS';
+                end
+                PP{k} = SS * PP{k};
+            end
+            cones(k).indices = reshape(n_cur+1:n_cur+nn*nv,nn,nv);
+            n_cur = cones(k).indices(end);
+        end
+        dbCA  = vertcat(dbCA',PP{:});
+        dir   = -dir;
+        tmp   = Q; Q = P; P = tmp;
+        nold  = size(dbCA,1);
+        Q(:,nold) = 0;
+        dualized = true;
+    end
+    
 end
 
 %
@@ -237,8 +241,20 @@ end
 %
 
 ndxs = full( sparse( ndxs, 1, 1 : length( ndxs ), nold, 1 ) );
+tt = zeros(1,length(cones));
 for k = 1 : length( cones ),
-    cones(k).indices = reshape( ndxs(cones(k).indices), size(cones(k).indices) );
+    temp = ndxs(cones(k).indices);
+    if all(temp),
+        temp = reshape( temp, size(cones(k).indices) );
+    else
+        temp = nonzeros(temp);
+        temp = reshape( temp, 1, length(temp) );
+    end
+    tt(k) = isempty(temp);
+    cones(k).indices = temp;
+end
+if any(tt),
+    cones(temp) = [];
 end
 
 % Copyright 2008 Michael C. Grant and Stephen P. Boyd.
