@@ -3,7 +3,7 @@ function solve( prob )
 global cvx___
 p = index( prob );
 pr = cvx___.problems(p);
-nobj = numel(pr);
+nobj = numel(pr.objective);
 if nobj > 1 & ~pr.separable,
     error( 'Non-separable multiobjective problems are not supported.' );
 end
