@@ -37,7 +37,6 @@ CswSegs   = 2^(CswBits);
 CvarCswLSBOverlap = 2;
 
 % set the quiet flag (no solver reporting)
-cvxq = cvx_quiet(true);
 
 disp('Generating the optimal tradeoff curve...')
 
@@ -47,7 +46,7 @@ disp('Generating the optimal tradeoff curve...')
 % varying phase noise parameter for the tradeoff curve
 powers = [];
 for PNSpec=0.7e-12:0.2e-12:1e-11
-  cvx_begin gp
+  cvx_begin gp quiet
     % optimization variables
     variable D;        % diameter of loop inductor
     variable W;        % width of loop inductor
@@ -151,6 +150,3 @@ plot(10*log10(PNSpec),powers/1e-3);
 xlabel('Phase Noise (dBc/Hz)')
 ylabel('Power (mW)')
 disp('Optimal tradeoff curve plotted.')
-
-% restore initial solver reporting state
-cvx_quiet(cvxq);

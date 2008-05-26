@@ -11,7 +11,7 @@ To make changes, update the M-file and republish this document.
       -->
       <title>Chebychev design of an FIR filter given a desired H(w)</title>
       <meta name="generator" content="MATLAB 7.5">
-      <meta name="date" content="2008-03-11">
+      <meta name="date" content="2008-05-23">
       <meta name="m-file" content="fir_chebychev_design"><style>
 
 body {
@@ -178,9 +178,9 @@ it pstep dstep pinfeas dinfeas  gap      mean(obj)   cputime
 11|0.534|0.946|4.3e-15|1.7e-12|3.7e-07|-7.071066e-01| 0:0:00| chol  1  1 
 12|0.536|0.955|2.4e-13|1.1e-12|2.0e-07|-7.071067e-01| 0:0:00| chol  1  1 
 13|0.536|1.000|5.0e-12|1.0e-12|1.1e-07|-7.071067e-01| 0:0:00| chol  1  2 
-14|0.537|1.000|2.3e-12|1.0e-12|6.3e-08|-7.071067e-01| 0:0:00| chol  1  2 
-15|0.539|1.000|1.1e-12|1.0e-12|3.5e-08|-7.071068e-01| 0:0:00|
-  sqlp stop: max(relative gap, infeasibilities) &lt; 1.49e-08
+14|0.537|1.000|2.3e-12|1.0e-12|6.3e-08|-7.071067e-01| 0:0:01| chol  1  2 
+15|0.539|1.000|1.1e-12|1.0e-12|3.5e-08|-7.071068e-01| 0:0:01|
+  stop: max(relative gap, infeasibilities) &lt; 1.49e-08
 -------------------------------------------------------------------
  number of iterations   = 15
  primal objective value = -7.07106746e-01
@@ -192,7 +192,7 @@ it pstep dstep pinfeas dinfeas  gap      mean(obj)   cputime
  rel. dual   infeas     = 1.00e-12
  norm(X), norm(y), norm(Z) = 1.4e+00, 1.2e+00, 1.2e+01
  norm(A), norm(b), norm(C) = 8.0e+01, 2.0e+00, 1.8e+01
- Total CPU time (secs)  = 0.4  
+ Total CPU time (secs)  = 0.5  
  CPU time per iteration = 0.0  
  termination code       =  0
  DIMACS: 1.1e-12  0.0e+00  9.2e-12  0.0e+00  1.5e-08  1.5e-08

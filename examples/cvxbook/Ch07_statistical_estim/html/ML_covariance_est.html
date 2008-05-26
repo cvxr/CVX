@@ -11,7 +11,7 @@ To make changes, update the M-file and republish this document.
       -->
       <title>Section 7.1.1: Covariance estimation for Gaussian variables</title>
       <meta name="generator" content="MATLAB 7.5">
-      <meta name="date" content="2008-05-13">
+      <meta name="date" content="2008-05-23">
       <meta name="m-file" content="ML_covariance_est"><style>
 
 body {
@@ -108,25 +108,19 @@ cvx_begin <span class="string">sdp</span>
     S &lt;= Li;
 cvx_end
 R_hat = inv(S);
-</pre><pre class="codeoutput">CVX Warning:
-   Models involving "log_det" or other functions in the log, exp, and entropy
-   family are solved using an experimental successive approximation method.
-   The method requires multiple calls to the solver, so it can be slow; and
-   in certain cases it fails to converge. See the user's guide for details
-   on the method, as well as instructions for suppressing this warning.
- 
+</pre><pre class="codeoutput"> 
 Successive approximation method to be employed.
    SDPT3 will be called several times to refine the solution.
    Original size: 356 variables, 122 equality constraints
    For improved efficiency, SDPT3 is solving the dual problem.
-   Approximation size: 368 variables, 129 equality constraints
+   Approximation size: 365 variables, 127 equality constraints
 -----------------------------------------------------------------
  Target     Conic    Solver
 Precision   Error    Status
 ---------------------------
-1.221e-04  3.230e-01  Solved
+1.221e-04  7.339e-01  Solved
+1.221e-04  1.481e-04  Solved
 1.221e-04  0.000e+00  Solved
-1.490e-08  3.940e-08  Solved
 1.490e-08  0.000e+00  Solved
 -----------------------------------------------------------------
 Status: Solved

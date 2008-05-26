@@ -11,7 +11,7 @@ To make changes, update the M-file and republish this document.
       -->
       <title>Digital circuit sizing for an inverter chain (GP)</title>
       <meta name="generator" content="MATLAB 7.5">
-      <meta name="date" content="2008-03-15">
+      <meta name="date" content="2008-05-23">
       <meta name="m-file" content="inverter_chain_sizing"><style>
 
 body {
@@ -216,21 +216,17 @@ Successive approximation method to be employed.
    SDPT3 will be called several times to refine the solution.
    Original size: 130 variables, 45 equality constraints
    For improved efficiency, SDPT3 is solving the dual problem.
-   Approximation size: 472 variables, 273 equality constraints
+   Approximation size: 435 variables, 235 equality constraints
 -----------------------------------------------------------------
- Target     Forcing     Conic    Solver
-Precision    Bias       Error    Status
----------------------------------------
-1.221e-04  0.000e+00  6.991e-01  Unbounded
-1.221e-04  0.000e+00  2.484e+00  Solved
-1.221e-04  2.174e+00  6.741e-03  Solved
-1.221e-04  2.174e+00  2.567e-05  Solved
-1.221e-04  2.174e+00  0.000e+00  Solved
-1.490e-08  0.000e+00  9.475e-02  Solved
-1.490e-08  0.000e+00  2.107e-03  Solved
-1.490e-08  0.000e+00  2.444e-05  Solved
-1.490e-08  0.000e+00  6.721e-08  Solved
-1.490e-08  0.000e+00  0.000e+00  Solved
+ Target     Conic    Solver
+Precision   Error    Status
+---------------------------
+1.221e-04  6.789e-01  Unbounded
+1.221e-04  2.660e-01  Solved
+1.221e-04  4.391e-04  Solved
+1.221e-04  0.000e+00  Solved
+1.490e-08  1.518e-08  Solved
+1.490e-08  0.000e+00  Solved
 -----------------------------------------------------------------
 Status: Solved
 Optimal value (cvx_optval): +32.2496
@@ -241,14 +237,14 @@ Optimal scale factors are:
 
 x =
 
-   3.046137972355965
-   2.655317424403565
-   4.332317598357734
-  12.439516844926066
-   1.000000000499161
-   1.318472181760604
-   2.235830652497240
-   5.221992878280638
+    3.0461
+    2.6553
+    4.3323
+   12.4395
+    1.0000
+    1.3185
+    2.2359
+    5.2220
 
 </pre><img vspace="5" hspace="5" src="inverter_chain_sizing_01.png"> <p class="footer"><br>
             Published with MATLAB&reg; 7.5<br></p>

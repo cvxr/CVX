@@ -176,8 +176,8 @@ LPs, SOCPs, SDPs, and combinations thereof.
 \cvx will convert the specified problem to an LP, SOCP, or SDP,
 when all the functions in the problem specification can be
 represented in these forms.
-This includes a wide variety of functions, such as minimums and
-maximums, absolute values, quadratic forms, 
+This includes a wide variety of functions, such as minimum and
+maximum, absolute value, quadratic forms, 
 the minimum and maximum eigenvalues of a symmetric matrix,
 power functions $x^p$, and $\ell_p$ norms (both for $p$ rational).
 %A few obscure functions have also been included, 
@@ -194,12 +194,12 @@ The log of the normal cumulative distribution $\log \Phi(x)$ is
 replaced with an SDP-compatible approximation.
 
 \paragraph{Problems handled with successive approximation.}
-This version of \cvx adds support for a number functions that cannot
-be exactly represented using via LP, SOCP, or SDP, including 
+This version of \cvx adds support for a number of functions that cannot
+be exactly represented via LP, SOCP, or SDP, including 
 log, exp, log-sum-exp $\log (\exp x_1+ \cdots + \exp x_n)$,
 entropy, and Kullback-Leibler divergence.
 These problems are handled by solving a sequence (typically just a handful)
-of SDPs, and yield the solution to the full accuracy of the core solver.
+of SDPs, which yields the solution to the full accuracy of the core solver.
 On the other hand, this technique can be 
 \emph{substantially slower}
 than if the core solver directly handled such functions.
@@ -907,7 +907,8 @@ For example, the code segment
 $50$-element vector variable, \verb@X@ is
 a real $20 \times 10$ matrix variable, \verb@Y@ is
 a real $50 \times 50$ symmetric matrix variable,
-and \verb@Z@ is a complex $100 \times 100$ Hermitian matrix variable.
+and \verb@Z@ is a complex $100 \times 100$ Hermitian Toeplitz 
+matrix variable.
 The structure keywords can be applied to
 $n$-dimensional arrays as well:
 each 2-dimensional ``slice'' of the array
@@ -928,8 +929,8 @@ For example, \verb@banded(1,1)@ (or \verb@banded(1)@) is a tridiagonal matrix.
 \item \verb@scaled_identity@: the matrix is a (variable) multiple of 
 the identity matrix.
 This is the same as declaring it to be diagonal and Toeplitz.
-\item \verb@upper_hankel@, \verb@hankel@: An \verb@upper_hankel@ matrix is zero below
-the antidiagonal; a \verb@hankel@ matrix is not (necessarily).
+\item \verb@upper_hankel@: The matrix is Hankel (\ie, constant along antidiagonals), and zero
+below the central antidiagonal, \ie, for $i+j>n+1$.
 \end{itemize}
 When multiple keywords are supplied, the resulting matrix structure is
 determined by intersection; if the keywords conflict, then an error will result.
@@ -937,7 +938,7 @@ determined by intersection; if the keywords conflict, then an error will result.
 \index{variables@\texttt{variables}}
 A \verb@variable@ statement can be used to declare only a single
 variable, which can be a bit inconvenient if you have a lot of variables
-to declare. For this reason, the statement \verb@variables@ statement
+to declare. For this reason, the \verb@variables@ statement
 is provided which allows you to declare multiple variables; \ie,
 \begin{code}
 	variables x1 x2 x3 y1(10) y2(10,10,10);
@@ -1090,12 +1091,12 @@ that an expression is in a set.
 To represent a set we use a \emph{function} that returns
 an unnamed variable that is required to be in the set.
 Consider, for example, $\symm^n_+$, the cone of 
-positive semidefinite $n \times n$ matrices.
+symmetric positive semidefinite $n \times n$ matrices.
 In \cvx, we represent this by the function \verb@semidefinite(n)@,
 which returns an unnamed new variable, that is constrained to be
 positive semidefinite.
 To require that the matrix expression \verb@X@ 
-be positive semidefinite, we use the syntax \verb@X == semidefinite(n)@.
+be symmetric positive semidefinite, we use the syntax \verb@X == semidefinite(n)@.
 The literal meaning of this is that \verb@X@ is constrained to be 
 equal to some unnamed variable, which is required to be 
 an $n \times n$ symmetric positive semidefinite matrix. 
@@ -1175,7 +1176,7 @@ an unnamed variable (\ie, a pair consisting of a vector and a
 scalar variable),
 constrained to lie in the Lorentz cone of length \verb@m@. 
 So the constraint in this
-specification requires that the pair \verb@A*x-b@, \verb@y@
+specification requires that the pair \verb@{ A*x-b, y }@
 lies in the appropriately-sized Lorentz cone.
 
 \subsection{Dual variables}
@@ -1287,14 +1288,14 @@ is infeasible or unbounded, then \verb@x@ and \verb@y@ will have different
 values. In the unbounded case, \verb@x@ will contain an \emph{unbounded direction};
 \ie, a point $x$ satisfying
 \begin{equation}
-	c^T x = -1, \quad A x \leq 0,
+	c^T x = -1, \quad A x \preceq 0,
 \end{equation}
 and \verb@y@ will be filled with \verb@NaN@ values, reflecting the fact
 that the dual problem is infeasible. In the infeasible case,
 \verb@x@ is filled with \verb@NaN@ values, while \verb@y@
 contains an \emph{unbounded dual direction}; \ie, a point $y$ satisfying
 \begin{equation}
-	b^T y = 1, \quad A^T y = 0, \quad y \geq 0
+	b^T y = -1, \quad A^T y = 0, \quad y \succeq 0
 \end{equation}
 Of course, the precise interpretation of primal and dual points and/or
 directions depends on the structure of the problem. See references
@@ -1679,13 +1680,14 @@ how they can be used in function  compositions,
 as we shall see in \S\ref{sec:compositions} below.
 
 For functions with only one argument, the categorization is 
-straightforward.  As examples, we have:
+straightforward.  Some examples are given in the table below.
 \begin{center}
-\begin{tabular}{lll}
-	\verb@sum( x )@ & $\sum_i x_i$ & affine, nondecreasing \\
-	\verb@abs( x )@ & $|x|$ & convex, nonmonotonic \\
+\begin{tabular}{llll}
+Function & Meaning & Curvature & Monotonicity \\ \hline
+	\verb@sum( x )@ & $\sum_i x_i$ & affine & nondecreasing \\
+	\verb@abs( x )@ & $|x|$ & convex & nonmonotonic \\
 	%\verb@log( x )@ & $\log x$ & concave, nondecreasing
-	\verb@sqrt( x )@ & $\sqrt x$ & concave, nondecreasing
+	\verb@sqrt( x )@ & $\sqrt x$ & concave & nondecreasing
 \end{tabular}
 \end{center}
 
@@ -1742,7 +1744,7 @@ In addition, some functions are convex, concave, or affine only for
 a \emph{subset} of its arguments. For example, the function
 \begin{center}
 \begin{tabular}{lll}
-	\verb@norm( x, p )@ & $\|x\|_p~~(1<p)$ & convex in $x$, nonmonotonic
+	\verb@norm( x, p )@ & $\|x\|_p~~(1 \leq p)$ & convex in $x$, nonmonotonic
 \end{tabular}
 \end{center}
 is convex only in its first argument. Whenever this function is used
@@ -1906,12 +1908,9 @@ not convex.
 
 There are several ways to modify the expression above to
 comply with the ruleset.
-One way is to write it as
-\begin{code}
-	( x + 1 ).^4 + 2*( x + 1 ).^2 + ( x + 1 )
-\end{code}
+One way is to write it as \verb@x^4 + 2*x^2 + 1@,
 which \cvx recognizes as convex, since
-\cvx allows positive even integer powers using the \verb@.^@ operator.
+\cvx allows positive even integer powers using the \verb@^@ operator.
 (Note that the same technique, applied to the function $(x^2-1)^2$,
 will fail, since its second term is concave.)
 %But let us look at an alternative for further illustration.
@@ -2093,7 +2092,7 @@ f(x) = \max \{ |x|-1, 0 \} =
 \left\{ \begin{array}{ll}
 0 & |x| \leq 1\\
 x-1 & x > 1\\
-1-x & x <-1
+-1-x & x <-1
 \end{array}\right.
 \]
 To implement this function in \cvx, simply create a file \verb@deadzone.m@
@@ -2163,8 +2162,9 @@ $g(x,y)\triangleq y$, then
 \]
 gives the classic \emph{epigraph} representation of $f$:
 \[
-\epi f = S+ \reals_+^n.
+\epi f = S+ \left( \{ 0 \} \times \reals_+ \right),
 \]
+where $0 \in \reals^n$.
 \index{function!epigraph}
 \index{epigraph}
 
@@ -2290,7 +2290,7 @@ can also be used in \cvx constraints and objectives, just like any other concave
 function in the atom library.
 
 There are two practical issues that arise when defining functions
-using incomplete specifications, both of we will illustrated using
+using incomplete specifications, both of which we will illustrate using
 our \verb@huber@ example above. First of all, as written the function works
 only with scalar values. To apply it (elementwise) 
 to a vector requires that we iterate
@@ -2311,9 +2311,9 @@ version of the problem:
 	        w <= 1;
 	cvx_end
 \end{code}
-This version of \verb@huber@ will in effect create \verb@prod( sx )@ ``instances''
+This version of \verb@huber@ will in effect create \verb@sx@ ``instances''
 of the problem in parallel; and when used in a \cvx specification,
-\cvx will do the right thing.
+will be handled correctly.
 
 The second issue is that if the input to \verb@huber@ is numeric, then
 direct computation is a far more efficient way to compute the result
@@ -2339,7 +2339,7 @@ the proper version to use:
 	end
 \end{code}
 Alternatively, you can create two separate versions of the function, one 
-for numeric input and one for \cvx expressions; and 
+for numeric input and one for \cvx expressions, and 
 place the numeric version in a subdirectory called
 \verb+@double+. Matlab will call the \verb+@double+ version only when its
 arguments are numeric, and it will call your \cvx version in other cases.
@@ -2484,15 +2484,15 @@ a test like \verb@min(eig(Z)) >= 0@.
 \index{function!generalized posynomial}
 \index{GGP}
 
-Geometric programs (GPs) are a special class mathematical programs 
+Geometric programs (GPs) are special mathematical programs 
 that can be converted to convex form using a change of variables.
 The convex form of GPs can be expressed as DCPs, but \cvx also 
 provides a special mode that allows a GP to be specified in 
 its native form. \cvx will automatically perform the necessary
 conversion, compute a numerical solution, and translate the results
 back to the original problem.
-A tutorial on geometric programming is beyond the scope of this document, so we
-refer the reader to \cite{BKVH:05}.
+For a tutorial on geometric programming,
+we refer the reader to \cite{BKVH:05}.
 
 To utilize GP mode, you must begin your \cvx specification
 with the command \verb@cvx_begin gp@ or \verb@cvx_begin GP@ instead of simply
@@ -2520,16 +2520,10 @@ geometric programs} (GGPs), by permitting the use of \emph{generalized
 posynomials} wherever posynomials are permitted in standard GP \cite{BKVH:05}.
 
 The solvers used in this version of \cvx do
-not support geometric programming natively. Therefore, we have developed an
-approximation method which allows \cvx to solve GPs and related
-problems. The method converts GPs to SDPs, and the approximation error 
-can be bounded in advance.
-Details of the method are outside of the scope of this document,
-but Appendix\ref{sec:gp-approx} provides a brief introduction and describes
-how to control its accuracy. While this approach
-is ultimately \emph{not} suited for very large GPs, it has proven
-in practice to perform respectably on small- and medium-scale
-problems.
+not support geometric programming natively. Instead, they are solved using the
+successive approximation technique described in
+Appendix~\ref{sec:succ-approx}.  This means that solving GPs can be slow,
+but for small and medium sized problems, the method works well.
 
 In the remainder of this section, we will describe specific rules
 that apply when constructing models in GP mode.
@@ -2703,7 +2697,6 @@ then the setting you choose will apply \emph{globally}; that is, to any
 subsequent models that are created and solved. The local approach should be
 preferred in an application where multiple models are constructed and solved
 at different levels of precision.
-with multiple precision
 
 If you call \verb@cvx_precision@ in function mode, either with a string or a numeric
 value, it will return as its output the \emph{previous} precision vector---the same
@@ -2897,7 +2890,7 @@ The statement
 \begin{code}
 	dual variables y{n}
 \end{code}
-allocates a cell array $n$ dual variables, and stores the result in the Matlab
+allocates a cell array of $n$ dual variables, and stores the result in the Matlab
 variable \verb@Z@. The equality constraint in the \verb@for@ loop has been augmented
 with a reference to \verb@y{k+1}@, so that each constraint is assigned a separate
 dual variable.
@@ -3005,7 +2998,7 @@ Matlab path for subsequent Matlab sessions. Follow the instructions provided
 by \verb@cvx_setup@ to accomplish that.
 \end{enumerate}
 
-\subsection{MEX file compilaton}
+\subsection{MEX file compilation}
 \label{sec:othersys}
 
 Precompiled MEX files are provided only for a handful of platforms;
@@ -3593,7 +3586,7 @@ we construct a global approximation for \verb@exp@ (or \verb@log@,
 Solving this approximation yields an approximate optimal point $\bar{x}$. We
 shift the center point $x_0$ towards $\bar{x}$, construct a new approximation,
 and solve again. This process is repeated until $|\bar{x}-x_0|$ is small enough to conclude
-that our approximate is accurate enough to represent the orignal model.
+that our approximate is accurate enough to represent the original model.
 Again, this is a highly simplified description of the approach; for instance, we
 are also monitoring the dual problem as well to guide our judgements for shifting
 $x_0$ and terminating.
@@ -4045,6 +4038,8 @@ and his students, Art Owen, Rahul Panicker, Imre Polik, Jo\"{e}lle Skaf,
 Lieven Vandenberghe, Argyris Zymnis. We are also grateful to the many
 students in several universities who have (perhaps unwittingly)
 served as beta testers by using \cvx in their classwork.
+We thank Igal Sason for catching many typos in an earlier version of this 
+document.
 
 \newpage
 \bibliography{cvx_usrguide}

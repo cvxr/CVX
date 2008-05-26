@@ -78,7 +78,7 @@ W = ones(n,1); % initial weights
 disp([char(10) 'Log-based heuristic:']);
 % cvx_quiet(true);
 for k = 1:NUM_RUNS
-  cvx_begin
+  cvx_begin quiet
     variable x_log(n)
     minimize( sum( W.*abs(x_log) ) )
     subject to

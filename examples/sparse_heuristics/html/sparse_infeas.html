@@ -11,7 +11,7 @@ To make changes, update the M-file and republish this document.
       -->
       <title>Finding a point that satisfies many linear inequalities</title>
       <meta name="generator" content="MATLAB 7.5">
-      <meta name="date" content="2008-03-11">
+      <meta name="date" content="2008-05-23">
       <meta name="m-file" content="sparse_infeas"><style>
 
 body {
@@ -150,19 +150,19 @@ it pstep dstep pinfeas dinfeas  gap      mean(obj)   cputime
  8|0.993|0.561|6.1e-09|2.4e-03|5.3e+00| 3.739303e+01| 0:0:00| chol  1  1 
  9|0.870|0.368|9.1e-10|1.5e-03|3.3e+00| 3.782964e+01| 0:0:00| chol  1  1 
 10|1.000|0.375|2.3e-10|9.7e-04|2.0e+00| 3.815325e+01| 0:0:00| chol  1  1 
-11|1.000|0.573|6.7e-11|4.1e-04|8.5e-01| 3.856006e+01| 0:0:00| chol  1  1 
-12|0.918|0.617|4.4e-12|1.6e-04|3.2e-01| 3.877476e+01| 0:0:00| chol  1  1 
-13|1.000|0.270|7.9e-12|1.2e-04|2.4e-01| 3.881145e+01| 0:0:00| chol  1  1 
-14|1.000|0.240|3.2e-12|8.8e-05|1.8e-01| 3.883697e+01| 0:0:00| chol  1  1 
-15|1.000|0.315|1.2e-12|6.0e-05|1.3e-01| 3.886172e+01| 0:0:00| chol  1  1 
-16|1.000|0.386|5.4e-13|3.7e-05|7.9e-02| 3.888229e+01| 0:0:00| chol  1  1 
+11|1.000|0.573|6.7e-11|4.1e-04|8.5e-01| 3.856006e+01| 0:0:01| chol  1  1 
+12|0.918|0.617|4.4e-12|1.6e-04|3.2e-01| 3.877476e+01| 0:0:01| chol  1  1 
+13|1.000|0.270|7.9e-12|1.2e-04|2.4e-01| 3.881145e+01| 0:0:01| chol  1  1 
+14|1.000|0.240|3.2e-12|8.8e-05|1.8e-01| 3.883697e+01| 0:0:01| chol  1  1 
+15|1.000|0.315|1.2e-12|6.0e-05|1.3e-01| 3.886172e+01| 0:0:01| chol  1  1 
+16|1.000|0.386|5.4e-13|3.7e-05|7.9e-02| 3.888229e+01| 0:0:01| chol  1  1 
 17|0.878|0.582|3.0e-13|1.5e-05|3.3e-02| 3.890202e+01| 0:0:01| chol  1  1 
 18|1.000|0.418|1.9e-13|9.0e-06|1.9e-02| 3.890799e+01| 0:0:01| chol  1  1 
 19|1.000|0.552|1.7e-13|1.1e-05|8.5e-03| 3.891278e+01| 0:0:01| chol  1  1 
 20|1.000|0.979|1.6e-14|4.5e-06|2.1e-04| 3.891668e+01| 0:0:01| chol  1  1 
 21|1.000|0.989|1.5e-15|1.1e-07|5.0e-06| 3.891676e+01| 0:0:01| chol  1  1 
 22|1.000|0.989|1.9e-15|2.6e-09|9.8e-08| 3.891676e+01| 0:0:01|
-  sqlp stop: max(relative gap, infeasibilities) &lt; 1.49e-08
+  stop: max(relative gap, infeasibilities) &lt; 1.49e-08
 -------------------------------------------------------------------
  number of iterations   = 22
  primal objective value =  3.89167630e+01
@@ -174,7 +174,7 @@ it pstep dstep pinfeas dinfeas  gap      mean(obj)   cputime
  rel. dual   infeas     = 2.61e-09
  norm(X), norm(y), norm(Z) = 1.4e+01, 7.4e+00, 1.2e+01
  norm(A), norm(b), norm(C) = 5.7e+01, 1.4e+01, 1.3e+01
- Total CPU time (secs)  = 0.7  
+ Total CPU time (secs)  = 1.0  
  CPU time per iteration = 0.0  
  termination code       =  0
  DIMACS: 6.8e-15  0.0e+00  1.7e-08  0.0e+00  1.1e-09  1.2e-09

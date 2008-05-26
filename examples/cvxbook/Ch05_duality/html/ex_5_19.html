@@ -11,7 +11,7 @@ To make changes, update the M-file and republish this document.
       -->
       <title>Exercise 5.19c: Markovitz portfolio optimization w/ diversification constraint</title>
       <meta name="generator" content="MATLAB 7.5">
-      <meta name="date" content="2008-03-11">
+      <meta name="date" content="2008-05-23">
       <meta name="m-file" content="ex_5_19"><style>
 
 body {
@@ -169,11 +169,11 @@ it pstep dstep pinfeas dinfeas  gap      mean(obj)   cputime
 13|1.000|0.609|5.1e-11|1.6e-05|2.4e-02|-2.711395e+01| 0:0:00| chol  1  1 
 14|0.885|0.939|1.6e-11|9.7e-07|1.9e-03|-2.710932e+01| 0:0:00| chol  1  1 
 15|0.990|0.554|1.0e-12|5.4e-06|5.0e-04|-2.710950e+01| 0:0:00| chol  1  1 
-16|1.000|0.916|5.0e-14|1.4e-06|4.2e-05|-2.710933e+01| 0:0:00| chol  1  1 
-17|1.000|0.886|1.1e-11|1.2e-07|1.4e-05|-2.710932e+01| 0:0:00| chol  1  1 
-18|1.000|0.980|2.1e-13|3.9e-08|7.2e-07|-2.710932e+01| 0:0:00| chol  1  2 
-19|1.000|0.988|9.0e-14|2.0e-09|1.2e-08|-2.710932e+01| 0:0:00|
-  sqlp stop: max(relative gap, infeasibilities) &lt; 1.49e-08
+16|1.000|0.916|5.0e-14|1.4e-06|4.2e-05|-2.710933e+01| 0:0:01| chol  1  1 
+17|1.000|0.886|1.1e-11|1.2e-07|1.4e-05|-2.710932e+01| 0:0:01| chol  1  1 
+18|1.000|0.980|2.1e-13|3.9e-08|7.2e-07|-2.710932e+01| 0:0:01| chol  1  2 
+19|1.000|0.988|9.0e-14|2.0e-09|1.2e-08|-2.710932e+01| 0:0:01|
+  stop: max(relative gap, infeasibilities) &lt; 1.49e-08
 -------------------------------------------------------------------
  number of iterations   = 19
  primal objective value = -2.71093203e+01
@@ -185,7 +185,7 @@ it pstep dstep pinfeas dinfeas  gap      mean(obj)   cputime
  rel. dual   infeas     = 2.03e-09
  norm(X), norm(y), norm(Z) = 3.9e+01, 6.5e-01, 1.3e+00
  norm(A), norm(b), norm(C) = 3.0e+01, 5.4e+01, 3.3e+00
- Total CPU time (secs)  = 0.4  
+ Total CPU time (secs)  = 0.6  
  CPU time per iteration = 0.0  
  termination code       =  0
  DIMACS: 9.0e-14  0.0e+00  3.3e-09  0.0e+00  1.8e-10  2.3e-10
@@ -230,8 +230,8 @@ it pstep dstep pinfeas dinfeas  gap      mean(obj)   cputime
 16|1.000|0.916|3.1e-14|1.4e-06|4.2e-05|-2.710933e+01| 0:0:00| chol  1  1 
 17|1.000|0.886|4.0e-11|1.2e-07|1.4e-05|-2.710932e+01| 0:0:00| chol  1  1 
 18|1.000|0.980|1.2e-12|3.9e-08|7.2e-07|-2.710932e+01| 0:0:00| chol  1  2 
-19|1.000|0.988|4.9e-14|2.0e-09|1.2e-08|-2.710932e+01| 0:0:00|
-  sqlp stop: max(relative gap, infeasibilities) &lt; 1.49e-08
+19|1.000|0.988|4.9e-14|2.0e-09|1.2e-08|-2.710932e+01| 0:0:01|
+  stop: max(relative gap, infeasibilities) &lt; 1.49e-08
 -------------------------------------------------------------------
  number of iterations   = 19
  primal objective value = -2.71093203e+01
@@ -243,7 +243,7 @@ it pstep dstep pinfeas dinfeas  gap      mean(obj)   cputime
  rel. dual   infeas     = 2.03e-09
  norm(X), norm(y), norm(Z) = 3.9e+01, 6.5e-01, 1.3e+00
  norm(A), norm(b), norm(C) = 3.0e+01, 5.4e+01, 3.3e+00
- Total CPU time (secs)  = 0.4  
+ Total CPU time (secs)  = 0.5  
  CPU time per iteration = 0.0  
  termination code       =  0
  DIMACS: 4.9e-14  0.0e+00  3.3e-09  0.0e+00  1.8e-10  2.3e-10

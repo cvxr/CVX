@@ -11,7 +11,7 @@ To make changes, update the M-file and republish this document.
       -->
       <title>Example 7.2: Maximum entropy distribution</title>
       <meta name="generator" content="MATLAB 7.5">
-      <meta name="date" content="2008-04-14">
+      <meta name="date" content="2008-05-23">
       <meta name="m-file" content="maxent"><style>
 
 body {
@@ -171,20 +171,18 @@ hold <span class="string">off</span>
 Successive approximation method to be employed.
    SDPT3 will be called several times to refine the solution.
    Original size: 308 variables, 109 equality constraints
-   Approximation size: 1208 variables, 709 equality constraints
+   Approximation size: 1109 variables, 609 equality constraints
 -----------------------------------------------------------------
- Target     Forcing     Conic    Solver
-Precision    Bias       Error    Status
----------------------------------------
-1.221e-04  0.000e+00  2.454e+00  Solved
-1.221e-04  0.000e+00  2.984e-01  Solved
-1.221e-04  0.000e+00  1.177e-02  Solved
-1.221e-04  0.000e+00  1.116e-05  Solved
-1.221e-04  0.000e+00  0.000e+00  Solved
-1.490e-08  0.000e+00  4.145e-06  Solved
-1.490e-08  0.000e+00  0.000e+00  Solved
+ Target     Conic    Solver
+Precision   Error    Status
+---------------------------
+1.221e-04  2.684e+00  Solved
+1.221e-04  8.873e-03  Solved
+1.221e-04  0.000e+00  Solved
+1.490e-08  6.524e-07  Inaccurate/Solved
+1.490e-08  0.000e+00  Inaccurate/Solved
 -----------------------------------------------------------------
-Status: Solved
+Status: Inaccurate/Solved
 Optimal value (cvx_optval): +4.38629
 2.26172e-11 &lt;= Prob(x&lt;=-1) &lt;= 0.329406
 2.8871e-11 &lt;= Prob(x&lt;=-0.979798) &lt;= 0.344777
