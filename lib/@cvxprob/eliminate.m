@@ -254,7 +254,7 @@ for k = 1 : length( cones ),
     cones(k).indices = temp;
 end
 if any(tt),
-    cones(temp) = [];
+    cones(tt~=0) = [];
 end
 
 % Copyright 2008 Michael C. Grant and Stephen P. Boyd.
