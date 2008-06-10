@@ -7,14 +7,14 @@ switch class( x ),
         y = cell2struct( do_apply( func, struct2cell( x ) ), fieldnames( x ), 1 );
     case 'cell',
         global cvx___
-        if cvx___.mversion < 7.1,
+        if cvx___.hcellfun,
+            y = cellfun( func, x, 'UniformOutput', false );
+        else
             sx = size( x );
             y = cell( sx );
             for k = 1 : prod( sx ),
                 y{k} = feval( func, x{k} );
             end
-        else
-            y = cellfun( func, x, 'UniformOutput', false );
         end
     otherwise,
         y = feval( func, x );

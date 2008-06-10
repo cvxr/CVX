@@ -21,6 +21,7 @@ function z = plus( x, y, isdiff, cheat )
 % Default arguments
 %
 
+persistent remap_plus remap_minus
 if nargin < 4,
     if nargin < 3,
         isdiff = false;
@@ -51,18 +52,32 @@ end
 %
 
 if ~cheat,
-    temp = cvx_vexity( x ) .* cvx_vexity( y );
-    if isdiff,
-        bad = temp( : ) > 0;
-    else
-        bad = temp( : ) < 0;
+    if isempty( remap_plus ),
+        temp0 = cvx_remap( 'affine'  );
+        temp1 = cvx_remap( 'convex'  ) & ~temp0;
+        temp2 = cvx_remap( 'concave' ) & ~temp0;
+        temp3 = temp1' * +temp2;
+        temp1 = temp1' * +temp1;
+        temp2 = temp2' * +temp2;
+        temp4 = ( cvx_remap( 'log-concave' ) & ~cvx_remap( 'log-affine' ) )' * +(~cvx_remap( 'zero' )) | ...
+                cvx_remap( 'invalid' )' * cvx_remap( 'valid', 'invalid' );
+        temp4 = temp4 | temp4';
+        remap_minus = temp4 | temp1 | temp2;
+        remap_plus  = temp4 | temp3 | temp3';
     end
-    if any( bad ),
-        if isdiff,
-            error( sprintf( 'Disciplined convex programming error:\n   Differences between convex or concave terms are forbidden.' ) );
-        else
-            error( sprintf( 'Disciplined convex programming error:\n   Sums of convex and concave terms are forbidden.' ) );
-        end
+    vx = cvx_classify( x );
+    vy = cvx_classify( y );
+    bad = vx + size( remap_plus, 1 ) * ( vy - 1 );
+    if isdiff,
+        bad = remap_minus( bad );
+    else
+        bad = remap_plus( bad );
+    end
+    if nnz( bad ),
+        if ~xs, xs = cvx_subsref( x, bad ); end
+        if ~ys, ys = cvx_subsref( y, bad ); end
+        if isdiff, op = '-'; else, op = '+'; end
+        error( sprintf( 'Disciplined convex programming error:\n   Illegal operation: {%s} %s {%s}', cvx_class( x ), op, cvx_class( y ) ) );
     end
 end
 

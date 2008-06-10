@@ -91,15 +91,15 @@ end
 if ~isequal( clearmode, 'reset' ) & ~isequal( clearmode, 'extract' ),
     evalin( 'caller', 'clear cvx___' );
     s1 = evalin( 'caller', 'who' );
-    if cvx___.mversion < 7.1,
+    if cvx___.hcellfun,
+        s2 = sprintf( '%s, ', s1{:} );
+        s2 = evalin( 'caller', sprintf( 'cellfun( @cvx_id, { %s } )', s2(1:end-2) ) );
+    else
         nvars = prod( size( s1 ) );
         s2 = zeros( 1, nvars );
         for k = 1 : nvars,
             s2(k) = cvx_id( evalin( 'caller', s1{k} ) );
         end
-    else
-        s2 = sprintf( '%s, ', s1{:} );
-        s2 = evalin( 'caller', sprintf( 'cellfun( @cvx_id, { %s } )', s2(1:end-2) ) );
     end
     tt = s2 >= pid;
     s1 = s1( tt );

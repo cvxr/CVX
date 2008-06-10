@@ -1,7 +1,7 @@
 #include "mex.h"
-#include "matrix.h"
+#include <stddef.h>
 
-#if !defined(MX_API_VER) || ( MX_API_VER < 0x07030000 )
+#if !defined(HAVE_OCTAVE) && ( !defined(MX_API_VER) || ( MX_API_VER < 0x07030000 ) )
 typedef int mwIndex;
 typedef int mwSize;
 #endif

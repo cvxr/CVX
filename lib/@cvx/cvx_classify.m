@@ -57,8 +57,9 @@ if nnz( cvx___.exponential ),
     tt = find( v == 7 & q > 1 );
     if ~isempty( tt ),
         [ rx, cx, vx ] = find( x.basis_( :, tt ) );
-        qq = ( reshape( cvx___.logarithm( rx ), size( vx ) ) | rx == 1 ) & vx > 0;
-        v( tt( cx( qq ) ) ) = 12;
+        qq = ( ~reshape( cvx___.logarithm( rx ), size( vx ) ) & ( rx > 1 ) ) | vx < 0;
+        tt( cx( qq ) ) = [];
+        v( tt ) = 12;
     end
 end
 

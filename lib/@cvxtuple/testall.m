@@ -7,13 +7,13 @@ switch class( x ),
         y = do_test( func, struct2cell( x ) );
     case 'cell',
         global cvx___
-        if cvx___.mversion < 7.1,
+        if cvx___.hcellfun,
+            y = all( cellfun( func, x ) );
+        else
             y = true;
             for k = 1 : numel( x ),
                 if ~feval( func, x{k} ), y = false; break; end
             end
-        else
-            y = all( cellfun( func, x ) );
         end
     otherwise,
         y = feval( func, x );

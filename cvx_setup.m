@@ -5,32 +5,33 @@ function cvx_setup
 %    to insure that the paths are set properly and the MEX files are compiled.
 
 disp( ' ' );
-dd = cd;
+dd = pwd;
 
 global cvx___
 cvx___ = [];
 
 ver = version;
+verm = 0;
 temp = find( ver == '.' );
 if length( temp ) > 1,
+	verm = ver( temp( 2 ) + 1 : end );
     ver( temp( 2 ) : end ) = [];
 end
 needLarge = 0;
 ver = eval( ver, 'NaN' );
-if isnan( ver ) | ver < 6.1,
-    error( 'CVX requires MATLAB 6.1 or later.' );
-elseif ver < 7,
-    mpath = dbstack;
-    mpath = mpath(1);
-    mpath = mpath.name;
+mpath = mfilename('fullpath');
+isoctave = exist('OCTAVE_VERSION');
+if isoctave,
+	if isnan( ver ) | ver < 3.0 | ( ver == 3.0 & verm < 1 ),
+		error( 'CVX requires octave 3.0.1 or later.' );
+	end
 else
-    mpath = dbstack( '-completenames' );
-    mpath = mpath(1);
-    mpath = mpath.file;
-    if ver >= 7.3,
-        newext = mexext;
-        needLarge = strcmp( newext(end-1:end), '64' );
-    end
+	if isnan( ver ) | ver < 6.1,
+	    error( 'CVX requires MATLAB 6.1 or later.' );
+	elseif ver >= 7.3,	    
+	    newext = mexext;
+    	needLarge = strcmp( newext(end-1:end), '64' );
+	end    	
 end
 if ispc,
     fs = '\';
@@ -41,16 +42,15 @@ else
 end
 temp = strfind( mpath, fs );
 mpath( temp(end) : end ) = [];
-
 if needLarge,
-	solvers = { 'sdpt3' };
+    solvers = { 'sdpt3' };
 else
     solvers = { 'sdpt3', 'sedumi' };
 end
 rmpaths = { 'sets', 'keywords', 'builtins', 'commands', 'functions', 'lib', 'structures', 'matlab6' };
 needpaths = {};
 delepaths = {};
-if ver >= 7.0,
+if isoctave | ver >= 7.0,
     checkpaths = rmpaths(1:end-1);
     addpaths = rmpaths(3:end-1);
 elseif ver >= 6.5,
@@ -60,7 +60,9 @@ else
     checkpaths = rmpaths;
     addpaths = rmpaths;
 end
-addpaths = strcat( [ mpath, fs ], addpaths );
+for k = 1 : length(addpaths),
+	addpaths{k} = [ mpath, fs, addpaths{k} ];
+end
 addpaths{end+1} = mpath;
 missing = {};
 for k = 1 : length(checkpaths),
@@ -84,7 +86,7 @@ if length(missing) > msolv | msolv == length(solvers),
           sprintf( ' %s', missing{:} ) ) );
 end
 needupd = 0;
-newpath = [ ps, matlabpath, ps ];
+newpath = [ ps, path, ps ];
 if ispc,
     newpath2 = lower(newpath);
     mpath2 = lower(mpath);
@@ -124,7 +126,7 @@ for k = 1 : length(addpaths),
     end
 end
 newpath = newpath(2:end-1);
-matlabpath(newpath);
+path(newpath);
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Compile the CVX MEX files %
@@ -132,9 +134,13 @@ matlabpath(newpath);
 
 newext = mexext;
 isw32 = strcmp( newext, 'mexw32' );
-isNewLinux = strcmp( newext, 'mexglx' ) & ver >= 7.5;
+isNewLinux = strcmp( newext, 'mexglx' ) & ~isoctave & ver >= 7.5;
 fullRecompile = false;
-mexcmd = { '-O' };
+if isoctave,
+	mexcmd = {};
+else
+	mexcmd = { '-O' };
+end
 if needLarge,
     mexcmd{end+1} = '-largeArrayDims';
 end
@@ -256,7 +262,7 @@ if exist( sedpath, 'dir' ),
     end
 end
 
-matlabpath(newpath);
+path(newpath);
 disp( 'Testing the cvx distribution. If this script aborts with' );
 disp( 'an error, please report the error to the authors.' );
 disp( '-------------------------------------------------------------' );
@@ -265,12 +271,11 @@ m = 16; n = 8;
 A = randn(m,n);
 b = randn(m,1);
 xls = A \ b;
-s = cvx_quiet( 1 );
 cvx_begin
+    cvx_quiet(true);
     variable('x(n)');
     minimize( norm(A*x-b) );
 cvx_end
-cvx_quiet( s );
 try
     cvx_clearpath;
 end
