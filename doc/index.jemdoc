@@ -54,3 +54,13 @@ The CVX package includes a growing library of examples to help get you started,
 including examples from the book [http://stanford.edu/~boyd/cvxbook Convex Optimization]
 and from a variety of applications. You can browse through this library now---without having
 to download and install CVX---by clicking [examples/index.html here]. 
+
+~~~
+{Notice to users of Matlab R12.1 (6.1)}
+In order to facilitate some upcoming developments for CVX, we have decided that
+it will be necessary to discontinue support for Matlab 6.1. Once these developments
+are completed sometime in summer 2008, the use of CVX on Matlab will require
+version 6.5 or newer. If you currently use Matlab 6.1, please contact us to
+to discuss alternatives.
+~~~
+
