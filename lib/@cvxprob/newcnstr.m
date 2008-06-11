@@ -172,7 +172,7 @@ else
         for k = 1 : length( vi ),
             if any( sx ~= 1 ), xt = x(vi(k)); end
             if any( sy ~= 1 ), yt = y(vi(k)); end
-            strs{k+1} = sprintf( '\n   Invalid constraint: {%s} %s {%s}', cvx_class( xt, true, false ), op, cvx_class( yt, true, false ) );
+            strs{k+1} = sprintf( '\n   Invalid constraint: {%s} %s {%s}', cvx_class( xt, false, true ), op, cvx_class( yt, false, true ) );
         end
         error( [ sprintf( 'Disciplined convex programming error:' ), strs{:} ] );
     end

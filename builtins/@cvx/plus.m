@@ -53,16 +53,19 @@ end
 
 if ~cheat,
     if isempty( remap_plus ),
-        temp0 = cvx_remap( 'affine'  );
-        temp1 = cvx_remap( 'convex'  ) & ~temp0;
-        temp2 = cvx_remap( 'concave' ) & ~temp0;
-        temp3 = temp1' * +temp2;
-        temp1 = temp1' * +temp1;
-        temp2 = temp2' * +temp2;
-        temp4 = ( cvx_remap( 'log-concave' ) & ~cvx_remap( 'log-affine' ) )' * +(~cvx_remap( 'zero' )) | ...
-                cvx_remap( 'invalid' )' * cvx_remap( 'valid', 'invalid' );
+        temp0  = cvx_remap( 'affine'  );
+        tempc  = cvx_remap( 'complex', 'complex-affine' );
+        temp1  = cvx_remap( 'convex'  ) & ~temp0;
+        temp1c = temp1 + tempc;
+        temp2  = cvx_remap( 'concave' ) & ~temp0;
+        temp2c = temp2 + tempc;
+        temp3  = temp1' * temp2c + temp2' * temp1c;
+        temp1  = temp1' * temp1c;
+        temp2  = temp2' * temp2c;
+        temp4  = ( cvx_remap( 'log-concave' ) & ~cvx_remap( 'log-affine' ) )' * +(~cvx_remap( 'zero' )) | ...
+                   cvx_remap( 'invalid' )' * cvx_remap( 'valid', 'invalid' );
         temp4 = temp4 | temp4';
-        remap_minus = temp4 | temp1 | temp2;
+        remap_minus = temp4 | temp1 | temp1' | temp2 | temp2';
         remap_plus  = temp4 | temp3 | temp3';
     end
     vx = cvx_classify( x );
@@ -77,7 +80,7 @@ if ~cheat,
         if ~xs, xs = cvx_subsref( x, bad ); end
         if ~ys, ys = cvx_subsref( y, bad ); end
         if isdiff, op = '-'; else, op = '+'; end
-        error( sprintf( 'Disciplined convex programming error:\n   Illegal operation: {%s} %s {%s}', cvx_class( x ), op, cvx_class( y ) ) );
+        error( sprintf( 'Disciplined convex programming error:\n   Illegal operation: {%s} %s {%s}', cvx_class( x, false, true ), op, cvx_class( y, false, true ) ) );
     end
 end
 

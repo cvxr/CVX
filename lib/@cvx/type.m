@@ -9,27 +9,19 @@ end
 df  = abs( df );
 s   = x.size_;
 len = prod( s );
-isr = isreal( x.basis_ );
 
 if len == 1,
     isstruct = 0;
     nzs = len;
-    if ~isr,
-        st = 'complex scalar';
-    else
-        st = 'scalar';
-    end
+    st = 'scalar';
 else
-    isstruct = ~isempty( df ) & ( sum( df ) < ( 2 - isr ) * len );
+    isstruct = ~isempty( df ) & ( sum( df ) < ( 2 - isreal( x.basis_ ) ) * len );
     if ~isstruct,
         nzs = nnz( any( x.basis_, 1 ) );
     end
     nd = length( s );
     st = sprintf( '%dx', s );
     st = st( 1 : end - 1 );
-    if ~isreal( x ),
-        st = [ st, ' complex' ];
-    end
     if nd > 2,
         st = [ st, ' array' ];
     elseif any( s == 1 ),
@@ -39,9 +31,6 @@ else
     end
 end
 
-%if cvx_isconstant( x ),
-%    st = [ st, ' constant' ];
-%end
 if isstruct,
     st = sprintf( '%s, %d d.o.f.', st, df );
 elseif nzs < len,

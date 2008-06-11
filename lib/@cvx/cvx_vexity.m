@@ -34,8 +34,11 @@ if x.slow_,
 else
     v( tt ) = NaN;
 end
+if ~isreal( x ),
+    v( any( imag( x.basis_ ), 1 ) & v ) = NaN;
+end
 v = sign( v );
-v = reshape( v, x.size_ ); % cvx_reshape( v, x.size_ );
+v = reshape( v, x.size_ );
 
 % Copyright 2008 Michael C. Grant and Stephen P. Boyd.
 % See the file COPYING.txt for full copyright information.
