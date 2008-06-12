@@ -55,12 +55,18 @@ including examples from the book [http://stanford.edu/~boyd/cvxbook Convex Optim
 and from a variety of applications. You can browse through this library now---without having
 to download and install CVX---by clicking [examples/index.html here]. 
 
-~~~
-{Notice to users of Matlab R12.1 (6.1)}
+== Latest news
+
+=== Support for the exponential family of functions
+CVX version 1.2 now supports problems involving exponentials,
+logarithms, and entropy functions! A novel successive approximation approach
+has been developed to facilitate this improvement.
+Please see the user's guide for more details.
+
+=== Notice to users of Matlab R12.1 (6.1)
 In order to facilitate some upcoming developments for CVX, we have decided that
 it will be necessary to discontinue support for Matlab 6.1. This change will
 occur at some point this summer, at which point CVX will require the use of
 Matlab version 6.5 or newer. If you currently use Matlab 6.1, please contact
 us to discuss alternatives.
-~~~
 
