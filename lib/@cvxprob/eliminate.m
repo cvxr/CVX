@@ -183,7 +183,7 @@ for pass = 1 : 2,
     n_eq   = m1 - 1 - n_ineq;
     m_dua  = n1 - n_ineq - 1;
     n_dua  = nnz(rsv) + n_eq + ( n_eq ~= 0 );
-    if ( ( m_pri > n_pri ) | ( ( m_pri * n_pri > m_dua * n_dua ) ) & ( m_dua <= n_dua ) ), 
+    if ( ( m_pri > n_pri ) | ( m_pri * n_pri > m_dua * n_dua ) ) & ( m_dua <= n_dua ),
         ndxs = full(sparse(ndxs,1,1:n1));
         PP = cell(2,length(cones));
         n_cur = m1;
