@@ -44,7 +44,7 @@
    OUTPUT
      x - (n-i) array, will contain x = i:(n-1)
    ************************************************************ */
-void fromto(int *x, int i, const int n)
+void fromto(mwIndex *x, mwIndex i, const mwIndex n)
 {
   x -= i;                /* makes x(i:n-1) valid */
   for(; i < n; i++)
@@ -56,17 +56,17 @@ void fromto(int *x, int i, const int n)
    INPUT  n = length(z)
    OUTPUT z = zeros(n,1)
    ************************************************************ */
-void fzeros(double *z,const int n)
+void fzeros(double *z,const mwIndex n)
 {
-  int k;
+  mwIndex k;
   
-  for(k=0; k < n - 3; ){           /* LEVEL 4 */
+  for(k=0; k+3 < n; ){           /* LEVEL 4 */
     z[k] = 0.0; k++;
     z[k] = 0.0; k++;
     z[k] = 0.0; k++;
     z[k] = 0.0; k++;
   }
-  if(k < n - 1){                      /* LEVEL 2 */
+  if(k+1 < n){                      /* LEVEL 2 */
     z[k] = 0.0; k++;
     z[k] = 0.0; k++;
   }

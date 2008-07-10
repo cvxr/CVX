@@ -95,13 +95,13 @@ void isscalardiv(double *x, const double alpha,const int n)
 {
  int k;
 
- for(k = 0; k < n-3; ){                 /* LEVEL 4 */
+ for(k = 0; k+3 < n; ){                 /* LEVEL 4 */
    x[k] /= alpha; k++;
    x[k] /= alpha; k++;
    x[k] /= alpha; k++;
    x[k] /= alpha; k++;
  }
- if(k < n-1){                              /* LEVEL 2 */
+ if(k+1 < n){                              /* LEVEL 2 */
    x[k] /= alpha; k++;
    x[k] /= alpha; k++;
  }

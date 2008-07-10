@@ -63,9 +63,9 @@ function [lab,q] = psdeig(x,K)
    INPUT x, n - full n x n matrix x.
    OUTPUT y - on output, contains (x+x')/2
    ************************************************************ */
-void symproj(double *y, const double *x, const int n)
+void symproj(double *y, const double *x, const mwIndex n)
 {
-  int colp,i,j;
+  mwIndex colp,i,j;
   double yij;
 
   /* ------------------------------------------------------------
@@ -86,9 +86,9 @@ void symproj(double *y, const double *x, const int n)
    INPUT x, n - full n x n matrix x.
    OUTPUT y - on output, contains (x-x')/2
    ************************************************************ */
-void skewproj(double *y, const double *x, const int n)
+void skewproj(double *y, const double *x, const mwIndex n)
 {
-  int colp,i,j;
+  mwIndex colp,i,j;
   double yij;
 
   /* ------------------------------------------------------------
@@ -116,7 +116,7 @@ void mexFunction(const int nlhs, mxArray *plhs[],
 {
  mxArray *output_array[3], *Xk, *hXk;
  coneK cK;
- int k, nk, nkp1, nksqr, lendiag,lenud, lenfull, i,ii;
+ mwIndex k, nk, nkp1, nksqr, lendiag,lenud, lenfull, i,ii;
  double *lab,*q,*labk,*xwork;
  const double *x;
 

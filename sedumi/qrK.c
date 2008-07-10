@@ -59,9 +59,9 @@
    PROCEDURE isconjhadamul - Let y = conj(x).*y
    ************************************************************ */
 void isconjhadamul(double *y, double *ypi, const double *x,const double *xpi,
-                   const n)
+                   const mwIndex n)
 {
-  int i;
+  mwIndex i;
   double yi;
   for(i = 0; i < n; i++){
     yi = x[i] * y[i] + xpi[i] * ypi[i];
@@ -83,17 +83,19 @@ void isconjhadamul(double *y, double *ypi, const double *x,const double *xpi,
         Qk = I-qk*qk' / beta[k],   where qk = q(k:n-1,k).
      q - n x (n-1) matrix; each column is a Householder reflection.
    ************************************************************ */
-void qrfac(double *beta, double *q, double *u, const int n)
+void qrfac(double *beta, double *q, double *u, const mwIndex n)
 {
-  int i,k, kcol, nmink, icol;
+  mwIndex i,k, kcol, nmink, icol;
   double dk, betak, qkui, qkk;
 
   for(k = 0, kcol = 0; k < n-1; k++, kcol += n+1){
+
 /* ------------------------------------------------------------
    kth Householder reflection:
    dk = sign(xkk) * ||xk(k:n)||,
    qk(k+1:n) = x(k+1:n); qkk = xkk+dk, betak = dk*qkk, ukk = -dk.
    ------------------------------------------------------------ */
+       
     qkk = u[kcol];
     dk = SIGN(qkk) * sqrt(realssqr(u+kcol,n-k));
     memcpy(q + kcol+1, u+kcol+1, (n-k-1) * sizeof(double));
@@ -110,9 +112,11 @@ void qrfac(double *beta, double *q, double *u, const int n)
    ------------------------------------------------------------ */
     nmink = n-k;
     betak = -betak;
+  
     for(i = k + 1, icol = kcol + n; i < n; i++, icol += n){
       qkui = realdot(q+kcol, u+icol, nmink);
       addscalarmul(u+icol, qkui/betak, q+kcol, nmink);
+
     }
   }
 }
@@ -136,14 +140,15 @@ void qrfac(double *beta, double *q, double *u, const int n)
        u_OUT = Q_n' * Q_{n-1}* .. * Q_2*Q_1*u_IN.
    ************************************************************ */
 void prpiqrfac(double *beta, double *q, double *qpi, double *u,
-               double *upi, const int n)
+               double *upi, const mwIndex n)
 {
-  int i,j,k, kcol, nmink, icol;
-  double dk, betak, qkui,qkuiim, qkk, absxkk, normxk, xkk,xkkim;
+  mwIndex i,j,k, kcol, nmink, icol;
+  double betak, qkui,qkuiim, absxkk, normxk, xkk,xkkim;
   double *ui,*uipi, *qk, *qkpi;
 
   for(k = 0, kcol = 0; k < n-1; k++, kcol += n+1){
-    qk = q+kcol;   qkpi = qpi + kcol;
+    qk = q+kcol;   
+    qkpi = qpi + kcol;
 /* ------------------------------------------------------------
    kth Householder reflection:
    Set absxkk = |xkk| and normxk = norm(xk(k:n)), then
@@ -198,6 +203,7 @@ void prpiqrfac(double *beta, double *q, double *qpi, double *u,
    Therefore, we multiply each row with conj(sign(u_ii)) = conj(u_ii)/|u_ii|.
    Let q(1:n,n) =  sign(diag(u))
    ------------------------------------------------------------ */
+  mxAssert(n>=0,"");
   if(n > 0){
     kcol = n * (n-1);     /* sign column q(:,n) */
     qk = q + kcol;
@@ -227,12 +233,12 @@ void prpiqrfac(double *beta, double *q, double *qpi, double *u,
    PROCEDURE mexFunction - Entry for Matlab
    [beta,U,d,perm] = qrpfacK(x,K)
    ************************************************************ */
-void mexFunction(const int nlhs, mxArray *plhs[],
-  const int nrhs, const mxArray *prhs[])
+void mexFunction( int nlhs, mxArray *plhs[],
+  int nrhs, const mxArray *prhs[])
 {
   mxArray *myplhs[NPAROUT];
   coneK cK;
-  int i,k,nk,nksqr, sdpdim, qsize;
+  mwIndex i,k,nk,nksqr, sdpdim, qsize;
   double *q, *r, *betak;
 /* ------------------------------------------------------------
    Check for proper number of arguments
@@ -265,18 +271,20 @@ void mexFunction(const int nlhs, mxArray *plhs[],
    The actual job is done here:
    ------------------------------------------------------------ */
   for(k = 0; k < cK.rsdpN; k++){                /* real symmetric */
-    nk = cK.sdpNL[k];
+    nk = (mwIndex) cK.sdpNL[k];
     nksqr = SQR(nk);
     qrfac(q+nksqr-nk,q,r, nk);
-    r += nksqr; q += nksqr;
+    r += nksqr; 
+    q += nksqr;
   }
   for(; k < cK.sdpN; k++){                      /* complex Hermitian */
-    nk = cK.sdpNL[k];
+    nk = (mwIndex) cK.sdpNL[k];
     nksqr = SQR(nk);
     betak = q + 2*nksqr;
     prpiqrfac(betak,q,q+nksqr, r,r+nksqr, nk);
     nksqr += nksqr;
-    r += nksqr; q += nksqr + nk;               /* nk for betak */
+    r += nksqr; 
+    q += nksqr + nk;               /* nk for betak */
   }
 /* ------------------------------------------------------------
    Copy requested output parameters (at least 1), release others.

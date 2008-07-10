@@ -45,19 +45,19 @@
    compare yields < 0 iff a < b, 0 iff a==b, > 0 iff a > b.
    ------------------------------------------------------------ */
 /* Integer compare: (for ibsearch) */
-int icmp(const int *a, const int *b)
+char icmp(const mwIndex *a, const mwIndex *b)
 {
    return( (*a > *b) - (*a < *b)  );
 }
 
 /* Integer compare (with integer key): (for kiqsort) */
-int kicmp(const keyint *a, const keyint *b)
+char kicmp(const keyint *a, const keyint *b)
 {
    return( (a->i > b->i) - (a->i < b->i)  );
 }
 
 /* Float compare (with integer key), for DESCENDING sort (e.g. 10,9,8,..).*/
-int kdcmpdec(const keydouble *a, const keydouble *b)
+char kdcmpdec(const keydouble *a, const keydouble *b)
 {
    return( (a->r < b->r) - (a->r > b->r)  );
 }
@@ -81,9 +81,9 @@ int kdcmpdec(const keydouble *a, const keydouble *b)
      1 if found, 0 otherwise. If found, then x[*pi]=key, otherwise
      x[*pi] > key.
    ************************************************************ */
-int intbsearch(int *pi, const int *x, const int n, const int key)
+bool intbsearch(mwIndex *pi, const mwIndex *x, const mwIndex n, const mwIndex key)
 {
- int i,j,r;
+ mwIndex i,j,r;
 
  i = *pi;
  mxAssert(i >= 0,"");
@@ -125,7 +125,7 @@ int intbsearch(int *pi, const int *x, const int n, const int key)
    INPUT
      x, y - integer arrays of length xnnz and ynnz, resp.
      xnnz, ynnz - lengths of x and y, resp.
-     bsize - size of int working array b; bsize = floor(log(ynnz+1)/log(2)).
+     bsize - size of mwIndex working array b; bsize = floor(log(ynnz+1)/log(2)).
    OUTPUT
      z - length ynnz+2 array. Sets z[0]=0, z[ynnz+1]=xnnz, and
        x[z[k+1]-1] < y[k] <= x[z[k+1]] for all k=0:ynnz-1.
@@ -134,16 +134,17 @@ int intbsearch(int *pi, const int *x, const int n, const int key)
      b - length bsize iwork array; bsize = floor(log(ynnz+1)/log(2)).
    RETURNS 0 SUCCESS, -1 bsize too small.
    ************************************************************ */
-int intmbsearch(int *z, char *found, const int *x, const int xnnz,
-		const int *y, const int ynnz, int *b, const int bsize)
+char intmbsearch(mwIndex *z, bool *found, const mwIndex *x, const mwIndex xnnz,
+		const mwIndex *y, const mwIndex ynnz, mwIndex *b, const mwIndex bsize)
 {
-  int a,bk,k,m;
-  int *zp1;
+  mwIndex a,bk,k,m;
+  mwIndex *zp1;
+  bool isknegative;
 /* ------------------------------------------------------------
    Init:
    ------------------------------------------------------------ */
   mxAssert(xnnz >= 0 && ynnz >= 0,"");
-  if(bsize < floor(log(ynnz+1) / log(2)))
+  if(bsize < (mwIndex) floor(log(ynnz+1.0) / log(2.0)))
     return -1;                   /* ERROR: insufficient work space */
   z[0] = 0;
   zp1 = z + 1;
@@ -161,14 +162,15 @@ int intmbsearch(int *z, char *found, const int *x, const int xnnz,
   k = 0;
   a = 0;
   b[0] = ynnz;
-  while(k >= 0){
+  isknegative=0;
+  while(!isknegative){
     bk = b[k];
     mxAssert(a < bk,"");
 /* ------------------------------------------------------------
    y[a:bk-1] have not yet been located. Locate y[m] with
    a <= m < bk
    ------------------------------------------------------------ */
-    m = (a+bk-1)/2;                          /* int div rounds down */
+    m = (mwIndex) floor((double) (a+bk-1)/2); 
     zp1[m] = z[a];                        /* must be in [z[a],zp1[bk]) */
     found[m] = intbsearch(zp1+m, x, zp1[bk], y[m]);
 /* ------------------------------------------------------------
@@ -187,7 +189,11 @@ int intmbsearch(int *z, char *found, const int *x, const int xnnz,
    If a:bk-1 = {a}, i.e. m=a, then we finished this branch of the tree.
    We've located y[0:bk]. ASCEND in tree with a = bk+1.
    ------------------------------------------------------------ */
-      --k;
+      if(k>0)
+        --k;
+      else
+          isknegative=1;
+      mxAssert(k>=0,"");
       ++a;         /* Note that a = bk+1 < b[k], see DESCEND */
       mxAssert(a == bk+1,"");
     }

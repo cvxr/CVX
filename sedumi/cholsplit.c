@@ -40,6 +40,7 @@
 #define NPARIN 2
 
 #include "mex.h"
+#include <math.h>
 
 /* ************************************************************
    PROCEDURE getsplit - Compute splitting of supernodes, such that
@@ -55,10 +56,10 @@
        supernode j. Thus, 1 <= split[j] < xsuper[snode[j] + 1].
        For intermediate nodes, split[j] = 0.
    ************************************************************ */
-void getsplit(int *split, const int *ljc,const int *lir,const int *xsuper,
-              const int nsuper, const int cachesiz)
+void getsplit(mwIndex *split, const mwIndex *ljc,const mwIndex *lir,const mwIndex *xsuper,
+              const mwIndex nsuper, const mwIndex cachesiz)
 {
-  int j,k,ksup,mk, used,nextk;
+  mwIndex j,k,ksup,mk, used,nextk;
 
 /* ------------------------------------------------------------
    For each supernode ksup = 1:nsuper, column k=1:m.
@@ -115,13 +116,13 @@ void getsplit(int *split, const int *ljc,const int *lir,const int *xsuper,
 /* ************************************************************
    PROCEDURE mexFunction - Entry for Matlab
    ************************************************************ */
-void mexFunction(const int nlhs, mxArray *plhs[],
-                 const int nrhs, const mxArray *prhs[])
+void mexFunction(int nlhs, mxArray *plhs[],
+                 int nrhs, const mxArray *prhs[])
 {
   const mxArray *L_FIELD;
-  int i,j, nsuper,m, cachesiz;
-  const int *ljc,*lir;
-  int *xsuper, *split;
+  mwIndex i,j, nsuper,m, cachesiz;
+  const mwIndex *ljc,*lir;
+  mwIndex *xsuper, *split;
   const double *xsuperPr;
   double *splitPr;
 /* ------------------------------------------------------------
@@ -132,7 +133,7 @@ void mexFunction(const int nlhs, mxArray *plhs[],
 /* ------------------------------------------------------------
    Get cachesiz, and transform from KBs into 90% of FLOATS.
    ------------------------------------------------------------ */
-  cachesiz = 0.9 * (1024 / sizeof(double)) * mxGetScalar(CACHESIZ_IN);
+  cachesiz = (mwIndex) floor(0.9 * (1024 / sizeof(double)) * mxGetScalar(CACHESIZ_IN));
 /* ------------------------------------------------------------
    Disassemble block Cholesky structure L
    ------------------------------------------------------------ */
@@ -152,13 +153,14 @@ void mexFunction(const int nlhs, mxArray *plhs[],
 /* ------------------------------------------------------------
    Allocate working arrays:
    ------------------------------------------------------------ */
-  xsuper    = (int *) mxCalloc(nsuper+1,sizeof(int));
-  split     = (int *) mxCalloc(m,sizeof(int));
+  xsuper    = (mwIndex *) mxCalloc(nsuper+1,sizeof(mwIndex));
+  split     = (mwIndex *) mxCalloc(m,sizeof(mwIndex));
 /* ------------------------------------------------------------
    Convert XSUPER to integer and C-Style
    ------------------------------------------------------------ */
   for(i = 0; i <= nsuper; i++){
-    j =  xsuperPr[i];
+    j =  (mwIndex) xsuperPr[i];
+    mxAssert(j>0,"");
     xsuper[i] = --j;
   }
 /* ------------------------------------------------------------
@@ -172,7 +174,7 @@ void mexFunction(const int nlhs, mxArray *plhs[],
   splitPr = mxGetPr(SPLIT_OUT);
   for(i = 0; i < m; i += j){
     j = split[i];
-    splitPr[i] = j;
+    splitPr[i] = (double) j;
   }
 /* ------------------------------------------------------------
    Release working arrays.

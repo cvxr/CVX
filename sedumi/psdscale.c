@@ -66,10 +66,10 @@ void mexFunction(const int nlhs, mxArray *plhs[],
   const int nrhs, const mxArray *prhs[])
 {
   const mxArray *UD_FIELD;
-  int lenfull, lenud, sdplen, transp, fwsiz, i,k;
+  mwIndex lenfull, lenud, sdplen, transp, fwsiz, i,k;
   double *fwork, *y,*permPr;
   const double *x,*ud;
-  int *perm, *iwork;
+  mwIndex *perm, *iwork;
   coneK cK;
   char use_pivot;
 
@@ -134,11 +134,11 @@ void mexFunction(const int nlhs, mxArray *plhs[],
   y = mxGetPr(Y_OUT);
 /* ------------------------------------------------------------
    Allocate fwork 2 * [ max(cK.rMaxn^2, 2*cK.hMaxn^2) ]
-   iwork = int(sdplen)
+   iwork = mwIndex(sdplen)
    ------------------------------------------------------------ */
   fwsiz = MAX(SQR(cK.rMaxn),2*SQR(cK.hMaxn));
   fwork = (double *) mxCalloc( MAX(1,2 * fwsiz), sizeof(double));
-  iwork = (int *) mxCalloc( MAX(1, sdplen), sizeof(int) );
+  iwork = (mwIndex *) mxCalloc( MAX(1, sdplen), sizeof(mwIndex) );
 /* ------------------------------------------------------------
    Convert Fortran to C-style in perm:
    ------------------------------------------------------------ */
@@ -150,7 +150,7 @@ void mexFunction(const int nlhs, mxArray *plhs[],
     }
   }
   else
-    perm = (int *) NULL;
+    perm = (mwIndex *) NULL;
 /* ------------------------------------------------------------
    The actual job is done here:.
    ------------------------------------------------------------ */

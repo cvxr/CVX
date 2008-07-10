@@ -66,9 +66,9 @@ function [ux,ispos] = psdfactor(x,K)
    RETURNS:
      0 = "success", 1 = "X is NOT positive definite"
    ************************************************************ */
-int cholnopiv(double *u,const int n)
+mwIndex cholnopiv(double *u,const mwIndex n)
 {
-  int i,j;
+  mwIndex i,j;
   double uij,ujj;
   double *ui,*uj;
 
@@ -111,9 +111,9 @@ int cholnopiv(double *u,const int n)
    RETURNS:
      0 = "success", 1 = "X is NOT positive definite"
    ************************************************************ */
-int prpicholnopiv(double *u, double *upi, const int n)
+mwIndex prpicholnopiv(double *u, double *upi, const mwIndex n)
 {
-  int i,j;
+  mwIndex i,j;
   double uii,uij,ujj;
   double *ui,*uipi, *uj, *ujpi;
 
@@ -163,7 +163,7 @@ void mexFunction(const int nlhs, mxArray *plhs[],
 {
   mxArray *myplhs[NPAROUT];
   coneK cK;
-  int k,nk,nksqr, sdplen,sdpdim,lenfull, ispos;
+  mwIndex k,nk,nksqr, sdplen,sdpdim,lenfull, ispos;
   const double *x;
   double *ux;
 /* ------------------------------------------------------------

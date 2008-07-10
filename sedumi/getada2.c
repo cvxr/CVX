@@ -71,10 +71,10 @@ function ADA = getada2(ADA, DAt,Aord, K)
    WORKING ARRAYS
      ddotaj - work vector, size lorN.
    ************************************************************ */
-void getada2(jcir ada, jcir ddota, const int *perm, const int *invperm,
-             const int m, const int lorN,   double *ddotaj)
+void getada2(jcir ada, jcir ddota, const mwIndex *perm, const mwIndex *invperm,
+             const mwIndex m, const mwIndex lorN,   double *ddotaj)
 {
-  int i,j, knz,inz, permj;
+  mwIndex i,j, knz,inz, permj;
   double adaij;
 
 /* ------------------------------------------------------------
@@ -124,15 +124,15 @@ void getada2(jcir ada, jcir ddota, const int *perm, const int *invperm,
 /* ************************************************************
    PROCEDURE mexFunction - Entry for Matlab
    ************************************************************ */
-void mexFunction(const int nlhs, mxArray *plhs[],
-                 const int nrhs, const mxArray *prhs[])
+void mexFunction(int nlhs, mxArray *plhs[],
+                 int nrhs, const mxArray *prhs[])
 {
   coneK cK;
   const mxArray *MY_FIELD;
-  int m, i, j;
+  mwIndex m, i, j;
   const double *permPr;
   double *fwork;
-  int *iwork, *perm, *invperm;
+  mwIndex *iwork, *perm, *invperm;
   jcir ada, ddota;
 /* ------------------------------------------------------------
    Check for proper number of arguments
@@ -184,7 +184,7 @@ void mexFunction(const int nlhs, mxArray *plhs[],
    iwork(2*m) = [perm(m), invperm(m)].
    fwork[lorN]
    ------------------------------------------------------------ */
-    iwork = (int *) mxCalloc(MAX(2 * m,1), sizeof(int));
+    iwork = (mwIndex *) mxCalloc(MAX(2 * m,1), sizeof(mwIndex));
     perm = iwork;
     invperm = perm + m;
     fwork  = (double *) mxCalloc(MAX(cK.lorN,1), sizeof(double));
@@ -192,7 +192,8 @@ void mexFunction(const int nlhs, mxArray *plhs[],
    perm to integer C-style
    ------------------------------------------------------------ */
     for(i = 0; i < m; i++){
-      j = permPr[i];
+      j = (mwIndex) permPr[i];
+      mxAssert(j>0,"");
       perm[i] = --j;
     }
 /* ------------------------------------------------------------

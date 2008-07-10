@@ -70,7 +70,7 @@
      d - blkstart[0] (=K.l) vector containing x./z for LP-part.
      ddet - length nblk-1 (=|K.q|) vector containing d.det = (det(dk))_k for
        each Lorentz block k.
-     Ajc1 - m int-array, Ajc1 points to start of PSD nz's in At,
+     Ajc1 - m mwIndex-array, Ajc1 points to start of PSD nz's in At,
        and hence just beyond the LP/Lorentz part.
      blkstart - length nblk+1, cumsum([K.l,|K.q|, K.q-1]), is
          K.blkstart(1:2+length(K.q)).
@@ -87,11 +87,11 @@
      fwork - work vector, size 2*blkstart[nblk].
    ************************************************************ */
 void getada1(jcir ada, jcir At, const double *d, const double *ddet,
-             const int *Ajc1, const int *blkstart,
-             const int *perm, const int *invperm,
-             const int m, const int nblk, double *fwork)
+             const mwIndex *Ajc1, const mwIndex *blkstart,
+             const mwIndex *perm, const mwIndex *invperm,
+             const mwIndex m, const mwIndex nblk, double *fwork)
 {
-  int i,j,k, knz,inz, permj;
+  mwIndex i,j,k, knz,inz, permj;
   double *daj, *dsqr;
   double adaij, detk;
 /* ------------------------------------------------------------
@@ -158,14 +158,14 @@ void getada1(jcir ada, jcir At, const double *d, const double *ddet,
 /* ************************************************************
    PROCEDURE mexFunction - Entry for Matlab
    ************************************************************ */
-void mexFunction(const int nlhs, mxArray *plhs[],
-                 const int nrhs, const mxArray *prhs[])
+void mexFunction(int nlhs, mxArray *plhs[],
+                 int nrhs, const mxArray *prhs[])
 {
   const mxArray *MY_FIELD;
-  int nblk, m, i, j;
+  mwIndex nblk, m, i, j;
   const double *d, *ddet, *permPr, *Ajc2Pr, *blkstartPr;
   double *fwork;
-  int *blkstart, *iwork, *Ajc2, *perm, *invperm;
+  mwIndex *blkstart, *iwork, *Ajc2, *perm, *invperm;
   jcir At, ada;
 /* ------------------------------------------------------------
    Check for proper number of arguments
@@ -190,12 +190,13 @@ void mexFunction(const int nlhs, mxArray *plhs[],
 /* ------------------------------------------------------------
    Allocate working array blkstart(nblk+1).
    ------------------------------------------------------------ */
-  blkstart = (int *) mxCalloc(nblk + 1, sizeof(int));
+  blkstart = (mwIndex *) mxCalloc(nblk + 1, sizeof(mwIndex));
 /* ------------------------------------------------------------
-   Translate blkstart from Fortran-double to C-int
+   Translate blkstart from Fortran-double to C-mwIndex
    ------------------------------------------------------------ */
   for(i = 0; i < nblk; i++){                         /* to integers */
-    j = blkstartPr[i];
+    j = (mwIndex) blkstartPr[i];
+    mxAssert(j>0,"");
     blkstart[i+1] = --j;
   }
   mxAssert(mxGetM(AT_IN) >= blkstart[nblk], "Size mismatch At");
@@ -220,14 +221,14 @@ void mexFunction(const int nlhs, mxArray *plhs[],
   ada.ir = mxGetIr(ADA_IN);
   ADA_OUT = mxCreateSparse(m,m, ada.jc[m],mxREAL);  /* ADA = sparse(ADA_IN) */
   ada.pr = mxGetPr(ADA_OUT);                        /* initialized to all-0 */
-  memcpy(mxGetJc(ADA_OUT), ada.jc, (m+1) * sizeof(int));
-  memcpy(mxGetIr(ADA_OUT), ada.ir, ada.jc[m] * sizeof(int));
+  memcpy(mxGetJc(ADA_OUT), ada.jc, (m+1) * sizeof(mwIndex));
+  memcpy(mxGetIr(ADA_OUT), ada.ir, ada.jc[m] * sizeof(mwIndex));
 /* ------------------------------------------------------------
    ALLOCATE working arrays:
    iwork(3*m) = [Ajc2(m) perm(m), invperm(m)].
    fwork[2 * blkstart[nblk]]
    ------------------------------------------------------------ */
-  iwork = (int *) mxCalloc(MAX(3 * m,1), sizeof(int));
+  iwork = (mwIndex *) mxCalloc(MAX(3 * m,1), sizeof(mwIndex));
   Ajc2 = iwork;
   perm = iwork + m;
   invperm = perm + m;
@@ -236,11 +237,12 @@ void mexFunction(const int nlhs, mxArray *plhs[],
    perm and Ajc2 to integer C-style
    ------------------------------------------------------------ */
   for(i = 0; i < m; i++){
-    j = permPr[i];
+    j = (mwIndex) permPr[i];
+    mxAssert(j>0,"");
     perm[i] = --j;
   }
   for(i = 0; i < m; i++)
-    Ajc2[i] = Ajc2Pr[i];
+    Ajc2[i] = (mwIndex) Ajc2Pr[i];
 /* ------------------------------------------------------------
    Let invperm(perm) = 0:m-1.
    ------------------------------------------------------------ */

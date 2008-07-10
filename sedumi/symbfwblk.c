@@ -55,11 +55,11 @@
        to ljc[m], so that there are certainly enough entries.
      snode  - length m = xsuper[nsuper+1]. Maps subnode to its supernode.
    ************************************************************ */
-void snodeCompress(int *xlindx,int *lindx,int *snode,
-                   const int *ljc,const int *lir,const int *xsuper,
-                   const int nsuper)
+void snodeCompress(mwIndex *xlindx,mwIndex *lindx,mwIndex *snode,
+                   const mwIndex *ljc,const mwIndex *lir,const mwIndex *xsuper,
+                   const mwIndex nsuper)
 {
-  int j, jsup, ix, collen, jcol;
+  mwIndex j, jsup, ix, collen, jcol;
 /* ------------------------------------------------------------
    SNODE: map each column to the supernode containing it
    ------------------------------------------------------------ */
@@ -77,7 +77,7 @@ void snodeCompress(int *xlindx,int *lindx,int *snode,
     xlindx[jsup] = ix;
     jcol = xsuper[jsup];
     collen = ljc[jcol+1] - ljc[jcol];
-    memcpy(lindx + ix, lir + ljc[jcol], collen * sizeof(int));
+    memcpy(lindx + ix, lir + ljc[jcol], collen * sizeof(mwIndex));
     ix += collen;
   }
   xlindx[nsuper] = ix;
@@ -100,11 +100,11 @@ void snodeCompress(int *xlindx,int *lindx,int *snode,
    REMARK - caller has to set processed[jsup]=1; getnzfwlj only does
      this for the child supernodes.
    ************************************************************ */
-void getnzfwlj(int *snodefrom, char *processed, int jsup,
-              const int *snode, const int *xsuper,
-              const int *xlindx, const int *lindx)
+void getnzfwlj(mwIndex *snodefrom, char *processed, mwIndex jsup,
+              const mwIndex *snode, const mwIndex *xsuper,
+              const mwIndex *xlindx, const mwIndex *lindx)
 {
-  int i,j;
+  mwIndex i,j;
 
   j = xsuper[jsup+1] - xsuper[jsup];
   while(xlindx[jsup] + j < xlindx[jsup + 1]){
@@ -134,7 +134,7 @@ void getnzfwlj(int *snodefrom, char *processed, int jsup,
        them (each supernode is a dense diag block in L).
    INPUT
      bir, bnnz     - bir(bnnz) lists the row-indices of vector b.
-     invperm       - int(m) Is s.t. perm[invperm[i]] = i.
+     invperm       - mwIndex(m) Is s.t. perm[invperm[i]] = i.
      snode, xsuper - supernodal partition.
          xsuper(nsuper+1): xsuper(j):xsuper(j+1)-1 is jth supernode
          snode(m): j=snode(i) means xsuper(j) <= i < xsuper(j+1).
@@ -148,12 +148,12 @@ void getnzfwlj(int *snodefrom, char *processed, int jsup,
      snodefrom - Length nsuper array. Lists first relevant subnode of
        each supernode where processed[jsup]=1.
    ************************************************************ */
-void getnzsuper(int *snodefrom, char *processed,
-                const int *bir, const int bnnz,
-                const int *invperm, const int *snode, const int *xsuper,
-                const int *xlindx, const int *lindx)
+void getnzsuper(mwIndex *snodefrom, char *processed,
+                const mwIndex *bir, const mwIndex bnnz,
+                const mwIndex *invperm, const mwIndex *snode, const mwIndex *xsuper,
+                const mwIndex *xlindx, const mwIndex *lindx)
 {
-  int inz,i,jsup;
+  mwIndex inz,i,jsup;
 /* ------------------------------------------------------------
    We'll process each supernode jsup = snode[ bir[ inz ] ], to
    find all supernodes in x, L*x = b, and the first relevant
@@ -185,7 +185,7 @@ void getnzsuper(int *snodefrom, char *processed,
    PROCEDURE symbfwmat - Computes nz-structur of x = L\b(perm,:).
    INPUT
      bjc, bir - nz-structure of m x n RHS-matrix b.
-     invperm       - int(m) Is s.t. perm[invperm[i]] = i.
+     invperm       - mwIndex(m) Is s.t. perm[invperm[i]] = i.
      snode, xsuper - supernodal partition.
          xsuper(nsuper+1): xsuper(j):xsuper(j+1)-1 is jth supernode
          snode(m): j=snode(i) means xsuper(j) <= i < xsuper(j+1).
@@ -201,18 +201,18 @@ void getnzsuper(int *snodefrom, char *processed,
      *pmaxnnz - The allocated number of entries in *pxir. Will be changed
         by this function to the exact number needed (but s.t. maxnnz >= 1).
    WORK
-     snodefrom - int(nsuper)
+     snodefrom - mwIndex(nsuper)
      processed - char(nsuper)
    ************************************************************ */
-void symbfwmat(int *xjc, int **pxir,int *pmaxnnz,
-               const int *bjc, const int *bir,
-               const int *invperm, const int *snode, const int *xsuper,
-               const int *xlindx, const int *lindx,
-               const int nsuper, const int m, const int n,
-               int *snodefrom, char *processed)
+void symbfwmat(mwIndex *xjc, mwIndex **pxir,mwIndex *pmaxnnz,
+               const mwIndex *bjc, const mwIndex *bir,
+               const mwIndex *invperm, const mwIndex *snode, const mwIndex *xsuper,
+               const mwIndex *xlindx, const mwIndex *lindx,
+               const mwIndex nsuper, const mwIndex m, const mwIndex n,
+               mwIndex *snodefrom, char *processed)
 {
-  int i,j,k,inz, maxnnz;
-  int *xir;
+  mwIndex i,j,k,inz, maxnnz;
+  mwIndex *xir;
 /* ------------------------------------------------------------
    INIT: processed = 0, xir = *pxir, maxnnz = *pmaxnnz.
    ------------------------------------------------------------ */
@@ -228,7 +228,7 @@ void symbfwmat(int *xjc, int **pxir,int *pmaxnnz,
     xjc[j] = inz;
     if(inz + m > maxnnz){
       maxnnz += inz + m;        /* required + old amount */
-      xir = (int *) mxRealloc(xir, maxnnz*sizeof(int));
+      xir = (mwIndex *) mxRealloc(xir, maxnnz*sizeof(mwIndex));
     }
 /* ------------------------------------------------------------
    Find all nz-supernodes in L\b(:,j).
@@ -252,7 +252,7 @@ void symbfwmat(int *xjc, int **pxir,int *pmaxnnz,
   xjc[n] = inz;
   if(inz < maxnnz){
     maxnnz = MAX(inz,1);           /* avoid realloc to NULL */
-    xir = (int *) mxRealloc(xir, maxnnz * sizeof(int));
+    xir = (mwIndex *) mxRealloc(xir, maxnnz * sizeof(mwIndex));
   }
   *pxir = xir;
   *pmaxnnz = maxnnz;
@@ -264,13 +264,13 @@ void symbfwmat(int *xjc, int **pxir,int *pmaxnnz,
 /* ************************************************************
    PROCEDURE mexFunction - Entry for Matlab
    ************************************************************ */
-void mexFunction(const int nlhs, mxArray *plhs[],
-  const int nrhs, const mxArray *prhs[])
+void mexFunction(int nlhs, mxArray *plhs[],
+  int nrhs, const mxArray *prhs[])
 {
   const mxArray *L_FIELD;
-  int maxnnz, i,j, nsuper,m,n;
-  const int *ljc,*lir,*bjc,*bir;
-  int *xjc,*xir, *snode,*xlindx,*lindx, *iwork,*xsuper, *invperm;
+  mwIndex maxnnz, i,j, nsuper,m,n;
+  const mwIndex *ljc,*lir,*bjc,*bir;
+  mwIndex *xjc,*xir, *snode,*xlindx,*lindx, *iwork,*xsuper, *invperm;
   char *cwork;
   double *xpr;
   const double *permPr, *xsuperPr;
@@ -307,34 +307,36 @@ void mexFunction(const int nlhs, mxArray *plhs[],
   mxAssert( nsuper <= m , "Size L.xsuper mismatch.");
   xsuperPr = mxGetPr(L_FIELD);
 /* ------------------------------------------------------------
-   Allocate int-part of sparse output matrix X(m x n)
+   Allocate mwIndex-part of sparse output matrix X(m x n)
    Heuristically set nnz to nnz(B) + 4*m.
    ------------------------------------------------------------ */
   maxnnz = bjc[n] + 4 * m;
-  xjc = (int *) mxCalloc(n + 1, sizeof(int));
-  xir = (int *) mxCalloc(maxnnz, sizeof(int));
+  xjc = (mwIndex *) mxCalloc(n + 1, sizeof(mwIndex));
+  xir = (mwIndex *) mxCalloc(maxnnz, sizeof(mwIndex));
 /* ------------------------------------------------------------
    Allocate working arrays:
-   int invperm(m), snode(m), xsuper(nsuper+1), xlindx(nsuper+1), lindx(nnz(L)),
+   mwIndex invperm(m), snode(m), xsuper(nsuper+1), xlindx(nsuper+1), lindx(nnz(L)),
    iwork(nsuper).
    char cwork(nsuper).
    ------------------------------------------------------------ */
-  invperm   = (int *) mxCalloc(m,sizeof(int)); 
-  snode     = (int *) mxCalloc(m,sizeof(int)); 
-  xsuper    = (int *) mxCalloc(nsuper+1,sizeof(int));
-  xlindx    = (int *) mxCalloc(nsuper+1,sizeof(int));
-  lindx     = (int *) mxCalloc(ljc[m], sizeof(int));
-  iwork = (int *) mxCalloc(nsuper, sizeof(int));
+  invperm   = (mwIndex *) mxCalloc(m,sizeof(mwIndex)); 
+  snode     = (mwIndex *) mxCalloc(m,sizeof(mwIndex)); 
+  xsuper    = (mwIndex *) mxCalloc(nsuper+1,sizeof(mwIndex));
+  xlindx    = (mwIndex *) mxCalloc(nsuper+1,sizeof(mwIndex));
+  lindx     = (mwIndex *) mxCalloc(ljc[m], sizeof(mwIndex));
+  iwork = (mwIndex *) mxCalloc(nsuper, sizeof(mwIndex));
   cwork = (char *) mxCalloc(nsuper, sizeof(char));
 /* ------------------------------------------------------------
    Convert PERM, XSUPER to integer and C-Style
    ------------------------------------------------------------ */
   for(i = 0; i < m; i++){
-    j = permPr[i];
+    j = (mwIndex) permPr[i];
+    mxAssert(j>0,"");
     invperm[--j] = i;                /* so that invperm[perm[i]] = i */
   }
   for(i = 0; i <= nsuper; i++){
-    j =  xsuperPr[i];
+    j =  (mwIndex) xsuperPr[i];
+    mxAssert(j>0,"");    
     xsuper[i] = --j;
   }
 /* ------------------------------------------------------------

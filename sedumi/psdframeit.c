@@ -63,10 +63,10 @@
      fwork length max(rmaxn,2*hmaxn).
    ************************************************************ */
 void psdframeit(double *x, const double *frms, const double *lab,
-                const int *sdpNL,const int rsdpN,const int sdpN,
+                const mwIndex *sdpNL,const mwIndex rsdpN,const mwIndex sdpN,
                 double *fwork)
 {
-  int k,nk,nksqr, i,inz;
+  mwIndex k,nk,nksqr, i,inz;
   const double *beta;
   for(k = 0; k < rsdpN; k++){                /* real symmetric */
     nk = sdpNL[k];
@@ -107,10 +107,10 @@ void psdframeit(double *x, const double *frms, const double *lab,
 void mexFunction(const int nlhs, mxArray *plhs[],
   const int nrhs, const mxArray *prhs[])
 {
-  int i,lendiag, lenfull, lenud,qsize;
+  mwIndex i,lendiag, lenfull, lenud,qsize;
   double *x, *fwork;
   const double *lab,*frms;
-  int *sdpNL;
+  mwIndex *sdpNL;
   coneK cK;
 /* ------------------------------------------------------------
    Check for proper number of arguments 
@@ -148,7 +148,7 @@ void mexFunction(const int nlhs, mxArray *plhs[],
    integer working array sdpNL(sdpN).
    ------------------------------------------------------------ */
   fwork = (double *) mxCalloc(MAX(1,MAX(cK.rMaxn,2*cK.hMaxn)),sizeof(double));
-  sdpNL = (int *) mxCalloc(MAX(1,cK.sdpN), sizeof(int));
+  sdpNL = (mwIndex *) mxCalloc(MAX(1,cK.sdpN), sizeof(mwIndex));
 /* ------------------------------------------------------------
    double to integer
    ------------------------------------------------------------ */

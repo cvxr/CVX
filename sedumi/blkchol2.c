@@ -39,64 +39,45 @@
 /* ------------------------------------------------------------
    PROTOTYPES:
    ------------------------------------------------------------ */
-int blkLDL(const int neqns, const int nsuper, const int *xsuper,
-           const int *snode,  const int *xlindx, const int *lindx,
+mwIndex blkLDL(const mwIndex neqns, const mwIndex nsuper, const mwIndex *xsuper,
+           const mwIndex *snode,  const mwIndex *xlindx, const mwIndex *lindx,
            double *lb,
-           const int *ljc, double *lpr, double *d, const int *perm,
-           const double ub, const double maxu, int *skipIr,
-           int iwsiz, int *iwork, int fwsiz, double *fwork);
+           const mwIndex *ljc, double *lpr, double *d, const mwIndex *perm,
+           const double ub, const double maxu, mwIndex *skipIr,
+           mwIndex iwsiz, mwIndex *iwork, mwIndex fwsiz, double *fwork);
 
 /* ************************************************************
    TIME-CRITICAL PROCEDURE -- isscalarmul(x,alpha,n)
-   Computes x *= alpha using LEVEL 8 loop-unrolling.
+   Computes x *= alpha using BLAS.
    ************************************************************ */
-void isscalarmul(double *x, const double alpha, const int n)
+void isscalarmul(double *x, const double alpha, const mwIndex n)
 {
-  int i;
-  
-  for(i=0; i< n-7; ){          /* LEVEL 8 */
-    x[i++] *= alpha;
-    x[i++] *= alpha;
-    x[i++] *= alpha;
-    x[i++] *= alpha;
-    x[i++] *= alpha;
-    x[i++] *= alpha;
-    x[i++] *= alpha;
-    x[i++] *= alpha;
-  }
-/* ------------------------------------------------------------
-   Now, i in {n-7, n-6, ..., n}. Do the last n-i elements.
-   ------------------------------------------------------------ */
-  if(i < n-3){                           /* LEVEL 4 */
-    x[i++] *= alpha;
-    x[i++] *= alpha;
-    x[i++] *= alpha;
-    x[i++] *= alpha;
-  }
-  if(i < n-1){                           /* LEVEL 2 */
-    x[i++] *= alpha;
-    x[i++] *= alpha;
-  }
-  if(i < n)                              /* LEVEL 1 */
-    x[i] *= alpha;
+    int one=1;
+    #ifdef PC
+    dscal(&n,&alpha,x,&one);
+    #endif
+    #ifdef UNIX
+    dscal_(&n,&alpha,x,&one);
+    #endif
+    return;
 }
 
 /* ************************************************************
-   PROCEDURE maxabs - computes inf-norm
+   PROCEDURE maxabs - computes inf-norm using BLAS
    INPUT
      x - vector of length n
      n - length of x.
    RETURNS y = norm(x,inf).
    ************************************************************ */
-double maxabs(const double *x,const int n)
+double maxabs(const double *x,const mwIndex n)
 {
-  int i;
-  double y,xi;
-  y = 0.0;
-  for(i = 0; i < n; i++)
-    if((xi = fabs(x[i])) > y)
-      y = xi;
-  return y;
+int one=1;
+#ifdef PC
+    return fabs(x[idamax(&n,x,&one)]);
+#endif
+#ifdef UNIX
+    return fabs(x[idamax_(&n,x,&one)]);
+#endif
 }
 
 /* ************************************************************
@@ -123,11 +104,11 @@ double maxabs(const double *x,const int n)
    OUTPUT
      d - Length ncols. Diagonal in L*diag(d)*L' with diag(L)=all-1.
    ************************************************************ */
-void cholonBlk(double *x, double *d, int m, const int ncols, const int first,
+void cholonBlk(double *x, double *d, mwIndex m, const mwIndex ncols, const mwIndex first,
                const double ub, const double maxu, double *lb,
-               int *skipIr, int *pnskip)
+               mwIndex *skipIr, mwIndex *pnskip)
 {
-  int inz,i,k,n,coltail, nskip;
+  mwIndex inz,i,k,n,coltail, nskip;
   double xkk, xik, ubk;
   double *xi;
 /* ------------------------------------------------------------
@@ -206,9 +187,9 @@ void cholonBlk(double *x, double *d, int m, const int ncols, const int first,
              The position of subscript "xij" is thus
 			   xjc[j+1] - irInv[i].
    ************************************************************ */
-void getbwIrInv(int *irInv, const int *Lir, const int nnz)
+void getbwIrInv(mwIndex *irInv, const mwIndex *Lir, const mwIndex nnz)
 {
-  int inz,bwinz;
+  mwIndex inz,bwinz;
 
   bwinz = nnz;
   for(inz = 0; inz < nnz; inz++, bwinz--)
@@ -228,10 +209,10 @@ void getbwIrInv(int *irInv, const int *Lir, const int nnz)
      xj  -  On return, xj -= xk*xk(0:nj-1)'/xkk
      xk  -  On return, xk(0:nj-1) /= xkk
    ************************************************************ */
-void suboutprod(double *xj, int mj, const int nj, double *xk,
-                const double xkk, int mk)
+void suboutprod(double *xj, mwIndex mj, const mwIndex nj, double *xk,
+                const double xkk, mwIndex mk)
 {
-  int j;
+  mwIndex j;
   double xjk;
 
   for(j = 0; j < nj; j++){
@@ -256,10 +237,10 @@ void suboutprod(double *xj, int mj, const int nj, double *xk,
   UPDATED
      xk      -  On return, xk(0:nj-1) /= xkk if xkk > 0, otherwise unchanged.
    ************************************************************ */
-void isminoutprod(double *xj, const int nj, double *xk, const double xkk,
-                  int mk)
+void isminoutprod(double *xj, const mwIndex nj, double *xk, const double xkk,
+                  mwIndex mk)
 {
-  int j;
+  mwIndex j;
   double xjk;
 
   if(xkk > 0.0)   /* if not phase 2 node */
@@ -293,10 +274,10 @@ void isminoutprod(double *xj, const int nj, double *xk, const double xkk,
      xnz  -  On return, xj(relind,:) -= xk*xk(0:nj-1)'/xkk
      xk   -  On return, xk(0:nj-1) /= xkk
    ************************************************************ */
-void spsuboutprod(const int *xjjc, double *xnz, const int mj, const int nj,
-                  double *xk,const double xkk,const int mk, const int *relind)
+void spsuboutprod(const mwIndex *xjjc, double *xnz, const mwIndex mj, const mwIndex nj,
+                  double *xk,const double xkk,const mwIndex mk, const mwIndex *relind)
 {
-  int i, j, jcol, bottomj;
+  mwIndex i, j, jcol, bottomj;
   double xjk;
 
   ++xjjc;             /* now it points beyond bottom of columns */
@@ -328,10 +309,10 @@ void spsuboutprod(const int *xjjc, double *xnz, const int mj, const int nj,
   UPDATED
      xnz     -  On return, xj(relind,:) += xk
    ************************************************************ */
-void spadd(const int *xjjc, double *xnz, const int mj, const int nj,
-           const double *xk, const int mk, const int *relind)
+void spadd(const mwIndex *xjjc, double *xnz, const mwIndex mj, const mwIndex nj,
+           const double *xk, const mwIndex mk, const mwIndex *relind)
 {
-  int i, j, jcol, bottomj,mkcol;
+  mwIndex i, j, jcol, bottomj,mkcol;
 
   ++xjjc;             /* now it points beyond bottom of columns */
   mkcol = mk;         /* mkcol = mk - j */
@@ -368,12 +349,12 @@ void spadd(const int *xjjc, double *xnz, const int mj, const int nj,
    RETURNS  ncolup, number of columns updated by snode k.
     if -1, then fwsiz is too small.
    ************************************************************ */
-int precorrect(double *lpr, const int *ljc,const double *d, const int *irInv,
-               const int nextj, const int *Kir, const int mk,
-               const int firstk, const int nextk,
-               int *relind, const int fwsiz, double *fwork)
+mwIndex precorrect(double *lpr, const mwIndex *ljc,const double *d, const mwIndex *irInv,
+               const mwIndex nextj, const mwIndex *Kir, const mwIndex mk,
+               const mwIndex firstk, const mwIndex nextk,
+               mwIndex *relind, const mwIndex fwsiz, double *fwork)
 {
-  int i,j,k,ncolup,mj;
+  mwIndex i,j,k,ncolup,mj;
   double *xj;
 /* ------------------------------------------------------------
    j = first subscript in k (== 1st affected column)
@@ -421,7 +402,7 @@ int precorrect(double *lpr, const int *ljc,const double *d, const int *irInv,
    1. compute the complete modification, and store it in fwork:
    fwork = -Xk * inv(LABK) * Xk'
    ------------------------------------------------------------ */
-      if(fwsiz < mk * ncolup - ncolup*(ncolup-1)/2)
+      if(fwsiz + ncolup*(ncolup-1)/2 < mk * ncolup )
         return -1;
       for(k = firstk; k < nextk; k++)      /* find 1st positive diag */
         if(d[k] > 0.0)
@@ -486,16 +467,16 @@ int precorrect(double *lpr, const int *ljc,const double *d, const int *irInv,
    RETURNS  nskip (<=neqns), number of skipped nodes. Length of skipIr.
      if -1 then not enough workspace (iwsiz, fwsiz) allocated.
    ************************************************************ */
-int blkLDL(const int neqns, const int nsuper, const int *xsuper,
-           const int *snode,  const int *xlindx, const int *lindx,
+mwIndex blkLDL(const mwIndex neqns, const mwIndex nsuper, const mwIndex *xsuper,
+           const mwIndex *snode,  const mwIndex *xlindx, const mwIndex *lindx,
            double *lb,
-           const int *ljc, double *lpr, double *d, const int *perm,
-           const double ub, const double maxu, int *skipIr,
-           int iwsiz, int *iwork, int fwsiz, double *fwork)
+           const mwIndex *ljc, double *lpr, double *d, const mwIndex *perm,
+           const double ub, const double maxu, mwIndex *skipIr,
+           mwIndex iwsiz, mwIndex *iwork, mwIndex fwsiz, double *fwork)
 {
-  const int *Jir;
-  int *link, *length, *irInv, *relind, *ncolupLst;
-  int node,nextj,i,j,nnzj,n,inz,  k,colk,mk,linkk, ncolup,snodei, nskip;
+  const mwIndex *Jir;
+  mwIndex *link, *length, *irInv, *relind, *ncolupLst;
+  mwIndex node,nextj,i,j,nnzj,n,  k,mk,linkk, snodei, nskip;
 /* ------------------------------------------------------------
    Partition integer working array of size 2*(nsuper+neqns):
    iwork = [link(nsuper); length(nsuper); irInv(neqns); relind(neqns)].

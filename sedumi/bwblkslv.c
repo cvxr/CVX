@@ -43,6 +43,7 @@
 
 #include "mex.h"
 #include "blksdp.h"
+#include <string.h>
 
 #define Y_OUT plhs[0]
 
@@ -69,22 +70,22 @@
        collen[i] := L.jc[xsuper[i]+1]-L.jc[xsuper[i]] and
        superlen[i] := xsuper[i+1]-xsuper[i].
    ************************************************************ */
-void bwsolve(double *y, const int *Ljc, const int *Lir, const double *Lpr,
-             const int *xsuper, const int nsuper, double *fwork)
+void bwsolve(double *y, const mwIndex *Ljc, const mwIndex *Lir, const double *Lpr,
+             const mwIndex *xsuper, const mwIndex nsuper, double *fwork)
 {
-  int jsup,i,j,inz,k,jnnz;
+  mwIndex jsup,i,j,inz,k,jnnz;
   double yj;
 
   /* ------------------------------------------------------------
      For each supernode jsup:
      ------------------------------------------------------------ */
   j = xsuper[nsuper];      /* column after current snode (j=m)*/
-  for(jsup = nsuper-1; jsup >= 0; jsup--){
+  for(jsup = nsuper; jsup > 0; jsup--){
     i = j;
-    mxAssert(j == xsuper[jsup+1],"");
+    mxAssert(j == xsuper[jsup],"");
     inz = Ljc[--j];
     inz++;                        /* jump over diagonal entry */
-    if(j <= xsuper[jsup]){
+    if(j <= xsuper[jsup-1]){
 /* ------------------------------------------------------------
    If supernode is singleton j, then simply y[j] -= L(j+1:m,j)'*y(j+1:m)
    ------------------------------------------------------------ */
@@ -103,8 +104,9 @@ void bwsolve(double *y, const int *Ljc, const int *Lir, const double *Lpr,
       for(jnnz = 0; inz < Ljc[i]; inz++)
         fwork[jnnz++] = y[Lir[inz]];
       if(jnnz > 0)
-        while(i > xsuper[jsup]){
+        while(i > xsuper[jsup-1]){
           yj = realdot(Lpr+Ljc[i]-jnnz, fwork, jnnz);
+          mxAssert(i>0,"");
           y[--i] -= yj;
         }
       k = 1;
@@ -114,9 +116,10 @@ void bwsolve(double *y, const int *Ljc, const int *Lir, const double *Lpr,
      The equation L(:,j)'*yNEW = yOLD(j), yields
        y(j) -= L(j+(1:k),j)'*y(j+(1:k)),   k=1:i-xsuper[jsup]-1.
      ------------------------------------------------------------ */
-        --j;
+        mxAssert(j>0,"");
+          --j;
         y[j] -= realdot(Lpr+Ljc[j]+1, y+j+1, k++);
-      } while(j > xsuper[jsup]);
+      } while(j > xsuper[jsup-1]);
     }
   }
 }
@@ -135,11 +138,11 @@ void bwsolve(double *y, const int *Ljc, const int *Lir, const double *Lpr,
      y - full vector, on input y = rhs, on output y = L'\rhs.
         only the yir(0:ynnz-1) entries are used and defined.
    ************************************************************ */
-void selbwsolve(double *y, const int *Ljc, const int *Lir, const double *Lpr,
-                const int *xsuper, const int nsuper,
-                const int *snode, const int *yir, const int ynnz)
+void selbwsolve(double *y, const mwIndex *Ljc, const mwIndex *Lir, const double *Lpr,
+                const mwIndex *xsuper, const mwIndex nsuper,
+                const mwIndex *snode, const mwIndex *yir, const mwIndex ynnz)
 {
-  int jsup,j,inz,jnz,nk, k;
+  mwIndex jsup,j,inz,jnz,nk, k;
   double yj;
 
   if(ynnz <= 0)
@@ -180,11 +183,11 @@ void mexFunction(const int nlhs, mxArray *plhs[],
   const int nrhs, const mxArray *prhs[])
 {
  const mxArray *L_FIELD;
- int m,n, j, k, nsuper, inz;
+ mwIndex m,n, j, k, nsuper, inz;
  double *y, *fwork;
  const double *permPr, *b, *xsuperPr;
- const int *yjc, *yir, *bjc, *bir;
- int *perm, *xsuper, *iwork, *snode;
+ const mwIndex *yjc, *yir, *bjc, *bir;
+ mwIndex *perm, *xsuper, *iwork, *snode;
  jcir L;
  char bissparse;
  /* ------------------------------------------------------------
@@ -235,15 +238,15 @@ void mexFunction(const int nlhs, mxArray *plhs[],
    yjc = mxGetJc(Y_IN);
    yir = mxGetIr(Y_IN);
    Y_OUT = mxCreateSparse(m,n, yjc[n],mxREAL);
-   memcpy(mxGetJc(Y_OUT), yjc, (n+1) * sizeof(int));
-   memcpy(mxGetIr(Y_OUT), yir, yjc[n] * sizeof(int));
+   memcpy(mxGetJc(Y_OUT), yjc, (n+1) * sizeof(mwIndex));
+   memcpy(mxGetIr(Y_OUT), yir, yjc[n] * sizeof(mwIndex));
  }
  y = mxGetPr(Y_OUT);
  /* ------------------------------------------------------------
     Allocate working arrays
     ------------------------------------------------------------ */
  fwork = (double *) mxCalloc(m, sizeof(double));
- iwork = (int *) mxCalloc(2*m+nsuper+1, sizeof(int));
+ iwork = (mwIndex *) mxCalloc(2*m+nsuper+1, sizeof(mwIndex));
  perm = iwork;                   /* m */
  xsuper = iwork + m;             /*nsuper+1*/
  snode = xsuper + (nsuper+1);    /* m */

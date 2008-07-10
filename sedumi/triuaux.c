@@ -42,9 +42,9 @@
    OUTPUT
      y - n x n matrix, Y = X(perm,perm)
    ************************************************************ */
-void matperm(double *y, const double *x, const int *perm, const int n)
+void matperm(double *y, const double *x, const mwIndex *perm, const mwIndex n)
 {
-  int i,j,inz;
+  mwIndex i,j,inz;
   const double *xj;
 
   inz = 0;
@@ -58,9 +58,9 @@ void matperm(double *y, const double *x, const int *perm, const int n)
 /* ************************************************************
    PROCEDURE invmatperm - Let Y(perm,perm) = X
    ************************************************************ */
-void invmatperm(double *y, const double *x, const int *perm, const int n)
+void invmatperm(double *y, const double *x, const mwIndex *perm, const mwIndex n)
 {
-  int i,j,inz;
+  mwIndex i,j,inz;
   double *yj;
 
   inz = 0;
@@ -85,9 +85,9 @@ void invmatperm(double *y, const double *x, const int *perm, const int n)
      xl - length n^2 working vector, to store tril(X'*L).
    ************************************************************ */
 void realltxl(double *y, const double *ld, const double *x,
-              const int n, double *xld)
+              const mwIndex n, double *xld)
 {
-  int inz, i,j, m, icol, jcol;
+  mwIndex inz, i,j, m, icol, jcol;
 /* ------------------------------------------------------------
    Compute xl = tril(X'*L):   n^2 + (n-1)^2 + .. + 1^2 mults.
    For each j, let xj and lj point to x(j,j) and l(j,j); m is
@@ -126,9 +126,9 @@ void realltxl(double *y, const double *ld, const double *x,
    ************************************************************ */
 void prpiltxl(double *y,double *ypi, const double *ld,const double *ldpi,
               const double *x,const double *xpi,
-              const int n, double *xld)
+              const mwIndex n, double *xld)
 {
-  int inz, i,j, m, icol, jcol;
+  mwIndex inz, i,j, m, icol, jcol;
   double *xldpi;
 /* ------------------------------------------------------------
    Partition working array xld into real and imaginary part
@@ -172,9 +172,9 @@ void prpiltxl(double *y,double *ypi, const double *ld,const double *ldpi,
    PROCEDURE utmulx - Compute y = triu(U'*XU), U upper triag, in
    1*n + 2*(n-1) + ... + n*1 mults. Only triu(XU) will be used.
    ************************************************************ */
-void utmulx(double *y, const double *u, const double *xu, const int n)
+void utmulx(double *y, const double *u, const double *xu, const mwIndex n)
 {
-  int inz,i,j, m;
+  mwIndex inz,i,j, m;
   const double *ui;
 
   inz = 0;
@@ -191,9 +191,9 @@ void utmulx(double *y, const double *u, const double *xu, const int n)
    CAUTION: assumes that diag(imag(U)) == 0.
    ************************************************************ */
 void prpiutmulx(double *y, double *ypi, const double *u, const double *upi,
-                const double *xu, const double *xupi, const int n)
+                const double *xu, const double *xupi, const mwIndex n)
 {
-  int inz,i,j, m, icol;
+  mwIndex inz,i,j, m, icol;
 
   inz = 0;
   for(j = 0, m = n; j < n; j++, xu += n, xupi += n){
@@ -221,9 +221,9 @@ void prpiutmulx(double *y, double *ypi, const double *u, const double *upi,
      xu - length n^2 working vector, to store triu(X'*U).
    ************************************************************ */
 void realutxu(double *y, const double *u, const double *x,
-              const int n, double *xu)
+              const mwIndex n, double *xu)
 {
-  int inz, i,j, m, icol,jcol;
+  mwIndex inz, i,j, m, icol,jcol;
 /* ------------------------------------------------------------
    Compute xu = triu(X'*U):   1^2 + 2^2 + ... + (n-1)^2 + n^2 mults.
    For each j, let uj point to u(0,j); m is
@@ -255,9 +255,9 @@ void realutxu(double *y, const double *u, const double *x,
    ************************************************************ */
 void prpiutxu(double *y, double *ypi, const double *u, const double *upi,
               const double *x, const double *xpi,
-              const int n, double *xu)
+              const mwIndex n, double *xu)
 {
-  int inz, i,j, m, icol,jcol;
+  mwIndex inz, i,j, m, icol,jcol;
   double *xupi;
 /* ------------------------------------------------------------
    Partition working array xu into real and imaginary part
@@ -296,9 +296,9 @@ void prpiutxu(double *y, double *ypi, const double *u, const double *upi,
      y - length n vector, y = (U'\x)_{1:n}.
    ************************************************************ */
 void partfwsolve(double *y, const double *u, const double *x,
-                const int m, const int n)
+                const mwIndex m, const mwIndex n)
 {
-  int k;
+  mwIndex k;
 /* ------------------------------------------------------------
    The first equation, u(:,1)'*y=x(1), yields y(1) = x(1)/u(1,1).
    For k = 2:n, we solve
@@ -314,9 +314,9 @@ void partfwsolve(double *y, const double *u, const double *x,
  Solves U' * y = x */
 void prpipartfwsolve(double *y,double *ypi, const double *u,const double *upi,
                      const double *x,const double *xpi,
-                     const int m, const int n)
+                     const mwIndex m, const mwIndex n)
 {
-  int k;
+  mwIndex k;
 /* ------------------------------------------------------------
    The first equation, u(:,1)'*y=x(1), yields y(1) = x(1)/u(1,1).
    For k = 2:n, we solve
@@ -348,9 +348,9 @@ void prpipartfwsolve(double *y,double *ypi, const double *u,const double *upi,
      y - length m vector, y[j:m-1] = (L'\x)_{[j:m-1]}.
    ************************************************************ */
 void partbwsolve(double *y, const double *l, const double *x,
-                 const int m, const int j)
+                 const mwIndex m, const mwIndex j)
 {
-  int k;
+  mwIndex k;
   const double *lk;
   double ldoty;
 /* ------------------------------------------------------------
@@ -373,9 +373,9 @@ void partbwsolve(double *y, const double *l, const double *x,
  Solves L' * y = x */
 void prpipartbwsolve(double *y,double *ypi, const double *l,const double *lpi,
                      const double *x,const double *xpi,
-                     const int m, const int j)
+                     const mwIndex m, const mwIndex j)
 {
-  int k;
+  mwIndex k;
   const double *lk, *lkpi;
   double ldoty, ldotyim;
 /* ------------------------------------------------------------
@@ -413,9 +413,9 @@ void prpipartbwsolve(double *y,double *ypi, const double *l,const double *lpi,
      xu - length m^2 working vector, to store triu(X/U).
    ************************************************************ */
 void invutxu(double *y, const double *u, const double *x,
-              const int m, double *xu)
+              const mwIndex m, double *xu)
 {
-  int j, jcol;
+  mwIndex j, jcol;
 /* ------------------------------------------------------------
    Compute xu = (X/U)' = U'\X because X is symmetric.
    ------------------------------------------------------------ */
@@ -447,9 +447,9 @@ void invutxu(double *y, const double *u, const double *x,
      xu - length 2 * m^2 working vector, to store triu(X/U).
    ************************************************************ */
 void prpiinvutxu(double *y,double *ypi, const double *u,const double *upi,
-             const double *x,const double *xpi, const int m, double *xu)
+             const double *x,const double *xpi, const mwIndex m, double *xu)
 {
-  int j, jcol;
+  mwIndex j, jcol;
   double *xupi;
 /* ------------------------------------------------------------
    Partition xu in real and imaginary part
@@ -487,9 +487,9 @@ void prpiinvutxu(double *y,double *ypi, const double *u,const double *upi,
      xl - length m^2 working vector, to store tril(X/L).
    ************************************************************ */
 void invltxl(double *y, const double *l, const double *x,
-              const int m, double *xl)
+              const mwIndex m, double *xl)
 {
-  int j, jcol;
+  mwIndex j, jcol;
 /* ------------------------------------------------------------
    Compute xl = tril(X'/L)' = triu(L'\X)
    ------------------------------------------------------------ */
@@ -510,9 +510,9 @@ void invltxl(double *y, const double *l, const double *x,
 
 /* complex case. xl is 2*m^2. assume IM diag(l) is all-0. */
 void prpiinvltxl(double *y,double *ypi, const double *l,const double *lpi,
-                 const double *x,const double *xpi, const int m, double *xl)
+                 const double *x,const double *xpi, const mwIndex m, double *xl)
 {
-  int j, jcol;
+  mwIndex j, jcol;
   double *xlpi;
 /* ------------------------------------------------------------
    Partition xl in real and imaginary part
@@ -553,17 +553,17 @@ void prpiinvltxl(double *y,double *ypi, const double *l,const double *lpi,
        working vector.
    REMARK lenud := cK.rDim + cK.hDim
    ************************************************************ */
-void psdscaleK(double *y, const double *ud, const int *perm, const double *x,
+void psdscaleK(double *y, const double *ud, const mwIndex *perm, const double *x,
             const coneK cK, const char transp, double *fwork)
 {
-  int k,nk,nksqr;
+  mwIndex k,nk,nksqr;
   double *z, *zpi;
   char use_pivot;
 /* ------------------------------------------------------------
    Partition fwork into fwork(psdblk) and z(psdblk), where
    psdblk = max(rmaxn^2,2*hmaxn^2). Let zpi = z+hmaxn^2.
    ------------------------------------------------------------ */
-  use_pivot = (perm != (const int *) NULL);
+  use_pivot = (perm != (const mwIndex *) NULL);
   z = fwork + MAX(SQR(cK.rMaxn),2*SQR(cK.hMaxn));
   zpi = z + SQR(cK.hMaxn);
 /* ------------------------------------------------------------
@@ -685,11 +685,11 @@ void psdscaleK(double *y, const double *ud, const int *perm, const double *x,
        working vector.
    ************************************************************ */
 void scaleK(double *y, double *dmult, const double *d, const double *ud,
-            const double *qdetd, const int *perm, const double *x,
+            const double *qdetd, const mwIndex *perm, const double *x,
             const coneK cK, const char transp, const double *invdx,
             double *fwork)
 {
-  int k,nk;
+  mwIndex k,nk;
   double detdk;
 /* ------------------------------------------------------------
    LP: y = d .* x

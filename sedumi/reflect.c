@@ -50,39 +50,49 @@
      y - length m working vector, for storing c'*[X1, X2].
    ************************************************************ */
 void elqxq(double *x, const double beta, const double *c,
-           const int n1, const int m, double *y)
+           const mwIndex n1, const mwIndex m, double *y)
 {
-  int j,n2;
+  mwIndex j,n2;
   double *xj, *y2, *x2;
   double alpha;
   n2 = m - n1;          /* order of x2 */
   y2 = y + n1;
+
 /* ------------------------------------------------------------
    Compute y1 = c'*X1
    ------------------------------------------------------------ */
   for(j = 0, xj = x; j < n1; j++, xj += m)
     y[j] = realdot(c, xj, n2);
   x2 = xj;
+
+
 /* ------------------------------------------------------------
    Compute y2 = c'*tril(X2); y2 += tril(X2,-1)*c, SO THAT y2 = c'*X2SYM.
    ------------------------------------------------------------ */
   for(j = 0; j < n2; j++, xj += m+1)
     y2[j] = realdot(c+j, xj, n2-j);
+
   for(j = 1, xj = x2+1; j < n2; j++, xj += m+1)
     addscalarmul(y2+j, c[j-1], xj, n2-j);
+  
+
 /* ------------------------------------------------------------
    Below-diag block: let X1 += c*y1' / beta
    ------------------------------------------------------------ */
   for(j = 0, xj = x; j < n1; j++, xj += m)
     addscalarmul(xj, y[j] / beta, c, n2);
+  
+
 /* ------------------------------------------------------------
    Lower-Right block: X2 += c*((y2'*c/beta) * c' + y2')/beta + y2*c'/beta
    ------------------------------------------------------------ */
   alpha = realdot(y2, c, n2) / beta;
+ 
   for(j = 0, xj = x2; j < n2; j++, xj += m+1){
     addscalarmul(xj, (alpha * c[j] + y2[j])/beta, c+j, n2-j);
     addscalarmul(xj, c[j] / beta, y2+j, n2-j);
   }
+
 }
 
 /* ************************************************************
@@ -103,9 +113,9 @@ void elqxq(double *x, const double beta, const double *c,
      y - length 2*m working vector, for storing c'*[X1, X2].
    ************************************************************ */
 void prpielqxq(double *x, double *xpi, const double beta, const double *c,
-               const double *cpi, const int n1, const int m, double *y)
+               const double *cpi, const mwIndex n1, const mwIndex m, double *y)
 {
-  int j,n2;
+  mwIndex j,n2;
   double *xj,*xjpi, *y2, *x2, *x2pi, *ypi, *y2pi;
   double alpha;
   n2 = m - n1;          /* order of x2 */
@@ -191,9 +201,9 @@ void prpielqxq(double *x, double *xpi, const double beta, const double *c,
      fwork - length m working vector.
    ************************************************************ */
 void qtxq(double *x, const double *beta, const double *c,
-          const int m, double *fwork)
+          const mwIndex m, double *fwork)
 {
-  int k, inz;
+  mwIndex k, inz;
 
   inz = 0;
 /* ------------------------------------------------------------
@@ -220,9 +230,9 @@ void qtxq(double *x, const double *beta, const double *c,
      fwork - length 2*m working vector.
    ************************************************************ */
 void prpiqtxq(double *x, double *xpi, const double *beta, const double *c,
-              const double *cpi, const int m, double *fwork)
+              const double *cpi, const mwIndex m, double *fwork)
 {
-  int i,k, inz;
+  mwIndex i,k, inz;
   const double *qsgn, *qsgnpi;
   double qk, qkim, qij,qijim, xij;
 
@@ -274,17 +284,21 @@ void prpiqtxq(double *x, double *xpi, const double *beta, const double *c,
      fwork - length m working vector.
    ************************************************************ */
 void qxqt(double *x, const double *beta, const double *c,
-          const int m, double *fwork)
+          const mwIndex m, double *fwork)
 {
-  int k, inz;
-
+  mwIndex k, inz;
+    mxAssert(m>1,"");
   inz = SQR(m) - (m+2);
+
 /* ------------------------------------------------------------
    For each k, c[inz] = c(k,k), the top of the lower-right block,
    x[k] is start of k-th row in k.
    ------------------------------------------------------------ */
-  for(k = m-2; k >= 0; k--, inz -= m+1)
-    elqxq(x + k, -beta[k], c + inz, k, m, fwork);
+  for(k = m-1; k > 0; k--, inz -= m+1){
+    elqxq(x + k-1, -beta[k-1], c + inz, k-1, m, fwork);
+  }
+  /*elqxq(x , -beta[0], c , 0, m, fwork);*/
+
 }
 
 /* ************************************************************
@@ -303,9 +317,9 @@ void qxqt(double *x, const double *beta, const double *c,
      fwork - length 2*m working vector.
    ************************************************************ */
 void prpiqxqt(double *x, double *xpi, const double *beta, const double *c,
-              const double *cpi, const int m, double *fwork)
+              const double *cpi, const mwIndex m, double *fwork)
 {
-  int i,k, inz;
+  mwIndex i,k, inz;
   const double *qsgn, *qsgnpi;
   double qk, qkim, qij,qijim, xij;
 
@@ -338,6 +352,6 @@ void prpiqxqt(double *x, double *xpi, const double *beta, const double *c,
    x[k] is start of k-th row in k.
    ------------------------------------------------------------ */
   inz = SQR(m) - (m+2);
-  for(k = m-2; k >= 0; k--, inz -= m+1)
-    prpielqxq(x + k,xpi + k, -beta[k], c + inz,cpi+inz, k, m, fwork);
+  for(k = m-1; k > 0; k--, inz -= m+1)
+    prpielqxq(x + k-1,xpi + k-1, -beta[k-1], c + inz,cpi+inz, k-1, m, fwork);
 }

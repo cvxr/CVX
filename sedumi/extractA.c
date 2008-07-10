@@ -70,17 +70,17 @@ function Apart = extractA(At,Ajc,blk0,blk1,blkstart[,blkstart2]) --
    OUTPUT
      Y - sparse n x m matrix, with sum(Ajc2-Ajc1) nonzeros.
    ************************************************************ */
-void extractA(jcir Y, const int *Ajc1,const int *Ajc2,
-              const int *Air, const double *Apr, const int ifirst,
-              const int m)
+void extractA(jcir Y, const mwIndex *Ajc1,const mwIndex *Ajc2,
+              const mwIndex *Air, const double *Apr, const mwIndex ifirst,
+              const mwIndex m)
 {
-  int i,j,inz,ajnnz;
+  mwIndex i,j,inz,ajnnz;
   inz = 0;
   for(j = 0; j < m; j++){
     Y.jc[j] = inz;
     ajnnz = Ajc2[j]-Ajc1[j];
     memcpy(Y.pr + inz, Apr+Ajc1[j], ajnnz * sizeof(double));
-    memcpy(Y.ir + inz, Air+Ajc1[j], ajnnz * sizeof(int));
+    memcpy(Y.ir + inz, Air+Ajc1[j], ajnnz * sizeof(mwIndex));
     inz += ajnnz;
   }
 /* ------------------------------------------------------------
@@ -94,13 +94,14 @@ void extractA(jcir Y, const int *Ajc1,const int *Ajc2,
 /* ************************************************************
    PROCEDURE mexFunction - Entry for Matlab
    ************************************************************ */
-void mexFunction(const int nlhs, mxArray *plhs[],
-                 const int nrhs, const mxArray *prhs[])
+void mexFunction(int nlhs, mxArray *plhs[],
+                 int nrhs, const mxArray *prhs[])
 {
   jcir At, Apart;
-  int i,j, m, njc, ifirst, n, ynnz, blk0,blk1;
-  int *Ajc;
+  mwIndex i, m, njc, ifirst, n, ynnz, blk0,blk1;
+  mwIndex *Ajc;
   const double *blkstartPr, *AjcPr;
+  bool isblk0negative;
 /* ------------------------------------------------------------
    Check for proper number of arguments
    ------------------------------------------------------------ */
@@ -115,13 +116,13 @@ void mexFunction(const int nlhs, mxArray *plhs[],
   At.pr = mxGetPr(AT_IN);
   m = mxGetN(AT_IN);
   if(nrhs >=  NPARIN){
-    n = mxGetScalar(BLKSTART2_IN);
-    ifirst = mxGetScalar(BLKSTART_IN);
+    n = (mwIndex) mxGetScalar(BLKSTART2_IN);
+    ifirst = (mwIndex) mxGetScalar(BLKSTART_IN);
   }
   else if(mxGetM(BLKSTART_IN) * mxGetN(BLKSTART_IN) ==2){
     blkstartPr = mxGetPr(BLKSTART_IN);
-    ifirst = blkstartPr[0];
-    n = blkstartPr[1];
+    ifirst = (mwIndex) blkstartPr[0];
+    n = (mwIndex) blkstartPr[1];
   }
   else
     mxAssert(0==1, "blkstart size mismatch.");
@@ -129,35 +130,44 @@ void mexFunction(const int nlhs, mxArray *plhs[],
   AjcPr = mxGetPr(AJC_IN);
   mxAssert(m == mxGetM(AJC_IN), "Ablkjc size mismatch.");
   njc = mxGetN(AJC_IN);
-  blk0 = mxGetScalar(BLK0_IN);           /* double to int */
-  --blk0;                                /* Fortran to C */
+  blk0 = (mwIndex) mxGetScalar(BLK0_IN);           /* double to mwIndex */
+  
+
+  if(blk0>0){
+    --blk0;                                /* Fortran to C */
+    isblk0negative=0;}
+  else
+    isblk0negative=1;
+  
+ 
   if(mxGetM(BLK1_IN) * mxGetN(BLK1_IN) != 1)
     blk1 = njc;                           /*default to end */
   else{
-    blk1 = mxGetScalar(BLK1_IN);   /* double to int (thus inf not allowed) */
+    blk1 = (mwIndex) mxGetScalar(BLK1_IN);   /* double to mwIndex (thus inf not allowed) */
+    mxAssert(blk1>0,"");
     --blk1;                                /* Fortran to C */
   }
 /* ------------------------------------------------------------
-   Allocate int array blkstart Ajc(2*m)
+   Allocate mwIndex array blkstart Ajc(2*m)
    ------------------------------------------------------------ */
-  Ajc = (int *) mxCalloc(MAX(2*m,1), sizeof(int));
+  Ajc = (mwIndex *) mxCalloc(MAX(2*m,1), sizeof(mwIndex));
 /* ------------------------------------------------------------
-   Convert Ajc from double to int:
+   Convert Ajc from double to mwIndex:
    ------------------------------------------------------------ */
   mxAssert(blk0 < njc, "Ablkjc size mismatches blk0.");
-  if(blk0 < 0)
-    memcpy(Ajc,At.jc,m*sizeof(int));          /* default: start of column */
+  if(isblk0negative)
+    memcpy(Ajc,At.jc,m*sizeof(mwIndex));          /* default: start of column */
   else
     for(i = 0; i < m; i++){                         /* to integers */
-      Ajc[i] = AjcPr[m*blk0 + i];
+      Ajc[i] = (mwIndex) AjcPr[m*blk0 + i];
     }
   
   mxAssert(blk1 >= 0, "blk1 must be positive.");
   if(blk1 >= njc)
-    memcpy(Ajc+m,At.jc+1,m*sizeof(int));      /* default: end of column */
+    memcpy(Ajc+m,At.jc+1,m*sizeof(mwIndex));      /* default: end of column */
   else
     for(i = 0; i < m; i++){                         /* to integers */
-      Ajc[m+i] = AjcPr[blk1*m + i];
+      Ajc[m+i] = (mwIndex) AjcPr[blk1*m + i];
     }
 /* ------------------------------------------------------------
    Apart = sparse(n,m,ynnz);

@@ -68,10 +68,10 @@ function Lden = finsymbden(LAD,perm,dz,firstq)
    OUTPUT
      firstpiv - length n array
    ************************************************************ */
-void getfirstpiv(int *firstpiv, const int *invperm, const int *xsuper,
-                 const int *Xjc, const int *Xir, const int n)
+void getfirstpiv(mwIndex *firstpiv, const mwIndex *invperm, const mwIndex *xsuper,
+                 const mwIndex *Xjc, const mwIndex *Xir, const mwIndex n)
 {
-  int i,j,inz,firstj;
+  mwIndex i,j,inz,firstj;
   inz = Xjc[0];                 /* typically inz = 0*/
   for(j = 0; j < n; j++){
 /* ------------------------------------------------------------
@@ -101,13 +101,13 @@ void getfirstpiv(int *firstpiv, const int *invperm, const int *xsuper,
 /* ************************************************************
    PROCEDURE mexFunction - Entry for Matlab
    ************************************************************ */
-void mexFunction(const int nlhs, mxArray *plhs[],
-  const int nrhs, const mxArray *prhs[])
+void mexFunction(int nlhs, mxArray *plhs[],
+  int nrhs, const mxArray *prhs[])
 {
   mxArray *LDEN_FIELD;
-  int i,inz, j,m,n,nperm, firstQ, lastQ, nnzdz;
-  const int *LADjc, *LADir, *dzJc, *dzIr;
-  int *invdz,*firstpiv,*perm, *dznewJc;
+  mwIndex i,inz, j,m,n,nperm, firstQ, lastQ, nnzdz;
+  const mwIndex *LADjc, *LADir, *dzJc, *dzIr;
+  mwIndex *invdz,*firstpiv,*perm, *dznewJc;
   double *permPr, *firstPr;
   const char *LdenFieldnames[] = {"LAD","perm","dz","first"};
 /* ------------------------------------------------------------
@@ -136,20 +136,21 @@ void mexFunction(const int nlhs, mxArray *plhs[],
     dealing with Lorentz-trace entries. Let lastQ point just beyond
     Lorentz trace/block entries, i.e. add n-nperm.
    ------------------------------------------------------------ */
-  firstQ = mxGetScalar(FIRSTQ_IN);         /*firstq, F-double to C-int.*/
+  firstQ = (mwIndex) mxGetScalar(FIRSTQ_IN);         /*firstq, F-double to C-mwIndex.*/
+  mxAssert(firstQ>0,"");
   --firstQ;
   lastQ = firstQ + n - nperm;
 /* ------------------------------------------------------------
    Allocate integer working arrays:
    invdz(m), firstpiv(n), perm(n)
    ------------------------------------------------------------ */
-  invdz = (int *) mxCalloc(MAX(1,m), sizeof(int));
-  firstpiv = (int *) mxCalloc(MAX(1,n), sizeof(int));
-  perm = (int *) mxCalloc(MAX(1,n), sizeof(int));
+  invdz = (mwIndex *) mxCalloc(MAX(1,m), sizeof(mwIndex));
+  firstpiv = (mwIndex *) mxCalloc(MAX(1,n), sizeof(mwIndex));
+  perm = (mwIndex *) mxCalloc(MAX(1,n), sizeof(mwIndex));
 /* ------------------------------------------------------------
-   Allocate OUTPUT int array dznewJc(n+1)
+   Allocate OUTPUT mwIndex array dznewJc(n+1)
    ------------------------------------------------------------ */
-  dznewJc = (int *) mxCalloc(n+1, sizeof(int));
+  dznewJc = (mwIndex *) mxCalloc(n+1, sizeof(mwIndex));
 /* ------------------------------------------------------------
    Let invdz(dzIr) = 1:nnz(dz). Note that nnz(dz)<m is the number
    subscripts that are actually in use.
@@ -164,7 +165,7 @@ void mexFunction(const int nlhs, mxArray *plhs[],
    ------------------------------------------------------------ */
   inz = 0;
   for(i = 0; i < nperm; i++){
-    j = permPr[i];
+    j = (mwIndex) permPr[i];
     perm[inz] = --j;
     dznewJc[inz++] = dzJc[i];
     if(j >= firstQ && j < lastQ){
@@ -192,7 +193,7 @@ void mexFunction(const int nlhs, mxArray *plhs[],
   mxSetField(LDEN_OUT,0,"perm",LDEN_FIELD);
   permPr = mxGetPr(LDEN_FIELD);
   for(i = 0; i < n; i++)
-    permPr[i] = perm[i] + 1.0;                       /* C-int to F-double */
+    permPr[i] = perm[i] + 1.0;                       /* C-mwIndex to F-double */
   LDEN_FIELD = mxDuplicateArray(DZ_IN);                /* dz */
 /* NOTE: here we replace jc by dznewJc */
   mxFree(mxGetJc(LDEN_FIELD));
@@ -203,7 +204,7 @@ void mexFunction(const int nlhs, mxArray *plhs[],
   mxSetField(LDEN_OUT,0,"first",LDEN_FIELD);
   firstPr = mxGetPr(LDEN_FIELD);
   for(i = 0; i < n; i++)
-    firstPr[i] = firstpiv[i] + 1.0;               /* C-int to F-double */
+    firstPr[i] = firstpiv[i] + 1.0;               /* C-mwIndex to F-double */
 /* ------------------------------------------------------------
    Release working arrays
    ------------------------------------------------------------ */

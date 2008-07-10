@@ -57,9 +57,9 @@ function y = givensrot(gjc,g,x,K)
    UPDATED
      y - let Y := Q_g * Y.
    ************************************************************ */
-void matgivens(double *y, const twodouble *g, const int *gjc, const int n)
+void matgivens(double *y, const twodouble *g, const mwIndex *gjc, const mwIndex n)
 {
-  int j,k;
+  mwIndex j,k;
 
   for(j = 0; j < n; j++, y += n)       /* For all n columns of y */
 /* ------------------------------------------------------------
@@ -71,9 +71,9 @@ void matgivens(double *y, const twodouble *g, const int *gjc, const int n)
 
 /* complex case */
 void prpimatgivens(double *y,double *ypi, const tridouble *g,
-                   const int *gjc, const int n)
+                   const mwIndex *gjc, const mwIndex n)
 {
-  int j,k;
+  mwIndex j,k;
 
   for(j = 0; j < n; j++, y += n, ypi += n)       /* For all n columns of y */
 /* ------------------------------------------------------------
@@ -93,8 +93,8 @@ void prpimatgivens(double *y,double *ypi, const tridouble *g,
 void mexFunction(const int nlhs, mxArray *plhs[],
   const int nrhs, const mxArray *prhs[])
 {
-  int inz, i, k, nk, nksqr, lenud, sdplen, gnnz;
-  int *gjc, *iwork;
+  mwIndex inz, i, k, nk, nksqr, lenud, sdplen, gnnz;
+  mwIndex *gjc, *iwork;
   const double *gjcPr;
   const double *g, *gk;
   double *y;
@@ -130,9 +130,9 @@ void mexFunction(const int nlhs, mxArray *plhs[],
 /* ------------------------------------------------------------
    Allocate working array iwork(sum(K.s))
    ------------------------------------------------------------ */
-  iwork = (int *) mxCalloc(MAX(1,sdplen), sizeof(int));
+  iwork = (mwIndex *) mxCalloc(MAX(1,sdplen), sizeof(mwIndex));
 /* ------------------------------------------------------------
-   Convert gjcPr from float to int, and store in gjc:=iwork.
+   Convert gjcPr from float to mwIndex, and store in gjc:=iwork.
    ------------------------------------------------------------ */
   gjc = iwork;
   for(i = 0; i < sdplen; i++)

@@ -53,9 +53,9 @@
 /* ************************************************************
    PROCEDURE intscalaradd - Let y = d + x.
    ************************************************************ */
-void intscalaradd(int *y, const int d, const int *x, const int n)
+void intscalaradd(mwIndex *y, const mwSize d, const mwIndex *x, const mwSize n)
 {
-  int i;
+  mwIndex i;
   for(i = 0; i < n; i++)
     y[i] = x[i] + d;
 }
@@ -63,10 +63,10 @@ void intscalaradd(int *y, const int d, const int *x, const int n)
 /* ************************************************************
    PROCEDURE writenz
    ************************************************************ */
-void writenz(int *yir, double *ypr, int *pjnz, const int *xir,
-             const double *xpr, const int jc0, const int jc1, const int d)
+void writenz(mwIndex *yir, double *ypr, mwIndex *pjnz, const mwIndex *xir,
+             const double *xpr, const mwIndex jc0, const mwIndex jc1, const mwIndex d)
 {
-  int i,jnz;
+  mwIndex i,jnz;
   double yi;
   jnz = *pjnz;
 /* ------------------------------------------------------------
@@ -99,12 +99,12 @@ void writenz(int *yir, double *ypr, int *pjnz, const int *xir,
       iwsize >= 2+nf + floor(log_2(1+nf)).
    RETURNS ynnz (<=2*xnnz), number of free imag nonzeros in y.
    ************************************************************ */
-int fmakereal(int *yir, double *ypr, const int *xir, const double *xpi,
-	     const int xnnz, const int *cpxf, const int nf,
-	     char *cfound, int *iwork, int iwsize)
+mwIndex fmakereal(mwIndex *yir, double *ypr, const mwIndex *xir, const double *xpi,
+	     const mwIndex xnnz, const mwIndex *cpxf, const mwIndex nf,
+	     char *cfound, mwIndex *iwork, mwIndex iwsize)
 {
-  int i,jnz;
-  int *ipos;
+  mwIndex i,jnz;
+  mwIndex *ipos;
   double yj;
 
   if(xpi == (double *) NULL)
@@ -157,13 +157,13 @@ int fmakereal(int *yir, double *ypr, const int *xir, const double *xpi,
       iwsize >= 2+nx + floor(log_2(1+nx)).
    RETURNS ynnz (<=2*xnnz), number of nonzeros in y.
    ************************************************************ */
-int xmakereal(int *yir, double *ypr,
-	      const int *xir, const double *xpr, const double *xpi,
-	      const int xnnz, const int idelta, const int *cpxx, const int nx,
-	      char *cfound, int *iwork, int iwsize)
+mwIndex xmakereal(mwIndex *yir, double *ypr,
+	      const mwIndex *xir, const double *xpr, const double *xpi,
+	      const mwIndex xnnz, const mwIndex idelta, const mwIndex *cpxx, const mwIndex nx,
+	      char *cfound, mwIndex *iwork, mwIndex iwsize)
 {
-  int i,j,k,inz,jnz;
-  int *ipos;
+  mwIndex i,j,k,inz,jnz;
+  mwIndex *ipos;
   double yj;
 /* ------------------------------------------------------------
    Partition WORKING ARRAY:
@@ -183,7 +183,7 @@ int xmakereal(int *yir, double *ypr,
   if(idelta != 0)
     intscalaradd(yir, idelta, xir, ipos[1]);
   else
-    memcpy(yir, xir, ipos[1] * sizeof(int));
+    memcpy(yir, xir, ipos[1] * sizeof(mwIndex));
   jnz = ipos[1];
   for(i = 0; i < nx; ){
     if(cfound[i++]){
@@ -238,14 +238,14 @@ int xmakereal(int *yir, double *ypr,
       iwsize >= 2+2*ns + floor(log_2(1+2*ns)).
    RETURNS ynnz (<=2*xnnz), number of nonzeros in y.
    ************************************************************ */
-int smakereal(int *yir, double *ypr,
-	      const int *xir, const double *xpr, const double *xpi,
-	      const int xnnz, const int idelta,
-	      const int *cpxsi, const int twons, const int lenfull,
-	      char *cfound, int *iwork, int iwsize)
+mwIndex smakereal(mwIndex *yir, double *ypr,
+	      const mwIndex *xir, const double *xpr, const double *xpi,
+	      const mwIndex xnnz, const mwIndex idelta,
+	      const mwIndex *cpxsi, const mwIndex twons, const mwIndex lenfull,
+	      char *cfound, mwIndex *iwork, mwIndex iwsize)
 {
-  int i,j,k,inz,jnz;
-  int *ipos;
+  mwIndex i,j,k,inz,jnz;
+  mwIndex *ipos;
 /* ------------------------------------------------------------
    Partition WORKING ARRAY:
    ------------------------------------------------------------ */
@@ -265,7 +265,7 @@ int smakereal(int *yir, double *ypr,
   if(idelta != 0)
     intscalaradd(yir, idelta, xir, ipos[1]);
   else
-    memcpy(yir, xir, ipos[1] * sizeof(int));
+    memcpy(yir, xir, ipos[1] * sizeof(mwIndex));
   jnz = ipos[1];
   j = idelta;             /* subscript adjustment */
   for(i = 0; i < twons; ){
@@ -322,14 +322,14 @@ int smakereal(int *yir, double *ypr,
       iwsize >= 2 + MAXN + floor(log_2(1+MAXN)).
    RETURNS ynnz (<=2*xnnz), number of nonzeros in y.
    ************************************************************ */
-int makereal(int *yir, double *ypr,
-             const int *xir, const double *xpr, const double *xpi,
-             const int xnnz, const int *cpxf, const int nf,
-             const int *cpxx, const int nx, const int *cpxsi,
-             const int ns, const int lenfull, const int dimflqr,
-             char *cfound, int *iwork, int iwsize)
+mwIndex makereal(mwIndex *yir, double *ypr,
+             const mwIndex *xir, const double *xpr, const double *xpi,
+             const mwIndex xnnz, const mwIndex *cpxf, const mwIndex nf,
+             const mwIndex *cpxx, const mwIndex nx, const mwIndex *cpxsi,
+             const mwIndex ns, const mwIndex lenfull, const mwIndex dimflqr,
+             char *cfound, mwIndex *iwork, mwIndex iwsize)
 {
-  int jcs, jnz;
+  mwIndex jcs, jnz;
 /* ------------------------------------------------------------
    Find position of 1st PSD nonzero
    ------------------------------------------------------------ */
@@ -367,8 +367,8 @@ int makereal(int *yir, double *ypr,
 void mexFunction(const int nlhs, mxArray *plhs[],
   const int nrhs, const mxArray *prhs[])
 {
-  int i,j,jnz,MAXN, m,dimflqr,lenfull,reallength, nf,nx,ns, iwsize;
-  int *iwork, *sdpNL, *cpxf, *cpxx, *cpxs, *cpxsi;
+  mwIndex i,j,jnz,MAXN, m,dimflqr,lenfull,reallength, nf,nx,ns, iwsize;
+  mwIndex *iwork, *sdpNL, *cpxf, *cpxx, *cpxs, *cpxsi;
   char *cwork;
   const double *cpxfPr, *cpxxPr, *cpxsPr, *xpi;
   mxArray *MY_FIELD;
@@ -428,15 +428,15 @@ void mexFunction(const int nlhs, mxArray *plhs[],
   MAXN = MAX(MAX(nf,nx),2*ns);
   iwsize = floor(log(1 + MAXN) / log(2));       /* for binary tree search */
   iwsize += 2 * ns + 2 + MAXN;
-  iwork = (int *) mxCalloc(iwsize, sizeof(int));
+  iwork = (mwIndex *) mxCalloc(iwsize, sizeof(mwIndex));
   cwork = (char *) mxCalloc(MAX(1,MAXN), sizeof(char));
-  sdpNL = (int *) mxCalloc(MAX(1, cK.sdpN + nf + nx + 3*ns), sizeof(int));
+  sdpNL = (mwIndex *) mxCalloc(MAX(1, cK.sdpN + nf + nx + 3*ns), sizeof(mwIndex));
   cpxf = sdpNL + cK.sdpN;
   cpxx = cpxf + nf;
   cpxs = cpxx + nx;
   cpxsi = cpxs + ns;        /* length 2*ns */
 /* ------------------------------------------------------------
-   Convert double to int
+   Convert double to mwIndex
    ------------------------------------------------------------ */
   for(i = 0; i < cK.sdpN; i++){        /* K.s */
     j = cK.sdpNL[i];
@@ -505,7 +505,7 @@ void mexFunction(const int nlhs, mxArray *plhs[],
   if( (y.pr = (double *) mxRealloc(y.pr, jnz*sizeof(double))) == NULL)
     mexErrMsgTxt("Memory reallocation error");
   mxSetPr(Y_OUT,y.pr);
-  if( (y.ir = (int *) mxRealloc(y.ir, jnz*sizeof(int))) == NULL)
+  if( (y.ir = (mwIndex *) mxRealloc(y.ir, jnz*sizeof(mwIndex))) == NULL)
     mexErrMsgTxt("Memory reallocation error");
   mxSetIr(Y_OUT,y.ir);
   mxSetNzmax(Y_OUT,jnz);

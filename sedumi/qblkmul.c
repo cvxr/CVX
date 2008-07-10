@@ -57,10 +57,10 @@ function y = qblkmul(mu,d,blkstart)
 void mexFunction(const int nlhs, mxArray *plhs[],
   const int nrhs, const mxArray *prhs[])
 {
-  int i,j,nblk,k,nk,qDim;
+  mwIndex i,j,nblk,k,nk,qDim;
   double *y;
   const double *d, *mu, *blkstartPr;
-  int *blkstart;
+  mwIndex *blkstart;
 /* ------------------------------------------------------------
    Check for proper number of arguments 
    ------------------------------------------------------------ */
@@ -76,14 +76,14 @@ void mexFunction(const int nlhs, mxArray *plhs[],
   blkstartPr = mxGetPr(BLKSTART_IN);
   mxAssert(nblk == mxGetM(BLKSTART_IN) * mxGetN(BLKSTART_IN) - 1, "blkstart size mismatch.");
 /* ------------------------------------------------------------
-   Allocate int working array blkstart(nblk+1).
+   Allocate mwIndex working array blkstart(nblk+1).
    ------------------------------------------------------------ */
-  blkstart = (int *) mxCalloc(nblk + 1, sizeof(int));
+  blkstart = (mwIndex *) mxCalloc(nblk + 1, sizeof(mwIndex));
 /* ------------------------------------------------------------
-   Convert Fortran double to C int
+   Convert Fortran double to C mwIndex
    ------------------------------------------------------------ */
   for(i = 0; i <= nblk; i++){
-    j = blkstartPr[i];             /* double to int */
+    j = blkstartPr[i];             /* double to mwIndex */
     blkstart[i] = --j;
   }
 /* ------------------------------------------------------------

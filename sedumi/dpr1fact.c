@@ -94,10 +94,10 @@ function [Lden,L.d] = dpr1fact(x, d, Lsym, smult, maxu)
      if m > n: it'll be used in rows n:m-1.
    RETURNS: nph2, number of postponed nodes = length(ph2psqr).
    ************************************************************ */
-int dpr1fact(double *fi, double *d, keydouble *ph2psqr, double *pt, const int n,
+mwIndex dpr1fact(double *fi, double *d, keydouble *ph2psqr, double *pt, const mwIndex n,
              const double *mu, const double maxu)
 {
-  int nph2;
+  mwIndex nph2;
   double dj,fij, muph2, t;
   keydouble p2j;
 
@@ -165,10 +165,10 @@ int dpr1fact(double *fi, double *d, keydouble *ph2psqr, double *pt, const int n,
      if m > n: it'll be used in rows n:m-1.
    RETURNS: nph2, number of postponed nodes = length(ph2psqr).
    ************************************************************ */
-int dpr1factperm(double *fi, double *d, keydouble *ph2psqr, double *pt,
-                 int *perm, const int n, const double *mu, const double maxu)
+mwIndex dpr1factperm(double *fi, double *d, keydouble *ph2psqr, double *pt,
+                 mwIndex *perm, const mwIndex n, const double *mu, const double maxu)
 {
-  int i, jnz, nph2;
+  mwIndex i, jnz, nph2;
   double dj,fij, muph2, t;
   keydouble p2j;
 
@@ -221,9 +221,9 @@ int dpr1factperm(double *fi, double *d, keydouble *ph2psqr, double *pt,
      Since L=eye(m)+tril(p*beta'), beta(n-1) and fi(n-1) are useful only
      if m > n: it'll be used in rows n:m-1.
    ************************************************************ */
-void ph2dpr1fact(keydouble *psqr, double *d, double *pt, const int n)
+void ph2dpr1fact(keydouble *psqr, double *d, double *pt, const mwIndex n)
 {
-  int j, jnz;
+  mwIndex j, jnz;
   double dj,fij,t;
   t = *pt;
 /* ------------------------------------------------------------
@@ -277,11 +277,11 @@ void ph2dpr1fact(keydouble *psqr, double *d, double *pt, const int n)
        rank-1 subtraction. The caller should therefore call findnewdep
        afterwards (for t < 0).
    ************************************************************ */
-char dodpr1fact(double *beta, int *perm, double *d, double t, const double *p,
-                const int m, int *pn, int *dep, int *pndep,
+char dodpr1fact(double *beta, mwIndex *perm, double *d, double t, const double *p,
+                const mwIndex m, mwIndex *pn, mwIndex *dep, mwIndex *pndep,
                 const double maxu, double *psqr, keydouble *kdwork)
 {
-  int ndep, n, i, j, nph2, nextj, idep;
+  mwIndex ndep, n, i, j, nph2, nextj, idep;
   double psqrdep, h;
   double *mu;
   char deldep;
@@ -316,9 +316,9 @@ char dodpr1fact(double *beta, int *perm, double *d, double t, const double *p,
 /* ------------------------------------------------------------
    Let mu(m) = 0, mu(i) = max(psqr(i+1:mk)), for i=1:mk-1.
    ------------------------------------------------------------ */
-    for(h = 0.0, i = m - 1; i >= 0; i--){
-      mu[i] = h;
-      h = MAX(h, psqr[i]);
+    for(h = 0.0, i = m ; i > 0; i--){
+      mu[i-1] = h;
+      h = MAX(h, psqr[i-1]);
     }
 /* ------------------------------------------------------------
    1st round: pivot sequentially on 1:m, skipping instable ones.
@@ -386,7 +386,7 @@ char dodpr1fact(double *beta, int *perm, double *d, double t, const double *p,
    ------------------------------------------------------------ */
       if(t > 0.0){
         deldep = 1;
-        memmove(dep+j, dep+j+1, (ndep - j) * sizeof(int));
+        memmove(dep+j, dep+j+1, (ndep - j) * sizeof(mwIndex));
         h = SQR(maxu) * psqrdep;
         dep[ndep] = idep;                /* remember removed dependency */
         *pndep = --ndep;
@@ -428,9 +428,9 @@ char dodpr1fact(double *beta, int *perm, double *d, double t, const double *p,
    Now h=max(psqr(perm(n+1:m))).
    Let mu(i) = max(psqr(perm(i+1:m))).
    ------------------------------------------------------------ */
-    for(i = n - 1; i >= 0; i--){
-      mu[i] = h;
-      h = MAX(h, psqr[perm[i]]);
+    for(i = n ; i > 0; i--){
+      mu[i-1] = h;
+      h = MAX(h, psqr[perm[i-1]]);
     }
 /* ------------------------------------------------------------
    1st round: pivot sequentially on perm(1:n), skipping instable ones.
@@ -491,9 +491,9 @@ char dodpr1fact(double *beta, int *perm, double *d, double t, const double *p,
    RETURNS 1 if ndep has to be incremented, i.e. an entry of
      dep(ndep+1:maxndep) is inserted into dep(0:ndep). Otherwise returns 0.
    ************************************************************ */
-int findnewdep(int *dep, const int ndep, const int maxndep, const double *d)
+mwIndex findnewdep(mwIndex *dep, const mwIndex ndep, const mwIndex maxndep, const double *d)
 {
-  int i, j, idep;
+  mwIndex i, j, idep;
 
   for(i = ndep + 1; i <= maxndep; i++)
     if(d[dep[i]] <= 0.0)
@@ -502,7 +502,7 @@ int findnewdep(int *dep, const int ndep, const int maxndep, const double *d)
     idep = dep[i];
     j = 0;
     intbsearch(&j, dep, ndep, idep);  /* first j s.t. dep[j] > idep */
-    memmove(dep+j+1, dep+j, (i - j) * sizeof(int));
+    memmove(dep+j+1, dep+j, (i - j) * sizeof(mwIndex));
     dep[j] = idep;
     return 1;
   }
@@ -545,13 +545,13 @@ int findnewdep(int *dep, const int ndep, const int maxndep, const double *d)
      fwork  - length xsuper[n] float working array.
      kdwork - length xsuper[n] (i,r)-working array.
    ************************************************************ */
-void prodformfact(double *p, int *perm, double *beta, int *betajc,
-                  double *d, char *ordered, const int *xsuper,
-                  const int *colperm, const int *firstpiv,
-                  const double *smult, const int n, int *dep, int *pndep,
+void prodformfact(double *p, mwIndex *perm, double *beta, mwIndex *betajc,
+                  double *d, char *ordered, const mwIndex *xsuper,
+                  const mwIndex *colperm, const mwIndex *firstpiv,
+                  const double *smult, const mwIndex n, mwIndex *dep, mwIndex *pndep,
                   const double maxu, double *fwork, keydouble *kdwork)
 {
-  int k, colk, mk, nk, j, inz, maxndep;
+  mwIndex k, colk, mk, nk, j, inz, maxndep;
   double *betak, *pk, *pj;
   char useperm;
 /* ------------------------------------------------------------
@@ -631,9 +631,9 @@ void mexFunction(const int nlhs, mxArray *plhs[],
 {
   mxArray *MY_FIELD;
   mxArray *myplhs[NPAROUT];
-  int m,n,ndep,i,j, permj, pnnz, dznnz, permnnz;
+  mwIndex m,n,ndep,i,j, permj, pnnz, dznnz, permnnz;
   char *ordered;
-  int *dep, *colperm, *invrowperm, *betajc, *pivperm, *firstpiv;
+  mwIndex *dep, *colperm, *invrowperm, *betajc, *pivperm, *firstpiv;
   double *beta, *d,*betajcPr, *pj, *orderedPr, *fwork, *p, *permPr, *lab;
   const double *colpermPr, *smult, *firstPr;
   const char *LdenFieldnames[] = {"betajc","beta","p","pivperm","dopiv"};
@@ -684,18 +684,18 @@ void mexFunction(const int nlhs, mxArray *plhs[],
   dznnz = dz.jc[n];
 /* ------------------------------------------------------------
    Allocate working arrays:
-   int: colperm(n), firstpiv(n), dep(m+1), betajc(n+1), pivperm(pnnz),
+   mwIndex: colperm(n), firstpiv(n), dep(m+1), betajc(n+1), pivperm(pnnz),
      invrowperm(m).
    char: ordered(n)
    double: fwork(dznnz), d(dznnz),
    keydouble: kdwork(dznnz).
    ------------------------------------------------------------ */
-  firstpiv= (int *) mxCalloc(MAX(n,1), sizeof(int));
-  colperm = (int *) mxCalloc(MAX(n,1), sizeof(int)); 
-  dep     = (int *) mxCalloc(m+1, sizeof(int));
-  betajc  = (int *) mxCalloc(n+1, sizeof(int));
-  invrowperm = (int *) mxCalloc(MAX(m,1),sizeof(int));
-  pivperm = (int *) mxCalloc(MAX(pnnz,1), sizeof(int));      /* pivperm */
+  firstpiv= (mwIndex *) mxCalloc(MAX(n,1), sizeof(mwIndex));
+  colperm = (mwIndex *) mxCalloc(MAX(n,1), sizeof(mwIndex)); 
+  dep     = (mwIndex *) mxCalloc(m+1, sizeof(mwIndex));
+  betajc  = (mwIndex *) mxCalloc(n+1, sizeof(mwIndex));
+  invrowperm = (mwIndex *) mxCalloc(MAX(m,1),sizeof(mwIndex));
+  pivperm = (mwIndex *) mxCalloc(MAX(pnnz,1), sizeof(mwIndex));      /* pivperm */
   ordered = (char *) mxCalloc(MAX(n,1), sizeof(char));       /* boolean */
   fwork   = (double *) mxCalloc(MAX(dznnz,1), sizeof(double));   /* float */
   d = (double *) mxCalloc(MAX(dznnz,1), sizeof(double));
@@ -783,7 +783,7 @@ void mexFunction(const int nlhs, mxArray *plhs[],
     lab[dz.ir[i]] = d[i];
 /* ------------------------------------------------------------
    Let permnnz = sum{dz.jc[j] | ordered[j]==1}, and set
-   Lden.pivperm = pivperm (int to double, but C-form)
+   Lden.pivperm = pivperm (mwIndex to double, but C-form)
    ------------------------------------------------------------ */
   for(i = 0, permnnz = 0; i < n; i++)
     permnnz += ordered[i] * dz.jc[i+1];
@@ -792,7 +792,7 @@ void mexFunction(const int nlhs, mxArray *plhs[],
   mxSetField(LDEN_OUT, 0,"pivperm", MY_FIELD);
   permPr = mxGetPr(MY_FIELD);
   for(i = 0; i < permnnz; i++)
-    permPr[i] = pivperm[i];                 /* int to double */
+    permPr[i] = pivperm[i];                 /* mwIndex to double */
 /* ------------------------------------------------------------
    Create LDEN.BETAJC(n+1)
    ------------------------------------------------------------ */

@@ -49,18 +49,18 @@ void conepars(const mxArray *mxK, coneK *pK)
 {
  const mxArray *K_FIELD;
  const double *blkstartPr;
- int idummy, nblk;
+ mwIndex idummy, nblk;
  char gotthem;
 
  mxAssert(mxIsStruct(mxK), "Parameter `K' should be a structure.");
  if( (K_FIELD = mxGetField(mxK,0,"f")) == NULL)      /* K.f */
    pK->frN = 0;
  else
-   pK->frN = mxGetScalar(K_FIELD);
+   pK->frN = (mwSize) mxGetScalar(K_FIELD);
  if( (K_FIELD = mxGetField(mxK,0,"l")) == NULL)      /* K.l */
    pK->lpN = 0;
  else
-   pK->lpN = mxGetScalar(K_FIELD);
+   pK->lpN = (mwSize) mxGetScalar(K_FIELD);
  if( (K_FIELD = mxGetField(mxK,0,"q")) == NULL)      /* K.q */
    pK->lorN = 0;
  else{
@@ -92,31 +92,31 @@ void conepars(const mxArray *mxK, coneK *pK)
  if( (K_FIELD = mxGetField(mxK,0,"rsdpN")) == NULL)      /* K.rsdpN */
    pK->rsdpN = pK->sdpN;                           /* default to all real */
  else
-   pK->rsdpN = mxGetScalar(K_FIELD);
+   pK->rsdpN = (mwSize) mxGetScalar(K_FIELD);
    mxAssert(pK->rsdpN <= pK->sdpN, "K.rsdpN mismatches K.s");
  /* --------------------------------------------------
     GET STATISTICS: try to read from K, otherwise compute them.
     -------------------------------------------------- */
  gotthem = 0;
  if( (K_FIELD = mxGetField(mxK,0,"rLen")) != NULL){      /* K.rLen */
-   pK->rLen = mxGetScalar(K_FIELD);
+   pK->rLen = (mwSize) mxGetScalar(K_FIELD);
    if( (K_FIELD = mxGetField(mxK,0,"hLen")) != NULL){      /* K.hLen */
-     pK->hLen = mxGetScalar(K_FIELD);
+     pK->hLen = (mwSize) mxGetScalar(K_FIELD);
      if( (K_FIELD = mxGetField(mxK,0,"qMaxn")) != NULL){      /* K.qMaxn */
-       pK->qMaxn = mxGetScalar(K_FIELD);
+       pK->qMaxn = (mwSize) mxGetScalar(K_FIELD);
        if( (K_FIELD = mxGetField(mxK,0,"rMaxn")) != NULL){      /* K.rMaxn */
-	 pK->rMaxn = mxGetScalar(K_FIELD);
+	 pK->rMaxn = (mwSize) mxGetScalar(K_FIELD);
 	 if( (K_FIELD = mxGetField(mxK,0,"hMaxn")) != NULL){    /* K.hMaxn */
-	   pK->hMaxn = mxGetScalar(K_FIELD);
+	   pK->hMaxn = (mwSize) mxGetScalar(K_FIELD);
 	   if( (K_FIELD = mxGetField(mxK,0,"blkstart"))!=NULL){ /*K.blkstart*/
 	     mxAssert(!mxIsSparse(K_FIELD), "K.blkstart must be a full vector.");
          nblk = 1 + pK->lorN + pK->sdpN;
          mxAssert(mxGetM(K_FIELD) * mxGetN(K_FIELD) == nblk + 1, "Size mismatch K.blkstart.");
 	     blkstartPr = mxGetPr(K_FIELD);
-	     pK->qDim = blkstartPr[pK->lorN+1] - blkstartPr[0];
+	     pK->qDim = (mwSize) blkstartPr[pK->lorN+1] - (mwSize) blkstartPr[0];
 	     blkstartPr += pK->lorN+1;
-	     pK->rDim = blkstartPr[pK->rsdpN] - blkstartPr[0];
-	     pK->hDim = blkstartPr[pK->sdpN] - blkstartPr[pK->rsdpN];
+	     pK->rDim = (mwSize) blkstartPr[pK->rsdpN] - (mwSize) blkstartPr[0];
+	     pK->hDim = (mwSize) blkstartPr[pK->sdpN] - (mwSize) blkstartPr[pK->rsdpN];
 	     gotthem = 1;
 	   }
 	 }
@@ -142,16 +142,16 @@ void conepars(const mxArray *mxK, coneK *pK)
    IMPORTANT: this routine is especially designed for use with the
     blk.s structure, which contains nonneg integers stored as doubles.
    ************************************************************ */
-void someStats(int *pxmax, int *pxsum, int *pxssqr,
-	       const double *x, const int n)
+void someStats(mwIndex *pxmax, mwIndex *pxsum, mwIndex *pxssqr,
+	       const double *x, const mwIndex n)
 {
- int xi, xmax, xsum, xssqr;
- int i;
+ mwIndex xi, xmax, xsum, xssqr;
+ mwIndex i;
 
  xmax = 0;             /* assume that all integers are nonnegative */
  xsum = 0; xssqr = 0;
  for(i = 0; i < n; i++){
-   xi = x[i];
+   xi = (mwIndex) x[i];
    xmax = MAX(xmax, xi);
    xsum += xi;
    xssqr += SQR(xi);

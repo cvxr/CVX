@@ -47,10 +47,10 @@
    PROCEDURE mexFunction - Entry for Matlab
    x = eyeK(K)
    ************************************************************ */
-void mexFunction(const int nlhs, mxArray *plhs[],
-  const int nrhs, const mxArray *prhs[])
+void mexFunction(int nlhs, mxArray *plhs[],
+  int nrhs, const mxArray *prhs[])
 {
- int i,j,k, nk, lenfull;
+ mwIndex i,j,k, nk, lenfull;
  double *x;
  coneK cK;
 

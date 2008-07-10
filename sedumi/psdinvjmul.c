@@ -66,9 +66,9 @@ function z = psdinvjmul(xlab,xfrm, y, K)
    UPDATED
      y - full n x n, on return tril(yNEW) = 2*y(i,j)/(xi + xj), i >= j.
    ************************************************************ */
-void diagjdiv(double *y,const double *x,const int n)
+void diagjdiv(double *y,const double *x,const mwIndex n)
 {
-  int i,j;
+  mwIndex i,j;
   double xj;
 
 /* ------------------------------------------------------------
@@ -99,10 +99,10 @@ void diagjdiv(double *y,const double *x,const int n)
      fwork length max(rmaxn,2*hmaxn).
    ************************************************************ */
 void psdinvjmul(double *z, const double *frms, const double *x,
-                const double *y, const int *sdpNL,const int rsdpN,
-                const int sdpN, double *fwork)
+                const double *y, const mwIndex *sdpNL,const mwIndex rsdpN,
+                const mwIndex sdpN, double *fwork)
 {
-  int k,nk,nksqr;
+  mwIndex k,nk,nksqr;
   const double *beta;
 /* ------------------------------------------------------------
    PSD: Since X = Q'*diag(x)*Q, we have XZ+ZX = 2Y iff
@@ -117,6 +117,7 @@ void psdinvjmul(double *z, const double *frms, const double *x,
    memcpy(z, y, nksqr * sizeof(double));
    beta = frms + nksqr - nk;               /* beta = frms(:,end) */
    qxqt(z, beta, frms, nk, fwork);
+
 /* ------------------------------------------------------------
    Solve diag(x) jmul zNEW = zOLD
    ------------------------------------------------------------ */
@@ -164,11 +165,10 @@ void psdinvjmul(double *z, const double *frms, const double *x,
 void mexFunction(const int nlhs, mxArray *plhs[],
   const int nrhs, const mxArray *prhs[])
 {
- const mxArray *FRM_FIELD;
- int i, lenfull, lendiag, lenud, qsize;
+ mwIndex i, lenfull, lendiag, lenud, qsize;
  double *z, *fwork;
  const double *x,*y, *frms;
- int *sdpNL;
+ mwIndex *sdpNL;
  coneK cK;
 /* ------------------------------------------------------------
    Check for proper number of arguments 
@@ -212,12 +212,12 @@ void mexFunction(const int nlhs, mxArray *plhs[],
    integer working array sdpNL(sdpN).
    ------------------------------------------------------------ */
   fwork = (double *) mxCalloc(MAX(1,MAX(cK.rMaxn,2*cK.hMaxn)),sizeof(double));
-  sdpNL = (int *) mxCalloc(MAX(1,cK.sdpN), sizeof(int));
+  sdpNL = (mwIndex *) mxCalloc(MAX(1,cK.sdpN), sizeof(mwIndex));
 /* ------------------------------------------------------------
    double to integer
    ------------------------------------------------------------ */
   for(i = 0; i < cK.sdpN; i++)
-    sdpNL[i] = cK.sdpNL[i];
+    sdpNL[i] = (mwIndex) cK.sdpNL[i];
   psdinvjmul(z,frms,x,y,sdpNL,cK.rsdpN,cK.sdpN, fwork);
 /* ------------------------------------------------------------
    Release working array

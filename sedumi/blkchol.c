@@ -71,12 +71,12 @@
 /* ------------------------------------------------------------
    PROTOTYPES:
    ------------------------------------------------------------ */
-int blkLDL(const int neqns, const int nsuper, const int *xsuper,
-           const int *snode,  const int *xlindx, const int *lindx,
+mwIndex blkLDL(const mwIndex neqns, const mwIndex nsuper, const mwIndex *xsuper,
+           const mwIndex *snode,  const mwIndex *xlindx, const mwIndex *lindx,
            double *lb,
-           const int *ljc, double *lpr, double *d, const int *perm,
-           const double ub, const double maxu, int *skipIr,
-           int iwsiz, int *iwork, int fwsiz, double *fwork);
+           const mwIndex *ljc, double *lpr, double *d, const mwIndex *perm,
+           const double ub, const double maxu, mwIndex *skipIr,
+           mwIndex iwsiz, mwIndex *iwork, mwIndex fwsiz, double *fwork);
 
 /* ============================================================
    SUBROUTINES:
@@ -92,11 +92,11 @@ int blkLDL(const int neqns, const int nsuper, const int *xsuper,
       Pj  - Length m float work array.
    IMPORTANT: L, P and PERM in C style.
    ------------------------------------------------------------ */
-void permuteP(const int *Ljc,const int *Lir,double *Lpr,
-              const int *Pjc,const int *Pir,const double *Ppr,
-              const int *perm, double *Pj, const int m)
+void permuteP(const mwIndex *Ljc,const mwIndex *Lir,double *Lpr,
+              const mwIndex *Pjc,const mwIndex *Pir,const double *Ppr,
+              const mwIndex *perm, double *Pj, const mwIndex m)
 {
-  int j,inz,jcol;
+  mwIndex j,inz,jcol;
 /* ------------------------------------------------------------
    Let Pj = all-0
    ------------------------------------------------------------ */
@@ -154,15 +154,15 @@ void permuteP(const int *Ljc,const int *Lir,double *Lpr,
       fwork  - Length fwsiz working vector; fwsiz = L.tmpsiz.
    RETURNS - nskip (<=neqns), number of skipped nodes. Length of skipIr.
    *********************************************************************** */
-int spchol(const int m, const int nsuper, const int *xsuper,
-           int *snode,	int *xlindx, int *lindx, double *lb,
-           const int *ljc, double *lpr, double *d, const int *perm,
+mwIndex spchol(const mwIndex m, const mwIndex nsuper, const mwIndex *xsuper,
+           mwIndex *snode,	mwIndex *xlindx, mwIndex *lindx, double *lb,
+           const mwIndex *ljc, double *lpr, double *d, const mwIndex *perm,
            const double abstol,
-           const double canceltol, const double maxu, int *skipIr,
-           int *pnadd,
-           const int iwsiz, int *iwork, const int fwsiz, double *fwork)
+           const double canceltol, const double maxu, mwIndex *skipIr,
+           mwIndex *pnadd,
+           const mwIndex iwsiz, mwIndex *iwork, const mwIndex fwsiz, double *fwork)
 {
-  int jsup,j,ix,jcol,collen, nskip, nadd;
+  mwIndex jsup,j,ix,jcol,collen, nskip, nadd;
   double ub, dj;
   
 /* ------------------------------------------------------------
@@ -199,7 +199,7 @@ int spchol(const int m, const int nsuper, const int *xsuper,
     xlindx[jsup] = ix;
     jcol = xsuper[jsup];
     collen = ljc[jcol+1] - ljc[jcol];
-    memmove(lindx + ix, lindx + ljc[jcol], collen * sizeof(int));
+    memmove(lindx + ix, lindx + ljc[jcol], collen * sizeof(mwIndex));
     ix += collen;
   }
   xlindx[nsuper] = ix;
@@ -236,16 +236,16 @@ int spchol(const int m, const int nsuper, const int *xsuper,
 /* ************************************************************
    PROCEDURE mexFunction - Entry for Matlab
    ************************************************************ */
-void mexFunction(const int nlhs, mxArray *plhs[],
-  const int nrhs, const mxArray *prhs[])
+void mexFunction(int nlhs, mxArray *plhs[],
+  int nrhs, const mxArray *prhs[])
 {
   const mxArray *L_FIELD;
   mxArray *myplhs[NPAROUT];
-  int    m, i, j, inz, iwsiz, nsuper, tmpsiz, fwsiz, nskip, nadd, m1;
+  mwIndex    m, i, j, iwsiz, nsuper, tmpsiz, fwsiz, nskip, nadd, m1;
   double *fwork, *d, *skipPr, *orgd;
   const double *permPr,*xsuperPr,*Ppr,*absd;
-  int    *perm, *snode, *xsuper, *iwork, *xlindx, *skip, *skipJc;
-  const int *LINir, *Pjc, *Pir;
+  mwIndex    *perm, *snode, *xsuper, *iwork, *xlindx, *skip, *skipJc;
+  const mwIndex *LINir, *Pjc, *Pir;
   double canceltol, maxu, abstol;
   jcir   L;
   char useAbsd, useDelay;
@@ -285,7 +285,7 @@ void mexFunction(const int nlhs, mxArray *plhs[],
   xsuperPr = mxGetPr(L_FIELD);
   L_FIELD = mxGetField(L_IN,0,"tmpsiz");         /* L.tmpsiz */
   mxAssert( L_FIELD != NULL, "Missing field L.tmpsiz.");
-  tmpsiz   = mxGetScalar(L_FIELD);
+  tmpsiz   = (mwIndex) mxGetScalar(L_FIELD);
 /* ------------------------------------------------------------
    Disassemble pars structure: canceltol, maxu
    ------------------------------------------------------------ */
@@ -305,7 +305,7 @@ void mexFunction(const int nlhs, mxArray *plhs[],
       abstol = MAX(abstol, 0.0);
     }
     if( (L_FIELD = mxGetField(PARS_IN,0,"delay")) != NULL)
-      useDelay = mxGetScalar(L_FIELD);  /* pars.delay */
+      useDelay = (char) mxGetScalar(L_FIELD);  /* pars.delay */
 /* ------------------------------------------------------------
    Get optional vector absd
    ------------------------------------------------------------ */
@@ -321,8 +321,8 @@ void mexFunction(const int nlhs, mxArray *plhs[],
   L_OUT = mxCreateSparse(m,m, L.jc[m],mxREAL);
   L.ir  = mxGetIr(L_OUT);
   L.pr  = mxGetPr(L_OUT);
-  memcpy(mxGetJc(L_OUT), L.jc, (m+1) * sizeof(int));
-  memcpy(L.ir, LINir, L.jc[m] * sizeof(int));
+  memcpy(mxGetJc(L_OUT), L.jc, (m+1) * sizeof(mwIndex));
+  memcpy(L.ir, LINir, L.jc[m] * sizeof(mwIndex));
 /* ------------------------------------------------------------
    Create ouput vector d(m).
    ------------------------------------------------------------ */
@@ -342,23 +342,25 @@ void mexFunction(const int nlhs, mxArray *plhs[],
    double: orgd(m), fwork(fwsiz).
    ------------------------------------------------------------ */
   m1 = MAX(m,1);                  /* avoid alloc to 0 */
-  perm      = (int *) mxCalloc(m1,sizeof(int)); 
-  snode     = (int *) mxCalloc(m1,sizeof(int)); 
-  xsuper    = (int *) mxCalloc(nsuper+1,sizeof(int));
-  iwork     = (int *) mxCalloc(iwsiz,sizeof(int));
-  xlindx    = (int *) mxCalloc(m+1,sizeof(int));
-  skip      = (int *) mxCalloc(m1, sizeof(int));
+  perm      = (mwIndex *) mxCalloc(m1,sizeof(mwIndex)); 
+  snode     = (mwIndex *) mxCalloc(m1,sizeof(mwIndex)); 
+  xsuper    = (mwIndex *) mxCalloc(nsuper+1,sizeof(mwIndex));
+  iwork     = (mwIndex *) mxCalloc(iwsiz,sizeof(mwIndex));
+  xlindx    = (mwIndex *) mxCalloc(m+1,sizeof(mwIndex));
+  skip      = (mwIndex *) mxCalloc(m1, sizeof(mwIndex));
   orgd    = (double *) mxCalloc(m1,sizeof(double)); 
   fwork   = (double *) mxCalloc(fwsiz,sizeof(double)); 
 /* ------------------------------------------------------------
    Convert PERM, XSUPER to integer and C-Style
    ------------------------------------------------------------ */
   for(i = 0; i < m; i++){
-    j = permPr[i];
+    j = (mwIndex) permPr[i];
+    mxAssert(j>0,"");
     perm[i] = --j;
   }
   for(i = 0; i <= nsuper; i++){
-    j =  xsuperPr[i];
+    j =  (mwIndex) xsuperPr[i];
+    mxAssert(j>0,"");
     xsuper[i] = --j;
   }
 /* ------------------------------------------------------------
@@ -386,13 +388,13 @@ void mexFunction(const int nlhs, mxArray *plhs[],
 /* ------------------------------------------------------------
    Copy original row-indices from LINir to L.ir.
    ------------------------------------------------------------ */
-  memcpy(L.ir, LINir, L.jc[m] * sizeof(int));
+  memcpy(L.ir, LINir, L.jc[m] * sizeof(mwIndex));
 /* ------------------------------------------------------------
    Create output matrices skip = sparse([],[],[],m,1,nskip),
    diagadd = sparse([],[],[],m,1,nadd),
    ------------------------------------------------------------ */
   SKIP_OUT = mxCreateSparse(m,1, MAX(1,nskip),mxREAL);
-  memcpy(mxGetIr(SKIP_OUT), skip, nskip * sizeof(int));
+  memcpy(mxGetIr(SKIP_OUT), skip, nskip * sizeof(mwIndex));
   skipJc = mxGetJc(SKIP_OUT);
   skipJc[0] = 0; skipJc[1] = nskip;
   skipPr   = mxGetPr(SKIP_OUT);
@@ -411,7 +413,7 @@ void mexFunction(const int nlhs, mxArray *plhs[],
       fzeros(L.pr+L.jc[i]+1,L.jc[i+1]-L.jc[i]-1);
     }
   DIAGADD_OUT = mxCreateSparse(m,1, MAX(1,nadd),mxREAL);
-  memcpy(mxGetIr(DIAGADD_OUT), iwork, nadd * sizeof(int));
+  memcpy(mxGetIr(DIAGADD_OUT), iwork, nadd * sizeof(mwIndex));
   skipJc = mxGetJc(DIAGADD_OUT);
   skipJc[0] = 0; skipJc[1] = nadd;
   skipPr   = mxGetPr(DIAGADD_OUT);

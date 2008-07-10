@@ -52,3 +52,9 @@ paper that is available at http://plato.asu.edu/dimacs/node3.html. These are in 
 20061010 Fix: Michael Grant corrected a bug in the postprocessing phase.
 
 20061010 Fix: A new, completely rewritten SDPA format reader is provided in the conversion folder. It is fast and it follows the SDPA standard.
+
+20061014 Fix: A bugfix was contributed by Michael Grant regarding the handling of 2-dimensional Lorentz cones.
+
+20080409 Fix: SeDuMi now works on 64bit operating systems.
+
+20080409 Fix: BLAS is used to improve performance.

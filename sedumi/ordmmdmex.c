@@ -75,9 +75,10 @@ void getadj(int *forjc,int *forir,const int *cjc,const int *cir,const int n)
 void mexFunction(const int nlhs, mxArray *plhs[],
                  const int nrhs, const mxArray *prhs[])
 {
-  int m, i,j, iwsiz, flag, nofsub;
+  int m, i, iwsiz, flag, nofsub;
   double *permPr;
   int *iwork,*Xjc,*Xir, *xadj,*adjncy,*perm,*invp;
+  mwIndex *mwXjc, *mwXir;
 
  /* ------------------------------------------------------------
     Check for proper number of arguments
@@ -88,13 +89,19 @@ void mexFunction(const int nlhs, mxArray *plhs[],
    Check input X 
    ------------------------------------------------------------ */
   mxAssert(mxIsSparse(X_IN), "Input matrix must be sparse");
-  m = mxGetM(X_IN);
-  mxAssert( m == mxGetN(X_IN), "X should be square.");
+  m = (int) mxGetM(X_IN);
+  mxAssert( m == (int) mxGetN(X_IN), "X should be square.");
 /* ------------------------------------------------------------
    Get input X
    ------------------------------------------------------------ */
-  Xjc = mxGetJc(X_IN);
-  Xir = mxGetIr(X_IN);
+  mwXjc = mxGetJc(X_IN);
+  mwXir = mxGetIr(X_IN);
+  Xjc=(int *) mxCalloc(m+1, sizeof(int));
+  for(i=0;i<=m;i++)
+      Xjc[i]=(int) mwXjc[i];
+  Xir=(int *) mxCalloc(Xjc[m],sizeof(int));
+  for(i=0;i<Xjc[m];i++)
+      Xir[i]=(int) mwXir[i];
 /* ------------------------------------------------------------
    Create output vector PERM
    ------------------------------------------------------------ */
@@ -130,6 +137,8 @@ void mexFunction(const int nlhs, mxArray *plhs[],
 /* ------------------------------------------------------------
    Release working arrays
    ------------------------------------------------------------ */
+  mxFree(Xjc);
+  mxFree(Xir);
   mxFree(iwork);
   mxFree(invp);
   mxFree(perm);

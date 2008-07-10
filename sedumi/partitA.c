@@ -50,9 +50,9 @@ function Ablkjc = partitA(At,blkstart) --  Partition columns of A
 #define BLKSTART_IN prhs[1]
 #define NPARIN 2
 
-void intadd(int *x, const int y, const int n)
+void intadd(mwIndex *x, const mwIndex y, const mwIndex n)
 {
-  int i;
+  mwIndex i;
   for(i = 0; i < n; i++)
     x[i] += y;
 }
@@ -70,11 +70,11 @@ void intadd(int *x, const int y, const int n)
      cfound - length nblk char work array
      iwork  - length iwsize = floor(log(1+nblk)/log(2)) work array.
    ************************************************************ */
-void partitA(int *Ablkjc, const int *Ajc,const int *Air,
-             const int *blkstart, const int m,const int nblk,
-             const int iwsize, char *cfound, int *iwork)
+void partitA(mwIndex *Ablkjc, const mwIndex *Ajc,const mwIndex *Air,
+             const mwIndex *blkstart, const mwIndex m,const mwIndex nblk,
+             const mwIndex iwsize, char *cfound, mwIndex *iwork)
 {
-  int j, L;
+  mwIndex j, L;
   L = nblk+2;
   for(j = 0; j < m; j++)
     intmbsearch(Ablkjc + j*L, cfound, Air+Ajc[j], Ajc[j+1]-Ajc[j],
@@ -86,13 +86,13 @@ void partitA(int *Ablkjc, const int *Ajc,const int *Air,
 /* ************************************************************
    PROCEDURE mexFunction - Entry for Matlab
    ************************************************************ */
-void mexFunction(const int nlhs, mxArray *plhs[],
-                 const int nrhs, const mxArray *prhs[])
+void mexFunction(int nlhs, mxArray *plhs[],
+                int nrhs, const mxArray *prhs[])
 {
   jcir At;
-  int i,j, nblk,m, L, iwsize;
-  int *iwork, *Ablkjc, *blkstart;
-  const int *rowj;
+  mwIndex i,j, nblk,m, L, iwsize;
+  mwIndex *iwork, *Ablkjc, *blkstart;
+  const mwIndex *rowj;
   double *AblkjcPr;
   const double *blkstartPr;
   char *cwork;
@@ -114,16 +114,17 @@ void mexFunction(const int nlhs, mxArray *plhs[],
    Allocate working array Ablkjc((nblk+2) * m), iwork(log_2(1+nblk)),
    blkstart(nblk)
    ------------------------------------------------------------ */
-  iwsize = floor(log(1+nblk)/log(2));
-  iwork = (int *) mxCalloc(MAX(iwsize,1), sizeof(int));
-  Ablkjc = (int *) mxCalloc(MAX((nblk+2)*m,1), sizeof(int));
-  blkstart = (int *) mxCalloc(MAX(nblk,1), sizeof(int));
+  iwsize = (mwIndex) floor(log(1.0+nblk)/log(2.0));
+  iwork = (mwIndex *) mxCalloc(MAX(iwsize,1), sizeof(mwIndex));
+  Ablkjc = (mwIndex *) mxCalloc(MAX((nblk+2)*m,1), sizeof(mwIndex));
+  blkstart = (mwIndex *) mxCalloc(MAX(nblk,1), sizeof(mwIndex));
   cwork = (char *) mxCalloc(MAX(nblk,1), sizeof(char));
 /* ------------------------------------------------------------
-   Translate blkstart from Fortran-double to C-int
+   Translate blkstart from Fortran-double to C-mwIndex
    ------------------------------------------------------------ */
   for(i = 0; i < nblk; i++){                         /* to integers */
-    j = blkstartPr[i];
+    j = (mwIndex) blkstartPr[i];
+    mxAssert(j>0,"");
     blkstart[i] = --j;
   }
 /* ------------------------------------------------------------
@@ -140,7 +141,7 @@ void mexFunction(const int nlhs, mxArray *plhs[],
   for(j = 0; j < nblk; j++){
     ++rowj;
     for(i = 0; i < m; i++)
-      AblkjcPr[i] = rowj[i*L];      /* convert int to double */
+      AblkjcPr[i] = (double) rowj[i*L];      /* convert mwIndex to double */
     AblkjcPr += m;
   }
 /* ------------------------------------------------------------

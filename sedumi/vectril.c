@@ -62,15 +62,15 @@
    RETURNS nnz(X). Note that
    nnz(X) = triujc[n-2] + nnz(triu(X(n-1,:),1)) <= xjc1 - xjc0.
    ************************************************************ */
-int sptriujcT(int *triujc, const int *xir, const int xjc0, const int xjc1,
-              const int first,const int n)
+mwIndex sptriujcT(mwIndex *triujc, const mwIndex *xir, const mwIndex xjc0, const mwIndex xjc1,
+              const mwIndex first,const mwIndex n)
 {
-  int i,j,inz,jnz,jfirst,jlast;
+  mwIndex i,j,inz,jnz,jfirst,jlast;
 /* ------------------------------------------------------------
    Observe that triu(X(n,:))=[] and hence only use triujc[0:n-2].
    ------------------------------------------------------------ */
   mxAssert(n > 0,"");
-  memset(triujc, 0, (n-1) * sizeof(int));
+  memset(triujc, 0, (n-1) * sizeof(mwIndex));
   jnz = 0;        /* jnz = nnz(tril(X)) */
   jlast = 0;      /* index right after last activated column */
   for(inz = xjc0; inz < xjc1; inz++){
@@ -133,11 +133,11 @@ int sptriujcT(int *triujc, const int *xir, const int xjc0, const int xjc1,
      yir, ypr - length nnz(y) sparse vector, y = [tril(X); triu(X,1)'].
    RETURNS tilxnnz = nnz(tril(X)) if !skew, and nnz(tril(X,-1)) if skew.
    ************************************************************ */
-int sptrilandtriu(int *yir, double *ypr, int *triujc, const int *xir,
-                   const double *xpr, const int xjc0, const int xjc1,
-                   const int first, const int n,const bool skew)
+mwIndex sptrilandtriu(mwIndex *yir, double *ypr, mwIndex *triujc, const mwIndex *xir,
+                   const double *xpr, const mwIndex xjc0, const mwIndex xjc1,
+                   const mwIndex first, const mwIndex n,const bool skew)
 {
-  int i,j,inz,jnz,knz,jfirst,jlast;
+  mwIndex i,j,inz,jnz,knz,jfirst,jlast;
 /* ------------------------------------------------------------
    Store [tril(X); triu(X,1)'] into y,
    using the column pointers of triu(X,1)' as computed in triujc.
@@ -193,12 +193,12 @@ int sptrilandtriu(int *yir, double *ypr, int *triujc, const int *xir,
      iwork - length iwsize working array
    RETURNS znnz
    ************************************************************ */
-int spadd2(int *zir, double *zpr, const int *xir, const double *xpr,
-           const int xnnz, const int *yir, const double *ypr, const int ynnz,
-           int iwsize, char *cfound, int *iwork)
+mwIndex spadd2(mwIndex *zir, double *zpr, const mwIndex *xir, const double *xpr,
+           const mwIndex xnnz, const mwIndex *yir, const double *ypr, const mwIndex ynnz,
+           mwIndex iwsize, char *cfound, mwIndex *iwork)
 {
-  int inz,jnz,knz, i;
-  int * yinx;
+  mwIndex inz,jnz,knz, i;
+  mwIndex * yinx;
 /* ------------------------------------------------------------
    Partition working array [yinx(ynnz+2), iwork(log_2(ynnz+1))].
    ------------------------------------------------------------ */
@@ -207,7 +207,7 @@ int spadd2(int *zir, double *zpr, const int *xir, const double *xpr,
   iwsize -= ynnz + 2;
   intmbsearch(yinx, cfound, xir, xnnz, yir, ynnz, iwork, iwsize);
   jnz = yinx[1];
-  memcpy(zir, xir, jnz * sizeof(int));
+  memcpy(zir, xir, jnz * sizeof(mwIndex));
   memcpy(zpr, xpr, jnz * sizeof(double));
   for(i = 0; i < ynnz; i++){
     inz = yinx[i+1];
@@ -217,16 +217,16 @@ int spadd2(int *zir, double *zpr, const int *xir, const double *xpr,
       zpr[jnz] = ypr[i];
     zir[jnz++] = yir[i];
     knz = yinx[i+2]-inz;
-    memcpy(zir + jnz, xir + inz, knz * sizeof(int));
+    memcpy(zir + jnz, xir + inz, knz * sizeof(mwIndex));
     memcpy(zpr + jnz, xpr + inz, knz * sizeof(double));
     jnz += knz;
   }
   return jnz;
 }
       
-int spadd(int *zir, double *zpr, const int *xir, const double *xpr,
-          const int xnnz, const int *yir, const double *ypr, const int ynnz,
-          const int iwsize, char *cfound, int *iwork)
+mwIndex spadd(mwIndex *zir, double *zpr, const mwIndex *xir, const double *xpr,
+          const mwIndex xnnz, const mwIndex *yir, const double *ypr, const mwIndex ynnz,
+          const mwIndex iwsize, char *cfound, mwIndex *iwork)
 {
   if(xnnz < ynnz)
     return spadd2(zir,zpr, yir,ypr,ynnz, xir,xpr,xnnz, iwsize, cfound, iwork);
@@ -246,12 +246,12 @@ int spadd(int *zir, double *zpr, const int *xir, const double *xpr,
      iwork - length iwsize working array
    RETURNS znnz
    ************************************************************ */
-int spsub(int *zir, double *zpr, const int *xir, const double *xpr,
-          const int xnnz, const int *yir, const double *ypr, const int ynnz,
-          int iwsize, char *cfound, int *iwork)
+mwIndex spsub(mwIndex *zir, double *zpr, const mwIndex *xir, const double *xpr,
+          const mwIndex xnnz, const mwIndex *yir, const double *ypr, const mwIndex ynnz,
+          mwIndex iwsize, bool *cfound, mwIndex *iwork)
 {
-  int inz,jnz,knz, i;
-  int *yinx;
+  mwIndex inz,jnz,knz, i;
+  mwIndex *yinx;
 /* ------------------------------------------------------------
    Partition working array [yinx(ynnz+2), iwork(log_2(ynnz+1))].
    ------------------------------------------------------------ */
@@ -260,7 +260,7 @@ int spsub(int *zir, double *zpr, const int *xir, const double *xpr,
   iwsize -= ynnz + 2;
   intmbsearch(yinx, cfound, xir, xnnz, yir, ynnz, iwork, iwsize);
   jnz = yinx[1];
-  memcpy(zir, xir, jnz * sizeof(int));
+  memcpy(zir, xir, jnz * sizeof(mwIndex));
   memcpy(zpr, xpr, jnz * sizeof(double));
   for(i = 0; i < ynnz; i++){
     inz = yinx[i+1];
@@ -270,7 +270,7 @@ int spsub(int *zir, double *zpr, const int *xir, const double *xpr,
       zpr[jnz] = -ypr[i];
     zir[jnz++] = yir[i];
     knz = yinx[i+2]-inz;
-    memcpy(zir + jnz, xir + inz, knz * sizeof(int));
+    memcpy(zir + jnz, xir + inz, knz * sizeof(mwIndex));
     memcpy(zpr + jnz, xpr + inz, knz * sizeof(double));
     jnz += knz;
   }
@@ -292,7 +292,7 @@ int spsub(int *zir, double *zpr, const int *xir, const double *xpr,
         xnnz <= MIN(n^2, xjc1-*pxjc0). Thus
         iwsize <= n*(2*n+1)+log_2(1+n*(n-1)/2).
    OUTPUT
-     zir - length znnz int array, subscripts of z := vec(tril(x)+triu(x,1)').
+     zir - length znnz mwIndex array, subscripts of z := vec(tril(x)+triu(x,1)').
      zpr - length znnz vector, nonzeros of z.
    WORK
      cwork - length nnz(triu(X,1)) <= n*(n-1)/2 char array.
@@ -300,13 +300,13 @@ int spsub(int *zir, double *zpr, const int *xir, const double *xpr,
      ypr - length xnnz vector; xnnz <= n^2.
    RETURNS znnz
    ************************************************************ */
-int sptotril(int *zir, double *zpr, const int *xir, const double *xpr,
-             int *pxjc0, const int xjc1, const int first, const int n,
-             const bool skew, int iwsize, char *cwork, int *iwork,
+mwIndex sptotril(mwIndex *zir, double *zpr, const mwIndex *xir, const double *xpr,
+             mwIndex *pxjc0, const mwIndex xjc1, const mwIndex first, const mwIndex n,
+             const bool skew, mwIndex iwsize, char *cwork, mwIndex *iwork,
              double *ypr)
 {
-  int xjc0, xnnz, trilnnz, triujc0;
-  int *triujc, *yir;
+  mwIndex xjc0, xnnz, trilnnz, triujc0;
+  mwIndex *triujc, *yir;
 /* ------------------------------------------------------------
    Let iwork[0:n-2] point to row-starts for storing triu(X,1)
    row-wise. Let xnnz be nnz(X). Update *pxjc0 to point beyond this
@@ -352,7 +352,7 @@ int sptotril(int *zir, double *zpr, const int *xir, const double *xpr,
      psdN - number of PSD blocks
      iwsize - maxn*(2*maxn+1)+log_2(1+maxn*(maxn-1)/2), where maxn := max(K.s).
    OUTPUT
-     zir - length znnz <= xnnz int array: subscripts of z = vectril(x).
+     zir - length znnz <= xnnz mwIndex array: subscripts of z = vectril(x).
      zpr - length znnz <= xnnz vector: nonzeros of z = vectril(x).
    WORKING ARRAYS
      cwork - length maxn*(maxn-1)/2 char array, where maxn := max(K.s).
@@ -361,13 +361,13 @@ int sptotril(int *zir, double *zpr, const int *xir, const double *xpr,
        blocks, since we treat real and imag parts seperately.)
    RETURNS znnz
    ************************************************************ */
-int vectril(int *zir, double *zpr, const int *xir, const double *xpr,
-            const int xnnz, const int *psdNL,
-            const int *blkstart, const int *isblk,
-            const int rpsdN, const int psdN, const int iwsize,
-            char *cwork, int *iwork, double *fwork)
+mwIndex vectril(mwIndex *zir, double *zpr, const mwIndex *xir, const double *xpr,
+            const mwIndex xnnz, const mwIndex *psdNL,
+            const mwIndex *blkstart, const mwIndex *isblk,
+            const mwIndex rpsdN, const mwIndex psdN, const mwIndex iwsize,
+            char *cwork, mwIndex *iwork, double *fwork)
 {
-  int inz, jnz, k, nk;
+  mwIndex inz, jnz, k, nk;
 /* ------------------------------------------------------------
    Copy f,l,q,r parts without change. Let inz point to first
    PSD-nonzero in x, jnz in z.
@@ -375,7 +375,7 @@ int vectril(int *zir, double *zpr, const int *xir, const double *xpr,
   inz = 0;                                   /* pointer into x */
   intbsearch(&inz, xir, xnnz, blkstart[0]);  /* inz points to start PSD */
   isblk -= blkstart[0];
-  memcpy(zir, xir, inz * sizeof(int));
+  memcpy(zir, xir, inz * sizeof(mwIndex));
   memcpy(zpr, xpr, inz * sizeof(double));
   jnz = inz;                        /* jnz points to start PSD in z */
 /* ------------------------------------------------------------
@@ -409,12 +409,12 @@ int vectril(int *zir, double *zpr, const int *xir, const double *xpr,
    Complex numbers are stored as vec([real(Xk) imag(Xk)]).
    NB: x and y are sparse.
    ************************************************************ */
-void mexFunction(const int nlhs, mxArray *plhs[],
-  const int nrhs, const mxArray *prhs[])
+void mexFunction(int nlhs, mxArray *plhs[],
+   int nrhs, const mxArray *prhs[])
 {
-  int i, j, k, jnz, m,lenfull, firstPSD, maxn, iwsize;
+  mwIndex i, j, k, jnz, m,lenfull, firstPSD, maxn, iwsize;
   jcir x,y;
-  int *iwork, *psdNL, *blkstart, *xblk;
+  mwIndex *iwork, *psdNL, *blkstart, *xblk;
   char *cwork;
   double *fwork;
   coneK cK;
@@ -432,7 +432,7 @@ void mexFunction(const int nlhs, mxArray *plhs[],
    ------------------------------------------------------------ */
   firstPSD = cK.frN + cK.lpN + cK.qDim;
   for(i = 0; i < cK.rconeN; i++)        /* add dim of rotated cone */
-    firstPSD += cK.rconeNL[i];
+    firstPSD += (mwIndex) cK.rconeNL[i];
   lenfull =  firstPSD + cK.rDim + cK.hDim;
 /* ------------------------------------------------------------
    Get inputs x, blkstart
@@ -458,23 +458,23 @@ void mexFunction(const int nlhs, mxArray *plhs[],
 /* ------------------------------------------------------------
    Allocate iwork[iwsize],
    iwsize := maxn*(2*maxn+1)+log_2(1+maxn*(maxn-1)/2), where maxn := max(K.s);
-   cwork[maxn*(maxn-1)/2], fwork(maxn^2), int psdNL(length(K.s)).
-   int blkstart(sdpN+1), xblk(sdpDim)
+   cwork[maxn*(maxn-1)/2], fwork(maxn^2), mwIndex psdNL(length(K.s)).
+   mwIndex blkstart(sdpN+1), xblk(sdpDim)
    ------------------------------------------------------------ */
     maxn = MAX(cK.rMaxn,cK.hMaxn);
-    iwsize = log(1 + maxn*(maxn-1)/2) / log(2);
+    iwsize = (mwIndex) (log(1.0 + maxn*(maxn-1)/2) / log(2.0));
     iwsize += maxn * (2*maxn+1);
-    iwork = (int *) mxCalloc(MAX(1,iwsize), sizeof(int));
+    iwork = (mwIndex *) mxCalloc(MAX(1,iwsize), sizeof(mwIndex));
     cwork = (char *) mxCalloc(MAX(1,maxn*(maxn-1)/2), sizeof(char));
     fwork = (double *) mxCalloc(MAX(1,SQR(maxn)), sizeof(double));
-    psdNL = (int *) mxCalloc(MAX(1,cK.sdpN), sizeof(int));
-    blkstart = (int *) mxCalloc(1 + cK.sdpN, sizeof(int));
-    xblk = (int *) mxCalloc(MAX(1,cK.rDim + cK.hDim), sizeof(int));
+    psdNL = (mwIndex *) mxCalloc(MAX(1,cK.sdpN), sizeof(mwIndex));
+    blkstart = (mwIndex *) mxCalloc(1 + cK.sdpN, sizeof(mwIndex));
+    xblk = (mwIndex *) mxCalloc(MAX(1,cK.rDim + cK.hDim), sizeof(mwIndex));
 /* ------------------------------------------------------------
-   double -> int for K.s
+   double -> mwIndex for K.s
    ------------------------------------------------------------ */
     for(i = 0; i < cK.sdpN; i++)
-      psdNL[i] = cK.sdpNL[i];
+      psdNL[i] = (mwIndex) cK.sdpNL[i];
 /* ------------------------------------------------------------
    Let k = xblk(j-blkstart[0]) iff
    blkstart[k] <= j < blkstart[k+1], k=0:psdN-1.
@@ -516,7 +516,7 @@ void mexFunction(const int nlhs, mxArray *plhs[],
     if( (y.pr = (double *) mxRealloc(y.pr, jnz*sizeof(double))) == NULL)
       mexErrMsgTxt("Memory reallocation error");
     mxSetPr(Y_OUT,y.pr);
-    if( (y.ir = (int *) mxRealloc(y.ir, jnz*sizeof(int))) == NULL)
+    if( (y.ir = (mwIndex *) mxRealloc(y.ir, jnz*sizeof(mwIndex))) == NULL)
       mexErrMsgTxt("Memory reallocation error");
     mxSetIr(Y_OUT,y.ir);
     mxSetNzmax(Y_OUT,jnz);

@@ -67,14 +67,16 @@
    RETURNS:
      determinant qdet(x).
    ************************************************************ */
-double qdet(const double *x,const int n)
+double qdet(const double *x,const mwIndex n)
 {
   double y;
 /* ------------------------------------------------------------
    qdet(x) = x'*J*x / 2 = (x_1^2 - |x_2|^2)/2
    For stability, we evaluate it is (x_1+|x_2|)(x_1-|x_2|)/2
    ------------------------------------------------------------ */
-  y = sqrt(realssqr(x+1,n-1));
+  mwIndex nminusone=n-1;
+  int one =1;
+  y=dnrm2(&nminusone,x++,&one);
   return ((x[0]+y) * (x[0]-y)) / 2;
 }
 

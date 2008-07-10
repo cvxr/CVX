@@ -67,11 +67,11 @@ function y = fwdpr1(Lden, b)
      y - length m vector. On input, the rhs. On output the solution to
        PROD_j L(pj,betaj) * yNEW = yOLD.
    ************************************************************ */
-void fwprodform(double *y, const int *xsuper, const int *perm,
-                const double *p, const double *beta, const int *betajc,
-                const char *ordered, const int n)
+void fwprodform(double *y, const mwIndex *xsuper, const mwIndex *perm,
+                const double *p, const double *beta, const mwIndex *betajc,
+                const char *ordered, const mwIndex n)
 {
-  int k,nk, mk;
+  mwIndex k,nk, mk;
 /* ------------------------------------------------------------
    Forward solve L(pk,betak) * yNEXT = yPREV   for k=0,1,..,n-1, resp.
    ------------------------------------------------------------ */
@@ -101,9 +101,9 @@ void mexFunction(const int nlhs, mxArray *plhs[],
 {
  const mxArray *MY_FIELD;
  char *ordered;
- int m,n,nden,dznnz, i,j, permnnz;
+ mwIndex m,n,nden,dznnz, i,j, permnnz;
  const double *beta, *betajcPr, *orderedPr, *pivpermPr, *p;
- int *betajc, *pivperm;
+ mwIndex *betajc, *pivperm;
  double *y, *fwork;
  jcir dz;
 /* ------------------------------------------------------------
@@ -158,16 +158,16 @@ void mexFunction(const int nlhs, mxArray *plhs[],
     dznnz = dz.jc[nden];
     mxAssert(dznnz <= m, "Lden.dz size mismatch.");
 /* ------------------------------------------------------------
-   Allocate working arrays int: betajc(nden+1), pivperm(permnnz),
+   Allocate working arrays mwIndex: betajc(nden+1), pivperm(permnnz),
    char: ordered(nden)
    double: fwork(dznnz).
    ------------------------------------------------------------ */
-    betajc = (int *) mxCalloc(nden + 1,sizeof(int));
-    pivperm = (int *) mxCalloc(MAX(permnnz,1),sizeof(int));
+    betajc = (mwIndex *) mxCalloc(nden + 1,sizeof(mwIndex));
+    pivperm = (mwIndex *) mxCalloc(MAX(permnnz,1),sizeof(mwIndex));
     ordered = (char *) mxCalloc(nden,sizeof(char));   /* nden > 0 */
     fwork = (double *) mxCalloc(MAX(dznnz,1),sizeof(double));
 /* ------------------------------------------------------------
-   Convert betajcPr, ordered, pivperm to int
+   Convert betajcPr, ordered, pivperm to mwIndex
    ------------------------------------------------------------ */
     for(i = 0; i <= nden; i++){
       j = betajcPr[i];

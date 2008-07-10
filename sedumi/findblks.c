@@ -71,13 +71,13 @@ function Ablk = findblks(At,Ablkjc,blk0,blk1,blkstart) --  Find nonzero blocks
      cfound - length nblk char work array
      iwork  - length iwsize = nblk+2+floor(log(1+nblk)/log(2)) work array.
    ************************************************************ */
-void findblks(int *Ablkir, int *Ablkjc, const int *Ajc1,const int *Ajc2,
-              const int *Air, const int *blkstart, const int *blkstartm1,
-              const int m,const int nblk,
-              int iwsize, char *cfound, int *iwork)
+void findblks(mwIndex *Ablkir, mwIndex *Ablkjc, const mwIndex *Ajc1,const mwIndex *Ajc2,
+              const mwIndex *Air, const mwIndex *blkstart, const mwIndex *blkstartm1,
+              const mwIndex m,const mwIndex nblk,
+              mwIndex iwsize, char *cfound, mwIndex *iwork)
 {
-  int i,j,inz,ajnnz;
-  int *ipos;
+  mwIndex i,j,inz,ajnnz;
+  mwIndex *ipos;
 /* ------------------------------------------------------------
    Partition working array into ipos(nblk+2), iwork.
    ------------------------------------------------------------ */
@@ -118,14 +118,15 @@ void findblks(int *Ablkir, int *Ablkjc, const int *Ajc1,const int *Ajc2,
 /* ************************************************************
    PROCEDURE mexFunction - Entry for Matlab
    ************************************************************ */
-void mexFunction(const int nlhs, mxArray *plhs[],
-                 const int nrhs, const mxArray *prhs[])
+void mexFunction(int nlhs, mxArray *plhs[],
+                int nrhs, const mxArray *prhs[])
 {
   jcir At, Ablk;
-  int i,j, nblk,m, blknnz, njc, iwsize, blk0,blk1;
-  int *iwork, *Ajc, *blkstart;
+  mwIndex i,j, nblk,m, blknnz, njc, iwsize, blk0,blk1;
+  mwIndex *iwork, *Ajc, *blkstart;
   const double *blkstartPr, *AjcPr;
   char *cwork;
+  bool isblk0negative;
 /* ------------------------------------------------------------
    Check for proper number of arguments
    ------------------------------------------------------------ */
@@ -143,12 +144,18 @@ void mexFunction(const int nlhs, mxArray *plhs[],
   AjcPr = mxGetPr(ABLKJC_IN);
   mxAssert(m == mxGetM(ABLKJC_IN), "Ablkjc size mismatch.");
   njc = mxGetN(ABLKJC_IN);
-  blk0 = mxGetScalar(BLK0_IN);           /* double to int */
-  --blk0;                                /* Fortran to C */
+  blk0 = (mwIndex) mxGetScalar(BLK0_IN);           /* double to mwIndex */
+  isblk0negative=0;
+  mxAssert(blk0>0,"");
+  if(blk0>0)
+    --blk0;  /* Fortran to C */
+  else
+    isblk0negative=1;
   if(mxGetM(BLK1_IN) * mxGetN(BLK1_IN) != 1)
     blk1 = njc;                           /*default to end */
   else{
-    blk1 = mxGetScalar(BLK1_IN);   /* double to int (thus inf not allowed) */
+    blk1 = (mwIndex) mxGetScalar(BLK1_IN);   /* double to mwIndex (thus inf not allowed) */
+    mxAssert(blk1>0,"");
     --blk1;                                /* Fortran to C */
   }
 /* ------------------------------------------------------------
@@ -156,35 +163,37 @@ void mexFunction(const int nlhs, mxArray *plhs[],
    blkstart(2*nblk), Ajc(2*m)
    char cwork(nblk)
    ------------------------------------------------------------ */
-  iwsize = nblk + 2 + floor(log(1+nblk)/log(2));
-  iwork = (int *) mxCalloc(iwsize, sizeof(int));
-  blkstart = (int *) mxCalloc(MAX(2*nblk,1), sizeof(int));
-  Ajc = (int *) mxCalloc(MAX(2*m,1), sizeof(int));
+  iwsize = nblk + 2 + (mwIndex) floor(log(1.0+nblk)/log(2.0));
+  iwork = (mwIndex *) mxCalloc(iwsize, sizeof(mwIndex));
+  blkstart = (mwIndex *) mxCalloc(MAX(2*nblk,1), sizeof(mwIndex));
+  Ajc = (mwIndex *) mxCalloc(MAX(2*m,1), sizeof(mwIndex));
   cwork = (char *) mxCalloc(MAX(nblk,1), sizeof(char));
 /* ------------------------------------------------------------
-   Translate blkstart from Fortran-double to C-int
+   Translate blkstart from Fortran-double to C-mwIndex
    ------------------------------------------------------------ */
   for(i = 0; i < nblk; i++){                         /* to integers */
-    j = blkstartPr[i];
+    j = (mwIndex) blkstartPr[i];
+    mxAssert(j>0,"");
     blkstart[i] = --j;
+    mxAssert(j>0,"");    
     blkstart[nblk+i] = --j;          /* blkstart minus 1 */
   }
 /* ------------------------------------------------------------
-   Convert Ajc from double to int:
+   Convert Ajc from double to mwIndex:
    ------------------------------------------------------------ */
   mxAssert(blk0 < njc, "Ablkjc size mismatches blk0.");
-  if(blk0 < 0)
-    memcpy(Ajc,At.jc,m*sizeof(int));          /* default: start of column */
+  if(isblk0negative)
+    memcpy(Ajc,At.jc,m*sizeof(mwIndex));          /* default: start of column */
   else
     for(i = 0; i < m; i++){                         /* to integers */
-      Ajc[i] = AjcPr[m*blk0 + i];
+      Ajc[i] = (mwIndex) AjcPr[m*blk0 + i];
     }
   mxAssert(blk1 >= 0, "blk1 must be positive.");
   if(blk1 >= njc)
-    memcpy(Ajc+m,At.jc+1,m*sizeof(int));      /* default: end of column */
+    memcpy(Ajc+m,At.jc+1,m*sizeof(mwIndex));      /* default: end of column */
   else
     for(i = 0; i < m; i++){                         /* to integers */
-      Ajc[m+i] = AjcPr[blk1*m + i];
+      Ajc[m+i] = (mwIndex) AjcPr[blk1*m + i];
     }
 /* ------------------------------------------------------------
    Ablk = sparse(nblk,m,blknnz);
@@ -206,7 +215,7 @@ void mexFunction(const int nlhs, mxArray *plhs[],
    ------------------------------------------------------------ */
   mxAssert(Ablk.jc[m] <= blknnz,"");
   blknnz = MAX(Ablk.jc[m],1);
-  if((Ablk.ir = (int *) mxRealloc(Ablk.ir, blknnz * sizeof(int))) == NULL)
+  if((Ablk.ir = (mwIndex *) mxRealloc(Ablk.ir, blknnz * sizeof(mwIndex))) == NULL)
     mexErrMsgTxt("Memory allocation error");
   if((Ablk.pr = (double *) mxRealloc(mxGetPr(ABLK_OUT), blknnz*sizeof(double)))
      == NULL)

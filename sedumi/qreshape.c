@@ -57,9 +57,9 @@
 #define K_IN prhs[2]
 #define NPARIN 3
 
-void intadd(int *x, const int y, const int n)
+void intadd(mwIndex *x, const mwIndex y, const mwIndex n)
 {
-  int i;
+  mwIndex i;
   for(i = 0; i < n; i++)
     x[i] += y;
 }
@@ -75,9 +75,9 @@ void intadd(int *x, const int y, const int n)
    WORK
      fwork - length lorN-1 vector.
    ************************************************************ */
-void qreshape0(double *y, const int *blks, const int lorN, double *fwork)
+void qreshape0(double *y, const mwIndex *blks, const mwIndex lorN, double *fwork)
 {
-  int i,j,k;
+  mwIndex i,j,k;
   if(lorN <=1)
     return;             /* Nothing to do if only 1 block */
 /* ------------------------------------------------------------
@@ -140,12 +140,12 @@ void qreshape0(double *y, const int *blks, const int lorN, double *fwork)
      iwork - length iwsize = 2*(1+lorN).
      fwork - length lorN vector.
    ************************************************************ */
-void spqreshape0(int *yir, double *ypr, int ynnz, const int *blks,
-                 const int lorN, int iwsize, char *cfound,
-                 int *iwork, double *fwork)
+void spqreshape0(mwIndex *yir, double *ypr, mwIndex ynnz, const mwIndex *blks,
+                 const mwIndex lorN, mwIndex iwsize, char *cfound,
+                 mwIndex *iwork, double *fwork)
 {
-  int inz,k,knz, blknnz;
-  int *ipos;
+  mwIndex inz,k,knz, blknnz;
+  mwIndex *ipos;
 
   if(lorN <=1)
     return;             /* Nothing to do if only 1 block */
@@ -259,19 +259,19 @@ void spqreshape0(int *yir, double *ypr, int ynnz, const int *blks,
       inz = ipos[blknnz - knz - 1] + 1;     /* just beyond tr-entry */
       k = ipos[blknnz - knz] - inz;         /* amount before next tr-entry */
       if(k > 0){
-        memmove(yir+inz+knz, yir+inz, k * sizeof(int));
+        memmove(yir+inz+knz, yir+inz, k * sizeof(mwIndex));
         memmove(ypr+inz+knz, ypr+inz, k * sizeof(double));
       }
     }
     if(ipos[0] > 0){                   /* nonzeros before 1st nz-tr entry */
-      memmove(yir+blknnz, yir, ipos[0] * sizeof(int));
+      memmove(yir+blknnz, yir, ipos[0] * sizeof(mwIndex));
       memmove(ypr+blknnz, ypr, ipos[0] * sizeof(double));
     }
 /* ------------------------------------------------------------
    Re-insert the (saved) nonzero tr-entries at the start
    ------------------------------------------------------------ */
     memcpy(ypr, fwork, blknnz * sizeof(double));
-    memcpy(yir, iwork, blknnz * sizeof(int));
+    memcpy(yir, iwork, blknnz * sizeof(mwIndex));
     intadd(yir, blks[0], blknnz);
   }
 }
@@ -288,9 +288,9 @@ void spqreshape0(int *yir, double *ypr, int ynnz, const int *blks,
    WORK
      fwork - length lorN-1 vector.
    ************************************************************ */
-void qreshape1(double *y, const int *blks, const int lorN, double *fwork)
+void qreshape1(double *y, const mwIndex *blks, const mwIndex lorN, double *fwork)
 {
-  int i,j,k;
+  mwIndex i,j,k;
   if(lorN <=1)
     return;             /* Nothing to do if only 1 block */
 /* ------------------------------------------------------------
@@ -340,12 +340,11 @@ void qreshape1(double *y, const int *blks, const int lorN, double *fwork)
 /* ************************************************************
    PROCEDURE mexFunction - Entry for Matlab
    ************************************************************ */
-void mexFunction(const int nlhs, mxArray *plhs[],
-  const int nrhs, const mxArray *prhs[])
+void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 {
- int i,j, ifirst, N,m, iwsize;
+ mwIndex i,j, ifirst, N,m, iwsize;
  coneK cK;
- int *iwork, *blks;
+ mwIndex *iwork, *blks;
  double *fwork;
  char *cwork;
  bool flag, bsparse;
@@ -379,17 +378,17 @@ void mexFunction(const int nlhs, mxArray *plhs[],
    y.ir = mxGetIr(Y_OUT);
  }
  y.pr = mxGetPr(Y_OUT);
- flag = mxGetScalar(FLAG_IN);
+ flag = (bool) mxGetScalar(FLAG_IN);
 /* ------------------------------------------------------------
    Allocate working array iwork(2*(1+lorN)), fwork(lorN), blks(lorN),
    and cwork(lorN).
    ------------------------------------------------------------ */
  iwsize = 2 + 2 * cK.lorN;
- iwork = (int *) mxCalloc(iwsize, sizeof(int));
+ iwork = (mwIndex *) mxCalloc(iwsize, sizeof(mwIndex));
  fwork = (double *) mxCalloc(MAX(cK.lorN,1), sizeof(double));
- blks = (int *) mxCalloc(cK.lorN+1, sizeof(int));
+ blks = (mwIndex *) mxCalloc(cK.lorN+1, sizeof(mwIndex));
  for(i = 1; i <= cK.lorN; i++)
-   blks[i] = cK.lorNL[i-1];           /* float to int */
+   blks[i] = (mwIndex) cK.lorNL[i-1];           /* float to mwIndex */
  cwork = (char *) mxCalloc(MAX(1,cK.lorN), sizeof(char));
 /* ------------------------------------------------------------
    Let iwork(0:lorN) = cumsum([ifirst, K.q(1:end)])

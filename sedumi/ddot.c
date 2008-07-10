@@ -67,9 +67,9 @@ function ddotX = ddot(d,X,blkstart, Xblkjc)
      ypr - nblk vector. Gives d[k]'*xj[k] for each block.
    ************************************************************ */
 void ddotxj(double *ypr, const double *d, const double *xpr,
-            const int *blkstart, const int nblk)
+            const mwIndex *blkstart, const mwIndex nblk)
 {
-  int k;
+  mwIndex k;
   mxAssert(blkstart[0] == 0,"");
   for(k = 0; k < nblk; k++)
     ypr[k] = realdot(d+blkstart[k],xpr+blkstart[k], blkstart[k+1]-blkstart[k]);
@@ -93,11 +93,11 @@ void ddotxj(double *ypr, const double *d, const double *xpr,
         y(k,j) = d[k]'*xj[k]
    ************************************************************ */
 void spddotxj(jcir y, const double *d,
-              const int *xir, const double *xpr, const int *xjc0,
-              const int *xjc1, const int *xblk, const int *blkstart,
-              const int nblk, const int m)
+              const mwIndex *xir, const double *xpr, const mwIndex *xjc0,
+              const mwIndex *xjc1, const mwIndex *xblk, const mwIndex *blkstart,
+              const mwIndex nblk, const mwIndex m)
 {
-  int knz, nexti, inz, i, j, k, lend;
+  mwIndex knz, nexti, inz, i, j, k, lend;
   double yk;
 /* ------------------------------------------------------------
    INIT: Let blkstart[0] point to 1st nonzero in d and xblk, and
@@ -160,12 +160,12 @@ void spddotxj(jcir y, const double *d,
 /* ************************************************************
    PROCEDURE mexFunction - Entry for Matlab
    ************************************************************ */
-void mexFunction(const int nlhs, mxArray *plhs[],
-                 const int nrhs, const mxArray *prhs[])
+void mexFunction(int nlhs, mxArray *plhs[],
+                 int nrhs, const mxArray *prhs[])
 {
-  int i, j, k, m, nrows, maxnnz, nblk, qDim;
+  mwIndex i, j, k, m, nrows, maxnnz, nblk, qDim;
   const double *d, *XjcPr, *blkstartPr;
-  int *xjc1, *xblk, *blkstart;
+  mwIndex *xjc1, *xblk, *blkstart;
   jcir X, ddotx;
 /* ------------------------------------------------------------
    Check for proper number of arguments 
@@ -184,14 +184,15 @@ void mexFunction(const int nlhs, mxArray *plhs[],
   nblk = mxGetM(BLKSTART_IN) * mxGetN(BLKSTART_IN) - 1;
   mxAssert(nblk >= 0, "blkstart size mismatch.");
 /* ------------------------------------------------------------
-   Allocate int working array blkstart(nblk+1).
+   Allocate mwIndex working array blkstart(nblk+1).
    ------------------------------------------------------------ */
-  blkstart = (int *) mxCalloc(nblk + 1, sizeof(int));
+  blkstart = (mwIndex *) mxCalloc(nblk + 1, sizeof(mwIndex));
 /* ------------------------------------------------------------
-   Convert Fortran double to C int
+   Convert Fortran double to C mwIndex
    ------------------------------------------------------------ */
   for(i = 0; i <= nblk; i++){
-    j = blkstartPr[i];             /* double to int */
+    j = (mwIndex) blkstartPr[i];             /* double to mwIndex */
+    mxAssert(j>0,"");
     blkstart[i] = --j;
   }
   if(qDim != blkstart[nblk] - blkstart[0]){
@@ -245,15 +246,15 @@ void mexFunction(const int nlhs, mxArray *plhs[],
     XjcPr = mxGetPr(XBLKJC_IN) + m;      /* Point to Xjc(:,2) */
 /* ------------------------------------------------------------
    Allocate working arrays:
-   int xjc1(2*m), xblk(qDim).
+   mwIndex xjc1(2*m), xblk(qDim).
    ------------------------------------------------------------ */
-    xjc1 = (int *) mxCalloc(MAX(2*m,1), sizeof(int) );
-    xblk = (int *) mxCalloc(MAX(qDim,1), sizeof(int) );
+    xjc1 = (mwIndex *) mxCalloc(MAX(2*m,1), sizeof(mwIndex) );
+    xblk = (mwIndex *) mxCalloc(MAX(qDim,1), sizeof(mwIndex) );
 /* ------------------------------------------------------------
-   Convert double to int:
+   Convert double to mwIndex:
    ------------------------------------------------------------ */
     for(i = 0; i < 2*m; i++)
-      xjc1[i] = XjcPr[i];                /* double to int */
+      xjc1[i] = (mwIndex) XjcPr[i];                /* double to mwIndex */
 /* ------------------------------------------------------------
    Let k = xblk(j-blkstart[0]) iff
    blkstart[k] <= j < blkstart[k+1], k=0:nblk-1.
@@ -284,7 +285,7 @@ void mexFunction(const int nlhs, mxArray *plhs[],
    REALLOC (shrink) ddotx to ddotx.jc[m] nonzeros.
    ------------------------------------------------------------ */
     maxnnz = MAX(1,ddotx.jc[m]);
-    if((ddotx.ir = (int *) mxRealloc(ddotx.ir, maxnnz * sizeof(int))) == NULL)
+    if((ddotx.ir = (mwIndex *) mxRealloc(ddotx.ir, maxnnz * sizeof(mwIndex))) == NULL)
       mexErrMsgTxt("Memory allocation error");
     if((ddotx.pr = (double *) mxRealloc(ddotx.pr, maxnnz*sizeof(double)))
        == NULL)

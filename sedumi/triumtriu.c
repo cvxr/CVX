@@ -55,9 +55,9 @@ function y = triumtriu(r,u,K)
    PROCEDURE realumulu - Computes Y = R*U with R, U upper triu.
    Y will also be triu.
    ************************************************************ */
-void realumulu(double *y, const double *r,const double *u,const int n)
+void realumulu(double *y, const double *r,const double *u,const mwIndex n)
 {
-  int j,jcol,k;
+  mwIndex j,jcol,k;
 
 /* ------------------------------------------------------------
    For each column Rk, we have Y += Rk * U(k,:) = R(1:k,k)*U(k,k:n).
@@ -73,9 +73,9 @@ void realumulu(double *y, const double *r,const double *u,const int n)
     real diagonal. Y will also be triu, real diag.
    ************************************************************ */
 void prpiumulu(double *y,double *ypi, const double *r,const double *rpi,
-               const double *u,const double *upi, const int n)
+               const double *u,const double *upi, const mwIndex n)
 {
-  int j,jcol,k;
+  mwIndex j,jcol,k;
 
 /* ------------------------------------------------------------
    For each column Rk, we have Y += Rk * U(k,:) = R(1:k,k)*U(k,k:n).
@@ -104,7 +104,7 @@ void prpiumulu(double *y,double *ypi, const double *r,const double *rpi,
 void mexFunction(const int nlhs, mxArray *plhs[],
   const int nrhs, const mxArray *prhs[])
 {
-  int k, nk, nksqr, lenud;
+  mwIndex k, nk, nksqr, lenud;
   double *y;
   const double *r,*u;
   coneK cK;

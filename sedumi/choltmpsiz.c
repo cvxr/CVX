@@ -54,10 +54,10 @@
      snode - maps nodes 1:m to supernode containing it.
    RETURNS tmpsiz.
    ************************************************************ */
-int gettmpsiz(const int *ljc,const int *lir,const int *xsuper,
-              const int nsuper, const int *snode)
+mwIndex gettmpsiz(const mwIndex *ljc,const mwIndex *lir,const mwIndex *xsuper,
+              const mwIndex nsuper, const mwIndex *snode)
 {
-  int tmpsiz, ksup,k,j,i,nextj, mk,inz,ncolup, sizkj,ubsiz;
+  mwIndex tmpsiz, ksup,k,j,i,nextj, mk,inz,ncolup, sizkj,ubsiz;
 
   tmpsiz = 0;
 /* ------------------------------------------------------------
@@ -106,13 +106,13 @@ int gettmpsiz(const int *ljc,const int *lir,const int *xsuper,
 /* ************************************************************
    PROCEDURE mexFunction - Entry for Matlab
    ************************************************************ */
-void mexFunction(const int nlhs, mxArray *plhs[],
-                 const int nrhs, const mxArray *prhs[])
+void mexFunction(int nlhs, mxArray *plhs[],
+                 int nrhs, const mxArray *prhs[])
 {
   const mxArray *L_FIELD;
-  int i,j, nsuper,m, jsup,tmpsiz;
-  const int *ljc,*lir;
-  int *xsuper, *snode;
+  mwIndex i,j, nsuper,m, jsup,tmpsiz;
+  const mwIndex *ljc,*lir;
+  mwIndex *xsuper, *snode;
   const double *xsuperPr;
 /* ------------------------------------------------------------
    Check for proper number of arguments
@@ -138,13 +138,14 @@ void mexFunction(const int nlhs, mxArray *plhs[],
 /* ------------------------------------------------------------
    Allocate working arrays:
    ------------------------------------------------------------ */
-  xsuper    = (int *) mxCalloc(nsuper+1,sizeof(int));
-  snode     = (int *) mxCalloc(m,sizeof(int));
+  xsuper    = (mwIndex *) mxCalloc(nsuper+1,sizeof(mwIndex));
+  snode     = (mwIndex *) mxCalloc(m,sizeof(mwIndex));
 /* ------------------------------------------------------------
    Convert XSUPER to integer and C-Style
    ------------------------------------------------------------ */
   for(i = 0; i <= nsuper; i++){
-    j =  xsuperPr[i];
+    j =  (mwIndex) xsuperPr[i];
+    mxAssert(j>0,"");
     xsuper[i] = --j;
   }
 /* ------------------------------------------------------------
@@ -163,7 +164,7 @@ void mexFunction(const int nlhs, mxArray *plhs[],
    return OUTPUT variable tmpsiz
    ------------------------------------------------------------ */
   TMPSIZ_OUT = mxCreateDoubleMatrix(1, 1, mxREAL);          /* L.tmpsiz */
-  *mxGetPr(TMPSIZ_OUT) = tmpsiz;
+  *mxGetPr(TMPSIZ_OUT) = (double) tmpsiz;
 /* ------------------------------------------------------------
    Release working arrays.
    ------------------------------------------------------------ */

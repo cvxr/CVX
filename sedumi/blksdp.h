@@ -43,18 +43,18 @@
    ------------------------------------------------------------ */
 typedef struct{
  double *pr;
- int *jc, *ir;
+ mwIndex *jc, *ir;
     } jcir;
 
 typedef struct{
  double *pr;
- const int *jc;
- const int *ir;
+ const mwIndex *jc;
+ const mwIndex *ir;
     } constjcir;
 
 typedef struct{
-  int frN,lpN,lorN,rconeN,sdpN, rsdpN;
-  int qMaxn,rMaxn,hMaxn, rLen,hLen,  qDim,rDim,hDim;
+  mwSize frN,lpN,lorN,rconeN,sdpN, rsdpN;
+  mwSize qMaxn,rMaxn,hMaxn, rLen,hLen,  qDim,rDim,hDim;
   const double *lorNL,*rconeNL,*sdpNL;
 } coneK;
 
@@ -85,103 +85,117 @@ typedef struct{
 #endif
 
 /* ************************************************************
-   INT COMPARE: for searching an int array
+   INT COMPARE: for searching an mwIndex array
    NOTE: qsort sorts in ascending (0,1,2,..) order, if the compare
      function returns  < 0 iff a<b, 0 iff a==b, > 0 iff a > b.
    ************************************************************ */
 #if !defined(_COMPFUN_)
 #define _COMPFUN_
-typedef int (*COMPFUN)(const void *pa,const void *pb);
+typedef signed char (*COMPFUN)(const void *pa,const void *pb);
 #endif
 
-#define ibsearch(key,vec,n)  bsearch((void *)(key), (void *)(vec), (n), sizeof(int), (COMPFUN) icmp)
-#define iqsort(vec,n) qsort((void *)(vec), (n), sizeof(int), (COMPFUN) icmp)
+#define ibsearch(key,vec,n)  bsearch((void *)(key), (void *)(vec), (n), sizeof(mwSize), (COMPFUN) icmp)
+#define iqsort(vec,n) qsort((void *)(vec), (n), sizeof(mwSize), (COMPFUN) icmp)
 
 /* --------------------------------------
    KEY COMPARE: FOR SORTING AN (INT or FLOAT) ARRAY WITH INT-KEYS.
    -------------------------------------- */
 typedef struct{
-  int i,k;
+  mwIndex i,k;
 } keyint;
 
 #if !defined(_KEYDOUBLE_)
 #define _KEYDOUBLE
 typedef struct{
   double r;
-  int k;
+  mwIndex k;
 } keydouble;
 #endif
 
 #define kiqsort(vec,n)  qsort((void *)(vec), (n), sizeof(keyint), (COMPFUN) kicmp);
 #define kdsortdec(vec,n)  qsort((void *)(vec), (n), sizeof(keydouble), (COMPFUN) kdcmpdec);
 
+/*BLAS functions returning anything other than void need to be declared here as
+ *Matlab does not include a header file, so the compiler will
+ *assume they return an int.*/
+#ifdef PC
+extern double ddot(const mwIndex*, const double*, const int*, const double*, const int*);
+extern double dnrm2(const mwIndex*, const double*, const int*);
+extern mwIndex idamax(mwIndex *,double *,int *);
+#endif
+
+#ifdef UNIX
+extern double ddot_(mwIndex*, double*, int*, double*, int*);
+extern double dnrm2_(mwIndex*, double*,int*);
+extern mwIndex idamax_(mwIndex *,double *,int *);
+#endif
 
 /* ------------------------------------------------------------
    Prototypes:
    ------------------------------------------------------------ */
-int icmp(const int *a, const int *b);
-int intbsearch(int *pi, const int *x, const int n, const int key);
-int intmbsearch(int *z, char *found, const int *x, const int xnnz,
-		const int *y, const int ynnz, int *iwork, const int iwsize);
-int kicmp(const keyint *a, const keyint *b);
-int kdcmpdec(const keydouble *a, const keydouble *b);
-double realssqr(const double *x, const int n);
-double realdot(const double *x, const double *y, const int n);
+char icmp(const mwIndex *a, const mwIndex *b);
+bool intbsearch(mwIndex *pi, const mwIndex *x, const mwIndex n, const mwIndex key);
+char intmbsearch(mwIndex *z, bool *found, const mwIndex *x, const mwIndex xnnz,
+		const mwIndex *y, const mwIndex ynnz, mwIndex *iwork, const mwIndex iwsize);
+char kicmp(const keyint *a, const keyint *b);
+char kdcmpdec(const keydouble *a, const keydouble *b);
+double realssqr(const double *x, const mwSize n);
+double realdot(const double *x, const double *y, const mwSize n);
 double selrealdot(const double *x, const double *y,
-		  const int *sel, const int nnz);
-double realdotrow(const double *x, const double *y, const int n);
-void fromto(int *x, int i, const int n);
-double triudotprod(const double *x, const double *y, const int n);
-double striudotprod(const double *x, const double *y, const int n);
-void tril2sym(double *r, const int n);
-void tril2herm(double *r, double *rpi, const int n);
-void triu2sym(double *r, const int n);
-void triu2herm(double *r, double *rpi, const int n);
-void scalarmul(double *r, const double alpha,const double *x,const int n);
-void addscalarmul(double *r, const double alpha,const double *x,const int n);
-void subscalarmul(double *x, const double alpha, const double *y, const int n);
-void realHadamard(double * r, const double *x, const double *y, const int n);
-void minusHadamard(double * r, const double *x, const double *y, const int n);
-void realHadarow(double * r, const double *x, const double *y, const int n);
-void realHadadiv(double * r, const double *x, const double *y, const int n);
-void fzeros(double *z,const int n);
+		  const mwIndex *sel, const mwSize nnz);
+double realdotrow(const double *x, const double *y, const mwSize n);
+void fromto(mwIndex *x, mwSize i, const mwSize n);
+double triudotprod(const double *x, const double *y, const mwSize n);
+double striudotprod(const double *x, const double *y, const mwSize n);
+void tril2sym(double *r, const mwSize n);
+void tril2herm(double *r, double *rpi, const mwSize n);
+void triu2sym(double *r, const mwSize n);
+void triu2herm(double *r, double *rpi, const mwSize n);
+void scalarmul(double *r, const double alpha,const double *x,const mwSize n);
+void addscalarmul(double *r, const double alpha,const double *x,const mwSize n);
+void subscalarmul(double *x, const double alpha, const double *y, const mwSize n);
+void realHadamard(double * r, const double *x, const double *y, const mwSize n);
+void minusHadamard(double * r, const double *x, const double *y, const mwSize n);
+void realHadarow(double * r, const double *x, const double *y, const mwSize n);
+void realHadadiv(double * r, const double *x, const double *y, const mwSize n);
+void fzeros(double *z,const mwSize n);
 void conepars(const mxArray *mxK, coneK *pK);
-void someStats(int *pxmax, int *pxsum, int *pxssqr,
-	       const double *x, const int n);
-int spsqrscale(double *z, int *blks, const int *zjc, const int *zir,
-               const int *znnz, const double *d,
-               const int *xir, const double *xpr, int xjc0, const int xjc1,
-               const int *blkstart, const int *xblk, const int *psdNL,
-               const int rpsdN, double *fwork, int *iwork);
+void someStats(mwSize *pxmax, mwIndex *pxsum, mwIndex *pxssqr,
+	       const double *x, const mwSize n);
+mwIndex spsqrscale(double *z, mwIndex *blks, const mwIndex *zjc, const mwIndex *zir,
+               const mwIndex *znnz, const double *d,
+               const mwIndex *xir, const double *xpr, mwIndex xjc0, const mwIndex xjc1,
+               const mwIndex *blkstart, const mwIndex *xblk, const mwIndex *psdNL,
+               const mwIndex rpsdN, double *fwork, mwIndex *iwork);
 #ifdef OLDSEDUMI
 double qscale(double *z,const double *x,const double *y,
-              const double rdetx,const int n);
+              const double rdetx,const mwIndex n);
 void qlmul(double *z,const double *x,const double *y,
-	   const double rdetx,const int n);
+	   const double rdetx,const mwIndex n);
 void qldiv(double *z,const double *x,const double *y,
-	   const double rdetx,const int n);
-void vec2blks(int *blklocs, const int *blkstart, const int *yir,
-              const int ystart, const int ynnz, const int nblk);
-void vec2selblks(int *blklocs, const int *blkstart, const int *yir,
-                 const int ystart, const int ynnz,
-                 const int *blkir, const int blknnz);
-int lqdsqrx(double *z,
-            const int *xir, const double *xpr, const int xjc0,
-            const int xjcq, const int xjcs, const int *qir,
-            const int *blkstart,
+	   const double rdetx,const mwIndex n);
+void vec2blks(mwIndex *blklocs, const mwIndex *blkstart, const mwIndex *yir,
+              const mwIndex ystart, const mwIndex ynnz, const mwIndex nblk);
+void vec2selblks(mwIndex *blklocs, const mwIndex *blkstart, const mwIndex *yir,
+                 const mwIndex ystart, const mwIndex ynnz,
+                 const mwIndex *blkir, const mwIndex blknnz);
+mwIndex lqdsqrx(double *z,
+            const mwIndex *xir, const double *xpr, const mwIndex xjc0,
+            const mwIndex xjcq, const mwIndex xjcs, const mwIndex *qir,
+            const mwIndex *blkstart,
             const double *dsqr, const double *detd);
-int blkpsdscale(double *z, const int *zir, const int zjc1,
-		const double *u, const int *invperm, const double *x,
-		const int *xblk, const int blkjc0, const int blkjc1,
-		const int *blkstart, const int *psdNL, const int *cumpsdNL,
-		const int rpsdN, double *fwork);
+mwIndex blkpsdscale(double *z, const mwIndex *zir, const mwIndex zjc1,
+		const double *u, const mwIndex *invperm, const double *x,
+		const mwIndex *xblk, const mwIndex blkjc0, const mwIndex blkjc1,
+		const mwIndex *blkstart, const mwIndex *psdNL, const mwIndex *cumpsdNL,
+		const mwIndex rpsdN, double *fwork);
 #endif
-void uperm(double *y, const double *u, const int *perm, const int n);
+void uperm(double *y, const double *u, const mwIndex *perm, const mwIndex n);
 /* ------------------------------------------------------------
    For auxfwdpr1:
    ------------------------------------------------------------ */
 void fwipr1(double *y, const double *p, const double *beta,
-            const int m, const int n);
-void fwipr1o(double *y, const int *perm, const double *p, const double *beta,
-             const int m, const int n);
+            const mwSize m, const mwSize n);
+void fwipr1o(double *y, const mwIndex *perm, const double *p, const double *beta,
+             const mwSize m, const mwSize n);
 #endif

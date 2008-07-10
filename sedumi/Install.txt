@@ -1,73 +1,17 @@
-Welcome to SeDuMi 1.1
+Welcome to SeDuMi 1.2 64bit version
 
-SeDuMi 1.1 Installation instructions
+SeDuMi 1.2 Installation instructions
 
-The installation procedure of SeDuMi has changed since version 1.05R5
-to facilitate platform independent installation. SeDuMi is written in Matlab,
-with some time-critical procedures in C. These C files have to be compiled
-into libraries. We provide generic (not highly optimized) binaries for 
-Windows, but on the other platforms you need to build the binaries. Also, if 
-performance is critical for your application, you are advised to recompile the 
-binaries in Windows as well.
+This version of SeDuMi is designed for Matlab R2007b 64 bit version.
+Both Linux and Windows binaries are included, no compilation necessary.
+The binaries are built using blas for improved performance.
 
-0) Supported platforms and Matlab versions
-SeDuMi has been tested on a wide variety of systems and compilers:
+The sources are included but compilation is not encouraged.
 
-Matlab 7.0.4 64 bit, SuSe Linux 9.2 Pro on AMD Athlon 64, GCC
-Matlab 7.0.4, Windows XP Pro, Intel Pentium 4, MSVC and lcc
-Matlab 6.5, Windows 98, Intel Pentium II, GCC
-Matlab 6.5, AIX, IBM RS6000, both GCC and native
-Matlab 6.5, Sun OS, both GCC and native
-Matlab 6.5, Mandrake Linux 9.3, 4xIntel Pentium III, GCC
-Matlab 6.5, Mac OS X 10.3.9, both gcc and native
-
-I don't have access to Matlab 6.0, I am not sure if SeDuMi is still compatible with that.
-
-1) Installation instructions WITHOUT building the binaries (Windows)
-
-If you are using Windows you can simply uncompress the distribution and add the 
-path of this folder to the Matlab path so that you can run it from anywhere.
-If you want to rebuild the binaries for your hardware you can follow the 
-instructions in the next section. 
-The DLL-files in this distribution were compiled using MINGW.
-
-2) Installation instructions WITH building the binaries (all platforms)
-
-2.1) After uncompressing the distribution in the folder of your choice lauch Matlab
-and change the current folder to where you put all the files. 
-
-2.2) First of all make sure that you have a compiler installed in Matlab. if yes,
-you can jump to 2.3).
-If you are not sure then probably there is no compiler installed. To install a compiler type
-
-	mex -setup
-	
-This script will search for available compilers and install them for you. 
-Matlab supports several commercial and free compilers, for a list of
-compilers for the different architectures check
-http://www.mathworks.com/support/tech-notes/1600/1601.html
-
-On Windows you can also use the free GCC compiler, see the instructions at
-http://gnumex.sourceforge.net/
-
-If performance is really very important for you then you can experiment tweaking 
-your compiler's optimization flags, see your compiler's documentation for this.
-
-2.3) After installing the compiler enter the directory where you put the SeDuMi files 
-and type 
-
-	install_sedumi
-
-This will build all the binary files and add the directory to the Matlab path. You are now
-ready to use SeDuMi. You can start by typing
-	help sedumi
-	
-or by reading the User Guides in the /doc directory. To make changes permanent save the 
-path in Matlab.
-
-2.4) If you have any questions or comments you can share them at the forum at 
+If you have any questions or comments you can share them at the forum at
 http://sedumi.mcmaster.ca.
 
 
 ==========> L e t   Se Du Mi   s e d u c e   y o u   t o o   ! <==========
-Imre Polik, June 1, 2005
+Imre Polik 
+April 9, 2008

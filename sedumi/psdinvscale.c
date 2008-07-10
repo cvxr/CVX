@@ -70,10 +70,10 @@
      fwork - length max(rmaxn^2,2*hmaxn^2) working vector.
    ************************************************************ */
 void psdinvscale(double *y, const double *ud, const double *x,
-                 const int *psdNL, const int rsdpN, const int sdpN,
+                 const mwIndex *psdNL, const mwIndex rsdpN, const mwIndex sdpN,
                  const char transp, double *fwork)
 {
-  int k,nk,nksqr;
+  mwIndex k,nk,nksqr;
 /* ------------------------------------------------------------
    PSD, !transp: triu(Y) = triu(Ld' \ (X(perm,perm) / Ld)).
    Needs ony tril(X/Ld).
@@ -131,11 +131,12 @@ void psdinvscale(double *y, const double *ud, const double *x,
 void mexFunction(const int nlhs, mxArray *plhs[],
   const int nrhs, const mxArray *prhs[])
 {
-  int lenfull, lenud, transp, fwsiz, i, ifirst;
+  mwIndex lenfull, lenud, fwsiz, i, ifirst;
   double *fwork, *y;
   const double *x,*ud;
-  int *psdNL;
+  mwIndex *psdNL;
   coneK cK;
+  char transp;
 /* ------------------------------------------------------------
    Check for proper number of arguments 
    ------------------------------------------------------------ */
@@ -144,7 +145,7 @@ void mexFunction(const int nlhs, mxArray *plhs[],
     mxAssert(nrhs >= NPARINMIN, "psdinvscale requires more input arguments.");
   }
   else
-    transp = mxGetScalar(TRANSP_IN);
+    transp = (char) mxGetScalar(TRANSP_IN);
   mxAssert(nlhs <= NPAROUT, "psdinvscale generates 1 output argument.");
 /* ------------------------------------------------------------
    Disassemble cone K structure
@@ -171,16 +172,16 @@ void mexFunction(const int nlhs, mxArray *plhs[],
   y = mxGetPr(Y_OUT);
 /* ------------------------------------------------------------
    Allocate fwork [ max(cK.rMaxn^2, 2*cK.hMaxn^2) ]
-   psdNL = int(cK.sdpN)
+   psdNL = mwIndex(cK.sdpN)
    ------------------------------------------------------------ */
   fwsiz = MAX(SQR(cK.rMaxn),2*SQR(cK.hMaxn));
   fwork = (double *) mxCalloc( MAX(1,fwsiz), sizeof(double));
-  psdNL = (int *) mxCalloc( MAX(1, cK.sdpN), sizeof(int) );
+  psdNL = (mwIndex *) mxCalloc( MAX(1, cK.sdpN), sizeof(mwIndex) );
 /* ------------------------------------------------------------
-   Convert double to int
+   Convert double to mwIndex
    ------------------------------------------------------------ */
   for(i = 0; i < cK.sdpN; i++)
-    psdNL[i] = cK.sdpNL[i];               /* double to int */
+    psdNL[i] = cK.sdpNL[i];               /* double to mwIndex */
 /* ------------------------------------------------------------
    The real job:
    ------------------------------------------------------------ */

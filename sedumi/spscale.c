@@ -37,9 +37,9 @@
    PROCEDURE realtransp - Let Y = X', where X is m x n full.
    You may also view this as going from column- towards row-stacking.
    ************************************************************ */
-void realtransp(double *y, const double *x, const int m, const int n)
+void realtransp(double *y, const double *x, const mwIndex m, const mwIndex n)
 {
-  int i, j, ji;
+  mwIndex i, j, ji;
 /* ------------------------------------------------------------
    Y(n x m), X(m x n).
    For each column y:= yj, j=0:m-1
@@ -70,11 +70,11 @@ void realtransp(double *y, const double *x, const int m, const int n)
        and hence Y is nonzero.
    RETURNS knz = length(ycols), number of nonzero columns.
    ************************************************************ */
-int realdmulx(double *y, int *ycols, const double *d,
-              const double *xpr, const int *xir, int *pxjc0, const int xjc1,
-              const int first, const int n)
+mwIndex realdmulx(double *y, mwIndex *ycols, const double *d,
+              const double *xpr, const mwIndex *xir, mwIndex *pxjc0, const mwIndex xjc1,
+              const mwIndex first, const mwIndex n)
 {
-  int knz, jfirst, jlast, inz, i, j;
+  mwIndex knz, jfirst, jlast, inz, i, j;
   knz = 0;        /* length(ycols) */
   jlast = 0;      /* index right after last activated column */
   y -= n;         /* point to dummy column, which will be skipped */
@@ -93,7 +93,7 @@ int realdmulx(double *y, int *ycols, const double *d,
       jfirst = first + n * j;
       jlast = jfirst + n;
       i = i - jfirst;                  /* i = rem( (i-first)/n ) */
-      scalarmul(y, xpr[inz], d + i * n, n);               /* yj = xij * di */
+      scalarmul(y, xpr[inz], d + i * n, n);    /* yj = xij * di */
     }
     else
       addscalarmul(y, xpr[inz], d + (i-jfirst) * n, n);   /* yj += xij * di */
@@ -124,11 +124,11 @@ int realdmulx(double *y, int *ycols, const double *d,
        and hence Y is nonzero.
    RETURNS knz = length(ycols), number of nonzero columns.
    ************************************************************ */
-int cpxdmulx(double *y, int *ycols, const double *d,
-             const double *xpr, const int *xir, int *pxjc0, const int xjc1,
-             const int first, const int n)
+mwIndex cpxdmulx(double *y, mwIndex *ycols, const double *d,
+             const double *xpr, const mwIndex *xir, mwIndex *pxjc0, const mwIndex xjc1,
+             const mwIndex first, const mwIndex n)
 {
-  int jfirst, jlast, inz, jnz, knz, i, j, icol, imgfirst, nsqr, ncols;
+  mwIndex jfirst, jlast, inz, jnz, knz, i, j, icol, imgfirst, nsqr, ncols;
   double *ypr, *ypi;
   const double *dpi;
   char found;
@@ -244,12 +244,12 @@ int cpxdmulx(double *y, int *ycols, const double *d,
      dxcols - length n integer array.
      fwork  - 2 * n^2 vector.
    ************************************************************ */
-void sprealdxd(double *z, const int *zir, const int znnz,
+void sprealdxd(double *z, const mwIndex *zir, const mwIndex znnz,
                const double *d,
-               const double *xpr, const int *xir, int *pxjc0, const int xjc1,
-               const int first, const int n, double *fwork, int *dxcols)
+               const double *xpr, const mwIndex *xir, mwIndex *pxjc0, const mwIndex xjc1,
+               const mwIndex first, const mwIndex n, double *fwork, mwIndex *dxcols)
 {
-  int inz, i, icol, j, jfirst, jlast, m;
+  mwIndex inz, i, icol, j, jfirst, jlast, m;
   double *xd;
   const double *dj, *xdj;
 /* ------------------------------------------------------------
@@ -326,12 +326,12 @@ void sprealdxd(double *z, const int *zir, const int znnz,
      fwork  - 4 * n^2 vector.
    RETURNS zjc0_NEW
    ************************************************************ */
-void spcpxdxd(double *z, const int *zir, const int znnz,
+void spcpxdxd(double *z, const mwIndex *zir, const mwIndex znnz,
               const double *d,
-              const double *xpr, const int *xir, int *pxjc0, const int xjc1,
-              const int first, const int n, double *fwork, int *dxcols)
+              const double *xpr, const mwIndex *xir, mwIndex *pxjc0, const mwIndex xjc1,
+              const mwIndex first, const mwIndex n, double *fwork, mwIndex *dxcols)
 {
-  int inz, i, icol, j, jfirst, jlast, m, nsqr, imgfirst;
+  mwIndex inz, i, icol, j, jfirst, jlast, m, nsqr, imgfirst;
   double *dx, *dxpi, *fworkpi;
   double zi;
   const double *dj, *djpi, *djx, *djxpi;
@@ -456,13 +456,13 @@ void spcpxdxd(double *z, const int *zir, const int znnz,
      iwork - length n=MAX(rMaxn,hMaxn) integer array. (n=max(K.s))
    RETURNS blksnnz, number of entries written into blks.
    ************************************************************ */
-int spsqrscale(double *z, int *blks, const int *zjc, const int *zir,
-               const int *znnz, const double *d,
-               const int *xir, const double *xpr, int xjc0, const int xjc1,
-               const int *blkstart, const int *xblk, const int *psdNL,
-               const int rpsdN, double *fwork, int *iwork)
+mwIndex spsqrscale(double *z, mwIndex *blks, const mwIndex *zjc, const mwIndex *zir,
+               const mwIndex *znnz, const double *d,
+               const mwIndex *xir, const double *xpr, mwIndex xjc0, const mwIndex xjc1,
+               const mwIndex *blkstart, const mwIndex *xblk, const mwIndex *psdNL,
+               const mwIndex rpsdN, double *fwork, mwIndex *iwork)
 {
-  int blksnnz, k;
+  mwIndex blksnnz, k;
 
   blksnnz = 0;
   d -= blkstart[0];        /* Now, d + blkstart[k] gives Dk */
@@ -516,11 +516,11 @@ int spsqrscale(double *z, int *blks, const int *zjc, const int *zir,
      fwork  - 2 * n^2 vector.
    RETURNS zjc0_NEW
    ************************************************************ */
-int sprealutxu(double *z, const int *zir, const int zjc0, const int zjc1,
-               const double *u, const int *invperm, const double *x,
-               const int first, const int n, double *fwork)
+mwIndex sprealutxu(double *z, const mwIndex *zir, const mwIndex zjc0, const mwIndex zjc1,
+               const double *u, const mwIndex *invperm, const double *x,
+               const mwIndex first, const mwIndex n, double *fwork)
 {
-  int inz, i, irow, j, icol, jcol, jfirst, jlast, m;
+  mwIndex inz, i, irow, j, icol, jcol, jfirst, jlast, m;
   double *xu;
   const double *uj, *xuj;
 /* ------------------------------------------------------------
@@ -596,11 +596,11 @@ int sprealutxu(double *z, const int *zir, const int zjc0, const int zjc1,
      fwork  - 4 * n^2 vector.
    RETURNS zjc0_NEW
    ************************************************************ */
-int spcpxutxu(double *z, const int *zir, const int zjc0, const int zjc1,
-              const double *u, const int *invperm, const double *x,
-              const int first, const int n, double *fwork)
+mwIndex spcpxutxu(double *z, const mwIndex *zir, const mwIndex zjc0, const mwIndex zjc1,
+              const double *u, const mwIndex *invperm, const double *x,
+              const mwIndex first, const mwIndex n, double *fwork)
 {
-  int inz, i, irow, j, icol, jcol, jfirst, jlast, m, nsqr, imgfirst;
+  mwIndex inz, i, irow, j, icol, jcol, jfirst, jlast, m, nsqr, imgfirst;
   double *xu, *xupi, *fworkpi;
   const double *uj, *ujpi, *xuj, *xujpi, *upi;
 /* ------------------------------------------------------------
@@ -714,13 +714,13 @@ int spcpxutxu(double *z, const int *zir, const int zjc0, const int zjc1,
      fwork  - 2 * (rMaxn^2 + 2*hMaxn^2) vector.  (<= 4*max(K.s)^2)
    RETURNS zjc0_NEW (should be zjc1)
    ************************************************************ */
-int blkpsdscale(double *z, const int *zir, const int zjc1,
-		const double *u, const int *invperm, const double *x,
-		const int *xblk, const int blkjc0, const int blkjc1,
-		const int *blkstart, const int *psdNL, const int *cumpsdNL,
-		const int rpsdN, double *fwork)
+mwIndex blkpsdscale(double *z, const mwIndex *zir, const mwIndex zjc1,
+		const double *u, const mwIndex *invperm, const double *x,
+		const mwIndex *xblk, const mwIndex blkjc0, const mwIndex blkjc1,
+		const mwIndex *blkstart, const mwIndex *psdNL, const mwIndex *cumpsdNL,
+		const mwIndex rpsdN, double *fwork)
 {
-  int inz, knz, k, nk, lastzsub;
+  mwIndex inz, knz, k, nk, lastzsub;
 
   inz = 0;                 /* points into zir */
   if(inz >= zjc1)

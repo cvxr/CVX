@@ -36,123 +36,55 @@
 #include "blksdp.h"
 /* ************************************************************
    TIME-CRITICAL PROCEDURE -- scalarmul
-   Computes  r = alpha * x  using loop-unrolling.
+   Computes  r = alpha * x  using BLAS.
    ************************************************************ */
-void scalarmul(double *r, const double alpha,const double *x,const int n)
+void scalarmul(double *r, const double alpha,const double *x,const mwIndex n)
 {
-  int k;
-
-  for(k = 0; k < n-15; ){                 /* LEVEL 16 */
-    r[k] = alpha * x[k]; k++;
-    r[k] = alpha * x[k]; k++;
-    r[k] = alpha * x[k]; k++;
-    r[k] = alpha * x[k]; k++;
-    r[k] = alpha * x[k]; k++;
-    r[k] = alpha * x[k]; k++;
-    r[k] = alpha * x[k]; k++;
-    r[k] = alpha * x[k]; k++;
-    r[k] = alpha * x[k]; k++;
-    r[k] = alpha * x[k]; k++;
-    r[k] = alpha * x[k]; k++;
-    r[k] = alpha * x[k]; k++;
-    r[k] = alpha * x[k]; k++;
-    r[k] = alpha * x[k]; k++;
-    r[k] = alpha * x[k]; k++;
-    r[k] = alpha * x[k]; k++;
-  }
-/* ------------------------------------------------------------
-   Now, i in {n-15, n-14, ..., n}. Do the last n-i elements.
-   ------------------------------------------------------------ */
-  if(k < n-7){                              /* LEVEL 8 */
-    r[k] = alpha * x[k]; k++;
-    r[k] = alpha * x[k]; k++;
-    r[k] = alpha * x[k]; k++;
-    r[k] = alpha * x[k]; k++;
-    r[k] = alpha * x[k]; k++;
-    r[k] = alpha * x[k]; k++;
-    r[k] = alpha * x[k]; k++;
-    r[k] = alpha * x[k]; k++;
-  }
-  if(k < n-3){                              /* LEVEL 4 */
-    r[k] = alpha * x[k]; k++;
-    r[k] = alpha * x[k]; k++;
-    r[k] = alpha * x[k]; k++;
-    r[k] = alpha * x[k]; k++;
-  }
-  if(k < n-1){                              /* LEVEL 2 */
-    r[k] = alpha * x[k]; k++;
-    r[k] = alpha * x[k]; k++;
-  }
-  if(k < n)                                 /* LEVEL 1 */
-    r[k] = alpha * x[k];
+  int one=1;
+  #ifdef PC
+  dcopy(&n,x,&one,r,&one);
+  dscal(&n,&alpha,r,&one);
+  #endif
+  #ifdef UNIX
+  dcopy_(&n,x,&one,r,&one);
+  dscal_(&n,&alpha,r,&one);
+  #endif  
+  return;
+  
 }
 
 /* ************************************************************
    TIME-CRITICAL PROCEDURE -- addscalarmul
-   Computes  r += alpha * x  using loop-unrolling.
+   Computes  r += alpha * x  using BLAS.
    ************************************************************ */
-void addscalarmul(double *r, const double alpha,const double *x,const int n)
+void addscalarmul(double *r, const double alpha,const double *x,const mwIndex n)
 {
-  int k;
-
-  for(k = 0; k < n-7; ){                 /* LEVEL 8 */
-    r[k] += alpha * x[k]; k++;
-    r[k] += alpha * x[k]; k++;
-    r[k] += alpha * x[k]; k++;
-    r[k] += alpha * x[k]; k++;
-    r[k] += alpha * x[k]; k++;
-    r[k] += alpha * x[k]; k++;
-    r[k] += alpha * x[k]; k++;
-    r[k] += alpha * x[k]; k++;
-  }
-/* ------------------------------------------------------------
-   Now, i in {n-7, n-6, ..., n}. Do the last n-i elements.
-   ------------------------------------------------------------ */
-  if(k < n-3){                              /* LEVEL 4 */
-    r[k] += alpha * x[k]; k++;
-    r[k] += alpha * x[k]; k++;
-    r[k] += alpha * x[k]; k++;
-    r[k] += alpha * x[k]; k++;
-  }
-  if(k < n-1){                              /* LEVEL 2 */
-    r[k] += alpha * x[k]; k++;
-    r[k] += alpha * x[k]; k++;
-  }
-  if(k < n)                                 /* LEVEL 1 */
-    r[k] += alpha * x[k];
+  /*USE BLAS*/
+    int one=1;
+    #ifdef PC
+    daxpy(&n,&alpha,x,&one,r,&one);
+    #endif
+    #ifdef UNIX
+    daxpy_(&n,&alpha,x,&one,r,&one);
+    #endif    
+    return;
+  
 }
 
 /* ************************************************************
    TIME-CRITICAL PROCEDURE -- subscalarmul(x,alpha,y,n)
-   Computes x -= alpha * y using LEVEL 8 loop-unrolling.
+   Computes x -= alpha * y using BLAS.
    ************************************************************ */
-void subscalarmul(double *x, const double alpha, const double *y, const int n)
+void subscalarmul(double *x, const double alpha, const double *y, const mwIndex n)
 {
-  int i;
-  
-  for(i=0; i< n-7; ){          /* LEVEL 8 */
-    x[i] -= alpha * y[i]; i++;
-    x[i] -= alpha * y[i]; i++;
-    x[i] -= alpha * y[i]; i++;
-    x[i] -= alpha * y[i]; i++;
-    x[i] -= alpha * y[i]; i++;
-    x[i] -= alpha * y[i]; i++;
-    x[i] -= alpha * y[i]; i++;
-    x[i] -= alpha * y[i]; i++;
-  }
-/* ------------------------------------------------------------
-   Now, i in {n-7, n-6, ..., n}. Do the last n-i elements.
-   ------------------------------------------------------------ */
-  if(i < n-3){                           /* LEVEL 4 */
-    x[i] -= alpha * y[i]; i++;
-    x[i] -= alpha * y[i]; i++;
-    x[i] -= alpha * y[i]; i++;
-    x[i] -= alpha * y[i]; i++;
-  }
-  if(i < n-1){                           /* LEVEL 2 */
-    x[i] -= alpha * y[i]; i++;
-    x[i] -= alpha * y[i]; i++;
-  }
-  if(i < n)                              /* LEVEL 1 */
-    x[i] -= alpha * y[i];
+  /*USE BLAS*/
+    int one=1;
+    const double minusalpha=-alpha;
+    #ifdef PC
+    daxpy(&n,&minusalpha,y,&one,x,&one);
+    #endif
+    #ifdef UNIX
+    daxpy_(&n,&minusalpha,y,&one,x,&one);
+    #endif    
+    return;
 }

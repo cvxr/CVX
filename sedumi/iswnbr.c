@@ -64,10 +64,10 @@ function [delta,h,alpha] = iswnbr(vSQR,thetaSQR)
 /* --------------------------------------
    FLOAT COMPARE: FOR SORTING A FLOAT ARRAY
    -------------------------------------- */
-typedef int (*COMPFUN)(const void *pa,const void *pb);
+typedef signed char (*COMPFUN)(const void *pa,const void *pb);
 #define fsort(vec,n)  qsort((void *)(vec), (n), sizeof(double), (COMPFUN) fcmp);
 
-int fcmp(const double *a, const double *b)
+signed char fcmp(const double *a, const double *b)
 {
    return( (*a > *b) - (*a < *b)  );
 }
@@ -94,11 +94,11 @@ int fcmp(const double *a, const double *b)
  ****************************************************************/
 
 double getdelta(double *ph, double *palpha, const double *w,
-		const double thetaSQR, const int n, double *wQ)
+		const double thetaSQR, const mwIndex n, double *wQ)
 {
  double gap,r,h,hSQR,oldhSQR,hubSQR, sumdifv,sumdifw, sumwNT,wj,
    deltaSQR,alpha;
- int cardT,cardQ,i,j,STOP;
+ mwIndex cardT,cardQ,i,j,STOP;
 
  /* ------------------------------------------------------------
     gap = sum(w),  r = n / theta^2
@@ -154,6 +154,7 @@ double getdelta(double *ph, double *palpha, const double *w,
        if(wj <= 0.0)
          return 1e100;                 /* error: w should be positive */
        ++cardT;
+       mxAssert(cardQ>0,"");
        --cardQ;
        hubSQR *= 1 - wj/sumwNT;
        sumwNT -= wj;
@@ -216,13 +217,13 @@ double getdelta(double *ph, double *palpha, const double *w,
      Computes proximity "delta" w.r.t cregion C(theta).
      The projection of v onto C(theta) is (1-alpha)*max(h,v).
    ************************************************************ */
-void mexFunction(const int nlhs, mxArray *plhs[],
-  const int nrhs, const mxArray *prhs[])
+void mexFunction(int nlhs, mxArray *plhs[],
+   int nrhs, const mxArray *prhs[])
 {
  mxArray *myplhs[NPAROUT];
  double *w,*pdelta,*ph,*palpha, *fwork;
  double thetaSQR;
- int i,n;
+ mwIndex i,n;
 
 /* ------------------------------------------------------------
    Check for proper number of arguments

@@ -37,14 +37,17 @@
 #if !defined(GIVENS_H)
 #define GIVENS_H
 
+#include "matrix.h"
+#include "mex.h"
+
 typedef struct{
   double x,y;} twodouble;
 
 typedef struct{
   double x,xim,y;} tridouble;
 
-void givensrot(double *z, const twodouble *g, const int n);
-void givensrotuj(double *z, const twodouble *g, const int n);
-void prpigivensrot(double *z, double *zpi, const tridouble *g, const int n);
-void prpigivensrotuj(double *z, double *zpi, const tridouble *g, const int n);
+void givensrot(double *z, const twodouble *g, const mwIndex n);
+void givensrotuj(double *z, const twodouble *g, const mwIndex n);
+void prpigivensrot(double *z, double *zpi, const tridouble *g, const mwIndex n);
+void prpigivensrotuj(double *z, double *zpi, const tridouble *g, const mwIndex n);
 #endif

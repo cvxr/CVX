@@ -42,9 +42,9 @@
          L(p,beta)*yNEW = yOLD
    ------------------------------------------------------------ */
 void fwipr1(double *y, const double *p, const double *beta,
-            const int m, const int n)
+            const mwIndex m, const mwIndex n)
 {
-  int i;
+  mwIndex i;
   double yi,betai,t;
 
   if(n < 1)           /* If L = I, y remains the same */
@@ -85,10 +85,10 @@ void fwipr1(double *y, const double *p, const double *beta,
    y - Length m. On input, contains the rhs. On output, the solution to
          L(p(perm),beta)*yNEW(perm) = yOLD(perm)
    ------------------------------------------------------------ */
-void fwipr1o(double *y, const int *perm, const double *p, const double *beta,
-             const int m, const int n)
+void fwipr1o(double *y, const mwIndex *perm, const double *p, const double *beta,
+             const mwIndex m, const mwIndex n)
 {
-  int i, permi;
+  mwIndex i, permi;
   double yi,betai,t;
 
   if(n < 1)           /* If L = I, y remains the same */

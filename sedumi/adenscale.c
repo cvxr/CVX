@@ -59,10 +59,10 @@
    OUTPUT
      smult - length nden vector
    ************************************************************ */
-void adenscale(double *smult, const double *detd, const int *dencols,
-               const int *q, const int *blkend, const int nq, const int nden)
+void adenscale(double *smult, const double *detd, const mwIndex *dencols,
+               const mwIndex *q, const mwIndex *blkend, const mwIndex nq, const mwIndex nden)
 {
-  int j,k;
+  mwIndex j,k;
   double detdk;
 /* ------------------------------------------------------------
    LORENTZ norm-bound, detd(q(k)) while dencols(j)<blkend(k)
@@ -84,12 +84,12 @@ void adenscale(double *smult, const double *detd, const int *dencols,
 /* ************************************************************
    PROCEDURE mexFunction - Entry for Matlab
    ************************************************************ */
-void mexFunction(const int nlhs, mxArray *plhs[],
-  const int nrhs, const mxArray *prhs[])
+void mexFunction( int nlhs, mxArray *plhs[],
+  int nrhs, const mxArray *prhs[])
 {
   const mxArray *MY_FIELD;
-  int i, j, nden, nl, nq, lorN;
-  int *q, *dencols, *blkend;
+  mwIndex i, j, nden, nl, nq, lorN;
+  mwIndex *q, *dencols, *blkend;
   const double *qPr, *dencolsPr, *detd, *blkstartPr;
 /* ------------------------------------------------------------
    Check for proper number of arguments
@@ -102,14 +102,14 @@ void mexFunction(const int nlhs, mxArray *plhs[],
   mxAssert(mxIsStruct(DENSE_IN), "dense should be a structure.");
   MY_FIELD = mxGetField(DENSE_IN,0,"l");        /* dense.l */ 
   mxAssert( MY_FIELD != NULL, "Missing field dense.l.");
-  nl = mxGetScalar(MY_FIELD);                           /* double to int */
+  nl = (mwIndex) mxGetScalar(MY_FIELD);                           /* double to mwIndex */
   MY_FIELD = mxGetField(DENSE_IN,0,"q");          /* dense.q */
   mxAssert( MY_FIELD != NULL, "Missing field dense.q.");
-  nq = mxGetM(MY_FIELD) * mxGetN(MY_FIELD);
-  qPr = (double*)mxGetData(MY_FIELD);
+  nq = (mwIndex) (mxGetM(MY_FIELD) * mxGetN(MY_FIELD));
+  qPr = mxGetPr(MY_FIELD);
   MY_FIELD = mxGetField(DENSE_IN,0,"cols");            /* dense.cols */
   mxAssert( MY_FIELD != NULL, "Missing field dense.cols.");
-  nden = mxGetM(MY_FIELD) * mxGetN(MY_FIELD) - (nq+nl);  /* jump to q-norm */
+  nden = (mwIndex) (mxGetM(MY_FIELD) * mxGetN(MY_FIELD) - (nq+nl));  /* jump to q-norm */
   mxAssert(nden >= 0, "dense.cols size mismatch.");
   dencolsPr = mxGetPr(MY_FIELD) + (nq+nl);               /* jump to q-norm */
 /* ------------------------------------------------------------
@@ -119,7 +119,7 @@ void mexFunction(const int nlhs, mxArray *plhs[],
   MY_FIELD = mxGetField(D_IN,0,"det");           /* d.det */
   mxAssert( MY_FIELD != NULL, "Missing field d.det.");
   detd = mxGetPr(MY_FIELD);
-  lorN = mxGetM(MY_FIELD) * mxGetN(MY_FIELD);
+  lorN = (mwIndex) (mxGetM(MY_FIELD) * mxGetN(MY_FIELD));
 /* ------------------------------------------------------------
    Get INPUTS blkstart
    ------------------------------------------------------------ */
@@ -128,22 +128,25 @@ void mexFunction(const int nlhs, mxArray *plhs[],
 /* ------------------------------------------------------------
    Create working arrays q(nq), blkend(nq), dencols(nden - (nl+nq))
    ------------------------------------------------------------ */
-  q       = (int *) mxCalloc(MAX(nq,1), sizeof(int));
-  blkend  = (int *) mxCalloc(MAX(nq,1), sizeof(int));
-  dencols = (int *) mxCalloc(MAX(1,nden), sizeof(int));
+  q       = (mwIndex *) mxCalloc(MAX(nq,1), sizeof(mwIndex));
+  blkend  = (mwIndex *) mxCalloc(MAX(nq,1), sizeof(mwIndex));
+  dencols = (mwIndex *) mxCalloc(MAX(1,nden), sizeof(mwIndex));
 /* ------------------------------------------------------------
    Convert to integer C-style: q, blkend, dencols.
    ------------------------------------------------------------ */
   for(i = 0; i < nq; i++){
-    j = qPr[i];
+    j = (mwIndex) qPr[i];
+    mxAssert(j>0,"");
     q[i] = --j;
   }
   for(i = 0; i < nq; i++){
-    j = blkstartPr[q[i] + 1];        /* F-double to C-int */
+    j = (mwIndex) blkstartPr[q[i] + 1];        /* F-double to C-mwIndex */
+    mxAssert(j>0,"");    
     blkend[i] = --j;
   }
   for(i = 0; i < nden; i++){
-    j = dencolsPr[i];
+    j = (mwIndex) dencolsPr[i];
+    mxAssert(j>0,"");    
     dencols[i] = --j;
   }
 /* ------------------------------------------------------------

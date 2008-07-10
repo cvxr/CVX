@@ -61,9 +61,9 @@
 
 /* ========================= G E N E R A L ========================= */
 
-void spzeros(double *x,const int *xir,const int n)
+void spzeros(double *x,const mwIndex *xir,const mwIndex n)
 {
-  int i;
+  mwIndex i;
   for(i = 0; i < n; i++)
     x[xir[i]] = 0.0;
 }
@@ -80,10 +80,10 @@ void spzeros(double *x,const int *xir,const int n)
      cwork - length ny
      iwork - length ny+2+floor(log_2(1+ny)).
    ************************************************************ */
-void exmerge(int *x, const int *y, const int nx, const int ny,
-             const int iwsize, char *cwork, int *ipos)
+void exmerge(mwIndex *x, const mwIndex *y, const mwIndex nx, const mwIndex ny,
+             const mwIndex iwsize, char *cwork, mwIndex *ipos)
 {
-  int i,j,inz;
+  mwIndex i,j,inz;
 /* ------------------------------------------------------------
    Search all "insertion" positions of y-entries in list x
    ------------------------------------------------------------ */
@@ -94,7 +94,7 @@ void exmerge(int *x, const int *y, const int nx, const int ny,
   for(i = ny; i > 0; i--){         /* shift i entries down */
     inz = ipos[i];
     if((j = ipos[i+1]-inz) > 0)
-      memmove(x+inz+i,x+inz,j*sizeof(int));
+      memmove(x+inz+i,x+inz,j*sizeof(mwIndex));
   }
 /* ------------------------------------------------------------
    Insert y-entries
@@ -116,10 +116,10 @@ void exmerge(int *x, const int *y, const int nx, const int ny,
    OUTPUT
      d - length m vector, diag(X).
    ************************************************************ */
-void cpspdiag(double *d, const jcir x, const int m)
+void cpspdiag(double *d, const jcir x, const mwIndex m)
 {
-  int j, inz;
-  const int *diagFound;
+  mwIndex j, inz;
+  const mwIndex *diagFound;
   
 /* ------------------------------------------------------------
    For each column j: let dj = x(j,j)
@@ -148,15 +148,15 @@ void cpspdiag(double *d, const jcir x, const int m)
      iwork - length m array of integers. Points to "below row j"
        part of columns (trilstart). (initial contents irrelevant)
    ************************************************************ */
-void spmakesym(jcir x, const int m, int *iwork)
+void spmakesym(jcir x, const mwIndex m, mwIndex *iwork)
 {
-  int i, j, inz, jend;
+  mwIndex i, j, inz, jend;
   double xij;
   
 /* ------------------------------------------------------------
    Initialize: let iwork(0:m-1) = ada.jc(0:m-1)
    ------------------------------------------------------------ */
-  memcpy(iwork, x.jc, m * sizeof(int));   /* don't copy x.jc[m] */
+  memcpy(iwork, x.jc, m * sizeof(mwIndex));   /* don't copy x.jc[m] */
 /* ------------------------------------------------------------
    For each column j:   for each index i > j:
    let xij = x(i,j) + x(j,i).
@@ -190,10 +190,10 @@ void spmakesym(jcir x, const int m, int *iwork)
      dzjc - length nblk+1 array. Has blockstarts so that all subscripts
        in dzir fit in the resulting partition.
    ************************************************************ */
-void dzblkpartit(int *dzjc, const int *dzir, const int *xblk,
-                 const int dznnz, const int nblk)
+void dzblkpartit(mwIndex *dzjc, const mwIndex *dzir, const mwIndex *xblk,
+                 const mwIndex dznnz, const mwIndex nblk)
 {
-  int i,j;
+  mwIndex i,j;
 /* ------------------------------------------------------------
    Init dzjc = all-0
    ------------------------------------------------------------ */
@@ -220,7 +220,7 @@ void dzblkpartit(int *dzjc, const int *dzir, const int *xblk,
      ada.{jc,ir} - sparsity structure of ada.
      At - sparse N x m matrix.
      udsqr - lenud vector containing D, D(ud.perm,ud.perm) = Ud'*Ud.
-     Ajc1 - m int array, Ajc1(:,1) points to start of PSD nz's in At.
+     Ajc1 - m mwIndex array, Ajc1(:,1) points to start of PSD nz's in At.
      dzjc - psdN+1, partition of dz rowsubscipts into PSD blocks.
      dzstructjc, dzstructir - sparse N x m matrix, giving NEW PSD-nonzero
        positions of At(:,perm(j)).
@@ -251,23 +251,23 @@ void dzblkpartit(int *dzjc, const int *dzir, const int *xblk,
      cwork - maxadd, where maxadd = max(dzstructjc(i+1)-dzstructjc(i))
    ************************************************************ */
 void getada3(jcir ada, double *absd, jcir At, const double *udsqr,
-             const int *Ajc1, const int *dzjc,
-             const int *dzstructjc, const int *dzstructir,
-             const int *blkstart, const int *xblk, const int *psdNL,
-             const int *perm, const int *invperm,
-             const int m, const int lenud, const coneK *pcK,
-             double *fwork, int fwsiz, int *iwork, int iwsiz,
+             const mwIndex *Ajc1, const mwIndex *dzjc,
+             const mwIndex *dzstructjc, const mwIndex *dzstructir,
+             const mwIndex *blkstart, const mwIndex *xblk, const mwIndex *psdNL,
+             const mwIndex *perm, const mwIndex *invperm,
+             const mwIndex m, const mwIndex lenud, const coneK *pcK,
+             double *fwork, mwIndex fwsiz, mwIndex *iwork, mwIndex iwsiz,
              char *cwork)
 {
-  int i,j,k, knz,inz, dznnz, addnnz, permj, rsdpN, nblk, nnzbj;
+  mwIndex i,j,k, knz,inz, dznnz, permj, rsdpN, nblk, nnzbj;
   double *daj;
   double adaij, termj, absadajj;
-  int *dzknnz, *dzir, *blksj;
+  mwIndex *dzknnz, *dzir, *blksj;
 
   rsdpN = pcK->rsdpN;
 /* ------------------------------------------------------------
    Partition working arrays
-   int: dzknnz(psdN=length(K.s)), blksj(psdN), dzir(dznnz = dzstructjc[m]),
+   mwIndex: dzknnz(psdN=length(K.s)), blksj(psdN), dzir(dznnz = dzstructjc[m]),
      iwork[iwsiz],
      with iwsiz = max(dznnz, max(nk(PSD))).
    double:    daj(lenud), fwork[fwsiz],
@@ -367,17 +367,17 @@ void getada3(jcir ada, double *absd, jcir At, const double *udsqr,
 /* ************************************************************
    PROCEDURE mexFunction - Entry for Matlab
    ************************************************************ */
-void mexFunction(const int nlhs, mxArray *plhs[],
-                 const int nrhs, const mxArray *prhs[])
+void mexFunction(int nlhs, mxArray *plhs[],
+                 int nrhs, const mxArray *prhs[])
 {
   mxArray *myplhs[NPAROUT];
   coneK cK;
   const mxArray *MY_FIELD;
-  int lenfull, lenud, m, i, j, k, fwsiz, iwsiz, dznnz, maxadd;
+  mwIndex lenfull, lenud, m, i, j, k, fwsiz, iwsiz, dznnz, maxadd;
   const double *permPr, *Ajc1Pr, *blkstartPr, *udsqr;
-  const int *dzstructjc, *dzstructir;
+  const mwIndex *dzstructjc, *dzstructir;
   double *fwork, *absd;
-  int *blkstart, *iwork, *Ajc1, *psdNL, *xblk, *perm, *invperm, *dzjc;
+  mwIndex *blkstart, *iwork, *Ajc1, *psdNL, *xblk, *perm, *invperm, *dzjc;
   char *cwork;
   jcir At, ada;
 /* ------------------------------------------------------------
@@ -397,16 +397,17 @@ void mexFunction(const int nlhs, mxArray *plhs[],
 /* ------------------------------------------------------------
    Allocate working array blkstart(|K.s|+1).
    ------------------------------------------------------------ */
-  blkstart = (int *) mxCalloc(cK.sdpN + 1, sizeof(int));
+  blkstart = (mwIndex *) mxCalloc(cK.sdpN + 1, sizeof(mwIndex));
 /* ------------------------------------------------------------
-   Translate blkstart from Fortran-double to C-int
+   Translate blkstart from Fortran-double to C-mwIndex
    ------------------------------------------------------------ */
   MY_FIELD = mxGetField(K_IN,0,"blkstart");        /*K.blkstart*/
   mxAssert( MY_FIELD != NULL, "Missing K.blkstart.");
   mxAssert(mxGetM(MY_FIELD) * mxGetN(MY_FIELD) == 2+cK.lorN+cK.sdpN, "Size mismatch K.blkstart.");
   blkstartPr = mxGetPr(MY_FIELD) + cK.lorN + 1;          /* point to start of PSD */
   for(i = 0; i <= cK.sdpN; i++){                            /* to integers */
-    j = blkstartPr[i];
+    j = (mwIndex) blkstartPr[i];
+    mxAssert(j>0,"");
     blkstart[i] = --j;
   }
 /* ------------------------------------------------------------
@@ -472,20 +473,20 @@ void mexFunction(const int nlhs, mxArray *plhs[],
    where dznnz = dzstructjc[m].
    ------------------------------------------------------------ */
     dznnz = dzstructjc[m];
-    iwsiz = floor(log(1+maxadd)/log(2));              /* double to int */
+    iwsiz = (mwIndex) floor(log(1.0+maxadd)/log(2.0));  /* double to mwIndex */
     iwsiz += maxadd + 2;
     iwsiz = 2*cK.sdpN + dznnz + MAX(iwsiz,MAX(cK.rMaxn,cK.hMaxn));
-    iwork = (int *) mxCalloc(MAX(iwsiz,m), sizeof(int));
+    iwork = (mwIndex *) mxCalloc(MAX(iwsiz,m), sizeof(mwIndex));
 /* ------------------------------------------------------------
    ALLOCATE integer working arrays:
    Ajc1(m) psdNL[cK.sdpN], dzjc(cK.sdpN+1), perm(m), invperm(m), xblk(lenud).
    cwork(maxadd).
    ------------------------------------------------------------ */
-    Ajc1 = (int *) mxCalloc(MAX(m,1), sizeof(int));
-    psdNL = (int *) mxCalloc(1+2*cK.sdpN + lenud, sizeof(int));
+    Ajc1 = (mwIndex *) mxCalloc(MAX(m,1), sizeof(mwIndex));
+    psdNL = (mwIndex *) mxCalloc(1+2*cK.sdpN + lenud, sizeof(mwIndex));
     xblk = psdNL + cK.sdpN;    /* Not own alloc: we'll subtract blkstart[0] */
     dzjc = xblk + lenud;       /*dzjc(sdpN+1) */
-    perm = (int *) mxCalloc(MAX(2 * m,1), sizeof(int));
+    perm = (mwIndex *) mxCalloc(MAX(2 * m,1), sizeof(mwIndex));
     invperm = perm + m;                                 /* invperm(m) */
     cwork = (char *) mxCalloc(MAX(1,maxadd), sizeof(char));
 /* ------------------------------------------------------------
@@ -498,7 +499,8 @@ void mexFunction(const int nlhs, mxArray *plhs[],
    perm to integer C-style
    ------------------------------------------------------------ */
     for(i = 0; i < m; i++){
-      j = permPr[i];
+      j = (mwIndex) permPr[i];
+      mxAssert(j>0,"");
       perm[i] = --j;
     }
 /* ------------------------------------------------------------
@@ -510,9 +512,9 @@ void mexFunction(const int nlhs, mxArray *plhs[],
    Let psdNL = K.s in integer, Ajc1 = Ajc1Pr in integer.
    ------------------------------------------------------------ */
     for(i = 0; i < cK.sdpN; i++)                /* K.s */
-      psdNL[i] = cK.sdpNL[i];
+      psdNL[i] = (mwIndex) cK.sdpNL[i];
     for(i = 0; i < m; i++)
-      Ajc1[i] = Ajc1Pr[i];
+      Ajc1[i] = (mwIndex) Ajc1Pr[i];
 /* ------------------------------------------------------------
    Let k = xblk(j-blkstart[0]) iff
    blkstart[k] <= j < blkstart[k+1], k=0:nblk-1.
@@ -545,7 +547,7 @@ void mexFunction(const int nlhs, mxArray *plhs[],
    ALLOCATE integer work array iwork(m), with
    ------------------------------------------------------------ */
   else{
-    iwork = (int *) mxCalloc(MAX(1,m), sizeof(int));
+    iwork = (mwIndex *) mxCalloc(MAX(1,m), sizeof(mwIndex));
     cpspdiag(absd, ada,m);
   }
 /* ------------------------------------------------------------

@@ -46,3 +46,4 @@ function y = sparbwslv(L,b)
 %
 
 y = bwblkslv(L,b);
+%y(L.perm,:) = L.L'\b;

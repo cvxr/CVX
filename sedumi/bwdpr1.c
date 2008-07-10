@@ -63,9 +63,9 @@ function y = bwdpr1(Lden, b)
        L(p,beta)'*yNEW = yOLD. This updates only y(0:n-1).
    ------------------------------------------------------------ */
 void bwipr1(double *y, const double *p, const double *beta,
-            const int m, const int n)
+            const mwIndex m, const mwIndex n)
 {
-  int i;
+  mwIndex i;
   double yi,t;
 
   if(n < 1)           /* If L = I, y remains the same */
@@ -79,9 +79,9 @@ void bwipr1(double *y, const double *p, const double *beta,
    (eye(m)+triu(beta*p',1)) * yNEW = yOLD,
    i.e. yNEW(i) + betai*t = yOLD(i), with t := p(i+1:n-1)'*y.
    ------------------------------------------------------------ */
-  for(i = n-1; i >= 0; i--){
-    yi = (y[i] -= t * beta[i]);
-    t += p[i] * yi;
+  for(i = n; i > 0; i--){
+    yi = (y[i-1] -= t * beta[i-1]);
+    t += p[i-1] * yi;
   }
 }
 
@@ -96,10 +96,10 @@ void bwipr1(double *y, const double *p, const double *beta,
    y - Length m. On input, contains the rhs. On output, the solution to
        L(p,beta)'*yNEW = yOLD. This updates only y(0:n-1).
    ------------------------------------------------------------ */
-void bwipr1o(double *y, const int *perm, const double *p, const double *beta,
-            const int m, const int n)
+void bwipr1o(double *y, const mwIndex *perm, const double *p, const double *beta,
+            const mwIndex m, const mwIndex n)
 {
-  int i, permi;
+  mwIndex i, permi;
   double yi,t;
 
   if(n < 1)           /* If L = I, y remains the same */
@@ -116,9 +116,9 @@ void bwipr1o(double *y, const int *perm, const double *p, const double *beta,
    (eye(m)+triu(beta*p',1)) * yNEW = yOLD,
    i.e. yNEW(i) + betai*t = yOLD(i), with t := p(i+1:n-1)'*y.
    ------------------------------------------------------------ */
-  for(; i >= 0; i--){
-    permi = perm[i];
-    yi = (y[permi] -= t * beta[i]);
+  for(i=n; i > 0; i--){
+    permi = perm[i-1];
+    yi = (y[permi] -= t * beta[i-1]);
     t += p[permi] * yi;
   }
 }
@@ -137,25 +137,25 @@ void bwipr1o(double *y, const int *perm, const double *p, const double *beta,
      y - length m vector. On input, the rhs. On output the solution to
        (PROD_j L(pj,betaj))' * yNEW = yOLD.
    ************************************************************ */
-void bwprodform(double *y, const int *xsuper, const int *perm,
-                const double *p, const double *beta, const int *betajc,
-                const char *ordered, const int n, int pnnz,
-                int permnnz)
+void bwprodform(double *y, const mwIndex *xsuper, const mwIndex *perm,
+                const double *p, const double *beta, const mwIndex *betajc,
+                const char *ordered, const mwIndex n, mwIndex pnnz,
+                mwIndex permnnz)
 {
-  int k,nk, mk;
+  mwIndex k,nk, mk;
 /* ------------------------------------------------------------
    Backward solve L(pk,betak) * yNEXT = yPREV   for k=n-1:-1:0.
    ------------------------------------------------------------ */
-  for(k = n-1; k >= 0; k--){
-    mk = xsuper[k+1];
-    nk = betajc[k+1] - betajc[k];
+  for(k = n; k > 0; k--){
+    mk = xsuper[k];
+    nk = betajc[k] - betajc[k-1];
     pnnz -= mk;
-    if(ordered[k]){
+    if(ordered[k-1]){
       permnnz -= mk;
-      bwipr1o(y, perm+permnnz, p+pnnz, beta+betajc[k], mk, nk);
+      bwipr1o(y, perm+permnnz, p+pnnz, beta+betajc[k-1], mk, nk);
     }
     else
-      bwipr1(y, p+pnnz, beta+betajc[k], mk, nk);
+      bwipr1(y, p+pnnz, beta+betajc[k-1], mk, nk);
   }
   mxAssert(pnnz == 0,"");
   mxAssert(permnnz == 0 || permnnz == 1,"");
@@ -172,9 +172,9 @@ void mexFunction(const int nlhs, mxArray *plhs[],
 {
  const mxArray *MY_FIELD;
  char *ordered;
- int m,n,nden,dznnz, i,j, permnnz, pnnz;
+ mwIndex m,n,nden,dznnz, i,j, permnnz, pnnz;
  const double *beta, *betajcPr, *orderedPr, *pivpermPr, *p;
- int *betajc, *pivperm;
+ mwIndex *betajc, *pivperm;
  double *y, *fwork;
  jcir dz;
 /* ------------------------------------------------------------
@@ -230,16 +230,16 @@ void mexFunction(const int nlhs, mxArray *plhs[],
     dznnz = dz.jc[nden];
     mxAssert(dznnz <= m, "Lden.dz size mismatch.");
 /* ------------------------------------------------------------
-   Allocate working arrays int: betajc(nden+1), pivperm(permnnz),
+   Allocate working arrays mwIndex: betajc(nden+1), pivperm(permnnz),
    char: ordered(nden)
    double: fwork(dznnz)
    ------------------------------------------------------------ */
-    betajc = (int *) mxCalloc(nden + 1,sizeof(int));
-    pivperm = (int *) mxCalloc(MAX(permnnz,1),sizeof(int));
+    betajc = (mwIndex *) mxCalloc(nden + 1,sizeof(mwIndex));
+    pivperm = (mwIndex *) mxCalloc(MAX(permnnz,1),sizeof(mwIndex));
     ordered = (char *) mxCalloc(nden,sizeof(char));   /* nden > 0 */
     fwork = (double *) mxCalloc(MAX(dznnz,1), sizeof(double));
 /* ------------------------------------------------------------
-   Convert betajcPr, ordered, pivperm to int
+   Convert betajcPr, ordered, pivperm to mwIndex
    ------------------------------------------------------------ */
     for(i = 0; i <= nden; i++){
       j = betajcPr[i];

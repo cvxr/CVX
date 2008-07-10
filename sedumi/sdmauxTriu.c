@@ -45,9 +45,9 @@
    UPDATED r - on output, the strict lower triangular is copied
        to the strict upper triangular.
    ************************************************************ */
-void tril2sym(double *r, const int n)
+void tril2sym(double *r, const mwIndex n)
 {
- int colp,i,j;
+ mwIndex colp,i,j;
 
  /* ------------------------------------------------------------
     r points to R(:,i);     r+colp = R(:,j).
@@ -63,9 +63,9 @@ void tril2sym(double *r, const int n)
    INPUT n - order of 2*(n x n) matrix R.
    UPDATED r,rpi - on output, is made Hermitian (sym, skew-sym resp).
    ************************************************************ */
-void tril2herm(double *r, double *rpi, const int n)
+void tril2herm(double *r, double *rpi, const mwIndex n)
 {
-  int colp,i,j;
+  mwIndex colp,i,j;
 /* ------------------------------------------------------------
    First, make the real block symmetric. Then, make the imaginary
    part skew-symmetric.
@@ -87,9 +87,9 @@ void tril2herm(double *r, double *rpi, const int n)
    UPDATED r - on output, the strict lower triangular is copied
        to the strict upper triangular.
    ************************************************************ */
-void triu2sym(double *r, const int n)
+void triu2sym(double *r, const mwIndex n)
 {
- int colp,i,j;
+ mwIndex colp,i,j;
 
  /* ------------------------------------------------------------
     r points to R(:,i);     r+colp = R(:,j).
@@ -105,9 +105,9 @@ void triu2sym(double *r, const int n)
    INPUT n - order of 2*(n x n) matrix R.
    UPDATED r, rpi - on output, is made Hermitian (sym and skewsym resp).
    ************************************************************ */
-void triu2herm(double *r, double *rpi, const int n)
+void triu2herm(double *r, double *rpi, const mwIndex n)
 {
- int colp,i,j;
+ mwIndex colp,i,j;
  /* ------------------------------------------------------------
     First, make the real block symmetric. Then, let r point to
     the imaginary part and make that skew-symmetric.
@@ -133,9 +133,9 @@ void triu2herm(double *r, double *rpi, const int n)
    OUTPUT
      y - triu(y) = triu(u(:,perm).
    ************************************************************ */
-void uperm(double *y, const double *u, const int *perm, const int n)
+void uperm(double *y, const double *u, const mwIndex *perm, const mwIndex n)
 {
-  int j;
+  mwIndex j;
   const double *uj;
 
   for(j = 0; j < n; y += n){

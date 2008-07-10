@@ -235,13 +235,6 @@ if ~isempty(K.r)
 else
     prep.rq=0;
 end
-% ----------------------------------------
-% Now that complex Lorentz cones are transformed to real,
-% we need K.q(k) >= 3 for all k.
-% ----------------------------------------
-% if min(K.q) < 3
-%     error('The real dimension of each Lorentz cone should be at least 3.')
-% end
 % ---------------------------------------------------
 % Remove diagonal SDP blocks
 % ---------------------------------------------------
@@ -250,6 +243,9 @@ if ~isfield(pars,'sdp')
 end
 if cpx.dim>0
     pars.sdp=0;    % No SDP preprocessing for complex problems
+end
+if length(K.s)>1000 | max(K.s)<10
+    pars.sdp=0;
 end
 if pars.sdp==1
     Atf=At(1:K.f,:);
@@ -261,8 +257,6 @@ if pars.sdp==1
     c=[cf;c];
     K.f=Kf;
     clear Atf cf Kf
-    
-    %[At,b,c,K,prep.sdp]=preprocessSDP(At,b,c,K);
 end
 % ------------------------------------------------------------
 % Search for hidden free variables in split form and convert them into free
@@ -271,7 +265,7 @@ end
 if ~isfield(pars,'free')
     pars.free=1;
 end
-if pars.free & K.l>0
+if 0 & pars.free & K.l>0 %temporarily disabled due to a bug
     stest=c(K.f+1:K.f+K.l)-At(K.f+1:K.f+K.l,:)*rand(m,1);
     %Now we detect if stest contains the same vector twice, or opposite
     %vectors.

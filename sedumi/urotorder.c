@@ -76,10 +76,10 @@ function [u,perm,gjc,g] = urotorder(u,K, maxu,permIN)
      g - length gjc[n] <= n(n-1)/2 array of givens rotations.
       At worst we need n-1-k rotations in iter k=0:n-2.
    ************************************************************ */
-void rotorder(int *perm, double *u, int *gjc, twodouble *g, double *d,
-              const double maxusqr, const int n)
+void rotorder(mwIndex *perm, double *u, mwIndex *gjc, twodouble *g, double *d,
+              const double maxusqr, const mwIndex n)
 {
-  int i,j,k,inz, pivk, m;
+  mwIndex i,j,k,inz, pivk, m;
   double *uj, *rowuk;
   double dk,y,nexty, h, uki,ukmax;
   twodouble gi;
@@ -136,20 +136,20 @@ void rotorder(int *perm, double *u, int *gjc, twodouble *g, double *d,
       uj = rowuk + j * n;
       nexty = uj[m];                   /* last nonzero in col uj */
       y = SQR(nexty);
-      for(i = m-1; i >= 0; i--){
-        gi.x = uj[i];
+      for(i = m; i > 0; i--){
+        gi.x = uj[i-1];
         gi.y = nexty;
         y += SQR(gi.x);
         nexty = sqrt(y);
         gi.x /= nexty;                  /* Normalize to rotation [x,y; y,-x] */
         gi.y /= nexty;
-        g[i] = gi;
+        g[i-1] = gi;
       }                                /* y == d[j] after loop */
       uj[0] = nexty;                   /* New pivotal diagonal entry */
 /* ------------------------------------------------------------
    move pivot j=perm[pivk] to head of perm (shifting old k:pivk-1)
    ------------------------------------------------------------ */
-      memmove(perm+k+1, perm+k, m * sizeof(int));     /* move 1-> */
+      memmove(perm+k+1, perm+k, m * sizeof(mwIndex));     /* move 1-> */
       perm[k] = j;                     /* inserted at k */
 /* ------------------------------------------------------------
    Apply rotations to columns perm(k+1:n-1).
@@ -193,11 +193,11 @@ void rotorder(int *perm, double *u, int *gjc, twodouble *g, double *d,
      g - length gjc[n] <= n(n-1)/2 array of givens rotations.
       At worst we need n-1-k rotations in iter k=0:n-2.
    ************************************************************ */
-void prpirotorder(int *perm, double *u,double *upi, int *gjc,
+void prpirotorder(mwIndex *perm, double *u,double *upi, mwIndex *gjc,
                   tridouble *g, double *d,
-                  const double maxusqr, const int n)
+                  const double maxusqr, const mwIndex n)
 {
-  int i,j,k,inz, pivk, m;
+  mwIndex i,j,k,inz, pivk, m;
   double *uj,*ujpi, *rowuk, *rowukpi;
   double dk,y,nexty, h, uki,ukiim,ukmax;
   tridouble gi;
@@ -257,22 +257,22 @@ void prpirotorder(int *perm, double *u,double *upi, int *gjc,
       ujpi = rowukpi + j * n;
       nexty = uj[m];                   /* last nonzero in col uj (real) */
       y = SQR(nexty);
-      for(i = m-1; i >= 0; i--){
-        gi.x = uj[i];
-        gi.xim = ujpi[i];
+      for(i = m; i > 0; i--){
+        gi.x = uj[i-1];
+        gi.xim = ujpi[i-1];
         gi.y = nexty;
         y += SQR(gi.x) + SQR(gi.xim);
         nexty = sqrt(y);
         gi.x /= nexty;         /* Normalize to rotation [conj(x),y; y,-x] */
         gi.xim /= nexty;
         gi.y /= nexty;
-        g[i] = gi;
+        g[i-1] = gi;
       }                                /* y == d[j] after loop */
       uj[0] = nexty;                   /* New pivotal diagonal entry */
 /* ------------------------------------------------------------
    move pivot j=perm[pivk] to head of perm (shifting old k:pivk-1)
    ------------------------------------------------------------ */
-      memmove(perm+k+1, perm+k, m * sizeof(int));     /* move 1-> */
+      memmove(perm+k+1, perm+k, m * sizeof(mwIndex));     /* move 1-> */
       perm[k] = j;                     /* inserted at k */
 /* ------------------------------------------------------------
    Apply rotations to columns perm(k+1:n-1).
@@ -311,10 +311,10 @@ void mexFunction(const int nlhs, mxArray *plhs[],
   const int nrhs, const mxArray *prhs[])
 {
   mxArray *myplhs[NPAROUT];
-  int i,j,k, nk, nksqr, lenud, sdplen, gnnz, inz, maxKs,maxKssqr, rgnnz, hgnnz;
+  mwIndex i,j,k, nk, nksqr, lenud, sdplen, gnnz, inz, maxKs,maxKssqr, rgnnz, hgnnz;
   const double *uOld, *permOld;
   double *u, *d, *gjcPr, *permPr, *fwork, *fworkpi;
-  int *perm, *gjc;
+  mwIndex *perm, *gjc;
   double *g, *gk;
   double maxusqr;
   coneK cK;
@@ -376,8 +376,8 @@ void mexFunction(const int nlhs, mxArray *plhs[],
    ------------------------------------------------------------ */
   maxKs = MAX(cK.rMaxn,cK.hMaxn);                     /* max(K.s) */
   maxKssqr = MAX(SQR(cK.rMaxn),2 * SQR(cK.hMaxn));    /* max(K.s.^2) */
-  perm = (int *) mxCalloc(MAX(1,maxKs), sizeof(int));
-  gjc  = (int *) mxCalloc(MAX(1,maxKs), sizeof(int));
+  perm = (mwIndex *) mxCalloc(MAX(1,maxKs), sizeof(mwIndex));
+  gjc  = (mwIndex *) mxCalloc(MAX(1,maxKs), sizeof(mwIndex));
   d     = (double *) mxCalloc(MAX(1,maxKs), sizeof(double));
   fwork = (double *) mxCalloc(MAX(1,maxKssqr), sizeof(double));
   fworkpi = fwork + SQR(cK.hMaxn);

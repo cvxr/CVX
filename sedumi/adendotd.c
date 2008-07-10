@@ -76,11 +76,11 @@ function Ad = Adendotd(dense, d, sparAd, Ablk, blkstart)
        On output, has (ai[k]+Adeni[k])'*d[k] for k in q.
    ************************************************************ */
 void adendotd(jcir ad,jcir adotd,jcir aden,const double *d1,const double *d2,
-              const int *q,const int *dencols,
-              const int *blkend,const int nq,const int nden, double *fwork)
+              const mwIndex *q,const mwIndex *dencols,
+              const mwIndex *blkend,const mwIndex nq,const mwIndex nden, double *fwork)
 {
-  int inz, i,j,k;
-  const int *aden2jc;
+  mwIndex inz, i,j,k;
+  const mwIndex *aden2jc;
   double dj;
 /* ------------------------------------------------------------
    Initialize (Lorentz norm-bound part):
@@ -132,12 +132,12 @@ void adendotd(jcir ad,jcir adotd,jcir aden,const double *d1,const double *d2,
 /* ************************************************************
    PROCEDURE mexFunction - Entry for Matlab
    ************************************************************ */
-void mexFunction(const int nlhs, mxArray *plhs[],
-  const int nrhs, const mxArray *prhs[])
+void mexFunction(int nlhs, mxArray *plhs[],
+  int nrhs, const mxArray *prhs[])
 {
   const mxArray *MY_FIELD;
-  int i,j,firstQ, m,nden, nl, nq, lorN;
-  int *q, *dencols, *blkend;
+  mwIndex i,j,firstQ, m,nden, nl, nq, lorN;
+  mwIndex *q, *dencols, *blkend;
   const double *d1, *d2, *qPr, *dencolsPr, *blkstartPr;
   double *fwork;
   jcir ad, aden,adotd;
@@ -152,11 +152,11 @@ void mexFunction(const int nlhs, mxArray *plhs[],
   mxAssert(mxIsStruct(DENSE_IN),"dense should be a structure.");
   MY_FIELD = mxGetField(DENSE_IN,0,"l");               /* dense.l */
   mxAssert( MY_FIELD != NULL, "Missing field dense.l.");
-  nl = mxGetScalar(MY_FIELD);                             /* double to int */
+  nl = (mwIndex) mxGetScalar(MY_FIELD);                             /* double to mwIndex */
   MY_FIELD = mxGetField(DENSE_IN,0,"q");                    /* dense.q */
   mxAssert( MY_FIELD != NULL, "Missing field dense.q.");
   nq = mxGetM(MY_FIELD) * mxGetN(MY_FIELD);
-  qPr = (double*)mxGetData(MY_FIELD);
+  qPr = mxGetPr(MY_FIELD);
   MY_FIELD = mxGetField(DENSE_IN,0,"cols");                 /* dense.cols */
   mxAssert( MY_FIELD != NULL, "Missing field dense.cols.");
   nden = mxGetM(MY_FIELD) * mxGetN(MY_FIELD) - nl - nq;
@@ -196,28 +196,32 @@ void mexFunction(const int nlhs, mxArray *plhs[],
    Create working arrays q(nq), dencols(nden), fwork(m),
    blkend(nq)
    ------------------------------------------------------------ */
-  q    = (int *) mxCalloc(MAX(1,nq), sizeof(int));
-  dencols = (int *) mxCalloc(MAX(1,nden), sizeof(int));
-  blkend = (int *) mxCalloc(MAX(1,nq), sizeof(int));
+  q    = (mwIndex *) mxCalloc(MAX(1,nq), sizeof(mwIndex));
+  dencols = (mwIndex *) mxCalloc(MAX(1,nden), sizeof(mwIndex));
+  blkend = (mwIndex *) mxCalloc(MAX(1,nq), sizeof(mwIndex));
   fwork = (double *) mxCalloc(MAX(m,1), sizeof(double));
 /* ------------------------------------------------------------
    Convert to integer C-style; dencols, q, blkstart(q+1)
    ------------------------------------------------------------ */
   for(i = 0; i < nden; i++){
-    j = dencolsPr[i];
+    j = (mwIndex) dencolsPr[i];
+    mxAssert(j>0,"");
     dencols[i] = --j;
   }
   for(i = 0; i < nq; i++){
-    j = qPr[i];
+    j = (mwIndex) qPr[i];
+    mxAssert(j>0,"");
     q[i] = --j;
   }
 /* ------------------------------------------------------------
    Let firstQ point to subscript of 1st Lorentz norm-bound variable
    ------------------------------------------------------------ */
-  firstQ = blkstartPr[0];            /* double to int */
+  firstQ = (mwIndex) blkstartPr[0];            /* double to mwIndex */
+  mxAssert(firstQ>0,"");  
   --firstQ;                          /* Fortran to C */
   for(i = 0; i < nq; i++){
-    j = blkstartPr[q[i] + 1];        /* F-double to C-int */
+    j = (mwIndex) blkstartPr[q[i] + 1];        /* F-double to C-mwIndex */
+    mxAssert(j>0,"");
     blkend[i] = --j;
   }
 /* ------------------------------------------------------------

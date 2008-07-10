@@ -68,20 +68,20 @@ function [perm, dz] = incorder(At,Ajc1,ifirst)
      first, lenfull - index range we're interested in. (lenud:=lenfull-first)
      m - number of constraints (rows in At).
    OUTPUT
-     Ajc - length 1+lenud int-array, column pointers
+     Ajc - length 1+lenud mwIndex-array, column pointers
        of A := At(first:lenfull-1,:)'.
      Air - subscript array of output matrix A. length is:
        sum(Atjc(2:m) - Atjcs(1:m)).
    WORK
      iwork - length lenud (=lenfull-first) integer array.
    ************************************************************ */
-void spPartTransp(int *Air, int *Ajc,
-                  const int *Atir, const int *Atjc1, const int *Atjc2,
-                  const int first, const int lenfull, const int m,
-                  int *iwork)
+void spPartTransp(mwIndex *Air, mwIndex *Ajc,
+                  const mwIndex *Atir, const mwIndex *Atjc1, const mwIndex *Atjc2,
+                  const mwIndex first, const mwIndex lenfull, const mwIndex m,
+                  mwIndex *iwork)
 {
-  int i,j,inz;
-  int *inxnz;
+  mwIndex i,j,inz;
+  mwIndex *inxnz;
 /* ------------------------------------------------------------
    INIT: Make indices Ajc[first:lenfull] valid. Then set Ajc(:)=all-0.
    ------------------------------------------------------------ */
@@ -104,7 +104,7 @@ void spPartTransp(int *Air, int *Ajc,
 /* ------------------------------------------------------------
    Write the subscripts of A:= At(first:lenfull-1,:)'.
    ------------------------------------------------------------ */
-  memcpy(iwork, Ajc + first, (lenfull - first) * sizeof(int));
+  memcpy(iwork, Ajc + first, (lenfull - first) * sizeof(mwIndex));
   iwork -= first;          /* points to next avl. entry in A(:,i) */
   for(j = 0; j < m; j++)
     for(inz = Atjc1[j]; inz < Atjc2[j]; inz++){
@@ -137,13 +137,13 @@ void spPartTransp(int *Air, int *Ajc,
        in each column j=1:m.
      discard - length lenud of Booleans. 1 means index already in dz.
    ************************************************************ */
-void incorder(int *perm, int *dzjc, int *dzir,
-              const int *Atjc1,const int *Atjc2,const int *Atir,
-              const int *Ajc,const int *Air,
-              const int m, const int first, const int lenud,
-              int *iwork, char *discard)
+void incorder(mwIndex *perm, mwIndex *dzjc, mwIndex *dzir,
+              const mwIndex *Atjc1,const mwIndex *Atjc2,const mwIndex *Atir,
+              const mwIndex *Ajc,const mwIndex *Air,
+              const mwIndex m, const mwIndex first, const mwIndex lenud,
+              mwIndex *iwork, char *discard)
 {
-  int kmin,lenmin,i,j,k, inz,jnz, permk;
+  mwIndex kmin,lenmin,i,j,k, inz,jnz, permk;
 /* ------------------------------------------------------------
    initialize: dzjc[0]=0, nperm = m - ndeg. Let Ajc-=first, so
    that Ajc[first:lenfull] is valid. Similar for discard.
@@ -213,13 +213,13 @@ void incorder(int *perm, int *dzjc, int *dzir,
    PROCEDURE mexFunction - Entry for Matlab
       [perm,dz] = incorder(At,Ajc1,ifirst)   
    ************************************************************ */
-void mexFunction(const int nlhs, mxArray *plhs[],
-  const int nrhs, const mxArray *prhs[])
+void mexFunction(int nlhs, mxArray *plhs[],
+   int nrhs, const mxArray *prhs[])
 {
   mxArray *myplhs[NPAROUT];
-  int i,j, m, firstPSD, lenud, iwsiz, lenfull, maxnnz;
-  int *iwork, *Atjc1, *Ajc, *Air, *perm;
-  const int *Atjc2, *Atir;
+  mwIndex i, m, firstPSD, lenud, iwsiz, lenfull, maxnnz;
+  mwIndex *iwork, *Atjc1, *Ajc, *Air, *perm;
+  const mwIndex *Atjc2, *Atir;
   double *permPr;
   const double *Ajc1Pr;
   char *cwork;
@@ -233,8 +233,9 @@ void mexFunction(const int nlhs, mxArray *plhs[],
    GET STATISTICS:
    -------------------------------------------------- */
   if(nrhs == NPARIN){
-    firstPSD = mxGetScalar(IFIRST_IN);        /* double to int */
-    --firstPSD;                               /* Fortron to C */
+    firstPSD = (mwIndex) mxGetScalar(IFIRST_IN);        /* double to mwIndex */
+    mxAssert(firstPSD>0,"");
+    --firstPSD;                               /* Fortran to C */
   }
   else
     firstPSD = 0;                           /* default: use all subscripts */
@@ -249,15 +250,15 @@ void mexFunction(const int nlhs, mxArray *plhs[],
   Atir = mxGetIr(AT_IN);           /* subscripts */
 /* ------------------------------------------------------------
    ALLOCATE WORKING arrays:
-   int Atjc1(m),  Ajc(1+lenud), Air(maxnnz), perm(m),
+   mwIndex Atjc1(m),  Ajc(1+lenud), Air(maxnnz), perm(m),
      iwork(iwsiz). iwsiz = MAX(lenud,1+m)
    char cwork(lenud).
    ------------------------------------------------------------ */
-  Atjc1 = (int *) mxCalloc(MAX(m,1), sizeof(int));
-  Ajc = (int *) mxCalloc(1+lenud, sizeof(int));
-  perm = (int *) mxCalloc(MAX(1,m), sizeof(int));
+  Atjc1 = (mwIndex *) mxCalloc(MAX(m,1), sizeof(mwIndex));
+  Ajc = (mwIndex *) mxCalloc(1+lenud, sizeof(mwIndex));
+  perm = (mwIndex *) mxCalloc(MAX(1,m), sizeof(mwIndex));
   iwsiz = MAX(lenud, 1 + m);
-  iwork = (int *) mxCalloc(iwsiz, sizeof(int)); /* iwork(iwsiz) */
+  iwork = (mwIndex *) mxCalloc(iwsiz, sizeof(mwIndex)); /* iwork(iwsiz) */
   cwork = (char *) mxCalloc(MAX(1,lenud), sizeof(char));
 /* ------------------------------------------------------------
    Get input AJc1
@@ -266,10 +267,10 @@ void mexFunction(const int nlhs, mxArray *plhs[],
     Ajc1Pr = mxGetPr(AJC1_IN);
     mxAssert(mxGetM(AJC1_IN) * mxGetN(AJC1_IN) >= m, "Ajc1 size mismatch");
 /* ------------------------------------------------------------
-   Double to int: Atjc1
+   Double to mwIndex: Atjc1
    ------------------------------------------------------------ */
     for(i = 0; i < m; i++)
-      Atjc1[i] = Ajc1Pr[i];           /* double to int */
+      Atjc1[i] = (mwIndex) Ajc1Pr[i];           /* double to mwIndex */
 /* ------------------------------------------------------------
    Let maxnnz = number of PSD nonzeros = sum(Atjc2-Atjc1)
    ------------------------------------------------------------ */
@@ -278,13 +279,13 @@ void mexFunction(const int nlhs, mxArray *plhs[],
     maxnnz += Atjc2[i] - Atjc1[i];
   }
   else{
-    memcpy(Atjc1, mxGetJc(AT_IN), m * sizeof(int)); /* default column start */
+    memcpy(Atjc1, mxGetJc(AT_IN), m * sizeof(mwIndex)); /* default column start */
     maxnnz = Atjc2[m-1];                    /* maxnnz = nnz(At) */
   }
 /* ------------------------------------------------------------
-   ALLOCATE WORKING array int Air(maxnnz)
+   ALLOCATE WORKING array mwIndex Air(maxnnz)
    ------------------------------------------------------------ */
-  Air = (int *) mxCalloc(MAX(1,maxnnz), sizeof(int));
+  Air = (mwIndex *) mxCalloc(MAX(1,maxnnz), sizeof(mwIndex));
 /* ------------------------------------------------------------
    CREATE OUTPUT ARRAYS PERM(m) and DZ=sparse(lenfull,m,lenud).
    ------------------------------------------------------------ */
@@ -308,7 +309,7 @@ void mexFunction(const int nlhs, mxArray *plhs[],
    ------------------------------------------------------------ */
   mxAssert(dz.jc[m] <= lenud,"");
   maxnnz = MAX(1,dz.jc[m]);                     /* avoid realloc to 0 */
-  if((dz.ir = (int *) mxRealloc(dz.ir, maxnnz * sizeof(int))) == NULL)
+  if((dz.ir = (mwIndex *) mxRealloc(dz.ir, maxnnz * sizeof(mwIndex))) == NULL)
     mexErrMsgTxt("Memory allocation error");
   if((dz.pr = (double *) mxRealloc(mxGetPr(DZ_OUT), maxnnz*sizeof(double)))
      == NULL)
@@ -319,7 +320,7 @@ void mexFunction(const int nlhs, mxArray *plhs[],
   for(i = 0; i < maxnnz; i++)
     dz.pr[i] = 1.0;
 /* ------------------------------------------------------------
-   Convert C-int to Fortran-double
+   Convert C-mwIndex to Fortran-double
    ------------------------------------------------------------ */
   for(i = 0; i < m; i++)
     permPr[i] = perm[i] + 1.0;

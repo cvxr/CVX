@@ -40,6 +40,7 @@ function [zhi,zlo] = quadadd(xhi,xlo,y)
 #include <math.h>
 #include "mex.h"
 #include "blksdp.h"
+#include <string.h>
 
 #define ZHI_OUT myplhs[0]
 #define ZLO_OUT myplhs[1]
@@ -89,7 +90,7 @@ void mexFunction(const int nlhs, mxArray *plhs[],
                  const int nrhs, const mxArray *prhs[])
 {
   mxArray *myplhs[NPAROUT];
-  int i,m;
+  mwIndex i,m;
   const double *xhi, *xlo, *y;
   double *zhi, *zlo;
 /* ------------------------------------------------------------

@@ -41,6 +41,7 @@
 
 #include <string.h>
 #include "mex.h"
+#include "blksdp.h"
 
 #define Y_OUT plhs[0]
 #define NPAROUT 1
@@ -51,10 +52,10 @@
 #define Y_IN prhs[2]
 #define NPARIN 3
 
-typedef struct{
+/*typedef struct{
  const double *pr, *pi;
- const int *jc, *ir;
-    } jcir;
+ const mwIndex *jc, *ir;
+    } jcir;*/
 
 /* ============================================================
    FORWARD SOLVE:
@@ -73,10 +74,10 @@ typedef struct{
        collen[i] := L.jc[xsuper[i]+1]-L.jc[xsuper[i]] and
        superlen[i] := xsuper[i+1]-xsuper[i].
    ************************************************************ */
-void fwsolve(double *y, const int *Ljc, const int *Lir, const double *Lpr,
-             const int *xsuper, const int nsuper, double *fwork)
+void fwsolve(double *y, const mwIndex *Ljc, const mwIndex *Lir, const double *Lpr,
+             const mwIndex *xsuper, const mwIndex nsuper, double *fwork)
 {
-  int jsup,i,j,inz,jnnz;
+  mwIndex jsup,i,j,inz,jnnz;
   double yi,yj;
 
   /* ------------------------------------------------------------
@@ -146,11 +147,11 @@ void fwsolve(double *y, const int *Ljc, const int *Lir, const double *Lpr,
      y - full vector, on input y = rhs, on output y = L\rhs.
         only the yir(0:ynnz-1) entries are used and defined.
    ************************************************************ */
-void selfwsolve(double *y, const int *Ljc, const int *Lir, const double *Lpr,
-                const int *xsuper, const int nsuper,
-                const int *snode, const int *yir, const int ynnz)
+void selfwsolve(double *y, const mwIndex *Ljc, const mwIndex *Lir, const double *Lpr,
+                const mwIndex *xsuper, const mwIndex nsuper,
+                const mwIndex *snode, const mwIndex *yir, const mwIndex ynnz)
 {
-  int jsup,j,inz,jnz;
+  mwIndex jsup,j,inz,jnz;
   double yj;
 
   if(ynnz <= 0)
@@ -193,11 +194,11 @@ void mexFunction(const int nlhs, mxArray *plhs[],
   const int nrhs, const mxArray *prhs[])
 {
  const mxArray *L_FIELD;
- int m,n, j, k, nsuper, inz;
+ mwIndex m,n, j, k, nsuper, inz;
  double *y,*fwork;
  const double *permPr, *b, *xsuperPr;
- const int *yjc, *yir, *bjc, *bir;
- int *perm, *invperm, *snode, *xsuper, *iwork;
+ const mwIndex *yjc, *yir, *bjc, *bir;
+ mwIndex *perm, *invperm, *snode, *xsuper, *iwork;
  jcir L;
  char bissparse;
  /* ------------------------------------------------------------
@@ -255,15 +256,15 @@ void mexFunction(const int nlhs, mxArray *plhs[],
    yjc = mxGetJc(Y_IN);
    yir = mxGetIr(Y_IN);
    Y_OUT = mxCreateSparse(m,n, yjc[n],mxREAL);
-   memcpy(mxGetJc(Y_OUT), yjc, (n+1) * sizeof(int));
-   memcpy(mxGetIr(Y_OUT), yir, yjc[n] * sizeof(int));
+   memcpy(mxGetJc(Y_OUT), yjc, (n+1) * sizeof(mwIndex));
+   memcpy(mxGetIr(Y_OUT), yir, yjc[n] * sizeof(mwIndex));
  }
  y = mxGetPr(Y_OUT);
 /* ------------------------------------------------------------
    Allocate working arrays fwork(m) and iwork(2*m + nsuper+1)
    ------------------------------------------------------------ */
  fwork = (double *) mxCalloc(m, sizeof(double));
- iwork = (int *) mxCalloc(2*m+nsuper+1, sizeof(int));
+ iwork = (mwIndex *) mxCalloc(2*m+nsuper+1, sizeof(mwIndex));
  perm = iwork;
  invperm = perm;
  xsuper = iwork + m;

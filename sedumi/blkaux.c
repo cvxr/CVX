@@ -45,46 +45,30 @@
    TIME-CRITICAL PROCEDURE -- realHadamard
    Computes  r = x .* y  using loop-unrolling.
    ************************************************************ */
-void realHadamard(double * r, const double *x, const double *y, const int n)
+void realHadamard(double * r, const double *x, const double *y, const mwIndex n)
 {
- int i;
-
- for(i=0; i< n-7; ){              /* LEVEL 8 */
-   r[i] = x[i] * y[i]; i++;
-   r[i] = x[i] * y[i]; i++;
-   r[i] = x[i] * y[i]; i++;
-   r[i] = x[i] * y[i]; i++;
-   r[i] = x[i] * y[i]; i++;
-   r[i] = x[i] * y[i]; i++;
-   r[i] = x[i] * y[i]; i++;
-   r[i] = x[i] * y[i]; i++;
- }
- if(i < n-3){                         /* LEVEL 4 */
-   r[i] = x[i] * y[i]; i++;
-   r[i] = x[i] * y[i]; i++;
-   r[i] = x[i] * y[i]; i++;
-   r[i] = x[i] * y[i]; i++;
- }
-/* ------------------------------------------------------------
-   Now, i in {n-3, n-2, n-1, n}. Do the last n-i elements.
-   ------------------------------------------------------------ */
- if(i < n-1){                        /* LEVEL 2 */
-   r[i] = x[i] * y[i]; i++;
-   r[i] = x[i] * y[i]; i++;
- }
- if(i< n)                            /* LEVEL 1 */
-   r[i] = x[i] * y[i];
+    int one=1;
+    double zero=0.0;
+#ifdef PC
+    dcopy(&n,y,&one,r,&one);
+    dtbmv('u','n','n',&n,&zero,x,&one,r,&one);
+    #endif
+    #ifdef UNIX
+    dcopy_(&n,y,&one,r,&one);
+    dtbmv_('u','n','n',&n,&zero,x,&one,r,&one);
+    #endif
+    return;
 }
 
 /* ************************************************************
    TIME-CRITICAL PROCEDURE -- realHadadiv
    Computes  r = x ./ y  using loop-unrolling.
    ************************************************************ */
-void realHadadiv(double * r, const double *x, const double *y, const int n)
+void realHadadiv(double * r, const double *x, const double *y, const mwIndex n)
 {
- int i;
+ mwIndex i;
 
- for(i=0; i< n-3; ){              /* LEVEL 4 */
+ for(i=0; i+3< n; ){              /* LEVEL 4 */
    r[i] = x[i] / y[i]; i++;
    r[i] = x[i] / y[i]; i++;
    r[i] = x[i] / y[i]; i++;
@@ -93,7 +77,7 @@ void realHadadiv(double * r, const double *x, const double *y, const int n)
 /* ------------------------------------------------------------
    Now, i in {n-3, n-2, n-1, n}. Do the last n-i elements.
    ------------------------------------------------------------ */
- if(i < n-1){                        /* LEVEL 2 */
+ if(i+1 < n){                        /* LEVEL 2 */
    r[i] = x[i] / y[i]; i++;
    r[i] = x[i] / y[i]; i++;
  }
@@ -101,88 +85,3 @@ void realHadadiv(double * r, const double *x, const double *y, const int n)
    r[i] = x[i] / y[i];
 }
 
-#ifdef SEDUMI_OLD
-/* ============================================================
-   LORENTZ OPERATIONS
-   ============================================================ */
-/* ************************************************************
-   PROCEDURE qscale : LORENTZ SCALE D(x)y = z + mu * x (full version)
-     mu = (y1+alpha)/sqrt(2), z = rdetx * [alpha; y(2:n)],
-     where alpha = (x(2:n)'*y(2:n)) / (x(1)+ sqrt(2) * rdetx)
-   INPUT
-     x,y - full n x 1
-     rdetx - sqrt(det(x))
-     n - order of x,y,z.
-   OUTPUT
-     z - full n x 1. Let z := rdetx * [alpha; y(2:n)].
-   RETURNS
-     mu = (y1+alpha)/sqrt(2).
-   ************************************************************ */
-double qscale(double *z,const double *x,const double *y,
-              const double rdetx,const int n)
-{
- double alpha, mu;
-/* ------------------------------------------------------------
-   alpha = (x(2:n)'*y(2:n)) / (x(1)+ sqrt(2) * rdetx)
-   ------------------------------------------------------------ */
- alpha = realdot(x+1,y+1,n-1) / (x[0] + M_SQRT2 * rdetx);
-/* ------------------------------------------------------------
-   z = rdetx * [alpha; y(2:n)].
-   ------------------------------------------------------------ */
- z[0] = rdetx * alpha;
- scalarmul(z+1,rdetx,y+1,n-1);
-/* ------------------------------------------------------------
-   RETURN mu = (y1+alpha)/sqrt(2).
-   ------------------------------------------------------------ */
- return (y[0] + alpha) / M_SQRT2;
-}
-
-/* ************************************************************
-   PROCEDURE qlmul : LORENTZ SCALE z = D(x)y (full version)
-     z=D(x)y = [x'*y / sqrt(2);  mu * x(2:n) + rdetx * y(2:n)],
-     where mu = (z(1)+rdetx*y1) / (x(1)+ sqrt(2) * rdetx)
-   INPUT
-     x,y - full n x 1
-     rdetx - sqrt(det(x))
-     n - order of x,y,z.
-   OUTPUT
-     z - full n x 1. Let z := D(x)y.
-   ************************************************************ */
-void qlmul(double *z,const double *x,const double *y,
-	   const double rdetx,const int n)
-{
-  double mu;
-  mu = qscale(z, x,y,rdetx,n);
-  addscalarmul(z,mu,x,n);
-}
-
-/* ************************************************************
-   PROCEDURE qldiv : LORENTZ SCALE z = D(x)\y (full version)
-    D(x)\y = (1/det x) * [x'Jy/sqrt(2); rdetx * y2-alpha*x2],
-    where alpha = (x'Jy/sqrt(2) + rdetx*y1) / (x(1)+ sqrt(2) * rdetx)
-   INPUT
-     x,y - full n x 1
-     rdetx - sqrt(det(x))
-     n - order of x,y,z.
-   OUTPUT
-     z - full n x 1. Let z := D(x)^{-1}y.
-   ************************************************************ */
-void qldiv(double *z,const double *x,const double *y,
-	   const double rdetx,const int n)
-{
- double alpha,x1,y1,z1;
-/* ------------------------------------------------------------
-   z1 = x'*J*y / (sqrt(2) * det x),
-   alpha = (z1+y1/rdetx) / (x(1)+ sqrt(2) * rdetx)
-   ------------------------------------------------------------ */
- x1 = x[0]; y1 = y[0];
- z1 = (x1*y1 - realdot(x+1,y+1,n-1)) / (M_SQRT2 * SQR(rdetx));
- alpha = (z1 + y1 / rdetx) / (x1 + M_SQRT2 * rdetx);
-/* ------------------------------------------------------------
-   z(1) = z1, z(2:n) = y(2:n)/rdetx - alpha * x(2:n).
-   ------------------------------------------------------------ */
- z[0] = z1;
- scalarmul(z+1,-alpha,x+1,n-1);
- addscalarmul(z+1,1/rdetx,y+1,n-1);
-}
-#endif

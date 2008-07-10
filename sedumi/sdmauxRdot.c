@@ -34,79 +34,38 @@
  ************************************************************ */
 
 #include "blksdp.h"
+#include "mex.h"
+
 
 /* ************************************************************
    TIME-CRITICAL PROCEDURE -- r=realdot(x,y,n)
-   Computes r=sum(x_i * y_i) using loop-unrolling.
+   Computes r=sum(x_i * y_i) using BLAS.
    ************************************************************ */
-double realdot(const double *x, const double *y, const int n)
+double realdot(const double *x, const double *y, const mwIndex n)
 {
- int i;
- double r;
-
- r = 0.0;
- for(i = 0; i < n-7; ){          /* LEVEL 8 */
-   r+= x[i] * y[i]; i++;
-   r+= x[i] * y[i]; i++;
-   r+= x[i] * y[i]; i++;
-   r+= x[i] * y[i]; i++;
-   r+= x[i] * y[i]; i++;
-   r+= x[i] * y[i]; i++;
-   r+= x[i] * y[i]; i++;
-   r+= x[i] * y[i]; i++;
- }
-/* ------------------------------------------------------------
-   Now, i in {n-7, n-6, ..., n}. Do the last n-i elements.
-   ------------------------------------------------------------ */
- if(i < n-3){                            /* LEVEL 4 */
-   r+= x[i] * y[i]; i++;
-   r+= x[i] * y[i]; i++;
-   r+= x[i] * y[i]; i++;
-   r+= x[i] * y[i]; i++;
- }
- if(i < n-1){                           /* LEVEL 2 */
-   r+= x[i] * y[i]; i++;
-   r+= x[i] * y[i]; i++;
- }
- if(i < n)                              /* LEVEL 1 */
-   r+= x[i] * y[i];
- return r;
+    int one=1;
+    #ifdef PC
+    return ddot(&n,x,&one,y,&one);
+    #endif
+    
+    #ifdef UNIX
+    return ddot_(&n,x,&one,y,&one);
+    #endif
+    
 }
 
 /* ************************************************************
    TIME-CRITICAL PROCEDURE -- r=realssqr(x,n)
-   Computes r=sum(x_i^2) using loop-unrolling.
+   Computes r=sum(x_i^2) using BLAS.
    ************************************************************ */
-double realssqr(const double *x, const int n)
+double realssqr(const double *x, const mwIndex n)
 {
-  int i;
-  double r;
+    int one=1;
+    #ifdef PC
+    return ddot(&n,x,&one,x,&one);
+    #endif
 
-  r=0.0;
-  for(r=0.0, i=0; i< n-7; ){          /* LEVEL 8 */
-    r+= SQR(x[i]); i++;
-    r+= SQR(x[i]); i++;
-    r+= SQR(x[i]); i++;
-    r+= SQR(x[i]); i++;
-    r+= SQR(x[i]); i++;
-    r+= SQR(x[i]); i++;
-    r+= SQR(x[i]); i++;
-    r+= SQR(x[i]); i++;
-  }
-/* ------------------------------------------------------------
-   Now, i in {n-7, n-6, ..., n}. Do the last n-i elements.
-   ------------------------------------------------------------ */
-  if(i < n-3){                              /* LEVEL 4 */
-    r+= SQR(x[i]); i++;
-    r+= SQR(x[i]); i++;
-    r+= SQR(x[i]); i++;
-    r+= SQR(x[i]); i++;
-  }
-  if(i < n-1){                           /* LEVEL 2 */
-    r+= SQR(x[i]); i++;
-    r+= SQR(x[i]); i++;
-  }
-  if(i < n)                              /* LEVEL 1 */
-    r+= SQR(x[i]);
-  return r;
+    #ifdef UNIX
+    return ddot_(&n,x,&one,x,&one);
+    #endif    
 }

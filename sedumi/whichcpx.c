@@ -63,11 +63,11 @@
        the IM(x_i)-part should be treated as free variable.
    RETURNS n=number of free imaginary parts, length(ifr).
    ************************************************************ */
-int whichcpx(int *ifr, int *xcomplex, int *lorNL, int *rconeNL,
-	     const int nxcomplex, const int frlpN, const int lorN,
-	     const int rconeN)
+mwIndex whichcpx(mwIndex *ifr, mwIndex *xcomplex, mwIndex *lorNL, mwIndex *rconeNL,
+	     const mwIndex nxcomplex, const mwIndex frlpN, const mwIndex lorN,
+	     const mwIndex rconeN)
 {
-  int n, ix, i,j,k,lastj, ixOld;
+  mwIndex n, ix, i,j,k,lastj, ixOld;
   if(nxcomplex <= 0)
     return 0;
   n = 0; ix = 0;   /* target index into ifr, xcomplex */
@@ -137,11 +137,11 @@ int whichcpx(int *ifr, int *xcomplex, int *lorNL, int *rconeNL,
    PROCEDURE mexFunction - Entry for Matlab
    x = whichcpx(K)
    ************************************************************ */
-void mexFunction(const int nlhs, mxArray *plhs[],
-  const int nrhs, const mxArray *prhs[])
+void mexFunction( int nlhs, mxArray *plhs[],
+  int nrhs, const mxArray *prhs[])
 {
-  int i,j,iwsiz, nxcomplex, cpxf;
-  int *iwork, *lorNL, *rconeNL, *xcomplex;
+  mwIndex i,j,iwsiz, nxcomplex, cpxf;
+  mwIndex *iwork, *lorNL, *rconeNL, *xcomplex;
   double *myPr;
   const double *xcomplexPr;
   mxArray *MY_FIELD;
@@ -169,21 +169,22 @@ void mexFunction(const int nlhs, mxArray *plhs[],
    iwork(2*nxcomplex+lorN+rconeN))
    ------------------------------------------------------------ */
     iwsiz = 2* nxcomplex + cK.lorN + cK.rconeN;
-    iwork = (int *) mxCalloc(MAX(iwsiz,1), sizeof(int));
+    iwork = (mwIndex *) mxCalloc(MAX(iwsiz,1), sizeof(mwIndex));
     xcomplex = iwork + nxcomplex;
     lorNL = xcomplex + nxcomplex;
     rconeNL = lorNL + cK.lorN;
 /* ------------------------------------------------------------
-   Convert double to int
+   Convert double to mwIndex
    ------------------------------------------------------------ */
     for(i = 0; i < nxcomplex; i++){
-      j = xcomplexPr[i];                       /* double to int */
+      j = xcomplexPr[i];                       /* double to mwIndex */
+      mxAssert(j>0,"");
       xcomplex[i] = --j;                       /* Fortran to C */
     }
     for(i = 0; i < cK.lorN; i++)
-      lorNL[i] = cK.lorNL[i];                  /* double to int */
+      lorNL[i] = cK.lorNL[i];                  /* double to mwIndex */
     for(i = 0; i < cK.rconeN; i++)
-      rconeNL[i] = cK.rconeNL[i];              /* double to int */
+      rconeNL[i] = cK.rconeNL[i];              /* double to mwIndex */
 /* ------------------------------------------------------------
    The real work:
    ------------------------------------------------------------ */
@@ -205,26 +206,26 @@ void mexFunction(const int nlhs, mxArray *plhs[],
   MY_FIELD = mxCreateDoubleMatrix(cpxf,1,mxREAL);      /* cpx.f */
   myPr = mxGetPr(MY_FIELD);
   for(i = 0; i < cpxf; i++)
-    myPr[i] = 1.0 + iwork[i];                          /* int to double */
+    myPr[i] = 1.0 + iwork[i];                          /* mwIndex to double */
   mxSetField(CPX_OUT, 0,"f", MY_FIELD);
   MY_FIELD = mxCreateDoubleMatrix(cK.lorN,1,mxREAL);      /* cpx.q */
   if(iwsiz > 0){
     myPr = mxGetPr(MY_FIELD);
     for(i = 0; i < cK.lorN; i++)
-      myPr[i] = lorNL[i];                              /* int to double */
+      myPr[i] = lorNL[i];                              /* mwIndex to double */
   }
   mxSetField(CPX_OUT, 0,"q", MY_FIELD);
   MY_FIELD = mxCreateDoubleMatrix(cK.rconeN,1,mxREAL);      /* cpx.r */
   if(iwsiz > 0){
     myPr = mxGetPr(MY_FIELD);
     for(i = 0; i < cK.rconeN; i++)
-      myPr[i] = rconeNL[i];                              /* int to double */
+      myPr[i] = rconeNL[i];                              /* mwIndex to double */
   }
   mxSetField(CPX_OUT, 0,"r", MY_FIELD);
   MY_FIELD = mxCreateDoubleMatrix(nxcomplex,1,mxREAL);      /* cpx.x */
   myPr = mxGetPr(MY_FIELD);
   for(i = 0; i < nxcomplex; i++)
-    myPr[i] = 1.0 + xcomplex[i];                       /* int to double */
+    myPr[i] = 1.0 + xcomplex[i];                       /* mwIndex to double */
   mxSetField(CPX_OUT, 0,"x", MY_FIELD);
 /* ------------------------------------------------------------
    Release working arrays

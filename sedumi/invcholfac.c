@@ -56,13 +56,13 @@ function y = invcholfac(u,K, perm)
 /* ************************************************************
    PROCEDURE mexFunction - Entry for Matlab
    ************************************************************ */
-void mexFunction(const int nlhs, mxArray *plhs[],
-  const int nrhs, const mxArray *prhs[])
+void mexFunction(int nlhs, mxArray *plhs[],
+  int nrhs, const mxArray *prhs[])
 {
-  int i, k, nk, nksqr, lenud, fwsiz;
+  mwIndex i, k, nk, nksqr, lenud, fwsiz;
   double *fwork, *fworkpi, *y, *permPr;
   const double *u;
-  int *perm, *iwork;
+  mwIndex *perm, *iwork;
   coneK cK;
   char isperm;
 
@@ -98,11 +98,11 @@ void mexFunction(const int nlhs, mxArray *plhs[],
   y = mxGetPr(Y_OUT);
 /* ------------------------------------------------------------
    Allocate fwork = double( max(cK.rMaxn^2, 2*cK.hMaxn^2) )
-   iwork = int(rLen+hLen)
+   iwork = mwIndex(rLen+hLen)
    ------------------------------------------------------------ */
   fwsiz = MAX(SQR(cK.rMaxn),2*SQR(cK.hMaxn));
   fwork = (double *) mxCalloc( MAX(1,fwsiz), sizeof(double));
-  iwork = (int *) mxCalloc( MAX(1, cK.rLen + cK.hLen), sizeof(int) );
+  iwork = (mwIndex *) mxCalloc( MAX(1, cK.rLen + cK.hLen), sizeof(mwIndex) );
 /* ------------------------------------------------------------
    Let perm=iwork, and fworkpi = fwork + SQR(cK.hMaxn)
    ------------------------------------------------------------ */

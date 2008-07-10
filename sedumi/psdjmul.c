@@ -62,9 +62,9 @@ function y = psdmul(x,y, K)
    UPDATED
      z - full n x n, on entry arbitrary, on return tril(Z) = tril(XY+YX)/2.
    ************************************************************ */
-void symjmul(double *z,const double *x,const double *y,const int n)
+void symjmul(double *z,const double *x,const double *y,const mwIndex n)
 {
- int i,j,icol;
+ mwIndex i,j,icol;
 
  /* ------------------------------------------------------------
     For i=0..n-1:
@@ -88,9 +88,9 @@ void symjmul(double *z,const double *x,const double *y,const int n)
      z - full 2*(n x n), on entry arbitrary, on return
        tril(Z) = tril(XY + YX)/2.
    ************************************************************ */
-void hermjmul(double *z,const double *x,const double *y,const int n)
+void hermjmul(double *z,const double *x,const double *y,const mwIndex n)
 {
- int i,j,icol,jcol,nsqr;
+ mwIndex i,j,icol,jcol,nsqr;
  const double *xpi,*ypi;
 
  nsqr = SQR(n);
@@ -128,7 +128,7 @@ void hermjmul(double *z,const double *x,const double *y,const int n)
 void mexFunction(const int nlhs, mxArray *plhs[],
   const int nrhs, const mxArray *prhs[])
 {
- int k, nk, nksqr, lenfull, ifirst, lenud;
+ mwIndex k, nk, nksqr, lenfull, ifirst, lenud;
  double *z;
  const double *x,*y;
  coneK cK;
@@ -165,7 +165,7 @@ void mexFunction(const int nlhs, mxArray *plhs[],
    The actual job is done here: Z = (XY + YX)/2
    ------------------------------------------------------------ */
  for(k=0; k < cK.rsdpN; k++){                /* real symmetric */
-   nk = cK.sdpNL[k];                 /* real to int */
+   nk = cK.sdpNL[k];                 /* real to mwIndex */
    symjmul(z,x,y,nk);
    tril2sym(z,nk);
    nksqr = SQR(nk);
@@ -173,7 +173,7 @@ void mexFunction(const int nlhs, mxArray *plhs[],
    y += nksqr;
  }
  for(; k < cK.sdpN; k++){                    /* complex Hermitian */
-   nk = cK.sdpNL[k];                 /* real to int */
+   nk = cK.sdpNL[k];                 /* real to mwIndex */
    nksqr = SQR(nk);
    hermjmul(z,x,y,nk);
    tril2herm(z,z+nksqr,nk);

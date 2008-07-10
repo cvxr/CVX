@@ -135,6 +135,7 @@ void mexFunction(const int nlhs, mxArray *plhs[],
     *invp, *colcnt;
   mxArray *L_FIELD;
   const char *LFieldnames[] = {"L", "perm", "xsuper"};
+  mwIndex *mwXjc, *mwXir, *mwLjc, *mwLir;
 /* ------------------------------------------------------------
    Check for proper number of arguments
    ------------------------------------------------------------ */
@@ -143,15 +144,22 @@ void mexFunction(const int nlhs, mxArray *plhs[],
 /* ------------------------------------------------------------
    Check input sizes (ADJ,perm)
    ------------------------------------------------------------ */
-  m = mxGetM(X_IN);
-  mxAssert( m  == mxGetN(X_IN), "X must be square");
+  m = (int) mxGetM(X_IN);
+  mxAssert( m  == (int) mxGetN(X_IN), "X must be square");
   mxAssert(mxIsSparse(X_IN), "X must be sparse");
-  mxAssert( (mxGetM(PERM_IN) * mxGetN(PERM_IN)) == m, "perm size mismatch");
+  mxAssert( (mxGetM(PERM_IN) * mxGetN(PERM_IN)) == (mwIndex) m, "perm size mismatch");
 /* ------------------------------------------------------------
    Get input (X,perm)
    ------------------------------------------------------------ */
-  Xjc = mxGetJc(X_IN);
-  Xir = mxGetIr(X_IN);
+  mwXjc = mxGetJc(X_IN);
+  Xjc= (int *) mxCalloc(m+1,sizeof(int));
+  for(i=0;i<=m;i++)
+      Xjc[i]= (int) mwXjc[i];
+  mwXir = mxGetIr(X_IN);
+  Xir =(int *) mxCalloc(Xjc[m],sizeof(int));
+  for(i=0;i<Xjc[m];i++)
+      Xir[i]= (int) mwXir[i];
+  
   permPr = mxGetPr(PERM_IN);
 #ifdef DO_BFINIT
   cachsz = mxGetScalar(CACHSZ_IN);
@@ -199,9 +207,11 @@ void mexFunction(const int nlhs, mxArray *plhs[],
    Create sparse output matrix L.L, m x m, with nnzl nonzeros.
    ------------------------------------------------------------ */
   L_FIELD = mxCreateSparse(m,m, nnzl,mxREAL);
-  Ljc = mxGetJc(L_FIELD);
-  Lir = mxGetIr(L_FIELD);
+  mwLjc = mxGetJc(L_FIELD);
+  mwLir = mxGetIr(L_FIELD);
   Lpr = mxGetPr(L_FIELD);
+  Ljc=(int *) mxCalloc(m+1,sizeof(int));
+  Lir=(int *) mxCalloc(nnzl,sizeof(int));
 /* ------------------------------------------------------------
    Do symbolic factorization
    ------------------------------------------------------------ */
@@ -258,6 +268,15 @@ void mexFunction(const int nlhs, mxArray *plhs[],
 /* ------------------------------------------------------------
    Release working arrays
    ------------------------------------------------------------ */
+for(i=0;i<=m;i++)
+    mwLjc[i]=(mwIndex) Ljc[i];
+for(i=0;i<nnzl;i++)
+    mwLir[i]=(mwIndex) Lir[i];
+
+  mxFree(Xjc);
+  mxFree(Xir);
+  mxFree(Ljc);
+  mxFree(Lir);
   mxFree(iwork);
   mxFree(invp);
   mxFree(perm);

@@ -38,6 +38,7 @@ function y = vecsym(x,K)
 */
 
 #include <math.h>
+#include <string.h>
 #include "mex.h"
 #include "blksdp.h"
 
@@ -51,9 +52,9 @@ function y = vecsym(x,K)
    INPUT x, n - full n x n matrix x.
    OUTPUT y - on output, contains (x+x')/2
    ************************************************************ */
-void symproj(double *y, const double *x, const int n)
+void symproj(double *y, const double *x, const mwIndex n)
 {
-  int colp,i,j;
+  mwIndex colp,i,j;
   double yij;
 
   /* ------------------------------------------------------------
@@ -74,9 +75,9 @@ void symproj(double *y, const double *x, const int n)
    INPUT x, n - full n x n matrix x.
    OUTPUT y - on output, contains (x-x')/2
    ************************************************************ */
-void skewproj(double *y, const double *x, const int n)
+void skewproj(double *y, const double *x, const mwIndex n)
 {
-  int colp,i,j;
+  mwIndex colp,i,j;
   double yij;
 
   /* ------------------------------------------------------------
@@ -102,10 +103,10 @@ void skewproj(double *y, const double *x, const int n)
    OUTPUT
      y - length sum(K.s.^2) vector, y = vecsym(x,K).
    ************************************************************ */
-void vecsymPSD(double *y, const double *x,const int rsdpN,const int sdpN,
+void vecsymPSD(double *y, const double *x,const mwIndex rsdpN,const mwIndex sdpN,
                const double *sdpNL)
 {
-  int k,nk,nksqr;
+  mwIndex k,nk,nksqr;
 /* ------------------------------------------------------------
    Make real PSD blocks symmetric
    ------------------------------------------------------------ */
@@ -141,7 +142,7 @@ void mexFunction(const int nlhs, mxArray *plhs[],
  mxArray *output_array[1], *Xk;
 
  coneK cK;
- int k, nk, nksqr, lqDim,lenfull;
+ mwIndex k, nk, nksqr, lqDim,lenfull;
  const double *x;
  double *y;
 

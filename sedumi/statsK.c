@@ -70,9 +70,9 @@ void setScalarField(mxArray *mxK,const char *fnm,const double fval)
      cK - cone structure K.{l,q,s}.
      blkstart - blkstart = cumsum([0 K.l K.q K.s.^2])
    ************************************************************ */
-void getblkstart(int *blkstart, const coneK cK)
+void getblkstart(mwIndex *blkstart, const coneK cK)
 {
-  int i,k,nk,blknz;
+  mwIndex i,k,nk,blknz;
 
 /* ------------------------------------------------------------
    Lorentz trace block
@@ -103,11 +103,11 @@ void getblkstart(int *blkstart, const coneK cK)
 /* ************************************************************
    PROCEDURE mexFunction - Entry for Matlab
    ************************************************************ */
-void mexFunction(const int nlhs, mxArray *plhs[],
-  const int nrhs, const mxArray *prhs[])
+void mexFunction(int nlhs, mxArray *plhs[],
+  int nrhs, const mxArray *prhs[])
 {
-  int nblk,i, nycomplex;
-  int *blkstart;
+  mwIndex nblk,i, nycomplex;
+  mwIndex *blkstart;
   double *blkstartPr;
   const double *ycomplexPr;
   coneK cK;
@@ -138,7 +138,7 @@ void mexFunction(const int nlhs, mxArray *plhs[],
 /* ------------------------------------------------------------
    Allocate working array blkstart(nblk+1).
    ------------------------------------------------------------ */
-  blkstart = (int *) mxCalloc(nblk + 1, sizeof(int));
+  blkstart = (mwIndex *) mxCalloc(nblk + 1, sizeof(mwIndex));
   getblkstart(blkstart, cK);
 /* ------------------------------------------------------------
    Create output structure K

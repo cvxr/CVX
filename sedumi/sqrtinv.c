@@ -55,9 +55,9 @@ function y = sqrtinv(q,vlab,K)
 /* ************************************************************
    PROCEDURE qdivv - Computes Y = (Q / diag(sqrt(vlab)))'
    ************************************************************ */
-void qdivv(double *y, const double *q,const double *v,const int n)
+void qdivv(double *y, const double *q,const double *v,const mwIndex n)
 {
-  int i,j,jcol,inz;
+  mwIndex i,j,jcol,inz;
   double svi;
 
   for(inz = 0, i = 0; i < n; i++){
@@ -69,9 +69,9 @@ void qdivv(double *y, const double *q,const double *v,const int n)
 
 /* complex case */
 void prpiqdivv(double *y,double *ypi, const double *q,const double *qpi,
-               const double *v,const int n)
+               const double *v,const mwIndex n)
 {
-  int i,j,jcol,inz;
+  mwIndex i,j,jcol,inz;
   double svi;
 
   for(inz = 0, i = 0; i < n; i++){
@@ -95,7 +95,7 @@ void prpiqdivv(double *y,double *ypi, const double *q,const double *qpi,
 void mexFunction(const int nlhs, mxArray *plhs[],
   const int nrhs, const mxArray *prhs[])
 {
-  int i,k, nk, nksqr, lenud, lendiag, diagskip;
+  mwIndex i,k, nk, nksqr, lenud, lendiag, diagskip;
   double *y;
   const double *q,*v;
   coneK cK;

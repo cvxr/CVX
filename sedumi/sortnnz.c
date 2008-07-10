@@ -60,7 +60,7 @@ function perm = sortnnz(At,Ajc1,Ajc2)
    OUTPUT
      y - length m keyint-array.
    ************************************************************ */
-void sortnnz(keyint *y, const int *jc1, const int *jc2, const int m)
+void sortnnz(keyint *y, const mwIndex *jc1, const mwIndex *jc2, const mwSize m)
 {
   keyint ki;
   for(ki.k = 0; ki.k < m; ki.k++){
@@ -74,11 +74,11 @@ void sortnnz(keyint *y, const int *jc1, const int *jc2, const int m)
 /* ************************************************************
    PROCEDURE mexFunction - Entry for Matlab
    ************************************************************ */
-void mexFunction(const int nlhs, mxArray *plhs[],
-                 const int nrhs, const mxArray *prhs[])
+void mexFunction(int nlhs, mxArray *plhs[],
+                 int nrhs, const mxArray *prhs[])
 {
-  int i, m, njc1,njc2;
-  int *Ajc;
+  mwSize i, m, njc1,njc2;
+  mwIndex *Ajc;
   const double *Ajc1Pr, *Ajc2Pr;
   double *permPr;
   keyint *y;
@@ -100,13 +100,13 @@ void mexFunction(const int nlhs, mxArray *plhs[],
    Allocate int array Ajc(2*m)
    keyint array y(m)
    ------------------------------------------------------------ */
-  Ajc = (int *) mxCalloc(MAX(2*m,1), sizeof(int));
+  Ajc = (mwIndex *) mxCalloc(MAX(2*m,1), sizeof(mwIndex));
   y = (keyint *) mxCalloc(MAX(m,1), sizeof(keyint));
 /* ------------------------------------------------------------
    Convert Ajc from double to int:
    ------------------------------------------------------------ */
   if(njc1 == 0)
-    memcpy(Ajc,mxGetJc(AT_IN),m*sizeof(int));  /* default: start of column */
+    memcpy(Ajc,mxGetJc(AT_IN),m*sizeof(mwIndex));  /* default: start of column */
   else {
     mxAssert(njc1 >= m, "Ajc1 size mismatch.");
     for(i = 0; i < m; i++){                         /* to integers */
@@ -114,7 +114,7 @@ void mexFunction(const int nlhs, mxArray *plhs[],
     }
   }
   if(njc2 == 0)
-    memcpy(Ajc+m,mxGetJc(AT_IN)+1,m*sizeof(int));  /* default: end of column */
+    memcpy(Ajc+m,mxGetJc(AT_IN)+1,m*sizeof(mwIndex));  /* default: end of column */
   else {
     mxAssert(njc2 >= m, "Ajc2 size mismatch.");
     for(i = 0; i < m; i++){                         /* to integers */
