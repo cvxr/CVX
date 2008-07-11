@@ -125,9 +125,9 @@ extern mwIndex idamax(mwIndex *,double *,int *);
 #endif
 
 #ifdef UNIX
-extern double ddot_(mwIndex*, double*, int*, double*, int*);
-extern double dnrm2_(mwIndex*, double*,int*);
-extern mwIndex idamax_(mwIndex *,double *,int *);
+extern double ddot_(const mwIndex*, const double*,const int*, const double*, const int*);
+extern double dnrm2_(const mwIndex*, const double*,const int*);
+extern mwIndex idamax_(const mwIndex *,const double *,const int *);
 #endif
 
 /* ------------------------------------------------------------

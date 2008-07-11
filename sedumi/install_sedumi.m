@@ -1,5 +1,7 @@
-%SeDuMi installation script
+function install_sedumi
 
+%SeDuMi installation script
+%
 % This file is part of SeDuMi 1.1 by Imre Polik and Oleksandr Romanko
 % Copyright (C) 2005 McMaster University, Hamilton, CANADA  (since 1.1)
 %
@@ -87,52 +89,55 @@ targets64={...
 'invcholfac.c triuaux.c sdmauxCone.c sdmauxRdot.c sdmauxTriu.c sdmauxScalarmul.c blkaux.c',...
 };
 
-
-clc
-disp('Building SeDuMi binaries')
-MATLAB=matlabroot;
-if ispc
-    PCFLAG=' -DPC ';
-    BLASLIB = [' "',MATLAB,'\extern\lib\win64\microsoft\' ];
-    if ver < 7.3,
-        BLASLIB = [ BLASLIB, 'libmwlapack.lib" ' ];
-    else
-        BLASLIB = [ BLASLIB, 'libmwlapack.lib"', BLASLIB, 'libmwblas.lib" '  ];
+disp( 'Building SeDuMi binaries...' )
+COMPUTER = computer;
+VERSION  = [1,0.1]*sscanf(version,'%d.%d');
+flags{1} = '-O';
+if ispc,
+    flags{2} = '-DPC';
+elseif isunix,
+    flags{2} = '-DUNIX';
+end
+if strcmp(COMPUTER(end-1:end),'64') & (VERSION>=7.3),
+    flags{3} = '-largeArrayDims';
+elseif (VERSION<7.3),
+    flags{3} = '-DmwIndex=int';
+    flags{4} = '-DmwSize=int';
+end
+libs = {};
+if ispc,
+    MATLAB = matlabroot;
+    BLASDIR = [ MATLAB, '\extern\lib\', COMPUTER, '\microsoft\' ];
+    temp = [ BLASDIR, 'libmwlapack.lib' ];
+    if exist( temp ),
+        libs{end+1} = temp;
+        temp = [ BLASDIR, 'libmwlblas.lib' ];
+        if exist( temp ),
+            libs{end+1} = temp;
+        end
     end
-elseif isunix
-    PCFLAG=' -DUNIX ';
-    BLASLIB='';
 end
-COMPUTER=computer;
-ver = version;
-temp = find( ver == '.' );
-if length( temp ) > 1,
-    ver( temp( 2 ) : end ) = [];
-end
-ver = eval( ver, 'NaN' );
-if strcmp(COMPUTER(end-1:end),'64') & ( ver >= 7.3 ),
-    LARGEFLAG=' -largeArrayDims ';
-else
-    LARGEFLAG=' -DmwIndex=int -DmwSize=int ';
-end
-
+flags = sprintf( ' %s', flags{:} );
+libs  = sprintf( ' %s', libs{:} );
 for i=1:length(targets64)
-    disp(targets64{i});
-    eval(['mex -O ',PCFLAG,LARGEFLAG,targets64{i},BLASLIB])
+    disp( [ '   ', targets64{i} ] );
+    eval( [ 'mex ', flags, ' ', targets64{i}, libs ] );
 end
-disp('Done!')
-% disp('Adding SeDuMi to the Matlab path')
-% path(path,pwd);
-% cd conversion
-% path(path,pwd);
-% cd ..
-% cd examples
-% path(path,pwd);
-% cd ..
-% disp('Please save the Matlab path if you want to use SeDuMi from any directory.'); 
-% disp('Go to File/Set Path and click on Save.');
-% disp('SeDuMi has been succesfully installed. For more information type help sedumi or see the User guide.')
-% clear  i targets64
+disp( 'Done!' )
+
+if nargin < 1,
+    disp('Adding SeDuMi to the Matlab path')
+    path(path,pwd);
+    cd conversion
+    path(path,pwd);
+    cd ..
+    cd examples
+    path(path,pwd);
+    cd ..
+    disp('Please save the Matlab path if you want to use SeDuMi from any directory.'); 
+    disp('Go to File/Set Path and click on Save.');
+    disp('SeDuMi has been succesfully installed. For more information type help sedumi or see the User guide.')
+end
 
 %symfctmex and ordmmdmex are not truly 64bit due to the complexity of the
 %underlying code.
