@@ -93,17 +93,27 @@ disp('Building SeDuMi binaries')
 MATLAB=matlabroot;
 if ispc
     PCFLAG=' -DPC ';
-    BLASLIB=[' "',MATLAB,'\extern\lib\win64\microsoft\libmwblas.lib"'];
-    %BLASLIB=[' "',MATLAB,'\extern\lib\win32\lcc\libmwblas.lib"'];
+    BLASLIB = [' "',MATLAB,'\extern\lib\win64\microsoft\' ];
+    if ver < 7.3,
+        BLASLIB = [ BLASLIB, 'libmwlapack.lib" ' ];
+    else
+        BLASLIB = [ BLASLIB, 'libmwlapack.lib"', BLASLIB, 'libmwblas.lib" '  ];
+    end
 elseif isunix
     PCFLAG=' -DUNIX ';
     BLASLIB='';
 end
 COMPUTER=computer;
-if strcmp(COMPUTER(end-1:end),'64')
+ver = version;
+temp = find( ver == '.' );
+if length( temp ) > 1,
+    ver( temp( 2 ) : end ) = [];
+end
+ver = eval( ver, 'NaN' );
+if strcmp(COMPUTER(end-1:end),'64') & ( ver >= 7.3 ),
     LARGEFLAG=' -largeArrayDims ';
 else
-    LARGEFLAG=' ';
+    LARGEFLAG=' -DmwIndex=int -DmwSize=int ';
 end
 
 for i=1:length(targets64)

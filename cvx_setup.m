@@ -42,11 +42,7 @@ else
 end
 temp = strfind( mpath, fs );
 mpath( temp(end) : end ) = [];
-if needLarge,
-    solvers = { 'sdpt3' };
-else
-    solvers = { 'sdpt3', 'sedumi' };
-end
+solvers = { 'sdpt3', 'sedumi' };
 rmpaths = { 'sets', 'keywords', 'builtins', 'commands', 'functions', 'lib', 'structures', 'matlab6' };
 needpaths = {};
 delepaths = {};
@@ -202,7 +198,7 @@ cd( dd );
 newext = mexext;
 isw32 = strcmp( newext, 'mexw32' );
 sedpath = [ mpath, fs, 'sedumi' ];
-if ~needLarge & exist( sedpath, 'dir' ),
+if exist( sedpath, 'dir' ),
     if ~fullRecompile,
         mexfiles = dir( [ sedpath, fs, '*.', newext ] );
         if isempty( mexfiles ) & ispc & isw32,
