@@ -92,13 +92,14 @@ targets64={...
 disp( 'Building SeDuMi binaries...' )
 COMPUTER = computer;
 VERSION  = [1,0.1]*sscanf(version,'%d.%d');
+IS64BIT  = strcmp(COMPUTER(end-1:end),'64');
 flags{1} = '-O';
 if ispc,
     flags{2} = '-DPC';
 elseif isunix,
     flags{2} = '-DUNIX';
 end
-if strcmp(COMPUTER(end-1:end),'64') & (VERSION>=7.3),
+if IS64BIT & (VERSION>=7.3),
     flags{3} = '-largeArrayDims';
 elseif (VERSION<7.3),
     flags{3} = '-DmwIndex=int';
@@ -107,11 +108,18 @@ end
 libs = {};
 if ispc,
     MATLAB = matlabroot;
-    BLASDIR = [ MATLAB, '\extern\lib\', COMPUTER, '\microsoft\' ];
+    if IS64BIT,
+        BLASDIR = '64\microsoft\';
+    elseif VERSION >= 7.2,
+        BLASDIR = '32\microsoft\';
+    else
+        BLASDIR = '32\lcc\';
+    end
+    BLASDIR = [ MATLAB, '\extern\lib\win', BLASDIR ];
     temp = [ BLASDIR, 'libmwlapack.lib' ];
     if exist( temp ),
         libs{end+1} = temp;
-        temp = [ BLASDIR, 'libmwlblas.lib' ];
+        temp = [ BLASDIR, 'libmwblas.lib' ];
         if exist( temp ),
             libs{end+1} = temp;
         end
@@ -120,7 +128,7 @@ end
 flags = sprintf( ' %s', flags{:} );
 libs  = sprintf( ' %s', libs{:} );
 for i=1:length(targets64)
-    disp( [ '   ', targets64{i} ] );
+    disp( [ 'mex ', flags, ' ', targets64{i}, libs ] );
     eval( [ 'mex ', flags, ' ', targets64{i}, libs ] );
 end
 disp( 'Done!' )
