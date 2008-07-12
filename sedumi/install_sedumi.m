@@ -107,9 +107,16 @@ elseif (VERSION<7.3),
     flags{end+1} = '-DmwSize=int';
     flags{end+1} = '-DmwSignedIndex=int';
 end
-libs = {'-lmwlapack'};
-if VERSION >= 7.5,
-    libs{end+1} = '-lmwblas';
+if ispc,
+    libs = { 'libmwlapack.lib' };
+    if VERSION >= 7.5,
+        libs{end+1} = 'libmwblas.lib';
+    end
+else
+    libs = {'-lmwlapack'};
+    if VERSION >= 7.5,
+        libs{end+1} = '-lmwblas';
+    end
 end
 flags = sprintf( ' %s', flags{:} );
 libs  = sprintf( ' %s', libs{:} );
