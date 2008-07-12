@@ -403,7 +403,7 @@ mwIndex precorrect(double *lpr, const mwIndex *ljc,const double *d, const mwInde
    fwork = -Xk * inv(LABK) * Xk'
    ------------------------------------------------------------ */
       if(fwsiz + ncolup*(ncolup-1)/2 < mk * ncolup )
-        return -1;
+        return (mwIndex)-1;
       for(k = firstk; k < nextk; k++)      /* find 1st positive diag */
         if(d[k] > 0.0)
           break;
@@ -482,7 +482,7 @@ mwIndex blkLDL(const mwIndex neqns, const mwIndex nsuper, const mwIndex *xsuper,
    iwork = [link(nsuper); length(nsuper); irInv(neqns); relind(neqns)].
    ------------------------------------------------------------ */
   if(iwsiz < 2 * (neqns + nsuper))
-    return -1;
+    return (mwIndex)-1;
   link   = iwork;                    /* 2 times length nsuper: */
   length = link + nsuper;
   irInv  = length + nsuper;          /* 2 * length neqns: */
@@ -529,8 +529,8 @@ mwIndex blkLDL(const mwIndex neqns, const mwIndex nsuper, const mwIndex *xsuper,
       if((ncolupLst[k] = precorrect(lpr,ljc,d,irInv, nextj,
                                     lindx + xlindx[k+1]-length[k],
                                     length[k],xsuper[k],xsuper[k+1],
-                                    relind,fwsiz,fwork)) < 0)
-        return -1;         /* fwsiz too small */
+                                    relind,fwsiz,fwork)) == (mwIndex)-1 )
+        return (mwIndex)-1;         /* fwsiz too small */
     }	
 /* ------------------------------------------------------------
    DO DENSE CHOLESKY on the current supernode

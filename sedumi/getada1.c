@@ -204,11 +204,11 @@ void mexFunction(int nlhs, mxArray *plhs[],
    Get SCALING VECTOR: d.{l,det}, and check its size with blkstart.
    ------------------------------------------------------------ */
   mxAssert(mxIsStruct(D_IN), "Parameter `d' should be a structure."); /* d */
-  MY_FIELD = mxGetField(D_IN,0,"l");        /* d.l */
+  MY_FIELD = mxGetField(D_IN,(mwIndex)0,"l");        /* d.l */
   mxAssert( MY_FIELD!= NULL, "Field d.l missing.");
   blkstart[0] = mxGetM(MY_FIELD) * mxGetN(MY_FIELD);
   d = mxGetPr(MY_FIELD);
-  MY_FIELD = mxGetField(D_IN,0,"det");            /* d.det */
+  MY_FIELD = mxGetField(D_IN,(mwIndex)0,"det");            /* d.det */
   mxAssert( MY_FIELD != NULL, "Field d.det missing.");
   mxAssert(mxGetM(MY_FIELD) * mxGetN(MY_FIELD) == blkstart[1] - blkstart[0], "Size d.det mismatch");
   ddet = mxGetPr(MY_FIELD);

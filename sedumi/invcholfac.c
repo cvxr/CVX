@@ -94,7 +94,7 @@ void mexFunction(int nlhs, mxArray *plhs[],
 /* ------------------------------------------------------------
    Allocate output Y
    ------------------------------------------------------------ */
-  Y_OUT =  mxCreateDoubleMatrix(lenud, 1, mxREAL);
+  Y_OUT =  mxCreateDoubleMatrix(lenud, (mwSize)1, mxREAL);
   y = mxGetPr(Y_OUT);
 /* ------------------------------------------------------------
    Allocate fwork = double( max(cK.rMaxn^2, 2*cK.hMaxn^2) )

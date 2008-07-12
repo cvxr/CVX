@@ -138,14 +138,14 @@ void mexFunction(int nlhs, mxArray *plhs[],
    Disassemble block Cholesky structure L
    ------------------------------------------------------------ */
   mxAssert(mxIsStruct(L_IN), "Parameter `L' should be a structure.");
-  L_FIELD = mxGetField(L_IN,0,"L");        /* L.L */
+  L_FIELD = mxGetField(L_IN,(mwIndex)0,"L");        /* L.L */
   mxAssert( L_FIELD != NULL, "Missing field L.L.");
   m = mxGetM(L_FIELD);
   mxAssert(m == mxGetN(L_FIELD), "L.L must be square.");
   mxAssert(mxIsSparse(L_FIELD), "L.L should be sparse.");
   ljc = mxGetJc(L_FIELD);
   lir = mxGetIr(L_FIELD);
-  L_FIELD = mxGetField(L_IN,0,"xsuper");          /* L.xsuper */
+  L_FIELD = mxGetField(L_IN,(mwIndex)0,"xsuper");          /* L.xsuper */
   mxAssert( L_FIELD != NULL, "Missing field L.xsuper.");
   nsuper = mxGetM(L_FIELD) * mxGetN(L_FIELD) - 1;
   mxAssert( nsuper <= m, "Size L.xsuper mismatch.");
@@ -170,7 +170,7 @@ void mexFunction(int nlhs, mxArray *plhs[],
 /* ------------------------------------------------------------
    create OUTPUT variable SPLIT(m)
    ------------------------------------------------------------ */
-  SPLIT_OUT = mxCreateDoubleMatrix(m, 1, mxREAL);          /* L.split */
+  SPLIT_OUT = mxCreateDoubleMatrix(m, (mwSize)1, mxREAL);          /* L.split */
   splitPr = mxGetPr(SPLIT_OUT);
   for(i = 0; i < m; i += j){
     j = split[i];

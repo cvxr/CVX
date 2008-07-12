@@ -210,11 +210,11 @@ void mexFunction(const int nlhs, mxArray *plhs[],
     Disassemble block Cholesky structure L
     ------------------------------------------------------------ */
  mxAssert(mxIsStruct(L_IN), "Parameter `L' should be a structure.");
- if( (L_FIELD = mxGetField(L_IN,0,"perm")) == NULL)      /* L.perm */
+ if( (L_FIELD = mxGetField(L_IN,(mwIndex)0,"perm")) == NULL)      /* L.perm */
    mexErrMsgTxt("Missing field L.perm.");
  m = mxGetM(L_FIELD) * mxGetN(L_FIELD);
  permPr = mxGetPr(L_FIELD);
- if( (L_FIELD = mxGetField(L_IN,0,"L")) == NULL)      /* L.L */
+ if( (L_FIELD = mxGetField(L_IN,(mwIndex)0,"L")) == NULL)      /* L.L */
    mexErrMsgTxt("Missing field L.L.");
  if( m != mxGetM(L_FIELD) || m != mxGetN(L_FIELD) )
    mexErrMsgTxt("Size L.L mismatch.");
@@ -223,7 +223,7 @@ void mexFunction(const int nlhs, mxArray *plhs[],
  L.jc = mxGetJc(L_FIELD);
  L.ir = mxGetIr(L_FIELD);
  L.pr = mxGetPr(L_FIELD);
- if( (L_FIELD = mxGetField(L_IN,0,"xsuper")) == NULL)      /* L.xsuper */
+ if( (L_FIELD = mxGetField(L_IN,(mwIndex)0,"xsuper")) == NULL)      /* L.xsuper */
    mexErrMsgTxt("Missing field L.xsuper.");
  nsuper = mxGetM(L_FIELD) * mxGetN(L_FIELD) - 1;
  if( nsuper > m )

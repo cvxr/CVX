@@ -100,7 +100,7 @@ void snodeCompress(mwIndex *xlindx,mwIndex *lindx,mwIndex *snode,
    REMARK - caller has to set processed[jsup]=1; getnzfwlj only does
      this for the child supernodes.
    ************************************************************ */
-void getnzfwlj(mwIndex *snodefrom, char *processed, mwIndex jsup,
+void getnzfwlj(mwIndex *snodefrom, bool *processed, mwIndex jsup,
               const mwIndex *snode, const mwIndex *xsuper,
               const mwIndex *xlindx, const mwIndex *lindx)
 {
@@ -148,7 +148,7 @@ void getnzfwlj(mwIndex *snodefrom, char *processed, mwIndex jsup,
      snodefrom - Length nsuper array. Lists first relevant subnode of
        each supernode where processed[jsup]=1.
    ************************************************************ */
-void getnzsuper(mwIndex *snodefrom, char *processed,
+void getnzsuper(mwIndex *snodefrom, bool *processed,
                 const mwIndex *bir, const mwIndex bnnz,
                 const mwIndex *invperm, const mwIndex *snode, const mwIndex *xsuper,
                 const mwIndex *xlindx, const mwIndex *lindx)
@@ -209,7 +209,7 @@ void symbfwmat(mwIndex *xjc, mwIndex **pxir,mwIndex *pmaxnnz,
                const mwIndex *invperm, const mwIndex *snode, const mwIndex *xsuper,
                const mwIndex *xlindx, const mwIndex *lindx,
                const mwIndex nsuper, const mwIndex m, const mwIndex n,
-               mwIndex *snodefrom, char *processed)
+               mwIndex *snodefrom, bool *processed)
 {
   mwIndex i,j,k,inz, maxnnz;
   mwIndex *xir;
@@ -271,7 +271,7 @@ void mexFunction(int nlhs, mxArray *plhs[],
   mwIndex maxnnz, i,j, nsuper,m,n;
   const mwIndex *ljc,*lir,*bjc,*bir;
   mwIndex *xjc,*xir, *snode,*xlindx,*lindx, *iwork,*xsuper, *invperm;
-  char *cwork;
+  bool *cwork;
   double *xpr;
   const double *permPr, *xsuperPr;
 /* ------------------------------------------------------------
@@ -291,17 +291,17 @@ void mexFunction(int nlhs, mxArray *plhs[],
    Disassemble block Cholesky structure L
    ------------------------------------------------------------ */
   mxAssert(mxIsStruct(L_IN), "Parameter `L' should be a structure.");
-  L_FIELD = mxGetField(L_IN,0,"perm"); 
+  L_FIELD = mxGetField(L_IN,(mwIndex)0,"perm"); 
   mxAssert( L_FIELD != NULL, "Missing field L.perm.");        /* L.perm */
   mxAssert(m == mxGetM(L_FIELD) * mxGetN(L_FIELD), "L.perm size mismatches B");
   permPr = mxGetPr(L_FIELD);
-  L_FIELD = mxGetField(L_IN,0,"L"); 
+  L_FIELD = mxGetField(L_IN,(mwIndex)0,"L"); 
   mxAssert( L_FIELD!= NULL, "Missing field L.L.");           /* L.L */
   mxAssert( m == mxGetM(L_FIELD) && m == mxGetN(L_FIELD), "Size L.L mismatch.");
   mxAssert(mxIsSparse(L_FIELD), "L.L should be sparse.");
   ljc = mxGetJc(L_FIELD);
   lir = mxGetIr(L_FIELD);
-  L_FIELD = mxGetField(L_IN,0,"xsuper"); 
+  L_FIELD = mxGetField(L_IN,(mwIndex)0,"xsuper"); 
   mxAssert( L_FIELD!= NULL, "Missing field L.xsuper.");     /* L.xsuper */
   nsuper = mxGetM(L_FIELD) * mxGetN(L_FIELD) - 1;
   mxAssert( nsuper <= m , "Size L.xsuper mismatch.");
@@ -325,7 +325,7 @@ void mexFunction(int nlhs, mxArray *plhs[],
   xlindx    = (mwIndex *) mxCalloc(nsuper+1,sizeof(mwIndex));
   lindx     = (mwIndex *) mxCalloc(ljc[m], sizeof(mwIndex));
   iwork = (mwIndex *) mxCalloc(nsuper, sizeof(mwIndex));
-  cwork = (char *) mxCalloc(nsuper, sizeof(char));
+  cwork = (bool *) mxCalloc(nsuper, sizeof(bool));
 /* ------------------------------------------------------------
    Convert PERM, XSUPER to integer and C-Style
    ------------------------------------------------------------ */
@@ -353,7 +353,7 @@ void mexFunction(int nlhs, mxArray *plhs[],
 /* ------------------------------------------------------------
    Create output matrix x
    ------------------------------------------------------------ */
-  X_OUT = mxCreateSparse(m,n, 1,mxREAL);
+  X_OUT = mxCreateSparse(m,n, (mwSize)1,mxREAL);
   mxFree(mxGetJc(X_OUT));                    /* jc */
   mxFree(mxGetIr(X_OUT));                    /* ir */
   mxFree(mxGetPr(X_OUT));                    /* pr */

@@ -222,22 +222,22 @@ void mexFunction(const int nlhs, mxArray *plhs[],
 /* ------------------------------------------------------------
    Allocate output LAB(diag), eigvec Q(full for psd)
    ------------------------------------------------------------ */
-  LAB_OUT = mxCreateDoubleMatrix(lendiag, 1, mxREAL);
+  LAB_OUT = mxCreateDoubleMatrix(lendiag, (mwSize)1, mxREAL);
   lab = mxGetPr(LAB_OUT);
   if(nlhs > 1){
     if(mxIsComplex(X_IN)){
-      Q_OUT = mxCreateDoubleMatrix(cK.rDim, 1, mxCOMPLEX);
+      Q_OUT = mxCreateDoubleMatrix(cK.rDim, (mwSize)1, mxCOMPLEX);
       qpi = mxGetPi(Q_OUT);
     }
     else
-      Q_OUT = mxCreateDoubleMatrix(cK.rDim + cK.hDim, 1, mxREAL);
+      Q_OUT = mxCreateDoubleMatrix(cK.rDim + cK.hDim, (mwSize)1, mxREAL);
     q = mxGetPr(Q_OUT);
   }
 /* ------------------------------------------------------------
    Allocate working arrays:
    ------------------------------------------------------------ */
-  Xk = mxCreateDoubleMatrix(0,0,mxREAL);
-  hXk = mxCreateDoubleMatrix(0,0,mxCOMPLEX);
+  Xk = mxCreateDoubleMatrix((mwSize)0,(mwSize)0,mxREAL);
+  hXk = mxCreateDoubleMatrix((mwSize)0,(mwSize)0,mxCOMPLEX);
   if(mxIsComplex(X_IN)){
     xwork = (double *) mxCalloc(MAX(1,2 * SQR(cK.rMaxn)), sizeof(double));
     xpiwork = xwork + SQR(cK.rMaxn);
@@ -410,10 +410,10 @@ void mexFunction(const int nlhs, mxArray *plhs[],
 /* ------------------------------------------------------------
    Release PSD-working arrays.
    ------------------------------------------------------------ */
-  mxSetM(Xk,0); mxSetN(Xk,0); 
+  mxSetM(Xk,(mwSize)0); mxSetN(Xk,(mwSize)0); 
   mxSetPr(Xk, (double *) NULL);
   mxDestroyArray(Xk);
-  mxSetM(hXk,0); mxSetN(hXk,0); 
+  mxSetM(hXk,(mwSize)0); mxSetN(hXk,(mwSize)0); 
   mxSetPr(hXk, (double *) NULL);   mxSetPi(hXk, (double *) NULL);
   mxDestroyArray(hXk);
   mxFree(xwork);

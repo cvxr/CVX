@@ -186,11 +186,11 @@ void mexFunction(int nlhs, mxArray *plhs[],
 /* ------------------------------------------------------------
    Outputs Lden.(LAD, perm, dz, first)
    ------------------------------------------------------------ */
-  LDEN_OUT = mxCreateStructMatrix(1, 1, NLDEN_FIELDS, LdenFieldnames);
+  LDEN_OUT = mxCreateStructMatrix((mwSize)1,(mwSize)1, NLDEN_FIELDS, LdenFieldnames);
   LDEN_FIELD = mxDuplicateArray(LAD_IN);               /* LAD */
-  mxSetField(LDEN_OUT,0,"LAD",LDEN_FIELD);
-  LDEN_FIELD = mxCreateDoubleMatrix(n, 1, mxREAL);     /* perm */
-  mxSetField(LDEN_OUT,0,"perm",LDEN_FIELD);
+  mxSetField(LDEN_OUT,(mwIndex)0,"LAD",LDEN_FIELD);
+  LDEN_FIELD = mxCreateDoubleMatrix(n, (mwSize)1, mxREAL);     /* perm */
+  mxSetField(LDEN_OUT,(mwIndex)0,"perm",LDEN_FIELD);
   permPr = mxGetPr(LDEN_FIELD);
   for(i = 0; i < n; i++)
     permPr[i] = perm[i] + 1.0;                       /* C-mwIndex to F-double */
@@ -199,9 +199,9 @@ void mexFunction(int nlhs, mxArray *plhs[],
   mxFree(mxGetJc(LDEN_FIELD));
   mxSetJc(LDEN_FIELD, dznewJc);
   mxSetN(LDEN_FIELD, n);
-  mxSetField(LDEN_OUT,0,"dz",LDEN_FIELD);
-  LDEN_FIELD  = mxCreateDoubleMatrix(n, 1, mxREAL);  /* first */
-  mxSetField(LDEN_OUT,0,"first",LDEN_FIELD);
+  mxSetField(LDEN_OUT,(mwIndex)0,"dz",LDEN_FIELD);
+  LDEN_FIELD  = mxCreateDoubleMatrix(n, (mwSize)1, mxREAL);  /* first */
+  mxSetField(LDEN_OUT,(mwIndex)0,"first",LDEN_FIELD);
   firstPr = mxGetPr(LDEN_FIELD);
   for(i = 0; i < n; i++)
     firstPr[i] = firstpiv[i] + 1.0;               /* C-mwIndex to F-double */

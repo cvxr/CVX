@@ -135,7 +135,7 @@ mwIndex sptriujcT(mwIndex *triujc, const mwIndex *xir, const mwIndex xjc0, const
    ************************************************************ */
 mwIndex sptrilandtriu(mwIndex *yir, double *ypr, mwIndex *triujc, const mwIndex *xir,
                    const double *xpr, const mwIndex xjc0, const mwIndex xjc1,
-                   const mwIndex first, const mwIndex n,const bool skew)
+                   const mwIndex first, const mwIndex n, bool skew)
 {
   mwIndex i,j,inz,jnz,knz,jfirst,jlast;
 /* ------------------------------------------------------------
@@ -195,7 +195,7 @@ mwIndex sptrilandtriu(mwIndex *yir, double *ypr, mwIndex *triujc, const mwIndex 
    ************************************************************ */
 mwIndex spadd2(mwIndex *zir, double *zpr, const mwIndex *xir, const double *xpr,
            const mwIndex xnnz, const mwIndex *yir, const double *ypr, const mwIndex ynnz,
-           mwIndex iwsize, char *cfound, mwIndex *iwork)
+           mwIndex iwsize, bool *cfound, mwIndex *iwork)
 {
   mwIndex inz,jnz,knz, i;
   mwIndex * yinx;
@@ -226,7 +226,7 @@ mwIndex spadd2(mwIndex *zir, double *zpr, const mwIndex *xir, const double *xpr,
       
 mwIndex spadd(mwIndex *zir, double *zpr, const mwIndex *xir, const double *xpr,
           const mwIndex xnnz, const mwIndex *yir, const double *ypr, const mwIndex ynnz,
-          const mwIndex iwsize, char *cfound, mwIndex *iwork)
+          const mwIndex iwsize, bool *cfound, mwIndex *iwork)
 {
   if(xnnz < ynnz)
     return spadd2(zir,zpr, yir,ypr,ynnz, xir,xpr,xnnz, iwsize, cfound, iwork);
@@ -302,7 +302,7 @@ mwIndex spsub(mwIndex *zir, double *zpr, const mwIndex *xir, const double *xpr,
    ************************************************************ */
 mwIndex sptotril(mwIndex *zir, double *zpr, const mwIndex *xir, const double *xpr,
              mwIndex *pxjc0, const mwIndex xjc1, const mwIndex first, const mwIndex n,
-             const bool skew, mwIndex iwsize, char *cwork, mwIndex *iwork,
+             bool skew, mwIndex iwsize, bool *cwork, mwIndex *iwork,
              double *ypr)
 {
   mwIndex xjc0, xnnz, trilnnz, triujc0;
@@ -365,7 +365,7 @@ mwIndex vectril(mwIndex *zir, double *zpr, const mwIndex *xir, const double *xpr
             const mwIndex xnnz, const mwIndex *psdNL,
             const mwIndex *blkstart, const mwIndex *isblk,
             const mwIndex rpsdN, const mwIndex psdN, const mwIndex iwsize,
-            char *cwork, mwIndex *iwork, double *fwork)
+            bool *cwork, mwIndex *iwork, double *fwork)
 {
   mwIndex inz, jnz, k, nk;
 /* ------------------------------------------------------------
@@ -385,14 +385,14 @@ mwIndex vectril(mwIndex *zir, double *zpr, const mwIndex *xir, const double *xpr
     k = isblk[xir[inz]];
     nk = psdNL[k];
     jnz += sptotril(zir + jnz, zpr + jnz, xir, xpr, &inz, xnnz, blkstart[k],
-                    nk,0, iwsize, cwork, iwork, fwork);
+                    nk,(bool)0, iwsize, cwork, iwork, fwork);
 /* ------------------------------------------------------------
    For the imaginary part, we do a skew transpose: tril(IM Xk)-triu(IM Xk)'.
    This will make the diagonal of the imaginary block zero.
    ------------------------------------------------------------ */
     if(k >= rpsdN){
       jnz += sptotril(zir + jnz, zpr + jnz, xir, xpr, &inz, xnnz,
-                      blkstart[k]+SQR(nk), nk,1, iwsize, cwork, iwork, fwork);
+                      blkstart[k]+SQR(nk), nk,(bool)1, iwsize, cwork, iwork, fwork);
     }
   }
   return jnz;
@@ -415,7 +415,7 @@ void mexFunction(int nlhs, mxArray *plhs[],
   mwIndex i, j, k, jnz, m,lenfull, firstPSD, maxn, iwsize;
   jcir x,y;
   mwIndex *iwork, *psdNL, *blkstart, *xblk;
-  char *cwork;
+  bool *cwork;
   double *fwork;
   coneK cK;
 /* ------------------------------------------------------------
@@ -465,7 +465,7 @@ void mexFunction(int nlhs, mxArray *plhs[],
     iwsize = (mwIndex) (log(1.0 + maxn*(maxn-1)/2) / log(2.0));
     iwsize += maxn * (2*maxn+1);
     iwork = (mwIndex *) mxCalloc(MAX(1,iwsize), sizeof(mwIndex));
-    cwork = (char *) mxCalloc(MAX(1,maxn*(maxn-1)/2), sizeof(char));
+    cwork = (bool *) mxCalloc(MAX(1,maxn*(maxn-1)/2), sizeof(bool));
     fwork = (double *) mxCalloc(MAX(1,SQR(maxn)), sizeof(double));
     psdNL = (mwIndex *) mxCalloc(MAX(1,cK.sdpN), sizeof(mwIndex));
     blkstart = (mwIndex *) mxCalloc(1 + cK.sdpN, sizeof(mwIndex));

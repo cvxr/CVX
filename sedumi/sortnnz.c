@@ -124,7 +124,7 @@ void mexFunction(int nlhs, mxArray *plhs[],
 /* ------------------------------------------------------------
    Create output perm(m)
    ------------------------------------------------------------ */
-  PERM_OUT = mxCreateDoubleMatrix(m, 1, mxREAL);
+  PERM_OUT = mxCreateDoubleMatrix(m, (mwSize)1, mxREAL);
   permPr = mxGetPr(PERM_OUT);
 /* ------------------------------------------------------------
    The real job:

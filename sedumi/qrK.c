@@ -262,9 +262,9 @@ void mexFunction( int nlhs, mxArray *plhs[],
    Allocate output Q(qsize), R(sdpdim)
    and let r = x.
    ------------------------------------------------------------ */
-  Q_OUT = mxCreateDoubleMatrix(qsize, 1, mxREAL);
+  Q_OUT = mxCreateDoubleMatrix(qsize, (mwSize)1, mxREAL);
   q = mxGetPr(Q_OUT);
-  R_OUT = mxCreateDoubleMatrix(sdpdim, 1, mxREAL);
+  R_OUT = mxCreateDoubleMatrix(sdpdim, (mwSize)1, mxREAL);
   r = mxGetPr(R_OUT);
   memcpy(r, mxGetPr(X_IN), sdpdim * sizeof(double));
 /* ------------------------------------------------------------

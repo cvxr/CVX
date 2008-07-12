@@ -72,7 +72,7 @@ void intadd(mwIndex *x, const mwIndex y, const mwIndex n)
    ************************************************************ */
 void partitA(mwIndex *Ablkjc, const mwIndex *Ajc,const mwIndex *Air,
              const mwIndex *blkstart, const mwIndex m,const mwIndex nblk,
-             const mwIndex iwsize, char *cfound, mwIndex *iwork)
+             const mwIndex iwsize, bool *cfound, mwIndex *iwork)
 {
   mwIndex j, L;
   L = nblk+2;
@@ -95,7 +95,7 @@ void mexFunction(int nlhs, mxArray *plhs[],
   const mwIndex *rowj;
   double *AblkjcPr;
   const double *blkstartPr;
-  char *cwork;
+  bool *cwork;
 /* ------------------------------------------------------------
    Check for proper number of arguments
    ------------------------------------------------------------ */
@@ -118,7 +118,7 @@ void mexFunction(int nlhs, mxArray *plhs[],
   iwork = (mwIndex *) mxCalloc(MAX(iwsize,1), sizeof(mwIndex));
   Ablkjc = (mwIndex *) mxCalloc(MAX((nblk+2)*m,1), sizeof(mwIndex));
   blkstart = (mwIndex *) mxCalloc(MAX(nblk,1), sizeof(mwIndex));
-  cwork = (char *) mxCalloc(MAX(nblk,1), sizeof(char));
+  cwork = (bool *) mxCalloc(MAX(nblk,1), sizeof(bool));
 /* ------------------------------------------------------------
    Translate blkstart from Fortran-double to C-mwIndex
    ------------------------------------------------------------ */

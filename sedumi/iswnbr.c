@@ -39,6 +39,7 @@ function [delta,h,alpha] = iswnbr(vSQR,thetaSQR)
 
 #include <math.h>
 #include <stdlib.h>
+#include <string.h>
 #include "mex.h"
 
 #define	DELTA_OUT myplhs[0]
@@ -64,7 +65,7 @@ function [delta,h,alpha] = iswnbr(vSQR,thetaSQR)
 /* --------------------------------------
    FLOAT COMPARE: FOR SORTING A FLOAT ARRAY
    -------------------------------------- */
-typedef signed char (*COMPFUN)(const void *pa,const void *pb);
+typedef int (*COMPFUN)(const void *pa,const void *pb);
 #define fsort(vec,n)  qsort((void *)(vec), (n), sizeof(double), (COMPFUN) fcmp);
 
 signed char fcmp(const double *a, const double *b)
@@ -239,11 +240,11 @@ void mexFunction(int nlhs, mxArray *plhs[],
  /* ------------------------------------------------------------
     Allocate output DELTA, H, ALPHA.
     ------------------------------------------------------------ */
- DELTA_OUT = mxCreateDoubleMatrix(1, 1, mxREAL);
+ DELTA_OUT = mxCreateDoubleMatrix((mwSize)1, (mwSize)1, mxREAL);
  pdelta = mxGetPr(DELTA_OUT);
- H_OUT = mxCreateDoubleMatrix(1, 1, mxREAL);
+ H_OUT = mxCreateDoubleMatrix((mwSize)1, (mwSize)1, mxREAL);
  ph = mxGetPr(H_OUT);
- ALPHA_OUT = mxCreateDoubleMatrix(1, 1, mxREAL);
+ ALPHA_OUT = mxCreateDoubleMatrix((mwSize)1, (mwSize)1, mxREAL);
  palpha = mxGetPr(ALPHA_OUT);
  /* ------------------------------------------------------------
     Allocate working array fwork(n)

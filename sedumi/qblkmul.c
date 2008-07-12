@@ -102,7 +102,7 @@ void mexFunction(const int nlhs, mxArray *plhs[],
 /* ------------------------------------------------------------
    Allocate output y(qDim)
    ------------------------------------------------------------ */
-  Y_OUT =  mxCreateDoubleMatrix(qDim, 1, mxREAL);
+  Y_OUT =  mxCreateDoubleMatrix(qDim, (mwSize)1, mxREAL);
   y = mxGetPr(Y_OUT);
 /* ------------------------------------------------------------
    LORENTZ: yk = mu(k) * d[k]

@@ -141,7 +141,7 @@ void qreshape0(double *y, const mwIndex *blks, const mwIndex lorN, double *fwork
      fwork - length lorN vector.
    ************************************************************ */
 void spqreshape0(mwIndex *yir, double *ypr, mwIndex ynnz, const mwIndex *blks,
-                 const mwIndex lorN, mwIndex iwsize, char *cfound,
+                 const mwIndex lorN, mwIndex iwsize, bool *cfound,
                  mwIndex *iwork, double *fwork)
 {
   mwIndex inz,k,knz, blknnz;
@@ -205,20 +205,20 @@ void spqreshape0(mwIndex *yir, double *ypr, mwIndex ynnz, const mwIndex *blks,
     if(intmbsearch(ipos, cfound, blks, lorN, yir, ynnz, iwork, iwsize) != 0)
       mexErrMsgTxt("Out of working space");
     knz = 0;
-    k = -1;                            /* force new block opening */
-    for(inz = 0; inz < ynnz; inz++)
+    for(inz = 0; inz < ynnz; inz++) {
       if(cfound[inz]){                 /* block opens on trace */
         k = ipos[inz+1];
         iwork[knz] = k;
         ipos[knz] = inz;               /* start of block k in yir */
         cfound[knz++] = 1;
       }
-      else if(ipos[inz+1]-1 > k){      /* block opens somewhere later */
+      else if(knz==0||ipos[inz+1]>k+1){      /* block opens somewhere later */
         k = ipos[inz+1] - 1;
         iwork[knz] = k;
         ipos[knz] = inz;               /* start of block k in yir */
         cfound[knz++] = 0;
       }
+    }
     ipos[knz] = ynnz;
     blknnz = knz;
   }
@@ -346,7 +346,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
  coneK cK;
  mwIndex *iwork, *blks;
  double *fwork;
- char *cwork;
+ bool *cwork;
  bool flag, bsparse;
  jcir y;
 
@@ -389,7 +389,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
  blks = (mwIndex *) mxCalloc(cK.lorN+1, sizeof(mwIndex));
  for(i = 1; i <= cK.lorN; i++)
    blks[i] = (mwIndex) cK.lorNL[i-1];           /* float to mwIndex */
- cwork = (char *) mxCalloc(MAX(1,cK.lorN), sizeof(char));
+ cwork = (bool *) mxCalloc(MAX(1,cK.lorN), sizeof(bool));
 /* ------------------------------------------------------------
    Let iwork(0:lorN) = cumsum([ifirst, K.q(1:end)])
    ------------------------------------------------------------ */

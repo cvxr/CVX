@@ -169,7 +169,7 @@ void mexFunction(const int nlhs, mxArray *plhs[],
 /* ------------------------------------------------------------
    Allocate output vector y, and make it vecsym(x)
    ------------------------------------------------------------ */
- Y_OUT = mxCreateDoubleMatrix(lenfull, 1, mxREAL);
+ Y_OUT = mxCreateDoubleMatrix(lenfull, (mwSize)1, mxREAL);
  y = mxGetPr(Y_OUT);
  memcpy(y,x,lqDim * sizeof(double));
  x += lqDim; y += lqDim;

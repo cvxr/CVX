@@ -662,17 +662,17 @@ void mexFunction(const int nlhs, mxArray *plhs[],
    DISASSEMBLE structure Lsymb.{dz,perm,first}
    ------------------------------------------------------------ */
   mxAssert(mxIsStruct(LSYMB_IN), "Lsymb should be a structure.");
-  MY_FIELD = mxGetField(LSYMB_IN,0,"dz");      /* Lsymb.dz */
+  MY_FIELD = mxGetField(LSYMB_IN,(mwIndex)0,"dz");      /* Lsymb.dz */
   mxAssert( MY_FIELD != NULL, "Missing field Lsymb.dz.");
   mxAssert(mxGetM(MY_FIELD) == m && mxGetN(MY_FIELD) == n, "Lsymb.dz size mismatch.");
   mxAssert(mxIsSparse(MY_FIELD), "Lsymb.dz must be sparse.");
   dz.jc = mxGetJc(MY_FIELD);
   dz.ir = mxGetIr(MY_FIELD);                             /* (rowperm) */
-  MY_FIELD = mxGetField(LSYMB_IN,0,"perm");        /* Lsymb.perm */
+  MY_FIELD = mxGetField(LSYMB_IN,(mwIndex)0,"perm");        /* Lsymb.perm */
   mxAssert(MY_FIELD != NULL, "Missing field Lsymb.perm.");
   mxAssert(mxGetM(MY_FIELD) * mxGetN(MY_FIELD) == n, "Size mismatch Lsymb.perm."); /* (colperm) */
   colpermPr = mxGetPr(MY_FIELD);
-  MY_FIELD = mxGetField(LSYMB_IN,0,"first");        /* Lsymb.first */
+  MY_FIELD = mxGetField(LSYMB_IN,(mwIndex)0,"first");        /* Lsymb.first */
   mxAssert( MY_FIELD != NULL, "Missing field Lsymb.first.");
   mxAssert( mxGetM(MY_FIELD) * mxGetN(MY_FIELD) == n, "Size mismatch Lsymb.first.");
   firstPr = mxGetPr(MY_FIELD);
@@ -755,12 +755,12 @@ void mexFunction(const int nlhs, mxArray *plhs[],
 /* ------------------------------------------------------------
    Create output structure Lden
    ------------------------------------------------------------ */
-  LDEN_OUT = mxCreateStructMatrix(1, 1, NLDEN_FIELDS, LdenFieldnames);
+  LDEN_OUT = mxCreateStructMatrix((mwSize)1, (mwSize)1, NLDEN_FIELDS, LdenFieldnames);
 /* ------------------------------------------------------------
    Create LDEN.P(pnnz), and realloc p to the size it should have, i.e. pnnz
    ------------------------------------------------------------ */
-  MY_FIELD = mxCreateDoubleMatrix(pnnz, 1, mxREAL);
-  mxSetField(LDEN_OUT, 0,"p", MY_FIELD);
+  MY_FIELD = mxCreateDoubleMatrix(pnnz, (mwSize)1, mxREAL);
+  mxSetField(LDEN_OUT, (mwIndex)0,"p", MY_FIELD);
   if(pnnz > 0){
     mxFree(mxGetPr(MY_FIELD));
     if((p = (double *) mxRealloc(p, pnnz * sizeof(double))) == NULL)
@@ -788,16 +788,16 @@ void mexFunction(const int nlhs, mxArray *plhs[],
   for(i = 0, permnnz = 0; i < n; i++)
     permnnz += ordered[i] * dz.jc[i+1];
   mxAssert(permnnz <= pnnz, "");
-  MY_FIELD = mxCreateDoubleMatrix(permnnz, 1, mxREAL);
-  mxSetField(LDEN_OUT, 0,"pivperm", MY_FIELD);
+  MY_FIELD = mxCreateDoubleMatrix(permnnz, (mwSize)1, mxREAL);
+  mxSetField(LDEN_OUT, (mwIndex)0,"pivperm", MY_FIELD);
   permPr = mxGetPr(MY_FIELD);
   for(i = 0; i < permnnz; i++)
     permPr[i] = pivperm[i];                 /* mwIndex to double */
 /* ------------------------------------------------------------
    Create LDEN.BETAJC(n+1)
    ------------------------------------------------------------ */
-  MY_FIELD = mxCreateDoubleMatrix(n + 1, 1, mxREAL);
-  mxSetField(LDEN_OUT, 0,"betajc", MY_FIELD);
+  MY_FIELD = mxCreateDoubleMatrix(n + 1, (mwSize)1, mxREAL);
+  mxSetField(LDEN_OUT, (mwIndex)0,"betajc", MY_FIELD);
   betajcPr = mxGetPr(MY_FIELD);
   for(i = 0; i <= n; i++){
     j = betajc[i];
@@ -806,8 +806,8 @@ void mexFunction(const int nlhs, mxArray *plhs[],
 /* ------------------------------------------------------------
    Create LDEN.BETA(betajc[n])
    ------------------------------------------------------------ */
-  MY_FIELD = mxCreateDoubleMatrix(betajc[n], 1, mxREAL);
-  mxSetField(LDEN_OUT, 0,"beta", MY_FIELD);
+  MY_FIELD = mxCreateDoubleMatrix(betajc[n], (mwSize)1, mxREAL);
+  mxSetField(LDEN_OUT, (mwIndex)0,"beta", MY_FIELD);
   if(betajc[n] > 0){
     mxFree(mxGetPr(MY_FIELD));
     if((beta = (double *) mxRealloc(beta, betajc[n] * sizeof(double))) == NULL)
@@ -819,8 +819,8 @@ void mexFunction(const int nlhs, mxArray *plhs[],
 /* ------------------------------------------------------------
    Create LDEN.DOPIV(n)
    ------------------------------------------------------------ */
-  MY_FIELD = mxCreateDoubleMatrix(n, 1, mxREAL);
-  mxSetField(LDEN_OUT, 0,"dopiv", MY_FIELD);
+  MY_FIELD = mxCreateDoubleMatrix(n, (mwSize)1, mxREAL);
+  mxSetField(LDEN_OUT, (mwIndex)0,"dopiv", MY_FIELD);
   orderedPr = mxGetPr(MY_FIELD);
   for(i = 0; i < n; i++)
     orderedPr[i] = ordered[i];

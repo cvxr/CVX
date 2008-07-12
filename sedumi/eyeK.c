@@ -72,7 +72,7 @@ void mexFunction(int nlhs, mxArray *plhs[],
  /* ------------------------------------------------------------
     Allocate output x
     ------------------------------------------------------------ */
- X_OUT =  mxCreateDoubleMatrix(lenfull, 1, mxREAL);
+ X_OUT =  mxCreateDoubleMatrix(lenfull, (mwSize)1, mxREAL);
  x = mxGetPr(X_OUT);
  /* ------------------------------------------------------------
     The actual job is done here:.

@@ -66,12 +66,12 @@ void mexFunction(const int nlhs, mxArray *plhs[],
   const int nrhs, const mxArray *prhs[])
 {
   const mxArray *UD_FIELD;
-  mwIndex lenfull, lenud, sdplen, transp, fwsiz, i,k;
+  mwIndex lenfull, lenud, sdplen, fwsiz, i,k;
   double *fwork, *y,*permPr;
   const double *x,*ud;
   mwIndex *perm, *iwork;
   coneK cK;
-  char use_pivot;
+  bool use_pivot, transp;
 
 /* ------------------------------------------------------------
    Check for proper number of arguments 
@@ -81,7 +81,7 @@ void mexFunction(const int nlhs, mxArray *plhs[],
     mxAssert(nrhs >= NPARINMIN, "psdscale requires more input arguments.");
   }
   else
-    transp = mxGetScalar(TRANSP_IN);
+    transp = (bool)mxGetScalar(TRANSP_IN);
   mxAssert(nlhs <= NPAROUT, "psdscale generates less output arguments.");
 /* ------------------------------------------------------------
    Disassemble cone K structure
@@ -102,11 +102,11 @@ void mexFunction(const int nlhs, mxArray *plhs[],
     use_pivot = 0;
   }
   else{                         /* ud is structure */
-    UD_FIELD = mxGetField(UD_IN,0,"u");
+    UD_FIELD = mxGetField(UD_IN,(mwIndex)0,"u");
       mxAssert( UD_FIELD!= NULL,  "Field ud.u missing.");    /* ud.u */
     mxAssert(mxGetM(UD_FIELD) * mxGetN(UD_FIELD) == lenud, "ud.u size mismatch.");
     ud = mxGetPr(UD_FIELD);
-    UD_FIELD = mxGetField(UD_IN,0,"perm");                       /* ud.perm */
+    UD_FIELD = mxGetField(UD_IN,(mwIndex)0,"perm");                       /* ud.perm */
     if((use_pivot = (UD_FIELD != NULL))){
       if(mxGetM(UD_FIELD) * mxGetN(UD_FIELD) == sdplen)
         permPr = mxGetPr(UD_FIELD);
@@ -130,7 +130,7 @@ void mexFunction(const int nlhs, mxArray *plhs[],
 /* ------------------------------------------------------------
    Allocate output Y(lenud)
    ------------------------------------------------------------ */
-  Y_OUT =  mxCreateDoubleMatrix(lenud, 1, mxREAL);
+  Y_OUT =  mxCreateDoubleMatrix(lenud, (mwSize)1, mxREAL);
   y = mxGetPr(Y_OUT);
 /* ------------------------------------------------------------
    Allocate fwork 2 * [ max(cK.rMaxn^2, 2*cK.hMaxn^2) ]

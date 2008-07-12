@@ -51,10 +51,9 @@
      matrix (cjc,cir) to Fortran style sparse matrix (forjc,forir).
      On input, n is number of columns.
    ------------------------------------------------------------ */
-void getadj(int *forjc,int *forir,const int *cjc,const int *cir,const int n)
+void getadj(mwIndex *forjc,mwIndex *forir,const mwIndex *cjc,const mwIndex *cir, mwSize n )
 {
-	int i,j,inz,ix;
-
+    mwIndex i,j,inz,ix;
 	inz = 0;
     for(j = 0; j < n; j++){
 		forjc[j] = inz + 1;
@@ -75,10 +74,11 @@ void getadj(int *forjc,int *forir,const int *cjc,const int *cir,const int n)
 void mexFunction(const int nlhs, mxArray *plhs[],
                  const int nrhs, const mxArray *prhs[])
 {
-  int m, i, iwsiz, flag, nofsub;
-  double *permPr;
-  int *iwork,*Xjc,*Xir, *xadj,*adjncy,*perm,*invp;
-  mwIndex *mwXjc, *mwXir;
+    mwSize m, iwsiz;
+    mwIndex i, nofsub;
+    mwIndex *Xjc,*Xir,*iwork,*xadj,*adjncy,*perm,*invp;
+    mwSignedIndex flag;
+    double *permPr;
 
  /* ------------------------------------------------------------
     Check for proper number of arguments
@@ -94,34 +94,28 @@ void mexFunction(const int nlhs, mxArray *plhs[],
 /* ------------------------------------------------------------
    Get input X
    ------------------------------------------------------------ */
-  mwXjc = mxGetJc(X_IN);
-  mwXir = mxGetIr(X_IN);
-  Xjc=(int *) mxCalloc(m+1, sizeof(int));
-  for(i=0;i<=m;i++)
-      Xjc[i]=(int) mwXjc[i];
-  Xir=(int *) mxCalloc(Xjc[m],sizeof(int));
-  for(i=0;i<Xjc[m];i++)
-      Xir[i]=(int) mwXir[i];
+  Xjc = mxGetJc(X_IN);
+  Xir = mxGetIr(X_IN);
 /* ------------------------------------------------------------
    Create output vector PERM
    ------------------------------------------------------------ */
-  PERM_OUT = mxCreateDoubleMatrix(m, 1, mxREAL);
+  PERM_OUT = mxCreateDoubleMatrix(m, (mwSize)1, mxREAL);
   permPr = mxGetPr(PERM_OUT);
 /* ------------------------------------------------------------
    Allocate working arrays:
    int xadj(m+1), adjncy(Xnnz), perm(m), invp(m), iwork(iwsiz)
    ------------------------------------------------------------ */
-  xadj   = (int *) mxCalloc(m+1,sizeof(int));
-  adjncy = (int *) mxCalloc(Xjc[m],sizeof(int));
-  perm   = (int *) mxCalloc(m,sizeof(int));
-  invp   = (int *) mxCalloc(m,sizeof(int));
+  xadj   = (mwIndex*) mxCalloc(m+1,sizeof(mwIndex));
+  adjncy = (mwIndex*) mxCalloc(Xjc[m],sizeof(mwIndex));
+  perm   = (mwIndex*) mxCalloc(m,sizeof(mwIndex));
+  invp   = (mwIndex*) mxCalloc(m,sizeof(mwIndex));
   iwsiz  = 4 * m;
-  iwork = (int *) mxCalloc(iwsiz,sizeof(int));
+  iwork = (mwIndex*) mxCalloc(iwsiz,sizeof(mwIndex));
 /* ------------------------------------------------------------
    Convert C-style symmetric matrix to adjacency structure
    (xadj,adjncy) in Fortran-style.
    ------------------------------------------------------------ */
-  getadj(xadj,adjncy, Xjc,Xir,m);
+  getadj(xadj,adjncy,Xjc,Xir,m);
 /* ------------------------------------------------------------
    Compute multiple minimum degree ordering (J. Liu, in Fortran)
    ------------------------------------------------------------ */
@@ -131,14 +125,11 @@ void mexFunction(const int nlhs, mxArray *plhs[],
 /* ------------------------------------------------------------
    Convert PERM to floating point.
    ------------------------------------------------------------ */
-  for(i = 0; i < m; i++){
+  for(i = 0; i < m; i++)
     permPr[i] = perm[i];
-  }
 /* ------------------------------------------------------------
    Release working arrays
    ------------------------------------------------------------ */
-  mxFree(Xjc);
-  mxFree(Xir);
   mxFree(iwork);
   mxFree(invp);
   mxFree(perm);

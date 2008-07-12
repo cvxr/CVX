@@ -141,7 +141,7 @@ void mexFunction(const int nlhs, mxArray *plhs[],
 /* ------------------------------------------------------------
    Allocate output x
    ------------------------------------------------------------ */
-  X_OUT =  mxCreateDoubleMatrix(lenud, 1, mxREAL);
+  X_OUT =  mxCreateDoubleMatrix(lenud, (mwSize)1, mxREAL);
   x = mxGetPr(X_OUT);
 /* ------------------------------------------------------------
    Allocate working array fwork(max(rmaxn,2*hmaxn))

@@ -160,7 +160,7 @@ void mexFunction(int nlhs, mxArray *plhs[],
    DISASSEMBLE DAt structure: DAt.q
    ------------------------------------------------------------ */
   mxAssert(mxIsStruct(DAT_IN), "DAt should be a structure.");
-  MY_FIELD = mxGetField(DAT_IN,0,"q");       /* DAt.q */
+  MY_FIELD = mxGetField(DAT_IN,(mwIndex)0,"q");       /* DAt.q */
   mxAssert( MY_FIELD != NULL, "Missing field DAt.q.");
   mxAssert(mxGetM(MY_FIELD) == cK.lorN && mxGetN(MY_FIELD) == m, "Size mismatch DAt.q");
   mxAssert(mxIsSparse(MY_FIELD), "DAt.q should be sparse.");
@@ -171,7 +171,7 @@ void mexFunction(int nlhs, mxArray *plhs[],
    DISASSEMBLE Aord structure: Aord.qperm
    ------------------------------------------------------------ */
   mxAssert(mxIsStruct(AORD_IN), "Aord should be a structure.");
-  MY_FIELD = mxGetField(AORD_IN,0,"qperm");        /* Aord.qperm */
+  MY_FIELD = mxGetField(AORD_IN,(mwIndex)0,"qperm");        /* Aord.qperm */
   mxAssert( MY_FIELD != NULL, "Missing field Aord.qperm.");
   mxAssert(mxGetM(MY_FIELD) * mxGetN(MY_FIELD) == m, "Size mismatch Aord.qperm.");
   permPr = mxGetPr(MY_FIELD);

@@ -148,17 +148,17 @@ void mexFunction(const int nlhs, mxArray *plhs[],
 /* ------------------------------------------------------------
    Allocate output LAB(diag), eigvec Q(full for psd)
    ------------------------------------------------------------ */
-  LAB_OUT = mxCreateDoubleMatrix(lendiag, 1, mxREAL);
+  LAB_OUT = mxCreateDoubleMatrix(lendiag, (mwSize)1, mxREAL);
   lab = mxGetPr(LAB_OUT);
   if(nlhs > 1){
-    Q_OUT = mxCreateDoubleMatrix(lenud, 1, mxREAL);
+    Q_OUT = mxCreateDoubleMatrix(lenud, (mwSize)1, mxREAL);
     q = mxGetPr(Q_OUT);
   }
 /* ------------------------------------------------------------
    Allocate working arrays:
    ------------------------------------------------------------ */
-  Xk = mxCreateDoubleMatrix(0,0,mxREAL);
-  hXk = mxCreateDoubleMatrix(0,0,mxCOMPLEX);
+  Xk = mxCreateDoubleMatrix((mwSize)0,(mwSize)0,mxREAL);
+  hXk = mxCreateDoubleMatrix((mwSize)0,(mwSize)0,mxCOMPLEX);
   xwork =(double *) mxCalloc(MAX(1,SQR(cK.rMaxn)+2*SQR(cK.hMaxn)),
                              sizeof(double));
 /* ------------------------------------------------------------
@@ -253,10 +253,10 @@ void mexFunction(const int nlhs, mxArray *plhs[],
 /* ------------------------------------------------------------
    Release PSD-working arrays.
    ------------------------------------------------------------ */
-  mxSetM(Xk,0); mxSetN(Xk,0); 
+  mxSetM(Xk,(mwSize)0); mxSetN(Xk,(mwSize)0); 
   mxSetPr(Xk, (double *) NULL);
   mxDestroyArray(Xk);
-  mxSetM(hXk,0); mxSetN(hXk,0); 
+  mxSetM(hXk,(mwSize)0); mxSetN(hXk,(mwSize)0); 
   mxSetPr(hXk, (double *) NULL);   mxSetPi(hXk, (double *) NULL);
   mxDestroyArray(hXk);
   mxFree(xwork);

@@ -289,7 +289,7 @@ void mexFunction(int nlhs, mxArray *plhs[],
 /* ------------------------------------------------------------
    CREATE OUTPUT ARRAYS PERM(m) and DZ=sparse(lenfull,m,lenud).
    ------------------------------------------------------------ */
-  PERM_OUT = mxCreateDoubleMatrix(m,1,mxREAL);
+  PERM_OUT = mxCreateDoubleMatrix(m,(mwSize)1,mxREAL);
   permPr = mxGetPr(PERM_OUT);
   DZ_OUT = mxCreateSparse(lenfull,m,lenud,mxREAL);
   dz.jc = mxGetJc(DZ_OUT);

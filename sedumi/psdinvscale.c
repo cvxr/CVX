@@ -71,7 +71,7 @@
    ************************************************************ */
 void psdinvscale(double *y, const double *ud, const double *x,
                  const mwIndex *psdNL, const mwIndex rsdpN, const mwIndex sdpN,
-                 const char transp, double *fwork)
+                 bool transp, double *fwork)
 {
   mwIndex k,nk,nksqr;
 /* ------------------------------------------------------------
@@ -136,7 +136,7 @@ void mexFunction(const int nlhs, mxArray *plhs[],
   const double *x,*ud;
   mwIndex *psdNL;
   coneK cK;
-  char transp;
+  bool transp;
 /* ------------------------------------------------------------
    Check for proper number of arguments 
    ------------------------------------------------------------ */
@@ -145,7 +145,7 @@ void mexFunction(const int nlhs, mxArray *plhs[],
     mxAssert(nrhs >= NPARINMIN, "psdinvscale requires more input arguments.");
   }
   else
-    transp = (char) mxGetScalar(TRANSP_IN);
+    transp = (bool) mxGetScalar(TRANSP_IN);
   mxAssert(nlhs <= NPAROUT, "psdinvscale generates 1 output argument.");
 /* ------------------------------------------------------------
    Disassemble cone K structure
@@ -168,7 +168,7 @@ void mexFunction(const int nlhs, mxArray *plhs[],
 /* ------------------------------------------------------------
    Allocate output Y
    ------------------------------------------------------------ */
-  Y_OUT =  mxCreateDoubleMatrix(lenud, 1, mxREAL);
+  Y_OUT =  mxCreateDoubleMatrix(lenud, (mwSize)1, mxREAL);
   y = mxGetPr(Y_OUT);
 /* ------------------------------------------------------------
    Allocate fwork [ max(cK.rMaxn^2, 2*cK.hMaxn^2) ]

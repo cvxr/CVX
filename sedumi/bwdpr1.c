@@ -198,7 +198,7 @@ void mexFunction(const int nlhs, mxArray *plhs[],
    NOTE: if there are no dense columns, then simply let y = b, and return.
    ------------------------------------------------------------ */
   mxAssert(mxIsStruct(LDEN_IN), "Parameter `Lden' should be a structure.");
-  MY_FIELD = mxGetField(LDEN_IN,0,"betajc");           /* betajc */
+  MY_FIELD = mxGetField(LDEN_IN,(mwIndex)0,"betajc");           /* betajc */
   mxAssert( MY_FIELD != NULL, "Missing field Lden.betajc.");
   nden = mxGetM(MY_FIELD) * mxGetN(MY_FIELD) - 1;
 /* If no dense columns: get out immediately ! */
@@ -206,22 +206,22 @@ void mexFunction(const int nlhs, mxArray *plhs[],
     return;
   else{
     betajcPr = mxGetPr(MY_FIELD);
-    MY_FIELD = mxGetField(LDEN_IN,0,"p");         /* p */
+    MY_FIELD = mxGetField(LDEN_IN,(mwIndex)0,"p");         /* p */
     mxAssert( MY_FIELD != NULL, "Missing field Lden.p.");
     p = mxGetPr(MY_FIELD);
     pnnz = mxGetM(MY_FIELD) * mxGetN(MY_FIELD);
-    MY_FIELD = mxGetField(LDEN_IN,0,"dopiv");          /* dopiv */
+    MY_FIELD = mxGetField(LDEN_IN,(mwIndex)0,"dopiv");          /* dopiv */
     mxAssert( MY_FIELD != NULL, "Missing field Lden.dopiv.");
     mxAssert(mxGetM(MY_FIELD) * mxGetN(MY_FIELD) == nden, "Size mismatch Lden.dopiv.");
     orderedPr = mxGetPr(MY_FIELD);
-    MY_FIELD = mxGetField(LDEN_IN,0,"pivperm");           /* pivperm */
+    MY_FIELD = mxGetField(LDEN_IN,(mwIndex)0,"pivperm");           /* pivperm */
     mxAssert( MY_FIELD != NULL, "Missing field Lden.pivperm.");
     pivpermPr = mxGetPr(MY_FIELD);
     permnnz = mxGetM(MY_FIELD) * mxGetN(MY_FIELD);
-    MY_FIELD = mxGetField(LDEN_IN,0,"beta");          /* beta */
+    MY_FIELD = mxGetField(LDEN_IN,(mwIndex)0,"beta");          /* beta */
     mxAssert( MY_FIELD != NULL, "Missing field Lden.beta.");
     beta = mxGetPr(MY_FIELD);
-    MY_FIELD = mxGetField(LDEN_IN,0,"dz");         /* dz */
+    MY_FIELD = mxGetField(LDEN_IN,(mwIndex)0,"dz");         /* dz */
     mxAssert( MY_FIELD != NULL, "Missing field Lden.dz.");
     mxAssert(mxGetM(MY_FIELD) == m && mxGetN(MY_FIELD) == nden, "Lden.dz size mismatch.");
     mxAssert(mxIsSparse(MY_FIELD), "Lden.dz must be sparse.");
@@ -251,7 +251,7 @@ void mexFunction(const int nlhs, mxArray *plhs[],
     for(i = 0; i < permnnz; i++){
       pivperm[i] = pivpermPr[i];
     }
-    MY_FIELD = mxGetField(LDEN_IN,0,"beta");
+    MY_FIELD = mxGetField(LDEN_IN,(mwIndex)0,"beta");
     mxAssert(mxGetM(MY_FIELD) * mxGetN(MY_FIELD) == betajc[nden], "Size mismatch Lden.beta.");
 /* ------------------------------------------------------------
    The actual job is done here: y(perm,:) = PROD_L'\b(perm,:).

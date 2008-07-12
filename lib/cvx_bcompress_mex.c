@@ -145,6 +145,7 @@ void mexFunction(
 {
     mwSize n, k, col, nskip, lastcol, *ss_ndxs;
     double *map, *scl, lastnorm;
+    bool first;
     
     n       = mxGetN(  prhs[0] );
     ss_ir   = mxGetIr( prhs[0] );
@@ -168,13 +169,13 @@ void mexFunction(
      * Determine which rows are unique, and which are scales of another row
      */
 
-    plhs[0] = mxCreateDoubleMatrix( 1, n, mxREAL );
-    plhs[1] = mxCreateDoubleMatrix( 1, n, mxREAL );
+    plhs[0] = mxCreateDoubleMatrix( (mwSize)1, n, mxREAL );
+    plhs[1] = mxCreateDoubleMatrix( (mwSize)1, n, mxREAL );
     if ( plhs[0] == 0 || plhs[1] == 0 )
         mexErrMsgTxt( "Unable to allocate output arguments" );
     map = mxGetPr( plhs[0] );
     scl = mxGetPr( plhs[1] );
-    lastcol = -1;
+    first = true;
     lastnorm = 0.0;
     for ( k = 0 ; k < n ; ++k ) {
         col = ss_ndxs[k];
@@ -184,11 +185,12 @@ void mexFunction(
         } else if ( ss_jc[col] == ss_jc[col+1] ) {
             map[col] = col + 1;
             scl[col] = 0;
-        } else if ( lastcol == -1 || mycomp( lastcol, col ) != 0 ) {
+        } else if ( first || mycomp( lastcol, col ) != 0 ) {
             lastcol  = col;
             lastnorm = ss_pr[ss_jc[col]];
             map[col] = lastcol + 1;
             scl[col] = 1.0;
+            first = false;
         } else {
             map[col] = lastcol + 1;
             scl[col] = ss_pr[ss_jc[col]] / lastnorm;

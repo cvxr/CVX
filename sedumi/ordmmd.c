@@ -3,7 +3,8 @@
 	-lf2c -lm   (in that order)
 */
 
-typedef int integer;                  /* removed "long" */
+#include <mex.h>
+typedef mwSignedIndex integer;                  /* removed "long" */
 
 /* *********************************************************************** */
 /* *********************************************************************** */

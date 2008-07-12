@@ -72,8 +72,8 @@ void mexFunction(
             j, nQ, nnzQ,
             *row_counts  = (mwSize*)mxCalloc( m + n, sizeof(mwSize) ),
             *candidates  = row_counts + m;
-    double  *row_flags   = mxGetPr( plhs[0] = mxCreateNumericMatrix( m, 1, mxDOUBLE_CLASS, mxREAL ) ),
-            *col_flags   = mxGetPr( plhs[1] = mxCreateNumericMatrix( 1, n, mxDOUBLE_CLASS, mxREAL ) ),
+    double  *row_flags   = mxGetPr( plhs[0] = mxCreateNumericMatrix( m, (mwSize)1, mxDOUBLE_CLASS, mxREAL ) ),
+            *col_flags   = mxGetPr( plhs[1] = mxCreateNumericMatrix( (mwSize)1, n, mxDOUBLE_CLASS, mxREAL ) ),
             *reserved    = mxGetPr( prhs[2] ),
             *c_reserved  = mxGetPr( prhs[3] );
 
@@ -122,15 +122,15 @@ void mexFunction(
             row_flags[j] = 0;
     if ( nnzQ > nQ ) {
         col_sort_struct ss;
-        int i, iEnd;
+        mwIndex i, iEnd;
         ss.values = (mwSize*)mxCalloc( 2 * n, sizeof(mwSize) );
         ss.temp   = ss.values + n;
         nnzQ = 0;
         for ( i = iEnd = 0 ; i != nQ ; ++i ) {
-            int j = candidates[i],
-                r = col_flags[j] - 1,
-                kBeg = col_count_A[j],
-                kEnd = col_count_A[j+1], k;
+            mwIndex j    = candidates[i],
+                    r    = (mwIndex)col_flags[j] - 1,
+                    kBeg = col_count_A[j],
+                    kEnd = col_count_A[j+1], k;
             ss.values[j] = row_flags[r] - 2;
             for ( k = kBeg ; k != kEnd ; ++k )
                 if ( row_flags[row_index_A[k]] != 0 )
@@ -149,7 +149,7 @@ void mexFunction(
                      kEnd = col_count_A[j+1], k;
             mwSize  found = 0;
             for ( k = kBeg ; k != kEnd ; ++k ) {
-                int tr = row_index_A[k];
+                mwIndex tr = row_index_A[k];
                 if ( r != tr && row_flags[tr] != 0 ) {
                     --row_flags[tr];
                     ++found;

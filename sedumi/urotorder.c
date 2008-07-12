@@ -350,15 +350,15 @@ void mexFunction(const int nlhs, mxArray *plhs[],
 /* ------------------------------------------------------------
    Allocate output U_OUT, and initialize u_out = u_in.
    ------------------------------------------------------------ */
-  U_OUT = mxCreateDoubleMatrix(lenud, 1, mxREAL);
+  U_OUT = mxCreateDoubleMatrix(lenud, (mwSize)1, mxREAL);
   u = mxGetPr(U_OUT);
   memcpy(u, mxGetPr(U_IN), lenud * sizeof(double));
 /* ------------------------------------------------------------
    Allocate outputs PERM(sum(K.s)), GJC(sum(K.s))
    ------------------------------------------------------------ */
-  PERM_OUT = mxCreateDoubleMatrix(sdplen, 1, mxREAL);
+  PERM_OUT = mxCreateDoubleMatrix(sdplen, (mwSize)1, mxREAL);
   permPr = mxGetPr(PERM_OUT);
-  GJC_OUT  = mxCreateDoubleMatrix(sdplen, 1, mxREAL);
+  GJC_OUT  = mxCreateDoubleMatrix(sdplen, (mwSize)1, mxREAL);
   gjcPr = mxGetPr(GJC_OUT);
 /* ------------------------------------------------------------
    Allocate g initially as length (lenud - cK.rLen) / 2. The final
@@ -467,7 +467,7 @@ void mexFunction(const int nlhs, mxArray *plhs[],
 /* ------------------------------------------------------------
    Assign g to a length inz output vector
    ------------------------------------------------------------ */
-  G_OUT = mxCreateDoubleMatrix(1, 1, mxREAL);
+  G_OUT = mxCreateDoubleMatrix((mwSize)1, (mwSize)1, mxREAL);
   mxFree(mxGetPr(G_OUT));
   mxSetPr(G_OUT, (double *) g);
   mxSetM(G_OUT, inz);

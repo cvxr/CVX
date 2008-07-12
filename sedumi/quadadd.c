@@ -90,7 +90,8 @@ void mexFunction(const int nlhs, mxArray *plhs[],
                  const int nrhs, const mxArray *prhs[])
 {
   mxArray *myplhs[NPAROUT];
-  mwIndex i,m;
+  mwSize m;
+  mwIndex i;
   const double *xhi, *xlo, *y;
   double *zhi, *zlo;
 /* ------------------------------------------------------------
@@ -110,8 +111,8 @@ void mexFunction(const int nlhs, mxArray *plhs[],
 /* ------------------------------------------------------------
    Create output vectors zhi(m), zlo(m).
    ------------------------------------------------------------ */
-  ZHI_OUT = mxCreateDoubleMatrix(m,1,mxREAL);
-  ZLO_OUT = mxCreateDoubleMatrix(m,1,mxREAL);
+  ZHI_OUT = mxCreateDoubleMatrix(m,(mwSize)1,mxREAL);
+  ZLO_OUT = mxCreateDoubleMatrix(m,(mwSize)1,mxREAL);
   zhi = mxGetPr(ZHI_OUT);
   zlo = mxGetPr(ZLO_OUT);
 /* ------------------------------------------------------------

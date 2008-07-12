@@ -150,19 +150,19 @@ void mexFunction(int nlhs, mxArray *plhs[],
    DISASSEMBLE dense structure: dense.{cols,l,q,A}
    ------------------------------------------------------------ */
   mxAssert(mxIsStruct(DENSE_IN),"dense should be a structure.");
-  MY_FIELD = mxGetField(DENSE_IN,0,"l");               /* dense.l */
+  MY_FIELD = mxGetField(DENSE_IN,(mwIndex)0,"l");               /* dense.l */
   mxAssert( MY_FIELD != NULL, "Missing field dense.l.");
   nl = (mwIndex) mxGetScalar(MY_FIELD);                             /* double to mwIndex */
-  MY_FIELD = mxGetField(DENSE_IN,0,"q");                    /* dense.q */
+  MY_FIELD = mxGetField(DENSE_IN,(mwIndex)0,"q");                    /* dense.q */
   mxAssert( MY_FIELD != NULL, "Missing field dense.q.");
   nq = mxGetM(MY_FIELD) * mxGetN(MY_FIELD);
   qPr = mxGetPr(MY_FIELD);
-  MY_FIELD = mxGetField(DENSE_IN,0,"cols");                 /* dense.cols */
+  MY_FIELD = mxGetField(DENSE_IN,(mwIndex)0,"cols");                 /* dense.cols */
   mxAssert( MY_FIELD != NULL, "Missing field dense.cols.");
   nden = mxGetM(MY_FIELD) * mxGetN(MY_FIELD) - nl - nq;
   mxAssert(nden >= 0, "dense.q size mismatch.");
   dencolsPr = mxGetPr(MY_FIELD) + nl + nq;               /* Skip LP and Q-tr*/
-  MY_FIELD = mxGetField(DENSE_IN,0,"A");                     /* dense.A */
+  MY_FIELD = mxGetField(DENSE_IN,(mwIndex)0,"A");                     /* dense.A */
   mxAssert( MY_FIELD != NULL, "Missing field dense.A.");
   mxAssert(mxIsSparse(MY_FIELD), "dense.A must be sparse");
   m = mxGetM(MY_FIELD); 
@@ -174,11 +174,11 @@ void mexFunction(int nlhs, mxArray *plhs[],
    DISASSEMBLE d structure: d.{q1,q2}
    ------------------------------------------------------------ */
   mxAssert(mxIsStruct(D_IN), "d should be a structure.");
-  MY_FIELD = mxGetField(D_IN,0,"q1");         /* d.q1 */
+  MY_FIELD = mxGetField(D_IN,(mwIndex)0,"q1");         /* d.q1 */
   mxAssert( MY_FIELD != NULL, "Missing field d.q1.");
   lorN = mxGetM(MY_FIELD) * mxGetN(MY_FIELD);
   d1 = mxGetPr(MY_FIELD);
-  MY_FIELD = mxGetField(D_IN,0,"q2");        /* d.q2 */
+  MY_FIELD = mxGetField(D_IN,(mwIndex)0,"q2");        /* d.q2 */
   mxAssert( MY_FIELD != NULL, "Missing field d.q2.");
   d2 = mxGetPr(MY_FIELD);
 /* ------------------------------------------------------------

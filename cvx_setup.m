@@ -208,9 +208,9 @@ if exist( sedpath, 'dir' ),
     if fullRecompile | isempty( mexfiles ),
         cd( sedpath );
         try
-            disp( 'Running the SeDuMi MEX compilation script in 5 seconds.' );
-            pause(5);
-            install_sedumi;
+            disp( 'Generating the SeDuMi MEX files.' );
+            disp( '-------------------------------------------------------------' );
+            install_sedumi(1);
         catch
             disp( '-------------------------------------------------------------' );
             disp( 'SeDuMi was NOT built successfully. Please try CVX on a supported' );
@@ -241,8 +241,7 @@ if exist( sedpath, 'dir' ),
     if fullRecompile | isempty( mexfiles ),
         cd( sedpath );
         try
-            disp( 'Running the SDPT3 MEX compilation script in 5 seconds.' );
-            pause(5);
+            disp( 'Generating the SDPT3 MEX files.' );
             Installmex;
         catch
             disp( '-------------------------------------------------------------' );
@@ -289,11 +288,6 @@ else
     disp( ' ' );
 end
 
-if needLarge,
-    disp( 'NOTE: SeDuMi does not yet work on recent versions of 64-bit Matlab.' );
-    disp( 'SDPT3 will be the only solver available.' );
-    if needupd, disp( ' ' ); end 
-end
 if needupd,
     disp( 'NOTE: The MATLAB path has been updated to point to the cvx distribution.' );
     disp( 'In order to use cvx regularly, you must save this new path definition.' );

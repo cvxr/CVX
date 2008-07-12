@@ -53,15 +53,15 @@ void conepars(const mxArray *mxK, coneK *pK)
  char gotthem;
 
  mxAssert(mxIsStruct(mxK), "Parameter `K' should be a structure.");
- if( (K_FIELD = mxGetField(mxK,0,"f")) == NULL)      /* K.f */
+ if( (K_FIELD = mxGetField(mxK,(mwIndex)0,"f")) == NULL)      /* K.f */
    pK->frN = 0;
  else
    pK->frN = (mwSize) mxGetScalar(K_FIELD);
- if( (K_FIELD = mxGetField(mxK,0,"l")) == NULL)      /* K.l */
+ if( (K_FIELD = mxGetField(mxK,(mwIndex)0,"l")) == NULL)      /* K.l */
    pK->lpN = 0;
  else
    pK->lpN = (mwSize) mxGetScalar(K_FIELD);
- if( (K_FIELD = mxGetField(mxK,0,"q")) == NULL)      /* K.q */
+ if( (K_FIELD = mxGetField(mxK,(mwIndex)0,"q")) == NULL)      /* K.q */
    pK->lorN = 0;
  else{
    pK->lorN = mxGetM(K_FIELD) * mxGetN(K_FIELD);
@@ -70,7 +70,7 @@ void conepars(const mxArray *mxK, coneK *pK)
      if(pK->lorNL[0] == 0.0)
        pK->lorN = 0;
  }
- if( (K_FIELD = mxGetField(mxK,0,"r")) == NULL)      /* K.r */
+ if( (K_FIELD = mxGetField(mxK,(mwIndex)0,"r")) == NULL)      /* K.r */
    pK->rconeN = 0;
  else{
    pK->rconeN = mxGetM(K_FIELD) * mxGetN(K_FIELD);
@@ -79,7 +79,7 @@ void conepars(const mxArray *mxK, coneK *pK)
      if(pK->rconeNL[0] == 0.0)
        pK->rconeN = 0;
  }
- if( (K_FIELD = mxGetField(mxK,0,"s")) == NULL){     /* K.s */
+ if( (K_FIELD = mxGetField(mxK,(mwIndex)0,"s")) == NULL){     /* K.s */
    pK->sdpN = 0;
  }
  else{
@@ -89,7 +89,7 @@ void conepars(const mxArray *mxK, coneK *pK)
      if(pK->sdpNL[0] == 0.0)
        pK->sdpN = 0;
  }
- if( (K_FIELD = mxGetField(mxK,0,"rsdpN")) == NULL)      /* K.rsdpN */
+ if( (K_FIELD = mxGetField(mxK,(mwIndex)0,"rsdpN")) == NULL)      /* K.rsdpN */
    pK->rsdpN = pK->sdpN;                           /* default to all real */
  else
    pK->rsdpN = (mwSize) mxGetScalar(K_FIELD);
@@ -98,17 +98,17 @@ void conepars(const mxArray *mxK, coneK *pK)
     GET STATISTICS: try to read from K, otherwise compute them.
     -------------------------------------------------- */
  gotthem = 0;
- if( (K_FIELD = mxGetField(mxK,0,"rLen")) != NULL){      /* K.rLen */
+ if( (K_FIELD = mxGetField(mxK,(mwIndex)0,"rLen")) != NULL){      /* K.rLen */
    pK->rLen = (mwSize) mxGetScalar(K_FIELD);
-   if( (K_FIELD = mxGetField(mxK,0,"hLen")) != NULL){      /* K.hLen */
+   if( (K_FIELD = mxGetField(mxK,(mwIndex)0,"hLen")) != NULL){      /* K.hLen */
      pK->hLen = (mwSize) mxGetScalar(K_FIELD);
-     if( (K_FIELD = mxGetField(mxK,0,"qMaxn")) != NULL){      /* K.qMaxn */
+     if( (K_FIELD = mxGetField(mxK,(mwIndex)0,"qMaxn")) != NULL){      /* K.qMaxn */
        pK->qMaxn = (mwSize) mxGetScalar(K_FIELD);
-       if( (K_FIELD = mxGetField(mxK,0,"rMaxn")) != NULL){      /* K.rMaxn */
+       if( (K_FIELD = mxGetField(mxK,(mwIndex)0,"rMaxn")) != NULL){      /* K.rMaxn */
 	 pK->rMaxn = (mwSize) mxGetScalar(K_FIELD);
-	 if( (K_FIELD = mxGetField(mxK,0,"hMaxn")) != NULL){    /* K.hMaxn */
+	 if( (K_FIELD = mxGetField(mxK,(mwIndex)0,"hMaxn")) != NULL){    /* K.hMaxn */
 	   pK->hMaxn = (mwSize) mxGetScalar(K_FIELD);
-	   if( (K_FIELD = mxGetField(mxK,0,"blkstart"))!=NULL){ /*K.blkstart*/
+	   if( (K_FIELD = mxGetField(mxK,(mwIndex)0,"blkstart"))!=NULL){ /*K.blkstart*/
 	     mxAssert(!mxIsSparse(K_FIELD), "K.blkstart must be a full vector.");
          nblk = 1 + pK->lorN + pK->sdpN;
          mxAssert(mxGetM(K_FIELD) * mxGetN(K_FIELD) == nblk + 1, "Size mismatch K.blkstart.");

@@ -70,29 +70,27 @@
      matrix (cjc,cir) to Fortran style sparse matrix (forjc,forir).
      On input, n is number of columns.
    ------------------------------------------------------------ */
-void getadj(int *forjc,int *forir,const int *cjc,const int *cir,
-            const int n)
+void getadj(mwIndex *forjc,mwIndex *forir,const mwIndex *cjc,const mwIndex *cir, mwSize n )
 {
-  int i,j,inz,ix;
-  
-  inz = 0;
-  for(j = 0; j < n; j++){
-    forjc[j] = inz + 1;
-    for(ix = cjc[j]; ix < cjc[j+1]; ix++)
-      if((i = cir[ix]) != j)
-        forir[inz++] = ++i;
-  }
-  forjc[n] = ++inz;
+    mwIndex i,j,inz,ix;
+	inz = 0;
+    for(j = 0; j < n; j++){
+		forjc[j] = inz + 1;
+		for(ix = cjc[j]; ix < cjc[j+1]; ix++)
+			if((i = cir[ix]) != j)
+				forir[inz++] = ++i;
+	}
+	forjc[n] = ++inz;
 }
 
 /* ------------------------------------------------------------
    EXPANDSUB -
    ------------------------------------------------------------ */
-void expandsub(const int n,const int nsuper,
-               const int *xsuper,const int *xlindx,
-               int *Ljc,int *Lir)
+void expandsub( mwSize n, mwSize nsuper, 
+                const mwIndex* xsuper, const mwIndex* xlindx,
+                mwIndex *Ljc, mwIndex *Lir )
 {
-  int j, jsup, jcol, ix, jpnt,ipnt;
+    mwIndex j, jsup, jcol, ix, jpnt, ipnt;
 /* ------------------------------------------------------------
    Convert Ljc from FORTRAN to C, i.e. -=1
    ------------------------------------------------------------ */
@@ -128,9 +126,11 @@ void expandsub(const int n,const int nsuper,
 void mexFunction(const int nlhs, mxArray *plhs[],
   const int nrhs, const mxArray *prhs[])
 {
-  int m, i,j, iwsiz, nsuper, nsub, flag, nnzl;
-  double *permPr,*xsuperPr,*Lpr;
-  int *Ljc, *Lir, *xadj, *adjncy, *Xjc, *Xir,
+    mwSize m, iwsiz, nsuper, nsub, nnzl;
+    mwIndex i, j;
+    mwSignedIndex flag;
+    double *permPr,*xsuperPr,*Lpr;
+  mwIndex *Ljc, *Lir, *xadj, *adjncy, *Xjc, *Xir,
     *perm, *snode, *xsuper, *iwork,*xlindx,
     *invp, *colcnt;
   mxArray *L_FIELD;
@@ -151,15 +151,8 @@ void mexFunction(const int nlhs, mxArray *plhs[],
 /* ------------------------------------------------------------
    Get input (X,perm)
    ------------------------------------------------------------ */
-  mwXjc = mxGetJc(X_IN);
-  Xjc= (int *) mxCalloc(m+1,sizeof(int));
-  for(i=0;i<=m;i++)
-      Xjc[i]= (int) mwXjc[i];
-  mwXir = mxGetIr(X_IN);
-  Xir =(int *) mxCalloc(Xjc[m],sizeof(int));
-  for(i=0;i<Xjc[m];i++)
-      Xir[i]= (int) mwXir[i];
-  
+  Xjc = mxGetJc(X_IN);
+  Xir = mxGetIr(X_IN);
   permPr = mxGetPr(PERM_IN);
 #ifdef DO_BFINIT
   cachsz = mxGetScalar(CACHSZ_IN);
@@ -169,16 +162,16 @@ void mexFunction(const int nlhs, mxArray *plhs[],
     int xadj(m+1), adjncy(Xnnz), perm(m), invp(m), colcnt(m), snode(m),
        xsuper(m+1), iwork(iwsize), xlindx(m+1), split(m)
    ------------------------------------------------------------ */
-  xadj = (int *) mxCalloc(m+1,sizeof(int));
-  adjncy = (int *) mxCalloc(Xjc[m], sizeof(int));
-  perm   = (int *) mxCalloc(m,  sizeof(int));
-  invp   = (int *) mxCalloc(m,  sizeof(int));
-  colcnt = (int *) mxCalloc(m,  sizeof(int));
-  snode  = (int *) mxCalloc(m,  sizeof(int));
-  xsuper = (int *) mxCalloc(m+1,sizeof(int));
+  xadj = (mwIndex *) mxCalloc(m+1,sizeof(mwIndex));
+  adjncy = (mwIndex *) mxCalloc(Xjc[m], sizeof(mwIndex));
+  perm   = (mwIndex *) mxCalloc(m,  sizeof(mwIndex));
+  invp   = (mwIndex *) mxCalloc(m,  sizeof(mwIndex));
+  colcnt = (mwIndex *) mxCalloc(m,  sizeof(mwIndex));
+  snode  = (mwIndex *) mxCalloc(m,  sizeof(mwIndex));
+  xsuper = (mwIndex *) mxCalloc(m+1,sizeof(mwIndex));
   iwsiz  = 7*m + 3;
-  iwork  = (int *) mxCalloc(iwsiz,  sizeof(int));
-  xlindx = (int *) mxCalloc(m+1,sizeof(int));
+  iwork  = (mwIndex *) mxCalloc(iwsiz,  sizeof(mwIndex));
+  xlindx = (mwIndex *) mxCalloc(m+1,sizeof(mwIndex));
 /* ------------------------------------------------------------
    Convert C-style symmetric matrix to adjacency structure
    (xadj,adjncy) in Fortran-style.
@@ -202,16 +195,14 @@ void mexFunction(const int nlhs, mxArray *plhs[],
 /* ------------------------------------------------------------
    Create output structure L
    ------------------------------------------------------------ */
-  L_OUT = mxCreateStructMatrix(1, 1, NL_FIELDS, LFieldnames);
+  L_OUT = mxCreateStructMatrix((mwSize)1, (mwSize)1, NL_FIELDS, LFieldnames);
 /* ------------------------------------------------------------
    Create sparse output matrix L.L, m x m, with nnzl nonzeros.
    ------------------------------------------------------------ */
   L_FIELD = mxCreateSparse(m,m, nnzl,mxREAL);
-  mwLjc = mxGetJc(L_FIELD);
-  mwLir = mxGetIr(L_FIELD);
+  Ljc = mxGetJc(L_FIELD);
+  Lir = mxGetIr(L_FIELD);
   Lpr = mxGetPr(L_FIELD);
-  Ljc=(int *) mxCalloc(m+1,sizeof(int));
-  Lir=(int *) mxCalloc(nnzl,sizeof(int));
 /* ------------------------------------------------------------
    Do symbolic factorization
    ------------------------------------------------------------ */
@@ -239,20 +230,20 @@ void mexFunction(const int nlhs, mxArray *plhs[],
 /* ------------------------------------------------------------
    Create output L.(L,perm,xsuper)
    ------------------------------------------------------------ */
-  mxSetField(L_OUT, 0,"L", L_FIELD);                  /* L.L */
-  L_FIELD = mxCreateDoubleMatrix(m, 1, mxREAL);       /* L.perm */
+  mxSetField(L_OUT, (mwIndex)0,"L", L_FIELD);                  /* L.L */
+  L_FIELD = mxCreateDoubleMatrix(m, (mwSize)1, mxREAL);       /* L.perm */
   permPr = mxGetPr(L_FIELD);
-  mxSetField(L_OUT, 0,"perm", L_FIELD);
-  L_FIELD = mxCreateDoubleMatrix(nsuper+1, 1, mxREAL);   /* L.xsuper */
+  mxSetField(L_OUT, (mwIndex)0,"perm", L_FIELD);
+  L_FIELD = mxCreateDoubleMatrix(nsuper+1, (mwSize)1, mxREAL);   /* L.xsuper */
   xsuperPr = mxGetPr(L_FIELD);
-  mxSetField(L_OUT, 0,"xsuper", L_FIELD);
+  mxSetField(L_OUT, (mwIndex)0,"xsuper", L_FIELD);
 #ifdef DO_BFINIT
-  L_FIELD = mxCreateDoubleMatrix(m, 1, mxREAL);          /* L.split */
+  L_FIELD = mxCreateDoubleMatrix(m, (mwSize)1, mxREAL);          /* L.split */
   splitPr = mxGetPr(L_FIELD);
-  mxSetField(L_OUT, 0,"split", L_FIELD);
-  L_FIELD = mxCreateDoubleMatrix(1, 1, mxREAL);          /* L.tmpsiz */
+  mxSetField(L_OUT, (mwIndex)0,"split", L_FIELD);
+  L_FIELD = mxCreateDoubleMatrix((mwSize)1, (mwSize)1, mxREAL);          /* L.tmpsiz */
   *mxGetPr(L_FIELD) = tmpsiz;
-  mxSetField(L_OUT, 0,"tmpsiz", L_FIELD);
+  mxSetField(L_OUT, (mwIndex)0,"tmpsiz", L_FIELD);
 #endif
 /* ------------------------------------------------------------
    Convert (perm, xsuper) to floating point.
@@ -268,15 +259,7 @@ void mexFunction(const int nlhs, mxArray *plhs[],
 /* ------------------------------------------------------------
    Release working arrays
    ------------------------------------------------------------ */
-for(i=0;i<=m;i++)
-    mwLjc[i]=(mwIndex) Ljc[i];
-for(i=0;i<nnzl;i++)
-    mwLir[i]=(mwIndex) Lir[i];
 
-  mxFree(Xjc);
-  mxFree(Xir);
-  mxFree(Ljc);
-  mxFree(Lir);
   mxFree(iwork);
   mxFree(invp);
   mxFree(perm);

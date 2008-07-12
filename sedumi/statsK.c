@@ -59,9 +59,9 @@
 void setScalarField(mxArray *mxK,const char *fnm,const double fval)
 {
   mxArray *K_FIELD;
-  K_FIELD = mxCreateDoubleMatrix(1, 1, mxREAL);
+  K_FIELD = mxCreateDoubleMatrix((mwSize)1,(mwSize)1, mxREAL);
   *mxGetPr(K_FIELD) = fval;
-  mxSetField(mxK,0,fnm,K_FIELD);
+  mxSetField(mxK,(mwIndex)0,fnm,K_FIELD);
 }
 
 /* ************************************************************
@@ -124,7 +124,7 @@ void mexFunction(int nlhs, mxArray *plhs[],
    Disassemble cone K structure
    ------------------------------------------------------------ */
   conepars(K_IN, &cK);
-  if( (K_FIELD = mxGetField(K_IN,0,"ycomplex")) == NULL){  /* K.ycomplex */
+  if( (K_FIELD = mxGetField(K_IN,(mwIndex)0,"ycomplex")) == NULL){  /* K.ycomplex */
     nycomplex = 0;
   }
   else{
@@ -143,34 +143,34 @@ void mexFunction(int nlhs, mxArray *plhs[],
 /* ------------------------------------------------------------
    Create output structure K
    ------------------------------------------------------------ */
-  K_OUT = mxCreateStructMatrix(1, 1, NKFIELDS, Kfieldnames);
+  K_OUT = mxCreateStructMatrix((mwSize)1, (mwSize)1, NKFIELDS, Kfieldnames);
 /* ------------------------------------------------------------
    Create fields K.{l,q,s, rsdpN, blkstart}
    ------------------------------------------------------------ */
-  setScalarField(K_OUT,"l",cK.lpN);                          /* K.l */
-  K_FIELD = mxCreateDoubleMatrix(1,cK.lorN, mxREAL);         /* K.q */
+  setScalarField(K_OUT,"l",(double)cK.lpN);                          /* K.l */
+  K_FIELD = mxCreateDoubleMatrix((mwSize)1,cK.lorN, mxREAL);         /* K.q */
   memcpy(mxGetPr(K_FIELD), cK.lorNL, cK.lorN * sizeof(double));
-  mxSetField(K_OUT,0,"q",K_FIELD);
-  K_FIELD = mxCreateDoubleMatrix(1,cK.sdpN, mxREAL);         /* K.s */
+  mxSetField(K_OUT,(mwIndex)0,"q",K_FIELD);
+  K_FIELD = mxCreateDoubleMatrix((mwSize)1,cK.sdpN, mxREAL);         /* K.s */
   memcpy(mxGetPr(K_FIELD), cK.sdpNL, cK.sdpN * sizeof(double));
-  mxSetField(K_OUT,0,"s",K_FIELD);
-  setScalarField(K_OUT,"rsdpN",cK.rsdpN);                    /* K.rsdpN */
-  K_FIELD = mxCreateDoubleMatrix(nblk+1,1, mxREAL);          /* K.blkstart */
+  mxSetField(K_OUT,(mwIndex)0,"s",K_FIELD);
+  setScalarField(K_OUT,"rsdpN",(double)cK.rsdpN);                    /* K.rsdpN */
+  K_FIELD = mxCreateDoubleMatrix(nblk+1,(mwSize)1, mxREAL);          /* K.blkstart */
   blkstartPr = mxGetPr(K_FIELD);
   for(i = 0; i <= nblk; i++)
     blkstartPr[i] = blkstart[i] + 1;
-  mxSetField(K_OUT,0,"blkstart",K_FIELD);
-  K_FIELD = mxCreateDoubleMatrix(1,nycomplex, mxREAL);     /* K.ycomplex */
+  mxSetField(K_OUT,(mwIndex)0,"blkstart",K_FIELD);
+  K_FIELD = mxCreateDoubleMatrix((mwSize)1,nycomplex, mxREAL);     /* K.ycomplex */
   memcpy(mxGetPr(K_FIELD), ycomplexPr, nycomplex * sizeof(double));
-  mxSetField(K_OUT,0,"ycomplex",K_FIELD);
+  mxSetField(K_OUT,(mwIndex)0,"ycomplex",K_FIELD);
 /* ------------------------------------------------------------
    Create fields K.{rLen, hLen, qMaxn, rMaxN, hMaxn}
    ------------------------------------------------------------ */
-  setScalarField(K_OUT,"rLen",cK.rLen);                          /* K.rLen */
-  setScalarField(K_OUT,"hLen",cK.hLen);                          /* K.hLen */
-  setScalarField(K_OUT,"qMaxn",cK.qMaxn);                        /* K.qMaxn */
-  setScalarField(K_OUT,"rMaxn",cK.rMaxn);                        /* K.rMaxn */
-  setScalarField(K_OUT,"hMaxn",cK.hMaxn);                        /* K.hMaxn */
+  setScalarField(K_OUT,"rLen",(double)cK.rLen);                          /* K.rLen */
+  setScalarField(K_OUT,"hLen",(double)cK.hLen);                          /* K.hLen */
+  setScalarField(K_OUT,"qMaxn",(double)cK.qMaxn);                        /* K.qMaxn */
+  setScalarField(K_OUT,"rMaxn",(double)cK.rMaxn);                        /* K.rMaxn */
+  setScalarField(K_OUT,"hMaxn",(double)cK.hMaxn);                        /* K.hMaxn */
 /* ------------------------------------------------------------
    Release working array
    ------------------------------------------------------------ */

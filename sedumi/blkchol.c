@@ -209,14 +209,14 @@ mwIndex spchol(const mwIndex m, const mwIndex nsuper, const mwIndex *xsuper,
   nskip = blkLDL(m, nsuper, xsuper, snode, xlindx, lindx, lb,
                 ljc, lpr, d, perm,
                 ub, maxu, skipIr, iwsiz, iwork, fwsiz, fwork);
-  if(nskip < 0)
+  if(nskip == (mwIndex)-1)
     return nskip;
 /* ------------------------------------------------------------
    Let iwork = diag-adding indices. Viz. where d(skipIr)>0.0.
    Let skipIr = skipIr except diag-adding indices. Hence d(skipIr)=0.
    ------------------------------------------------------------ */
   if(iwsiz < nskip)
-    return -1;
+    return (mwIndex)-1;
   ix = 0;
   nadd = 0;
   for(j = 0; j < nskip; j++){
@@ -268,22 +268,22 @@ void mexFunction(int nlhs, mxArray *plhs[],
    Disassemble block Cholesky structure L
    ------------------------------------------------------------ */
   mxAssert(mxIsStruct(L_IN), "Parameter `L' should be a structure.");
-  L_FIELD = mxGetField(L_IN,0,"perm");       /* L.perm */
+  L_FIELD = mxGetField(L_IN,(mwIndex)0,"perm");       /* L.perm */
   mxAssert( L_FIELD != NULL, "Missing field L.perm.");
   mxAssert(m == mxGetM(L_FIELD) * mxGetN(L_FIELD), "perm size mismatch");
   permPr = mxGetPr(L_FIELD);
-  L_FIELD = mxGetField(L_IN,0,"L");         /* L.L */
+  L_FIELD = mxGetField(L_IN,(mwIndex)0,"L");         /* L.L */
   mxAssert( L_FIELD != NULL, "Missing field L.L.");
   mxAssert( m == mxGetM(L_FIELD) && m == mxGetN(L_FIELD), "Size L.L mismatch.");
   mxAssert(mxIsSparse(L_FIELD), "L.L should be sparse.");
   L.jc = mxGetJc(L_FIELD);
   LINir = mxGetIr(L_FIELD);
-  L_FIELD = mxGetField(L_IN,0,"xsuper");       /* L.xsuper */
+  L_FIELD = mxGetField(L_IN,(mwIndex)0,"xsuper");       /* L.xsuper */
   mxAssert( L_FIELD != NULL, "Missing field L.xsuper.");
   nsuper = mxGetM(L_FIELD) * mxGetN(L_FIELD) - 1;
   mxAssert( nsuper <= m, "Size L.xsuper mismatch.");
   xsuperPr = mxGetPr(L_FIELD);
-  L_FIELD = mxGetField(L_IN,0,"tmpsiz");         /* L.tmpsiz */
+  L_FIELD = mxGetField(L_IN,(mwIndex)0,"tmpsiz");         /* L.tmpsiz */
   mxAssert( L_FIELD != NULL, "Missing field L.tmpsiz.");
   tmpsiz   = (mwIndex) mxGetScalar(L_FIELD);
 /* ------------------------------------------------------------
@@ -296,15 +296,15 @@ void mexFunction(int nlhs, mxArray *plhs[],
   useDelay = 0;
   if(nrhs >= NPARINMIN + 1){       /* 3rd argument = pars */
     mxAssert(mxIsStruct(PARS_IN), "Parameter `pars' should be a structure.");
-    if( (L_FIELD = mxGetField(PARS_IN,0,"canceltol")) != NULL)
+    if( (L_FIELD = mxGetField(PARS_IN,(mwIndex)0,"canceltol")) != NULL)
       canceltol  = mxGetScalar(L_FIELD);  /* pars.canceltol */
-    if( (L_FIELD = mxGetField(PARS_IN,0,"maxu")) != NULL)
+    if( (L_FIELD = mxGetField(PARS_IN,(mwIndex)0,"maxu")) != NULL)
       maxu = mxGetScalar(L_FIELD);  /* pars.maxu */
-    if( (L_FIELD = mxGetField(PARS_IN,0,"abstol")) != NULL){
+    if( (L_FIELD = mxGetField(PARS_IN,(mwIndex)0,"abstol")) != NULL){
       abstol = mxGetScalar(L_FIELD);  /* pars.abstol */
       abstol = MAX(abstol, 0.0);
     }
-    if( (L_FIELD = mxGetField(PARS_IN,0,"delay")) != NULL)
+    if( (L_FIELD = mxGetField(PARS_IN,(mwIndex)0,"delay")) != NULL)
       useDelay = (char) mxGetScalar(L_FIELD);  /* pars.delay */
 /* ------------------------------------------------------------
    Get optional vector absd
@@ -326,7 +326,7 @@ void mexFunction(int nlhs, mxArray *plhs[],
 /* ------------------------------------------------------------
    Create ouput vector d(m).
    ------------------------------------------------------------ */
-  D_OUT = mxCreateDoubleMatrix(m,1,mxREAL);
+  D_OUT = mxCreateDoubleMatrix(m,(mwSize)1,mxREAL);
   d     = mxGetPr(D_OUT);
 /* ------------------------------------------------------------
    Compute required sizes of working arrays:
@@ -393,7 +393,7 @@ void mexFunction(int nlhs, mxArray *plhs[],
    Create output matrices skip = sparse([],[],[],m,1,nskip),
    diagadd = sparse([],[],[],m,1,nadd),
    ------------------------------------------------------------ */
-  SKIP_OUT = mxCreateSparse(m,1, MAX(1,nskip),mxREAL);
+  SKIP_OUT = mxCreateSparse(m,(mwSize)1, MAX(1,nskip),mxREAL);
   memcpy(mxGetIr(SKIP_OUT), skip, nskip * sizeof(mwIndex));
   skipJc = mxGetJc(SKIP_OUT);
   skipJc[0] = 0; skipJc[1] = nskip;
@@ -412,7 +412,7 @@ void mexFunction(int nlhs, mxArray *plhs[],
       L.pr[L.jc[i]] = 1.0;
       fzeros(L.pr+L.jc[i]+1,L.jc[i+1]-L.jc[i]-1);
     }
-  DIAGADD_OUT = mxCreateSparse(m,1, MAX(1,nadd),mxREAL);
+  DIAGADD_OUT = mxCreateSparse(m,(mwSize)1, MAX(1,nadd),mxREAL);
   memcpy(mxGetIr(DIAGADD_OUT), iwork, nadd * sizeof(mwIndex));
   skipJc = mxGetJc(DIAGADD_OUT);
   skipJc[0] = 0; skipJc[1] = nadd;

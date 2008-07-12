@@ -131,7 +131,7 @@ void mexFunction(const int nlhs, mxArray *plhs[],
 /* ------------------------------------------------------------
    Allocate output Y
    ------------------------------------------------------------ */
-  Y_OUT =  mxCreateDoubleMatrix(lenud, 1, mxREAL);
+  Y_OUT =  mxCreateDoubleMatrix(lenud, (mwSize)1, mxREAL);
   y = mxGetPr(Y_OUT);
 /* ------------------------------------------------------------
    The actual job is done here: Y = R*U  (triu * triu)

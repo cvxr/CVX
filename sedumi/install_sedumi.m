@@ -1,4 +1,4 @@
-function install_sedumi
+function install_sedumi(nopath)
 
 %SeDuMi installation script
 %
@@ -93,37 +93,23 @@ disp( 'Building SeDuMi binaries...' )
 COMPUTER = computer;
 VERSION  = [1,0.1]*sscanf(version,'%d.%d');
 IS64BIT  = strcmp(COMPUTER(end-1:end),'64');
-flags{1} = '-O';
+flags = {};
+% flags{1} = '-O';
 if ispc,
-    flags{2} = '-DPC';
+    flags{end+1} = '-DPC';
 elseif isunix,
-    flags{2} = '-DUNIX';
+    flags{end+1} = '-DUNIX';
 end
 if IS64BIT & (VERSION>=7.3),
-    flags{3} = '-largeArrayDims';
+    flags{end+1} = '-largeArrayDims';
 elseif (VERSION<7.3),
-    flags{3} = '-DmwIndex=int';
-    flags{4} = '-DmwSize=int';
+    flags{end+1} = '-DmwIndex=int';
+    flags{end+1} = '-DmwSize=int';
+    flags{end+1} = '-DmwSignedIndex=int';
 end
-libs = {};
-if ispc,
-    MATLAB = matlabroot;
-    if IS64BIT,
-        BLASDIR = '64\microsoft\';
-    elseif VERSION >= 7.2,
-        BLASDIR = '32\microsoft\';
-    else
-        BLASDIR = '32\lcc\';
-    end
-    BLASDIR = [ MATLAB, '\extern\lib\win', BLASDIR ];
-    temp = [ BLASDIR, 'libmwlapack.lib' ];
-    if exist( temp ),
-        libs{end+1} = temp;
-        temp = [ BLASDIR, 'libmwblas.lib' ];
-        if exist( temp ),
-            libs{end+1} = temp;
-        end
-    end
+libs = {'-lmwlapack'};
+if VERSION >= 7.5,
+    libs{end+1} = '-lmwblas';
 end
 flags = sprintf( ' %s', flags{:} );
 libs  = sprintf( ' %s', libs{:} );
@@ -146,6 +132,3 @@ if nargin < 1,
     disp('Go to File/Set Path and click on Save.');
     disp('SeDuMi has been succesfully installed. For more information type help sedumi or see the User guide.')
 end
-
-%symfctmex and ordmmdmex are not truly 64bit due to the complexity of the
-%underlying code.

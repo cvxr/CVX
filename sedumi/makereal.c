@@ -101,7 +101,7 @@ void writenz(mwIndex *yir, double *ypr, mwIndex *pjnz, const mwIndex *xir,
    ************************************************************ */
 mwIndex fmakereal(mwIndex *yir, double *ypr, const mwIndex *xir, const double *xpi,
 	     const mwIndex xnnz, const mwIndex *cpxf, const mwIndex nf,
-	     char *cfound, mwIndex *iwork, mwIndex iwsize)
+	     bool *cfound, mwIndex *iwork, mwIndex iwsize)
 {
   mwIndex i,jnz;
   mwIndex *ipos;
@@ -160,7 +160,7 @@ mwIndex fmakereal(mwIndex *yir, double *ypr, const mwIndex *xir, const double *x
 mwIndex xmakereal(mwIndex *yir, double *ypr,
 	      const mwIndex *xir, const double *xpr, const double *xpi,
 	      const mwIndex xnnz, const mwIndex idelta, const mwIndex *cpxx, const mwIndex nx,
-	      char *cfound, mwIndex *iwork, mwIndex iwsize)
+	      bool *cfound, mwIndex *iwork, mwIndex iwsize)
 {
   mwIndex i,j,k,inz,jnz;
   mwIndex *ipos;
@@ -242,7 +242,7 @@ mwIndex smakereal(mwIndex *yir, double *ypr,
 	      const mwIndex *xir, const double *xpr, const double *xpi,
 	      const mwIndex xnnz, const mwIndex idelta,
 	      const mwIndex *cpxsi, const mwIndex twons, const mwIndex lenfull,
-	      char *cfound, mwIndex *iwork, mwIndex iwsize)
+	      bool *cfound, mwIndex *iwork, mwIndex iwsize)
 {
   mwIndex i,j,k,inz,jnz;
   mwIndex *ipos;
@@ -327,7 +327,7 @@ mwIndex makereal(mwIndex *yir, double *ypr,
              const mwIndex xnnz, const mwIndex *cpxf, const mwIndex nf,
              const mwIndex *cpxx, const mwIndex nx, const mwIndex *cpxsi,
              const mwIndex ns, const mwIndex lenfull, const mwIndex dimflqr,
-             char *cfound, mwIndex *iwork, mwIndex iwsize)
+             bool *cfound, mwIndex *iwork, mwIndex iwsize)
 {
   mwIndex jcs, jnz;
 /* ------------------------------------------------------------
@@ -369,7 +369,7 @@ void mexFunction(const int nlhs, mxArray *plhs[],
 {
   mwIndex i,j,jnz,MAXN, m,dimflqr,lenfull,reallength, nf,nx,ns, iwsize;
   mwIndex *iwork, *sdpNL, *cpxf, *cpxx, *cpxs, *cpxsi;
-  char *cwork;
+  bool *cwork;
   const double *cpxfPr, *cpxxPr, *cpxsPr, *xpi;
   mxArray *MY_FIELD;
   coneK cK;
@@ -391,19 +391,19 @@ void mexFunction(const int nlhs, mxArray *plhs[],
    Disassemble cpx structure
    ------------------------------------------------------------ */
   mxAssert(mxIsStruct(CPX_IN), "Parameter `cpx' should be a structure.");
-  if( (MY_FIELD = mxGetField(CPX_IN,0,"f")) == NULL)  /* cpx.f */
+  if( (MY_FIELD = mxGetField(CPX_IN,(mwIndex)0,"f")) == NULL)  /* cpx.f */
     nf = 0;
   else{
     nf = mxGetM(MY_FIELD) * mxGetN(MY_FIELD);
     cpxfPr = mxGetPr(MY_FIELD);
   }
-  if( (MY_FIELD = mxGetField(CPX_IN,0,"s")) == NULL)  /* cpx.s */
+  if( (MY_FIELD = mxGetField(CPX_IN,(mwIndex)0,"s")) == NULL)  /* cpx.s */
     ns = 0;
   else{
     ns = mxGetM(MY_FIELD) * mxGetN(MY_FIELD);
     cpxsPr = mxGetPr(MY_FIELD);
   }
-  if( (MY_FIELD = mxGetField(CPX_IN,0,"x")) == NULL)  /* cpx.x */
+  if( (MY_FIELD = mxGetField(CPX_IN,(mwIndex)0,"x")) == NULL)  /* cpx.x */
     nx = 0;
   else{
     nx = mxGetM(MY_FIELD) * mxGetN(MY_FIELD);
@@ -426,10 +426,10 @@ void mexFunction(const int nlhs, mxArray *plhs[],
    Allocate iwork[iwsiz], cwork[MAXN], {K.s, cpx.{f[nf],x[nx],s[ns],si[2*ns]}}
    ------------------------------------------------------------ */
   MAXN = MAX(MAX(nf,nx),2*ns);
-  iwsize = floor(log(1 + MAXN) / log(2));       /* for binary tree search */
+  iwsize = floor(log(1.0 + MAXN) / log(2.0));       /* for binary tree search */
   iwsize += 2 * ns + 2 + MAXN;
   iwork = (mwIndex *) mxCalloc(iwsize, sizeof(mwIndex));
-  cwork = (char *) mxCalloc(MAX(1,MAXN), sizeof(char));
+  cwork = (bool *) mxCalloc(MAX(1,MAXN), sizeof(bool));
   sdpNL = (mwIndex *) mxCalloc(MAX(1, cK.sdpN + nf + nx + 3*ns), sizeof(mwIndex));
   cpxf = sdpNL + cK.sdpN;
   cpxx = cpxf + nf;

@@ -62,9 +62,9 @@ void utmulx(double *y, const double *u, const double *xu, const mwIndex n);
 void prpiutmulx(double *y, double *ypi, const double *u, const double *upi,
                 const double *xu, const double *xupi, const mwIndex n);
 void psdscaleK(double *y, const double *ud, const mwIndex *perm, const double *x,
-            const coneK cK, const char transp, double *fwork);
+               const coneK cK, bool transp, double *fwork);
 void scaleK(double *y, double *dmult, const double *d, const double *ud,
             const double *qdetd, const mwIndex *perm, const double *x,
-            const coneK cK, const char transp, const double *invdx,
+            const coneK cK, bool transp, const double *invdx,
             double *fwork);
 #endif

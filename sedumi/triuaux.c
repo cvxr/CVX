@@ -495,7 +495,7 @@ void invltxl(double *y, const double *l, const double *x,
    ------------------------------------------------------------ */
   jcol = 0;
   for(j = 0; j < m; j++, jcol += m)        /* Computes complete L'\X */
-    partbwsolve(xl+jcol, l, x+jcol, m,0);
+    partbwsolve(xl+jcol, l, x+jcol, m,(mwIndex)0);
 /* ------------------------------------------------------------
    Let tril(xl) = triu(lx)' = tril(X/L)    NB:discards tril(L'\X)
    ------------------------------------------------------------ */
@@ -523,7 +523,7 @@ void prpiinvltxl(double *y,double *ypi, const double *l,const double *lpi,
    ------------------------------------------------------------ */
   jcol = 0;
   for(j = 0; j < m; j++, jcol += m)        /* Computes complete L'\X */
-    prpipartbwsolve(xl+jcol,xlpi+jcol, l,lpi, x+jcol,xpi+jcol, m,0);
+    prpipartbwsolve(xl+jcol,xlpi+jcol, l,lpi, x+jcol,xpi+jcol, m,(mwIndex)0);
 /* ------------------------------------------------------------
    Let tril(xl) = triu(lx)' = tril(X/L)    NB:discards tril(L'\X)
    ------------------------------------------------------------ */
@@ -554,7 +554,7 @@ void prpiinvltxl(double *y,double *ypi, const double *l,const double *lpi,
    REMARK lenud := cK.rDim + cK.hDim
    ************************************************************ */
 void psdscaleK(double *y, const double *ud, const mwIndex *perm, const double *x,
-            const coneK cK, const char transp, double *fwork)
+            const coneK cK, bool transp, double *fwork)
 {
   mwIndex k,nk,nksqr;
   double *z, *zpi;

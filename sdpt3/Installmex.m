@@ -8,8 +8,9 @@
    fprintf(' current directory is:  %s\n',curdir);    
 %%
 %% generate mex files in Mexfun
-%% 
-   if strcmp(computer,'PCWIN64') | strcmp(computer,'GLNXA64')
+%%
+   isoctave = exist('OCTAVE_VERSION');
+   if isoctave | strcmp(computer,'PCWIN64') | strcmp(computer,'GLNXA64')
       computer_model = 64; 
    else
       computer_model = 32; 
@@ -41,20 +42,24 @@
    fname{14} = 'mextriang';
    fname{15} = 'mextriangsp';
 
-   if (matlabversion < 7.3) 
+   if isoctave
+      mexcmd = 'mex ';
+   elseif (matlabversion < 7.3) 
       mexcmd = 'mex  -O  '; 
    else
       mexcmd = 'mex  -O -largeArrayDims  '; 
    end
    for k = 1:length(fname)
-      cmd([mexcmd,fname{k},'.c']);  
+       cmd = [mexcmd,fname{k},'.c'];
+       disp( cmd );
+       eval( cmd );
    end 
    cd .. 
    cd ..
 %%
 %% generate mex files in spchol
 %%
-   if (matlabversion < 7.3) 
+   if ~isoctave & (matlabversion < 7.3) 
       clear fname
       src = [curdir,fsp,'Linsysolver',fsp,'spchol']; 
       eval(['cd ','Linsysolver',fsp,'spchol']); 
@@ -70,14 +75,10 @@
       fname{7} = 'mexbwblkslv.c sdmauxFill.c sdmauxRdot.c';
       mexcmd = 'mex  -O  '; 
       for k = 1:length(fname)
-         cmd([mexcmd,fname{k}]);  
+       cmd = [mexcmd,fname{k},'.c'];
+       disp( cmd );
+       eval( cmd );
       end      
       cd .. 
       cd ..
    end
-%%***********************************************
-   function cmd(s) 
-   
-   fprintf(' %s\n',s); 
-   eval(s); 
-%%***********************************************

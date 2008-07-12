@@ -74,7 +74,7 @@ function Ablk = findblks(At,Ablkjc,blk0,blk1,blkstart) --  Find nonzero blocks
 void findblks(mwIndex *Ablkir, mwIndex *Ablkjc, const mwIndex *Ajc1,const mwIndex *Ajc2,
               const mwIndex *Air, const mwIndex *blkstart, const mwIndex *blkstartm1,
               const mwIndex m,const mwIndex nblk,
-              mwIndex iwsize, char *cfound, mwIndex *iwork)
+              mwIndex iwsize, bool *cfound, mwIndex *iwork)
 {
   mwIndex i,j,inz,ajnnz;
   mwIndex *ipos;
@@ -125,7 +125,7 @@ void mexFunction(int nlhs, mxArray *plhs[],
   mwIndex i,j, nblk,m, blknnz, njc, iwsize, blk0,blk1;
   mwIndex *iwork, *Ajc, *blkstart;
   const double *blkstartPr, *AjcPr;
-  char *cwork;
+  bool *cwork;
   bool isblk0negative;
 /* ------------------------------------------------------------
    Check for proper number of arguments
@@ -167,7 +167,7 @@ void mexFunction(int nlhs, mxArray *plhs[],
   iwork = (mwIndex *) mxCalloc(iwsize, sizeof(mwIndex));
   blkstart = (mwIndex *) mxCalloc(MAX(2*nblk,1), sizeof(mwIndex));
   Ajc = (mwIndex *) mxCalloc(MAX(2*m,1), sizeof(mwIndex));
-  cwork = (char *) mxCalloc(MAX(nblk,1), sizeof(char));
+  cwork = (bool *) mxCalloc(MAX(nblk,1), sizeof(bool));
 /* ------------------------------------------------------------
    Translate blkstart from Fortran-double to C-mwIndex
    ------------------------------------------------------------ */

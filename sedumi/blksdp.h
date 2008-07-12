@@ -91,7 +91,7 @@ typedef struct{
    ************************************************************ */
 #if !defined(_COMPFUN_)
 #define _COMPFUN_
-typedef signed char (*COMPFUN)(const void *pa,const void *pb);
+typedef int (*COMPFUN)(const void *pa,const void *pb);
 #endif
 
 #define ibsearch(key,vec,n)  bsearch((void *)(key), (void *)(vec), (n), sizeof(mwSize), (COMPFUN) icmp)

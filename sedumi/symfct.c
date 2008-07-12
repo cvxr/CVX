@@ -3,7 +3,9 @@
 	-lf2c -lm   (in that order)
 */
 
-typedef int integer;                  /* removed "long" */
+#include "mex.h"
+typedef mwSignedIndex integer;                  /* removed "long" */
+
 #if !defined(max)
 #define  max(A, B)   ((A) > (B) ? (A) : (B))
 #endif

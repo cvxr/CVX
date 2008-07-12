@@ -124,7 +124,7 @@ void mexFunction(const int nlhs, mxArray *plhs[],
 /* ------------------------------------------------------------
    Allocate output y(lenud), and let y = x.
    ------------------------------------------------------------ */
-  Y_OUT = mxCreateDoubleMatrix(lenud, 1, mxREAL);
+  Y_OUT = mxCreateDoubleMatrix(lenud, (mwSize)1, mxREAL);
   y = mxGetPr(Y_OUT);
   memcpy(y, mxGetPr(X_IN), lenud * sizeof(double));
 /* ------------------------------------------------------------

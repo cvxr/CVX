@@ -81,7 +81,7 @@ void spzeros(double *x,const mwIndex *xir,const mwIndex n)
      iwork - length ny+2+floor(log_2(1+ny)).
    ************************************************************ */
 void exmerge(mwIndex *x, const mwIndex *y, const mwIndex nx, const mwIndex ny,
-             const mwIndex iwsize, char *cwork, mwIndex *ipos)
+             const mwIndex iwsize, bool *cwork, mwIndex *ipos)
 {
   mwIndex i,j,inz;
 /* ------------------------------------------------------------
@@ -257,7 +257,7 @@ void getada3(jcir ada, double *absd, jcir At, const double *udsqr,
              const mwIndex *perm, const mwIndex *invperm,
              const mwIndex m, const mwIndex lenud, const coneK *pcK,
              double *fwork, mwIndex fwsiz, mwIndex *iwork, mwIndex iwsiz,
-             char *cwork)
+             bool *cwork)
 {
   mwIndex i,j,k, knz,inz, dznnz, permj, rsdpN, nblk, nnzbj;
   double *daj;
@@ -378,7 +378,7 @@ void mexFunction(int nlhs, mxArray *plhs[],
   const mwIndex *dzstructjc, *dzstructir;
   double *fwork, *absd;
   mwIndex *blkstart, *iwork, *Ajc1, *psdNL, *xblk, *perm, *invperm, *dzjc;
-  char *cwork;
+  bool *cwork;
   jcir At, ada;
 /* ------------------------------------------------------------
    Check for proper number of arguments
@@ -401,7 +401,7 @@ void mexFunction(int nlhs, mxArray *plhs[],
 /* ------------------------------------------------------------
    Translate blkstart from Fortran-double to C-mwIndex
    ------------------------------------------------------------ */
-  MY_FIELD = mxGetField(K_IN,0,"blkstart");        /*K.blkstart*/
+  MY_FIELD = mxGetField(K_IN,(mwIndex)0,"blkstart");        /*K.blkstart*/
   mxAssert( MY_FIELD != NULL, "Missing K.blkstart.");
   mxAssert(mxGetM(MY_FIELD) * mxGetN(MY_FIELD) == 2+cK.lorN+cK.sdpN, "Size mismatch K.blkstart.");
   blkstartPr = mxGetPr(MY_FIELD) + cK.lorN + 1;          /* point to start of PSD */
@@ -433,14 +433,14 @@ void mexFunction(int nlhs, mxArray *plhs[],
    DISASSEMBLE Aord structure: Aord.{dz,sperm}
    ------------------------------------------------------------ */
   mxAssert(mxIsStruct(AORD_IN), "Aord should be a structure.");
-  MY_FIELD = mxGetField(AORD_IN,0,"dz");         /* Aord.dz */
+  MY_FIELD = mxGetField(AORD_IN,(mwIndex)0,"dz");         /* Aord.dz */
   mxAssert( MY_FIELD != NULL, "Missing field Aord.dz.");
   mxAssert(mxGetN(MY_FIELD) >= m, "Size mismatch Aord.dz.");
   mxAssert(mxGetM(MY_FIELD) == lenfull, "Aord.dz size mismatch");
   mxAssert(mxIsSparse(MY_FIELD), "Aord.dz should be sparse.");
   dzstructjc = mxGetJc(MY_FIELD);
   dzstructir = mxGetIr(MY_FIELD);
-  MY_FIELD = mxGetField(AORD_IN,0,"sperm");   /* Aord.sperm */
+  MY_FIELD = mxGetField(AORD_IN,(mwIndex)0,"sperm");   /* Aord.sperm */
   mxAssert( MY_FIELD != NULL, "Missing field Aord.sperm.");
   mxAssert(mxGetM(MY_FIELD) * mxGetN(MY_FIELD) == m, "Aord.sperm size mismatch");
   permPr = mxGetPr(MY_FIELD);
@@ -456,7 +456,7 @@ void mexFunction(int nlhs, mxArray *plhs[],
 /* ------------------------------------------------------------
    Create output vector absd(m)
    ------------------------------------------------------------ */
-  ABSD_OUT = mxCreateDoubleMatrix(m,1,mxREAL);
+  ABSD_OUT = mxCreateDoubleMatrix(m,(mwSize)1,mxREAL);
   absd = mxGetPr(ABSD_OUT);
 /* ------------------------------------------------------------
    The following ONLY if there are PSD blocks:
@@ -488,7 +488,7 @@ void mexFunction(int nlhs, mxArray *plhs[],
     dzjc = xblk + lenud;       /*dzjc(sdpN+1) */
     perm = (mwIndex *) mxCalloc(MAX(2 * m,1), sizeof(mwIndex));
     invperm = perm + m;                                 /* invperm(m) */
-    cwork = (char *) mxCalloc(MAX(1,maxadd), sizeof(char));
+    cwork = (bool *) mxCalloc(MAX(1,maxadd), sizeof(bool));
 /* ------------------------------------------------------------
    ALLOCATE float working array:
    fwork[fwsiz] with fwsiz = lenud + 2 * max(rMaxn^2, 2*hMaxn^2).

@@ -199,18 +199,18 @@ void mexFunction(const int nlhs, mxArray *plhs[],
     Disassemble block Cholesky structure L
     ------------------------------------------------------------ */
  mxAssert(mxIsStruct(L_IN), "Parameter `L' should be a structure.");
- L_FIELD = mxGetField(L_IN,0,"perm");                    /* L.perm */
+ L_FIELD = mxGetField(L_IN,(mwIndex)0,"perm");                    /* L.perm */
  mxAssert( L_FIELD != NULL, "Missing field L.perm.");
  m = mxGetM(L_FIELD) * mxGetN(L_FIELD);
  permPr = mxGetPr(L_FIELD);
- L_FIELD = mxGetField(L_IN,0,"L");         /* L.L */
+ L_FIELD = mxGetField(L_IN,(mwIndex)0,"L");         /* L.L */
  mxAssert( L_FIELD != NULL, "Missing field L.L.");
  mxAssert( m == mxGetM(L_FIELD) && m == mxGetN(L_FIELD), "Size L.L mismatch.");
  mxAssert(mxIsSparse(L_FIELD), "L.L should be sparse.");
  L.jc = mxGetJc(L_FIELD);
  L.ir = mxGetIr(L_FIELD);
  L.pr = mxGetPr(L_FIELD);
- L_FIELD = mxGetField(L_IN,0,"xsuper");          /* L.xsuper */
+ L_FIELD = mxGetField(L_IN,(mwIndex)0,"xsuper");          /* L.xsuper */
  mxAssert( L_FIELD != NULL, "Missing field L.xsuper.");
  nsuper = mxGetM(L_FIELD) * mxGetN(L_FIELD) - 1;
  mxAssert( nsuper <= m, "Size L.xsuper mismatch.");

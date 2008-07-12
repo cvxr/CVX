@@ -156,7 +156,7 @@ void mexFunction( int nlhs, mxArray *plhs[],
    Disassemble cone K structure
    ------------------------------------------------------------ */
   conepars(K_IN, &cK);
-  if( (MY_FIELD = mxGetField(K_IN,0,"xcomplex")) == NULL){  /* K.xcomplex */
+  if( (MY_FIELD = mxGetField(K_IN,(mwIndex)0,"xcomplex")) == NULL){  /* K.xcomplex */
     nxcomplex = 0;
   }
   else{
@@ -202,31 +202,31 @@ void mexFunction( int nlhs, mxArray *plhs[],
 /* ------------------------------------------------------------
    Create output structure CPX
    ------------------------------------------------------------ */
-  CPX_OUT = mxCreateStructMatrix(1, 1, NCPX_FIELDS, CPXFieldnames);
-  MY_FIELD = mxCreateDoubleMatrix(cpxf,1,mxREAL);      /* cpx.f */
+  CPX_OUT = mxCreateStructMatrix((mwIndex)1, (mwIndex)1, NCPX_FIELDS, CPXFieldnames);
+  MY_FIELD = mxCreateDoubleMatrix(cpxf,(mwIndex)1,mxREAL);      /* cpx.f */
   myPr = mxGetPr(MY_FIELD);
   for(i = 0; i < cpxf; i++)
     myPr[i] = 1.0 + iwork[i];                          /* mwIndex to double */
-  mxSetField(CPX_OUT, 0,"f", MY_FIELD);
-  MY_FIELD = mxCreateDoubleMatrix(cK.lorN,1,mxREAL);      /* cpx.q */
+  mxSetField(CPX_OUT, (mwIndex)0,"f", MY_FIELD);
+  MY_FIELD = mxCreateDoubleMatrix(cK.lorN,(mwIndex)1,mxREAL);      /* cpx.q */
   if(iwsiz > 0){
     myPr = mxGetPr(MY_FIELD);
     for(i = 0; i < cK.lorN; i++)
       myPr[i] = lorNL[i];                              /* mwIndex to double */
   }
-  mxSetField(CPX_OUT, 0,"q", MY_FIELD);
-  MY_FIELD = mxCreateDoubleMatrix(cK.rconeN,1,mxREAL);      /* cpx.r */
+  mxSetField(CPX_OUT, (mwIndex)0,"q", MY_FIELD);
+  MY_FIELD = mxCreateDoubleMatrix(cK.rconeN,(mwIndex)1,mxREAL);      /* cpx.r */
   if(iwsiz > 0){
     myPr = mxGetPr(MY_FIELD);
     for(i = 0; i < cK.rconeN; i++)
       myPr[i] = rconeNL[i];                              /* mwIndex to double */
   }
-  mxSetField(CPX_OUT, 0,"r", MY_FIELD);
-  MY_FIELD = mxCreateDoubleMatrix(nxcomplex,1,mxREAL);      /* cpx.x */
+  mxSetField(CPX_OUT, (mwIndex)0,"r", MY_FIELD);
+  MY_FIELD = mxCreateDoubleMatrix(nxcomplex,(mwIndex)1,mxREAL);      /* cpx.x */
   myPr = mxGetPr(MY_FIELD);
   for(i = 0; i < nxcomplex; i++)
     myPr[i] = 1.0 + xcomplex[i];                       /* mwIndex to double */
-  mxSetField(CPX_OUT, 0,"x", MY_FIELD);
+  mxSetField(CPX_OUT, (mwIndex)0,"x", MY_FIELD);
 /* ------------------------------------------------------------
    Release working arrays
    ------------------------------------------------------------ */

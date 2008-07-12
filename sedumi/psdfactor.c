@@ -191,9 +191,9 @@ void mexFunction(const int nlhs, mxArray *plhs[],
 /* ------------------------------------------------------------
    Allocate output UX(sdpdim), ispos(1).
    ------------------------------------------------------------ */
-  UX_OUT = mxCreateDoubleMatrix(sdpdim, 1, mxREAL);
+  UX_OUT = mxCreateDoubleMatrix(sdpdim, (mwSize)1, mxREAL);
   ux = mxGetPr(UX_OUT);
-  ISPOS_OUT = mxCreateDoubleMatrix(1,1,mxREAL);
+  ISPOS_OUT = mxCreateDoubleMatrix((mwSize)1,(mwSize)1,mxREAL);
 /* ------------------------------------------------------------
    PSD: Cholesky factorization.
    Initialize  ispos = 1 and ux = x.

@@ -100,14 +100,14 @@ void mexFunction( int nlhs, mxArray *plhs[],
    DISASSEMBLE dense structure: dense.{l,cols,q}
    ------------------------------------------------------------ */
   mxAssert(mxIsStruct(DENSE_IN), "dense should be a structure.");
-  MY_FIELD = mxGetField(DENSE_IN,0,"l");        /* dense.l */ 
+  MY_FIELD = mxGetField(DENSE_IN,(mwIndex)0,"l");        /* dense.l */ 
   mxAssert( MY_FIELD != NULL, "Missing field dense.l.");
   nl = (mwIndex) mxGetScalar(MY_FIELD);                           /* double to mwIndex */
-  MY_FIELD = mxGetField(DENSE_IN,0,"q");          /* dense.q */
+  MY_FIELD = mxGetField(DENSE_IN,(mwIndex)0,"q");          /* dense.q */
   mxAssert( MY_FIELD != NULL, "Missing field dense.q.");
   nq = (mwIndex) (mxGetM(MY_FIELD) * mxGetN(MY_FIELD));
   qPr = mxGetPr(MY_FIELD);
-  MY_FIELD = mxGetField(DENSE_IN,0,"cols");            /* dense.cols */
+  MY_FIELD = mxGetField(DENSE_IN,(mwIndex)0,"cols");            /* dense.cols */
   mxAssert( MY_FIELD != NULL, "Missing field dense.cols.");
   nden = (mwIndex) (mxGetM(MY_FIELD) * mxGetN(MY_FIELD) - (nq+nl));  /* jump to q-norm */
   mxAssert(nden >= 0, "dense.cols size mismatch.");
@@ -116,7 +116,7 @@ void mexFunction( int nlhs, mxArray *plhs[],
    Disassemble structure d.{det}
    ------------------------------------------------------------ */
   mxAssert(mxIsStruct(D_IN), "d should be a structure.");
-  MY_FIELD = mxGetField(D_IN,0,"det");           /* d.det */
+  MY_FIELD = mxGetField(D_IN,(mwIndex)0,"det");           /* d.det */
   mxAssert( MY_FIELD != NULL, "Missing field d.det.");
   detd = mxGetPr(MY_FIELD);
   lorN = (mwIndex) (mxGetM(MY_FIELD) * mxGetN(MY_FIELD));
@@ -152,7 +152,7 @@ void mexFunction( int nlhs, mxArray *plhs[],
 /* ------------------------------------------------------------
    Create output: smult(nden,1)
    ------------------------------------------------------------ */
-  SMULT_OUT = mxCreateDoubleMatrix(nden, 1, mxREAL);
+  SMULT_OUT = mxCreateDoubleMatrix(nden, (mwSize)1, mxREAL);
   adenscale(mxGetPr(SMULT_OUT),detd, dencols,q, blkend, nq,nden);
 /* ------------------------------------------------------------
    Release working arrays
