@@ -1,4 +1,4 @@
-function cvx_setup
+function cvx_setup( varargin )
 
 % CVX_SETUP   Sets up and tests the cvx distribution.
 %    This function is to be called any time CVX is installed on a new machine,
@@ -26,12 +26,13 @@ if isoctave,
 		error( 'CVX requires octave 3.0.1 or later.' );
 	end
 else
-	if isnan( ver ) | ver < 6.1,
-	    error( 'CVX requires MATLAB 6.1 or later.' );
-	elseif ver >= 7.3,	    
-	    newext = mexext;
-    	needLarge = strcmp( newext(end-1:end), '64' );
-	end    	
+	newext = mexext;
+        needLarge = strcmp( newext(end-1:end), '64' );
+	if isnan( ver ) | ver < 6.1 | ( ( ver < 7.4 ) & needLarge ),
+	    error( sprintf( ...
+		[ 'CVX requires 32-bit MATLAB 6.1 or later,\n', ...
+                  '          or 64-bit MATLAB 7.3 or later.' ] ) );
+        end
 end
 if ispc,
     fs = '\';
@@ -129,9 +130,13 @@ path(newpath);
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 newext = mexext;
+if strcmp( newext, 'mexglx' ) & ver >= 7.2,
+    fullRecompile = true;
+else
+    fullRecompile = any( strcmp( varargin, '-force' ) );
+end
 isw32 = strcmp( newext, 'mexw32' );
 isNewLinux = strcmp( newext, 'mexglx' ) & ~isoctave & ver >= 7.5;
-fullRecompile = false;
 if isoctave,
 	mexcmd = {};
 else
@@ -161,9 +166,6 @@ catch
     disp( ' ' );
     cd( dd );
     return
-end
-if has_mex & isNewLinux,
-    fullRecompile = ~eval('cvx_bcompress_mex(sparse(1,1))','0');
 end
 if ~has_mex | fullRecompile,
     disp( 'Attempting to generate the CVX MEX files...' );

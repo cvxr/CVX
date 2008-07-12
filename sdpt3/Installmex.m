@@ -75,7 +75,7 @@
       fname{7} = 'mexbwblkslv.c sdmauxFill.c sdmauxRdot.c';
       mexcmd = 'mex  -O  '; 
       for k = 1:length(fname)
-       cmd = [mexcmd,fname{k},'.c'];
+       cmd = [mexcmd,fname{k}];
        disp( cmd );
        eval( cmd );
       end      
