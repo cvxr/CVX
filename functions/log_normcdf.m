@@ -4,9 +4,9 @@ function y = log_normcdf( x, approx )
 %   Y = LOG_NORMCDF(X) is the logarithm of the CDF of the normal
 %   distribution at the point X.
 %
-%                           1    / x
-%       LOG_NORMCDF(X) = ------- |   exp(-t^2/2) dt
-%                        sqrt(2) / -Inf
+%                                1    / x
+%       LOG_NORMCDF(X) = LOG( ------- |   exp(-t^2/2) dt )
+%                             sqrt(2) / -Inf
 %
 %   For numeric X, LOG_NORMCDF(X) is computed using the equivalent 
 %   expression LOG(0.5*ERFC(-X*SQRT(0.5))). When X is a CVX variable, a 
