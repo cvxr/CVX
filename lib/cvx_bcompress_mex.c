@@ -151,7 +151,7 @@ void mexFunction(
     ss_ir   = mxGetIr( prhs[0] );
     ss_jc   = mxGetJc( prhs[0] );
     ss_pr   = mxGetPr( prhs[0] );
-    ss_mode = nrhs < 2 ? FULL_COMPRESS :  mxGetScalar( prhs[1] );
+    ss_mode = nrhs < 2 ? FULL_COMPRESS : (int)mxGetScalar( prhs[1] );
     nskip   = nrhs < 3 ? 0 : (int)mxGetScalar(prhs[2]);
     ss_ndxs = mxCalloc( n, sizeof(mwSize) );
     ss_temp = mxCalloc( n, sizeof(mwSize) );

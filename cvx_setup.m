@@ -19,7 +19,12 @@ if length( temp ) > 1,
 end
 needLarge = 0;
 ver = eval( ver, 'NaN' );
-mpath = mfilename('fullpath');
+try
+    mpath = mfilename('fullpath');
+catch
+    dbs = dbstack;
+    mpath = dbs.name;
+end
 isoctave = exist('OCTAVE_VERSION');
 if isoctave,
 	if isnan( ver ) | ver < 3.0 | ( ver == 3.0 & verm < 1 ),

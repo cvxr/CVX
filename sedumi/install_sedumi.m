@@ -93,8 +93,7 @@ disp( 'Building SeDuMi binaries...' )
 COMPUTER = computer;
 VERSION  = [1,0.1]*sscanf(version,'%d.%d');
 IS64BIT  = strcmp(COMPUTER(end-1:end),'64');
-flags = {};
-% flags{1} = '-O';
+flags{1} = '-O';
 if ispc,
     flags{end+1} = '-DPC';
 elseif isunix,
