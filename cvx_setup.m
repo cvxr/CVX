@@ -33,10 +33,10 @@ if isoctave,
 else
 	newext = mexext;
         needLarge = strcmp( newext(end-1:end), '64' );
-	if isnan( ver ) | ver < 6.1 | ( ( ver < 7.4 ) & needLarge ),
+	if isnan( ver ) | ver < 6.1 | ( ( ver < 7.3 ) & needLarge ),
 	    error( sprintf( ...
 		[ 'CVX requires 32-bit MATLAB 6.1 or later,\n', ...
-                  '          or 64-bit MATLAB 7.3 or later.' ] ) );
+          '          or 64-bit MATLAB 7.3 or later.' ] ) );
         end
 end
 if ispc,
