@@ -1,10 +1,13 @@
 #include "mex.h"
 #include <stddef.h>
+#include <math.h>
 
 #if !defined(HAVE_OCTAVE) && ( !defined(MX_API_VER) || ( MX_API_VER < 0x07030000 ) )
 typedef int mwIndex;
 typedef int mwSize;
 #endif
+
+static const double MAX_GROWTH = 16;
 
 /*
 % Copyright 2005 Michael C. Grant and Stephen P. Boyd.
@@ -72,44 +75,96 @@ void mexFunction(
             j, nQ, nnzQ,
             *row_counts  = (mwSize*)mxCalloc( m + n, sizeof(mwSize) ),
             *candidates  = row_counts + m;
-    double  *row_flags   = mxGetPr( plhs[0] = mxCreateNumericMatrix( m, (mwSize)1, mxDOUBLE_CLASS, mxREAL ) ),
+    double  *value_A     = mxGetPr( prhs[0] ),
+            *row_flags   = mxGetPr( plhs[0] = mxCreateNumericMatrix( m, (mwSize)1, mxDOUBLE_CLASS, mxREAL ) ),
             *col_flags   = mxGetPr( plhs[1] = mxCreateNumericMatrix( (mwSize)1, n, mxDOUBLE_CLASS, mxREAL ) ),
             *reserved    = mxGetPr( prhs[2] ),
             *c_reserved  = mxGetPr( prhs[3] );
-
-    for ( j = 0 ; j != nnzA ; ++j )
-        ++row_counts[row_index_A[j]];
+    
+    /*
+     * This loop has two functions:
+     * --- Locate one-variable equality constraints: xi == bj, and target 
+     *     them for removal if the variable is free
+     * --- Count the number of elements in each row
+     */
+    
     nQ = nnzQ = 0;
+    reserved[0] = 1;
+    row_flags[0] = -1;
+    for ( j = nobj ; j != n ; ++j ) {
+        mwIndex kBeg = col_count_A[j],
+                kEnd = col_count_A[j+1], k;
+        for ( k = kBeg ; k != kEnd ; ++k )
+            ++row_counts[row_index_A[k]];
+        if ( c_reserved[j] == 0 && kBeg != kEnd ) {
+            mwIndex rb = row_index_A[kBeg];
+            if ( kBeg - kEnd == ( rb == 0 ? 2 : 1 ) ) {
+                rb = row_index_A[kEnd-1];
+                if ( reserved[rb] == 0 ) {
+                    candidates[nQ++] = j;
+                    reserved[rb] = 1;
+                    c_reserved[j] = 1;
+                    col_flags[j] = rb + 1;
+                    row_flags[rb] = 1;
+                    ++nnzQ;
+                }
+            }
+        }
+    }
     for ( j = nobj ; j != n ; ++j ) {
         if ( c_reserved[j] == 0 ) {
-            mwIndex kBeg = col_count_A[j],
-                    kEnd = col_count_A[j+1],
-                    nc   = kEnd - kBeg, k, rb;
-            mwSize  rr   = nnzA1;
+            mwIndex kBeg  = col_count_A[j],
+                    kEnd  = col_count_A[j+1], k, 
+                    rb    = 0;
+            double  c_max = 0;
             for ( k = kBeg ; k != kEnd ; ++k ) {
                 mwIndex tr = row_index_A[k];
-                if ( reserved[tr] == 0 ) {
-                    mwSize nr = row_counts[tr],
-                           n1 = ( nr - 1 ) * ( nc - 1 ),
-                           n2 = nr + nc - 1;
-                    if ( n1 <= n2 ) {
-                        if ( row_flags[tr] <= 0 && ( n1 < rr || n1 == rr && row_flags[rb] && !row_flags[tr] ) ) {
-                            rb = tr;
-                            rr = n1;
+                if ( tr != 0 )
+                    if ( row_flags[tr] && reserved[tr] ) {
+                        c_max = 0;
+                        break;
+                    } else {
+                        double temp = fabs(value_A[k]);
+                        if ( c_max < temp ) 
+                            c_max = temp;
+                    }
+            }
+            if ( c_max != 0 ) {
+                c_max /= MAX_GROWTH;
+                mwIndex nc = kEnd - kBeg;
+                for ( k = kBeg ; k != kEnd ; ++k ) {
+                    mwIndex tr = row_index_A[k];
+                    if ( tr == 0 ) 
+                        --nc;
+                    else if ( reserved[tr] == 0 ) {
+                        mwSize nr = row_counts[tr],
+                               n1 = ( nr - 1 ) * ( nc - 1 ),
+                               n2 = nr + nc - 1;
+                        if ( n1 <= n2 && row_flags[tr] <= 0 ) {
+                            double temp = fabs(value_A[k]);
+                            if ( temp > c_max || temp == c_max && row_flags[rb] && !row_flags[tr] ) {
+                                rb = tr;
+                                c_max = temp;
+                            }
                         }
+                    } else if ( row_flags[tr] ) {
+                        rb = 0;
+                        break;
                     }
                 }
             }
-            if ( rr != nnzA1 ) {
+            if ( rb != 0 ) {
                 for ( k = kBeg ; k != kEnd ; ++k ) {
                     mwIndex tr = row_index_A[k];
-                    int32_T fg = row_flags[tr];
-                    if ( fg > 0 ) {
-                        ++fg;
-                        ++nnzQ;
-                    } else
-                        --fg;
-                    row_flags[tr] = fg;
+                    if ( tr != 0 ) {
+                        double fg = row_flags[tr];
+                        if ( fg > 0 ) {
+                            ++fg;
+                            ++nnzQ;
+                        } else
+                            --fg;
+                        row_flags[tr] = fg;
+                    }
                 }
                 col_flags[j] = rb + 1;
                 nnzQ += ( row_flags[rb] = - row_flags[rb] );
