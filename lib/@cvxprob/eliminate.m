@@ -66,6 +66,7 @@ for pass = 1 : 2,
     elseif dualized,
         ineqs = zeros(1,size(dbCA,2));
     end
+    ineqs(1) = true;
     
     while true,
         success = false;
