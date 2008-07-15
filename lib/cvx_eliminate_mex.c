@@ -130,8 +130,8 @@ void mexFunction(
                     }
             }
             if ( c_max != 0 ) {
-                c_max /= MAX_GROWTH;
                 mwIndex nc = kEnd - kBeg;
+                c_max /= MAX_GROWTH;
                 for ( k = kBeg ; k != kEnd ; ++k ) {
                     mwIndex tr = row_index_A[k];
                     if ( tr == 0 ) 
