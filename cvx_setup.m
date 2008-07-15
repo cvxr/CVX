@@ -37,7 +37,10 @@ else
 	    error( sprintf( ...
 		[ 'CVX requires 32-bit MATLAB 6.1 or later,\n', ...
           '          or 64-bit MATLAB 7.3 or later.' ] ) );
-        end
+    end
+    if ver >= 7.1,
+        warning( 'off', 'MATLAB:dispatcher:ShadowedMEXExtension' );
+    end
 end
 if ispc,
     fs = '\';
