@@ -167,9 +167,13 @@ else
     % Create the variable object
     %
 
-    str2 = sparse( ndim, 1 : dof, 1 );
-    if ~isempty( str ),
-        str2 = str2 * str;
+    if dof == 0,
+        str2 = sparse( 1, 0 );
+    else
+        str2 = sparse( ndim, 1 : dof, 1 );
+        if ~isempty( str ),
+            str2 = str2 * str;
+        end
     end
     y = cvx( siz, str2, dof * ( 1 - 2 * geo ), false );
 
