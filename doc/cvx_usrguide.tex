@@ -3251,7 +3251,7 @@ constraints are not met. Concave.
 matrix; \ie, \verb@det_root2n(X)=sqrt(det_rootn(X))@. Concave. Maintained
 solely for back-compatibility purposes.
 \item $\dagger$ \verb@entr@, the elementwise
-entropy function: \verb@entr(x)=x.*log(x)@. Concave.  Returns \verb@-Inf@ when
+entropy function: \verb@entr(x)=-x.*log(x)@. Concave.  Returns \verb@-Inf@ when
 called with a constant argument that has a negative entry.
 
 \item \verb@geo_mean@: the geometric mean of a vector, $\left( \prod_{k=1}^n x_k \right)^{1/n}$. When
@@ -3305,7 +3305,7 @@ its argument to be symmetric (if real) or Hermitian (if complex) and
 positive definite. 
 With numerical argument, \verb@log_det@ returns \verb@-Inf@ if these
 constraints are not met. Concave.
-\item $\star$ \verb@log_norm_cdf(x)@: logarithm of cumulative distribution
+\item $\star$ \verb@log_normcdf(x)@: logarithm of cumulative distribution
 function of standard normal random variable.  Concave and increasing.
 The current implementation is a fairly crude SDP-representable approximation,
 with modest accuracy over the interval $[-4,4]$; we intend to replace it

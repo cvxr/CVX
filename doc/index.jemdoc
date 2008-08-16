@@ -57,6 +57,15 @@ to download and install CVX---by clicking [examples/index.html here].
 
 == Latest news
 
+=== Fuller support for 64-bit platforms
+CVX version 1.2 now supports 64-bit versions of Matlab on Windows, 
+Linux, and Macintosh platforms; precompiled MEX files are supplied
+for each of these platforms. Previously, only SDPT3 was supported on
+64-bit platforms; now SeDuMi is as well. However, due to the evolution
+of Matlab's large matrix standard, Matlab version 7.3 or later is required
+for 64-bit platforms. (Earlier versions are still supported for 32-bit
+platforms.)
+
 === Support for the exponential family of functions
 CVX version 1.2 now supports problems involving exponentials,
 logarithms, and entropy functions! A novel successive approximation approach
