@@ -43,11 +43,10 @@ work fine with any platform that supports Matlab 6.1 or later and at least one o
 See Appendix A of the user's guide for more detials.
 
 ~~~
-*Note for 64-bit MATLAB users*: SeDuMi is currently not supported for the 64-bit
-versions of Matlab 7.3 and later. This is due to a change made to Matlab's internal
-data structures between versions 7.2 and 7.3. When the SeDuMi authors release a new 
-version of SeDuMi with an appropriate fix, we will update the CVX distribution 
-accordingly. Until then, SDPT3 is the only solver available for those platforms.
+*Note for 64-bit MATLAB users*: CVX is supported only for 64-bit Matlab versions
+7.3 and leter. This is due to changes made in Matlab's internal data structures
+for 64-bit platforms. We simply cannot reliably support the "old" 64-bit API
+and the "new" 64-bit API in the same package.
 ~~~
 
 ~~~
