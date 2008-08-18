@@ -32,6 +32,16 @@ For most platforms, installation is relatively simple:
 
 For more detailed installation instructions, see Appendix A of the user's guide.
 
+~~~
+*Attention Windows users:* you may need to install some additional 
+Microsoft libraries to get the CVX, SeDuMi, and SDPT3 mex files to work.
+If you get setup errors during the +cvx_setup+ process, go to the
+appropriate page below and click the "Download" button. Or you can
+download them proactively; there is no harm in doing so.
+. [http://www.microsoft.com/downloads/details.aspx?FamilyID=9b2da534-3e03-4391-8a4d-074b9f2bc1bf&displaylang=en Windows 32-bit]
+. [http://www.microsoft.com/downloads/details.aspx?FamilyID=bd2a6171-e2d6-4230-b809-9a8d7548c1b6&displaylang=en Windows 64-bit]
+~~~
+
 == System requirements
 
 CVX is built using Matlab, and requires version 6.1 or later of
