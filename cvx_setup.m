@@ -51,7 +51,6 @@ else
 end
 temp = strfind( mpath, fs );
 mpath( temp(end) : end ) = [];
-solvers = { 'sdpt3', 'sedumi' };
 rmpaths = { 'sets', 'keywords', 'builtins', 'commands', 'functions', 'lib', 'structures', 'matlab6' };
 needpaths = {};
 delepaths = {};
@@ -64,6 +63,13 @@ elseif ver >= 6.5,
 else
     checkpaths = rmpaths;
     addpaths = rmpaths;
+end
+if ~isoctave & any( strcmp( mexext, { 'mexw32', 'mexw64' } ) ) & ver < 7.5,
+    skip_sedumi = 1;
+    solvers = { 'sdpt3' };
+else
+    skip_sedumi = 0;
+    solvers = { 'sdpt3', 'sedumi' };
 end
 for k = 1 : length(addpaths),
 	addpaths{k} = [ mpath, fs, addpaths{k} ];
@@ -208,7 +214,7 @@ cd( dd );
 newext = mexext;
 isw32 = strcmp( newext, 'mexw32' );
 sedpath = [ mpath, fs, 'sedumi' ];
-if exist( sedpath, 'dir' ),
+if ~skip_sedumi & exist( sedpath, 'dir' ),
     if ~fullRecompile,
         mexfiles = dir( [ sedpath, fs, '*.', newext ] );
         if isempty( mexfiles ) & ispc & isw32,
@@ -295,6 +301,13 @@ if norm( x - xls ) > 0.01 * norm( x ),
     return
 else
     disp( 'No errors! cvx has been successfully installed.' );
+    disp( ' ' );
+end
+
+if skip_sedumi,
+    disp( 'NOTE: SeDuMi 1.2 does not work with this version of Matlab.' );
+    disp( 'The only solver available for this platform is SDPT3. If you wish' );
+    disp( 'to use SeDuMi, upgrade to Matlab 7.5 or later.' );
     disp( ' ' );
 end
 
