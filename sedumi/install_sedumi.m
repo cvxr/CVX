@@ -110,6 +110,9 @@ if ispc,
 	if VERSION >= 7.5, libval = 'blas'; else, libval = 'lapack'; end
 	if IS64BIT, dirval = 'win64'; else, dirval = 'win32'; end
 	libs = [ matlabroot, '\extern\lib\', dirval, '\microsoft\libmw', libval, '.lib' ];
+    if ~exist( libs ),
+    	libs = [ matlabroot, '\extern\lib\', dirval, '\microsoft\msvc60\libmw', libval, '.lib' ];
+    end       
 elseif VERSION >= 7.5,
 	libs = '-lmwblas';
 else
