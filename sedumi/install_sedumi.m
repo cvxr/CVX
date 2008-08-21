@@ -107,21 +107,19 @@ elseif (VERSION<7.3),
     flags{end+1} = '-DmwSignedIndex=int';
 end
 if ispc,
-    libs = { 'libmwlapack.lib' };
-    if VERSION >= 7.5,
-        libs{end+1} = 'libmwblas.lib';
-    end
+	if VERSION >= 7.5, libval = 'blas'; else, libval = 'lapack'; end
+	if IS64BIT, dirval = 'win64'; else, dirval = 'win32'; end
+	libs = [ matlabroot, '\extern\lib\', dirval, '\microsoft\libmw', libval, '.lib' ];
+elseif VERSION >= 7.5,
+	libs = '-lmwblas';
 else
-    libs = {'-lmwlapack'};
-    if VERSION >= 7.5,
-        libs{end+1} = '-lmwblas';
-    end
+	libs = '-lmwlapack';
 end
 flags = sprintf( ' %s', flags{:} );
-libs  = sprintf( ' %s', libs{:} );
 for i=1:length(targets64)
-    disp( [ 'mex ', flags, ' ', targets64{i}, libs ] );
-    eval( [ 'mex ', flags, ' ', targets64{i}, libs ] );
+	temp =  [ 'mex ', flags, ' ', targets64{i}, ' ', libs ];
+	disp( temp );
+	eval( temp );
 end
 disp( 'Done!' )
 
