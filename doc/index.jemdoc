@@ -63,7 +63,8 @@ Linux, and Macintosh platforms; precompiled MEX files are supplied
 for each of these platforms. Previously, only SDPT3 was supported on
 64-bit platforms; now SeDuMi is as well. However, due to the evolution
 of Matlab's MEX API, Matlab version 7.3 or later is required
-for 64-bit platforms. (Earlier versions are still supported for 32-bit
+for 64-bit platforms; and SeDuMi requires version 7.5 or later.
+(Earlier versions of Matlab are still supported for 32-bit
 platforms.)
 
 === Support for the exponential family of functions
