@@ -33,13 +33,12 @@ For most platforms, installation is relatively simple:
 For more detailed installation instructions, see Appendix A of the user's guide.
 
 ~~~
-*Attention Windows users:* you may need to install some additional 
+*Attention 64-bit Windows users:* you may need to install some additional 
 Microsoft libraries to get the CVX, SeDuMi, and SDPT3 mex files to work.
 If you get setup errors during the +cvx_setup+ process, go to the
 appropriate page below and click the "Download" button. Or you can
 download them proactively; there is no harm in doing so.
-. [http://www.microsoft.com/downloads/details.aspx?FamilyID=9b2da534-3e03-4391-8a4d-074b9f2bc1bf&displaylang=en Windows 32-bit]
-. [http://www.microsoft.com/downloads/details.aspx?FamilyID=bd2a6171-e2d6-4230-b809-9a8d7548c1b6&displaylang=en Windows 64-bit]
+- [http://www.microsoft.com/downloads/details.aspx?FamilyID=bd2a6171-e2d6-4230-b809-9a8d7548c1b6&displaylang=en Windows 64-bit libraries]
 ~~~
 
 == System requirements
@@ -54,7 +53,8 @@ See Appendix A of the user's guide for more detials.
 
 ~~~
 *Note for 64-bit MATLAB users*: CVX is supported only for 64-bit Matlab versions
-7.3 and leter. This is due to changes made in Matlab's internal data structures
+7.3 and later; and SeDuMi is supported only for versions 7.5 and later.
+This is due to changes made in Matlab's internal data structures
 for 64-bit platforms. We simply cannot reliably support the "old" 64-bit API
 and the "new" 64-bit API in the same package.
 ~~~
