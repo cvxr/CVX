@@ -64,7 +64,7 @@ else
     checkpaths = rmpaths;
     addpaths = rmpaths;
 end
-if ~isoctave & any( strcmp( mexext, { 'mexw32', 'mexw64' } ) ) & ver < 7.5,
+if ~isoctave & strcmp( mexext, 'mexw64' ) & ver < 7.5,
     skip_sedumi = 1;
     solvers = { 'sdpt3' };
 else
