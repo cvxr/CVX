@@ -93,7 +93,7 @@ if isempty( cvx___ ),
     subs{end+1} = 'sedumi';
     nsolver = length( subs );
     miss_solv = 0;
-    if cvx___.octave | cvx___.mversion >= 7.1,
+    if cvx___.octave | cvx___.mversion >= 7.0,
         subs{end+1} = 'keywords';
         subs{end+1} = 'sets';
     end
