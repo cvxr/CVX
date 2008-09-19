@@ -20,6 +20,7 @@ elseif sx( 2 ) == 1 & sy( 1 ) == 1,
     return
 elseif sx( 1 ) == 1 & sy( 2 ) == 1,
     z = mtimes( y, x );
+    return
 else
     sz = sx .* sy;
 end

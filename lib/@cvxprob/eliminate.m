@@ -115,6 +115,7 @@ for pass = 1 : 2,
         if size( xR, 1 ) ~= size( xR, 2 ), 
             success = true;
             P = P * cvx_invert_structure( xR );
+            ineqs = ineqs( any( xR, 1 ) );
             rcnt = sum( dbCA ~= 0, 2 );
         end
         while true,

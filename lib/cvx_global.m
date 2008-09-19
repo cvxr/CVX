@@ -17,6 +17,9 @@ if isempty( cvx___ ),
         ver( temp( 2 ) : end ) = [];
     end
     ver = eval( ver, 'NaN' );
+    if ~isoct & ver >= 7.1,
+        warning( 'off', 'MATLAB:dispatcher:ShadowedMEXExtension' );
+    end
 
     %
     % Construct the path control structure

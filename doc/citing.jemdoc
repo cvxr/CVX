@@ -20,9 +20,10 @@ In addition, please include the following entries in your bibliography:
     disciplined convex programming (web page and software).
     [http://stanford.edu/~boyd/cvx], ___TDATE___.
 - M. Grant and S. Boyd. Graph implementations for nonsmooth
-  convex programs. To appear in /Recent Advances in Learning
+  convex programs, /Recent Advances in Learning
   and Control (a tribute to M. Vidyasagar)/, V. Blondel, S.
-  Boyd, and H. Kimura, editors. Springer, 2008.
+  Boyd, and H. Kimura, editors, pages 95-110,
+  /Lecture Notes in Control and Information Sciences/, Springer, 2008.
   [http://stanford.edu/~boyd/graph_dcp.html].
   
 Thank you!
