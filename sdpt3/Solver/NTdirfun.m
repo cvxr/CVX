@@ -14,7 +14,9 @@
     dX = cell(size(blk,1),1); dZ = cell(size(blk,1),1); dy = [];
     if (any(isnan(xx)) | any(isinf(xx)))
        solve_ok = 0;
-       fprintf('\n  linsysolve: solution contains NaN or inf.');
+       if par.printlevel, 
+           fprintf('\n  linsysolve: solution contains NaN or inf.');
+       end
        return;
     end
 %%
