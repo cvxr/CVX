@@ -8,13 +8,10 @@ if nobj > 1 & ~pr.separable,
     error( 'Non-separable multiobjective problems are not supported.' );
 end
 quiet = cvx___.problems(p).quiet;
-obj = cvx___.problems(p).objective;
-gobj = cvx___.problems(p).geometric;
+obj   = cvx___.problems(p).objective;
+gobj  = cvx___.problems(p).geometric;
 clear pr
 [ At, cones, sgn, Q, P, dualized ] = eliminate( prob, true );
-% if any( strcmp( { cones.type }, 'exponential' ) ),
-%     error( 'Constraints involving exp() and log() are not yet supported.' );
-% end
 
 dbca = At;
 c = At( :, 1 );
@@ -437,10 +434,11 @@ if dualized,
     end
 end
 
+gscale = 0;
 if gobj,
     switch status,
-        case 'Unbounded', status = 'Solved';
-        case 'Inaccurate/Unbounded',  status = 'Inaccurate/Solved';
+        case 'Unbounded', gscale = 1; status = 'Solved';
+        case 'Inaccurate/Unbounded',  gscale = 1; status = 'Inaccurate/Solved';
     end
 end
 
