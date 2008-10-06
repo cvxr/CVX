@@ -223,6 +223,7 @@ elseif n ~= 0 & ~infeas & ( any( b ) | any( c ) ),
         pobj = +Inf;
         stagnant = false;
         last_slow = false;
+        last_u = false;
         dscale = blkdiag(speye(m,m),speye(new_m-m,new_m-m));
         XY0 = {};
         nprec = prec(3) * [ 1, 1, 1 ];
@@ -234,79 +235,81 @@ elseif n ~= 0 & ~infeas & ( any( b ) | any( c ) ),
             At(fndxs) = amult * qq2;
             [ x, y, status, z ] = feval( sfunc, At, b, c, cones, true, nprec );
             if status(1) == 'F',
-                tprec   = Inf;
+                tprec = Inf;
             else
                 tprec = nprec(2+(status(3)=='a'));
             end
-            x_valid = ~isnan(x(1));
-            y_valid = ~isnan(y(1));
-            x_clean = false;
-            y_clean = false;
             tighten = false;
-            if x_valid,
+            if isnan(x(1)),
+                x_valid = false;
+                x_clean = false;
+            else
                 xxx = x(xndxs,:);
                 yyy = x(yndxs,:);
                 zzz = x(zndxs,:);
                 x_valid = all( yyy >= 0 & zzz >= 0 );
                 if x_valid,
-                    nx0 = xxx ./ yyy;
-                    nx1 = log( zzz ./ yyy );
+                    yy2 = max( yyy, realmin );
+                    nx0 = xxx ./ yy2;
+                    nx1 = log( zzz ./ yy2 );
                     nxe = nx0 - nx1;
-                    nx0 = 0.5 * ( nx0 + nx1 );
-                    ttt = yyy == 0;
-                    if any( ttt ),
-                        nxe( ttt ) = 0;
-                        nx0( ttt ) = x0( ttt );
-                    end
-                    x_clean = all( nxe <= 0 );
+                    ttx = yyy == 0 | nxe <= 0;
+                    x_clean = all( ttx );
                     pob = c' * x;
                 else
-                    tighten = true;
+                    x_clean = false;
+                    tighten = true; 
                 end
             end
-            if y_valid,
+            if isnan(y(1)),
+                y_valid = false;
+            else
                 z = z + At * [ zeros(m,1) ; y(m+1:end) ];
                 uuu = z( xndxs, : );
                 vvv = z( yndxs, : );
                 www = z( zndxs, : );
                 y_valid = all( uuu <= 0 & www >= 0 );
                 if y_valid,
-                    nx2 = 1 - vvv ./ uuu;
-                    nx3 = - log( - www ./ uuu );
-                    nxd = nx3 - nx2;
-                    nx2 = 0.5 * ( nx2 + nx3 );
-                    ttt = uuu == 0;
-                    if any( ttt ),
-                        nxd( ttt ) = 0;
-                        nx2( ttt ) = x0( ttt );
-                    end
-                    y_clean = all( nxd <= 0 );
-                    if y_clean,
+                    uu2 = min( uuu, -realmin );
+                    nx2 = 1 - vvv ./ uu2;
+                    nx3 = - log( www ./ uu2 );
+                    if all( uuu == 0 | nx3 <= nx2 ),
+                        y_clean = true;
                         dob = b' * y;
-                        if x_clean,
-                            nx0 = 0.5 * ( nx0 + nx2 );
-                        else
-                            nx0 = nx2;
-                        end
+                        nx0 = 0.5 * ( nx0 + nx2 );
+                    else
+                        y_valid = false;
                     end
-                else
-                    tighten = true;
                 end
+                if ~y_valid, 
+                    tighten = true; 
+                end
+            end
+            if x_valid & ~y_valid,
+                nxe( ttx ) = 0;
+                nx0( ttx ) = x0( ttx );
             end
             switch status,
                 case { 'Infeasible', 'Inaccurate/Infeasible' },
                     x_clean = y_valid;
+                    stagnant = true;
+                    last_u = false;
                     pob = Inf;
                 case { 'Unbounded', 'Inaccurate/Unbounded' },
-                    y_clean = x_valid;
+                    y_valid = x_valid;
+                    stagnant = true;
+                    last_u = true;
                     dob = -Inf;
+                case { 'Solved', 'Inaccurate/Solved' },
+                    stagnant = ~last_u;
+                    last_u = false;
             end
             if x_clean & ( tprec < best_px | ( tprec == best_px & pob < best_ox ) ),
                 best_x  = x(1:n);
                 best_px = tprec;
                 best_ox = pob;
             end
-            if y_clean & ( tprec < best_py | ( tprec == best_py & dob > best_oy ) ),
+            if y_valid & ( tprec < best_py | ( tprec == best_py & dob > best_oy ) ),
                 best_y  = y(1:m);
                 best_py = tprec;
                 best_oy = dob;
@@ -314,15 +317,9 @@ elseif n ~= 0 & ~infeas & ( any( b ) | any( c ) ),
             if tighten,
                 err = Inf;
             else
-                err = 0;
+                err = max(0,max(nxe));
             end
-            if x_valid & ~x_clean,
-                err = max( err, max(nxe) );
-            end
-            if y_valid & ~y_clean,
-                err = max( err, max(nxd) );
-            end
-            stagnant = ~isnan( x(1) ) & ~isnan( y(1) ) & ( err > 0.9 * last_err );
+            stagnant = stagnant & ~isnan( x(1) ) & ~isnan( y(1) ) & ( err > 0.9 * last_err );
             if ~quiet,
                 if stagnant, stagc = 'S'; else stagc = ' '; end
                 disp( sprintf( '%9.3e%c %9.3e  %s', nprec(2), stagc, err, status ) );
