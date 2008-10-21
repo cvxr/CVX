@@ -1,9 +1,8 @@
 # jemdoc: menu{MENU}{license.html},addcss{cvx.css},showsource
 = CVX: Matlab Software for\nDisciplined Convex Programming
-Version ___VERSION___ (___TDATE___, Build ___BUILD___)\n
-[http://stanford.edu/~mcgrant Michael Grant],
-[http://stanford.edu/~boyd Stephen Boyd],
-[http://stanford.edu/~yyye Yinyu Ye]
+Version ___VERSION___ (___TDATE___, Build ___BUILD___)
+\n[http://www.stanford.edu/~mcgrant Michael Grant] and
+[http://www.stanford.edu/~boyd Stephen Boyd]
 
 == License
 

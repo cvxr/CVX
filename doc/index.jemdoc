@@ -1,9 +1,8 @@
 # jemdoc: menu{MENU}{index.html},addcss{cvx.css},showsource
 = CVX: Matlab Software for\nDisciplined Convex Programming
-Version ___VERSION___ (___TDATE___, Build ___BUILD___)\n
-[http://stanford.edu/~mcgrant Michael Grant],
-[http://stanford.edu/~boyd Stephen Boyd],
-[http://stanford.edu/~yyye Yinyu Ye]
+Version ___VERSION___ (___TDATE___, Build ___BUILD___)
+\n[http://www.stanford.edu/~mcgrant Michael Grant] and
+[http://www.stanford.edu/~boyd Stephen Boyd]
 
 == Introduction
 
@@ -54,6 +53,11 @@ The CVX package includes a growing library of examples to help get you started,
 including examples from the book [http://stanford.edu/~boyd/cvxbook Convex Optimization]
 and from a variety of applications. You can browse through this library now---without having
 to download and install CVX---by clicking [examples/index.html here]. 
+
+CVX was designed designed by
+[http://stanford.edu/~mcgrant Michael Grant] and 
+[http://stanford.edu/~boyd Stephen Boyd], with input from 
+[http://stanford.edu/~yyye Yinyu Ye].
 
 == Latest news
 
