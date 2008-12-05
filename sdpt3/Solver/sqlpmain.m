@@ -349,7 +349,7 @@
          runhist.dinfeas(iter+1) = runhist.dinfeas(iter); 
          runhist.relgap(iter+1)  = runhist.relgap(iter); 
          runhist.cputime(iter+1) = cputime-tstart; 
-         termcode = -4;
+         param.termcode = -4;
          break; %% do not ues breakyes = 1
       end
       timenew = cputime;
@@ -454,7 +454,7 @@
             runhist.dinfeas(iter+1) = runhist.dinfeas(iter); 
             runhist.relgap(iter+1)  = runhist.relgap(iter); 
             runhist.cputime(iter+1) = cputime-tstart; 
-            termcode = -4;
+            param.termcode = -4;
             break; %% do not ues breakyes = 1
          end
          timenew = cputime;

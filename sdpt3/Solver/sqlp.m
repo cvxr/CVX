@@ -194,8 +194,18 @@
 %% detect unrestricted blocks in linear blocks
 %%-----------------------------------------
 %%
+    try
    [blk2,At2,C2,ublkinfo,parbarrier2,X02,Z02] = ...
     detect_ublk(blk,At,C,parbarrier,X0,Z0,par.printlevel);
+    catch
+        blk2 = blk;
+        At2 = At;
+        C2 = C;
+        ublkinfo = cell(size(blk,1),3);  
+        parbarrier2 = parbarrier;
+        X02 = X0;
+        Z02 = Z0;
+    end
    ublksize = blkdim(4); 
    for p = 1:size(ublkinfo,1)
       ublksize = ublksize + length(ublkinfo{p}); 
