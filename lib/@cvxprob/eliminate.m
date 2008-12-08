@@ -84,9 +84,9 @@ for pass = 1 : 2,
         nnzr = nnz( rows );
         if nnzr > 0,
             celm = cc( rows, 1 );
-            celm( nng(rows) & ( 1 - 2 * dualized ) * celm < 0 ) = 0;
+            celm( nng(rows) & ( ( 1 - 2 * dualized ) * celm ) < 0 ) = 0;
             nnzc = nnz( celm );
-            if ~nnzc | nnzr > 1,
+            if nnzc > 1 | nnzr > nnzc,
                 success = true;
                 if nnzc,
                     cnrm = norm( celm );
@@ -94,7 +94,7 @@ for pass = 1 : 2,
                     ndxq = ndxq( celm ~= 0 );
                     ndxq = ndxq( 1 );
                     Q( :, ndxq ) = Q( :, rows ) * ( celm / cnrm );
-                    dbCA( ndxq, 1 ) = cnrm;
+                    dbCA( ndxq, 1 ) = ( 1 - 2 * dualized ) * cnrm;
                     rows( ndxq ) = 0;
                 end
                 rowX = ~rows;
