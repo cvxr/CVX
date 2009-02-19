@@ -104,6 +104,7 @@ cvx_end_set
 
 if iscplx,
     x = cvx_r2c( x, 1 );
+    nv = nv * 0.5;
 end
 nleft = prod( sx( 1 : dim - 1 ) );
 if nleft > 1,
