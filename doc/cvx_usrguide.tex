@@ -612,7 +612,7 @@ Similarly, to minimize the $\ell_1$ norm $\|\cdot\|_1$, we can
 use \verb@linprog@ as follows:
 \begin{code2}[firstnumber=139]
 	f    = [ zeros(n,1); ones(m,1);  ones(m,1)  ];
-	Aeq  = [ A,          eye(m),     +eye(m)    ];
+	Aeq  = [ A,          -eye(m),    +eye(m)    ];
 	lb   = [ -Inf(n,1);  zeros(m,1); zeros(m,1) ];
 	xzz  = linprog(f,[],[],Aeq,b,lb,[]);
 	x_l1 = xzz(1:n,:);

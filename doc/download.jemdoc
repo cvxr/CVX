@@ -19,7 +19,7 @@ To download the user guide alone, select this link:
 For most platforms, installation is relatively simple:
 . If you already have an earlier version of CVX installed, /remove it or move it out of the way/. 
   Do not install this version on top of the old.
-. Unpack the distribution wherever you like. It will create a directory called +cvx/+.
+. Unpack the .zip or .tar.gz file wherever you like; however, do *not* install it into Matlab's own toolbox/ directory. It will create a directory called +cvx/+.
 . Start Matlab.
 . At the Matlab prompt, type +cd+ /<cvxroot>/, where /<cvxroot>/ is the
   +cvx/+ directory that was created when the software was unpacked.
