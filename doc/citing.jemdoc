@@ -4,6 +4,22 @@ Version ___VERSION___ (___TDATE___, Build ___BUILD___)
 \n[http://www.stanford.edu/~mcgrant Michael Grant] and
 [http://www.stanford.edu/~boyd Stephen Boyd]
 
+== Usage statistics
+
+In April 2009, we sought to get an idea of how widely CVX is being used.
+To that end, we scoured Google search results, old emails, and various
+bibliographic databases. This is what we were able to positively confirm.
+
+- CVX is used for coursework in at least 29 universities, including 19 in the U.S.
+- It is used in some capacity in at least 93 additional universities, including 36 in the U.S.
+- It is used in at least 30 other companies or institutions
+- Google Scholar returned 168 bibliographic citations for CVX or its related papers
+- It has been used in at least one textbook.
+
+If you are actively using CVX in teaching, research, or applications, and
+haven't yet told us about it, [contact.html please do so]! It is truly encouraging to hear
+about new uses for CVX.
+
 == Citing CVX
 
 Are you using CVX in research work to be published? If so, please
@@ -26,4 +42,3 @@ In addition, please include the following entries in your bibliography:
   [http://stanford.edu/~boyd/graph_dcp.html].
   
 Thank you!
-

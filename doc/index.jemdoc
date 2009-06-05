@@ -61,6 +61,12 @@ CVX was designed designed by
 
 == Latest news
 
+=== Reports of problems with 64-bit Windows and Matlab R2009a
+Apparently, the MEX files that ship with CVX do not work with the latest and
+greatest version of the 64-bit Windows version of Matlab. I do not recommend
+upgrading to R2009a if this is your operating system of choice and you rely
+on CVX for your work.
+
 === Fuller support for 64-bit platforms
 CVX version 1.2 now supports 64-bit versions of Matlab on Windows, 
 Linux, and Macintosh platforms; precompiled MEX files are supplied

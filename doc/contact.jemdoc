@@ -8,7 +8,9 @@ Version ___VERSION___ (___TDATE___, Build ___BUILD___)
 
 We welcome your feedback! Please contact [mailto:mcgrant@stanford.edu Michael Grant]
 or [mailto:boyd@stanford.edu Stephen Boyd] with your bug reports and feature
-suggesstions.
+suggesstions, or just to let us know the novel applications you have for CVX. 
+In addition, please let us know if you choose to incorporate CVX
+into a course you are teaching---we like to keep track.
 
 If you do send a bug report, please include the following information if possible:
 - A copy of the error messages, if any, produced by Matlab.
@@ -16,7 +18,7 @@ If you do send a bug report, please include the following information if possibl
   a command called +cvx_version+ that will print all of this information to the 
   screen---just copy its output from Matlab and paste it into your email.
 - A Matlab program (+.m+) and\/or data (+.mat+) file that
-  we can use to reproduce the problem
+  we can use to reproduce the problem.
 
 Your help will be greatly appreciated.
 
