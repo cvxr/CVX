@@ -9,7 +9,7 @@ svn update $SRC
 SVN=`svn info | grep '^Repository Root: ' | sed 's/^Repository Root: *//'`
 
 # Key subdirectories / sub-repositories
-DST=$SRC/WWW
+DST=~/WWW/cvx
 STG=$SRC/dist
 CPY=$SRC/tmp
 CVX=$CPY/cvx
