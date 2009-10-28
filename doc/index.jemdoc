@@ -1,7 +1,7 @@
-# jemdoc: menu{MENU}{index.html},addcss{cvx.css},showsource
+# jemdoc: addcss{cvx.css},showsource
 = CVX: Matlab Software for\nDisciplined Convex Programming
-Version ___VERSION___ (___TDATE___, Build ___BUILD___)
-\n[http://www.stanford.edu/~mcgrant Michael Grant] and
+Version  (October 2009, Build 714)
+\n[/ Michael Grant] and
 [http://www.stanford.edu/~boyd Stephen Boyd]
 
 == Introduction
@@ -28,13 +28,13 @@ cvx_end
 
 In its default mode, CVX supports a particular approach to convex 
 optimization that we call 
-[http://stanford.edu/~mcgrant/dcp.html disciplined convex programming]. 
+[//dcp.html disciplined convex programming]. 
 Under this approach, convex functions and sets are built up from a small 
 set of rules from convex analysis, starting from a base library of convex 
 functions and sets. Constraints and objectives that are expressed using 
 these rules are automatically transformed to a canonical form and solved.
 For more information on disciplined convex programming, see 
-[http://stanford.edu/~mcgrant/papers.html these resources];
+[//papers.html these resources];
 for the basics of convex analysis and convex optimization, see the 
 book [http://stanford.edu/~boyd/cvxbook Convex Optimization].
 
@@ -55,7 +55,7 @@ and from a variety of applications. You can browse through this library now---wi
 to download and install CVX---by clicking [examples/index.html here]. 
 
 CVX was designed designed by
-[http://stanford.edu/~mcgrant Michael Grant] and 
+[/ Michael Grant] and 
 [http://stanford.edu/~boyd Stephen Boyd], with input from 
 [http://stanford.edu/~yyye Yinyu Ye].
 
