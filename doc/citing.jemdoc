@@ -33,7 +33,7 @@ solving convex programs \\cite{CVX,DCP}.
 In addition, please include the following entries in your bibliography:
 - M. Grant and S. Boyd. CVX: Matlab software for
     disciplined convex programming (web page and software).
-    [http://stanford.edu/~boyd/cvx], ___TDATE___.
+    [http://cvxr.com/cvx], ___TDATE___.
 - M. Grant and S. Boyd. Graph implementations for nonsmooth
   convex programs, /Recent Advances in Learning
   and Control (a tribute to M. Vidyasagar)/, V. Blondel, S.
