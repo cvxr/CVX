@@ -1,6 +1,6 @@
 # jemdoc: addcss{cvx.css},showsource
 = CVX: Matlab Software for\nDisciplined Convex Programming
-Version  (October 2009, Build 714)
+Version 1.2 (October 2009, Build 714)
 \n[/ Michael Grant] and
 [http://www.stanford.edu/~boyd Stephen Boyd]
 
