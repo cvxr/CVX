@@ -38,8 +38,19 @@ if isempty( b ),
 %elseif issparse( b ) & ~cvx_use_sparse( b ),
 %    b = full( b );
 end
-if length( s ) == 1,
-    s( 2 ) = 1;
+switch length( s ),
+    case 2,
+    case 1,
+        s( 2 ) = 1;
+    case 0,
+        s = [ 0, 0 ];
+    otherwise,
+        while s(end) == 1,
+            s(end) = [];
+            if length( s ) == 2, 
+                break; 
+            end
+        end
 end
 if nnz( isnan( b ) | isinf( b ) ),
     slow = true;

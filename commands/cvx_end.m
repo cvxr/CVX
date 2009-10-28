@@ -75,7 +75,6 @@ elseif pstr.complete & nnz( pstr.t_variable ) == 1,
     % Compress and solve
     %
 
-    clear pstr
     solve( prob );
     pstr = cvx___.problems( p );
 
@@ -101,11 +100,12 @@ elseif pstr.complete & nnz( pstr.t_variable ) == 1,
             pstr.result = pstr.result * ones(size(pstr.objective));
         end
     end
-    assignin( 'caller', 'cvx_optpnt', pstr.variables );
-    assignin( 'caller', 'cvx_optdpt', pstr.duals );
-    assignin( 'caller', 'cvx_status', pstr.status );
-    assignin( 'caller', 'cvx_optval', pstr.result );
-
+    assignin( 'caller', 'cvx_optpnt',  pstr.variables );
+    assignin( 'caller', 'cvx_optdpt',  pstr.duals );
+    assignin( 'caller', 'cvx_status',  pstr.status );
+    assignin( 'caller', 'cvx_optval',  pstr.result );
+    assignin( 'caller', 'cvx_iters',   pstr.iters );
+    
     %
     % Compute the numerical values and clear out
     %
@@ -221,12 +221,13 @@ else
     % Set the status and clear the problem from internal storage
     %
 
-    clear pstr
     assignin( 'caller', 'cvx_status', 'Incorporated' );
     evalin( 'caller', 'cvx_pop( cvx_problem, ''none'' )' );
 
 end
 
+assignin( 'caller', 'cvx_cputime', cputime - pstr.cputime );
+    
 if isempty( cvx___.problems ) & cvx___.profile,
     profile off;
 end

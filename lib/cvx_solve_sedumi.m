@@ -1,4 +1,4 @@
-function [ x, y, status, XYZ ] = cvx_solve_sedumi( At, b, c, nonls, quiet, prec, XYZ )
+function [ x, y, status, iters, XYZ ] = cvx_solve_sedumi( At, b, c, nonls, quiet, prec, XYZ )
 
 n_in = 0;
 n_out = 0;
@@ -82,6 +82,7 @@ if add_row,
 end
 
 [ xx, yy, info ] = sedumi( At, b, c, K, pars );
+iters = info.iter;
 xx = full( xx );
 yy = full( yy );
 if info.numerr == 2,

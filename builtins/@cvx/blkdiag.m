@@ -29,7 +29,7 @@ for k = 1 : nargin,
     ndxr = ndxr( :, ones( 1, sx( 2 ) ) );
     ndxc = [ coff : coff + sx( 2 ) - 1 ];
     ndxc = ndxc( ones( 1, sx( 1 ) ), : );
-    bz( 1 : size( b, 2 ), ndxc( : ) * sz( 1 ) + ndxr( : ) + 1 ) = b;
+    bz( 1 : size( b, 1 ), ndxc( : ) * sz( 1 ) + ndxr( : ) + 1 ) = b;
     roff = roff + sx( 1 );
     coff = coff + sx( 2 );
 end

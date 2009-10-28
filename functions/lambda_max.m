@@ -1,4 +1,4 @@
-function z = lambda_max( x )
+function z = lambda_max( Y )
 
 % LAMBDA_MAX    Maximum eigenvalue of a symmetric matrix.
 %     For square matrix X, LAMBDA_MAX(X) is MAX(EIG(X)) if X is Hermitian

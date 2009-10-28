@@ -19,12 +19,12 @@ end
 
 cvx_begin sdp
     if isreal(X),
-        variable Y(n,n) symmetric
+        variable Y(n,n)
     else
-        variable Y(n,n) Hermitian
+        variable Y(n,n) complex
     end
-    maximize(trace(Y))
-    [eye(n),Y;Y,X] >= 0
+    maximize(real(trace(Y)))
+    [eye(n),Y;Y',X] >= 0
 cvx_end
 
 % Copyright 2008 Michael C. Grant and Stephen P. Boyd. 

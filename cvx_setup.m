@@ -7,9 +7,18 @@ function cvx_setup( varargin )
 disp( ' ' );
 dd = pwd;
 
+% Clear out the global CVX structure
 global cvx___
 cvx___ = [];
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Get version and portability information %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% Octave?
+isoctave = exist( 'OCTAVE_VERSION' );
+
+% Numeric version
 ver = version;
 verm = 0;
 temp = find( ver == '.' );
@@ -19,29 +28,26 @@ if length( temp ) > 1,
 end
 needLarge = 0;
 ver = eval( ver, 'NaN' );
-try
-    mpath = mfilename('fullpath');
-catch
-    dbs = dbstack;
-    mpath = dbs.name;
-end
-isoctave = exist('OCTAVE_VERSION');
+
+% Octave?
 if isoctave,
 	if isnan( ver ) | ver < 3.0 | ( ver == 3.0 & verm < 1 ),
 		error( 'CVX requires octave 3.0.1 or later.' );
 	end
 else
 	newext = mexext;
-        needLarge = strcmp( newext(end-1:end), '64' );
-	if isnan( ver ) | ver < 6.1 | ( ( ver < 7.3 ) & needLarge ),
+    needLarge = strcmp( newext(end-1:end), '64' );
+	if isnan( ver ) | ver < 6.5 | ( ( ver < 7.3 ) & needLarge ),
 	    error( sprintf( ...
-		[ 'CVX requires 32-bit MATLAB 6.1 or later,\n', ...
+		[ 'CVX requires 32-bit MATLAB 6.5 or later,\n', ...
           '          or 64-bit MATLAB 7.3 or later.' ] ) );
     end
     if ver >= 7.1,
         warning( 'off', 'MATLAB:dispatcher:ShadowedMEXExtension' );
     end
 end
+
+% File path separators
 if ispc,
     fs = '\';
     ps = ';';
@@ -49,20 +55,26 @@ else
     fs = '/';
     ps = ':';
 end
+
+%%%%%%%%%%%%%%%%%%%%%%%%
+% Set up the CVX paths %
+%%%%%%%%%%%%%%%%%%%%%%%%
+
+try
+    mpath = mfilename('fullpath');
+catch
+    dbs = dbstack;
+    mpath = dbs.name;
+end
 temp = strfind( mpath, fs );
 mpath( temp(end) : end ) = [];
 rmpaths = { 'sets', 'keywords', 'builtins', 'commands', 'functions', 'lib', 'structures', 'matlab6' };
+checkpaths = rmpaths(1:end-1);
+addpaths = checkpaths;
 needpaths = {};
 delepaths = {};
 if isoctave | ver >= 7.0,
-    checkpaths = rmpaths(1:end-1);
-    addpaths = rmpaths(3:end-1);
-elseif ver >= 6.5,
-    checkpaths = rmpaths(1:end-1);
-    addpaths = rmpaths(1:end-1);
-else
-    checkpaths = rmpaths;
-    addpaths = rmpaths;
+    addpaths(1:2) = [];
 end
 if ~isoctave & strcmp( mexext, 'mexw64' ) & ver < 7.5,
     skip_sedumi = 1;
