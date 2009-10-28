@@ -58,7 +58,7 @@ if length( strs ) ~= 1,
         A = strs{k};
         if ~rstr,
             if isreal(A),
-                A = blkdiag(A,A);
+                A = cvx_blkdiag(A,A);
             else
                 A = [real(A),imag(A)];
             end

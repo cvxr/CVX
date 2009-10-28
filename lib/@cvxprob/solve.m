@@ -34,6 +34,7 @@ end
 % Ferret out the degenerate and overdetermined problems
 %
 
+iters = 0;
 tt = ( b' ~= 0 ) & ~any( At, 1 );
 infeas = any( tt );
 if m > n & n > 0,
@@ -221,7 +222,7 @@ elseif n ~= 0 & ~infeas & ( any( b ) | any( c ) ),
         stagnant = false;
         last_slow = false;
         last_u = false;
-        dscale = blkdiag(speye(m,m),speye(new_m-m,new_m-m));
+        dscale = cvx_blkdiag(speye(m,m),speye(new_m-m,new_m-m));
         XY0 = {};
         nprec = prec(3) * [ 1, 1, 1 ];
         for iter = 1 : 1000,
@@ -230,7 +231,8 @@ elseif n ~= 0 & ~infeas & ( any( b ) | any( c ) ),
             qq2 = 1 - x0e;
             At(endxs) = - amult * qq1;
             At(fndxs) = amult * qq2;
-            [ x, y, status, z ] = feval( sfunc, At, b, c, cones, true, nprec );
+            [ x, y, status, iters2, z ] = feval( sfunc, At, b, c, cones, true, nprec );
+            iters = iters + iters2;
             if status(1) == 'F',
                 tprec = Inf;
             else
@@ -273,7 +275,11 @@ elseif n ~= 0 & ~infeas & ( any( b ) | any( c ) ),
                     if all( uuu == 0 | nx3 <= nx2 ),
                         y_clean = true;
                         dob = b' * y;
-                        nx0 = 0.5 * ( nx0 + nx2 );
+                        if x_valid,
+                            nx0 = 0.5 * ( nx0 + nx2 );
+                        else
+                            nx0 = nx2;
+                        end
                     else
                         y_valid = false;
                     end
@@ -311,7 +317,7 @@ elseif n ~= 0 & ~infeas & ( any( b ) | any( c ) ),
                 best_py = tprec;
                 best_oy = dob;
             end
-            if tighten,
+            if tighten || ~x_valid,
                 err = Inf;
             else
                 err = max(0,max(nxe));
@@ -362,7 +368,7 @@ elseif n ~= 0 & ~infeas & ( any( b ) | any( c ) ),
         y = best_y;
         c = c(1:n,:);
     else
-        [ x, y, status ] = feval( sfunc, At, b, c, cones, quiet, prec );
+        [ x, y, status, iters ] = feval( sfunc, At, b, c, cones, quiet, prec );
     end
     if cvx___.profile, profile resume; end
     if ~cvx___.path.hold, 
@@ -447,6 +453,7 @@ if ~quiet,
 end
 
 cvx___.problems( p ).status = status;
+cvx___.problems( p ).iters = iters;
 
 %
 % Push the results into the master CVX workspace

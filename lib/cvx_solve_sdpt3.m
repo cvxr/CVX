@@ -1,4 +1,4 @@
-function [ x, y, status, z ] = cvx_solve_sdpt3( At, b, c, nonls, quiet, prec, XY0 )
+function [ x, y, status, iters, z ] = cvx_solve_sdpt3( At, b, c, nonls, quiet, prec, XY0 )
 
 [n,m] = size(At);
 
@@ -268,16 +268,16 @@ if ~isempty( tt ),
     end
     blk{end,2} = horzcat( blk{end,2}{:} );
     Avec{end}  = vertcat( Avec{end}{:} );
-    Cvec{end}  = blkdiag( Cvec{end}{:} );
+    Cvec{end}  = cvx_blkdiag( Cvec{end}{:} );
     tvec{end}  = vertcat( tvec{end}{:} );
-    xvec{end}  = blkdiag( xvec{end}{:} );
+    xvec{end}  = cvx_blkdiag( xvec{end}{:} );
     xvec{end}(nnn*nnn+1:end,:) = [];
     if use_x0,
-        X0{end} = blkdiag( X0{end}{:} );
-        Z0{end} = blkdiag( Z0{end}{:} );
+        X0{end} = cvx_blkdiag( X0{end}{:} );
+        Z0{end} = cvx_blkdiag( Z0{end}{:} );
     end
     if need_z,
-        zvec{end} = blkdiag( zvec{end}{:} );
+        zvec{end} = cvx_blkdiag( zvec{end}{:} );
         zvec{end}(nnn*nnn+1:end,:) = [];
     end
     found(tt)  = true;
@@ -328,6 +328,7 @@ else
     [ obj, xx, y, zz, info ] = sqlp( blk, Avec, Cvec, b, OPTIONS );
 end
 warning(s);
+iters = info.iter;
 
 %
 % Interpret the output
