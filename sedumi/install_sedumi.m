@@ -90,42 +90,45 @@ targets64={...
 };
 
 disp( 'Building SeDuMi binaries...' )
+ISOCTAVE = exist('OCTAVE_VERSION');
 COMPUTER = computer;
 VERSION  = [1,0.1]*sscanf(version,'%d.%d');
-IS64BIT  = strcmp(COMPUTER(end-1:end),'64');
-flags{1} = '-O';
+IS64BIT  = ISOCTAVE & strcmp(COMPUTER(end-1:end),'64');
+mexprog  = 'mex';
 if ispc,
-    flags{end+1} = '-DPC';
+    flags = {'-DPC'};
 elseif isunix,
-    flags{end+1} = '-DUNIX';
+    flags = {'-DUNIX'};
 end
-if IS64BIT & (VERSION>=7.3),
-    flags{end+1} = '-largeArrayDims';
-elseif (VERSION<7.3),
-    flags{end+1} = '-DmwIndex=int';
-    flags{end+1} = '-DmwSize=int';
-    flags{end+1} = '-DmwSignedIndex=int';
-end
-if ispc,
-	if VERSION >= 7.5, libval = 'blas'; else, libval = 'lapack'; end
-	if IS64BIT, dirval = 'win64'; else, dirval = 'win32'; end
-	libs = [ matlabroot, '\extern\lib\', dirval, '\microsoft\libmw', libval, '.lib' ];
-    if ~exist( libs ),
-    	libs = [ matlabroot, '\extern\lib\', dirval, '\microsoft\msvc60\libmw', libval, '.lib' ];
-    end       
-elseif VERSION >= 7.5,
-	libs = '-lmwblas';
-else
-	libs = '-lmwlapack';
+if ~ISOCTAVE,
+    flags{end+1} = '-O';
+    if IS64BIT & ( VERSION >= 7.3 ),
+        flags{end+1} = '-largeArrayDims';
+    elseif VERSION < 7.3,
+        flags{end+1} = '-DmwIndex=int';
+        flags{end+1} = '-DmwSize=int';
+        flags{end+1} = '-DmwSignedIndex=int';
+    end
+    if ispc,
+        if VERSION >= 7.5, libval = 'blas'; else, libval = 'lapack'; end
+        if IS64BIT, dirval = 'win64'; else, dirval = 'win32'; end
+        libs = [ matlabroot, '\extern\lib\', dirval, '\microsoft\libmw', libval, '.lib' ];
+        if ~exist( libs ),
+            libs = [ matlabroot, '\extern\lib\', dirval, '\microsoft\msvc60\libmw', libval, '.lib' ];
+        end
+    elseif VERSION >= 7.5,
+        libs = '-lmwblas';
+    else
+        libs = '-lmwlapack';
+    end
 end
 flags = sprintf( ' %s', flags{:} );
 for i=1:length(targets64)
-	temp =  [ 'mex ', flags, ' ', targets64{i}, ' ', libs ];
-	disp( temp );
-	eval( temp );
+    temp =  [ mexprog, flags, ' ', targets64{i}, ' "', libs ,'"'];
+    disp( temp );
+    eval( temp );
 end
 disp( 'Done!' )
-
 if nargin < 1,
     disp('Adding SeDuMi to the Matlab path')
     path(path,pwd);

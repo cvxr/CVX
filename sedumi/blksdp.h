@@ -119,15 +119,15 @@ typedef struct{
  *Matlab does not include a header file, so the compiler will
  *assume they return an int.*/
 #ifdef PC
-extern double ddot(const mwIndex*, const double*, const int*, const double*, const int*);
-extern double dnrm2(const mwIndex*, const double*, const int*);
-extern mwIndex idamax(mwIndex *,double *,int *);
+extern double ddot(const mwIndex*, const double*, const mwIndex*, const double*, const mwIndex*);
+extern double dnrm2(const mwIndex*, const double*, const mwIndex*);
+extern mwIndex idamax(mwIndex *,double *,mwIndex *);
 #endif
 
 #ifdef UNIX
-extern double ddot_(const mwIndex*, const double*,const int*, const double*, const int*);
-extern double dnrm2_(const mwIndex*, const double*,const int*);
-extern mwIndex idamax_(const mwIndex *,const double *,const int *);
+extern double ddot_(const mwIndex*, const double*,const mwIndex*, const double*, const mwIndex*);
+extern double dnrm2_(const mwIndex*, const double*,const mwIndex*);
+extern mwIndex idamax_(const mwIndex *,const double *,const mwIndex *);
 #endif
 
 /* ------------------------------------------------------------

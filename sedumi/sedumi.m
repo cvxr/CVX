@@ -180,7 +180,9 @@ function [x,y,info] = sedumi(A,b,c,K,pars)
 %
 % See also mat, vec, cellK, eyeK, eigK
 
-% This file is part of SeDuMi 1.1 by Imre Polik and Oleksandr Romanko
+% This file is part of SeDuMi 1.21 by Imre Polik and Oleksandr Romanko
+% Copyright (C) 2009 Imre Polik, Lehigh University, Bethlehem, PA, USA (since 1.21)
+%
 % Copyright (C) 2006 McMaster University, Hamilton, CANADA  (since 1.1)
 %
 % Copyright (C) 2001 Jos F. Sturm (up to 1.05R5)
@@ -251,6 +253,30 @@ end
 % and print welcome.
 % ----------------------------------------
 [A,b,c,K,prep,origcoeff] = pretransfo(A,b,c,K,pars);
+[N,m]=size(A);
+if issparse(A)
+    if sprank([A;b'])>sprank(A)
+        info.pinf=1;
+        x=[];
+        %A dual improving direction could be computed easily
+        y=[A;b']\[zeros(N,1);1];
+
+        warning('The problem is primal infeasible. there is no x such that Ax=b.')
+        return
+    elseif sprank(A)<m
+        error('The coefficient matrix is not full row rank.')
+    end
+else
+    if rank([A;b'])>rank(A)
+        info.pinf=1;
+        x=[];
+        y=[A;b']\[zeros(N,1);1];
+        warning('The problem is primal infeasible, there is no x such that Ax=b.')
+        return
+    elseif rank(A)<m
+        error('The coefficient matrix is not full row rank.')
+    end
+end
 if prep.cpx.dim>0
     origcoeff=[];      % No error measures for complex problems.
 end
@@ -259,7 +285,7 @@ pars = checkpars(pars,lponly);
 % ----------------------------------------
 % Print welcome and statistics of cone-problem
 % ----------------------------------------
-my_fprintf(pars.fid,'SeDuMi 1.2 by AdvOL, 2005-2008 and Jos F. Sturm, 1998-2003.\n');
+my_fprintf(pars.fid,'SeDuMi 1.21 by AdvOL, 2005-2008 and Jos F. Sturm, 1998-2003.\n');
 switch pars.alg
     case 0
         my_fprintf(pars.fid,'Alg = 0: No corrector, ');
@@ -293,7 +319,7 @@ if pars.prep==1
             my_fprintf(pars.fid,'Detected %i diagonal SDP block(s) with %i linear variables\n',blockcount,varcount);
         end
     end
-    if isfield(prep,'freeblock1') & length(prep.freeblock1)>0
+    if isfield(prep,'freeblock1') & ~isempty(prep.freeblock1)
         my_fprintf(pars.fid,'Detected %i free variables in the linear part\n',length(prep.freeblock1));
     end
     if isfield(prep,'Kf') & prep.Kf>0
@@ -310,7 +336,7 @@ end
 % --------------------------------------------------
 Ablkjc = partitA(A,K.mainblks);
 [dense,DAt.denq] = getdense(A,Ablkjc,K,pars);
-if length(dense.cols) > 0
+if ~isempty(dense.cols)
     dense.A = A(dense.cols,:)';
     A(dense.cols,:) = 0.0;
     Ablkjc = partitA(A,K.mainblks);
@@ -353,7 +379,7 @@ merit = (sum(R.w) + max(R.sd,0))^2 * y0 / R.b0;  % Merit function
 my_fprintf(pars.fid,'eqs m = %g, order n = %g, dim = %g, blocks = %g\n',...
     length(b),n,length(c),1 + length(K.q) + length(K.s));
 my_fprintf(pars.fid,'nnz(A) = %d + %d, nnz(ADA) = %d, nnz(L) = %d\n',nnz(A),nnz(dense.A), nnz(ADA), nnz(L.L));
-if length(dense.cols) > 0
+if ~isempty(dense.cols)
     my_fprintf(pars.fid,'Handling %d + %d dense columns.\n',...
         length(dense.cols),length(dense.q));
 end

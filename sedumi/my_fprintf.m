@@ -34,5 +34,5 @@ function my_fprintf(fid, varargin)
 % 02110-1301, USA
 
 if fid,
-    fprintf(fid, varargin{:})
-  end
+    fprintf(fid, varargin{:});
+end
