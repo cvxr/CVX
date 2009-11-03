@@ -58,3 +58,9 @@ paper that is available at http://plato.asu.edu/dimacs/node3.html. These are in 
 20080409 Fix: SeDuMi now works on 64bit operating systems.
 
 20080409 Fix: BLAS is used to improve performance.
+
+20090510 Fix: Some BLAS calls are fixed in blkaux.c
+
+20090510 Fix: A new installer script is provided by Michael Grant.
+
+20090510 Fix: Michael Grant modified some files to compile under 64 bit versions.
