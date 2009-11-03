@@ -44,9 +44,9 @@
      n - order
    RETURNS the inner product between X and Y, trace(X*Y).
    ************************************************************ */
-double triudotprod(const double *x, const double *y, const int n)
+double triudotprod(const double *x, const double *y, const mwIndex n)
 {
-  int i, j;
+  mwIndex i, j;
   double z;
   if(n <= 0)
     return 0.0;
@@ -60,9 +60,9 @@ double triudotprod(const double *x, const double *y, const int n)
 
 /* striudotprod: z = tr(X*Y), where diag(X)=0. only triu(X,1) and triu(Y,1)
    are used. For the imaginary part into the real inner product. */
-double striudotprod(const double *x, const double *y, const int n)
+double striudotprod(const double *x, const double *y, const mwIndex n)
 {
-  int i, j;
+  mwIndex i, j;
   double z;
   if(n <= 1)
     return 0.0;

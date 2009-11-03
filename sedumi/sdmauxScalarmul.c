@@ -40,7 +40,7 @@
    ************************************************************ */
 void scalarmul(double *r, const double alpha,const double *x,const mwIndex n)
 {
-  int one=1;
+  mwIndex one=1;
   #ifdef PC
   dcopy(&n,x,&one,r,&one);
   dscal(&n,&alpha,r,&one);
@@ -60,7 +60,7 @@ void scalarmul(double *r, const double alpha,const double *x,const mwIndex n)
 void addscalarmul(double *r, const double alpha,const double *x,const mwIndex n)
 {
   /*USE BLAS*/
-    int one=1;
+    mwIndex one=1;
     #ifdef PC
     daxpy(&n,&alpha,x,&one,r,&one);
     #endif
@@ -78,7 +78,7 @@ void addscalarmul(double *r, const double alpha,const double *x,const mwIndex n)
 void subscalarmul(double *x, const double alpha, const double *y, const mwIndex n)
 {
   /*USE BLAS*/
-    int one=1;
+    mwIndex one=1;
     const double minusalpha=-alpha;
     #ifdef PC
     daxpy(&n,&minusalpha,y,&one,x,&one);

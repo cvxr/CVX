@@ -75,8 +75,8 @@
 void mexFunction(const int nlhs, mxArray *plhs[],
   const int nrhs, const mxArray *prhs[])
 {
-  int m, i,j, iwsiz, flag, nofsub, cachesiz, nsuper, nsub, nnzl;
-  int *Xjc,*Xir, *snode, *xsuper, *invp, *colcnt, *xadj, *adjncy;
+  mwIndex m, i,j, iwsiz, flag, nofsub, cachesiz, nsuper, nsub, nnzl;
+  mwIndex *Xjc,*Xir, *snode, *xsuper, *invp, *colcnt, *xadj, *adjncy;
   mxArray *L_FIELD;
   const char *LFieldnames[] = {"L", "perm", "xsuper", "tmpsiz", "split"};
 /* ------------------------------------------------------------
@@ -102,12 +102,12 @@ void mexFunction(const int nlhs, mxArray *plhs[],
    Allocate working arrays:
    int xadj(m+1), adjncy(Xnnz), perm(m), invp(m), iwork(iwsiz)
    ------------------------------------------------------------ */
-  xadj   = (int *) mxCalloc(m+1,sizeof(int));
-  adjncy = (int *) mxCalloc(Xjc[m],sizeof(int));
-  perm   = (int *) mxCalloc(m,sizeof(int));
-  invp   = (int *) mxCalloc(m,sizeof(int));
+  xadj   = (mwIndex *) mxCalloc(m+1,sizeof(mwIndex));
+  adjncy = (mwIndex *) mxCalloc(Xjc[m],sizeof(mwIndex));
+  perm   = (mwIndex *) mxCalloc(m,sizeof(mwIndex));
+  invp   = (mwIndex *) mxCalloc(m,sizeof(mwIndex));
   iwsiz  = 4 * m;
-  iwork = (int *) mxCalloc(iwsiz,sizeof(int));
+  iwork = (mwIndex *) mxCalloc(iwsiz,sizeof(mwIndex));
   
 /* ------------------------------------------------------------
    Convert C-style symmetric matrix to adjacency structure
@@ -123,11 +123,11 @@ void mexFunction(const int nlhs, mxArray *plhs[],
   
   mxFree(iwork);
   iwsiz  = 7*m + 3;
-  iwork  = (int *) mxCalloc(iwsiz,  sizeof(int));
-  colcnt = (int *) mxCalloc(m,  sizeof(int));
-  snode  = (int *) mxCalloc(m,  sizeof(int));
-  xsuper = (int *) mxCalloc(m+1,sizeof(int));
-  xlindx = (int *) mxCalloc(m+1,sizeof(int));
+  iwork  = (mwIndex *) mxCalloc(iwsiz,  sizeof(mwIndex));
+  colcnt = (mwIndex *) mxCalloc(m,  sizeof(mwIndex));
+  snode  = (mwIndex *) mxCalloc(m,  sizeof(mwIndex));
+  xsuper = (mwIndex *) mxCalloc(m+1,sizeof(mwIndex));
+  xlindx = (mwIndex *) mxCalloc(m+1,sizeof(mwIndex));
   
   sfinit_(&m, Xjc+m,  xadj,adjncy, perm, invp, colcnt,
           &nnzl, &nsub, &nsuper, snode, xsuper, &iwsiz, iwork, &flag);
@@ -166,9 +166,9 @@ void mexFunction(const int nlhs, mxArray *plhs[],
      matrix (cjc,cir) to Fortran style sparse matrix (forjc,forir).
      On input, n is number of columns.
    ------------------------------------------------------------ */
-void getadj(int *forjc,int *forir,const int *cjc,const int *cir,const int n)
+void getadj(mwIndex *forjc,mwIndex *forir,const mwIndex *cjc,const mwIndex *cir,const mwIndex n)
 {
-	int i,j,inz,ix;
+	mwIndex i,j,inz,ix;
 
 	inz = 0;
     for(j = 0; j < n; j++){

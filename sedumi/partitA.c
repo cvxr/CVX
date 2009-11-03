@@ -64,7 +64,7 @@ void intadd(mwIndex *x, const mwIndex y, const mwIndex n)
      blkstart, nblk - length nblk integer array of subscripts.
      iwsize - length of iwork, iwsize = floor(log(1+nblk)/log(2)).
    OUTPUT
-     Ablkjc - length (nblk+2)*m array. Rows 1+(1:nblk) list 1st nonzero
+     Ablkjc - length (nblk+1)*m array. Rows 1+(1:nblk) list 1st nonzero
        with subscript at or beyond blkstart.
    WORK
      cfound - length nblk char work array

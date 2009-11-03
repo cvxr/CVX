@@ -47,17 +47,46 @@
    ************************************************************ */
 void realHadamard(double * r, const double *x, const double *y, const mwIndex n)
 {
-    int one=1;
-    double zero=0.0;
-#ifdef PC
-    dcopy(&n,y,&one,r,&one);
-    dtbmv('u','n','n',&n,&zero,x,&one,r,&one);
-    #endif
-    #ifdef UNIX
-    dcopy_(&n,y,&one,r,&one);
-    dtbmv_('u','n','n',&n,&zero,x,&one,r,&one);
-    #endif
-    return;
+/* TODO: This blas solution segfaults. OpenMP?
+//     int one=1;
+//     double zero=0.0;
+//     #ifdef PC
+//     dcopy(&n,y,&one,r,&one);
+//     dtbmv('u','n','n',&n,&zero,x,&one,r,&one);
+//     #endif
+//     
+//     #ifdef UNIX
+//     dcopy_(&n,y,&one,r,&one);
+//     dtbmv_('u','n','n',&n,&zero,x,&one,r,&one);
+//     #endif
+//     return;*/
+    mwIndex i;
+
+ for(i=0; i+7< n; ){              /* LEVEL 8 */
+   r[i] = x[i] * y[i]; i++;
+   r[i] = x[i] * y[i]; i++;
+   r[i] = x[i] * y[i]; i++;
+   r[i] = x[i] * y[i]; i++;
+   r[i] = x[i] * y[i]; i++;
+   r[i] = x[i] * y[i]; i++;
+   r[i] = x[i] * y[i]; i++;
+   r[i] = x[i] * y[i]; i++;
+ }
+ if(i+3 < n){                         /* LEVEL 4 */
+   r[i] = x[i] * y[i]; i++;
+   r[i] = x[i] * y[i]; i++;
+   r[i] = x[i] * y[i]; i++;
+   r[i] = x[i] * y[i]; i++;
+ }
+/* ------------------------------------------------------------
+   Now, i in {n-3, n-2, n-1, n}. Do the last n-i elements.
+   ------------------------------------------------------------ */
+ if(i+1 < n){                        /* LEVEL 2 */
+   r[i] = x[i] * y[i]; i++;
+   r[i] = x[i] * y[i]; i++;
+ }
+ if(i< n)                            /* LEVEL 1 */
+   r[i] = x[i] * y[i];
 }
 
 /* ************************************************************

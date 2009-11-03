@@ -52,7 +52,7 @@ mwIndex blkLDL(const mwIndex neqns, const mwIndex nsuper, const mwIndex *xsuper,
    ************************************************************ */
 void isscalarmul(double *x, const double alpha, const mwIndex n)
 {
-    int one=1;
+    mwIndex one=1;
     #ifdef PC
     dscal(&n,&alpha,x,&one);
     #endif
@@ -71,7 +71,7 @@ void isscalarmul(double *x, const double alpha, const mwIndex n)
    ************************************************************ */
 double maxabs(const double *x,const mwIndex n)
 {
-int one=1;
+mwIndex one=1;
 #ifdef PC
     return fabs(x[idamax(&n,x,&one)]);
 #endif

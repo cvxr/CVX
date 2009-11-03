@@ -43,7 +43,7 @@
    ************************************************************ */
 double realdot(const double *x, const double *y, const mwIndex n)
 {
-    int one=1;
+    mwIndex one=1;
     #ifdef PC
     return ddot(&n,x,&one,y,&one);
     #endif
@@ -60,7 +60,7 @@ double realdot(const double *x, const double *y, const mwIndex n)
    ************************************************************ */
 double realssqr(const double *x, const mwIndex n)
 {
-    int one=1;
+    mwIndex one=1;
     #ifdef PC
     return ddot(&n,x,&one,x,&one);
     #endif

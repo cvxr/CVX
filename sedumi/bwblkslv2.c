@@ -45,10 +45,10 @@
    UPDATED
      y - full xsuper[nsuper]-vector, yOUTPUT = L' \ yINPUT.
    ************************************************************ */
-void bwsolve(double *y, const int *Ljc, const int *Lir, const double *Lpr,
-             const int *xsuper, const int nsuper)
+void bwsolve(double *y, const mwIndex *Ljc, const mwIndex *Lir, const double *Lpr,
+             const mwIndex *xsuper, const mwIndex nsuper)
 {
-  int jsup,j,inz,k;
+  mwIndex jsup,j,inz,k;
   double yj, ljj;
 
   /* ------------------------------------------------------------
@@ -83,11 +83,11 @@ void bwsolve(double *y, const int *Ljc, const int *Lir, const double *Lpr,
    UPDATED
      y - full m-vector, yOUT = L(0:m-1,0:m-1)'\yIN.
    ************************************************************ */
-void partbwsolve(double *y, const int *ljc, const double *lpr,
-             const int *xlindx, const int *lindx, const int *xsuper,
-             const int nsuper, const int m)
+void partbwsolve(double *y, const mwIndex *ljc, const double *lpr,
+             const mwIndex *xlindx, const mwIndex *lindx, const mwIndex *xsuper,
+             const mwIndex nsuper, const mwIndex m)
 {
-  int jsup,j,inz,k,i, ixfirst,ixnz;
+  mwIndex jsup,j,inz,k,i, ixfirst,ixnz;
   double yj;
 /* ------------------------------------------------------------
    For each supernode jsup:

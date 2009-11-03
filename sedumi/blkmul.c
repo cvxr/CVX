@@ -57,10 +57,10 @@
    OUTPUT
      y n-vector. On output, y(1:nL(1))= kappa(1)*d(1:nL(1)), etc.
    ************************************************************ */
-int blkmul(double *y, const double *mu,const double *d,const int *nL,
-           const int kappa, int n)
+int blkmul(double *y, const double *mu,const double *d,const mwIndex *nL,
+           const mwIndex kappa, mwIndex n)
 {
-  int k,nk;
+  mwIndex k,nk;
 /* ------------------------------------------------------------
    For each block k: yk = mu(k) * d[k].
    n denotes remaining length of d and y.
@@ -89,10 +89,10 @@ int blkmul(double *y, const double *mu,const double *d,const int *nL,
 void mexFunction(const int nlhs, mxArray *plhs[],
   const int nrhs, const mxArray *prhs[])
 {
-  int i,kappa,n;
+  mwIndex i,kappa,n;
   double *y;
   const double *d, *mu, *nLpr;
-  int *nL;
+  mwIndex *nL;
 
 /* ------------------------------------------------------------
    Check for proper number of arguments 
@@ -116,7 +116,7 @@ void mexFunction(const int nlhs, mxArray *plhs[],
 /* ------------------------------------------------------------
    ALLOCATE working array nL(kappa) = nLPr in ints.
    ------------------------------------------------------------ */
- nL = (int *) mxCalloc(MAX(1,kappa), sizeof(int));
+ nL = (mwindex *) mxCalloc(MAX(1,kappa), sizeof(mwIndex));
  for(i = 0; i < kappa; i++)
    nL[i] = nLpr[i];
 /* ------------------------------------------------------------
