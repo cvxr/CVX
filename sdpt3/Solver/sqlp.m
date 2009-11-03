@@ -223,7 +223,7 @@
 %%-----------------------------------------
 %%
    exist_analytic_term = 0; 
-   for p = 1:size(blk,1);
+   for p = 1:size(blk3,1);
       idx = find(parbarrier3{p} > 0); 
       if ~isempty(idx); exist_analytic_term = 1; end
    end

@@ -106,7 +106,7 @@
       end          
       blk{numblk+1,1} = 'l'; 
       blk{numblk+1,2} = numdiagelt;
-      C{numblk+1}    = Cdiag;
+      C{numblk+1,1}   = Cdiag;
       At(numblk+1,1) = svec(blk(numblk+1,:),Adiag,1); 
       idx_keepblk = [idx_keepblk, numblk+1];
       blk = blk(idx_keepblk,:); 
@@ -114,8 +114,8 @@
       At  = At(idx_keepblk,:);
       if (nargin >= 7)
          parbarrier{numblk+1,1} = parbarrierdiag;  
-         X{numblk+1} = Xdiag; 
-         Z{numblk+1} = Zdiag;
+         X{numblk+1,1} = Xdiag; 
+         Z{numblk+1,1} = Zdiag;
          parbarrier = parbarrier(idx_keepblk); 
          X = X(idx_keepblk); 
          Z = Z(idx_keepblk); 

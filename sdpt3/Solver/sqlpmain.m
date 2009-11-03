@@ -10,8 +10,8 @@
 
   function [obj,X,y,Z,info,runhist] = sqlpmain(blk,At,C,b,par,parbarrier,X0,y0,Z0);
 
-   global spdensity smallblkdim  printlevel  msg
-   global solve_ok  use_LU  exist_analytic_term  
+   global spdensity smallblkdim  printlevel msg
+   global solve_ok  use_LU  exist_analytic_term numpertdiagschur  
    global schurfun  schurfun_par 
 %%
    randstate = rand('state');  randnstate = randn('state');
@@ -37,7 +37,7 @@
    schurfun_par  = par.schurfun_par;
    ublksize      = par.ublksize; 
 %%
-   tstart = cputime; 
+   tstart = clock; 
    X = X0; y = y0; Z = Z0; 
    for p = 1:size(blk,1)
       if strcmp(blk{p,1},'u'); Z{p} = zeros(blk{p,2},1); end
@@ -58,8 +58,8 @@
          At{p} = [At{p}; -At{p}];  
          tau = max(1,norm(C{p})); 
          C{p} = [C{p}; -C{p}]; 
-         msg = '*** convert ublk to lblk'; 
-         if (printlevel); fprintf(' %s',msg); end
+         msg = 'convert ublk to lblk'; 
+         if (printlevel); fprintf(' *** %s',msg); end
          b2 = 1 + abs(b');  
          normCtmp = 1+norm(C{p});
          normAtmp = 1+sqrt(sum(At{p}.*At{p}));
@@ -76,8 +76,8 @@
 	 else
             const = max(abs(X{p})) + 100; 
             X{p} = [X{p}+const; const*ones(n/2,1)]; 
-            const = 100; 
-            Z{p} = [const*ones(n/2,1); const*ones(n/2,1)]; 
+            %%old: const = 100; Z{p} = [const*ones(n/2,1); const*ones(n/2,1)];
+            Z{p} = [abs(Z0{p}); abs(Z0{p})] + 1e-4; 
          end
       end
    end
@@ -233,7 +233,7 @@
    runhist.infeas  = infeas;  
    runhist.step    = 0; 
    runhist.normX   = normX; 
-   runhist.cputime = cputime-tstart; 
+   runhist.cputime = etime(clock,tstart); 
    ttime.preproc   = runhist.cputime; 
    ttime.pred = 0; ttime.pred_pstep = 0; ttime.pred_dstep = 0; 
    ttime.corr = 0; ttime.corr_pstep = 0; ttime.corr_dstep = 0; 
@@ -270,14 +270,16 @@
 %%
    param.termcode    = termcode; 
    param.iter        = 0; 
-   param.normA       = normA; 
-   param.normb       = normb;
-   param.normC       = normC;
-   param.normX0      = normX0; 
-   param.normZ0      = normZ0; 
-   param.m0          = m0;
-   param.indeprows   = indeprows;
-   param.prim_infeas_bad = 0;
+   param.obj         = obj;
+   param.relgap      = relgap; 
+   param.prim_infeas = prim_infeas;   param.dual_infeas = dual_infeas;    
+   param.homRd       = homRd;         param.homrp       = homrp; 
+   param.AX          = AX;            param.ZpATynorm   = ZpATynorm;
+   param.normA       = normA;  
+   param.normb       = normb;         param.normC       = normC;
+   param.normX0      = normX0;        param.normZ0      = normZ0; 
+   param.m0          = m0;            param.indeprows   = indeprows;
+   param.prim_infeas_bad = 0;         
    param.dual_infeas_bad = 0; 
    param.prim_infeas_min = prim_infeas; 
    param.dual_infeas_min = dual_infeas; 
@@ -290,7 +292,7 @@
    Xbest = X; ybest = y; Zbest = Z; 
 %%
    for iter = 1:maxit;
-      tstart  = cputime;  
+      tstart  = clock;  
       timeold = tstart;
       update_iter = 0; breakyes = 0; 
       pred_slow = 0; corr_slow = 0; step_short = 0; 
@@ -348,12 +350,12 @@
          runhist.pinfeas(iter+1) = runhist.pinfeas(iter); 
          runhist.dinfeas(iter+1) = runhist.dinfeas(iter); 
          runhist.relgap(iter+1)  = runhist.relgap(iter); 
-         runhist.cputime(iter+1) = cputime-tstart; 
-         param.termcode = -4;
+         runhist.cputime(iter+1) = etime(clock,tstart); 
+         termcode = -4;
          break; %% do not ues breakyes = 1
       end
-      timenew = cputime;
-      ttime.pred = ttime.pred + timenew-timeold; timeold = timenew; 
+      timenew = clock;
+      ttime.pred = ttime.pred + etime(timenew,timeold); timeold = timenew; 
 %%
 %%-----------------------------------------
 %% step-lengths for predictor step
@@ -366,8 +368,8 @@
       end 
       [Xstep,invXchol] = steplength(blk,X,dX,Xchol,invXchol); 
       pstep = min(1,gamused*full(Xstep));
-      timenew = cputime; 
-      ttime.pred_pstep = ttime.pred_pstep + timenew-timeold; timeold = timenew;
+      timenew = clock; 
+      ttime.pred_pstep = ttime.pred_pstep + etime(timenew,timeold); timeold = timenew;
       Zstep = steplength(blk,Z,dZ,Zchol,invZchol); 
       dstep = min(1,gamused*full(Zstep));
       trXZnew = trXZ + pstep*blktrace(blk,dX,Z,parbarrier) ...
@@ -375,8 +377,8 @@
                  + pstep*dstep*blktrace(blk,dX,dZ,parbarrier);
       if (nn > 0); mupred  = trXZnew/nn; else; mupred = 1e-16; end
       mupredhist(iter) = mupred;
-      timenew = cputime;        
-      ttime.pred_dstep = ttime.pred_dstep + timenew-timeold; timeold = timenew;
+      timenew = clock;        
+      ttime.pred_dstep = ttime.pred_dstep + etime(timenew,timeold); timeold = timenew;
 %%
 %%-----------------------------------------
 %%  stopping criteria for predictor step.
@@ -388,7 +390,7 @@
             fprintf('\n  %s',msg);
             fprintf(': pstep = %3.2e,  dstep = %3.2e\n',pstep,dstep);
          end
-         runhist.cputime(iter+1) = cputime-tstart; 
+         runhist.cputime(iter+1) = etime(clock,tstart); 
          termcode = -2; 
          breakyes = 1; 
       end
@@ -407,7 +409,7 @@
                fprintf(': mupred/mu = %3.2f, pred_convg_rate = %3.2f.',...
                mupred/mu,pred_convg_rate);
             end
-            runhist.cputime(iter+1) = cputime-tstart; 
+            runhist.cputime(iter+1) = etime(clock,tstart); 
             termcode = -2; 
             breakyes = 1;
          else 
@@ -453,12 +455,12 @@
             runhist.pinfeas(iter+1) = runhist.pinfeas(iter); 
             runhist.dinfeas(iter+1) = runhist.dinfeas(iter); 
             runhist.relgap(iter+1)  = runhist.relgap(iter); 
-            runhist.cputime(iter+1) = cputime-tstart; 
-            param.termcode = -4;
+            runhist.cputime(iter+1) = etime(clock,tstart); 
+            termcode = -4;
             break; %% do not ues breakyes = 1
          end
-         timenew = cputime;
-         ttime.corr = ttime.corr + timenew-timeold; timeold = timenew; 
+         timenew = clock;
+         ttime.corr = ttime.corr + etime(timenew,timeold); timeold = timenew; 
 %%
 %%-----------------------------------
 %% step-lengths for corrector step
@@ -471,16 +473,16 @@
          end            
          Xstep = steplength(blk,X,dX,Xchol,invXchol);
          pstep = min(1,gamused*full(Xstep));
-         timenew = cputime;
-         ttime.corr_pstep = ttime.corr_pstep+timenew-timeold; timeold = timenew;
+         timenew = clock;
+         ttime.corr_pstep = ttime.corr_pstep+etime(timenew,timeold); timeold = timenew;
          Zstep = steplength(blk,Z,dZ,Zchol,invZchol);
          dstep = min(1,gamused*full(Zstep));
          trXZnew = trXZ + pstep*blktrace(blk,dX,Z,parbarrier) ...
                     + dstep*blktrace(blk,X,dZ,parbarrier)...
                     + pstep*dstep*blktrace(blk,dX,dZ,parbarrier); 
          if (nn > 0); mucorr  = trXZnew/nn; else; mucorr = 1e-16; end
-         timenew = cputime;
-         ttime.corr_dstep = ttime.corr_dstep+timenew-timeold; timeold = timenew;
+         timenew = clock;
+         ttime.corr_dstep = ttime.corr_dstep+etime(timenew,timeold); timeold = timenew;
 %%
 %%-----------------------------------------
 %%  stopping criteria for corrector step
@@ -500,8 +502,8 @@
                fprintf(': mucorr/mu = %3.2f, corr_convg_rate = %3.2f',...
                mucorr/mu,corr_convg_rate); 
             end
-            runhist.cputime(iter+1) = cputime-tstart; 
-            termcode = -1; 
+            runhist.cputime(iter+1) = etime(clock,tstart); 
+            termcode = -2; 
             breakyes = 1;
          else
             update_iter = 1;
@@ -514,15 +516,15 @@
       if (update_iter)
          for t = 1:5
             [Xchol,indef(1)] = blkcholfun(blk,ops(X,'+',dX,pstep)); 
-            timenew = cputime;
-            ttime.pchol = ttime.pchol + timenew-timeold; timeold = timenew;
+            timenew = clock;
+            ttime.pchol = ttime.pchol + etime(timenew,timeold); timeold = timenew;
             if (indef(1)); pstep = 0.8*pstep; else; break; end            
          end
 	 if (t > 1); pstep = gamused*pstep; end
 	 for t = 1:5
             [Zchol,indef(2)] = blkcholfun(blk,ops(Z,'+',dZ,dstep)); 
-            timenew = cputime;
-            ttime.dchol = ttime.dchol + timenew-timeold; timeold = timenew; 
+            timenew = clock;
+            ttime.dchol = ttime.dchol + etime(timenew,timeold); timeold = timenew; 
             if (indef(2)); dstep = 0.8*dstep; else; break; end             
          end
 	 if (t > 1); dstep = gamused*dstep; end
@@ -651,9 +653,9 @@
       runhist.infeas(iter+1)  = infeas;
       runhist.step(iter+1)    = min(pstep,dstep); 
       runhist.normX(iter+1)   = normX; 
-      runhist.cputime(iter+1) = cputime-tstart; 
-      timenew = cputime;
-      ttime.misc = ttime.misc + timenew-timeold; timeold = timenew;  
+      runhist.cputime(iter+1) = etime(clock,tstart); 
+      timenew = clock;
+      ttime.misc = ttime.misc + etime(timenew,timeold); timeold = timenew;  
       [hh,mm,ss] = mytime(sum(runhist.cputime)); 
       if (printlevel>=3)
          fprintf('\n%2.0f|%4.3f|%4.3f',iter,pstep,dstep);
@@ -679,6 +681,7 @@
       param.ZpATynorm = ZpATynorm;
       param.normX     = ops(X,'norm'); 
       param.normZ     = ops(Z,'norm'); 
+      param.numpertdiagschur = numpertdiagschur; 
       if (~breakyes)
          [param,breakyes,restart,msg2] = sqlpcheckconvg(param,runhist); 
       end
@@ -713,10 +716,10 @@
          update_best(iter+1) = 0; 
       end   
       if (max(relgap_best,infeas_best) < 1e-4 ...
-          & norm(update_best(iter-1:iter+1)) == 0)
+          & norm(update_best(max(1,iter-1):iter+1)) == 0)
          msg = 'lack of progress in infeas'; 
          if (printlevel); fprintf('\n  %s',msg); end
-         termcode = -3; 
+         termcode = -9; 
          breakyes = 1; 
       end
       if (breakyes); break; end
@@ -798,7 +801,7 @@
    info.pinfeas  = prim_infeas;
    info.dinfeas  = dual_infeas;
    info.cputime  = sum(runhist.cputime); 
-   info.ttime    = ttime; 
+   info.time     = ttime; 
    info.resid    = resid;
    info.reldist  = reldist; 
    info.normX    = ops(X,'norm'); 

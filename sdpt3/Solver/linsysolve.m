@@ -16,7 +16,7 @@
    
     global solve_ok existspcholsymb exist_analytic_term
     global nnzmat nnzmatold matfct_options matfct_options_old use_LU 
-    global Lsymb msg diagR diagRold 
+    global Lsymb msg diagR diagRold numpertdiagschur
 
     spdensity  = par.spdensity;
     printlevel = par.printlevel; 
@@ -27,6 +27,7 @@
     if (iter==1); 
        use_LU = 0; matfct_options_old = ''; 
        diagR = ones(m,1); 
+       numpertdiagschur = 0; 
     end
     if isempty(nnzmatold); nnzmatold = 0; end
     diagRold = diagR; 
@@ -70,7 +71,8 @@
        if (len > 0 & len < 5) & (norm(rhs(idx)) < tol) 
           pertdiagschur(idx) = 1*ones(length(idx),1); 
           mexschurfun(schur,pertdiagschur); 
-          if (printlevel>2); fprintf('#'); end
+          numpertdiagschur = numpertdiagschur + 1; 
+          if (printlevel>2); fprintf('#'); end   
        end
     end
 %% 
@@ -241,11 +243,11 @@
           L.matfct_options = 'splu';  
           L.symmatrix = 1; 
           try,
-              [L.l,L.u,L.p,L.q] = lu(raugmat);
-              [ii,jj] = find(L.q); L.q = ii;
-          catch,
-              L.q = colamd(raugmat);
-              [L.l,L.u,L.p] = lu(raugmat(:,L.q));
+            [L.l,L.u,L.p,L.q] = lu(raugmat);
+            [ii,jj] = find(L.q); L.q = ii;
+          catch
+            L.q = colamd(raugmat); 
+            [L.l,L.u,L.p] = lu(raugmat(:,L.q));            
           end
           [ii,jj] = find(L.p); L.p = ii; 
        end

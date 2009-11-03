@@ -33,7 +33,8 @@
             if ~isspA; A=sparse(A); isspA=1; end
             if ~isspB; B=sparse(B); isspB=1; end
          end
-         use_matlab = (options==0 & ~isspA & ~isspB) | (isspA & isspB); 
+         %%use_matlab = (options==0 & ~isspA & ~isspB) | (isspA & isspB); 
+         use_matlab = (~isspA & ~isspB) | (isspA & isspB); 
          if (use_matlab)
             C = A*B;  
             if (options==1); C = 0.5*(C+C'); end; 

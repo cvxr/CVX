@@ -135,11 +135,11 @@
    idxN = find(dd < 1e-13*mean(L.d));
    ddB = dd(setdiff([1:m],idxN));
    ddN = dd(idxN);
-   if ~isempty(ddN) & ~isempty(ddB), if (min(ddB)/max(ddN) < 10) 
+   if ~isempty(ddN) & ~isempty(ddB) & (min(ddB)/max(ddN) < 10) 
       %% no clear separation of elements in dd
       %% do not label constraints as dependent
       idxN = []; 
-   end; end
+   end
    if ~isempty(idxN)     
       neardepconstr = 1; 
       if (printlevel)

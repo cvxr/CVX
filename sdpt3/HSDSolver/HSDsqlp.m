@@ -42,8 +42,8 @@
 %% Last Modified: 16 Sep 2004
 %%*************************************************************************
 
-  function [obj,X,y,Z,info,runhist] = HSDsqlp(blk,At,C,b,OPTIONS,X0,y0,Z0);
-
+  function [obj,X,y,Z,info,runhist] = ...
+            HSDsqlp(blk,At,C,b,OPTIONS,X0,y0,Z0,kap0,tau0,theta0);
 %%
     isemptyAtb = 0; 
     if isempty(At) & isempty(b);
@@ -179,7 +179,15 @@
       error('HSDsqlp: length of b and y0 not compatible'); 
    end
    [X0,Z0] = validate_startpoint(blk,X0,Z0,par.spdensity); 
-   X = X0; y = y0; Z = Z0;  
+%%
+   if (nargin <= 8) | (isempty(kap0) | isempty(tau0) | isempty(theta0)) 
+      if (max([ops(At,'norm'),ops(C,'norm'),norm(b)]) > 1e6)
+         kap0 = 10*blktrace(blk,X0,Z0); 
+      else
+         kap0 = blktrace(blk,X0,Z0);  
+      end
+      tau0 = 1; theta0 = 1; 
+   end
 %%
    if (par.printlevel>=2)
       fprintf('\n num. of constraints = %2.0d',length(b));      
@@ -218,7 +226,7 @@
 %%-----------------------------------------
 %%
    exist_analytic_term = 0; 
-   for p = 1:size(blk,1);
+   for p = 1:size(blk3,1);
       idx = find(parbarrier3{p} > 0); 
       if ~isempty(idx); exist_analytic_term = 1; end
    end
@@ -229,7 +237,7 @@
    par.blkdim = blkdim;
    par.ublksize = ublksize; 
    [obj,X3,y,Z3,info,runhist] = ...
-        HSDsqlpmain(blk3,At3,C3,b,par,X03,y0,Z03);
+        HSDsqlpmain(blk3,At3,C3,b,par,X03,y0,Z03,kap0,tau0,theta0);
 %%
 %%-----------------------------------------
 %% recover semidefinite blocks from linear blocks

@@ -107,7 +107,8 @@
       end
       if (err < 1e-3) & (iter > 10) ...
          & (runhist.pinfeas(iter+1) > 0.9*runhist.pinfeas(max(1,iter-5))) ...
-         & (runhist.dinfeas(iter+1) > 0.9*runhist.dinfeas(max(1,iter-5)))
+         & (runhist.dinfeas(iter+1) > 0.9*runhist.dinfeas(max(1,iter-5))) ...
+         & (runhist.relgap(iter+1)  > 0.1*runhist.relgap(max(1,iter-5))); 
          msg = 'Stop: progress is bad**';
          if (printlevel); fprintf('\n  %s',msg); end
          termcode = -5;

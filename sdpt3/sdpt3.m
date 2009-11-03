@@ -233,7 +233,7 @@
    end
    par.blkdim   = blkdim;
    par.ublksize = ublksize;
-   if (~exist_analytic_term) & (ublksize > 0 | blkdim(1) > 0)
+   if (~exist_analytic_term) & (ublksize > 0 & blkdim(1) > 0)
       if (nargin <= 5) | (isempty(X0) | isempty(y0) | isempty(Z0)); 
          if (max([ops(At3,'norm'),ops(C3,'norm'),norm(b)]) > 1e2)
             [X03,y03,Z03] = infeaspt(blk3,At3,C3,b,1);

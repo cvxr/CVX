@@ -22,7 +22,7 @@
     if (solve_ok<=0) & (printlevel)
        fprintf('\n  warning: iterative solver fails: %3.1f.',solve_ok); 
     end
-    if (printlevel>=3); fprintf(' %2.0d',length(resnrm)-1); end
+    if (par.printlevel>=3); fprintf(' %2.0f',length(resnrm)-1); end
 %%   
     [par,dX,dy,dZ] = HSDNTdirfun(blk,At,par,Rd,EinvRc,xx); 
 %%************************************************************************

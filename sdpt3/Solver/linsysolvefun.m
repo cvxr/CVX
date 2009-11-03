@@ -31,7 +31,8 @@
            xtmp = mextriangsp(L.l,mextriangsp(L.u,btmp(L.q),2),1);
            x(L.perm,k) = xtmp(L.p); 
 	else
-           x(L.perm,k) = L.q*( L.u \ (L.l \ (L.p*b(L.perm,k))));
+	   btmp = b(L.perm,k); 
+           x(L.perm,k) = L.q*( L.u \ (L.l \ (L.p*btmp)));
         end
      end
   end

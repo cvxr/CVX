@@ -196,7 +196,7 @@ void svec2(int n, int numblk, int *cumblksize, int *blknnz,
 return;
 }
 /**********************************************************
-* single block: stack upper lowere part of A row-wise 
+* single block: stack upper lower part of A row-wise 
 * into a column vector
 **********************************************************/
 void svec3(int n, double r2, 

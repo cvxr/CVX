@@ -49,7 +49,8 @@
          end
       elseif strcmp(pblk{1},'q') | strcmp(pblk{1},'l') | strcmp(pblk{1},'u'); 
          if ~all([size(X0{p},2) size(Z0{p},2)]==1); 
-            error(['validate_startpoint: ',num2str(p),'-th block of X0,Z0 must be column vectors']);
+            error(['validate_startpoint: ',num2str(p),...
+            '-th block of X0,Z0 must be column vectors']);
          end
          if ~all([size(X0{p},1) size(Z0{p},1)]==n); 
             error(['validate_startpoint: blk, and X0,Z0, are not compatible']); 
@@ -64,8 +65,14 @@
          else
             if issparse(Z0{p}); Z0{p} = full(Z0{p}); end;
          end
-         if strcmp(pblk{1},'u') 
-            Z0{p} = sparse(n,1); 
+	 if strcmp(pblk{1},'l') & (any(X0{p} < 1e-12) | any(Z0{p} < 1e-12))
+            error(['X0 or Z0 is not in nonnegative cone']); 
+         end
+         if strcmp(pblk{1},'q'); 
+            s = 1+[0, cumsum(pblk{2})]; len = length(pblk{2}); 
+            if any(X0{p}(s(1:len)) < 1e-12) | any(Z0{p}(s(1:len)) < 1e-12)
+               error(['X0 or Z0 is not in socp cone']); 
+            end
          end
       end
    end 

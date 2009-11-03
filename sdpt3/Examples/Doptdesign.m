@@ -21,6 +21,9 @@
    if (nargin == 1); solve = 0; end
 
    [n,p] = size(V);  
+   if (n > p); 
+     error(' size(V,1) > size(V,2)'); 
+   end
 %%
 %% form At, C, b
 %%
@@ -42,9 +45,9 @@
    At{3,1} = ones(1,p); 
    C{3,1} = 1; 
 
-   OPTIONS.parbarrier{1} = 1; 
-   OPTIONS.parbarrier{2} = 0; 
-   OPTIONS.parbarrier{3} = 0; 
+   OPTIONS.parbarrier{1,1} = 1; 
+   OPTIONS.parbarrier{2,1} = 0; 
+   OPTIONS.parbarrier{3,1} = 0; 
 %%
    if (solve)
       [obj,X,y,Z] = sqlp(blk,At,C,b,OPTIONS);

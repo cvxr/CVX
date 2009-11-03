@@ -1,7 +1,7 @@
 %%*******************************************************************
 %%  Read in a problem in SeDuMi format.
 %%
-%%  [blk,A,C,b] = read_sedumi(fname,b,c,K)
+%%  [blk,A,C,b,perm] = read_sedumi(fname,b,c,K)
 %%
 %%  Input: fname.mat = name of the file containing SDP data in
 %%                     SeDuMi format.
@@ -16,7 +16,7 @@
 %% Last Modified: 16 Sep 2004
 %%******************************************************************
 
-  function [blk,Avec,C,b] = read_sedumi(fname,b,c,K,smallblkdim);
+  function [blk,Avec,C,b,perm] = read_sedumi(fname,b,c,K,smallblkdim);
 
   if (nargin < 5) 
      smallblkdim = 40; 
@@ -84,7 +84,7 @@
   if (K.f == 0) | isempty(K.f); K.f = 0; end;
   if (K.l == 0) | isempty(K.l); K.l = 0; end;
   if (sum(K.q) == 0) | isempty(K.q); K.q = 0; end
-  if (sum(K.s) == 0) | isempty(K.s); K.s = 0; end 
+  if (sum(K.s) == 0) | isempty(K.s); K.s = 0; end  
 %%
 %%
 %%
@@ -97,6 +97,7 @@
       Atmp = At(rowidx+[1:len],:); 
       Avec{idxblk,1} = Atmp;
       C{idxblk,1} = c(rowidx+[1:len]); 
+      perm{idxblk} = [];
       rowidx = rowidx + len; 
    end
    if ~(K.l == 0) 
@@ -106,6 +107,7 @@
       Atmp = At(rowidx+[1:len],:); 
       Avec{idxblk,1} = Atmp;
       C{idxblk,1} = c(rowidx+[1:len]); 
+      perm{idxblk} = [];
       rowidx = rowidx + len; 
    end
    if ~(K.q == 0) 
@@ -120,11 +122,12 @@
       Atmp = At(rowidx+[1:len],:); 
       Avec{idxblk,1} = Atmp;
       C{idxblk,1} = c(rowidx+[1:len]); 
+      perm{idxblk} = [];
       rowidx = rowidx + len;
    end
    if ~(K.s == 0) 
       blksize = K.s;  
-      if size(blksize,2) == 1; blksize = blksize'; end
+      if (size(blksize,2) == 1); blksize = blksize'; end
       blknnz = [0, cumsum(blksize.*blksize)];   
       deblkidx = find(blksize > smallblkdim); 
       if ~isempty(deblkidx)
@@ -149,7 +152,8 @@
              end
              Ctmp = c(rowidx+blknnz(deblkidx(p))+[1:n*n]);
              Ctmp = mexmat(pblk,Ctmp,1);
-             C{idxblk,1} = 0.5*(Ctmp+Ctmp'); 
+             C{idxblk,1} = 0.5*(Ctmp+Ctmp');
+             perm{idxblk,1} = deblkidx(p);  
           end 
       end
       spblkidx = find(blksize <= smallblkdim);
@@ -178,7 +182,8 @@
          end
          Ctmp = c(pos); 
          Ctmp = mexmat(blk(idxblk,:),Ctmp,1); 
-         C{idxblk,1} = 0.5*(Ctmp+Ctmp');                 
+         C{idxblk,1} = 0.5*(Ctmp+Ctmp');  
+         perm{idxblk,1} = spblkidx;                             
       end
    end   
 %%

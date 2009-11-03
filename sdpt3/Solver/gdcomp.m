@@ -6,7 +6,7 @@
 %% on semi-definite programming problems,  
 %% Mathematical Programming, 109 (2007), pp. 445--475.
 %%
-%% [gd,info,yfeas,Zfeas,blk2,At2,C2,b2] = gdcomp(blk,At,C,b,OPTIONS);
+%% [gd,info,yfeas,Zfeas,blk2,At2,C2,b2] = gdcomp(blk,At,C,b,OPTIONS,solveyes);
 %%
 %% yfeas,Zfeas: a dual feasible pair when gd is finite.
 %%              That is, if
@@ -17,15 +17,17 @@
 %%
 %%*********************************************************************
 
-  function [gd,info,yfeas,Zfeas,blk2,At2,C2,b2] = gdcomp(blk,At,C,b,OPTIONS,solver);
+  function [gd,info,yfeas,Zfeas,blk2,At2,C2,b2] = gdcomp(blk,At,C,b,OPTIONS,solveyes);
 
-  if (nargin <= 5); solver = 'HSDsqlp'; end
-  if (nargin <= 4)
+  if (nargin < 6); solveyes = 1; end
+  if (nargin < 5)
      OPTIONS = sqlparameters; 
      OPTIONS.vers   = 1; 
      OPTIONS.gaptol = 1e-10;
      OPTIONS.printlevel = 3; 
   end
+  if isempty(OPTIONS); OPTIONS = sqlparameters; end
+  if ~isfield(OPTIONS,'solver'); OPTIONS.solver = 'HSDsqlp'; end
   if ~isfield(OPTIONS,'printlevel'); OPTIONS.printlevel = 3; end
   if ~iscell(C); tmp = C; clear C; C{1} = tmp; end
 %%
@@ -112,30 +114,33 @@
 %%
 %% Solve SDP
 %%
-   if strcmp(solver,'sqlp')
-      [X0,y0,Z0] = infeaspt(blk2,At2,C2,b2,2,100);    
-      [obj,X,y,Z,info] = sqlp(blk2,At2,C2,b2,OPTIONS,X0,y0,Z0); 
-   else
-      [obj,X,y,Z,info] = HSDsqlp(blk2,At2,C2,b2,OPTIONS); 
-   end
-   tt = alp*abs(y(m+1)); theta = beta*abs(y(m+2)); 
-   yfeas = D*y(1:m)/theta; 
-   Zfeas = ops(ops(Z(1:numblk),'+',EE,tt),'/',theta); 
-   %%
-   if (obj(2) > 0) | (abs(obj(2)) < 1e-8)
-      gd = 1/abs(obj(2));
-   elseif (obj(1) > 0)
-      gd = 1/obj(1);
-   else
-      gd = 1/exp(mean(log(abs(obj))));
-   end
-   err = max(info.dimacs([1,3,6])); 
-   if (OPTIONS.printlevel)
-      fprintf('\n ******** gd = %3.2e, err = %3.1e\n',gd,err); 
-      if (err > 1e-6);
-         fprintf('\n----------------------------------------------------')
-         fprintf('\n gd problem is not solved to sufficient accuracy');
-         fprintf('\n----------------------------------------------------\n')
+   gd = []; info = []; yfeas = []; Zfeas = [];
+   if (solveyes)
+      if strcmp(OPTIONS.solver,'sqlp')
+         [X0,y0,Z0] = infeaspt(blk2,At2,C2,b2,2,100);    
+         [obj,X,y,Z,info] = sqlp(blk2,At2,C2,b2,OPTIONS,X0,y0,Z0); 
+      else
+         [obj,X,y,Z,info] = HSDsqlp(blk2,At2,C2,b2,OPTIONS); 
+      end
+      tt = alp*abs(y(m+1)); theta = beta*abs(y(m+2)); 
+      yfeas = D*y(1:m)/theta; 
+      Zfeas = ops(ops(Z(1:numblk),'+',EE,tt),'/',theta); 
+      %%
+      if (obj(2) > 0) | (abs(obj(2)) < 1e-8)
+         gd = 1/abs(obj(2));
+      elseif (obj(1) > 0)
+         gd = 1/obj(1);
+      else
+         gd = 1/exp(mean(log(abs(obj))));
+      end
+      err = max(info.dimacs([1,3,6])); 
+      if (OPTIONS.printlevel)
+         fprintf('\n ******** gd = %3.2e, err = %3.1e\n',gd,err); 
+         if (err > 1e-6);
+            fprintf('\n----------------------------------------------------')
+            fprintf('\n gd problem is not solved to sufficient accuracy');
+            fprintf('\n----------------------------------------------------\n')
+         end
       end
    end
 %%*********************************************************************

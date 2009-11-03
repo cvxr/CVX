@@ -6,7 +6,7 @@
 %% on semi-definite programming problems,  
 %% Mathematical Programming, 109 (2007), pp. 445--475.
 %%
-%% [gp,info,Xfeas,blk2,At2,C2,b2] = gpcomp(blk,At,C,b,OPTIONS);
+%% [gp,info,Xfeas,blk2,At2,C2,b2] = gpcomp(blk,At,C,b,OPTIONS,solveyes);
 %%
 %% Xfeas = a feasible X for the primal problem if gp is finite. 
 %%         That is, 
@@ -14,15 +14,17 @@
 %%         should be small
 %%*********************************************************************
 
-  function [gp,info,Xfeas,blk2,At2,C2,b2] = gpcomp(blk,At,C,b,OPTIONS,solver);
+  function [gp,info,Xfeas,blk2,At2,C2,b2] = gpcomp(blk,At,C,b,OPTIONS,solveyes);
 
-  if (nargin <= 5); solver = 'sqlp'; end
-  if (nargin <= 4)
+  if (nargin < 6); solveyes = 1; end
+  if (nargin < 5)
      OPTIONS = sqlparameters; 
-     OPTIONS.vers = 1; 
+     OPTIONS.vers   = 1; 
      OPTIONS.gaptol = 1e-10;
-     OPTIONS.printlevel = 3;
+     OPTIONS.printlevel = 3; 
   end
+  if isempty(OPTIONS); OPTIONS = sqlparameters; end
+  if ~isfield(OPTIONS,'solver'); OPTIONS.solver = 'sqlp'; end
   if ~isfield(OPTIONS,'printlevel'); OPTIONS.printlevel = 3; end
   if ~iscell(C); tmp = C; clear C; C{1} = tmp; end
 %%
@@ -123,30 +125,33 @@
 %%
 %% Solve SDP
 %%
-   if strcmp(solver,'sqlp')
-      [X0,y0,Z0] = infeaspt(blk2,At2,C2,b2,2,100);    
-      [obj,X,y,Z,info] = sqlp(blk2,At2,C2,b2,OPTIONS,X0,y0,Z0); 
-   else
-      [obj,X,y,Z,info] = HSDsqlp(blk2,At2,C2,b2,OPTIONS); 
-   end
-   obj = -obj;
-   tt = X{numblk+1}(1); theta = X{numblk+1}(2); 
-   Xfeas = ops(ops(X(1:numblk),'+',EE(1:numblk),tt),'/',theta); 
+   gp = []; info = []; Xfeas = []; 
+   if (solveyes)
+      if strcmp(OPTIONS.solver,'sqlp')
+         [X0,y0,Z0] = infeaspt(blk2,At2,C2,b2,2,100);    
+         [obj,X,y,Z,info] = sqlp(blk2,At2,C2,b2,OPTIONS,X0,y0,Z0); 
+      else
+         [obj,X,y,Z,info] = HSDsqlp(blk2,At2,C2,b2,OPTIONS); 
+      end
+      obj = -obj;
+      tt = X{numblk+1}(1); theta = X{numblk+1}(2); 
+      Xfeas = ops(ops(X(1:numblk),'+',EE(1:numblk),tt),'/',theta); 
 %%
-   if (obj(1) > 0) | (abs(obj(1)) < 1e-8)
-      gp = 1/abs(obj(1));
-   elseif (obj(2) > 0)
-      gp = 1/obj(2);
-   else
-      gp = 1/exp(mean(log(abs(obj))));
-   end
-   err = max(info.dimacs([1,3,6])); 
-   if (OPTIONS.printlevel)
-      fprintf('\n ******** gp = %3.2e, err = %3.1e\n',gp,err); 
-      if (err > 1e-6);
-         fprintf('\n----------------------------------------------------')
-         fprintf('\n gp problem is not solved to sufficient accuracy');
-         fprintf('\n----------------------------------------------------\n')
+      if (obj(1) > 0) | (abs(obj(1)) < 1e-8)
+         gp = 1/abs(obj(1));
+      elseif (obj(2) > 0)
+         gp = 1/obj(2);
+      else
+         gp = 1/exp(mean(log(abs(obj))));
+      end
+      err = max(info.dimacs([1,3,6])); 
+      if (OPTIONS.printlevel)
+         fprintf('\n ******** gp = %3.2e, err = %3.1e\n',gp,err); 
+         if (err > 1e-6);
+            fprintf('\n----------------------------------------------------')
+            fprintf('\n gp problem is not solved to sufficient accuracy');
+            fprintf('\n----------------------------------------------------\n')
+         end
       end
    end
 %%*********************************************************************

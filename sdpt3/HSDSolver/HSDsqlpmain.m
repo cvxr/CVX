@@ -51,7 +51,7 @@
 %% get parameters from the OPTIONS structure. 
 %%-----------------------------------------
 %%
-   global spdensity  smallblkdim  solve_ok   
+   global spdensity  smallblkdim  solve_ok use_LU
    global schurfun   schurfun_par 
 %%
    randstate = rand('state');  randnstate = randn('state');
@@ -77,7 +77,7 @@
    schurfun_par  = par.schurfun_par;
    ublksize      = par.ublksize;
 %%
-   tstart = cputime; 
+   tstart = clock; 
    X = X0; y = y0; Z = Z0; 
    for p = 1:size(blk,1)
       if strcmp(blk{p,1},'u'); Z{p} = zeros(blk{p,2},1); end
@@ -94,8 +94,9 @@
       pblk = blk(p,:); 
       n = sum(pblk{2}); 
       tmp = max(1,norm(C{p},'fro'))/sqrt(n); 
-      if strcmp(pblk{1},'u') 
-         if (printlevel); fprintf(' *** convert ublk to linear blk'); end
+      if strcmp(pblk{1},'u')
+         msg = sprintf('convert ublk to linear blk'); 
+         if (printlevel); fprintf('\n *** %s',msg); end
          ublkidx(p) = 1; 
          n = 2*pblk{2}; 
          blk{p,1} = 'l'; blk{p,2} = n;
@@ -211,11 +212,12 @@
    runhist.pinfeas = prim_infeas;
    runhist.dinfeas = dual_infeas;
    runhist.infeas  = infeas;  
-   runhist.cputime = cputime-tstart; 
+   runhist.cputime = etime(clock,tstart); 
    runhist.step    = 0; 
    runhist.kappa   = kap; 
    runhist.tau     = tau; 
    runhist.theta   = theta;  
+   runhist.useLU   = 0; 
    ttime.preproc   = runhist.cputime; 
    ttime.pred = 0; ttime.pred_pstep = 0; ttime.pred_dstep = 0; 
    ttime.corr = 0; ttime.corr_pstep = 0; ttime.corr_dstep = 0; 
@@ -227,19 +229,19 @@
 %%
    if (printlevel >= 2)
       fprintf('\n********************************************');
-      fprintf('***********************\n');
+      fprintf('************************************************\n');
       fprintf('   SDPT3: homogeneous self-dual path-following algorithms'); 
       fprintf('\n********************************************');
-      fprintf('***********************\n');
+      fprintf('************************************************\n');
       [hh,mm,ss] = mytime(ttime.preproc); 
       if (printlevel>=3)       
          fprintf(' version  predcorr  gam  expon\n');
          if (vers == 1); fprintf('   HKM '); elseif (vers == 2); fprintf('    NT '); end
          fprintf('     %1.0f      %4.3f   %1.0f\n',predcorr,gam,expon);
          fprintf('it pstep dstep pinfeas dinfeas  gap')
-         fprintf('     mean(obj)    cputime\n');
+         fprintf('     mean(obj)    cputime    kap   tau    theta\n');
          fprintf('------------------------------------------------');
-         fprintf('-------------------\n');
+         fprintf('--------------------------------------------\n');
          fprintf('%2.0f|%4.3f|%4.3f|%2.1e|%2.1e|',0,0,0,prim_infeas,dual_infeas);
          fprintf('%2.1e|%- 7.6e| %s:%s:%s|',gap,mean(obj),hh,mm,ss);
          fprintf('%2.1e|%2.1e|%2.1e|',kap,tau,theta); 
@@ -284,9 +286,8 @@
 %%
    for iter = 1:maxit;  
        update_iter = 0; pred_slow = 0; corr_slow = 0; step_short = 0; 
-       tstart = cputime;  
-       time = zeros(1,11); 
-       time(1) = cputime;
+       tstart  = clock;  
+       timeold = tstart;
        par.kap   = kap; 
        par.tau   = tau; 
        par.theta = theta; 
@@ -337,12 +338,12 @@
        if (solve_ok <= 0)
           msg = 'stop: difficulty in computing predictor directions';
           if (printlevel); fprintf('\n  %s',msg); end
-          runhist.cputime(iter+1) = cputime-tstart; 
+          runhist.cputime(iter+1) = etime(clock,tstart); 
           termcode = -4;
           break;
        end
-       time(2) = cputime;
-       ttime.pred = ttime.pred + time(2)-time(1);
+       timenew = clock;
+       ttime.pred = ttime.pred + etime(timenew,timeold); timeold=timenew; 
 %%
 %%-----------------------------------------
 %% step-lengths for predictor step
@@ -356,9 +357,9 @@
       kapstep = max( (par.dkap<0)*(-kap/(par.dkap-eps)), (par.dkap>=0)*1e6 ); 
       taustep = max( (par.dtau<0)*(-tau/(par.dtau-eps)), (par.dtau>=0)*1e6 ); 
       [Xstep,invXchol] = steplength(blk,X,dX,Xchol,invXchol); 
-      time(3) = cputime; 
+      timenew = clock; 
+      ttime.pred_pstep = ttime.pred_pstep + etime(timenew,timeold); timeold=timenew;
       Zstep = steplength(blk,Z,dZ,Zchol,invZchol); 
-      time(4) = cputime;        
       pstep = min(1,gamused*min([Xstep,Zstep,kapstep,taustep]));
       dstep = pstep; 
       kappred = kap + pstep*par.dkap; 
@@ -367,8 +368,8 @@
                  + pstep*dstep*blktrace(blk,dX,dZ); 
       mupred  = (trXZpred + kappred*taupred)/(nn+1); 
       mupredhist(iter) = mupred; 
-      ttime.pred_pstep = ttime.pred_pstep + time(3)-time(2);
-      ttime.pred_dstep = ttime.pred_dstep + time(4)-time(3);  
+      timenew = clock;        
+      ttime.pred_dstep = ttime.pred_dstep + etime(timenew,timeold); timeold=timenew;
 %%
 %%-----------------------------------------
 %%  stopping criteria for predictor step.
@@ -380,7 +381,7 @@
             fprintf('\n  %s',msg);
             fprintf(': pstep = %3.2e,  dstep = %3.2e',pstep,dstep);
          end
-         runhist.cputime(iter+1) = cputime-tstart; 
+         runhist.cputime(iter+1) = etime(clock,tstart); 
          termcode = -2; 
          breakyes = 1; 
       end
@@ -399,8 +400,8 @@
                fprintf(': mupred/mu = %3.2f, pred_convg_rate = %3.2f.',...
                mupred/mu,pred_convg_rate);
             end
-            runhist.cputime(iter+1) = cputime-tstart; 
-            termcode = -1; 
+            runhist.cputime(iter+1) = etime(clock,tstart); 
+            termcode = -2; 
             breakyes = 1;
          else 
             update_iter = 1; 
@@ -435,12 +436,12 @@
          if (solve_ok <= 0)
             msg = 'stop: difficulty in computing corrector directions'; 
             if (printlevel); fprintf('\n  %s',msg); end
-            runhist.cputime(iter+1) = cputime-tstart; 
+            runhist.cputime(iter+1) = etime(clock,tstart); 
             termcode = -4;
             break;
          end
-         time(5) = cputime;
-         ttime.corr = ttime.corr + time(5)-time(4);
+         timenew = clock;
+         ttime.corr = ttime.corr + etime(timenew,timeold); timeold=timenew;
 %%
 %%-----------------------------------
 %% step-lengths for corrector step
@@ -454,9 +455,10 @@
          kapstep = max( (par.dkap<0)*(-kap/(par.dkap-eps)), (par.dkap>=0)*1e6 ); 
          taustep = max( (par.dtau<0)*(-tau/(par.dtau-eps)), (par.dtau>=0)*1e6 ); 
          Xstep = steplength(blk,X,dX,Xchol,invXchol);
-         time(6) = cputime;
+         timenew = clock;
+         ttime.corr_pstep = ttime.corr_pstep + etime(timenew,timeold); timeold=timenew; 
          Zstep = steplength(blk,Z,dZ,Zchol,invZchol);
-         time(7) = cputime;
+         timenew = clock;
          pstep = min(1,gamused*min([Xstep,Zstep,kapstep,taustep]));
          dstep = pstep; 
          kapcorr = kap + pstep*par.dkap; 
@@ -464,8 +466,7 @@
          trXZcorr = trXZ + pstep*blktrace(blk,dX,Z) + dstep*blktrace(blk,X,dZ)...
                     + pstep*dstep*blktrace(blk,dX,dZ); 
          mucorr = (trXZcorr+kapcorr*taucorr)/(nn+1);
-         ttime.corr_pstep = ttime.corr_pstep + time(6)-time(5);
-         ttime.corr_dstep = ttime.corr_dstep + time(7)-time(6);
+         ttime.corr_dstep = ttime.corr_dstep + etime(timenew,timeold); timeold=timenew; 
 %%
 %%-----------------------------------------
 %%  stopping criteria for corrector step
@@ -486,8 +487,8 @@
                fprintf(': mucorr/mu = %3.2f, corr_convg_rate = %3.2f',...
                mucorr/mu,corr_convg_rate); 
             end
-            runhist.cputime(iter+1) = cputime-tstart; 
-            termcode = -1; 
+            runhist.cputime(iter+1) = etime(clock,tstart); 
+            termcode = -2; 
             breakyes = 1;
          else
             update_iter = 1;
@@ -501,18 +502,16 @@
       indef = [1 1]; 
       if (update_iter)
          for t = 1:5
-            [Xchol,indef(1)] = blkcholfun(blk,ops(X,'+',dX,pstep)); time(8) = cputime;
-            if (predcorr); ttime.pchol = ttime.pchol + time(8)-time(7); 
-            else;          ttime.pchol = ttime.pchol + time(8)-time(4); 
-            end 
+            [Xchol,indef(1)] = blkcholfun(blk,ops(X,'+',dX,pstep)); 
+            timenew = clock;
+            ttime.pchol = ttime.pchol + etime(timenew,timeold); timeold = timenew; 
             if (indef(1)); pstep = 0.8*pstep; else; break; end            
          end
 	 if (t > 1); pstep = gamused*pstep; end
 	 for t = 1:5
-            [Zchol,indef(2)] = blkcholfun(blk,ops(Z,'+',dZ,dstep)); time(9) = cputime; 
-            if (predcorr); ttime.dchol = ttime.dchol + time(9)-time(8); 
-            else;          ttime.dchol = ttime.dchol + time(9)-time(4); 
-            end 
+            [Zchol,indef(2)] = blkcholfun(blk,ops(Z,'+',dZ,dstep)); 
+            timenew = clock; 
+            ttime.dchol = ttime.dchol + etime(timenew,timeold); timeold = timenew; 
             if (indef(2)); dstep = 0.8*dstep; else; break; end             
          end
 	 if (t > 1); dstep = gamused*dstep; end
@@ -596,13 +595,14 @@
       runhist.pinfeas(iter+1) = prim_infeas;
       runhist.dinfeas(iter+1) = dual_infeas;
       runhist.infeas(iter+1)  = infeas;
-      runhist.cputime(iter+1) = cputime-tstart; 
+      runhist.cputime(iter+1) = etime(clock,tstart); 
       runhist.step(iter+1)    = min(pstep,dstep); 
       runhist.kappa(iter+1)   = kap; 
       runhist.tau(iter+1)     = tau; 
       runhist.theta(iter+1)   = theta;  
-      time(10) = cputime;
-      ttime.misc = ttime.misc + time(10)-time(9); 
+      runhist.useLU(iter+1)   = use_LU; 
+      timenew = clock;
+      ttime.misc = ttime.misc + etime(timenew,timeold); timeold = timenew; 
       [hh,mm,ss] = mytime(sum(runhist.cputime)); 
       if (printlevel>=3)
          fprintf('\n%2.0f|%4.3f|%4.3f|',iter,pstep,dstep);
@@ -661,16 +661,16 @@
          update_best(iter+1) = 0; 
       end   
       errbest = max(relgap_best,infeas_best); 
-      if (errbest < 1e-4 & norm(update_best(iter-1:iter+1)) == 0)
+      if (errbest < 1e-4 & norm(update_best(max(1,iter-1):iter+1)) == 0)
          msg = 'lack of progess in infeas'; 
          if (printlevel); fprintf('\n  %s',msg); end
-         termcode = -3; 
+         termcode = -9; 
          breakyes = 1; 
       end  
       if (errbest < 1e-3 & max([relgap,infeas]) > 1.2*errbest & theta < 1e-10) 
          msg = 'lack of progress in infeas'; 
          if (printlevel); fprintf('\n  %s',msg); end
-         termcode = -3; 
+         termcode = -9; 
          breakyes = 1; 
       end          
       if (breakyes > 0.5); break; end
@@ -746,6 +746,7 @@
    info.pinfeas  = prim_infeas;
    info.dinfeas  = dual_infeas;
    info.cputime  = sum(runhist.cputime); 
+   info.time     = ttime;; 
    info.resid    = resid; 
    info.reldist  = reldist; 
    info.normX    = ops(X,'norm'); 

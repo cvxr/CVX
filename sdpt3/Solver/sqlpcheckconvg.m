@@ -27,21 +27,24 @@
       stoplevel   = param.stoplevel; 
       ublksize    = param.ublksize; 
       use_LU      = param.use_LU; 
+      numpertdiagschur = param.numpertdiagschur;
       infeas      = max(prim_infeas,dual_infeas); 
       restart     = 0; 
       breakyes    = 0; 
       msg         = []; 
 %%
       if (param.normX > 1e15*param.normX0 | param.normZ > 1e15*param.normZ0)
-         termcode = -10;
+         termcode = 3;
          breakyes = 1; 
       end
       err = max(infeas,relgap);
-      if (param.homRd < 0.1*sqrt(err*max(param.inftol,1e-13))) & (iter > 30)
+      if (param.homRd < 0.1*sqrt(err*max(param.inftol,1e-13))) ...
+         & (iter > 30 | termcode==3)
          termcode = 1;
          breakyes = 1;
       end
-      if (param.homrp < 0.1*sqrt(err*max(param.inftol,1e-13))) & (iter > 30)
+      if (param.homrp < 0.1*sqrt(err*max(param.inftol,1e-13))) ...
+         & (iter > 30 | termcode==3)
          termcode = 2;
          breakyes = 1;
       end
@@ -60,6 +63,8 @@
          end
          gap_progress_bad = (infeas < 1e-4) & (relgap < 5e-3) ...
   	    & (gap > 0.9*exp(mean(log(runhist.gap(idx))))); 
+         gap_progress_bad2 = (infeas < 1e-4) & (relgap < 1) ...
+  	    & (gap > 0.95*exp(mean(log(runhist.gap(idx))))); 
          gap_ratio = runhist.gap(idx+1)./runhist.gap(idx); 
          idxtmp = [max(1,iter-4): iter]; 
          gap_ratio_tmp = runhist.gap(idxtmp+1)./runhist.gap(idxtmp);
@@ -76,7 +81,7 @@
                msg = 'stop: progress is too slow'; 
                if (printlevel); fprintf('\n  %s',msg); end
                termcode = -5; 
-               %%breakyes = 1;
+               breakyes = 1;
             elseif (max(infeas,relgap) < 1e-2) & (prim_infeas_bad) 
                if (relgap < max(0.2*prim_infeas,1e-2*dual_infeas)) 
                   msg = 'stop: relative gap < infeasibility'; 
@@ -88,6 +93,13 @@
          end  
 	 if (iter > 20) & (gap_progress_bad) ...
             & (prim_infeas_bad | any(runhist.step(idx) > 0.5))
+            msg = 'stop: progress is bad'; 
+            if (printlevel); fprintf('\n  %s',msg); end
+            termcode = -5;
+            breakyes = 1;  
+         end
+	 if (iter > 20) & (gap_progress_bad2) ...
+ 	    & (numpertdiagschur > 10);
             msg = 'stop: progress is bad'; 
             if (printlevel); fprintf('\n  %s',msg); end
             termcode = -5;

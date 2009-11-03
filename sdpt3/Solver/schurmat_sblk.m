@@ -88,7 +88,7 @@
                tmp = XVD(:,idx)* (Y{p}*At{p,2}(:,idx))';
             end
             if (~symm)
-               tmp = 0.5*(mexsvec(pblk,tmp) + mexsvec(pblk,tmp,[],1));
+               tmp = 0.5*(mexsvec(pblk,tmp) + mexsvec(pblk,tmp'));
             else
                tmp = mexsvec(pblk,tmp);                
             end 

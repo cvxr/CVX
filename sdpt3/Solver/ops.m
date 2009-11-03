@@ -174,11 +174,13 @@
          end
       elseif strcmp(operand,'zeros');
          if ~iscell(X); 
-            Z = zeros(size(X));
+            [m,n] = size(X);
+            Z = sparse(m,n);
          else 
             Z = cell(size(X)); 
             for p = 1:length(X);
-                Z{p} = zeros(size(X{p}));
+               [m,n] = size(X{p});
+               Z{p} = sparse(m,n);
             end
          end
       elseif strcmp(operand,'identity');
