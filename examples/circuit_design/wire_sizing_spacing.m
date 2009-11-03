@@ -175,7 +175,7 @@ end
 %
 
 figure(1);
-ind = finite(areas);
+ind = isfinite(areas);
 plot(areas(ind), delays(ind));
 xlabel('total width s_1 + s_2');
 ylabel('dominant time constant');

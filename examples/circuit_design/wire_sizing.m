@@ -136,7 +136,7 @@ end
 %
 
 figure(1)
-ind = finite(areas);
+ind = isfinite(areas);
 plot(areas(ind), delays(ind));
 xlabel('Area');
 ylabel('Tdom');
