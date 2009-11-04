@@ -1,4 +1,4 @@
-function [ x, y, status, iters, XYZ ] = cvx_solve_sedumi( At, b, c, nonls, quiet, prec, XYZ )
+function [ x, y, status, iters, z ] = cvx_solve_sedumi( At, b, c, nonls, quiet, prec )
 
 n_in = 0;
 n_out = 0;
@@ -89,21 +89,25 @@ if info.numerr == 2,
     status = 'Failed';
     x = NaN * ones( n, 1 );
     y = NaN * ones( m, 1 );
+    z = NaN * ones( n, 1 );
 elseif info.pinf ~= 0,
     status = 'Infeasible';
     x = NaN * ones( n, 1 );
     y = yy;
+    z = - real( reord * ( At * yy ) );
     if add_row,
         y = zeros( 0, 1 );
     end
 elseif info.dinf ~= 0,
     status = 'Unbounded';
     y = NaN * ones( m, 1 );
+    z = NaN * ones( n, 1 );
     x = real( reord * xx );
 else
     status = 'Solved';
     x = real( reord * xx );
     y = yy;
+    z = real( reord * ( c - At * yy ) );
     if add_row, 
         y = zeros( 0, 1 ); 
     end

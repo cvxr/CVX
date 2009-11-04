@@ -116,8 +116,8 @@ void mexFunction(const int nlhs, mxArray *plhs[],
 {
  mxArray *output_array[3], *Xk, *hXk;
  coneK cK;
- mwIndex k, nk, nkp1, nksqr, lendiag,lenud, lenfull, i,ii;
- double *lab,*q,*labk,*xwork;
+ mwIndex k, nk, nkp1, nksqr, lendiag, nmax, lenud, lenfull, i,ii;
+ double *lab,*q,*labk,*xwork,*xworki;
  const double *x;
 
 /* ------------------------------------------------------------
@@ -135,6 +135,12 @@ void mexFunction(const int nlhs, mxArray *plhs[],
   lendiag = cK.rLen + cK.hLen;
   lenud = cK.rDim + cK.hDim;
   lenfull = cK.lpN + cK.qDim + lenud;
+  nmax = 1;
+  for ( k = cK.rsdpN ; k != cK.sdpN ; ++k ) {
+	  nk = cK.sdpNL[k]; nksqr = SQR(nk);
+	  if ( nmax < nksqr ) nmax = nksqr;
+  }
+  
 /* ------------------------------------------------------------
    Get input vector x
    ------------------------------------------------------------ */
@@ -161,6 +167,8 @@ void mexFunction(const int nlhs, mxArray *plhs[],
   hXk = mxCreateDoubleMatrix((mwSize)0,(mwSize)0,mxCOMPLEX);
   xwork =(double *) mxCalloc(MAX(1,SQR(cK.rMaxn)+2*SQR(cK.hMaxn)),
                              sizeof(double));
+  xworki =(double*) mxCalloc(nmax,sizeof(double));
+  
 /* ------------------------------------------------------------
    PSD: (I) LAB = eig(X)
    ------------------------------------------------------------ */
@@ -186,6 +194,7 @@ void mexFunction(const int nlhs, mxArray *plhs[],
 /* ------------------------------------------------------------
    WARNING: Matlab's eig doesn't recognize Hermitian, hence VERY slow
    ------------------------------------------------------------ */
+	mxSetPi(hXk,xworki);
     for(; k < cK.sdpN; k++){                    /* complex Hermitian */
       nk = cK.sdpNL[k]; nksqr = SQR(nk);
       symproj(xwork,x,nk);              /* make it Hermitian */
@@ -193,7 +202,7 @@ void mexFunction(const int nlhs, mxArray *plhs[],
       mxSetM(hXk, nk);
       mxSetN(hXk, nk);
       mxSetPr(hXk, xwork);
-      mxSetPi(hXk, xwork + nksqr);     
+	  memcpy(xworki,xwork+nksqr,sizeof(double));
       mexCallMATLAB(1, output_array, 1, &hXk, "eig");
       memcpy(lab, mxGetPr(output_array[0]), nk * sizeof(double));
       mxDestroyArray(output_array[0]);
@@ -221,6 +230,7 @@ void mexFunction(const int nlhs, mxArray *plhs[],
       mxDestroyArray(output_array[1]);
       lab += nk;  x += nksqr; q += nksqr;
     }
+	mxSetPi(hXk,xworki);
     for(; k < cK.sdpN; k++){                    /* complex Hermitian */
       nk = cK.sdpNL[k]; nksqr = SQR(nk);
       symproj(xwork,x,nk);                      /* make it Hermitian */
@@ -228,7 +238,7 @@ void mexFunction(const int nlhs, mxArray *plhs[],
       mxSetM(hXk, nk);
       mxSetN(hXk, nk);
       mxSetPr(hXk, xwork);
-      mxSetPi(hXk, xwork+nksqr);
+	  memcpy(xworki,xwork+nksqr,nksqr*sizeof(double));
 #ifdef USE_SVD
       mexCallMATLAB(3, output_array, 1, &hXk, "svd");
 #else
@@ -257,7 +267,9 @@ void mexFunction(const int nlhs, mxArray *plhs[],
   mxSetPr(Xk, (double *) NULL);
   mxDestroyArray(Xk);
   mxSetM(hXk,(mwSize)0); mxSetN(hXk,(mwSize)0); 
-  mxSetPr(hXk, (double *) NULL);   mxSetPi(hXk, (double *) NULL);
+  mxSetPr(hXk, (double *) NULL);   
+  mxSetPi(hXk, (double *) NULL);
   mxDestroyArray(hXk);
   mxFree(xwork);
+  mxFree(xworki);
 }

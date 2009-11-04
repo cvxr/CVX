@@ -223,13 +223,11 @@ cd( dd );
 % Compile the SeDuMi MEX files %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-newext = mexext;
-isw32 = strcmp( newext, 'mexw32' );
 sedpath = [ mpath, fs, 'sedumi' ];
 if ~skip_sedumi & exist( sedpath, 'dir' ),
     if ~fullRecompile,
         mexfiles = dir( [ sedpath, fs, '*.', newext ] );
-        if isempty( mexfiles ) & ispc & isw32,
+        if isempty( mexfiles ) & isw32,
             mexfiles = dir( [ sedpath, fs, '*.dll' ] );
         end
     end

@@ -324,8 +324,10 @@ OPTIONS.printlevel = 3 * ~quiet;
 s = warning;
 if use_x0,
     [ obj, xx, y, zz, info ] = sqlp( blk, Avec, Cvec, b, OPTIONS, X0, y0, Z0 );
+    % [ obj, xx, y, zz, info ] = sdpt3( blk, Avec, Cvec, b, OPTIONS, X0, y0, Z0 );
 else
     [ obj, xx, y, zz, info ] = sqlp( blk, Avec, Cvec, b, OPTIONS );
+    % [ obj, xx, y, zz, info ] = sdpt3( blk, Avec, Cvec, b, OPTIONS );
 end
 warning(s);
 iters = info.iter;
