@@ -289,7 +289,7 @@ const int nrhs, const mxArray *prhs[])
     if ( cK.sdpN != ii ) {
         nmax = 1;
         for ( k = ii ; k != cK.sdpN ; ++k ) {
-            nmax = cK.sdpNL[k];
+            nk = cK.sdpNL[k];
             if ( nmax < nk ) nmax = nk;
         }
         Xk = mxCreateDoubleMatrix( nmax, nmax, mxCOMPLEX );

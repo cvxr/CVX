@@ -183,7 +183,7 @@ void mexFunction(
     if ( cK.sdpN != cK.rsdpN ) {
         nmax = 1;
         for ( k = cK.rsdpN ; k != cK.sdpN ; ++k ) {
-            nmax = (mwSize)cK.sdpNL[k];
+            nk = (mwSize)cK.sdpNL[k];
             if ( nmax < nk ) nmax = nk;
         }
         Xk = mxCreateDoubleMatrix( nmax, nmax, mxCOMPLEX );
