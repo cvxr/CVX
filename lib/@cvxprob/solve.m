@@ -267,7 +267,7 @@ elseif n ~= 0 & ~infeas & ( any( b ) | any( c ) ),
                         else
                             dob = b' * yold; 
                         end
-                        if tprec < best_py | ( tprec == best_py & dob > best_oy ),
+                        if tprec < best_py || ( tprec == best_py && dob > best_oy ),
                             best_y  = yold;
                             best_py = tprec;
                             best_oy = dob;
@@ -294,7 +294,7 @@ elseif n ~= 0 & ~infeas & ( any( b ) | any( c ) ),
                     if err == 0,
                         if any(strfind(status,'Unbounded')), pob = -Inf;
                         else pob = c' * x; end
-                        if tprec < best_px | tprec == best_px & pob < best_ox,
+                        if tprec < best_px || ( tprec == best_px && pob < best_ox ),
                             best_x  = x(1:n);
                             best_px = tprec;
                             best_ox = pob;
