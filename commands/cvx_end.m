@@ -105,6 +105,7 @@ elseif pstr.complete & nnz( pstr.t_variable ) == 1,
     assignin( 'caller', 'cvx_status',  pstr.status );
     assignin( 'caller', 'cvx_optval',  pstr.result );
     assignin( 'caller', 'cvx_iters',   pstr.iters );
+    assignin( 'caller', 'cvx_tol',     pstr.tol );
     
     %
     % Compute the numerical values and clear out

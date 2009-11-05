@@ -90,8 +90,8 @@ if isempty( cvx___ ),
     temp = strfind( s, fs );
     s( temp(end-1) + 1 : end ) = [];
     subs = { 'sdpt3', 'sdpt3/Solver', 'sdpt3/HSDSolver', 'sdpt3/Solver/Mexfun', 'sdpt3/Linsysolver/spchol' };
-    if ~cvx___.octave && strcmp( mexext, 'mexw32' ) && cvx___.mversion >= 7.5,
-        subs{end+1} = 'sedumi/mexw32';
+    if ~cvx___.octave && cvx___.mversion >= 7.5 && any( strcmp( mexext, { 'mexw32', 'mexmaci' } ) ),
+        subs{end+1} = 'sedumi/7.5';
     end
     subs{end+1} = 'sedumi';
     nsolver = length( subs );

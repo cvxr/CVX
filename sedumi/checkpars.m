@@ -103,6 +103,9 @@ end
 if ~isfield(pars,'bigeps')                   % threshold for numerr=1 vs 2.
     pars.bigeps = 1E-3;
 end
+if ~isfield(pars,'stopeps')
+    pars.stopeps = pars.eps;
+end
 if ~isfield(pars,'maxiter')
     pars.maxiter = 150;
 end

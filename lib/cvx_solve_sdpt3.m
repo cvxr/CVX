@@ -1,11 +1,9 @@
-function [ x, y, status, iters, z ] = cvx_solve_sdpt3( At, b, c, nonls, quiet, prec, XY0 )
+function [ x, y, status, tol, iters, z ] = cvx_solve_sdpt3( At, b, c, nonls, quiet, prec, XY0 )
 
 [n,m] = size(At);
 
-%
-% Add an extra row and column if needed---SDPT3 can't handle empty
-% equality constraints or square systems
-%
+% SDPT3 cannot handle empty equality constraints or square systems. So
+% add an extra row or column, as needed, to rectify this problem.
 
 mzero = m == 0 | isempty( nonls ) | m == n;
 if mzero,    
@@ -27,8 +25,9 @@ if mzero,
     end
     nonls(end+1).type = 'nonnegative';
     nonls(end).indices = n;
+else
+    azero = false;
 end
-    
 
 types = { nonls.type };
 indices = { nonls.indices };
@@ -319,48 +318,37 @@ b = full(b);
 OPTIONS = sqlparameters;
 OPTIONS.gaptol = prec(1);
 OPTIONS.printlevel = 3 * ~quiet;
-% OPTIONS.vers = 2;
-
-s = warning;
+warn_save = warning;
 if use_x0,
     [ obj, xx, y, zz, info ] = sqlp( blk, Avec, Cvec, b, OPTIONS, X0, y0, Z0 );
-    % [ obj, xx, y, zz, info ] = sdpt3( blk, Avec, Cvec, b, OPTIONS, X0, y0, Z0 );
 else
     [ obj, xx, y, zz, info ] = sqlp( blk, Avec, Cvec, b, OPTIONS );
-    % [ obj, xx, y, zz, info ] = sdpt3( blk, Avec, Cvec, b, OPTIONS );
 end
-warning(s);
-iters = info.iter;
+warning(warn_save);
+tol = max( [ info.relgap, info.pinfeas, info.dinfeas ] );
 
 %
-% Interpret the output
+% Interpret status codes
 %
 
+x_good = true;
+y_good = true;
 switch info.termcode,
-    case 0,
+    case 0, 
         status = 'Solved';
-        x_good = true;
-        y_good = true;
     case 1,
         status = 'Infeasible';
         x_good = false;
-        y_good = true;
     case 2,
         status = 'Unbounded';
-        x_good = true;
         y_good = false;
     otherwise,
-        x_good = info.pinfeas <= prec(3);
-        y_good = info.dinfeas <= prec(3);
-        err = [info.relgap,info.pinfeas,info.dinfeas];
-        if any(isnan(err)),
-            err = Inf;
-        else
-            err = max(err);
-        end
-        if err > prec(3),
+        if isnan(tol),
+            tol = Inf;
             status = 'Failed';
-        elseif err <= prec(2),
+        elseif tol > prec(3),
+            status = 'Failed';
+        elseif tol <= prec(2),
             status = 'Solved';
             info.termcode = 0;
         else
@@ -368,42 +356,58 @@ switch info.termcode,
             info.termcode = 0;
         end
 end
+
+% Primal point
+
 if x_good,
     x = zeros(1,n);
     for k = 1 : length(xx),
         x(1,tvec{k}) = x(1,tvec{k}) + vec(xx{k})' * xvec{k};
     end
+end
+if x_good && all(isfinite(x)),
     x = full( x )';
 else
     x = NaN * ones(n,1);
 end
+if mzero,
+    x(end) = [];
+end
+
+% Lagrange multipliers
+
 if y_good,
-    y = full( y );
-    if need_z,
+    y = full(y);
+end
+if ~y_good || ~all(isfinite(y)),
+    y = NaN * ones(m,1);
+end
+if azero,
+    y(end) = [];
+end
+
+% Iteration count
+
+iters = info.iter;
+
+% Dual cone
+
+if need_z,
+    if y_good,
         z = zeros(1,n);
         for k = 1 : length(zz),
             z(1,tvec{k}) = z(1,tvec{k}) + vec(zz{k})' * zvec{k};
         end
+    end
+    if y_good && all(isfinite(z)),
         z = full( z )';
+    else
+        z = NaN * ones(n,1);
     end
-else
-    y = NaN * ones( m, 1 );
-    if need_z,
-        z = NaN * ones( n, 1 );
-    end
-end
-
-%
-% Remove the extra row & column if needed
-%
-
-if mzero,
-    x(end) = [];
-    if azero,
-        y(end) = [];
+    if mzero,
+        z(end) = [];
     end
 end
-
 
 % Copyright 2008 Michael C. Grant and Stephen P. Boyd.
 % See the file COPYING.txt for full copyright information.

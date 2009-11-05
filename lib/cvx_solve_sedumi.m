@@ -1,4 +1,4 @@
-function [ x, y, status, iters, z ] = cvx_solve_sedumi( At, b, c, nonls, quiet, prec )
+function [ x, y, status, tol, iters, z ] = cvx_solve_sedumi( At, b, c, nonls, quiet, prec )
 
 n_in = 0;
 n_out = 0;
@@ -70,8 +70,8 @@ reord = sparse( reord.sr, reord.sc', reord.sv, n, n_out );
 At = reord' * At;
 c  = reord' * c;
 pars.free   = 0;
-pars.eps    = prec(1);
-pars.bigeps = prec(2:end);
+pars.eps     = prec(1);
+pars.bigeps  = prec(3);
 if quiet,
     pars.fid = 0;
 end
@@ -82,38 +82,38 @@ if add_row,
 end
 
 [ xx, yy, info ] = sedumi( At, b, c, K, pars );
+tol = info.r0;
 iters = info.iter;
 xx = full( xx );
 yy = full( yy );
-if info.numerr == 2,
-    status = 'Failed';
-    x = NaN * ones( n, 1 );
-    y = NaN * ones( m, 1 );
-    z = NaN * ones( n, 1 );
-elseif info.pinf ~= 0,
+
+status = '';
+if info.pinf ~= 0,
     status = 'Infeasible';
     x = NaN * ones( n, 1 );
     y = yy;
     z = - real( reord * ( At * yy ) );
-    if add_row,
-        y = zeros( 0, 1 );
-    end
+    if add_row, y = zeros( 0, 1 ); end
 elseif info.dinf ~= 0,
     status = 'Unbounded';
     y = NaN * ones( m, 1 );
     z = NaN * ones( n, 1 );
     x = real( reord * xx );
 else
-    status = 'Solved';
     x = real( reord * xx );
     y = yy;
     z = real( reord * ( c - At * yy ) );
-    if add_row, 
-        y = zeros( 0, 1 ); 
-    end
+    if add_row, y = zeros( 0, 1 ); end
 end
-if info.numerr == 1.5 | (info.numerr == 1 & prec(2) == prec(3))
-    status = [ 'Inaccurate/', status ];
+if info.numerr == 2,
+    status = 'Failed';
+else
+    if isempty( status ),
+        status = 'Solved';
+    end
+    if info.numerr == 1 && info.r0 > prec(2),
+        status = [ 'Inaccurate/', status ];
+    end
 end
 
 % Copyright 2008 Michael C. Grant and Stephen P. Boyd.

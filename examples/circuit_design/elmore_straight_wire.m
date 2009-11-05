@@ -59,14 +59,12 @@ end
 %********************************************************************
 % optimization
 %********************************************************************
-% set the quiet flag (no solver reporting)
-cvxq = cvx_quiet(true);
 
 disp('Generating the tradeoff curve...')
 
 Darray = []; widths = [];
 for Amax = [10.05 10.5 11 12:2:20 22.5 25:5:60]
-  cvx_begin gp
+  cvx_begin gp quiet
     % optimization variables
     variable w(N-1)     % wire width
     variable T(N)       % arrival time (Elmore delay to node i)
@@ -121,9 +119,6 @@ for Amax = [10.05 10.5 11 12:2:20 22.5 25:5:60]
   Darray = [Darray cvx_optval];
   widths = [widths w];
 end
-
-% restore initial solver reporting state
-cvx_quiet(cvxq);
 
 % indices of four taper designs on the tradeoff curve
 Amax = [10.05 10.5 11 12:2:20 22.5 25:5:60];

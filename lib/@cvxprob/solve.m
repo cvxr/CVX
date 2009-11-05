@@ -154,9 +154,9 @@ elseif n ~= 0 & ~infeas & ( any( b ) | any( c ) ),
         nQA     = max(QAi);
         mQA     = max(QAj);
         nc      = size(ndxs,2);
-        new_n   = n + (nQA-3) * nc + 1;
+        new_n   = n + (nQA-3) * nc; % + 1;
         new_m   = m + mQA * nc;
-        n_ndxs  = [ ndxs ; reshape( n + 1 : new_n - 1, nQA-3, nc  ) ];
+        n_ndxs  = [ ndxs ; reshape( n + 1 : new_n, nQA-3, nc  ) ];
         n_ndxs  = n_ndxs(QAr,:);
         if ~quiet,
             disp( sprintf( '   Approximation size: %d variables, %d equality constraints', new_n, new_m ) );
@@ -164,12 +164,12 @@ elseif n ~= 0 & ~infeas & ( any( b ) | any( c ) ),
         end
 
         % Stuff free variables into a lorentz cone to preserve warm start
-        tfree = ones( 1, n );
-        for k = 1 : length(cones),
-            tfree(cones(k).indices) = 0;
-        end
-        tfree(xndxs) = 1;
-        tfree = find(tfree);
+        % tfree = ones( 1, n );
+        % for k = 1 : length(cones),
+        %     tfree(cones(k).indices) = 0;
+        % end
+        % tfree(xndxs) = 1;
+        % tfree = find(tfree);
         
         % Perform (x,y,z) ==> w transformation on A and C
         c (new_n,end) = 0;
@@ -191,175 +191,195 @@ elseif n ~= 0 & ~infeas & ( any( b ) | any( c ) ),
         ncone.indices    = reshape(n_ndxs(1:nQA-2,:),3,(nQA-2)*nc/3);
         ncone(2).type    = 'nonnegative';
         ncone(2).indices = n_ndxs(nQA,:);
-        ncone(3).type    = 'lorentz';
-        ncone(3).indices = [ tfree(:) ; new_n ];
+%       ncone(3).type    = 'lorentz';
+%       ncone(3).indices = [ tfree(:) ; new_n ];
         cones(texp) = [];
         cones = [ cones, ncone ];
 
-        amult = 1;
-        bmult = 1;
-        rel_err = 1e-6;
-        last_err = Inf;
+        amult = 1; bmult = 1; 
         epow_i = 1 / epow;
         
-        ninfeas  = 0;
-        best_x   = [];
+        best_x   = NaN * ones(n,1);
         best_px  = Inf;
         best_ox  = Inf;
         best_py  = Inf;
         best_oy  = -Inf;
-        best_y   = [];
-        solv_warn = false;
-        use_init = false;
+        best_y   = NaN * ones(m,1);
         if ~quiet,
-            disp( ' Target     Conic    Solver' );
-            disp( 'Precision   Error    Status' );
-            disp( '---------------------------' );
+            disp( '    Precision         Conic     Solver' );
+            disp( ' Target   Achieved    Error     Status' );
+            disp( '-----------------------------------------' );
         end
-        best_x = NaN * ones(n,1);
-        best_y = NaN * ones(m,1);
         dobj = -Inf;
         pobj = +Inf;
-        stagnant = false;
-        last_slow = false;
-        last_u = false;
-        dscale = cvx_blkdiag(speye(m,m),speye(new_m-m,new_m-m));
-        XY0 = {};
+        failed = 0;
+        stagnant = 0;
+        attempts = 0;
+        success_once = false;
+        last_nxe = 0;
+        last_err = Inf;
+        last_centered = 0;
+        last_solved = false;
         nprec = prec(3) * [ 1, 1, 1 ];
         for iter = 1 : 1000,
+            
+            % Insert the current centerpoints into the constraints
             x0e = x0 * epow_i;
             Anew(endxs) = - exp( -x0e );
             Anew(fndxs) = 1 - x0e;
-            [ x, y, status, iters2, z ] = feval( sfunc, bmult * [ At, amult * Anew ], bmult * [ b ; bnew ], c, cones, true, nprec );
+            
+            % Solve the approximation
+            [ x, y, status, tprec, iters2, z ] = feval( sfunc, bmult * [ At, amult * Anew ], bmult * [ b ; bnew ], c, cones, true, nprec );
             iters = iters + iters2;
-            if status(1) == 'F',
-                break;
-            else
-                tprec = nprec(2+(status(3)=='a'));
-            end
-            tighten = false;
+            
+            % Exit if we have nothing to work with
             x_isnan = any(isnan(x));
             y_isnan = any(isnan(y));
-            x_clean = false;
-            x_valid = false;
-            y_valid = false;
-            if ~x_isnan,
-                xxx = x(xndxs,:);
-                yyy = x(yndxs,:);
-                zzz = x(zndxs,:);
-                if all( yyy >= 0 & zzz >= 0 ),
-                    yy2 = max( yyy, realmin );
-                    nx0 = xxx ./ yy2;
-                    nx1 = log( zzz ./ yy2 );
-                    nxe = ( nx0 - nx1 ) .* ( yyy > 0 );
-                    ttx = nxe > 0;
-                    x_valid = true;
-                    x_clean = ~any( ttx );
-                    pob = c' * x;
-                end
+            if x_isnan && y_isnan || status(1) == 'F' && success_once,
+                break;
             end
+
+            % Tweak the scaling
+            if ~x_isnan,
+                norm_1 = norm( Anew' * x );
+                norm_2 = norm( b * ~y_isnan - At' * x );
+            end
+            
+            % The dual point should be feasible at all times
+            err = Inf;
+            y_valid = false;
             if ~y_isnan,
                 yold = y(1:m);
-                ynew = y(m+1:end);
-                z = z + amult * Anew * ynew;
+                z = z + amult * Anew * y(m+1:end);
                 uuu = z( xndxs, : );
                 vvv = z( yndxs, : );
                 www = z( zndxs, : );
-                if all( uuu <= 0 & www >= 0 ),
+                y_valid = all( uuu <= 0 & www >= 0 );
+                if y_valid,
                     uu2 = min( uuu, -realmin );
                     nx2 = min( max( 1 - vvv ./ uu2, -maxw ), maxw );
                     nx3 = min( max( - log( www ./ uu2 ), -maxw ), maxw );
-                    if all( uuu == 0 | nx3 <= nx2 ),
-                        y_valid = true;
-                        dob = b' * yold + bnew' * ynew;
+                    y_valid = all( uuu == 0 | nx3 <= nx2 );
+                    if y_valid, 
+                        if any(strfind(status,'Infeasible')), 
+                            err = 0;
+                            dob = +Inf;
+                        else
+                            dob = b' * yold; 
+                        end
+                        if tprec < best_py | ( tprec == best_py & dob > best_oy ),
+                            best_y  = yold;
+                            best_py = tprec;
+                            best_oy = dob;
+                        end
                     end
                 end
             end
+            
+            % The primal point is only feasible when we're close enough
+            x_valid = false;
+            if ~x_isnan,
+                xxx = x( xndxs, : );
+                yyy = x( yndxs, : );
+                zzz = x( zndxs, : );
+                x_valid = all( yyy >= 0 & zzz >= 0 );
+                if x_valid,
+                    yy2 = max( yyy, realmin );
+                    nx0 = xxx ./ yy2;
+                    nx1 = log( zzz ./ yy2 );
+                    nxe = max( 0, ( nx0 - nx1 ) .* ( yyy > 0 ) );
+                    n_viol = nnz( nxe );
+                    err = max( nxe );
+                    x_valid = true;
+                    if err == 0,
+                        if any(strfind(status,'Unbounded')), pob = -Inf;
+                        else pob = c' * x; end
+                        if tprec < best_px | tprec == best_px & pob < best_ox,
+                            best_x  = x(1:n);
+                            best_px = tprec;
+                            best_ox = pob;
+                        end
+                    end
+                end
+            end
+            
+            % Determine new centerpoint
+            is_stagnant = false;
+            is_failed = false;
+            advance = false;
             if x_valid,
-                if ~y_valid,
-                    tty = ( nx0 > x0 ) & ttx;
-                    nx0(tty) = nx1(tty);
-                    nx0(~ttx) = x0(~ttx);
+                if y_valid, success_once = true; end
+                tt1 = nx0 >= x0 & nx1 <= x0 & nxe;
+                tt2 = nx1 > x0 & nxe;
+                tt3 = nx0 < x0 & nxe;
+                n_centered = nnz( tt1 );
+                n_lost = nnz( nxe & ~last_nxe );
+                last_nxe = nxe;
+                if n_centered == n_viol,
+                    nx0 = 0.5 * ( nx0 + nx1 );
+                    is_stagnant = n_viol ~= 0 && n_lost == 0;
                 else
-                    nx0 = nx2;
+                    tt2 = nx1 >= x0 & nxe;
+                    nx0(tt1) = 0.5 * ( nx0(tt1) + nx1(tt1) );
+                    nx0(tt2) = nx1(tt2);
+                    if y_valid,
+                        is_stagnant = last_solved && err > 0.5 * last_err && n_lost == 0;
+                        last_solved = true;
+                        last_err = err;
+                    else
+                        last_solved = false;
+                    end
                 end
             elseif y_valid,
+                last_solved = false;
+                n_centered = 0;
                 nx0 = nx2;
-            elseif 1,
-                tighten = true;
-            elseif ~x_clean,
-                if x_valid,
-                    if y_valid,
-                        nx0 = max( min( nx0, 2 * epow ), -2 * epow );
-                        nx1 = max( min( nx1, 2 * epo2 ), -2 * epow );
-                        nx0 = 0.5 * ( nx0 + nx1 );
-                    else
-                        nx0 = x0;
-                        nx0(~ttx) = nx1(~ttx);
-                    end
-                elseif y_valid,
-                    nx2 = max( min( nx2, 2 * epow ), -2 * epow );
-                    nx3 = max( min( nx3, 2 * epow ), -2 * epow );
-                    nx0 = 0.5 * ( nx2 + nx3 );
-                else
-                    tighten = true;
-                end
-            end
-            switch status,
-                case { 'Infeasible', 'Inaccurate/Infeasible' },
-                    x_clean = y_valid;
-                    stagnant = true;
-                    last_u = false;
-                    pob = Inf;
-                case { 'Unbounded', 'Inaccurate/Unbounded' },
-                    y_valid = x_valid;
-                    stagnant = true;
-                    last_u = true;
-                    dob = -Inf;
-                case { 'Solved', 'Inaccurate/Solved' },
-                    stagnant = ~last_u;
-                    last_u = false;
-            end
-            if x_clean & ( tprec < best_px | ( tprec == best_px & pob < best_ox ) ),
-                best_x  = x(1:n);
-                best_px = tprec;
-                best_ox = pob;
-            end
-            if y_valid & ( tprec < best_py | ( tprec == best_py & dob > best_oy ) ),
-                best_y  = y(1:m);
-                best_py = tprec;
-                best_oy = dob;
-            end
-            if tighten || ~x_valid,
-                err = Inf;
             else
-                err = max(0,max(nxe));
+                is_failed = true;
             end
-            stagnant = stagnant & ~x_isnan & ~y_isnan & ( err > 0.9 * last_err );
-            if ~quiet,
-                if stagnant, stagc = 'S'; else stagc = ' '; end
-                disp( sprintf( '%9.3e%c %9.3e  %s', nprec(2), stagc, err, status ) );
-            end
-            if err == 0,
-                if nprec(1) == prec(1), break; end
+            
+            % Stagnation?
+            if ~is_stagnant,
+                stagnant = 0;
+            elseif stagnant == 2,
                 advance = true;
-            elseif ~stagnant,
-                advance = false;
-            elseif tprec == nprec(2),
+            else
+                stagnant = stagnant + 1;
                 amult = amult * 100;
-            elseif nprec(1) == prec(1),
-                break;
+            end
+            
+            % Several invalid points in a row?
+            if ~is_failed,
+                failed = 0;
+            elseif failed == 2,
+                if x_isnan && y_isnan, break;
+                else advance = true; end
             else
-                advance = true;
+                failed = failed + 1;
+            end
+            
+            % Print status
+            if ~quiet,
+                if is_stagnant, stagc = 'S'; else stagc = ' '; end
+                disp( sprintf( '%9.3e %9.3e %9.3e%c  %s', nprec(2), tprec, err, stagc, status ) );
+            end
+
+            % Time to boost precision?
+            if err == 0,
+                advance = tprec <= nprec(1) || attempts == 1;
+                attempts = attempts + 1;
             end
             if advance,
+                if min(tprec,nprec(1)) <= prec(1), break; end
                 nprec(1:2) = prec(1:2);
-                stagnant = false;
-                err = Inf;
-                At(:,m+1:end) = At(:,m+1:end) / amult;
-                amult = 1;
+                last_solved = false;
+                last_err = Inf;
+                attempts = 0;
+                stagnant = 0;
+                failed = 0;
             end
-            last_err = err;
+            
+            % Shift centerpoint
             if x_valid | y_valid,
                 x0 = min( max( nx0, x0 - epow ), x0 + epow );
                 x0 = min( max( -maxw, x0 ), maxw );
@@ -372,17 +392,17 @@ elseif n ~= 0 & ~infeas & ( any( b ) | any( c ) ),
         else
             status = 'Solved';
         end
-        best_p = max( best_px, best_py );
-        if best_p > prec(3),
+        tprec = max( best_px, best_py );
+        if tprec > prec(3),
             status = 'Failed';
-        elseif best_p > prec(2),
+        elseif tprec > prec(2),
             status = [ 'Inaccurate/', status ];
         end
         x = best_x;
         y = best_y;
         c = c(1:n,:);
     else
-        [ x, y, status, iters ] = feval( sfunc, At, b, c, cones, quiet, prec );
+        [ x, y, status, tprec, iters ] = feval( sfunc, At, b, c, cones, quiet, prec );
     end
     if cvx___.profile, profile resume; end
     if ~cvx___.path.hold, 
@@ -403,8 +423,8 @@ elseif n ~= 0 & ~infeas & ( any( b ) | any( c ) ),
         dval = NaN;
     otherwise,
         oval = NaN;
-        pval = NaN;
-        dval = NaN;
+        if isnan( x ), pval = NaN; else pval = 1; end
+        if isnan( y ), dval = NaN; else dval = 1; end
     end
     if ~quiet,
         disp( spacer );
@@ -468,6 +488,7 @@ end
 
 cvx___.problems( p ).status = status;
 cvx___.problems( p ).iters = iters;
+cvx___.problems( p ).tol = tprec;
 
 %
 % Push the results into the master CVX workspace

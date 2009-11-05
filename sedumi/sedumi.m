@@ -576,9 +576,11 @@ Ay = full(Amul(A,dense,y,1));      % "full" since y may be scalar.
 normy = norm(y);
 normx = norm(x(2:end));
 clear A
+
 % ------------------------------------------------------------
 % Determine infeasibility
 % ------------------------------------------------------------
+
 pinf = norm(x0*b-Ax);
 z = qreshape(Ay-x0*c,1,K);
 dinf = max(eigK(z,K));
@@ -612,6 +614,7 @@ end % x0 > 0
 % ------------------------------------------------------------
 % Interpret the solution as feasible:
 % ------------------------------------------------------------
+info.r0 = Inf;
 if x0 > 0
     x = x / x0;
     y = y / x0;
@@ -622,14 +625,15 @@ if x0 > 0
     normx = normx / x0;
     normy = normy / x0;
     if cx <= by                % zero or negative duality gap
-        sigdig = Inf;
+        r0 = 0;
     elseif cx == 0.0           % Dual feasibility problem
-        sigdig = -log(-by/(R.maxb*normy +1E-10 * x0)) / log(10);
+        r0 = -by/(R.maxb*normy +1E-10 * x0);
     elseif by == 0.0           % Primal feasibility problem
-        sigdig = -log(cx / (R.maxc*normx +1E-10 * x0)) / log(10);
+        r0 = cx / (R.maxc*normx +1E-10 * x0);
     else                       % Optimization problem
-        sigdig = -log((cx-by)/(abs(by) + 1E-5 * (x0+abscx))) / log(10);
+        r0 = (cx-by)/(abs(by) + 1E-5 * (x0+abscx));
     end
+    sigdig = -log10(r0);
     my_fprintf(pars.fid,...
         'iter seconds digits       c*x               b*y\n');
     my_fprintf(pars.fid,'%3d %8.1f %5.1f %- 17.10e %- 17.10e\n',...
@@ -639,23 +643,26 @@ if x0 > 0
     % ------------------------------------------------------------
     % Determine level of numerical problems with x0>0 (feasible)
     % ------------------------------------------------------------
-    if STOP == -1
-        r0 = max([10^(-sigdig); pinf;dinf] ./ [1; 1+R.maxb+(1E-3)*R.maxRb;...
+    info.r0 = max([r0 ; pinf;dinf] ./ [1; 1+R.maxb+(1E-3)*R.maxRb;...
             1+R.maxc+(1E-3)*R.maxRc]);
-        if r0 > pars.bigeps
+    if STOP == -1
+        if info.r0 > pars.bigeps
             my_fprintf(pars.fid, 'No sensible solution found.\n');
             info.numerr = 2;                          % serious numerical error
-        elseif r0 > pars.eps
+        elseif info.r0 > pars.eps
             info.numerr = 1;                          % moderate numerical error
         else
             info.numerr = 0;                          % achieved desired accuracy
         end
+    else
+        info.r0 = min( info.r0, pars.eps );
     end
 else  % (if x0>0)
     % --------------------------------------------------
     % Infeasible problems: pinf==norm(Ax), dinf==max(eigK(At*y,K)).
     % --------------------------------------------------
     if pinf < -pars.bigeps * cx
+        info.r0 = abs(pinf/cx);
         info.dinf = 1;
         abscx = -cx;
         pinf = pinf / abscx;
@@ -664,6 +671,7 @@ else  % (if x0>0)
         my_fprintf(pars.fid, 'Dual infeasible, primal improving direction found.\n');
     end
     if dinf < pars.bigeps * by
+        info.r0 = abs(pinf/cx);
         info.pinf = 1;
         dinf = dinf / by;
         normy = normy / by;

@@ -36,8 +36,6 @@ CswBits   = 3;
 CswSegs   = 2^(CswBits);
 CvarCswLSBOverlap = 2;
 
-% set the quiet flag (no solver reporting)
-
 disp('Generating the optimal tradeoff curve...')
 
 %********************************************************************
