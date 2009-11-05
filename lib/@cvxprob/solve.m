@@ -366,11 +366,11 @@ elseif n ~= 0 & ~infeas & ( any( b ) | any( c ) ),
 
             % Time to boost precision?
             if err == 0,
-                advance = tprec <= nprec(1) || attempts == 1;
+                advance = tprec <= nprec(2) || attempts == 1;
                 attempts = attempts + 1;
             end
             if advance,
-                if min(tprec,nprec(1)) <= prec(1), break; end
+                if min(tprec,nprec(2)) <= prec(2), break; end
                 nprec(1:2) = prec(1:2);
                 last_solved = false;
                 last_err = Inf;

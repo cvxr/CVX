@@ -93,7 +93,7 @@ disp( 'Building SeDuMi binaries...' )
 ISOCTAVE = exist('OCTAVE_VERSION');
 COMPUTER = computer;
 VERSION  = [1,0.1]*sscanf(version,'%d.%d');
-IS64BIT  = ISOCTAVE & strcmp(COMPUTER(end-1:end),'64');
+IS64BIT  = ~ISOCTAVE & strcmp(COMPUTER(end-1:end),'64');
 mexprog  = 'mex';
 if ispc,
     flags = {'-DPC'};

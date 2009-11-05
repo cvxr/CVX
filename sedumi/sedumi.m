@@ -633,7 +633,11 @@ if x0 > 0
     else                       % Optimization problem
         r0 = (cx-by)/(abs(by) + 1E-5 * (x0+abscx));
     end
-    sigdig = -log10(r0);
+    if r0 == 0,
+        sigdig = Inf;
+    else
+        sigdig = -log10(r0);
+    end
     my_fprintf(pars.fid,...
         'iter seconds digits       c*x               b*y\n');
     my_fprintf(pars.fid,'%3d %8.1f %5.1f %- 17.10e %- 17.10e\n',...
