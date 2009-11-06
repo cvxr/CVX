@@ -76,7 +76,7 @@ delepaths = {};
 if isoctave | ver >= 7.0,
     addpaths(1:2) = [];
 end
-if ~isoctave & strcmp( mexext, 'mexw64' ) & ver < 7.5,
+if ~isoctave & strcmp( mexext, 'mexw64' ) & ver < 7.3,
     skip_sedumi = 1;
     solvers = { 'sdpt3' };
 else
