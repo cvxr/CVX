@@ -68,30 +68,23 @@ catch
 end
 temp = strfind( mpath, fs );
 mpath( temp(end) : end ) = [];
-rmpaths = { 'sets', 'keywords', 'builtins', 'commands', 'functions', 'lib', 'structures', 'matlab6' };
-checkpaths = rmpaths(1:end-1);
-addpaths = checkpaths;
+if ispc, mpath = lower(mpath); end
+solvers = { 'sdpt3', 'sedumi' };
+rmpaths = { 'sets', 'keywords', 'builtins', 'commands', 'functions', 'lib', 'structures' };
+for k = 1 : length(rmpaths),
+    rmpaths{k} = [ mpath, fs, rmpaths{k} ];
+end
+rmpaths{end+1} = mpath;
+addpaths = rmpaths;
 needpaths = {};
 delepaths = {};
-if isoctave | ver >= 7.0,
+if isoctave || ver >= 7.0,
     addpaths(1:2) = [];
 end
-if ~isoctave & strcmp( mexext, 'mexw64' ) & ver < 7.3,
-    skip_sedumi = 1;
-    solvers = { 'sdpt3' };
-else
-    skip_sedumi = 0;
-    solvers = { 'sdpt3', 'sedumi' };
-end
-for k = 1 : length(addpaths),
-	addpaths{k} = [ mpath, fs, addpaths{k} ];
-end
-addpaths{end+1} = mpath;
 missing = {};
-for k = 1 : length(checkpaths),
-    temp = [ mpath, fs, checkpaths{k} ];
-    if ~exist( temp, 'dir' ),
-        missing{end+1} = checkpaths{k};
+for k = 1 : length(addpaths),
+    if ~exist( addpaths{k}, 'dir' ),
+        missing{end+1} = addpaths{k};
     end
 end
 msolv = 0;
@@ -101,7 +94,7 @@ for k = 1 : length(solvers),
         msolv = msolv + 1;
     end
 end
-if length(missing) > msolv | msolv == length(solvers),
+if length(missing) > msolv || msolv == length(solvers),
     error( sprintf( ...
         [ 'The following directories in the CVX distribution are missing:\n', ...
           '  %s\n', ...
@@ -109,47 +102,27 @@ if length(missing) > msolv | msolv == length(solvers),
           sprintf( ' %s', missing{:} ) ) );
 end
 needupd = 0;
-newpath = [ ps, path, ps ];
-if ispc,
-    newpath2 = lower(newpath);
-    mpath2 = lower(mpath);
-else
-    newpath2 = newpath;
-    mpath2 = mpath;
-end
+oldpath = [ ps, path, ps ];
+if ispc, oldpath = lower(oldpath); end
+newpath = oldpath;
 for k = 1 : length(rmpaths),
-    temp = [ ps, mpath2, fs, rmpaths{k}, ps ];
-    ndxs = strfind( newpath2, temp );
-    if isempty( ndxs ),
-        temp = [ ps, rmpaths{k}, ps ];
-        ndxs = strfind( newpath2, temp );
-    end
+    ndxs = strfind( newpath, [ ps, rmpaths{k}, ps ] );
     if ~isempty( ndxs ),
         needupd = 1;
-        delepaths{end+1} = temp(2:end-1);
-        len = length( temp ) - 1;
+        delepaths{end+1} = rmpaths{k};
+        len = length( rmpaths{k} ) + 1;
         for j = 1 : length( ndxs ),
             newpath( ndxs(j) + 1 : ndxs(j) + len ) = [];
-            newpath2( ndxs(j) + 1 : ndxs(j) + len ) = [];
             ndxs = ndxs - len;
         end
     end
 end
 for k = 1 : length(addpaths),
-    temp = [ ps, addpaths{k}, ps ];
-    if ispc,
-        temp = lower( temp );
-    end
-    ndxs = strfind( newpath2, temp );
-    if isempty( ndxs ),
-        needupd = 1;
-        needpaths{end+1} = temp(2:end-1);
-        newpath2 = [ temp(1:end-1), newpath2 ];
-        newpath = [ ps, addpaths{k}, newpath ];
-    end
+    newpath = [ ps, addpaths{k}, newpath ];
 end
-newpath = newpath(2:end-1);
-path(newpath);
+if ~strcmp(oldpath,newpath),
+    path(newpath(2:end-1));
+end
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Compile the CVX MEX files %
@@ -224,7 +197,7 @@ cd( dd );
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 sedpath = [ mpath, fs, 'sedumi' ];
-if ~skip_sedumi & exist( sedpath, 'dir' ),
+if exist( sedpath, 'dir' ),
     if ~fullRecompile,
         mexfiles = dir( [ sedpath, fs, '*.', newext ] );
         if isempty( mexfiles ) & isw32,
@@ -314,14 +287,7 @@ else
     disp( ' ' );
 end
 
-if skip_sedumi,
-    disp( 'NOTE: SeDuMi 1.2 does not work with this version of Matlab.' );
-    disp( 'The only solver available for this platform is SDPT3. If you wish' );
-    disp( 'to use SeDuMi, upgrade to Matlab 7.5 or later.' );
-    disp( ' ' );
-end
-
-if needupd,
+if ~strcmp(newpath,oldpath),
     disp( 'NOTE: The MATLAB path has been updated to point to the cvx distribution.' );
     disp( 'In order to use cvx regularly, you must save this new path definition.' );
     switch computer,
