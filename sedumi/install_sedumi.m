@@ -1,4 +1,4 @@
-function install_sedumi(nopath)
+function install_sedumi( nopath, endpath )
 
 %SeDuMi installation script
 %
@@ -101,6 +101,10 @@ elseif isunix,
     flags = {'-DUNIX'};
 end
 if ~ISOCTAVE,
+    if nargin > 1 && ~isempty(endpath),
+        flags{end+1} = '-outdir',
+        flags{end+1} = endpath;
+    end
     flags{end+1} = '-O';
     if IS64BIT & ( VERSION >= 7.3 ),
         flags{end+1} = '-largeArrayDims';

@@ -197,10 +197,17 @@ cd( dd );
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 sedpath = [ mpath, fs, 'sedumi' ];
+smexpath = sedpath;
+if ~isoctave && ver < 7.5,
+    temp = [ sedpath, fs, 'pre7.5' ];
+    if exist( temp, 'dir' ) && ~isempty( dir( [ temp, fs, '*.', mexext ] ) ),
+        smexpath = temp;
+    end
+end
 if exist( sedpath, 'dir' ),
     if ~fullRecompile,
-        mexfiles = dir( [ sedpath, fs, '*.', newext ] );
-        if isempty( mexfiles ) & isw32,
+        mexfiles = dir( [ smexpath, fs, '*.', newext ] );
+        if isempty( mexfiles ) && isw32 && ver < 7.5,
             mexfiles = dir( [ sedpath, fs, '*.dll' ] );
         end
     end
@@ -209,7 +216,11 @@ if exist( sedpath, 'dir' ),
         try
             disp( 'Generating the SeDuMi MEX files.' );
             disp( '-------------------------------------------------------------' );
-            install_sedumi(1);
+            if strcmp(smexpath,sedpath),
+                install_sedumi(1);
+            else
+                install_sedumi(1,smexpath);
+            end
         catch
             disp( '-------------------------------------------------------------' );
             disp( 'SeDuMi was NOT built successfully. Please try CVX on a supported' );
