@@ -102,7 +102,7 @@ elseif isunix,
 end
 if ~ISOCTAVE,
     if nargin > 1 && ~isempty(endpath),
-        flags{end+1} = '-outdir',
+        flags{end+1} = '-outdir';
         flags{end+1} = endpath;
     end
     flags{end+1} = '-O';

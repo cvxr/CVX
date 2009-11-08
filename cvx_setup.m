@@ -15,9 +15,6 @@ cvx___ = [];
 % Get version and portability information %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-% Octave?
-isoctave = exist( 'OCTAVE_VERSION' );
-
 % Numeric version
 ver = version;
 verm = 0;
@@ -30,6 +27,7 @@ needLarge = 0;
 ver = eval( ver, 'NaN' );
 
 % Octave?
+isoctave = exist( 'OCTAVE_VERSION' );
 if isoctave,
 	if isnan( ver ) | ver < 3.0 | ( ver == 3.0 & verm < 1 ),
 		error( 'CVX requires octave 3.0.1 or later.' );
@@ -56,6 +54,12 @@ else
     ps = ':';
 end
 
+% Mex locations
+isw32 = strcmp( newext, 'mexw32' );
+fullRecompile = any( strcmp( varargin, '-force' ) );
+newext = mexext;
+usePre75 = ~isoctave && ver < 7.5;
+
 %%%%%%%%%%%%%%%%%%%%%%%%
 % Set up the CVX paths %
 %%%%%%%%%%%%%%%%%%%%%%%%
@@ -70,13 +74,15 @@ temp = strfind( mpath, fs );
 mpath( temp(end) : end ) = [];
 if ispc, mpath = lower(mpath); end
 solvers = { 'sdpt3', 'sedumi' };
-rmpaths = { 'sets', 'keywords', 'builtins', 'commands', 'functions', 'lib', 'structures' };
+rmpaths = { 'sets', 'keywords', 'builtins', 'commands', 'functions', 'lib', [ 'lib', fs, 'pre7.5' ], 'structures' };
 for k = 1 : length(rmpaths),
     rmpaths{k} = [ mpath, fs, rmpaths{k} ];
 end
 rmpaths{end+1} = mpath;
 addpaths = rmpaths;
-needpaths = {};
+if ~usePre75,
+    addpaths(7) = [];
+end
 delepaths = {};
 if isoctave || ver >= 7.0,
     addpaths(1:2) = [];
@@ -102,9 +108,9 @@ if length(missing) > msolv || msolv == length(solvers),
           sprintf( ' %s', missing{:} ) ) );
 end
 needupd = 0;
-oldpath = [ ps, path, ps ];
+oldpath = path;
 if ispc, oldpath = lower(oldpath); end
-newpath = oldpath;
+newpath = [ ps, oldpath, ps ];
 for k = 1 : length(rmpaths),
     ndxs = strfind( newpath, [ ps, rmpaths{k}, ps ] );
     if ~isempty( ndxs ),
@@ -120,55 +126,36 @@ end
 for k = 1 : length(addpaths),
     newpath = [ ps, addpaths{k}, newpath ];
 end
-if ~strcmp(oldpath,newpath),
-    path(newpath(2:end-1));
-end
+newpath = newpath(2:end-1);
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Compile the CVX MEX files %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-newext = mexext;
-if strcmp( newext, 'mexglx' ) & ver >= 7.2,
-    fullRecompile = true;
-else
-    fullRecompile = any( strcmp( varargin, '-force' ) );
-end
-isw32 = strcmp( newext, 'mexw32' );
-isNewLinux = strcmp( newext, 'mexglx' ) & ~isoctave & ver >= 7.5;
-if isoctave,
-	mexcmd = {};
-else
-	mexcmd = { '-O' };
-end
-if needLarge,
-    mexcmd{end+1} = '-largeArrayDims';
-end
-libpath = [ mpath, fs, 'lib' ];
-try
-    cd( libpath );
-    mexfiles = dir( '*.c' );
-    mexfiles = { mexfiles.name };
+cd( [ mpath, fs, 'lib' ] );
+mexfiles = dir( '*.c' );
+mexfiles = { mexfiles.name };
+if ~fullRecompile,
     has_mex = 1;
     for k = 1 : length( mexfiles ),
         str = mexfiles{k};
-        if ~exist( [ str(1:end-1), newext ] ),
-            if ~isw32 | ~exist( [ str(1:end-1), 'dll' ] ),
-                has_mex = 0;
-                break;
-            end
+        if exist( str(1:end-2) ) ~= 3,
+            has_mex = 0;
+            break;
         end
-    end
-catch
-    disp( 'The cvx distribution seems to be incomplete: the lib/ directory is' );
-    disp( 'missing. Please re-unpack the distribution and try again.' );
-    disp( ' ' );
-    cd( dd );
-    return
+    end 
 end
-if ~has_mex | fullRecompile,
+if fullRecompile || ~has_mex,
     disp( 'Attempting to generate the CVX MEX files...' );
     disp( '-------------------------------------------------------------' );
+    if isoctave,
+        mexcmd = {};
+    else
+        mexcmd = { '-O' };
+    end
+    if needLarge,
+        mexcmd{end+1} = '-largeArrayDims';
+    end
     has_mex = 1;
     for k = 1 : length( mexfiles ),
         str = mexfiles{k};
@@ -179,48 +166,38 @@ if ~has_mex | fullRecompile,
             has_mex = 0;
         end
     end
-    if ~has_mex,
+    if has_mex,
+        disp( '-------------------------------------------------------------' );
+    else
         disp( 'ERROR: One or more of cvx''s required MEX files could not be generated.' );
         disp( 'This is likely because your MEX system has not been properly configured.' );
         disp( 'Please consult the MATLAB documentation for details on how to do this.' );
-        disp( ' ' );
-        cd( dd );
-        return
-    else
-        disp( '-------------------------------------------------------------' );
     end
 end
 cd( dd );
+if ~has_mex,
+    return
+end
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Compile the SeDuMi MEX files %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 sedpath = [ mpath, fs, 'sedumi' ];
-smexpath = sedpath;
-if ~isoctave && ver < 7.5,
-    temp = [ sedpath, fs, 'pre7.5' ];
-    if exist( temp, 'dir' ) && ~isempty( dir( [ temp, fs, '*.', mexext ] ) ),
-        smexpath = temp;
-    end
-end
 if exist( sedpath, 'dir' ),
+    has_mex = 0;
     if ~fullRecompile,
-        mexfiles = dir( [ smexpath, fs, '*.', newext ] );
-        if isempty( mexfiles ) && isw32 && ver < 7.5,
-            mexfiles = dir( [ sedpath, fs, '*.dll' ] );
+        has_mex = ~isempty( dir( [ sedpath, fs, '*.', newext ] ) );
+        if ~has_mex && ~isoctave && ver < 7.5,
+            has_mex = ~isempty( dir( [ sedpath, fs, 'pre7.5', fs, '*.', newext ] ) );
         end
     end
-    if fullRecompile | isempty( mexfiles ),
+    if ~has_mex,
         cd( sedpath );
         try
             disp( 'Generating the SeDuMi MEX files.' );
             disp( '-------------------------------------------------------------' );
-            if strcmp(smexpath,sedpath),
-                install_sedumi(1);
-            else
-                install_sedumi(1,smexpath);
-            end
+            install_sedumi(1);
         catch
             disp( '-------------------------------------------------------------' );
             disp( 'SeDuMi was NOT built successfully. Please try CVX on a supported' );
@@ -240,15 +217,16 @@ end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 sedpath = [ mpath, fs, 'sdpt3' ];
+mexpath = [ sedpath, fs, 'Solver', fs, 'Mexfun' ];
 if exist( sedpath, 'dir' ),
+    has_mex = 0;
     if ~fullRecompile,
-        mexfiles = dir( [ sedpath, fs, 'Solver', fs, 'Mexfun', fs, '*.', newext ] );
-        if isempty( mexfiles ) & ispc & isw32,
-            newext = 'dll';
-            mexfiles = dir( [ sedpath, fs, 'Solver', fs, 'Mexfun', fs, '*.', newext ] );
+        has_mex = ~isempty( dir( [ mexpath, fs, '*.', newext ] ) );
+        if ~has_mex && ~isoctave && ver < 7.5,
+            has_mex = ~isempty( dir( [ mexpath, fs, 'pre7.5', fs, '*.', newext ] ) );
         end
     end
-    if fullRecompile | isempty( mexfiles ),
+    if ~has_mex,
         cd( sedpath );
         try
             disp( 'Generating the SDPT3 MEX files.' );
@@ -318,8 +296,8 @@ if ~strcmp(newpath,oldpath),
             for k = 1 : length( delepaths ),
                 disp( [ '    rmpath ', delepaths{k} ] );
             end
-            for k = 1 : length( needpaths ),
-                disp( [ '    addpath ', needpaths{k} ] );
+            for k = length( addpaths ) : -1 : 1,
+                disp( [ '    addpath ', addpaths{k} ] );
             end
             disp( 'Consult the MATLAB documentation if necessary.' );
     end

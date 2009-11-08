@@ -89,11 +89,7 @@ if isempty( cvx___ ),
     end
     temp = strfind( s, fs );
     s( temp(end-1) + 1 : end ) = [];
-    subs = { 'sdpt3', 'sdpt3/Solver', 'sdpt3/HSDSolver', 'sdpt3/Solver/Mexfun', 'sdpt3/Linsysolver/spchol' };
-    if ~cvx___.octave && cvx___.mversion < 7.5 && ~isempty( dir( [ s, 'sedumi\pre7.5', fs, 'eyeK.', mexext ] ) ),
-        subs{end+1} = 'sedumi/pre7.5';
-    end
-    subs{end+1} = 'sedumi';
+    subs = { 'sdpt3', 'sdpt3/Solver', 'sdpt3/HSDSolver', 'sdpt3/Solver/Mexfun/pre7.5', 'sdpt3/Solver/Mexfun', 'sdpt3/Linsysolver/spchol', 'sedumi/pre7.5', 'sedumi' };
     nsolver = length( subs );
     miss_solv = 0;
     if cvx___.octave || cvx___.mversion >= 7.0,
@@ -114,17 +110,19 @@ if isempty( cvx___ ),
         end
         temp = [ s, tsub ];
         if exist( temp, 'dir' ),
-            temp2 = [ temp, ps ];
-            ndxs = strfind( opath, temp2 );
-            if ~isempty( ndxs ),
-                if k > nsolver,
-                    cvx___.path.active = true;
-                elseif isempty( cvx___.path.sactive ) & strcmpi( cvx___.solver, base ),
-                    cvx___.path.sactive = base;
-                else
-                    opath( ndxs(1) : ndxs(1) + length(temp2) - 1 ) = [];
+            if ~strcmp( temp(end-5:end), 'pre7.5' ) || ~cvx___.octave && cvx___.mversion < 7.5,
+                temp2 = [ temp, ps ];
+                ndxs = strfind( opath, temp2 );
+                if ~isempty( ndxs ),
+                    if k > nsolver,
+                        cvx___.path.active = true;
+                    elseif isempty( cvx___.path.sactive ) & strcmpi( cvx___.solver, base ),
+                        cvx___.path.sactive = base;
+                    else
+                        opath( ndxs(1) : ndxs(1) + length(temp2) - 1 ) = [];
+                    end
+                    needupd = true;
                 end
-                needupd = true;
             end
             if k > nsolver,
                 npath = [ npath, temp2 ];
