@@ -47,6 +47,6 @@ xx = exp( sqrt(-1) * xx );
 y  = real( xx ) * real( vv ) + imag( xx ) * imag( vv );
 y  = reshape( y, sx );
 
-% Copyright 2008 Michael C. Grant and Stephen P. Boyd. 
+% Copyright 2009 Michael C. Grant and Stephen P. Boyd. 
 % See the file COPYING.txt for full copyright information.
 % The command 'cvx_where' will show where this file is located.

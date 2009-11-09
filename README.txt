@@ -1,5 +1,5 @@
 CVX: A system for disciplined convex programming
-Copyright (C) 2007 Michael C. Grant and Stephen P. Boyd.
+Copyright 2009 Michael C. Grant and Stephen P. Boyd.
 --------------------------------------------------------
 
 Thank you for downloading cvx. Please see Appendix A of the

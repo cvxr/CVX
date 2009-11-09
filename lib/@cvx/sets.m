@@ -12,6 +12,6 @@
 %   semidefinite            - Real symmetric positive semidefinite matrices     {X: X==X', min(eig(X))>=0}
 %   simplex                 - The unit simplex.                                 {x: x>=0, sum(x)==1}
 
-% Copyright 2008 Michael C. Grant and Stephen P. Boyd.
+% Copyright 2009 Michael C. Grant and Stephen P. Boyd.
 % See the file COPYING.txt for full copyright information.
 % The command 'cvx_where' will show where this file is located.
