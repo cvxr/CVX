@@ -1,6 +1,6 @@
 function [ cvx_ver, cvx_bld ] = cvx_version
 cvx_ver = 1.21;
-cvx_bld = '___BUILD___';
+cvx_bld = ':::BUILD:::';
 if nargout == 0,
    fprintf( 1, 'CVX version %g (build %s)\n', cvx_ver, cvx_bld );
    if exist( 'OCTAVE_VERSION', 'var' ),
