@@ -1,4 +1,4 @@
-function cvx_optpnt = simplex( sx, dim )
+function cvx_optpnt = simplex( sx, dim ) %#ok
 
 %SIMPLEX   The unit simplex.
 %    SIMPLEX(N), where N is a positive integer, creates a column vector
@@ -43,14 +43,14 @@ nd = length( sx );
 % Check dimension
 %
 
-if nargin < 2 | isempty( dim ),
+if nargin < 2 || isempty( dim ),
     dim = [ find( sx > 1 ), 1 ];
     dim = dim( 1 );
-elseif ~isnumeric( dim ) | dim < 0 | dim ~= floor( dim ),
+elseif ~isnumeric( dim ) || dim < 0 || dim ~= floor( dim ),
     error( 'Second argument must be a dimension.' );
 elseif dim > nd,
-    sx( end + 1 : dim ) = 1;
-    nd = dim;
+    sx( end + 1 : dim ) = 1; %#ok
+    nd = dim; %#ok
 end
 
 %
@@ -60,7 +60,7 @@ end
 cvx_begin_set
    variables x( sx )
    sum( x, dim ) == 1;
-   x >= 0;
+   x >= 0; %#ok
 cvx_end_set
 
 % Copyright 2009 Michael C. Grant and Stephen P. Boyd. 

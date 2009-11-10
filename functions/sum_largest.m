@@ -34,9 +34,9 @@ function cvx_optval = sum_largest( x, k, dim )
 error( nargchk( 2, 3, nargin ) );
 if ~isreal( x ),
     error( 'First argument must be real.' );
-elseif ~isnumeric( k ) | ~isreal( k ) | length( k ) ~= 1,
+elseif ~isnumeric( k ) || ~isreal( k ) || length( k ) ~= 1,
     error( 'Second argument must be a real scalar.' );
-elseif nargin < 3 | isempty( dim ),
+elseif nargin < 3 || isempty( dim ),
     dim = cvx_default_dimension( size( x ) );
 elseif ~cvx_check_dimension( dim, false ),
     error( 'Third argument, if supplied, must be a positive integer.' );

@@ -17,8 +17,6 @@
 %                               (Tmax/2)G1(x, d1, d2) - C1(x,d2) >= 0
 %                               (Tmax/2)G2(x, d1, d2) - C2(x) >= 0
 
-cvxq = cvx_quiet(true);
-
 %
 % Circuit parameters
 %
@@ -93,7 +91,7 @@ for i = 1 : npts + xnpts,
     % Construct and solve the convex model
     %
 
-    cvx_begin sdp
+    cvx_begin sdp quiet
         variables w(m,2) d(1,2)
         variable G(n,n,2) symmetric
         variable C(n,n,2) symmetric
@@ -194,4 +192,3 @@ for k = 1 : xnpts,
     text( xareas(k), xdelays(k), sprintf( '(%d)', k ) );
 end
 
-cvx_quiet(cvxq);

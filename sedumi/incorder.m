@@ -14,7 +14,7 @@
 
 
 
-function [perm, dz] = incorder(At,Ajc1,ifirst)
+function [perm, dz] = incorder(At,Ajc1,ifirst) %#ok
 %
 % This file is part of SeDuMi 1.1 by Imre Polik and Oleksandr Romanko
 % Copyright (C) 2005 McMaster University, Hamilton, CANADA  (since 1.1)

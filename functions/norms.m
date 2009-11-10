@@ -30,11 +30,11 @@ function cvx_optval = norms( x, p, dim )
 %
 
 error( nargchk( 1, 3, nargin ) );
-if nargin < 2 | isempty( p ),
+if nargin < 2 || isempty( p ),
     p = 2;
-elseif ~isnumeric( p ) | numel( p ) ~= 1 | ~isreal( p ),
+elseif ~isnumeric( p ) || numel( p ) ~= 1 || ~isreal( p ),
     error( 'Second argument must be a real number.' );
-elseif p < 1 | isnan( p ),
+elseif p < 1 || isnan( p ),
     error( 'Second argument must be between 1 and +Inf, inclusive.' );
 end
     
@@ -43,11 +43,11 @@ end
 %
 
 sx = size( x );
-if nargin < 3 | isempty( dim ),
+if nargin < 3 || isempty( dim ),
     dim = cvx_default_dimension( sx );
 elseif ~cvx_check_dimension( dim, false ),
     error( 'Third argument must be a valid dimension.' );
-elseif isempty( x ) | dim > length( sx ) | sx( dim ) == 1,
+elseif isempty( x ) || dim > length( sx ) || sx( dim ) == 1,
     p = 1;
 end
 

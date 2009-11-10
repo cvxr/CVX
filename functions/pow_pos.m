@@ -10,10 +10,10 @@ function y = pow_pos( x, p )
 %       greater than or equal to 1.
 
 error( nargchk( 2, 2, nargin ) );
-if ~isnumeric( x ) | ~isreal( x ) | ~isnumeric( p ) | ~isreal( p ),
+if ~isnumeric( x ) || ~isreal( x ) || ~isnumeric( p ) || ~isreal( p ),
     error( 'Arguments must be real.' );
 elseif any( p(:) <= 1 ),
-    error( sprintf( 'Second argument must be greater than or equal to 1.\nFor other exponents, use POW_P instead.' ) );
+    error( 'Second argument must be greater than or equal to 1.\nFor other exponents, use POW_P instead.', 1 ); %#ok
 end
 y = max(x,0).^p;
 

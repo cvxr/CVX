@@ -1,5 +1,5 @@
 function [ dbCA, cones, dir, Q, P, dualized ] = eliminate( prob, destructive )
-if nargin  < 2 | nargout < 8, destructive = false; end
+if nargin  < 2 || nargout < 8, destructive = false; end
 
 % For the problem
 %    minimize c^T * x + d
@@ -15,7 +15,6 @@ if nargin  < 2 | nargout < 8, destructive = false; end
 % that solves an equivalent problem. The original x and y can be recovered
 % from the reduced xx and yy by Q*[1;xx] and P*[1;-yy], respectively.
 
-global cvx___
 [ dbCA, cones, dir, Q, P ] = extract( prob, destructive );
 dualized = false;
 if size( dbCA, 1 ) == 1, 
@@ -34,7 +33,7 @@ end
 
 for pass = 1 : 2,
 
-    if pass == 1 | dualized,
+    if pass == 1 || dualized,
         n_tot = 0;
         nn  = size(dbCA,1);
         rsv = sparse( 1, 1, 1, nn, 1 );
@@ -51,7 +50,7 @@ for pass = 1 : 2,
         n_rsv = nnz( rsv ) - 1;
         rsv   = full( rsv );
         nng   = full( nng );
-        ndxs  = [ 1 : nn ]';
+        ndxs  = ( 1 : nn )';
         nold  = nn;
     end
 
@@ -87,7 +86,7 @@ for pass = 1 : 2,
             celm = csgn * cc( rows, 1 );
             celm( nng(rows) & celm < 0 ) = 0;
             nnzc = nnz( celm );
-            if nnzc > 1 | nnzr > nnzc,
+            if nnzc > 1 || nnzr > nnzc,
                 success = true;
                 if nnzc,
                     cnrm = norm( celm );
@@ -95,7 +94,7 @@ for pass = 1 : 2,
                     ndxq = ndxq( celm ~= 0 );
                     ndxq = ndxq( 1 );
                     Q( :, ndxq ) = Q( :, rows ) * ( celm / cnrm );
-                    dbCA( ndxq, 1 ) = csgn * cnrm;
+                    dbCA( ndxq, 1 ) = csgn * cnrm; %#ok
                     rows( ndxq ) = 0;
                 end
                 rowX = ~rows;
@@ -117,7 +116,7 @@ for pass = 1 : 2,
             success = true;
             P = P * cvx_invert_structure( xR );
             ineqs = ineqs( any( xR, 1 ) );
-            rcnt = sum( dbCA ~= 0, 2 );
+            % rcnt = sum( dbCA ~= 0, 2 );
         end
         while true,
             %
@@ -148,8 +147,8 @@ for pass = 1 : 2,
             A12  = dbCA( rowX, cols );
             A21  = dbCA( rows, colX );
             A22  = dbCA( rows, cols );
-            if ( size( A22, 1 ) ~= size( A22, 2 ) | nnz( A22 ) ~= size( A22, 1 ) ),
-                error( sprintf( 'There seems to be an error in the CVX presolver routine.\nPlease report this to the authors; and if possible, include the\ncvx model and data that gave you this error.' ) );
+            if ( size( A22, 1 ) ~= size( A22, 2 ) || nnz( A22 ) ~= size( A22, 1 ) ),
+                error( 'There seems to be an error in the CVX presolver routine.\nPlease report this to the authors; and if possible, include the\ncvx model and data that gave you this error.', 1 ); %#ok
             end
             [ ii, jj, vv ] = find( A22 );
             A22i  = sparse( jj, ii, 1.0 ./ vv );
@@ -168,7 +167,7 @@ for pass = 1 : 2,
         end
     end
     
-    if pass == 2 | isempty(cones),
+    if pass == 2 || isempty(cones),
         break;
     end
     
@@ -186,7 +185,7 @@ for pass = 1 : 2,
     n_eq   = m1 - 1 - n_ineq;
     m_dua  = n1 - n_ineq - 1;
     n_dua  = nnz(rsv) + n_eq + ( n_eq ~= 0 );
-    if ( ( m_pri > n_pri ) | ( m_pri * n_pri > m_dua * n_dua ) ) & ( m_dua <= n_dua ),
+    if ( ( m_pri > n_pri ) || ( m_pri * n_pri > m_dua * n_dua ) ) && ( m_dua <= n_dua ),
         ndxs = full(sparse(ndxs,1,1:n1));
         PP = cell(2,length(cones));
         n_cur = m1;

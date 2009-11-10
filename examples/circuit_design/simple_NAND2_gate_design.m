@@ -45,13 +45,10 @@ Npoints = 25;
 Amax = linspace(5,45,Npoints);
 Dopt = [];
 
-% set the quiet flag (no solver reporting)
-cvxq = cvx_quiet(true);
-
 disp('Generating the optimal tradeoff curve...')
 
 for k = 1:Npoints
-  cvx_begin gp
+  cvx_begin gp quiet
     % device width variables
     variable w(N)
 
@@ -116,6 +113,3 @@ end
 plot(Dopt,Amax);
 xlabel('Dmin'); ylabel('Amax');
 disp('Optimal tradeoff curve plotted.')
-
-% restore initial solver reporting state
-cvx_quiet(cvxq);

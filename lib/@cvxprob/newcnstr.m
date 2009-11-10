@@ -27,9 +27,9 @@ if ~cy,
 end
 sx = size( x );
 sy = size( y );
-if ~cx | ~cy,
-    if cx | cy | op(1) ~= '=',
-        error( sprintf( 'Invalid CVX constraint: {%s} %s {%s}', class( x ), op, class( y ) ) );
+if ~cx || ~cy,
+    if cx || cy || op(1) ~= '=',
+        error( 'Invalid CVX constraint: {%s} %s {%s}', class( x ), op, class( y ) );
     elseif ~isequal( sx, sy ),
         error( 'The left- and right-hand sides have incompatible sizes.' );
     else
@@ -45,7 +45,7 @@ if ~cx | ~cy,
 end
 xs = all( sx == 1 );
 ys = all( sy == 1 );
-if ~xs & ~ys & ~isequal( sx, sy ),
+if ~xs && ~ys && ~isequal( sx, sy ),
     error( 'Matrix dimensions must agree.' );
 end
 
@@ -57,7 +57,7 @@ tx = cvx_readlevel( x );
 ty = cvx_readlevel( y );
 tx = any( tx( : ) > p );
 ty = any( ty( : ) > p );
-if tx | ty,
+if tx || ty,
     error( 'Constraints may not involve internal, read-only variables.' );
 end
 
@@ -101,15 +101,15 @@ end
 sdp_mode = false;
 mx = sx( 1 ) > 1 & sx( 2 ) > 1;
 my = sy( 1 ) > 1 & sy( 2 ) > 1;
-if op(1) ~= '=' & cvx___.problems( p ).sdp & ( mx | my ),
+if op(1) ~= '=' && cvx___.problems( p ).sdp && ( mx || my ),
 
-    if sx( 1 ) ~= sx( 2 ) | sy( 1 ) ~= sy( 2 ),
+    if sx( 1 ) ~= sx( 2 ) || sy( 1 ) ~= sy( 2 ),
         error( 'SDP constraint must be square.' );
-    elseif xs & cvx_isnonzero( x ),
-        error( sprintf( 'SDP constraint {scalar} %s {matrix} valid only if the scalar is zero.', op ) );
-    elseif ys & cvx_isnonzero( y ),
-        error( sprintf( 'SDP constraint {matrix} %s {scalar} valid only if the scalar is zero.', op ) );
-    elseif ~cvx_isaffine( x ) | ~cvx_isaffine( y ),
+    elseif xs && cvx_isnonzero( x ),
+        error( 'SDP constraint {scalar} %s {matrix} valid only if the scalar is zero.', op );
+    elseif ys && cvx_isnonzero( y ),
+        error( 'SDP constraint {matrix} %s {scalar} valid only if the scalar is zero.', op );
+    elseif ~cvx_isaffine( x ) || ~cvx_isaffine( y ),
         error( 'Both sides of an SDP constraint must be affine.' );
     elseif op( 1 ) == '>',
         x = minus( x, y );
@@ -210,7 +210,7 @@ if op(1) == '<',
 else
     z = minus( x, y );
 end
-if op( 1 ) == '=' | sdp_mode,
+if op( 1 ) == '=' || sdp_mode,
     cmode = 'full';
 else
     cmode = 'magnitude';
@@ -223,11 +223,10 @@ if sdp_mode,
         nnq = sz( 1 ) * sz( 1 );
     end
     if size( zR, 1 ) > nnq * prod( sz( 3 : end ) ),
-        warning( sprintf( [ ...
+        warning( 'CVX:UnsymmetricLMI', [ ...
             'This linear matrix inequality appears to be unsymmetric. This is\n', ...
             'very likely an error that will produce unexpected results. Please check\n', ...
-            'the LMI; and, if necessary, re-enter the model. (To disable this warning\n', ...
-            'message, run the command ''cvx_sdp_warning(false)''.)' ] ) );
+            'the LMI; and, if necessary, re-enter the model.' ], 1 );  
     end
 end
 
@@ -238,7 +237,7 @@ end
 touch( prob, zL, op(1) == '=' );
 mO = length( cvx___.equalities );
 mN = length( zL );
-cvx___.equalities = [ cvx___.equalities ; zL ];
+cvx___.equalities = vertcat( cvx___.equalities, zL );
 cvx___.needslack( end + 1 : end + mN, : ) = op( 1 ) ~= '=';
 
 %

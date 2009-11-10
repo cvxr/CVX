@@ -1,5 +1,5 @@
-function ans = cvx_constant( x )
-ans = cvx_reshape( x.basis_( 1, : ), x.size_ );
+function y = cvx_constant( x )
+y = cvx_reshape( x.basis_( 1, : ), x.size_ );
 
 % Copyright 2009 Michael C. Grant and Stephen P. Boyd.
 % See the file COPYING.txt for full copyright information.

@@ -4,8 +4,6 @@
 % Adapted for CVX by Michael Grant, 2005/12/19
 % Generates figures 7.5-7.8
 
-cvxq = cvx_quiet( true );
-
 % The constellation points. Feel free to change them, but they must
 % produce a valid Voronoi diagram. Therefore, there must be three or
 % more points, and no three can be collinear. To test your selected
@@ -154,6 +152,4 @@ axis( [ 0.2 0.5 0.9 1 ] );
 xlabel( 'x' );
 ylabel( 'y' );
 %print -deps chernoff_example.eps
-
-cvx_quiet( cvxq );
 

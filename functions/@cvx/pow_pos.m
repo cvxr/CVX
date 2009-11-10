@@ -10,7 +10,7 @@ elseif ~isreal( p ),
 end
 p = cvx_constant( p );
 if nnz( p < 1 ),
-    error( sprintf( 'Second argument must be greater than or equal to 1.\n(Use POW_P for exponents less than 1.)' ) );
+    error( 'Second argument must be greater than or equal to 1.\n(Use POW_P for exponents less than 1.)', 1 ); %#ok
 end
 y = pow_cvx( x, p, 'pow_pos' );
 

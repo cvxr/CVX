@@ -47,11 +47,11 @@ end
 %
 
 nd = length( sx );
-if nargin < 2 | isempty( dim ),
+if nargin < 2 || isempty( dim ),
     dim = cvx_default_dimension( sx );
 elseif ~cvx_check_dimension( dim, true ),
     error( 'Second argument must be a dimension (or zero).' );
-elseif dim == 0 | dim > nd | sx( dim ) == 1,
+elseif dim == 0 || dim > nd || sx( dim ) == 1,
     dim = find( sx == 1 );
     if isempty( dim ),
         dim = nd + 1;
@@ -68,7 +68,7 @@ end
 % Check complex flag
 %
 
-if nargin < 3 | isempty( iscplx ),
+if nargin < 3 || isempty( iscplx ),
     iscplx = false;
 elseif length( iscplx ) ~= 1,
     error( 'Third argument must be a scalar.' );

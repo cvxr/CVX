@@ -16,7 +16,7 @@ function y = pow_p( x, p )
 %       In all cases, X must be real.
 
 error( nargchk( 2, 2, nargin ) );
-if ~isnumeric( x ) | ~isreal( x ) | ~isnumeric( p ) | ~isreal( p ),
+if ~isnumeric( x ) || ~isreal( x ) || ~isnumeric( p ) || ~isreal( p ),
     error( 'Arguments must be real.' );
 end
 y  = x .^ p;

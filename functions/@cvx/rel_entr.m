@@ -8,9 +8,9 @@ error( nargchk( 2, 2, nargin ) );
 sx = size( x ); xs = all( sx == 1 );
 sy = size( y ); ys = all( sy == 1 );
 if xs,
-    sz = sy;
+    sz = sy; %#ok 
 elseif ys,
-    sz = sx;
+    sz = sx; %#ok
 elseif ~isequal( sx, sy ),
     error( 'Dimensions are not compatible.' );
 end
@@ -68,7 +68,7 @@ for k = 1 : nv,
     switch vk,
         case 0,
             % Invalid
-            error( sprintf( 'Disciplined convex programming error:\n    Illegal operation: rel_entr( {%s}, {%s} ).', cvx_class( xt, true, true ), cvx_class( yt, true, true ) ) );
+            error( 'Disciplined convex programming error:\n    Illegal operation: rel_entr( {%s}, {%s} ).', cvx_class( xt, true, true ), cvx_class( yt, true, true ) );
         case 1,
             % Constant
             cvx_optval = cvx( rel_entr( cvx_constant( xt ), cvx_constant( yt ) ) );

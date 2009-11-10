@@ -48,7 +48,6 @@ w = linspace(0,pi,m);
 %*********************************************************************
 % use bisection algorithm to solve the problem
 %*********************************************************************
-cvx_quiet(true);
 
 n_bot = 1;
 n_top = max_order;
@@ -73,7 +72,7 @@ while( n_top - n_bot > 1)
   As  = A(ind,:);
 
   % formulate and solve the feasibility linear-phase lp filter design
-  cvx_begin
+  cvx_begin quiet
     variable r(n_cur,1);
     % feasibility problem
     % passband bounds
@@ -100,7 +99,6 @@ end
 n = n_top;
 fprintf(1,'\nOptimum number of filter taps for given specs is %d.\n',n);
 
-cvx_quiet(false);
 
 %********************************************************************
 % plots

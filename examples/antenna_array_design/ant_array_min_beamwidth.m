@@ -90,7 +90,6 @@ Atar = A(ind_closest,:);
 %*********************************************************************
 % use bisection algorithm to solve the problem
 %*********************************************************************
-cvx_quiet(true);
 
 halfbeam_bot = 1;
 halfbeam_top = max_half_beam;
@@ -109,7 +108,7 @@ while( halfbeam_top - halfbeam_bot > 1)
   As = A(ind,:);
 
   % formulate and solve the feasibility antenna array problem
-  cvx_begin
+  cvx_begin quiet
     variable w(n) complex
     % feasibility problem
     Atar*w == 1;
@@ -136,15 +135,13 @@ fprintf(1,'\nOptimum half beam-width for given specs is %d.\n',halfbeam);
 ind = find(theta <= (theta_tar-halfbeam) | ...
            theta >= (theta_tar+halfbeam) );
 As = A(ind,:);
-cvx_begin
+cvx_begin quiet
   variable w(n) complex
   minimize( norm( w ) )
   subject to
     Atar*w == 1;
     abs(As*w) <= 10^(min_sidelobe/20);
 cvx_end
-
-cvx_quiet(false);
 
 %********************************************************************
 % plots

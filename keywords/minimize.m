@@ -3,7 +3,7 @@ function minimize( varargin )
 %MINIMIZE Specifiies a convex (or affine) objective to be maximized.
 
 cvx_problem = evalin( 'caller', 'cvx_problem', '[]' );
-if isempty( cvx_problem ) | ~isa( cvx_problem, 'cvxprob' ),
+if isempty( cvx_problem ) || ~isa( cvx_problem, 'cvxprob' ),
     error( 'A cvx problem does not exist in this scope.' );
 end
 if ~isempty( cvx_problem.direction ),
@@ -24,8 +24,8 @@ else
     arg = varargin{1};
 end
 
-if ~isa( arg, 'cvx' ) & ~isa( arg, 'double' ) & ~isa( arg, 'sparse' ),
-    error( sprintf( 'Cannot accept an objective of type ''%s''.', class( arg ) ) );
+if ~isa( arg, 'cvx' ) && ~isa( arg, 'double' ) && ~isa( arg, 'sparse' ),
+    error( 'Cannot accept an objective of type ''%s''.', class( arg ) );
 end
 persistent remap
 if isempty( remap ),
@@ -33,7 +33,7 @@ if isempty( remap ),
 end
 vx = remap( cvx_classify( arg ) );
 if ~all( vx ),
-    error( sprintf( 'Disciplined convex programming error:\n   Cannot minimize a(n) %s expression.', cvx_class(arg(vx==0),false,true) ) );
+    error( 'Disciplined convex programming error:\n   Cannot minimize a(n) %s expression.', cvx_class(arg(vx==0),false,true) );
 end
 
 newobj( cvx_problem, 'minimize', arg );

@@ -1,4 +1,4 @@
-function cvx_optpnt = norm_ball( sz, varargin )
+function cvx_optpnt = norm_ball( sz, varargin ) %#ok
 
 %NORM_BALL   Norm ball.
 %   NORM_BALL( sz, ... ) returns a variable of size sz, say 'x', that is
@@ -23,7 +23,7 @@ end
 
 cvx_begin_set
     variable x( sz )
-    norm( x, varargin{:} ) <= 1;
+    norm( x, varargin{:} ) <= 1; %#ok
 cvx_end_set
 
 % Copyright 2009 Michael C. Grant and Stephen P. Boyd. 

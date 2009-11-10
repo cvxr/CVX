@@ -1,11 +1,11 @@
 function x = buncompress( xR, x, sx )
 error( nargchk( 2, 3, nargin ) );
 
-if ~isa( xR, 'double' ) & ~isa( xR, 'sparse' ),
+if ~isa( xR, 'double' ) && ~isa( xR, 'sparse' ),
     error( 'First argument must be a structure matrix.' );
 elseif size( x.basis_, 2 ) ~= size( xR, 1 ),
     error( 'Structure matrix incompatible with vector.' );
-elseif nargin < 3 | isempty( sx ),
+elseif nargin < 3 || isempty( sx ),
     sx = size( xR, 2 );
 elseif ~cvx_check_dimlist( sx, false ),
     error( 'Third argument must be a size matrix.' );

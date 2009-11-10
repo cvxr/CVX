@@ -10,11 +10,22 @@ function s = cvx_where
 %   The proper operation of this function assumes that it has not been
 %   moved from its default position within the cvx distribution.
 
-s = '-completenames';
-s = eval( 'dbstack(s)', 'dbstack' );
+try
+    s = dbstack('-completenames');
+catch
+    s = dbstack;
+end
 s = s(1);
-s = eval( 's.file', 's.name' );
-if ispc, fs = '\'; else fs = '/'; end
+if isfield( s, 'file' ),
+    s = s.file;
+else
+    s = s.name;
+end
+if ispc, 
+    fs = '\'; 
+else
+    fs = '/'; 
+end
 temp = strfind( s, fs );
 s( temp(end-1) + 1 : end ) = [];
 

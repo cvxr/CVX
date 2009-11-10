@@ -48,15 +48,15 @@ if ~isreal( x ),
 end
 sx = size( x );
 
-if nargin < 2 | isempty( dim ),
+if nargin < 2 || isempty( dim ),
     dim = cvx_default_dimension( sx );
 elseif ~cvx_check_dimension( dim, true ),
     error( 'Second argument must be a valid dimension.' );
 end
 
-if nargin < 3 | isempty( tol ),
+if nargin < 3 || isempty( tol ),
     tol = 0.01;
-elseif ~isnumeric( tol ) | length( tol ) ~= 1 | ~isreal( tol ) | tol <= 0 | tol >= 1,
+elseif ~isnumeric( tol ) || length( tol ) ~= 1 || ~isreal( tol ) || tol <= 0 || tol >= 1,
     error( 'tol must be a number between 0 and 1, exclusuve.' );
 end
 
@@ -134,7 +134,7 @@ ls2tol = + nlevs * tols_lse2;
 degs = [ min([find(ls2tol<=tol),Inf]), min([find(dectol<=tol),Inf]), min([find(lintol<=tol),Inf]) ];
 if all( isinf( degs ) ),
     tmax = min( [ lintol(end), ls2tol(end), dectol(end) ] );
-    error( sprintf( 'A polynomial of required accuracy (%g) has not been supplied.\nConsider raising the tolerance to %g or greater to proceed.', tol, tmax ) );
+    error( 'A polynomial of required accuracy (%g) has not been supplied.\nConsider raising the tolerance to %g or greater to proceed.', tol, tmax );
 end
 nnx = nx;
 npairs = 0;
@@ -172,7 +172,7 @@ end
 % along the first dimension.
 %
 
-if dim > 1 & any( sx( 1 : dim - 1 ) > 1 ),
+if dim > 1 && any( sx( 1 : dim - 1 ) > 1 ),
     perm = [ dim, 1 : dim - 1, dim + 1 : length( sx ) ];
     x = permute( x, perm );
     sx = sx( perm );
@@ -200,15 +200,15 @@ cvx_begin sdp separable
     if use_lse2,
         xq = cvx_accept_convex( xq );
         variables w( 1, npairs * nv ) v( 1, npairs * nv )
-        abs( [0.5,-0.5]*xq ) <= w + v;
-        w <= xoff;
-        v >= 0;
-        poly_env( p, w / ( 0.5 * xoff ) - 1 ) + v + [0.5,0.5]*xq <= yq;
+        abs( [0.5,-0.5]*xq ) <= w + v; %#ok
+        w <= xoff; %#ok
+        v >= 0; %#ok
+        poly_env( p, w / ( 0.5 * xoff ) - 1 ) + v + [0.5,0.5]*xq <= yq; %#ok
     else
         xy = xq - ones(size(xq,1),1) * yq;
         xy = max( xy, - xoff );
         xy = cvx_accept_convex( xy );
-        sum( poly_env( p, xy / ( 0.5 * xoff ) + 1 ), 1 ) <= 1;
+        sum( poly_env( p, xy / ( 0.5 * xoff ) + 1 ), 1 ) <= 1; %#ok
     end
 cvx_end
 

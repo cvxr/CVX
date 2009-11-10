@@ -4,11 +4,11 @@ function cvx_optval = sum_largest( x, k, dim )
 
 error( nargchk( 2, 3, nargin ) );
 sx = size( x );
-if nargin < 3 | isempty( dim ),
+if nargin < 3 || isempty( dim ),
 	dim = cvx_default_dimension( sx );
 elseif ~cvx_check_dimension( dim ),
     error( 'Second argument must be a dimension.' );
-elseif ~isnumeric( k ) | ~isreal( k ),
+elseif ~isnumeric( k ) || ~isreal( k ),
     error( 'Third argument must be a real scalar.' );
 elseif ~isreal( x ),
     error( 'First argument must be real.' );
@@ -39,8 +39,8 @@ else
         epigraph variable z( sy )
         variables xp( sx ) yp( sy )
         z == sum( xp, dim ) - k * yp;
-        xp >= cvx_expand_dim( yp, dim, sx(dim) ) + x;
-        xp >= 0;
+        xp >= cvx_expand_dim( yp, dim, sx(dim) ) + x; %#ok
+        xp >= 0; %#ok
     cvx_end
 
 end

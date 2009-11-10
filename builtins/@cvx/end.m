@@ -8,7 +8,7 @@ sz = size( x );
 nz = length( sz );
 if k > nz,
     y = 1;
-elseif k < n | nz <= n,
+elseif k < n || nz <= n,
     y = sz( k );
 else
     y = prod( sz( k : end ) );

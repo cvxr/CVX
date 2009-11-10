@@ -21,15 +21,15 @@ end
 % Check sizes and indices
 %
 
-ni = prod( size( i ) );
-nj = prod( size( j ) );
+ni = numel(  i  );
+nj = numel(  j  );
 nk = prod( x.size_ );
 nz = [ ni, nj, nk ];
 if any( diff( nz( nz ~= 1 ) ) ~= 0 ),
     error( 'Vectors must be the same length.' );
-elseif ( ~isnumeric( i ) & ~ischar( i ) ) | ( ~isnumeric( j ) & ~ischar( j ) ),
+elseif ( ~isnumeric( i ) && ~ischar( i ) ) || ( ~isnumeric( j ) && ~ischar( j ) ),
     error( 'Indices into a matrix must be numeric.' );
-elseif any( i <= 0 ) | any( j <= 0 ) | any( i ~= floor( i ) ) | any( j ~= floor( j ) ),
+elseif any( i <= 0 ) || any( j <= 0 ) || any( i ~= floor( i ) ) || any( j ~= floor( j ) ),
     error( 'Indices into a matrix must be positive integers.' );
 end
 i = i( : );
@@ -37,9 +37,9 @@ j = j( : );
 if nargin == 3,
     m = max( i );
     n = max( j );
-elseif ( ~isnumeric( m ) & ~ischar( m ) ) | ( ~isnumeric( n ) & ~ischar( n ) ) | n < 0 | m < 0 | n ~= floor( n ) | m ~= floor( m ),
+elseif ( ~isnumeric( m ) && ~ischar( m ) ) || ( ~isnumeric( n ) && ~ischar( n ) ) || n < 0 || m < 0 || n ~= floor( n ) || m ~= floor( m ),
     error( 'Sparse matrix sizes must be positive integers.' );
-elseif any( i > m ) | any( j > n ),
+elseif any( i > m ) || any( j > n ),
     error( 'Index exceeds matrix dimensions.' );
 end
 

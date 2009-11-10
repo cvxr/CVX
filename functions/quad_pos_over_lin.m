@@ -31,7 +31,7 @@ if ~isreal( x ),
     error( 'First argument must be real.' ); 
 elseif ~isreal( y ),
     error( 'Second argument must be real.' ); 
-elseif nargin < 3 | isempty( dim ),
+elseif nargin < 3 || isempty( dim ),
     dim = cvx_default_dimension( size( x ) );
 elseif ~cvx_check_dimension( dim ),
     error( 'Third argument, if supplied, must be a positive integer.' );

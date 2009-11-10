@@ -17,7 +17,11 @@ rstr  = true;
 for k = 1 : nstrs,
     argt = varargin{k};
     if isstruct( argt ),
-        args = eval( 'argt.args', '{}' );
+        try
+            args = argt.args;
+        catch
+            args = {};
+        end
         argt = argt.name;
     else
         args = {};
@@ -30,9 +34,9 @@ for k = 1 : nstrs,
             S = feval( name, sz( 1 ), sz( 2 ), args );
         end
     catch
-        temp = exist( name );
-        if temp ~= 2 & temp ~= 3,
-            error( sprintf( 'Undefined matrix structure type: %s', argt ) );
+        temp = exist( name, 'file' );
+        if temp ~= 2 && temp ~= 3,
+            error( 'Undefined matrix structure type: %s', argt );
         else
             error( lasterror );
         end

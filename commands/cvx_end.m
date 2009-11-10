@@ -16,12 +16,12 @@ end
 p = index( prob );
 pstr = cvx___.problems( p );
 
-if isempty( pstr.objective ) & isempty( pstr.variables ) & isempty( pstr.duals ) & nnz( pstr.t_variable ) == 1,
+if isempty( pstr.objective ) && isempty( pstr.variables ) && isempty( pstr.duals ) && nnz( pstr.t_variable ) == 1,
 
-    warning( 'Empty cvx model; no action taken.' );
+    warning( 'CVX:EmptyModel', 'Empty cvx model; no action taken.' );
     evalin( 'caller', 'cvx_pop( cvx_problem, ''none'' )' );
 
-elseif pstr.complete & nnz( pstr.t_variable ) == 1,
+elseif pstr.complete && nnz( pstr.t_variable ) == 1,
 
     %
     % Check the integrity of the variables
@@ -55,10 +55,9 @@ elseif pstr.complete & nnz( pstr.t_variable ) == 1,
     tt = i1 ~= i2;
     if any( tt ),
         vv = [ fn1 ; fn2 ];
+        evalin( 'caller', 'cvx_clear' );
         temp = sprintf( ' %s', vv{tt} );
-        temp = sprintf( 'The following cvx variable(s) have been overwritten:\n  %s\nThis is often an indication that an equality constraint was\nwritten with one equals ''='' instead of two ''==''. The model\nmust be rewritten before cvx can proceed.', temp );
-        eval( 'caller', 'cvx_clear' );
-        error( temp );
+        error( 'The following cvx variable(s) have been overwritten:\n  %s\nThis is often an indication that an equality constraint was\nwritten with one equals ''='' instead of two ''==''. The model\nmust be rewritten before cvx can proceed.', temp ); %#ok
     end
 
     %
@@ -82,7 +81,7 @@ elseif pstr.complete & nnz( pstr.t_variable ) == 1,
     % Pause again!
     %
 
-    if cvx___.pause & ~cvx___.quiet,
+    if cvx___.pause && ~cvx___.quiet,
         disp( ' ' );
         input( 'Press Enter/Return to continue:' );
         disp( ' ' );
@@ -104,8 +103,8 @@ elseif pstr.complete & nnz( pstr.t_variable ) == 1,
     assignin( 'caller', 'cvx_optdpt',  pstr.duals );
     assignin( 'caller', 'cvx_status',  pstr.status );
     assignin( 'caller', 'cvx_optval',  pstr.result );
-    assignin( 'caller', 'cvx_iters',   pstr.iters );
-    assignin( 'caller', 'cvx_tol',     pstr.tol );
+    assignin( 'caller', 'cvx_slvitr',   pstr.iters );
+    assignin( 'caller', 'cvx_slvtol',     pstr.tol );
     
     %
     % Compute the numerical values and clear out
@@ -130,22 +129,26 @@ else
 
     vars = cvx_collapse( pstr.variables, true, false );
     dvars = cvx_collapse( pstr.duals, true, false );
-    if ~isempty( vars ) | ~isempty( dvars ),
-        base(1).type = '.';
-        base(1).subs = [ pstr.name, '_' ];
-        base(2).type = '{}';
-    end
-    if ~isempty( vars ),
-        nvars = cvx___.problems( np ).variables;
-        base(2).subs = { eval( 'length(subsref(nvars,base(1)))+1', '1' ) };
-        nvars = builtin( 'subsasgn', nvars, base, vars );
-        cvx___.problems( np ).variables = nvars;
-    end
-    if ~isempty( dvars ),
-        nvars = cvx___.problems( np ).duals;
-        base(2).subs = { eval( 'length(subsref(nvars,base(1)))+1', '1' ) };
-        nvars = builtin( 'subsasgn', nvars, base, dvars );
-        cvx___.problems( np ).duals = nvars;
+    if ~isempty( vars ) || ~isempty( dvars ),
+        pname = [ pstr.name, '_' ];
+        if ~isempty( vars ),
+            try
+                ovars = cvx___.problems(np).variables.(pname);
+            catch
+                ovars = {};
+            end
+            ovars{end+1} = vars;
+            cvx___.problems(np).variables.(pname) = ovars;
+        end
+        if ~isempty( dvars ),
+            try
+                ovars = cvx___.problems(np).duals.(name);
+            catch
+                ovars = {};
+            end
+            ovars{end+1} = dvars;
+            cvx___.problems(np).duals.(pname) = ovars;
+        end
     end
 
     %
@@ -191,7 +194,7 @@ else
             x = sparsify( x, 'objective' );
         end
         xB = cvx_basis( x );
-        [ r, c ] = find( xB );
+        [ r, c ] = find( xB ); %#ok
         t = r ~= 1; r = r( t );
         cvx___.canslack( r ) = true;
 
@@ -229,7 +232,7 @@ end
 
 assignin( 'caller', 'cvx_cputime', cputime - pstr.cputime );
     
-if isempty( cvx___.problems ) & cvx___.profile,
+if isempty( cvx___.problems ) && cvx___.profile,
     profile off;
 end
 

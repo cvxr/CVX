@@ -1,4 +1,5 @@
 function z = newtemp( prob, model, base )
+global cvx___
 error( nargchk( 1, 3, nargin ) );
 
 %
@@ -8,14 +9,12 @@ error( nargchk( 1, 3, nargin ) );
 if ~isa( prob, 'cvxprob' ),
     error( 'First argument must be a cvxprob object.' );
 end
-global cvx___
-p = index( prob );
 
 %
 % Check model
 %
 
-if nargin < 2 | isempty( model ),
+if nargin < 2 || isempty( model ),
     ismod = 0;
     siz   = [ 1, 1 ];
     str   = sparse( 1, 1, 1 );
@@ -36,11 +35,16 @@ end
 % Check base
 %
 
-if nargin < 3 | isempty( base ),
+if nargin < 3 || isempty( base ),
     base( 1 ).type = '.';
     base( 1 ).subs = 'temp_';
     base( 2 ).type = '{}';
-    base( 2 ).subs = { eval( 'length(cvx___.problems( p ).variables.temp_)+1','1' ) };
+    try
+        ndx = length(cvx___.problems( p ).variables.temp_);
+    catch
+        ndx = 0;
+    end
+    base( 2 ).subs = { ndx + 1 };
 end
 
 %

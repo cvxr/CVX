@@ -24,12 +24,12 @@ switch nargin,
         dim = [ find( s > 1 ), 1 ];
         dim = dim( 1 );
     case 2,
-        if ~isnumeric( dim ) | dim <= 0 | dim ~= floor( dim ),
+        if ~isnumeric( dim ) || dim <= 0 || dim ~= floor( dim ),
             error( 'Second argument must be a dimension.' );
         end
 end
 
-if dim > length( s ) | s( dim ) == 1,
+if dim > length( s ) || s( dim ) == 1,
 
     y = x;
 
@@ -52,7 +52,7 @@ else
     y = cvx( s, b );
     v = cvx_vexity( y );
     if any( isnan( v( : ) ) ),
-        error( sprintf( 'Disciplined convex programming error:\n   Illegal addition encountered (e.g., {convex} + {concave}).' ) );
+        error( 'Disciplined convex programming error:\n   Illegal addition encountered (e.g., {convex} + {concave}).', 1 ); %#ok
     end
 
 end

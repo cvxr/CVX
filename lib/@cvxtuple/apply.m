@@ -2,11 +2,11 @@ function y = apply( func, x )
 y = do_apply( func, x.value_ );
 
 function y = do_apply( func, x )
+global cvx___
 switch class( x ),
     case 'struct',
         y = cell2struct( do_apply( func, struct2cell( x ) ), fieldnames( x ), 1 );
     case 'cell',
-        global cvx___
         if cvx___.hcellfun,
             y = cellfun( func, x, 'UniformOutput', false );
         else

@@ -50,7 +50,7 @@ end;
 %
 %  Check for any rotated cone constraints.
 %
-if (isfield(K,'r') & (~isempty(K.r)) & (K.r ~= 0)),
+if (isfield(K,'r') && (~isempty(K.r)) && (K.r ~= 0)),
   disp('rotated cone constraints are not yet supported.');
   return;
 end; 
@@ -135,7 +135,7 @@ else
     fprintf(fid,'1\n');
     work=c(base:base+K.s(i)^2-1);
     work=reshape(work,K.s(i),K.s(i));
-    if (work ~= work'),
+    if nnz(work ~= work'),
       disp('Non symmetric C.s matrix!');
       work=(work+work')/2;
     end;
@@ -163,7 +163,7 @@ else
       fprintf(fid,'1\n');
       work=A(cn,base:base+K.s(i)^2-1);
       work=reshape(work,K.s(i),K.s(i));
-      if (work ~= work'),
+      if nnz(work ~= work'),
         disp('Non symmetric A.s matrix!');
         work=(work+work')/2;
       end;

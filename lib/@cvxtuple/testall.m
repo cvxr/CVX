@@ -2,11 +2,11 @@ function y = testall( func, x )
 y = do_test( func, x.value_ );
 
 function y = do_test( func, x )
+global cvx___
 switch class( x ),
     case 'struct',
         y = do_test( func, struct2cell( x ) );
     case 'cell',
-        global cvx___
         if cvx___.hcellfun,
             y = all( cellfun( func, x ) );
         else

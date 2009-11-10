@@ -77,10 +77,10 @@ if ~cheat,
         bad = remap_plus( bad );
     end
     if nnz( bad ),
-        if ~xs, xs = cvx_subsref( x, bad ); end
-        if ~ys, ys = cvx_subsref( y, bad ); end
-        if isdiff, op = '-'; else, op = '+'; end
-        error( sprintf( 'Disciplined convex programming error:\n   Illegal operation: {%s} %s {%s}', cvx_class( x, false, true ), op, cvx_class( y, false, true ) ) );
+        if ~xs, x = cvx_subsref( x, bad ); end
+        if ~ys, y = cvx_subsref( y, bad ); end
+        if isdiff, op = '-'; else op = '+'; end
+        error( 'Disciplined convex programming error:\n   Illegal operation: {%s} %s {%s}', cvx_class( x, false, true ), op, cvx_class( y, false, true ) );
     end
 end
 
@@ -98,20 +98,20 @@ else
     if isdiff,
         by = -by;
     end
-    if xs & ~ys,
+    if xs && ~ys,
         nz = prod( sz );
         bx = bx( :, ones( 1, nz ) );
-    elseif ys & ~xs,
+    elseif ys && ~xs,
         nz = prod( sz );
         by = by( :, ones( 1, nz ) );
     end
     nx = size( bx, 1 );
     ny = size( by, 1 );
     if nx < ny,
-        if issparse( by ) & ~issparse( bx ), bx = sparse( bx ); end
+        if issparse( by ) && ~issparse( bx ), bx = sparse( bx ); end
         bx( ny, : ) = 0;
     elseif ny < nx,
-        if issparse( bx ) & ~issparse( by ), by = sparse( by ); end
+        if issparse( bx ) && ~issparse( by ), by = sparse( by ); end
         by( nx, : ) = 0;
     end
     bz = bx + by;

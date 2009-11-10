@@ -48,7 +48,7 @@ if abs(abs(feasratio)-1) < 0.1
     z0 = x0 / d.l(1);
     %This value is never used.
     %deptol = 1E-10 * max(x0,z0);
-    if (feasratio < -0.5) & (x0 < z0*z0)
+    if (feasratio < -0.5) && (x0 < z0*z0)
         x0 = 0;                          % Try project onto direction.
     end
     % ------------------------------------------------------------
@@ -82,7 +82,7 @@ if abs(abs(feasratio)-1) < 0.1
     % ----------------------------------------
     % CHECK WHETHER x[B] >= 0 AND WHETHER RESIDUAL DID NOT DETERIORATE.
     % ----------------------------------------
-    if (min(x) < 0.0) | ...
+    if (min(x) < 0.0) || ...
             (norm(err.b,inf) > 5 * max(max(y0,1e-10 * x0) * R.maxb, y0 * R.maxRb))
         x = [];  % Incorrect guess of LP-basis
         return
@@ -111,7 +111,7 @@ if abs(abs(feasratio)-1) < 0.1
         cx = c'*x;
         by = b'*y;
         z0 = by - cx; %[JFS 9/2003: changed condition below
-        if (~isempty(lpNB) & (min(z(lpNB)) < 0.0)) | ...
+        if (~isempty(lpNB) && (min(z(lpNB)) < 0.0)) || ...
                 normzB > 5 * max(1E-10 * (x0+(x0==0)) * norm(c), min(y0,1e-8) * norm(R.c))
             x = [];  % Incorrect guess of LP-basis
             return

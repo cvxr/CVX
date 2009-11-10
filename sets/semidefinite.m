@@ -1,4 +1,4 @@
-function cvx_optpnt = semidefinite( sz, iscplx )
+function cvx_optpnt = semidefinite( sz, iscplx ) %#ok
 
 %SEMIDEFINITE   Real symmetric positive semidefinite matrices.
 %    SEMIDEFINITE(N), where N is an integer, creates a symmetric matrix
@@ -38,7 +38,7 @@ function cvx_optpnt = semidefinite( sz, iscplx )
 %
 
 error( nargchk( 1, 2, nargin ) );
-if ~isnumeric( sz ) | isempty( sz ) | any( sz < 0 ) | any( sz ~= floor( sz ) ),
+if ~isnumeric( sz ) || isempty( sz ) || any( sz < 0 ) || any( sz ~= floor( sz ) ),
     error( 'First argument must be a nonnegative integer or a valid size vector.' );
 elseif length( sz ) == 1,
     sz = [ sz, sz ];
@@ -52,7 +52,7 @@ end
 
 if nargin < 2,
     iscplx = false;
-elseif ( ~isnumeric( iscplx ) & ~islogical( iscplx ) ) | length( iscplx ) ~= 1,
+elseif ( ~isnumeric( iscplx ) && ~islogical( iscplx ) ) || length( iscplx ) ~= 1,
     error( 'Second argument must be a numeric or logical scalar.' );
 end
 
@@ -61,7 +61,7 @@ end
 %
 
 cvx_begin_set
-   if any( sz == 0 ) | sz(1) == 1,
+   if any( sz == 0 ) || sz(1) == 1,
        variable x( sz )
        s = 'nonnegative';
    elseif iscplx,

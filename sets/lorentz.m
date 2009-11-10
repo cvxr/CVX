@@ -50,14 +50,14 @@ end
 % Check dimension
 %
 
-if nargin < 2 | isempty( dim ),
+if nargin < 2 || isempty( dim ),
     dim = cvx_default_dimension( sx );
 elseif ~cvx_check_dimension( dim, true ),
     error( 'Second argument must be a dimension (or zero).' );
 end
 sy = sx;
 nd = length( sx );
-if dim <= 0 | dim > nd | sx( dim ) == 1,
+if dim <= 0 || dim > nd || sx( dim ) == 1,
     nv  = 1;
     dim = 0;
 else
@@ -69,7 +69,7 @@ end
 % Check complex flag
 %
 
-if nargin < 3 | isempty( iscplx ),
+if nargin < 3 || isempty( iscplx ),
     iscplx = false;
 elseif length( iscplx ) ~= 1,
     error( 'Third argument must be a scalar.' );
@@ -89,9 +89,9 @@ elseif iscplx,
 end
 cvx_begin_set
     variables x( nv, ny ) y( 1, ny )
-    [ ty, dummy ] = find( cvx_basis( y ) );
+    [ ty, dummy ] = find( cvx_basis( y ) ); %#ok
     if nv > 0,
-        [ tx, dummy ] = find( cvx_basis( x ) );
+        [ tx, dummy ] = find( cvx_basis( x ) ); %#ok
         newnonl( cvx_problem, 'lorentz', [ reshape( tx, nv, ny ) ; reshape( ty, 1, ny ) ] );
     else
         newnonl( cvx_problem, 'nonnegative', ty );

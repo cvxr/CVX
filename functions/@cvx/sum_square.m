@@ -4,7 +4,7 @@ function cvx_optval = sum_square( x, varargin )
 
 error( nargchk( 1, 2, nargin ) );
 if ~isreal( x ),
-    error( sprintf( 'Disciplined convex programming error:\n   The argument to SUM_SQUARE must be real and affine.' ) );
+    error( 'Disciplined convex programming error:\n   The argument to SUM_SQUARE must be real and affine.', 1 ); %#ok
 end
 cvx_optval = quad_over_lin( x, 1, varargin{:} );
 

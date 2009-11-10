@@ -1,6 +1,6 @@
 function a = gt( x, y )
 
-if isa(y,'cvxin')|~isa(x,'cvxin')|~x.active,
+if isa(y,'cvxin')||~isa(x,'cvxin')||~x.active,
     error( 'CVX error: improper use of the <in> pseudo-operator.' );
 end
 b = newcnstr( evalin( 'caller', 'cvx_problem', '[]' ), x.value, y, '==' );

@@ -27,7 +27,7 @@ function [cvx_optval,P,q,r,X,lambda] = cheb(A,b,Sigma);
 %
 
 [ m, n ] = size( A );
-cvx_begin sdp
+cvx_begin sdp quiet
     variable P(n,n) symmetric
     variables q(n) r tau(m)
     dual variables Z{m}

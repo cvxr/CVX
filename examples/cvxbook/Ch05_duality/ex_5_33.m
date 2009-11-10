@@ -8,7 +8,6 @@
 % Plots p_star(epsilon) versus epsilon and demonstrates the fact that it's
 % affine on an interval that includes epsilon = 0.
 
-cvx_quiet(true);
 % Input data
 A = [-2  7  1; ...
      -5 -1  3; ...
@@ -24,7 +23,7 @@ p_star = zeros(size(epsilon));
 fprintf(1,'Computing p*(epsilon) for -1 <= epsilon <= 1 ...');
 
 for i=1:length(epsilon)
-    cvx_begin
+    cvx_begin quiet
         variable x(3);
         minimize ( norm( A*x + b + epsilon(i)*d, 1) )
     cvx_end

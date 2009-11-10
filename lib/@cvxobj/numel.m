@@ -1,5 +1,5 @@
 function n = numel( x, varargin )
-n = prod( size( x ) );
+n = prod( size( x ) ); %#ok
 
 % Copyright 2009 Michael C. Grant and Stephen P. Boyd.
 % See the file COPYING.txt for full copyright information.

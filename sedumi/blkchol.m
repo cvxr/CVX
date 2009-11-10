@@ -24,7 +24,7 @@
 %
 % See also symbchol, sparfwslv, sparbwslv, [symbfact, symmmd, chol].
 
-function [L.L, L.d, L.skip, L.add] = blkchol(L,X,pars,absd)
+function [LL, Ld, Lskip, Ladd] = blkchol(L,X,pars,absd) %#ok
 
  %  
 % This file is part of SeDuMi 1.1 by Imre Polik and Oleksandr Romanko

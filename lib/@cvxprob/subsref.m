@@ -1,7 +1,6 @@
 function x = subsref( x, S, cheat )
-
+global cvx___
 try
-    global cvx___
     x = subsref( cvx___.problems( index( x ) ), S );
 catch
     error( lasterr );

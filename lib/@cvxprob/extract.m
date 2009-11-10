@@ -1,5 +1,5 @@
 function [ dbcA, cones, dir, Q, P ] = extract( pp, destructive )
-if nargin < 2 | nargout < 7, destructive = false; end
+if nargin < 2 || nargout < 7, destructive = false; end
 
 global cvx___
 p = cvx___.problems( index( pp ) );
@@ -13,7 +13,7 @@ dbcA = p.objective;
 if isempty(p.objective),
     dir = 1;
     dbcA = cvx( [ 1, 1 ], [] );
-elseif strcmp( p.direction, 'minimize' ) | strcmp( p.direction, 'epigraph' ),
+elseif strcmp( p.direction, 'minimize' ) || strcmp( p.direction, 'epigraph' ),
     dbcA = sum( vec( dbcA ) );
     dir = 1;
 else
@@ -38,7 +38,7 @@ if p.n_equality > 0,
     end
 elseif destructive,
     cvx___.equalities = cvx( [ 0, 1 ], [] );
-    cvx___.needslack = logical( zeros( 0, 1 ) );
+    cvx___.needslack =  false( 0, 1 ) ;
 end
 if ~isempty( AA ),
     ineqs = [ false ; ineqs ];
@@ -132,9 +132,9 @@ if any( ineqs ),
             ineqs( ndxs( temp ) ) = false;
             if any( qslack ),
                 ndxs = ndxs( ~temp );
-                [ rr, cc, vv ] = find( sterms( qslack, ~temp ) );
+                [ rr, cc, vv ] = find( sterms( qslack, ~temp ) ); %#ok
                 [ c1, ci ] = unique( cc ); [ c2, ri ] = unique( rr( ci ) );
-                [ c2, rj ] = unique( rr ); [ c2, cj ] = unique( cc( rj ) );
+                [ c2, rj ] = unique( rr ); [ c2, cj ] = unique( cc( rj ) ); %#ok
                 if length( c2 ) < length( ri ), c2 = c1( ri ); end
                 ineqs( ndxs( c2 ) ) = false;
             end
@@ -147,7 +147,6 @@ end
 %
 
 ocones = [];
-cones = cvx___.cones;
 used = full( any( dbcA, 2 ) );
 if all( used ),
     cones = cvx___.cones;
@@ -165,7 +164,7 @@ else
                 cones = [ cones, ncone ];
             end
         end
-        if destructive & ~all( temp ),
+        if destructive && ~all( temp ),
             cone.indices( :, temp ) = [];
             if isempty( ocones ),
                 ocones = cone;

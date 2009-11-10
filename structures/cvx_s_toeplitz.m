@@ -8,7 +8,7 @@ end
 mn = m * n;
 c  = 0 : n - 1;
 c  = c( ones( 1, m ), : );
-r  = [ 0 : m - 1 ]';
+r  = ( 0 : m - 1 )';
 r  = r( :, ones( 1, n ) );
 y  = r - c + 1;
 temp = y <= 0;

@@ -1,6 +1,6 @@
 function y = lt( x, y )
 
-if isa(x,'cvxin')|~isa(y,'cvxin')|y.active,
+if isa(x,'cvxin')||~isa(y,'cvxin')||y.active,
     error( 'CVX error: improper use of the <in> pseudo-operator.' );
 end
 y.active = true;

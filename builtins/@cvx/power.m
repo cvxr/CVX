@@ -40,7 +40,7 @@ sx = size( x ); xs = all( sx == 1 );
 sy = size( y ); ys = all( sy == 1 );
 if xs,
     sz = sy;
-elseif ys | isequal( sx, sy ),
+elseif ys || isequal( sx, sy ),
     sz = sx;
 else
     error( 'Matrix dimensions must agree.' );
@@ -57,7 +57,7 @@ if cvx_isconstant( y ),
     
 elseif ~cvx_isconstant( x ),
     
-    error( sprintf( 'Disciplined convex programming error:\n   In an expression X .^ Y, either X or Y must be constant.' ) );
+    error( 'Disciplined convex programming error:\n   In an expression X .^ Y, either X or Y must be constant.', 1 ); %#ok
     
 end
 
@@ -112,7 +112,7 @@ for k = 1 : nv,
     switch vu( k ),
         case 0,
             % Invalid
-            error( sprintf( 'Disciplined convex programming error:\n    Cannot perform the operation {%s}.^{%s}', cvx_class( xt, true, true, true ), cvx_class( yt, true, true, true ) ) );
+            error( 'Disciplined convex programming error:\n    Cannot perform the operation {%s}.^{%s}', cvx_class( xt, true, true, true ), cvx_class( yt, true, true, true ) );
         case 1,
             % zero .^ convex
             cvx_optval = cvx( zeros( sz ) );

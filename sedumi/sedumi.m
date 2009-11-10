@@ -261,7 +261,7 @@ if issparse(A)
         %A dual improving direction could be computed easily
         y=[A;b']\[zeros(N,1);1];
 
-        warning('The problem is primal infeasible. there is no x such that Ax=b.')
+        warning('SeDuMi:PrimalInfeasible','The problem is primal infeasible. there is no x such that Ax=b.')
         return
     elseif sprank(A)<m
         error('The coefficient matrix is not full row rank.')
@@ -271,7 +271,7 @@ else
         info.pinf=1;
         x=[];
         y=[A;b']\[zeros(N,1);1];
-        warning('The problem is primal infeasible, there is no x such that Ax=b.')
+        warning('SeDuMi:PrimalInfeasible', 'The problem is primal infeasible, there is no x such that Ax=b.')
         return
     elseif rank(A)<m
         error('The coefficient matrix is not full row rank.')
@@ -319,10 +319,10 @@ if pars.prep==1
             my_fprintf(pars.fid,'Detected %i diagonal SDP block(s) with %i linear variables\n',blockcount,varcount);
         end
     end
-    if isfield(prep,'freeblock1') & ~isempty(prep.freeblock1)
+    if isfield(prep,'freeblock1') && ~isempty(prep.freeblock1)
         my_fprintf(pars.fid,'Detected %i free variables in the linear part\n',length(prep.freeblock1));
     end
-    if isfield(prep,'Kf') & prep.Kf>0
+    if isfield(prep,'Kf') && prep.Kf>0
         switch pars.free
             case 0
                 my_fprintf(pars.fid,'Split %i free variables\n',prep.Kf);
@@ -410,9 +410,9 @@ while STOP == 0
         keyboard
     end
     
-    if pars.stepdif==2 & ...
-            (iter>20 | (iter>1 & (err.kcg + Lsd.kcg>3)) | ...
-            (iter>5 & abs(1-feasratio)<0.05) )
+    if pars.stepdif==2 && ...
+            (iter>20 || (iter>1 && (err.kcg + Lsd.kcg>3)) || ...
+            (iter>5 && abs(1-feasratio)<0.05) )
         pars.stepdif=1;
     end
     % --------------------------------------------------
@@ -464,13 +464,13 @@ while STOP == 0
     meritOld = merit;
     merit = (sum(R.w) + max(R.sd,0))^2 * y0 / R.b0;
     rate = merit / meritOld;
-    if (rate >= 0.9999) & (wr.desc == 1)
+    if (rate >= 0.9999) && (wr.desc == 1)
         % ------------------------------------------------------------
         % STOP = -1  --> Stop due to numerical problems
         % ------------------------------------------------------------
         STOP = -1;                  % insuf. progress in descent direction.
         iter = iter - 1;
-        y0 = y0Old;
+        y0 = y0Old; %#ok
         my_fprintf(pars.fid,'Run into numerical problems.\n');
         break
     end
@@ -496,7 +496,7 @@ while STOP == 0
     % If we get in superlinear region of LP,
     % try to guess optimal solution:
     % ----------------------------------------
-    if lponly & (rate < 0.05)
+    if lponly && (rate < 0.05)
         [xsol,ysol] = optstep(A,b,c, y0,y,d,v,dxmdz, ...
             K,L,symLden,dense, Ablkjc,Aord,ADA,DAt, feasratio, R,pars);
         if ~isempty(xsol)
@@ -504,7 +504,7 @@ while STOP == 0
             feasratio = 1 - 2*(xsol(1)==0);
             break
         end
-    elseif (by > 0) & (abs(1+feasratio) < 0.05) & (R.b0*y0 < 0.5)
+    elseif (by > 0) && (abs(1+feasratio) < 0.05) && (R.b0*y0 < 0.5)
         if max(eigK(full(qreshape(Amul(A,dense,y,1),1,K)),K)) <= pars.eps * by
             STOP = 3;                   % Means Farkas solution found !
             break
@@ -604,7 +604,7 @@ if x0 > 0
         % If the quality of the Farkas solution is good and better than
         % the approx. feasible soln, set x0=0: Farkas solution found.
         % ------------------------------------------------------------
-        if (reldirinf < pars.eps) | (relinf > max(pars.bigeps, reldirinf))
+        if (reldirinf < pars.eps) || (relinf > max(pars.bigeps, reldirinf))
             x0 = 0.0;
             pinf = pdirinf;
             dinf = ddirinf;
@@ -692,7 +692,7 @@ else  % (if x0>0)
         my_fprintf(pars.fid, 'Failed: no sensible solution/direction found.\n');
         info.numerr = 2;
     elseif STOP == -1
-        if (pinf > -pars.eps * cx) & (dinf > pars.eps * by)
+        if (pinf > -pars.eps * cx) && (dinf > pars.eps * by)
             info.numerr = 1;
         else
             info.numerr = 0;
@@ -705,7 +705,7 @@ end
 % - bring ysol into complex format, indicated by K.ycomplex.
 % - at 0's in ysol where rows where removed.
 % ----------------------------------------'
-[x,y,K] = posttransfo(x,y,prep,K,pars);
+[x,y,K] = posttransfo(x,y,prep,K,pars); %#ok
 % Detailed timing
 %Preprocessing+IPM+Postprocessing
 info.timing=[cputime1-cputime0 cputime2-cputime1 cputime-cputime2];

@@ -32,10 +32,10 @@ if nargin < 3, oper = 'times'; end
 
 sx = size( x );
 sy = size( y );
-if all( sx == 1 ) | all( sy == 1 ),
+if all( sx == 1 ) || all( sy == 1 ),
     z = feval( oper, x, y );
     return
-elseif length( sx ) > 2 | length( sy ) > 2,
+elseif length( sx ) > 2 || length( sy ) > 2,
     error( 'Input arguments must be 2-D.' );
 elseif sx( 2 ) ~= sy( 1 ),
     error( 'Inner matrix dimensions must agree.' );
@@ -52,20 +52,20 @@ if cvx_isconstant( x ),
     
     xC = cvx_constant( x );
     if nnz( isnan( xC ) ),
-        error( sprintf( 'Disciplined convex programming error:\n    Invalid numeric values (NaNs) may not be used in CVX expressions.' ) );
+        error( 'Disciplined convex programming error:\n    Invalid numeric values (NaNs) may not be used in CVX expressions.', 1 ); %#ok
     elseif cvx_isconstant( y ),
         yC = cvx_constant( y );
         if nnz( isnan( yC ) ),
-            error( sprintf( 'Disciplined convex programming error:\n    Invalid numeric values (NaNs) may not be used in CVX expressions.' ) );
+            error( 'Disciplined convex programming error:\n    Invalid numeric values (NaNs) may not be used in CVX expressions.', 1 ); %#ok
         end
         z = feval( [ 'm', oper ], xC, yC );
         if nnz( isnan( z ) ),
-            error( sprintf( 'Disciplined convex programming error:\n    This expression produced one or more invalid numeric values (NaNs).' ) );
+            error( 'Disciplined convex programming error:\n    This expression produced one or more invalid numeric values (NaNs).', 1 ); %#ok
         end
         z = cvx( z );
         return
     elseif isequal( oper, 'rdivide' ),
-        error( sprintf( 'Disciplined convex programming error:\n    Matrix divisor must be constant.' ) );
+        error( 'Disciplined convex programming error:\n    Matrix divisor must be constant.', 1 ); %#ok
     end
     xC   = cvx_constant( x );
     yA   = cvx_basis( y );
@@ -80,21 +80,17 @@ elseif cvx_isconstant( y ),
 
     yC = cvx_constant( y );
     if nnz( isnan( yC ) ),
-        error( sprintf( 'Disciplined convex programming error:\n    Invalid numeric values (NaNs) may not be used in CVX expressions.' ) );
+        error( 'Disciplined convex programming error:\n    Invalid numeric values (NaNs) may not be used in CVX expressions.', 1 ); %#ok
+    elseif isequal( oper, 'ldivide' ),
+        error( 'Disciplined convex programming error:\n    Matrix divisor must be constant.', 1 ); %#ok
     end
-    if isequal( oper, 'ldivide' ),
-        error( sprintf( 'Disciplined convex programming error:\n    Matrix divisor must be constant.' ) );
-    else
-        xA   = cvx_basis( x );
-        cnst = false;
-        raff = true;
-        raff = true;
-        laff = false;
-        quad = false;
-        cnst = false;
-        posy = false;
-        vpos = false;
-    end
+    xA   = cvx_basis( x );
+    raff = true;
+    laff = false;
+    quad = false;
+    cnst = false;
+    posy = false;
+    vpos = false;
     
 else
 
@@ -128,7 +124,7 @@ else
     quad = +ax * +ay;
     if nnz( quad ) ~= 0,
         if length( quad ) ~= 1,
-            error( sprintf( 'Disciplined convex programming error:\n    Invalid quadratic form: must be a scalar.' ) );
+            error( 'Disciplined convex programming error:\n    Invalid quadratic form: must be a scalar.', 1 ); %#ok
         else
             cx = cx & ~ax;
             cy = cy & ~ay;
@@ -152,7 +148,7 @@ else
     end
     othr = +( vx > 1 | vx < 0 ) * +( vy > 1 | vy < 0 ) - quad - posy - vpos;
     if nnz( othr ) ~= 0,
-        error( sprintf( 'Disciplined convex programming error:\n    Cannot perform the operation {%s}*{%s}', cvx_class( x ), cvx_class( y ) ) );
+        error( 'Disciplined convex programming error:\n    Cannot perform the operation {%s}*{%s}', cvx_class( x ), cvx_class( y ) );
     end
     laff = nnz( laff ) ~= 0;
     raff = nnz( raff ) ~= 0;
@@ -162,7 +158,6 @@ else
 end
 
 first = true;
-check_inf = false;
 
 if cnst,
     switch oper,
@@ -170,7 +165,7 @@ if cnst,
     case 'rdivide', z2 = xC / yC;
     otherwise,      z2 = xC * yC;
     end
-    if first, z = z2; first = false; else z = z + z2; end
+    if first, z = z2; first = false; else z = z + z2; end %#ok
 end
 
 if raff,
@@ -192,9 +187,6 @@ if raff,
     otherwise,      z2 = z2 * yC;
     end
     z2 = cvx_reshape( z2, [ nA, nz ], tt );
-    if 0, first & nnz( isnan( z2 ) ),
-        error( sprintf( 'Disciplined convex programming error:\n    This expression produced one or more invalid numeric values (NaNs).' ) );
-    end
     z2 = cvx( sz, z2 );
     if first, z = z2; first = false; else z = z + z2; end
 end
@@ -241,13 +233,13 @@ if quad,
     if sum( sum( abs( xA - alpha * cyA ) ) ) <= 2 * eps * sum( sum( abs( xA ) ) ),
         beta = xB - alpha * conj( yB );
         yt = cvx( [ 1, size( yA, 2 ) ], yA ) + yB;
-        if isreal( yA ) & isreal( yB ) & isreal( beta ),
+        if isreal( yA ) && isreal( yB ) && isreal( beta ),
             beta = ( 0.5 / alpha ) * beta;
             z2 = alpha * ( sum_square( yt + beta ) - sum_square( beta ) );
         elseif all( abs( beta ) <= 2 * eps * abs( xB ) ),
             z2 = alpha * sum_square_abs( yt );
         else
-            error( sprintf( 'Disciplined convex programming error:\n    Invalid quadratic form: product is not real.\n' ) );
+            error( 'Disciplined convex programming error:\n    Invalid quadratic form: product is not real.\n', 1 ); %#ok
         end
     else
         %
@@ -262,13 +254,13 @@ if quad,
         Q  = cxA * yB.' + cyA * xB.';
         R  = xB * yB.';
         P  = 0.5 * ( P + P.' );
-        if ~isreal( R ) | ~isreal( Q ) | ~isreal( P ),
-            error( sprintf( 'Disciplined convex programming error:\n   Invalid quadratic form: product is complex.' ) );
+        if ~isreal( R ) || ~isreal( Q ) || ~isreal( P ),
+            error( 'Disciplined convex programming error:\n   Invalid quadratic form: product is complex.', 1 ); %#ok
         else
             xx = cvx( zb, sparse( dx, 1 : zb, 1 ) );
             [ z2, success ] = quad_form( xx, P );
             if ~success,
-                error( sprintf( 'Disciplined convex programming error:\n   Invalid quadratic form: neither convex nor concave.' ) );
+                error( 'Disciplined convex programming error:\n   Invalid quadratic form: neither convex nor concave.', 1 ); %#ok
             end
             z2 = z2 + Q' * xx + R;
         end
@@ -295,7 +287,7 @@ if vpos,
     [ iz, jz ] = find( sparse( 1 : nnz(gx), jx, 1 ) * sparse( iy, 1 : nnz(gy), 1 ) );
     z2 = exp( vec( cvx_subsref( vx, iz ) ) + vec( cvx_subsref( vy, jz ) ) );
     z2 = sparse( ix(iz), jy(jz), z2, sz(1), sz(2) );
-    if first, z = z2; first = false; else z = z + z2; end
+    if first, z = z2; first = false; else z = z + z2; end %#ok
 end
 
 %
@@ -312,7 +304,7 @@ if any( isnan( v( : ) ) ),
     if any( isnan( v( ~tt ) ) ),
         temp = [ temp, '\n   Illegal affine combination of convex and/or concave terms detected.' ];
     end
-    error( sprintf( temp ) );
+    error( temp, 1 ); 
 end
 
 % Copyright 2009 Michael C. Grant and Stephen P. Boyd.

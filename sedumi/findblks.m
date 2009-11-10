@@ -11,7 +11,7 @@
 
 
 
-function Ablk = findblks(At,Ablkjc,blk0,blk1,blkstart)
+function Ablk = findblks(At,Ablkjc,blk0,blk1,blkstart) %#ok
 %
 % This file is part of SeDuMi 1.1 by Imre Polik and Oleksandr Romanko
 % Copyright (C) 2005 McMaster University, Hamilton, CANADA  (since 1.1)

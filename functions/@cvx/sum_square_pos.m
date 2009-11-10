@@ -1,4 +1,4 @@
-function cvx_optval = sum_square( x, varargin )
+function cvx_optval = sum_square_pos( x, varargin ) %#ok
 
 %SUM_SQUARE_POS   Internal cvx version.
 
@@ -6,7 +6,7 @@ error( nargchk( 1, 2, nargin ) );
 cvx_begin
     variable x2( size( x ) );
     minimize( sum_square( x2, varargin{:} ) );
-    x2 >= x;
+    x2 >= x; %#ok
 cvx_end
 
 % Copyright 2009 Michael C. Grant and Stephen P. Boyd. 

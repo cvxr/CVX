@@ -1,4 +1,4 @@
-function y = cvxs_symmetric_ut( m, n )
+function y = cvx_s_symmetric_ut( m, n )
 %CVX_S_SYMMETRIC_UT Symmetric matrices (upper triangle storage).
 
 if m ~= n,

@@ -48,14 +48,12 @@ function varargout = dual( varargin )
 
 if ~evalin( 'caller', 'exist(''cvx_problem'',''var'')', '0' ),
     error( 'A cvx problem does not exist in this scope.' );
-else
-    prob = evalin( 'caller', 'cvx_problem' );
-    p = index( prob );
+elseif ~iscellstr( varargin ),
+    error( 'All arguments must be strings.' );
 end
 
-if ~iscellstr( varargin ),
-    error( 'All arguments must be strings.' );
-elseif strcmp( varargin{1}, 'variable' ),
+prob = evalin( 'caller', 'cvx_problem' );
+if strcmp( varargin{1}, 'variable' ),
     error( nargchk( 2, 2, nargin ) );
     varargin(1) = [];
 elseif strcmp( varargin{1}, 'variables' ),
@@ -75,21 +73,21 @@ for k = 1 : nargs,
         x.name = nm;
         x.size = [];
     elseif nm(end) ~= '}',
-        error( sprintf( 'Invalid dual variable specification: %s', nm ) );
+        error( 'Invalid dual variable specification: %s', nm );
     else
         x.name = nm( 1 : xt( 1 ) - 1 );
         x.size = nm( xt( 1 ) + 1 : end - 1 );
     end
     if ~isvarname( x.name ),
-        error( sprintf( 'Invalid dual variable specification: %s', nm ) );
+        error( 'Invalid dual variable specification: %s', nm );
     elseif x.name( end ) == '_',
-        error( sprintf( 'Invalid dual variable specification: %s\n   Variables ending in underscores are reserved for internal use.', nm ) );
+        error( 'Invalid dual variable specification: %s\n   Variables ending in underscores are reserved for internal use.', nm );
     end
     if ischar( x.size ),
         x.size = evalin( 'caller', [ '[', x.size, '];' ], 'NaN' );
         [ temp, x.size ] = cvx_check_dimlist( x.size, true );
         if ~temp,
-            error( sprintf( [ 'Invalid variable specification: ', nm, '\n   Dimension list must be a vector of finite nonnegative integers.' ] ) );
+            error( 'Invalid variable specification: %s\n   Dimension list must be a vector of finite nonnegative integers.', nm );
         end
     end
     temp = newdual( prob, x.name, x.size );

@@ -34,7 +34,7 @@ function y = huber_circ( x, DIM, varargin )
 %       X, on the other hand, may be real or complex.
 
 if ~cvx_isaffine( x ),
-    error( sprintf( 'Disciplined convex programming error:\n    HUBER_CIRC is nonmonotonic in X, so X must be affine.' ) );
+    error( 'Disciplined convex programming error:\n    HUBER_CIRC is nonmonotonic in X, so X must be affine.', 1 ); %#ok
 end
 if nargin < 2, DIM = []; end
 y = huber_pos( norms( x, DIM ), varargin{:} );

@@ -52,7 +52,6 @@ if nn == 0,
     z = zeros( sz );
     return
 end
-zs = all( sz == 1 );
 
 %
 % Determine the computation methods
@@ -128,7 +127,7 @@ vr = remap( vx + size( remap, 1 ) * ( vy - 1 ) );
 vu = sort( vr );
 vu = vu([true,diff(vu)~=0]);
 nv = length( vu );
-if vu(1) == 1 & nv > 1,
+if vu(1) == 1 && nv > 1,
     vr(vr==1) == vu(2);
     nv = nv - 1;
     vu(1) = [];
@@ -142,8 +141,6 @@ x   = cvx( x );
 y   = cvx( y );
 xt  = x;
 yt  = y;
-xts = xs;
-yts = ys;
 if nv ~= 1,
     z = cvx( sz, [] );
 end
@@ -173,7 +170,7 @@ for k = 1 : nv,
     case 0,
 
         % Invalid
-        error( sprintf( 'Disciplined convex programming error:\n    Cannot perform the operation: {%s} %s {%s}', cvx_class( xt, true, true, true ), oper, cvx_class( yt, true, true, true ) ) );
+        error( 'Disciplined convex programming error:\n    Cannot perform the operation: {%s} %s {%s}', cvx_class( xt, true, true, true ), oper, cvx_class( yt, true, true, true ) );
         
     case 1,
         
@@ -188,7 +185,7 @@ for k = 1 : nv,
             cvx_optval = xb .* yb;
         end
         if nnz( isnan( cvx_optval ) ),
-            error( sprintf( 'Disciplined convex programming error:\n    This expression produced one or more invalid numeric values (NaNs).' ) );
+            error( 'Disciplined convex programming error:\n    This expression produced one or more invalid numeric values (NaNs).', 1 ); %#ok
         end
         cvx_optval = cvx( cvx_optval );
 
@@ -198,13 +195,13 @@ for k = 1 : nv,
         xb = cvx_constant( xt );
         if l_recip, xb = 1.0 ./ xb; end
         yb = yt;
-        if r_recip & nnz( xb ), yb = exp( - log( yb ) ); end
+        if r_recip && nnz( xb ), yb = exp( - log( yb ) ); end
         yb = yb.basis_;
         if ~xs,
-            nn = prod( size( xb ) );
+            nn = numel(  xb  );
             if ys,
                 xb = cvx_reshape( xb, [ 1, nn ] );
-                if issparse( yb ) & ~issparse( xb ), 
+                if issparse( yb ) && ~issparse( xb ), 
                     xb = sparse( xb ); 
                 end
             else
@@ -220,13 +217,13 @@ for k = 1 : nv,
         yb = cvx_constant( yt );
         if r_recip, yb = 1.0 ./ yb; end
         xb = xt;
-        if l_recip & any( xb ), xb = exp( - log( xb ) ); end
+        if l_recip && any( xb ), xb = exp( - log( xb ) ); end
         xb = xb.basis_;
         if ~ys,
-            nn = prod( size( yb ) );
+            nn = numel(  yb  );
             if xs,
                 yb = cvx_reshape( yb, [ 1, nn ] );
-                if issparse( xb ) & ~issparse( yb ),
+                if issparse( xb ) && ~issparse( yb ),
                     yb = sparse( yb );
                 end
             else
@@ -241,8 +238,8 @@ for k = 1 : nv,
         % affine .* affine
         nn = prod( sz );
         xA = xt.basis_; yA = yt.basis_;
-        if xs & ~ys, xA = xA( :, ones( 1, nn ) ); end
-        if ys & ~xs, yA = yA( :, ones( 1, nn ) ); end
+        if xs && ~ys, xA = xA( :, ones( 1, nn ) ); end
+        if ys && ~xs, yA = yA( :, ones( 1, nn ) ); end
         mm = max( size( xA, 1 ), size( yA, 1 ) );
         if size( xA, 1 ) < mm, xA( mm, end ) = 0; end
         if size( yA, 1 ) < mm, yA( mm, end ) = 0; end
@@ -259,10 +256,10 @@ for k = 1 : nv,
             elseif all( abs( beta ) <= 2 * eps * abs( xB ) ),
                 cvx_optval = alpha .* square_abs( y );
             else
-                error( sprintf( 'Disciplined convex programming error:\n    Invalid quadratic form(s): product is not real.\n' ) );
+                error( 'Disciplined convex programming error:\n    Invalid quadratic form(s): product is not real.\n', 1 ); %#ok
             end
         else
-            error( sprintf( 'Disciplined convex programming error:\n    Invalid quadratic form(s): not a square.\n' ) );
+            error( 'Disciplined convex programming error:\n    Invalid quadratic form(s): not a square.\n', 1 ); %#ok
         end
 
     case 5,

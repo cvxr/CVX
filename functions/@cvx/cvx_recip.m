@@ -45,7 +45,7 @@ for k = 1 : nv,
     switch vu( k ),
         case 0,
             % Invalid
-            error( sprintf( 'Disciplined convex programming error:\n    Cannot perform the operation recip( {%s} )', cvx_class( x, false, false, true ) ) );
+            error( 'Disciplined convex programming error:\n    Cannot perform the operation recip( {%s} )', cvx_class( x, false, false, true ) );
         case 1,
             % Non-zero constant
             yt = cvx( 1.0 ./ cvx_constant( xt ) );

@@ -39,12 +39,12 @@ nx = sx( dim );
 % Third argument check
 %
 
-if nargin < 3 | isempty( w ),
+if nargin < 3 || isempty( w ),
     w = [];
-elseif numel( w ) ~= length( w ) | ~isnumeric( w ) | ~isreal( w ) | any( w < 0 ) | any( w ~= floor( w ) ),
+elseif numel( w ) ~= length( w ) || ~isnumeric( w ) || ~isreal( w ) || any( w < 0 ) || any( w ~= floor( w ) ),
     error( 'Third argument must be a vector of nonnegative integers.' );
 elseif length( w ) ~= nx,
-    error( sprintf( 'Third argument must be a vector of length %d.', nx ) );
+    error( 'Third argument must be a vector of length %d.', nx );
 else
     w = reshape( w, 1, nx );
 end
@@ -55,7 +55,7 @@ if nx == 0,
 else
     if nx == 1,
         y = x;
-    elseif isempty( w ) | ~any( diff( w ) ),
+    elseif isempty( w ) || ~any( diff( w ) ),
         y = exp( sum( log( max( x, realmin ) ), dim ) * ( 1 / nx ) );
     elseif dim == 1,
         y = exp( w * log( max( x, realmin ) ) * ( 1 / sum( w ) ) );

@@ -7,7 +7,6 @@
 %               s.t.    a'*x = b
 % It is also given by P_C(x0) = x0 + (b - a'*x0)*a/||a||^2
 
-cvx_quiet(true);
 % Input data
 randn('seed',0);
 n  = 10;
@@ -23,7 +22,7 @@ fprintf(1,'Done! \n');
 % Solution via QP
 fprintf(1,'Computing the optimal solution by solving a QP ...');
 
-cvx_begin
+cvx_begin quiet
     variable x(n)
     minimize ( square_pos(norm(x - x0)) )
     a'*x == b;

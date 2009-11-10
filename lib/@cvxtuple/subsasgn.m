@@ -1,4 +1,4 @@
-function y = subsasgn( x, varargin )
+function y = subsasgn( x, varargin ) %#ok
 error( 'cvx tuple objects are read-only.' );
 
 % Copyright 2009 Michael C. Grant and Stephen P. Boyd.

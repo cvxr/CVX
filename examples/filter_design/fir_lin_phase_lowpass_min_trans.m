@@ -41,7 +41,6 @@ w = linspace(0,pi,m);
 %*********************************************************************
 % use bisection algorithm to solve the problem
 %*********************************************************************
-cvx_quiet(true);
 
 wstop_bot = wpass;
 wstop_top  = wstop;
@@ -64,7 +63,7 @@ while( wstop_top - wstop_bot > TOL)
   As  = A(ind,:);
 
   % formulate and solve the feasibility linear-phase lp filter design
-  cvx_begin
+  cvx_begin quiet
     variable h_cur(n+1,1);
     % feasibility problem
     % passband bounds
@@ -91,7 +90,6 @@ fprintf(1,['\nOptimum stopband frequency for given specs is %3.4f*pi rads\n' ...
            'and the minimum transition width is %3.4f*pi radians.\n'],...
             wstop/pi, (wstop-wpass)/pi);
 
-cvx_quiet(false);
 
 %********************************************************************
 % plots

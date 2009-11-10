@@ -71,7 +71,7 @@ end
 % ------------------------------------------------------------
 t = 0.0;
 ntry = 0;  % do loop at least once
-while (t < 0.5 * tR) | ( (fullt-tR) + (1e-7 * fullt) < (tR - t) ) | ntry==0
+while (t < 0.5 * tR) || ( (fullt-tR) + (1e-7 * fullt) < (tR - t) ) || ntry==0
     ntry = 1;
     if tR == maxt                       % Bisection
         tM = 0.1 * t + 0.9 * tR;
@@ -105,7 +105,7 @@ while (t < 0.5 * tR) | ( (fullt-tR) + (1e-7 * fullt) < (tR - t) ) | ntry==0
     % ALL:
     wM.lab = [xM(1:K.l).*zM(1:K.l); detxz ./ lab2q; lab2q; psdeig(wM.s,K)];
     [deltaM,hM,alphaM] = iswnbr(wM.lab, thetaSQR);
-    if (deltaM <= pars.beta) | ((tM < fullt / 10) & (deltaM < 1))
+    if (deltaM <= pars.beta) || ((tM < fullt / 10) && (deltaM < 1))
         w = wM;
         t = tM;
         wr.h=hM;

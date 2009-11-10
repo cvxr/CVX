@@ -25,8 +25,7 @@ fprintf(1,'Done! \n');
 % Solution via QP
 fprintf(1,'Computing the optimal solution by solving a QP ...');
 
-cvx_begin
-    cvx_quiet true
+cvx_begin quiet
     variable x(n)
     minimize ( norm(x-x0) )
     x <= u;

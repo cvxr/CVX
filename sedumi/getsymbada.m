@@ -42,7 +42,7 @@ function SYMBADA = getsymbada(At,Ablkjc,DAt,psdblkstart)
 
 Alpq = spones(extractA(At,Ablkjc,0,3,1,psdblkstart(1)));
 Ablks = findblks(At,Ablkjc,3,[],psdblkstart);
-if spars(Ablks)==1 | spars(Alpq)==1 | (~isempty(DAt.q) & spars(DAt.q)==1)
+if spars(Ablks)==1 || spars(Alpq)==1 || (~isempty(DAt.q) && spars(DAt.q)==1)
     SYMBADA=sparse(ones(size(At,2),size(At,2)));
 else
     SYMBADA = Alpq' * Alpq + Ablks'*Ablks + DAt.q'*DAt.q;

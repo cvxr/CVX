@@ -35,13 +35,13 @@ function y = poly_env( p, x )
 sp = size( p );
 if isempty( p ),
     p = zeros( 1, 0 );
-elseif ~isa( p, 'double' ) | ~isreal( p ) | length( sp ) > 2 | ~any( sp == 1 ),
+elseif ~isa( p, 'double' ) || ~isreal( p ) || length( sp ) > 2 || ~any( sp == 1 ),
     error( 'First argument must be a non-empty real vector.' );
 elseif any( isnan( p ) | isinf( p ) ),
     error( 'Inf and NaN not accepted here.' );
 end
 n = prod( sp );
-if n > 2 & rem( n, 2 ) == 0,
+if n > 2 && rem( n, 2 ) == 0,
     error( 'The length of the vector p must be odd.' );
 end
 
@@ -49,7 +49,7 @@ end
 % Check the second argument
 %
 
-if n > 1 & ( ~cvx_isaffine( x ) | ~isreal( x ) ),
+if n > 1 && ( ~cvx_isaffine( x ) || ~isreal( x ) ),
     error( 'The second argument must be real and affine.' );
 end
 
@@ -106,10 +106,10 @@ p     = psign * reshape( p, 1, n );
 cvx_begin sdp separable
     epigraph variable y(sx);
     variable P(deg2,deg2,sx) hankel;
-    P >= 0;
+    P >= 0; %#ok
     1 == P(1,1,:);
     x == reshape( P(2,1,:), sx );
-    y == reshape( p(end:-1:1) * [ reshape( P(1,:,:), deg2, nv ) ; reshape( P(2:end,end,:), deg2-1, nv ) ], sx );
+    y == reshape( p(end:-1:1) * [ reshape( P(1,:,:), deg2, nv ) ; reshape( P(2:end,end,:), deg2-1, nv ) ], sx ); %#ok
 cvx_end
 
 y = cvx_optval * psign;

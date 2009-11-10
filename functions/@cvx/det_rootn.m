@@ -12,7 +12,7 @@ elseif size( X, 2 ) ~= n,
 
     error( 'Matrix must be square.' );
 
-elseif nnz( X ) <= n & nnz( diag( X ) ) == nnz( X ),
+elseif nnz( X ) <= n && nnz( diag( X ) ) == nnz( X ),
 
     cvx_optval = geo_mean( diag( X ) );
 

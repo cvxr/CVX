@@ -14,7 +14,7 @@ function subject( varargin )
 
 if ~iscellstr( varargin ),
     error( 'SUBJECT TO must be used in command mode.' );
-elseif nargin ~= 1 | ~strcmpi( varargin{1}, 'to' ),
+elseif nargin ~= 1 || ~strcmpi( varargin{1}, 'to' ),
     error( 'Syntax: subject to' );
 elseif ~isa( evalin( 'caller', 'cvx_problem', '[]' ), 'cvxprob' ),
     error( 'SUBJECT TO can only be used within a CVX model.' );

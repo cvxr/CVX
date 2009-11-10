@@ -8,8 +8,6 @@
 %               s.t.    (x-2)(x-2)<=u
 % Finds p_star(u) and plots it versus u.
 
-cvx_quiet(true);
-
 fprintf(1,'Computing p_star(u)...\n ');
 
 u = linspace(-0.9,10,50);
@@ -17,7 +15,7 @@ p_star = zeros(1,length(u));
 for i = 1:length(u)
     disp(['for u = ' num2str(u(i))]);
     % perturbed problem
-    cvx_begin
+    cvx_begin quiet
         variable x(1)
         minimize ( quad_form(x,1) + 1 )
         quad_form(x,1) - 6*x + 8 <= u(i);

@@ -10,11 +10,7 @@ function y = permute( x, order )
 
 s = x.size_;
 ndxs = 1 : prod( s );
-try
-    ndx2 = permute( reshape( ndxs, s ), order );
-catch
-    error( lasterror );
-end
+ndx2 = permute( reshape( ndxs, s ), order );
 
 %
 % Permute the data
@@ -24,7 +20,7 @@ b = x.basis_;
 try
     b = x.basis_( :, ndx2 );
 catch
-    ndxs( ndxs2( : ).' ) = ndxs;
+    ndxs( ndx2( : ).' ) = ndxs;
     [ r, c, v ] = find( b );
     b = sparse( r, ndxs( c ), v, size( b, 1 ), size( b, 2 ) );
     clear r c v

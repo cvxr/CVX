@@ -8,7 +8,6 @@
 % It is also given by P_C(x0) = x0 + (b - a'*x0)*a/||a||^2 if a'*x0 > b
 %                           and x0                         if a'*x0 <=b
 
-cvx_quiet(true);
 % Input data
 randn('seed',0);
 n  = 10;
@@ -27,7 +26,7 @@ fprintf(1,'Done! \n');
 
 % Solution via QP
 fprintf(1,'Computing the solution of the QP for the case where a^T*x0 <=b...');
-cvx_begin
+cvx_begin quiet
     variable xs0(n)
     minimize ( square_pos(norm(xs0 - x0)) )
     a'*xs0 <= b;
@@ -35,7 +34,7 @@ cvx_end
 fprintf(1,'Done! \n');
 
 fprintf(1,'Computing the solution of the QP for the case where a^T*x0 > b...');
-cvx_begin
+cvx_begin quiet
     variable xs1(n)
     minimize ( square_pos(norm(xs1 - x1)) )
     a'*xs1 <= b;

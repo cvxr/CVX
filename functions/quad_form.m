@@ -27,11 +27,11 @@ function y = quad_form( x, Q )
 
 error( nargchk( 2, 2, nargin ) );
 sx = size( x );
-if length( sx ) ~= 2 | all( sx > 1 ),
+if length( sx ) ~= 2 || all( sx > 1 ),
     error( 'The first argument must be a row or column.' );
-elseif ndims( Q ) > 2 | size( Q, 1 ) ~= size( Q, 2 ),
+elseif ndims( Q ) > 2 || size( Q, 1 ) ~= size( Q, 2 ),
     error( 'The second argument must be a scalar or a square matrix.' );
-elseif size( Q, 1 ) ~= 1 & size( Q, 1 ) ~= length( x ),
+elseif size( Q, 1 ) ~= 1 && size( Q, 1 ) ~= length( x ),
     error( 'Sizes are incompatible.' );
 end
 

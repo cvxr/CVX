@@ -1,4 +1,4 @@
-function newnonl( prob, ncones, arg )
+function newnonl( prob, ncones, arg ) %#ok
 error( nargchk( 2, 3, nargin ) );
 global cvx___
 cones = cvx___.cones;

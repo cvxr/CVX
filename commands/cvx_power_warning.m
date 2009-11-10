@@ -10,10 +10,11 @@ function sout = cvx_power_warning( flag )
 %   transformations requires more than Q second-order cones. The default value
 %   is 10, which is not likely to be exceeded for typical choices of P.
 
+global cvx___
 if nargin > 0,
     if isempty( flag ),
         ns = 10;
-    elseif ~isnumeric( flag ) | ~isreal( flag ) | numel( flag ) > 1 | flag <= 0 | flag ~= floor( flag ),
+    elseif ~isnumeric( flag ) || ~isreal( flag ) || numel( flag ) > 1 || flag <= 0 || flag ~= floor( flag ),
         error( 'Argument must be a positive integer.' );
     else
         ns = flag;
@@ -28,14 +29,14 @@ if isempty( cvx___.problems ),
 else
     s = cvx___.problems(end).rat_growth;
     if nargin > 0,
-        if ~isequal( s, ns ) & isa( evalin( 'caller', 'cvx_problem', '[]' ), 'cvxprob' ),
-            warning( 'The global CVX x.^p warning setting cannot be changed while a model is being constructed.' );
+        if ~isequal( s, ns ) && isa( evalin( 'caller', 'cvx_problem', '[]' ), 'cvxprob' ),
+            warning( 'CVX:PowerWarning', 'The global CVX x.^p warning setting cannot be changed while a model is being constructed.' );
         else
             cvx___.problems(end).rat_growth = ns;
         end
     end
 end
-if nargin == 0 | nargout > 0,
+if nargin == 0 || nargout > 0,
     sout = s;
 end
 

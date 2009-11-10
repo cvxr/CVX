@@ -3,7 +3,7 @@ function cvx_optval = lambda_max( x )
 %LAMBDA_MAX   Internal cvx version.
 
 error( nargchk( 1, 1, nargin ) );
-if ndims( x ) > 2 | size( x, 1 ) ~= size( x, 2 ),
+if ndims( x ) > 2 || size( x, 1 ) ~= size( x, 2 ),
 
     error( 'Input must be a square matrix.' );
 

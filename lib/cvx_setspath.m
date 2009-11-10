@@ -1,4 +1,5 @@
-function cvx_clearspath( nsolv )
+function cvx_setspath( nsolv )
+global cvx___
 
 %CVX_SETPATH   Sets the cvx solver path.
 %   CVX_SETPATH adds the internal cvx solver directories to Matlab's path
@@ -14,7 +15,7 @@ if ~strcmp( nsolv, osolv ),
     needupd = false;
     cpath = matlabpath;
     if ~isempty( osolv ),
-        tstr = getfield( cvx___.path.solvers, osolv );
+        tstr = cvx___.path.solvers.(osolv);
         if ~isempty( tstr ),
             temp = strfind( cpath, tstr );
             if ~isempty(temp),
@@ -25,7 +26,7 @@ if ~strcmp( nsolv, osolv ),
     end
     if ~isempty( nsolv ),
         if ~isempty( nsolv ),
-            tstr = getfield( cvx___.path.solvers, nsolv );
+            tstr = cvx___.path.solvers.(nsolv);
             if ~isempty( tstr ),
                 cpath = [ tstr, cpath ];
                 needupd = true;

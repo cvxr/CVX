@@ -143,7 +143,7 @@ for PNSpec=0.7e-12:0.2e-12:1e-11
 end
 
 % plot the tradeoff curve
-PNSpec = [0.7e-12:0.2e-12:1e-11];
+PNSpec = 0.7e-12:0.2e-12:1e-11;
 plot(10*log10(PNSpec),powers/1e-3);
 xlabel('Phase Noise (dBc/Hz)')
 ylabel('Power (mW)')

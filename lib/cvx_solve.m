@@ -4,7 +4,7 @@ prob = evalin( 'caller', 'cvx_problem', '[]' );
 if ~isa( prob, 'cvxprob' ),
     error( 'No cvx problem exists in this scope.' );
 else
-    if nargin < 1 | presolve, eliminate( prob ); end
+    if nargin < 1 || presolve, eliminate( prob ); end
     solve( prob, cvx___.quiet );
     assignin( 'caller', 'cvx_status', prob.status );
     assignin( 'caller', 'cvx_optval', prob.result );

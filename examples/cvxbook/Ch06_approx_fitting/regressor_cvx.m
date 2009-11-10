@@ -18,8 +18,6 @@
 %
 % is solved
 
-clear
-cvx_quiet(true);
 rand('state',0);
 
 m = 10;
@@ -48,7 +46,7 @@ card_heur = [0];
 for k=2:(nopts-1)
   alpha = alphas(k);
 
-  cvx_begin
+  cvx_begin quiet
     variable x(n)
     minimize(norm(A*x-b))
     subject to

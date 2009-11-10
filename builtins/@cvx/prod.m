@@ -71,7 +71,7 @@ nk = length( nu );
 % Quick exit for easy case
 %
 
-if nx == 1 & nu(1) > 0,
+if nx == 1 && nu(1) > 0,
     y = x;
     return
 end
@@ -81,12 +81,12 @@ end
 %
 
 perm = [];
-if nk > 1 | ( any( nu > 1 ) & nx > 1 ),
-    if dim > 1 & any( sx( 1 : dim - 1 ) > 1 ),
+if nk > 1 || ( any( nu > 1 ) && nx > 1 ),
+    if dim > 1 && any( sx( 1 : dim - 1 ) > 1 ),
         perm = [ dim, 1 : dim - 1, dim + 1 : length( sx ) ];
         x    = permute( x,  perm );
         ta   = permute( ta, perm );
-        sx   = sx( perm );
+        % sx   = sx( perm );
         sy   = sy( perm );
         dim  = 1;
     end
@@ -112,7 +112,7 @@ for k = 1 : nk,
 
     switch nu( k ),
         case 0,
-            error( sprintf( 'Disciplined convex programming error:\n   Invalid computation: prod( {%s} )', cvx_class( xt, true, true ) ) );
+            error( 'Disciplined convex programming error:\n   Invalid computation: prod( {%s} )', cvx_class( xt, true, true ) );
         case 1,
             yt = cvx( prod( cvx_constant( xt ), dim ) );
         case 2,

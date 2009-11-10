@@ -28,7 +28,7 @@ function z = quad_over_lin( x, y, dim )
 error( nargchk( 2, 3, nargin ) );
 if ~isreal( y ),
     error( 'Second argument must be real.' );
-elseif nargin < 3 | isempty( dim ),
+elseif nargin < 3 || isempty( dim ),
     dim = cvx_default_dimension( size( x ) );
 elseif ~cvx_check_dimension( dim, true ),
     error( 'Third argument, if supplied, must be a positive integer.' );
@@ -41,7 +41,7 @@ end
 %
 
 z = sum_square( x, dim );
-if length( y ) ~= 1 & ~isequal( size( z ), size( y ) ),
+if length( y ) ~= 1 && ~isequal( size( z ), size( y ) ),
     error( 'Input size mismatch.' );
 end
 temp = y <= 0;

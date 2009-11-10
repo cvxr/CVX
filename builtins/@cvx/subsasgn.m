@@ -63,10 +63,10 @@ else
     nx = size( bx, 1 );
     [ ny, my ] = size( by );
     if nx < ny,
-        if issparse( by ) & ~issparse( bx ), bx = sparse( bx ); end
+        if issparse( by ) && ~issparse( bx ), bx = sparse( bx ); end
         bx( ny, : ) = 0;
     elseif nx > ny,
-        if issparse( bx ) & ~issparse( by ), by = sparse( by ); end
+        if issparse( bx ) && ~issparse( by ), by = sparse( by ); end
         by( nx, : ) = 0;
     end
     if my < nlz,

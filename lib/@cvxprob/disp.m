@@ -22,7 +22,7 @@ nineqs = nnz( cvx___.needslack( p.n_equality + 1 : end ) ) + ...
          nnz( cvx_vexity( cvx___.linrepls( p.n_linform + 1 : end ) ) ) + ...
          nnz( cvx_vexity( cvx___.unirepls( p.n_uniform + 1 : end ) ) );
 neqns = neqns - nineqs;     
-if isempty( p.name ) | strcmp( p.name, 'cvx_' ),
+if isempty( p.name ) || strcmp( p.name, 'cvx_' ),
     nm = '';
 else
     nm = [ p.name, ': ' ];
@@ -37,9 +37,7 @@ ni = nnz( tt ) - 1;
 ndup = sum( rsv ) - nnz( rsv );
 neqns = neqns + ndup;
 nv = nt - fv + ni - nnz( cvx___.geometric( qv ) ) + ndup;
-nf = nnz( rsv( qv ) == 0 );
 tt( qv ) = true;
-ng = nnz( cvx___.geometric( tt ) );
 gfound = nnz( cvx___.logarithm( tt ) & ~cvx___.geometric( tt ) );
 cfound = false;
 for k = 1 : length( cvx___.cones ),
@@ -70,8 +68,8 @@ else
     if nvars > 0,
         disp( [ prefix, 'variables: ' ] );
         [ vnam, vsiz ] = dispvar( p.variables, '' );
-        vnam = strvcat( vnam );
-        vsiz = strvcat( vsiz );
+        vnam = strvcat( vnam ); %#ok
+        vsiz = strvcat( vsiz ); %#ok
         for k = 1 : size( vnam ),
             disp( [ prefix, '   ', vnam( k, : ), '  ', vsiz( k, : ) ] );
         end
@@ -79,28 +77,28 @@ else
     if nduls > 0,
         disp( [ prefix, 'dual variables: ' ] );
         [ vnam, vsiz ] = dispvar( p.duals, '' );
-        vnam = strvcat( vnam );
-        vsiz = strvcat( vsiz );
+        vnam = strvcat( vnam ); %#ok
+        vsiz = strvcat( vsiz ); %#ok
         for k = 1 : size( vnam ),
             disp( [ prefix, '   ', vnam( k, : ), '  ', vsiz( k, : ) ] );
         end
     end
-    if neqns > 0 | nineqs > 0,
+    if neqns > 0 || nineqs > 0,
         disp( [ prefix, 'linear constraints:' ] );
         if neqns > 0,
             if neqns > 1, plural = 'ies'; else plural = 'y'; end
-            disp( sprintf( '%s   %d equalit%s', prefix, neqns, plural ) );
+            fprintf( 1, '%s   %d equalit%s\n', prefix, neqns, plural );
         end
         if nineqs > 0,
             if nineqs > 1, plural = 'ies'; else plural = 'y'; end
-            disp( sprintf( '%s   %d inequalit%s', prefix, nineqs, plural ) );
+            fprintf( 1, '%s   %d inequalit%s\n', prefix, nineqs, plural );
         end
     end
-    if cfound | gfound,
+    if cfound || gfound,
         disp( [ prefix, 'nonlinearities:' ] );
         if gfound > 0,
             if gfound > 1, plural = 'ies'; else plural = 'y'; end
-            disp( sprintf( '%s   %d exponential nonlinearit%s', prefix, gfound, plural ) );
+            fprintf( 1, '%s   %d exponential nonlinearit%s\n', prefix, gfound, plural );
         end
         if cfound,
             for k = 1 : length( cvx___.cones ),
@@ -109,12 +107,12 @@ else
                 if ~isempty( ndxs ),
                     if isequal( cvx___.cones( k ).type, 'nonnegative' ),
                         ncones = 1;
-                        csize = prod( size( ndxs ) );
+                        csize = numel(  ndxs  );
                     else
                         [ csize, ncones ] = size( ndxs );
                     end
                     if ncones == 1, plural = ''; else plural = 's'; end
-                    disp( sprintf( '%s   %d order-%d %s cone%s', prefix, ncones, csize, cvx___.cones( k ).type, plural ) );
+                    fprintf( 1, '%s   %d order-%d %s cone%s\n', prefix, ncones, csize, cvx___.cones( k ).type, plural );
                 end
             end
         end
@@ -132,7 +130,7 @@ switch class( v ),
             [ name2, size2 ] = dispvar( subsref(v,struct('type','.','subs',fn{k})), [ name, fn{k} ] );
             names( end + 1 : end + length( name2 ) ) = name2;
             sizes( end + 1 : end + length( size2 ) ) = size2;
-            if k == 1 & ~isempty( name ), name( 1 : end - 1 ) = ' '; end
+            if k == 1 && ~isempty( name ), name( 1 : end - 1 ) = ' '; end
         end
     case 'cell',
         names = {}; sizes = {};

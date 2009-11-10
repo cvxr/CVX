@@ -1,14 +1,15 @@
 function cvx_pop( depth, clearmode )
+global cvx___
 if nargin < 2, clearmode = 'clear'; end
 
 %
 % Determine the index of the problem to be cleaned up
 %
 
-p = 0;
 cvx_global
+p = 0;
 if ~isempty( cvx___.problems ),
-    if nargin < 1 | isempty( depth ),
+    if nargin < 1 || isempty( depth ),
         depth = evalin( 'caller', 'cvx_problem', '[]' );
         if isempty( depth ),
             st = dbstack;
@@ -17,7 +18,7 @@ if ~isempty( cvx___.problems ),
     end
     if isa( depth, 'cvxprob' ),
         p = index( depth );
-        if p < 1 | p > length( cvx___.problems ) | cvx___.problems( p ).self ~= depth,
+        if p < 1 || p > length( cvx___.problems ) || cvx___.problems( p ).self ~= depth,
             p = 0;
         end
     end
@@ -79,21 +80,21 @@ if ~isequal( clearmode, 'none' ),
             cvx___.logarithm(  temp, : ) = [];
         end
     end
-    if nf <= 2 | ne <= 1,
+    if nf <= 2 || ne <= 1,
         cvx___.equalities = cvx( [ 0, 1 ], [] );
-        cvx___.needslack = ( logical( zeros( 0, 1 ) ) );
+        cvx___.needslack = ( false( 0, 1 ) );
     elseif length( cvx___.equalities ) >= ne,
         cvx___.equalities( ne : end ) = [];
         cvx___.needslack( ne : end ) = [];
     end
-    if nf <= 2 | nl <= 1,
+    if nf <= 2 || nl <= 1,
         cvx___.linforms = cvx( [ 0, 1 ], [] );
         cvx___.linrepls = cvx( [ 0, 1 ], [] );
     elseif length( cvx___.linforms ) >= nl,
         cvx___.linforms( nl : end ) = [];
         cvx___.linrepls( nl : end ) = [];
     end
-    if nf <= 2 | nu <= 1,
+    if nf <= 2 || nu <= 1,
         cvx___.uniforms = cvx( [ 0, 1 ], [] );
         cvx___.unirepls = cvx( [ 0, 1 ], [] );
     elseif length( cvx___.uniforms ) >= nu,
@@ -116,7 +117,7 @@ if ~isequal( clearmode, 'extract' ),
             s2 = sprintf( '%s, ', s1{:} );
             s2 = evalin( 'caller', sprintf( 'cellfun( @cvx_id, { %s } )', s2(1:end-2) ) );
         else
-            nvars = prod( size( s1 ) );
+            nvars = numel(  s1  );
             s2 = zeros( 1, nvars );
             for k = 1 : nvars,
                 s2(k) = cvx_id( evalin( 'caller', s1{k} ) );

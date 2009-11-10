@@ -13,12 +13,12 @@ error( nargchk( 2, 2, nargin ) );
 
 sx = size( x );
 sy = size( y );
-if length( sx ) > 2 | length( sy ) > 2,
+if length( sx ) > 2 || length( sy ) > 2,
     error( 'N-D arrays not supported.' );
-elseif sx( 2 ) == 1 & sy( 1 ) == 1,
+elseif sx( 2 ) == 1 && sy( 1 ) == 1,
     z = mtimes( x, y );
     return
-elseif sx( 1 ) == 1 & sy( 2 ) == 1,
+elseif sx( 1 ) == 1 && sy( 2 ) == 1,
     z = mtimes( y, x );
     return
 else

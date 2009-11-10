@@ -13,7 +13,7 @@ function cvx_optval = norm_largest( x, k )
 error( nargchk( 2, 2, nargin ) );
 if ~any( size( x ) ~= 1 ),
     error( 'The first argument must be a vector.' );
-elseif ~isnumeric( k ) | ~isreal( k ) | length( k ) ~= 1,
+elseif ~isnumeric( k ) || ~isreal( k ) || length( k ) ~= 1,
     error( 'Third argument must be a scalar.' );
 else
     cvx_optval = sum_largest( abs( x ), k );

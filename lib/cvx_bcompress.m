@@ -1,9 +1,9 @@
 function [ xR, x ] = cvx_bcompress( x, mode, num_sorted )
 error( nargchk( 1, 3, nargin ) );
-if nargin < 3 | isempty( num_sorted ),
+if nargin < 3 || isempty( num_sorted ),
     num_sorted = 0;
 end
-if nargin < 2 | isempty( mode ),
+if nargin < 2 || isempty( mode ),
     mode = 0;
 else
     switch mode,
@@ -31,7 +31,7 @@ xR = sparse( ndxs, 1 : n, scls, n, n );
 t2 = any( xR, 2 );
 xR = xR( t2, : );
 
-if nargout > 1 & ~all( t2 ),
+if nargout > 1 && ~all( t2 ),
     x = x( :, t2 );
 end
 

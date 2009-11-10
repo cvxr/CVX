@@ -10,7 +10,7 @@ function xi = cvx_cleanup_structure( xi )
 %    without modifying it to remove some of the cleanup code.
 
 % Reduce using an LU factorization
-[LL,xi,PP] = lu(xi);
+[LL,xi,PP] = lu(xi); %#ok
 [m,n] = size(xi);
 
 % Remove the entries that are close to zero
@@ -41,13 +41,13 @@ jj = jj(dd);
 % must already be zero or be dependent upon these rows, so we remove them.
 % Q is the result except that its columns are scrambled.
 rr = length(ii);
-j2 = [1:n]'; j2(jj) = [];
+j2 = (1:n)'; j2(jj) = [];
 Q  = xi(ii,jj)\xi(ii,j2);
 
 % Reduce roundoff error by converting the values to ratios of integers.
 [i3,j3,vv] = find(Q);
 [vn,vd] = rat(vv,tol);
-xi = sparse([[1:rr]';i3],[jj;j2(j3)],[ones(rr,1);vn./vd],rr,n);
+xi = sparse([(1:rr)';i3],[jj;j2(j3)],[ones(rr,1);vn./vd],rr,n);
 
 % Copyright 2009 Michael C. Grant and Stephen P. Boyd.
 % See the file COPYING.txt for full copyright information.

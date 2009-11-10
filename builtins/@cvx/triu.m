@@ -11,7 +11,7 @@ if nargin < 2, k = 0; end
 s = x.size_;
 if length( s ) > 2,
     error( 'The first argument must be 2-D.' );
-elseif ~isnumeric( k ) | length( k ) ~= 1,
+elseif ~isnumeric( k ) || length( k ) ~= 1,
     error( 'The second argument must be an integer scalar.' );
 end
 

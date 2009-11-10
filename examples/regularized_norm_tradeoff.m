@@ -7,7 +7,6 @@
 % || A x - b || = || b || are optimal. Varying gamma allows us
 % to genreate a tradeoff curve between these extremes.
 
-cvx_quiet( true );
 n = 10;
 A = randn(2*n,n);
 b = randn(2*n,1);
@@ -18,7 +17,7 @@ fprintf( 1, 'Gamma: ' );
 for k = 1 : length( gamma ),
    if k > 1 & rem( k, 10 ) == 1, fprintf( 1, '\n       ' ); end
    fprintf( 1, '%g ', gamma( k ) );
-   cvx_begin
+   cvx_begin quiet
       variable x(n)
       minimize( norm( A * x - b, 1 ) + gamma( k ) * norm( x, Inf ) )
    cvx_end

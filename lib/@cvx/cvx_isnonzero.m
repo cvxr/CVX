@@ -1,10 +1,10 @@
-function ans = cvx_isnonzero( x, full )
+function y = cvx_isnonzero( x, full )
 error( nargchk( 1, 2, nargin ) );
-ans = any( x.basis_, 1 );
+y = any( x.basis_, 1 );
 if nargin < 2,
-    ans = all( ans );
+    y = all( y );
 else
-    ans = cvx_reshape( ans, x.size_ );
+    y = cvx_reshape( y, x.size_ );
 end
 
 % Copyright 2009 Michael C. Grant and Stephen P. Boyd.

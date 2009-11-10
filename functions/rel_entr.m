@@ -21,7 +21,7 @@ function z = rel_entr( x, y )
 %       constraints X >= 0 or Y >= 0 to enforce this.
 
 error(nargchk(2,2,nargin));
-if ~isreal( x ) | ~isreal( y ),
+if ~isreal( x ) || ~isreal( y ),
     error( 'Arguments must be real.' );
 end
 t1 = x < 0  | y <= 0;

@@ -1,4 +1,4 @@
-function cvx_optval = trace_sqrtm( X )
+function cvx_optval = trace_sqrtm( X ) %#ok
 
 %TRACE_SQRTM   Internal cvx version.
 
@@ -23,8 +23,8 @@ cvx_begin sdp
     else
         variable Y(n,n) complex
     end
-    maximize(real(trace(Y)))
-    [eye(n),Y;Y',X] >= 0
+    maximize(real(trace(Y))); 
+    [eye(n),Y;Y',X] >= 0; %#ok
 cvx_end
 
 % Copyright 2009 Michael C. Grant and Stephen P. Boyd. 

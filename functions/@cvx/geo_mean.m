@@ -1,6 +1,5 @@
-function y = geo_mean( x, dim, w, ismap, cmode )
-error( nargchk( 1, 5, nargin ) );
-if nargin < 5, cmode = ''; end
+function y = geo_mean( x, dim, w )
+error( nargchk( 1, 3, nargin ) );
 
 %GEO_MEAN   Internal cvx version.
 
@@ -9,7 +8,7 @@ if nargin < 5, cmode = ''; end
 %
 
 sx = size( x );
-if nargin < 2 | isempty( dim ),
+if nargin < 2 || isempty( dim ),
     dim = cvx_default_dimension( sx );
 elseif ~cvx_check_dimension( dim ),
     error( 'Second argument must be a positive integer.' );
@@ -32,15 +31,12 @@ end
 % Third and fourth argument check
 %
 
-map = [];
-if nargin >= 4 & ismap,
-    map = w;
-elseif nargin < 3 | isempty( w ),
+if nargin < 3 || isempty( w ),
     w = [];
-elseif numel( w ) ~= length( w ) | ~isnumeric( w ) | ~isreal( w ) | any( w < 0 ) | any( w ~= floor( w ) ),
+elseif numel( w ) ~= length( w ) || ~isnumeric( w ) || ~isreal( w ) || any( w < 0 ) || any( w ~= floor( w ) ),
     error( 'Third argument must be a vector of nonnegative integers.' );
 elseif length( w ) ~= nx,
-    error( sprintf( 'Third argument must be a vector of length %d', nx ) );
+    error( 'Third argument must be a vector of length %d', nx );
 elseif ~any( w ),
     y = ones( sy );
     return
@@ -75,11 +71,11 @@ nk = length( nu );
 %
 
 perm = [];
-if nk > 1 | ( any( nu > 1 ) & nx > 1 ),
-    if dim > 1 & any( sx( 1 : dim - 1 ) > 1 ),
+if nk > 1 || ( any( nu > 1 ) && nx > 1 ),
+    if dim > 1 && any( sx( 1 : dim - 1 ) > 1 ),
         perm = [ dim, 1 : dim - 1, dim + 1 : length( sx ) ];
         x    = permute( x,  perm );
-        sx   = sx( perm );
+        sx   = sx( perm ); %#ok
         sy   = sy( perm );
         ta   = permute( ta, perm );
         dim  = 1;
@@ -102,17 +98,17 @@ for k = 1 : nk,
 
     if nk == 1,
         xt = x;
-        sz = sy;
+        sz = sy; %#ok
     else
         tt = ta == nu( k );
         xt = cvx_subsref( x, ':', tt );
         nv = nnz( tt );
-        sz = [ 1, nv ];
+        sz = [ 1, nv ]; %#ok
     end
 
     switch nu( k ),
         case 0,
-            error( sprintf( 'Disciplined convex programming error:\n   Invalid computation: geo_mean( {%s} )', cvx_class( xt, true, true ) ) );
+            error( 'Disciplined convex programming error:\n   Invalid computation: geo_mean( {%s} )', cvx_class( xt, true, true ) );
         case 1,
             yt = cvx( geo_mean( cvx_constant( xt ), dim, w ) );
         case 2,

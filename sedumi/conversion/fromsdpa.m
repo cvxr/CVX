@@ -59,7 +59,7 @@ fgetl(fid);
 %Negative means diagonal block, we convert that to linear
 %.,(){} are omitted
 dims=sscanf(regexprep(fgetl(fid),'[\.\,(){}]',' '),'%d',nblocks)';
-if length(dims(dims==0))>0 | length(dims)~=nblocks
+if ~isempty(dims(dims==0)) || length(dims)~=nblocks
     error('Invalid SDPA file.')
 end
 N=-sum(dims(dims<0))+sum(dims(dims>0).^2);

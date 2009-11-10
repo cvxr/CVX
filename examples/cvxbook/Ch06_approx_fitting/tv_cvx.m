@@ -26,9 +26,6 @@
 % Note how TV reconstruction does a better job of preserving the
 % sharp transitions in the signal while removing the noise.
 
-clear
-cvx_quiet(true);
-
 n = 2000;  % length of signal
 t = (0:n)';
 
@@ -63,7 +60,7 @@ TVs = linspace(0.01,.9*noisy_variation,nopts);
    obj1 = [];  obj2 = [];
    for i=1:nopts
      fprintf('tradeoff point %d\n',i);
-     cvx_begin
+     cvx_begin quiet
         variable xrec(n+1)
         minimize(norm(xrec-corrupt))
         subject to
@@ -87,7 +84,7 @@ figure(2)
 figure(3)
    subplot(311)
    % solve total variation problem
-   cvx_begin
+   cvx_begin quiet
     variable xrec(n+1)
     minimize(norm(xrec-corrupt))
     subject to
@@ -99,7 +96,7 @@ figure(3)
    title('xhat with TV=10');
 
    subplot(312)
-   cvx_begin
+   cvx_begin quiet
     variable xrec(n+1)
     minimize(norm(xrec-corrupt))
     subject to
@@ -111,7 +108,7 @@ figure(3)
    title('xhat with TV=8');
 
    subplot(313)
-   cvx_begin
+   cvx_begin quiet
     variable xrec(n+1)
     minimize(norm(xrec-corrupt))
     subject to

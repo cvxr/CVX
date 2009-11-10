@@ -1,4 +1,4 @@
-function cvx_optval = quad_pos_over_lin( x, y, varargin )
+function cvx_optval = quad_pos_over_lin( x, y, varargin ) %#ok
 
 %QUAD_POS_OVER_LIN   Internal cvx version.
 
@@ -9,7 +9,7 @@ end
 cvx_begin
     variable x2( size(x) )
     minimize quad_over_lin( x2, y, varargin{:} );
-    x2 >= x;
+    x2 >= x; %#ok
 cvx_end
 
 % Copyright 2009 Michael C. Grant and Stephen P. Boyd. 

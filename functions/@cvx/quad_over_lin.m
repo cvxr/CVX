@@ -8,10 +8,10 @@ sy = size( y );
 nx = length( sx );
 ny = length( sy );
 nd = max( nx, ny );
-if nargin < 3 | isempty( dim ),
+if nargin < 3 || isempty( dim ),
     dim = [ find( sx ~= 1 ), 1 ];
     dim = dim( 1 );
-elseif ~isnumeric( dim ) | dim < 0 | dim ~= floor( dim ),
+elseif ~isnumeric( dim ) || dim < 0 || dim ~= floor( dim ),
     error( 'Third argument must be a dimension.' );
 elseif dim == 0,
     dim = nd + 1;
@@ -26,10 +26,10 @@ sx = [ sx, ones( 1, nd - nx ) ];
 sy = [ sy, ones( 1, nd - ny ) ];
 sz = sx;
 sz( dim ) = 1;
-if sy( dim ) ~= 1 & any( sx ~= 1 ),
+if sy( dim ) ~= 1 && any( sx ~= 1 ),
     error( 'Dimensions are not compatible.' );
 end
-if all( sz == sy ) | all( sy == 1 ),
+if all( sz == sy ) || all( sy == 1 ),
     need_contraction = false;
 elseif all( sz == 1 ),
     sz = sy;

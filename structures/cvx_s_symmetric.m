@@ -1,4 +1,4 @@
-function y = cvxs_symmetric( m, n )
+function y = cvx_s_symmetric( m, n )
 %CVX_S_SYMMETRIC Symmetric matrices (lower triangle storage).
 
 if m ~= n,

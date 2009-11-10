@@ -25,7 +25,7 @@ elseif size( X, 2 ) ~= n,
     error( 'Matrix must be square.' );
 elseif nargin < 2,
     p = 1;
-elseif ~isnumeric( p ) | ~isreal( p ) | numel( p ) ~=  1 | p <= 0,
+elseif ~isnumeric( p ) || ~isreal( p ) || numel( p ) ~=  1 || p <= 0,
     error( 'Second argument must be a positive scalar.' );
 end
 

@@ -1,10 +1,10 @@
-function ans = cvx_isconcave( x, full )
+function y = cvx_isconcave( x, full )
 error( nargchk( 1, 2, nargin ) );
-ans = cvx_vexity( x );
+y = cvx_vexity( x );
 if nargin < 2,
-    ans = nnz( ans > 0 ) == 0;
+    y = nnz( y > 0 ) == 0;
 else
-    ans = cvx_reshape( ans <= 0, x.size_ );
+    y = cvx_reshape( y <= 0, x.size_ );
 end
 
 % Copyright 2009 Michael C. Grant and Stephen P. Boyd.

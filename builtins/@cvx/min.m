@@ -20,7 +20,7 @@ if nargin == 2,
     ys = all( sy == 1 );
     if xs,
         sz = sy;
-    elseif ys | isequal( sx, sy ),
+    elseif ys || isequal( sx, sy ),
         sz = sx;
     else
         error( 'Array dimensions must match.' );
@@ -69,11 +69,11 @@ if nargin == 2,
             t = vr == vu( k );
             if ~xs,
                 xt = cvx_subsref( x, t );
-                sz = size( xt );
+                sz = size( xt ); %#ok
             end
             if ~ys,
                 yt = cvx_subsref( y, t );
-                sz = size( yt );
+                sz = size( yt ); %#ok
             end
         end
 
@@ -84,7 +84,7 @@ if nargin == 2,
         switch vu( k ),
         case 0,
             % Invalid
-            error( sprintf( 'Disciplined convex programming error:\n    Cannot perform the operation min( {%s}, {%s} )', cvx_class( xt, false, true ), cvx_class( yt, false, true ) ) );
+            error( 'Disciplined convex programming error:\n    Cannot perform the operation min( {%s}, {%s} )', cvx_class( xt, false, true ), cvx_class( yt, false, true ) );
         case 1,
             % constant
             cvx_optval = cvx( min( cvx_constant( xt ), cvx_constant( yt ) ) );
@@ -98,15 +98,15 @@ if nargin == 2,
             % posy
             cvx_begin gp
                  hypograph variable zt( sz )
-                xt >= zt;
-                yt >= zt;
+                xt >= zt; %#ok
+                yt >= zt; %#ok
             cvx_end
         case 5,
             % non-posy
             cvx_begin
                 hypograph variable zt( sz )
-                xt >= zt;
-                yt >= zt;
+                xt >= zt; %#ok
+                yt >= zt; %#ok
             cvx_end
         otherwise,
             error( 'Shouldn''t be here.' );
@@ -130,7 +130,7 @@ else
     % min( X, [], dim )
     %
 
-    if nargin > 1 & ~isempty( y ),
+    if nargin > 1 && ~isempty( y ),
         error( 'min with two matrices to compare and a working dimension is not supported.' );
     end
     sx = size( x );
@@ -178,7 +178,7 @@ else
     % Quick exit for size 1
     %
 
-    if nx == 1 & all( nu ),
+    if nx == 1 && all( nu ),
         z = x;
         return
     end
@@ -187,8 +187,7 @@ else
     % Permute and reshape, if needed
     %
 
-    perm = [];
-    if dim > 1 & any( sx( 1 : dim - 1 ) > 1 ),
+    if dim > 1 && any( sx( 1 : dim - 1 ) > 1 ),
         perm = [ dim, 1 : dim - 1, dim + 1 : length( sx ) ];
         x   = permute( x,  perm );
         ta  = permute( ta, perm );
@@ -215,23 +214,23 @@ else
         else
             tt = ta == nu( k );
             xt = cvx_subsref( x, ':', tt );
-            nv = nnz( tt );
+            nv = nnz( tt ); %#ok
         end
 
         switch nu( k ),
             case 0,
-                error( sprintf( 'Disciplined convex programming error:\n   Invalid computation: min( {%s} )', cvx_class( xt, false, true ) ) );
+                error( 'Disciplined convex programming error:\n   Invalid computation: min( {%s} )', cvx_class( xt, false, true ) );
             case 1,
                 cvx_optval = min( cvx_constant( xt ), [], dim );
             case 2,
                 cvx_begin gp
                     hypograph variable zt( 1, nv )
-                    xt >= ones(nx,1) * zt;
+                    xt >= ones(nx,1) * zt; %#ok
                 cvx_end
             case 3,
                 cvx_begin
                     hypograph variable zt( 1, nv )
-                    xt >= ones(nx,1) * zt;
+                    xt >= ones(nx,1) * zt; %#ok
                 cvx_end
             otherwise,
                 error( 'Shouldn''t be here.' );

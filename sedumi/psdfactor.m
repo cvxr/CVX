@@ -5,7 +5,7 @@
 %
 % See also sedumi
 
-function [ux,ispos] = psdfactor(x,K)
+function [ux,ispos] = psdfactor(x,K) %#ok
 %
 % This file is part of SeDuMi 1.1 by Imre Polik and Oleksandr Romanko
 % Copyright (C) 2005 McMaster University, Hamilton, CANADA  (since 1.1)

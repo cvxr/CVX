@@ -14,11 +14,11 @@ if nargin < 5,
 end
 usp = cvx_use_sparse( s, nnz( x ), isreal( x ) );
 isp = issparse( x );
-if ~usp & isp, 
+if ~usp && isp, 
     x = full( x ); 
 end
-if ~isequal( s, sx ) | ~isempty( rmap ) | ~isempty( cperm ) | ~isempty( cperm2 ),
-    if usp & ( numel( x ) > 2147483647 | ~isempty( rmap ) | ~isempty( cperm ) ),
+if ~isequal( s, sx ) || ~isempty( rmap ) || ~isempty( cperm ) || ~isempty( cperm2 ),
+    if usp && ( numel( x ) > 2147483647 || ~isempty( rmap ) || ~isempty( cperm ) ),
         [ ii, jj, x ] = find( x );
         if ~isempty( rmap ),
             sx( 1 ) = length( rmap );
@@ -41,7 +41,7 @@ if ~isequal( s, sx ) | ~isempty( rmap ) | ~isempty( cperm ) | ~isempty( cperm2 )
         x = sparse( ii, jj, x, s( 1 ), s( 2 ) );
         clear ii jj ij
         isp = true;
-    else,
+    else
         if ~isempty( cperm ),
             x = x( :, cperm );
         end
@@ -55,7 +55,7 @@ if ~isequal( s, sx ) | ~isempty( rmap ) | ~isempty( cperm ) | ~isempty( cperm2 )
         end
     end
 end
-if usp & ~isp,
+if usp && ~isp,
     x = sparse( x ); 
 end
 

@@ -1,4 +1,4 @@
-function y = cvx_isconvex( x, full )
+function y = cvx_isconcave( x, full )
 error( nargchk( 1, 2, nargin ) );
 if nargin == 2,
     y = ~imag( x );

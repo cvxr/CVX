@@ -9,7 +9,7 @@
 % See also partitA.
 
 
-function perm = sortnnz(At,Ajc1,Ajc2)
+function perm = sortnnz(At,Ajc1,Ajc2) %#ok
 %
 % This file is part of SeDuMi 1.1 by Imre Polik and Oleksandr Romanko
 % Copyright (C) 2005 McMaster University, Hamilton, CANADA  (since 1.1)

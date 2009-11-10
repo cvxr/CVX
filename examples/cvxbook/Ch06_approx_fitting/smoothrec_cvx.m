@@ -24,7 +24,6 @@
 
 
 randn('state',0);
-cvx_quiet(true);
 
 n = 4000;  t = (0:n-1)';
 exact = 0.5*sin((2*pi/n)*t).*sin(0.01*t);
@@ -59,7 +58,7 @@ fprintf('computing 100 points on tradeoff curve ... \n');
 for i=1:nopts
 
   lambda = lambdas(i);
-  cvx_begin
+  cvx_begin quiet
     variable x(n)
     minimize(norm(x-corrupt)+lambda*norm(x(2:n)-x(1:n-1)))
   cvx_end
@@ -86,7 +85,7 @@ xrecon = [];
 for i=1:3
    fprintf(1,'Reconstructed Signals: %d of 3 \n',i)
    alpha = alphas(i);
-   cvx_begin
+   cvx_begin quiet
     variable x(n)
     minimize(norm(x(2:n)-x(1:n-1)))
     subject to

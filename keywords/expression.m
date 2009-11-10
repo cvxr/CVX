@@ -23,11 +23,8 @@ function varargout = expression( nm, varargin )
 prob = evalin( 'caller', 'cvx_problem', '[]' );
 if ~isa( prob, 'cvxprob' ),
     error( 'A cvx problem does not exist in this scope.' );
-end
-global cvx___
-p = index( prob );
-if nargin > 1,
-    error( sprintf( 'Too many input arguments.\nTrying to declare multiple expression holders? Use the EXPRESSIONS keyword instead.' ) );
+elseif nargin > 1,
+    error( 'Too many input arguments.\nTrying to declare multiple expression holders? Use the EXPRESSIONS keyword instead.', 1 ); %#ok
 end
 
 %
@@ -39,23 +36,23 @@ if isempty( xt ),
     x.name = nm;
     x.size = [1,1];
 elseif nm( end ) ~= ')',
-    error( sprintf( 'Invalid expression specification: %s', nm ) );
+    error( 'Invalid expression specification: %s', nm );
 else
     x.name = nm( 1 : xt( 1 ) - 1 );
     x.size = nm( xt( 1 ) + 1 : end - 1 );
 end
 if ~isvarname( x.name ),
-    error( sprintf( 'Invalid expression specification: %s', nm ) );
+    error( 'Invalid expression specification: %s', nm );
 elseif x.name( end ) == '_',
-    error( sprintf( 'Invalid expression specification: %s\n   Variables ending in underscores are reserved for internal use.', nm ) );
+    error( 'Invalid expression specification: %s\n   Variables ending in underscores are reserved for internal use.', nm );
 elseif exist( [ 'cvx_s_', x.name ], 'file' ) == 2,
-    error( sprintf( [ 'Invalid expression specification: %s\n', ...
+    error( [ 'Invalid expression specification: %s\n', ...
         '   The name "%s" is reserved as a matrix structure modifier,\n', ...
-        '   which can be used only with the VARIABLE keyword.' ], nm, x.name ) );
+        '   which can be used only with the VARIABLE keyword.' ], nm, x.name );
 end
 tt = evalin( 'caller', x.name, '[]' );
-if isa( tt, 'cvxobj' ) & cvx_id( tt ) >= cvx_id( prob ),
-    error( sprintf( 'Invalid expression specification: %s\n   Name already used for another CVX object.', nm ) );
+if isa( tt, 'cvxobj' ) && cvx_id( tt ) >= cvx_id( prob ),
+    error( 'Invalid expression specification: %s\n   Name already used for another CVX object.', nm );
 end
 
 %
@@ -69,7 +66,7 @@ if ischar( x.size ),
     x.size = evalin( 'caller', [ '[', x.size, '];' ], 'NaN' );
     [ temp, x.size ] = cvx_check_dimlist( x.size, true );
     if ~temp,
-        error( sprintf( [ 'Invalid expression specification: ', nm, '\n   Dimension list must be a vector of finite nonnegative integers.' ] ) );
+        error( 'Invalid expression specification: %s\n   Dimension list must be a vector of finite nonnegative integers.', nm );
     end
 end
 

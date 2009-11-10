@@ -17,7 +17,7 @@ end
 tt = remap( cvx_classify( x ) );
 if nnz( tt ),
     xt = cvx_subsref( x, tt );
-    error( sprintf( 'Disciplined convex programming error:\n    Illegal operation: - {%s}', cvx_class( xt ) ) );
+    error( 'Disciplined convex programming error:\n    Illegal operation: - {%s}', cvx_class( xt ) );
 end
 
 z = cvx( x.size_, -x.basis_ );

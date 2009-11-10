@@ -76,7 +76,6 @@ nnzs = [];
 W = ones(n,1); % initial weights
 
 disp([char(10) 'Log-based heuristic:']);
-% cvx_quiet(true);
 for k = 1:NUM_RUNS
   cvx_begin quiet
     variable x_log(n)
@@ -93,7 +92,6 @@ for k = 1:NUM_RUNS
   % adjust the weights and re-iterate
   W = 1./(delta + abs(x_log));
 end
-% cvx_quiet(false);
 
 % number of nonzero elements in the solution (its cardinality or diversity)
 nnz = length(find( abs(x_log) > delta ));

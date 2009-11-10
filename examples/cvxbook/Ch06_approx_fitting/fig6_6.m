@@ -13,7 +13,6 @@
 %       J_mag   = 1/(N+1) sum_{t=0}^N u(t)^2
 %       J_der   = 1/N sum_{t=0}^{N-1} (u(t+1) - u(t))^2
 
-cvx_quiet(true);
 % Input data
 m = 201;  n = 201;  N=200;
 t = [0:m-1]';
@@ -32,7 +31,7 @@ eta = [0.005 0.05 0.05];
 disp('Finding the optimal input for ');
 for i = 1:length(delta)
     disp(['* delta = ' num2str(delta(i)) ' and eta = ' num2str(eta(i))]);
-    cvx_begin
+    cvx_begin quiet
     variable u(N+1)
     minimize ( square_pos(norm(H*u - y_des))/(N+1) + ...
                eta(i)*square_pos(norm(u))/(N+1) + ...

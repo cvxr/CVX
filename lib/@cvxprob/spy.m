@@ -1,5 +1,5 @@
 function spy( prob, reduce )
-if nargin < 2 | ~reduce,
+if nargin < 2 || ~reduce,
     A = extract( prob );
 else
     A = eliminate( prob );

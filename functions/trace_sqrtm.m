@@ -11,7 +11,7 @@ function z = trace_sqrtm( Y )
 %         elementwise comparison), so its argument must be affine.
 
 error( nargchk( 1, 1, nargin ) );
-if ndims( Y ) > 2 | size( Y, 1 ) ~= size( Y, 2 ),
+if ndims( Y ) > 2 || size( Y, 1 ) ~= size( Y, 2 ),
     error( 'Input must be a square matrix.' );
 end
 err = Y - Y';

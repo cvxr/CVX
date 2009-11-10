@@ -7,7 +7,7 @@ function y = isreal( x, full )
 %   expressions.
 
 y = x.basis_;
-if nargin > 1 & full,
+if nargin > 1 && full,
     y = any( imag( y ), 1 );
 else
     y = isreal( x.basis_ ) | nnz(imag(x.basis_)) == 0;

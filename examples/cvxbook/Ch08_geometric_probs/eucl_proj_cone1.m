@@ -7,7 +7,6 @@
 %               s.t.    x >= 0
 % It is also given by: P_K(x0)_k = max{x0_k,0}
 
-cvx_quiet(true);
 % Input data
 randn('seed',0);
 n  = 10;
@@ -23,7 +22,7 @@ fprintf(1,'Done! \n');
 % Solution via CVX
 fprintf(1,'Computing the solution via a QP...');
 
-cvx_begin
+cvx_begin quiet
     variable x(n)
     minimize ( norm(x - x0) )
     x >= 0;

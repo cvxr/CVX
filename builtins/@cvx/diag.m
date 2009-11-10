@@ -9,7 +9,7 @@ switch nargin,
     case 1,
         k = 0;
     case 2,
-        if ~isnumeric( k ) | k ~= floor( k ),
+        if ~isnumeric( k ) || k ~= floor( k ),
             error( 'Second argument must be an integer.' );
         end
 end
@@ -33,7 +33,7 @@ if any( s == 1 ),
     nn = prod( s );
     nel = nn + roff + coff;
     y = sparse( roff + 1 : roff + nn, coff + 1 : coff + nn, v, nel, nel );
-elseif roff >= s(1) | coff >= s(2),
+elseif roff >= s(1) || coff >= s(2),
     y = sparse( 0, 1 );
 else
     nel = min( s(1) - roff, s(2) - coff );

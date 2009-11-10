@@ -14,12 +14,12 @@ function cvx_expert( flag )
 %
 %   CVX_EXPERT, with no arguments, returns the current flag value.
 
+global cvx___
 error( nargchk( 1, 1, nargin ) );
 if nargin == 1,
-    nflag = [];
-    if isnumeric(flag) | islogical(flag),
+    if isnumeric(flag) || islogical(flag),
         ns = double(flag) ~= 0;
-    elseif ischar(flag) & size(flag,1) == 1,
+    elseif ischar(flag) && size(flag,1) == 1,
         switch lower(flag),
             case 'true',
                 ns = true;

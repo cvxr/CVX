@@ -24,10 +24,10 @@ error( nargchk( 0, 1, nargin ) );
 % Check size vector
 %
 
-if nargin == 0 | isempty( sx ),
-    sx = [1,1];
+if nargin == 0 || isempty( sx ),
+    sx = [1,1]; %#ok
 else
-    [ temp, sx ] = cvx_check_dimlist( sx, true );
+    [ temp, sx ] = cvx_check_dimlist( sx, true ); %#ok
     if ~temp,
         error( 'First argument must be a dimension vector.' );
     end
@@ -38,12 +38,11 @@ end
 % Build the cone
 %
 
-nx = prod( sx );
 cvx_begin_set
     variables x( sx ) y( sx ) z( sx )
-    [ tx, dummy ] = find( cvx_basis( x ) );
-    [ ty, dummy ] = find( cvx_basis( y ) );
-    [ tz, dummy ] = find( cvx_basis( z ) );
+    [ tx, dummy ] = find( cvx_basis( x ) ); %#ok
+    [ ty, dummy ] = find( cvx_basis( y ) ); %#ok
+    [ tz, dummy ] = find( cvx_basis( z ) ); %#ok
     newnonl( cvx_problem, 'exponential', [ tx(:)' ; ty(:)' ; tz(:)' ] );
 cvx_end_set
 

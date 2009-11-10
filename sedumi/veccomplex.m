@@ -42,7 +42,7 @@ imsel = 1:nfx;
 imsel = imsel' + [zeros(length(cpx.f),1); vec(cpx.x)];
 rsel(imsel) = 0;
 rsel = find(rsel);
-z(1:dimflqr-nfx) = x(rsel);
+z(1:dimflqr-nfx) = x(rsel); %#ok
 z(cpx.f) = z(cpx.f) + sqrt(-1) * x(imsel(1:length(cpx.f)));
 z(cpx.x) = z(cpx.x) + sqrt(-1) * x(imsel(length(cpx.f)+1:end));
 % ----------------------------------------
@@ -63,7 +63,7 @@ for knz = 1:length(cpx.s)
     end
     nksqr = K.s(K.rsdpN + knz)^2;                   % insert a Hermitian block
     z(zfirstk:zfirstk+nksqr-1) = x(hfirstk:hfirstk+nksqr-1) ...
-        + i * x(hfirstk+nksqr: hfirstk+2*nksqr-1);
+        + 1i * x(hfirstk+nksqr: hfirstk+2*nksqr-1);
     zfirstk = zfirstk + nksqr;
     hfirstk = hfirstk + 2*nksqr;
     k = newk + 1;                                   % handled up to block newk.

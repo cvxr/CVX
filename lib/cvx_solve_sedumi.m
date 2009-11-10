@@ -15,7 +15,7 @@ for k = 1 : length( nonls ),
     tt = nonls( k ).type;
     n_in = n_in + nnv;
     n_out = n_out + nnv;
-    if nn == 1 | isequal( tt, 'nonengative' ),
+    if nn == 1 || isequal( tt, 'nonengative' ),
         K.l = K.l + nn * nv;
         reord.l = [ reord.l ; temp( : ) ];
     elseif isequal( tt, 'lorentz' ),
@@ -31,7 +31,7 @@ for k = 1 : length( nonls ),
             nn = sqrt( nn );
             str = cvx_create_structure( [ nn, nn, nv ], 'hermitian' );
         else
-            error( sprintf( 'Unsupported nonlinearity: %s', tt ) );
+            error( 'Unsupported nonlinearity: %s', tt );
         end
         K.s = [ K.s, nn * ones( 1, nv ) ];
         stri = cvx_invert_structure( str, 'compact' )';
@@ -49,10 +49,9 @@ end
 
 n_f = n - n_in;
 if n_f,
-    n_in = n;
     n_out = n_out + n_f + 1;
     K.q(end+1) = n_f + 1;
-    reord.f = [ 1 : n ]';
+    reord.f = ( 1 : n )';
     reord.f( [ reord.l ; reord.q ; reord.sr ] ) = [];
 end
 n_d = max( m - n - n_f + 1, isempty( At ) );

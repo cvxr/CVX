@@ -19,7 +19,7 @@ if nargin ~= 0,
 	    cd(subdir);
 	else
 	    cd(oldd);
-	    error( sprintf( 'Cannot CD to %s%s (Name is nonexistent or not a directory).', cvx_where, subdir ) );
+	    error( 'Cannot CD to %s%s (Name is nonexistent or not a directory).', cvx_where, subdir );
 	end
 end
 

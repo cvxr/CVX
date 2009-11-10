@@ -33,7 +33,7 @@ function epigraph( varargin )
 
 if ~iscellstr( varargin ),
     error( 'EPIGRAPH must be used in command mode.' );
-elseif nargin ~= 2 | ~strcmpi( varargin{1}, 'variable' ),
+elseif nargin ~= 2 || ~strcmpi( varargin{1}, 'variable' ),
     error( 'Syntax: epigraph variable <variable>' );
 elseif ~isa( evalin( 'caller', 'cvx_problem', '[]' ), 'cvxprob' ),
     error( 'EPIGRAPH can only be used within a CVX model.' );

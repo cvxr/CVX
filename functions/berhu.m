@@ -36,7 +36,7 @@ function y = berhu( x, M, t )
 error( nargchk( 1, 3, nargin ) );
 if nargin < 2,
     M = 1;
-elseif ~isreal( M ) | any( M( : ) <= 0 ),
+elseif ~isreal( M ) || any( M( : ) <= 0 ),
     error( 'Second argument must be real and positive.' );
 end
 if nargin < 3,

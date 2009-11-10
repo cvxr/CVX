@@ -6,7 +6,6 @@ if m ~= n,
 end
 
 nsq = n * n;
-ntr = 0.5 * ( nsq + n );
 c  = 0 : n - 1;
 c  = c( ones( 1, 2 * n ), : );
 c  = c( : );
@@ -15,7 +14,7 @@ r  = r( [ 1, 1 ], : );
 r  = r( : );
 r  = r( :, ones( 1, n ) );
 r  = r( : );
-v  = [ 1 ; j ];
+v  = [ 1 ; 1i ];
 v  = v( :, ones( 1, nsq ) );
 v  = v( : );
 temp = r < c;

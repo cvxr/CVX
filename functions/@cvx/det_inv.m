@@ -10,7 +10,7 @@ elseif size( X, 2 ) ~= n,
     error( 'Matrix must be square.' );
 elseif nargin < 2,
     p = 1;
-elseif ~isnumeric( p ) | ~isreal( p ) | numel( p ) ~=  1 | p <= 0,
+elseif ~isnumeric( p ) || ~isreal( p ) || numel( p ) ~=  1 || p <= 0,
     error( 'Second argument must be a positive scalar.' );
 end
 
@@ -19,11 +19,11 @@ if cvx_isconstant( X ),
     
     cvx_optval = cvx( det_inv( cvx_constant( X ), p ) );
 
-elseif nnz( X ) <= n & nnz( diag( X ) ) == nnz( X ),
+elseif nnz( X ) <= n && nnz( diag( X ) ) == nnz( X ),
     
     cvx_begin
         epigraph variable y
-        geo_mean( [ diag(X) ; y ], w ) >= 1;
+        geo_mean( [ diag(X) ; y ], w ) >= 1; %#ok
     cvx_end
 
 elseif isreal( X ),
@@ -33,7 +33,7 @@ elseif isreal( X ),
         variable Z(n,n) lower_triangular
         D = diag( Z );
         [ diag( D ), Z' ; Z, X ] == semidefinite(2*n);
-        geo_mean( [ D ; y ], [], w ) >= 1;
+        geo_mean( [ D ; y ], [], w ) >= 1; %#ok
     cvx_end
 
 else
@@ -43,7 +43,7 @@ else
         variable Z(n,n) lower_triangular complex
         D = diag( Z );
         [ diag( D ), Z' ; Z, X ] == hermitian_semidefinite(2*n);
-        geo_mean( [ real( D ) ; y ], [], w ) >= 1;
+        geo_mean( [ real( D ) ; y ], [], w ) >= 1; %#ok
     cvx_end
 
 end

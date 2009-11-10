@@ -1,4 +1,4 @@
-function y = cvxs_skew_symmetric( m, n )
+function y = cvx_s_skew_symmetric( m, n )
 %CVX_S_SKEW_SYMMETRIC Skew-symmetric matrices.
 
 if m ~= n,

@@ -1,8 +1,8 @@
 function x = cvx_accept_concave( x )
+global cvx___
 if isa( x, 'cvx' ),
     t = cvx_vexity( x ) < 0;
     if any( t( : ) ),
-        global cvx___
         prob = cvx___.problems(end).self;
         if all( t ),
             src = x;

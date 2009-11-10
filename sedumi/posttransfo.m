@@ -82,7 +82,7 @@ end
 % ----------------------------------------
 % Postprocess the SDP part
 % ----------------------------------------
-if pars.sdp==1 & isfield(prep,'sdp')
+if pars.sdp==1 && isfield(prep,'sdp')
     xpf(1:K.f,1)=xp(1:K.f);
     xp=xp(K.f+1:end);
     Kf=K.f;

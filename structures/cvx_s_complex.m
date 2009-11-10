@@ -5,7 +5,7 @@ mn   = m * n;
 rvec = 1 : 2 * mn;
 cvec = ceil( 0.5 * rvec );
 vvec = ones( 1, 2 * mn );
-vvec( 2 : 2 : end ) = j;
+vvec( 2 : 2 : end ) = 1i;
 y = sparse( rvec( : ), cvec( : ), vvec( : ), 2 * mn, mn );
 
 % Copyright 2009 Michael C. Grant and Stephen P. Boyd. 

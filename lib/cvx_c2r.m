@@ -8,7 +8,7 @@ sx = size( x );
 if nargin < 2,
     dim = [ find( sx > 1 ), 1 ];
     dim = dim( 1 );
-elseif ~isnumeric( dim ) | dim <= 0 | dim ~= floor( dim ),
+elseif ~isnumeric( dim ) || dim <= 0 || dim ~= floor( dim ),
     error( 'Second argument must be a dimension.' );
 end
 sx = [ sx, ones( 1, dim - length( sx ) ) ];
@@ -18,7 +18,7 @@ nd = length( sx );
 % Perform the sparse case differently
 %
 
-if isnumeric( x ) & issparse( x ) & dim <= 2,
+if isnumeric( x ) && issparse( x ) && dim <= 2,
     [ rr, cc, vv ] = find( x );
     vr = real( vv );
     vi = imag( vv );

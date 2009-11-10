@@ -91,7 +91,7 @@ end
 % Try to get problem in LIPSOL format
 % ----------------------------------------
 if(status == 0)
-    if(exist('findprob') > 1)
+    if(exist('findprob','file') > 1)
         if (findprob([],pname) == 1)
             status = 2;
         end

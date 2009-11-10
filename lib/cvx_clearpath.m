@@ -17,7 +17,7 @@ if cvx___.path.hold,
         nsolv = cvx___.problems(end).solver;
     end
     cvx_setspath( nsolv );
-elseif cvx___.path.active & isempty( cvx___.problems ),
+elseif cvx___.path.active && isempty( cvx___.problems ),
     cvx_setspath( '' );
     if ~isempty( cvx___.path.string ),
         cpath = matlabpath;

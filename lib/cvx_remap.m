@@ -55,7 +55,6 @@ if isempty( remap_str ),
      remap_str = remap_str(:);
      [ remap_str, ndx ] = sort( remap_str );
      remap_big = remap_big( ndx, : );
-     temp = strcat( '~', remap_str );
 end
 
 [ c, ndx ] = sort( [ remap_str ; varargin(:) ] );

@@ -7,7 +7,7 @@
 %
 % **********  INTERNAL FUNCTION OF CHOLTOOL  **********
 
-function perm = ordmmdmex(adjncy)
+function perm = ordmmdmex(adjncy) %#ok
 
 %
 %   This file is part of CholTool 1.00

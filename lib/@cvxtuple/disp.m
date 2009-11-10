@@ -30,7 +30,7 @@ switch class( x ),
         end
         disp( [ fprefix, cvx_class( x, true, true ), ' ', type( x ), suffix ] );
     case 'double',
-        disp( sprintf( '%s%g%s', fprefix, x, suffix ) );
+        fprintf( 1, '%s%g%s\n', fprefix, x, suffix );
 end
 
 % Copyright 2009 Michael C. Grant and Stephen P. Boyd.

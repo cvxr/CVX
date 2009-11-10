@@ -8,7 +8,7 @@ function y = cvx_check_dimension( x, zero_ok )
 %   CVX_CHECK_DIMENSION( DIM, ZERO_OK ) allows DIM to be zero if ZERO_OK is
 %   true. If ZERO_OK is false, the default behavior is used.
 
-if isnumeric( x ) & length( x ) == 1 & isreal( x ) & x < Inf & x == floor( x ),
+if isnumeric( x ) && length( x ) == 1 && isreal( x ) && x < Inf && x == floor( x ),
     if nargin < 2, zero_ok = false; end
     y = x > 0 | zero_ok;
 else

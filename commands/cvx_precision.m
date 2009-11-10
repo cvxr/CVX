@@ -33,11 +33,11 @@ function sout = cvx_precision( flag )
 %       PBEST = eps^0.5, PHIGH = eps^0.5, PLOW = eps^0.25.
 %
 %   A number of text-based options are provided for convenience:
-%       CVX_PRECISION DEFAULT: [eps^0.25, eps^0.5,   eps^0.5 ]
-%       CVX_PRECISION HIGH   : [eps^0.375,eps^0.75,  eps^0.75] 
-%       CVX_PRECISION MEDIUM : [eps^0.25, eps^0.375, eps^0.5 ]
-%       CVX_PRECISION LOW    : [eps^0.25, eps^0.25,  eps^0.5 ]
-%       CVX_PRECISION BEST   : [eps^0.25, eps^0.5,   0       ]
+%       CVX_PRECISION DEFAULT: [eps^0.5,  eps^0.5,   eps^0.25 ]
+%       CVX_PRECISION HIGH   : [eps^0.75, eps^0.75,  eps^0.375] 
+%       CVX_PRECISION MEDIUM : [eps^0.5,  eps^0.375, eps^0.25 ]
+%       CVX_PRECISION LOW    : [eps^0.5,  eps^0.25,  eps^0.25 ]
+%       CVX_PRECISION BEST   : [0,        eps^0.5,   eps^0.25 ]
 %
 %   CVX_PRECISION BEST creates a sort of 'best effort' mode. By setting
 %   PBEST=0, it instructs the solver to proceed as long as it can make any
@@ -69,6 +69,7 @@ function sout = cvx_precision( flag )
 %
 %   CVX_PRECISION, with no arguments, returns the current precision value.
 
+global cvx___
 if nargin > 0,
     if isempty( flag ),
         ns = [ eps^0.5, eps^0.5, eps^0.25 ];
@@ -91,9 +92,9 @@ if nargin > 0,
                     error( [ 'Invalid precision mode: ', flag ] );
             end
         end
-    elseif ~isnumeric( flag ) | numel( flag ) > 3 | length(flag) ~= numel(flag),
+    elseif ~isnumeric( flag ) || numel( flag ) > 3 || length(flag) ~= numel(flag),
         error( 'Argument must be a real number, a 2-vector, a 3-vector, or a string.' );
-    elseif any( flag < 0 ) | any( flag >= 1 ),
+    elseif any( flag < 0 ) || any( flag >= 1 ),
         error( 'Each precision value must satisfy 0 <= P < 1.' );
     elseif numel( flag ) == 1,
         ns = [ max(flag,eps^0.5), flag, min(sqrt(flag),max(flag,eps^0.25)) ];
@@ -114,14 +115,14 @@ if isempty( cvx___.problems ),
 else
     s = cvx___.problems(end).precision;
     if nargin > 0,
-        if ~isequal( s, ns ) & ~isa( evalin( 'caller', 'cvx_problem', '[]' ), 'cvxprob' ),
-            warning( 'The global CVX precision setting cannot be changed while a model is being constructed.' );
+        if ~isequal( s, ns ) && ~isa( evalin( 'caller', 'cvx_problem', '[]' ), 'cvxprob' ),
+            warning( 'CVX:Precision', 'The global CVX precision setting cannot be changed while a model is being constructed.' );
         else
             cvx___.problems(end).precision = ns;
         end
     end
 end
-if nargin == 0 | nargout > 0,
+if nargin == 0 || nargout > 0,
     sout = s;
 end
 

@@ -58,16 +58,16 @@ for k = 1 : nv,
     switch vk,
         case 0,
             % Invalid
-            error( sprintf( 'Disciplined convex programming error:\n    Illegal operation: log( {%s} ).', cvx_class( xt, true, true, true ) ) );
+            error( 'Disciplined convex programming error:\n    Illegal operation: log( {%s} ).', cvx_class( xt, true, true, true ) );
         case 1,
             % Constant
             yt = cvx( log( cvx_constant( xt ) ) );
         case 2,
             % Affine, convex (invalid)
-            sx = xt.size_;
+            sx = xt.size_; %#ok
             cvx_begin
-                hypograph variable yt( sx )
-                exp( yt ) <= xt;
+                hypograph variable yt( sx ) 
+                exp( yt ) <= xt;            %#ok
             cvx_end
         case 3,
             % Monomial

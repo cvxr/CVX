@@ -47,7 +47,7 @@ for k = 1 : nv,
     switch vk,
         case 0,
             % Invalid
-            error( sprintf( 'Disciplined convex programming error:\n    Illegal operation: square( {%s} ).', cvx_class( xt, true, true ) ) );
+            error( 'Disciplined convex programming error:\n    Illegal operation: square( {%s} ).', cvx_class( xt, true, true ) );
         case 1,
             % Constant
             yt = cvx_constant( xt );

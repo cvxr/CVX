@@ -8,7 +8,7 @@
 %
 % See also sedumi
 
-function [lab,q] = psdeig(x,K)
+function [lab,q] = psdeig(x,K) %#ok
 %
 % This file is part of SeDuMi 1.1 by Imre Polik and Oleksandr Romanko
 % Copyright (C) 2005 McMaster University, Hamilton, CANADA  (since 1.1)

@@ -16,7 +16,7 @@ for k = 1 : nargin,
 end
 for j = k+1 : nargin,
     sx = size(varargin{k});
-    if any( sx ~= 1 ) & any( sx ~= sz ),
+    if any( sx ~= 1 ) && any( sx ~= sz ),
         sz = [];
         break
     end

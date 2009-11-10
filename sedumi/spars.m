@@ -32,7 +32,7 @@ function sparsity=spars(x)
 % 02110-1301, USA
 
 if ~isempty(x)
-    sparsity=nnz(x)/prod(size(x));
+    sparsity=nnz(x)/numel(x);
 else
     sparsity=0;
 end

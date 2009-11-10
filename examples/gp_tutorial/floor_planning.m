@@ -30,8 +30,7 @@ fprintf(1,'Solving for the optimal tradeoff curve...\n');
 min_area = [];
 for n = 1:N
   % GP variables
-  cvx_begin gp
-    cvx_quiet true
+  cvx_begin gp quiet
     variables wa wb wc wd ha hb hc hd
 
     % objective function is the area of the bounding box

@@ -20,7 +20,7 @@ while true,
                 fx   = fx( ndxs );
             end
             nfx = length( fx );
-            if nfx == 1 & nx == 1,
+            if nfx == 1 && nx == 1,
                 x = subsref( x, struct( 'type', '.', 'subs', fx{1} ) );
                 continue;
             end
@@ -36,8 +36,6 @@ while true,
                 end
                 x = reshape( x, sx );
             end
-        otherwise,
-            cx = false;
     end
     break;
 end

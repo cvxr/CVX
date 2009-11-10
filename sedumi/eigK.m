@@ -20,7 +20,7 @@
 %
 % See also sedumi, mat, vec, eyeK.
 
-function [lab,q,f] = eigK(x,K)
+function [lab,q,f] = eigK(x,K) %#ok
 
 % THE M-FILE VERSION OF THIS FUNCTION IS HERE ONLY AS ILLUSTRATION.
 % SEE THE C-SOURCE FOR THE MEX-VERSION.
@@ -61,7 +61,7 @@ disp('In Matlab, launch "install_sedumi" in the folder you put the SeDuMi files.
 disp('For more information see the file Install.txt.')
 error(' ')
 
-lab = zeros(K.l + 2*length(K.q) + sum(K.s),1);
+lab = zeros(K.l + 2*length(K.q) + sum(K.s),1); %#ok
 % ----------------------------------------
 % LP: lab = x
 % ----------------------------------------

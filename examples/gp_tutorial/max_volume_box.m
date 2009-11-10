@@ -31,8 +31,7 @@ for k = 1:length(Awall)
   for n = 1:N
     % resolve the problem with varying parameters
     Afloor_n = Afloor(n);
-    cvx_begin gp
-      cvx_quiet true
+    cvx_begin gp quiet
       variables h w d
       % objective function is the box volume
       maximize( h*w*d )

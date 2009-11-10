@@ -23,8 +23,6 @@
 % the 2nd and 3rd constraints are nonlinear convex constraints that can be
 % cast as 3 x 3-LMIs (Please refer to the paper for more details).
 
-cvxq = cvx_quiet(true);
-
 %
 % Circuit parameters
 %
@@ -98,7 +96,7 @@ for j = 1 : npts + xnpts,
     % Construct and solve the convex model
     %
 
-    cvx_begin sdp
+    cvx_begin sdp quiet
         variables w(m,3) t(m,2) s(1,2)
         variable G(N,N) symmetric
         variable C(N,N) symmetric
@@ -185,4 +183,3 @@ for k = 1 : xnpts,
     text( xareas(k), xdelays(k), sprintf( '(%d)', k ) );
 end
 
-cvx_quiet(cvxq);

@@ -39,7 +39,7 @@ Avec = cell( 0, 1 );
 Cvec = cell( 0, 1 );
 xvec = cell( 0, 1 );
 tvec = cell( 0, 1 );
-if nargin > 6 & ~isempty( XY0 ),
+if nargin > 6 && ~isempty( XY0 ),
     use_x0 = true;
     xx0 = XY0{1};
     y0  = XY0{2};
@@ -102,7 +102,6 @@ if ~isempty( tt ),
         indices{k} = reshape(ti,1,numel(ti));
     end
     ti = cat( 2, indices{tt} );
-    ni = length(ti);
     Avec{end+1,1} = At(ti,:);
     Cvec{end+1,1} = c(ti);
     tvec{end+1,1} = ti;
@@ -244,7 +243,7 @@ if ~isempty( tt ),
         [ rr, cc, vv ] = find( str_2' );
         cc = cc + floor((cc-1)/n2)*(nnn-n2);
         if nv > 1,
-            ov = ones(1,nv); sv = [0:nv-1];
+            ov = ones(1,nv); sv = 0:nv-1;
             or = ones(length(rr),1);
             rr = rr(:,ov) + or*(sv*nt);
             cc = cc(:,ov) + or*(sv*(n2*(nnn+1)));
@@ -255,7 +254,7 @@ if ~isempty( tt ),
             [ rr, cc, vv ] = find( str_1 );
             cc = cc + floor((cc-1)/n2)*(nnn-n2);
             if nv > 1,
-                ov = ones(1,nv); sv = [0:nv-1];
+                ov = ones(1,nv); sv = 0:nv-1;
                 or = ones(length(rr),1);
                 rr = rr(:,ov) + or*(sv*nt);
                 cc = cc(:,ov) + or*(sv*(n2*(nnn+1)));
@@ -286,7 +285,7 @@ ti = find(~found);
 if ~isempty(ti),
     types = unique( types(ti) );
     types = sprintf( ' %s', types{:} );
-    error( sprintf( 'One or more unsupported nonlinearities detected: %s', types ) );
+    error( 'One or more unsupported nonlinearities detected: %s', types ); %#ok
 end
 
 ti = find(~used);
@@ -306,8 +305,8 @@ if ~isempty(ti),
     if need_z,
         zvec{end+1,1} = 1;
     end
-    found(tt) = true;
-    used(ti) = true;
+    % found(tt) = true;
+    % used(ti) = true;
 end
 
 %

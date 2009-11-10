@@ -30,7 +30,7 @@ function y = huber( x, varargin )
 %       must be affine and T must be concave (or affine). T must be real.
 
 if ~cvx_isaffine( x ),
-    error( sprintf( 'Disciplined convex programming error:\n    HUBER is nonmonotonic in X, so X must be affine.' ) );
+    error( 'Disciplined convex programming error:\n    HUBER is nonmonotonic in X, so X must be affine.', 1 ); %#ok
 end
 y = huber_pos( abs( x ), varargin{:} );
 

@@ -16,11 +16,11 @@ sx = size( x );
 if nargin < 2,
     dim = [ find( sx > 1 ), 1 ];
     dim = dim( 1 );
-elseif ~isnumeric( dim ) | dim <= 0 | dim ~= floor( dim ),
+elseif ~isnumeric( dim ) || dim <= 0 || dim ~= floor( dim ),
     error( 'Second argument must be a dimension.' );
 end
 nd = length( sx );
-if nd < dim | rem( sx( dim ), 2 ) ~= 0,
+if nd < dim || rem( sx( dim ), 2 ) ~= 0,
     error( 'The size of the array along the key dimension must be even.' );
 end
 
@@ -38,7 +38,7 @@ xi = cvx_subsref( x, ndxs{:} );
 % Combine
 %
 
-x = xr + j * xi;
+x = xr + 1i * xi;
 
 % Copyright 2009 Michael C. Grant and Stephen P. Boyd.
 % See the file COPYING.txt for full copyright information.

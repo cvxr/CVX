@@ -1,6 +1,6 @@
 function v = value( x, data )
+global cvx___
 if nargin == 1,
-    global cvx___
     data = cvx___.x;
 end
 nx = size( data, 1 );

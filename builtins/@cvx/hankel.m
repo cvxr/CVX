@@ -15,7 +15,7 @@ error( nargchk( 1, 2, nargin ) );
 if nargin < 2,
     r = zeros(size(c));
 else
-    temp = cvx_subsref( r, 1 ) - cvx_subsref( c, prod(size(c)) );
+    temp = cvx_subsref( r, 1 ) - cvx_subsref( c, numel(c) );
     if ~cvx_isnonzero( temp ),
         warning('MATLAB:hankel:AntiDiagonalConflict',['Last element of ' ...
                'input column does not match first element of input row. ' ...
@@ -37,7 +37,7 @@ x  = [ c ; cvx_subsref( r, 2 : nr, 1 ) ];
 % Construct matrix
 %
 
-cidx = [ 1 : nc ]';
+cidx = ( 1 : nc )';
 ridx = 0 : nr - 1;
 H    = cidx(:,ones(nr,1)) + ridx(ones(nc,1),:);
 H    = reshape( cvx_subsref( x, H( : ) ), size( H ) );

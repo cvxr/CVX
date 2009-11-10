@@ -66,8 +66,7 @@ disp('Generating the optimal tradeoff curve...')
 
 for k = 1:length(Amax)
   for n = 1:N
-    cvx_begin gp
-      cvx_quiet true
+    cvx_begin gp quiet
       % optimization variables
       variable x(m)                 % scale factors
       variable t(m)                 % arrival times

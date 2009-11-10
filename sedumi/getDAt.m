@@ -11,7 +11,7 @@
 %
 % See also sedumi
 
-function [DAtq, DAts] = getDAt(At,Ablk,colsel, d,ud,K)
+function [DAtq, DAts] = getDAt(At,Ablk,colsel, d,ud,K) %#ok
 
 %
 % This file is part of SeDuMi 1.1 by Imre Polik and Oleksandr Romanko

@@ -41,7 +41,7 @@ function pars = checkpars(pars,lponly)
 % --------------------------------------------------
 % Algorithm selection parameters
 % --------------------------------------------------
-if ~isfield(pars,'alg') | sum([0 1 2] == pars.alg) == 0
+if ~isfield(pars,'alg') || sum([0 1 2] == pars.alg) == 0
     pars.alg = 2;
 end
 if ~isfield(pars,'beta')       % 0.1 <= beta <= 0.9 (theoretically in (0,1))
@@ -68,7 +68,7 @@ end
 if ~isfield(pars,'w')
     pars.w = [1;1];
 elseif length(pars.w)~=2
-    warning('pars.w should be vector of order 2')
+    warning( 'SeDuMi:pars.w', 'pars.w should be vector of order 2' ); %#ok
     pars.w = [1;1];
 else
     pars.w = max(pars.w,1e-8);    % positive weights
@@ -88,7 +88,7 @@ end
 % --------------------------------------------------
 % Initialization
 % --------------------------------------------------
-if ~isfield(pars,'mu') | pars.mu <= 0
+if ~isfield(pars,'mu') || pars.mu <= 0
     pars.mu = 1;
 end
 % --------------------------------------------------

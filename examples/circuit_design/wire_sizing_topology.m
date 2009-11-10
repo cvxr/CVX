@@ -14,8 +14,6 @@
 %                               Tmax*G(x) - C(x) >= 0
 % Please refer to the paper (section 2) to find what G(x) and C(x) are.
 
-cvxq = cvx_quiet( true );
-
 %
 % Circuit parameters
 %
@@ -111,7 +109,7 @@ for i = 1 : npts  + xnpts,
     % Construct and solve the convex model
     %
 
-    cvx_begin sdp
+    cvx_begin sdp quiet
         variable x(6)
         variable G(n,n) symmetric
         variable C(n,n) symmetric
@@ -178,4 +176,3 @@ end
 disp(['Three specific solutions:']);
 sizes
 
-cvx_quiet( cvxq );

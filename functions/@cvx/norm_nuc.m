@@ -1,4 +1,4 @@
-function cvx_optval = norm_nuc( X )
+function cvx_optval = norm_nuc( X ) %#ok
 
 %NORM_NUC   Internal cvx version.
 
@@ -13,12 +13,12 @@ end
 % Construct problem
 % 
 
-[ m, n ] = size( X );
+[ m, n ] = size( X ); %#ok
 cvx_begin sdp
     variable W1(m,m) symmetric
     variable W2(n,n) symmetric
     minimize(0.5*(trace(W1)+trace(W2)));
-    [W1,X;X',W2] >= 0;
+    [W1,X;X',W2] >= 0; %#ok
 cvx_end
 
 % Copyright 2009 Michael C. Grant and Stephen P. Boyd. 

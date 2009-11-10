@@ -54,7 +54,7 @@ for k = 1 : nv,
     switch vk,
         case 0,
             % Invalid
-            error( sprintf( 'Disciplined convex programming error:\n    Illegal operation: exp( {%s} ).', cvx_class( xt ) ) );
+            error( 'Disciplined convex programming error:\n    Illegal operation: exp( {%s} ).', cvx_class( xt ) );
         case 1,
             % Constant
             xt = cvx( exp( cvx_constant( xt ) ) );
@@ -64,13 +64,13 @@ for k = 1 : nv,
             [ rx, cx, vx ] = find( xt.basis_ );
             tt = rx == 1;  rx( tt ) = [];
             cc = cx( tt ); cx( tt ) = [];
-            vc = vx( tt ); vx( tt ) = [];
+            vc = vx( tt ); % vx( tt ) = [];
             exps = cvx___.exponential( rx, 1 );
             tt = exps == 0;
             if any( tt ),
                 n1 = unique( rx( tt ) );
                 n2 = newvar( cvx___.problems( end ).self, '', length( n1 ) );
-                [ n2, dummy ] = find( n2.basis_ );
+                [ n2, dummy ] = find( n2.basis_ ); %#ok
                 cvx___.exponential( n1, 1 ) = n2( : );
                 cvx___.logarithm( n2, 1 ) = n1( : );
                 cvx___.vexity( n2 ) = 1;

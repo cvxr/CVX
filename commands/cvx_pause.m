@@ -7,13 +7,13 @@ function sout = cvx_pause( flag )
 %
 %   CVX_PAUSE(FALSE) ends the pausing behavior.
 
+global cvx___
 cvx_global
 s = cvx___.pause;
 if nargin == 1,
-    nflag = [];
-    if isnumeric(flag) | islogical(flag),
+    if isnumeric(flag) || islogical(flag),
         ns = double(flag) ~= 0;
-    elseif ischar(flag) & size(flag,1) == 1,
+    elseif ischar(flag) && size(flag,1) == 1,
         switch lower(flag),
             case 'true',
                 ns = true;
@@ -27,7 +27,7 @@ if nargin == 1,
     end
     cvx___.pause = ns;
 end
-if nargin == 0 | nargout > 0,
+if nargin == 0 || nargout > 0,
     sout = s;
 end
 

@@ -31,8 +31,9 @@ function sout = cvx_gp_precision( flag )
 %
 %   For more information, see LOGSUMEXP_SDP.
 
+global cvx___
 if nargin > 0,
-    if ~isa( flag, 'double' ) | length( flag ) ~= 1 | ~isreal( flag ) | flag <= 0 | flag > 1,
+    if ~isa( flag, 'double' ) || length( flag ) ~= 1 || ~isreal( flag ) || flag <= 0 || flag > 1,
         error( 'Argument must be a scalar between 0 and 1, exclusive.' );
     end
 end
@@ -45,14 +46,14 @@ if isempty( cvx___.problems ),
 else
     s = cvx___.problems(end).gptol;
     if nargin > 0,
-        if ~isequal( s, flag ) & ~isa( evalin( 'caller', 'cvx_problem', '[]' ), 'cvxprob' ),
-            warning( 'The global CVX GP precision setting cannot be changed while a model is being constructed.' );
+        if ~isequal( s, flag ) && ~isa( evalin( 'caller', 'cvx_problem', '[]' ), 'cvxprob' ),
+            warning( 'CVX:GPPrecision', 'The global CVX GP precision setting cannot be changed while a model is being constructed.' );
         else
             cvx___.problems(end).gptol = flag;
         end
     end
 end
-if nargin == 0 | nargout > 0,
+if nargin == 0 || nargout > 0,
     sout = s;
 end
 

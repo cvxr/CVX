@@ -7,11 +7,11 @@ function y = norms( x, p, dim )
 %
 
 error( nargchk( 1, 3, nargin ) );
-if nargin < 2 | isempty( p ),
+if nargin < 2 || isempty( p ),
     p = 2;
-elseif ~isnumeric( p ) | numel( p ) ~= 1 | ~isreal( p ),
+elseif ~isnumeric( p ) || numel( p ) ~= 1 || ~isreal( p ),
     error( 'Second argument must be a real number.' );
-elseif p < 1 | isnan( p ),
+elseif p < 1 || isnan( p ),
     error( 'Second argument must be between 1 and +Inf, inclusive.' );
 end
 
@@ -20,12 +20,12 @@ end
 %
 
 sx = size( x );
-if nargin < 3 | isempty( dim ),
+if nargin < 3 || isempty( dim ),
     dim = cvx_default_dimension( sx );
 elseif ~cvx_check_dimension( dim, false ),
     error( 'Third argument must be a valid dimension.' );
 end
-if isempty( x ) | length( sx ) < dim | sx( dim ) == 1,
+if isempty( x ) || length( sx ) < dim || sx( dim ) == 1,
     p = 1;
 end
 
@@ -40,7 +40,7 @@ if isempty( remap2 ),
 end
 xc = reshape( cvx_classify( x ), sx );
 if ~all( remap2( xc( : ) ) ),
-    error( sprintf( 'Disciplined convex programming error:\n   Invalid computation: norms( {%s}, ... )', cvx_class( x, true, true ) ) );
+    error( 'Disciplined convex programming error:\n   Invalid computation: norms( {%s}, ... )', cvx_class( x, true, true ) );
 end
 
 %
@@ -84,7 +84,7 @@ switch p,
         elseif p == 2,
             cvx_begin
                 epigraph variable y( sy )
-                { cvx_accept_convex(x), y } == lorentz( sx, dim, ~isreal( x ) );
+                { cvx_accept_convex(x), y } == lorentz( sx, dim, ~isreal( x ) ); %#ok
             cvx_end
         else
             sw = sx;
@@ -92,9 +92,9 @@ switch p,
             cvx_begin
                 variable z( sx )
                 epigraph variable y( sy )
-                if isreal(x), cmode = 'abs'; else, cmode = 'cabs'; end
+                if isreal(x), cmode = 'abs'; else cmode = 'cabs'; end
                 { cat( nd+1, z, cvx_expand_dim( y, dim, nx ) ), cvx_accept_convex(x) } ...
-                    == geo_mean_cone( sw, nd+1, [1/p,1-1/p], cmode );
+                    == geo_mean_cone( sw, nd+1, [1/p,1-1/p], cmode ); %#ok
                 sum( z, dim ) == y;
             cvx_end
         end

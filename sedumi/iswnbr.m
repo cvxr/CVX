@@ -8,7 +8,7 @@
 % See also sedumi
 
 
-function [delta,h,alpha] = iswnbr(w,thetaSQR)
+function [delta,h,alpha] = iswnbr(w,thetaSQR) %#ok
 %
 % This file is part of SeDuMi 1.1 by Imre Polik and Oleksandr Romanko
 % Copyright (C) 2005 McMaster University, Hamilton, CANADA  (since 1.1)
@@ -54,7 +54,7 @@ error(' ')
 % deltaSQR = r * ( 2*alpha-alpha^2 - (1-alpha)^2 * sumdifw/gap )
 % WE UPDATE sumdifv AND sumdifw IN A STABLE WAY
 % ----------------------------------------
-n = length(w); gap = sum(w);
+n = length(w); gap = sum(w); %#ok
 sumwNT = gap;
 r = n / thetaSQR;
 cardT = 0; wQ = []; sumdifv = 0; sumdifw = 0;

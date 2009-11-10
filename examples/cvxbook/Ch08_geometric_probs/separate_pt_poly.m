@@ -9,7 +9,6 @@
 %                       norm(mu)* <= 1
 %                       lambda >= 0
 
-cvx_quiet(true);
 % Input data
 randn('seed',0);
 n  = 10;
@@ -21,7 +20,7 @@ b  = rand(m,1);
 % CVX solution
 fprintf(1,'Finding a separating hyperplane between the 2 polyhedra...');
 
-cvx_begin
+cvx_begin quiet
     variables muu(n) lambda(m)
     maximize ( muu'*x0 - b'*lambda )
     A'*lambda == muu;

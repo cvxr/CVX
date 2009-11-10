@@ -29,12 +29,10 @@ Nlambda = 20;
 lambda = logspace(-2, 3, Nlambda);
 nnz = zeros(1,Nlambda);
 
-
 for i=1:Nlambda
     disp(['i = ' num2str(i) ', lambda(i) = ' num2str(lambda(i))]);        
     % Maximum likelihood estimate of R^{-1}
-    cvx_begin sdp
-        cvx_quiet false
+    cvx_begin sdp quiet
         variable S(n,n) symmetric
         maximize log_det(S) - trace(S*Y) - lambda(i)*sum(sum(abs(S)))
         S >= 0

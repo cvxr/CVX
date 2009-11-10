@@ -20,7 +20,7 @@ sx = size( x );
 % Check second argument
 %
 
-if ~isnumeric( k ) | ~isreal( k ) | length( k ) ~= 1,
+if ~isnumeric( k ) || ~isreal( k ) || length( k ) ~= 1,
     error( 'Second argument must be a real scalar.' );
 end
 
@@ -28,7 +28,7 @@ end
 % Check third argument
 %
 
-if nargin < 3 | isempty( dim ),
+if nargin < 3 || isempty( dim ),
     dim = cvx_default_dimension( sx );
 elseif ~cvx_check_dimension( dim, false ),
     error( 'Third argument must be a valid dimension.' );

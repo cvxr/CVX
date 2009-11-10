@@ -11,7 +11,6 @@
 % relative positioning constraints of those rectangles.
 % We are also given minimal areas for the rectangles.
 
-cvx_quiet(1);
 % Input data
 n = 5;
 % for each entry i, X_tree(i) = parent(i)

@@ -9,26 +9,24 @@ function [ cvx_optval, success ] = quad_form( x, Q, tol )
 error( nargchk( 2, 3, nargin ) );
 if nargin < 3, tol = 4 * eps; end
 sx = size( x );
-if length( sx ) ~= 2 | all( sx > 1 ),
+if length( sx ) ~= 2 || all( sx > 1 ),
     error( 'The first argument must be a row or column.' );
 else
     sx = prod( sx );
 end
 
 sQ = size( Q );
-if length( sQ ) ~= 2 | sQ( 1 ) ~= sQ( 2 ),
+if length( sQ ) ~= 2 || sQ( 1 ) ~= sQ( 2 ),
     error( 'The second argument must be a scalar or a square matrix.' );
-elseif sQ( 1 ) ~= sx & sQ( 1 ) ~= 1,
+elseif sQ( 1 ) ~= sx && sQ( 1 ) ~= 1,
     error( 'Sizes are incompatible.' );
-else
-    sQ = sQ( 1 );
 end
 
 x = vec( x );
 success = true;
 if cvx_isconstant( x ),
 
-    if isreal( Q ) | isreal( x ),
+    if isreal( Q ) || isreal( x ),
 
         %
         % Constant x, affine Q, real case
@@ -54,7 +52,7 @@ elseif ~cvx_isaffine( x ),
 
     error( 'First argument must be affine.' );
     
-elseif size( Q, 1 ) == 1,
+elseif sQ( 1 ) == 1,
     
     %
     % Constant scalar Q, affine x

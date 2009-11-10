@@ -72,8 +72,7 @@ disp('Generating the tradeoff curve...')
 Darray = [];
 for Amax = [5.05 5.25 5.5 5.75 6:25]
   % formulate the GP problem and solve it
-  cvx_begin gp
-    cvx_quiet true
+  cvx_begin gp quiet
     % optimization variables
     variable w(N-1)     % wire width
     variable T(N)       % arrival time (Elmore delay to node i)

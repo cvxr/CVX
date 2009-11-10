@@ -23,13 +23,12 @@ elseif ischar( name ),
         if size( name, 1 ) ~= 1,
             error( 'Second argument must be a string or a subscript structure array.' );
         elseif ~isvarname( name ),
-            error( sprintf( 'Invalid dual variable name: %s', name ) );
+            error( 'Invalid dual variable name: %s', name );
         elseif isfield( vars, name ),
-            error( sprintf( 'Dual variable name conflict: %s', name ) );
+            error( 'Dual variable name conflict: %s', name );
         elseif isfield( cvx___.problems( p ).variables,name ),
-            error( sprintf( 'Primal/dual variable name conflict: %s', name ) );
+            error( 'Primal/dual variable name conflict: %s', name );
         end
-        nstr = struct( 'type', '.', 'subs', name );
     end
 end
 

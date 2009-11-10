@@ -1,4 +1,5 @@
 function cvx_setpath( arg )
+global cvx___
 
 %CVX_SETPATH   Sets the cvx path.
 %   CVX_SETPATH adds the internal cvx directories to Matlab's path so that the
@@ -17,7 +18,7 @@ if ~cvx___.path.active,
     end
     cvx___.path.active = true;
 end
-if nargin == 0 | cvx___.path.hold,
+if nargin == 0 || cvx___.path.hold,
     cvx___.path.hold = true;
     if isempty(cvx___.problems),
         nsolv = cvx___.solver;

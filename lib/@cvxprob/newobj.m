@@ -18,7 +18,7 @@ end
 % Check direction
 %
 
-if ~ischar( dir ) | size( dir, 1 ) ~= 1 | ~any( strcmpi( dir, { 'minimize', 'maximize' } ) ),
+if ~ischar( dir ) || size( dir, 1 ) ~= 1 || ~any( strcmpi( dir, { 'minimize', 'maximize' } ) ),
     error( 'The second argument must be either "minimize" or "maximize".' );
 end
 
@@ -29,7 +29,7 @@ end
 if ~isreal( x ),
     error( 'Expressions in objective functions must be real.' );
 elseif isempty( x ),
-    warning( 'Empty objective.' );
+    warning( 'CVX:EmptyObjective', 'Empty objective.' );
 end
 
 %

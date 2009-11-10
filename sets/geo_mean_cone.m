@@ -74,17 +74,17 @@ end
 if nargin < 4,
     mode = '';
 end
-if nargin == 2 & ischar( dim ),
+if nargin == 2 && ischar( dim ),
     mode = dim;
     dim = cvx_default_dimension( sx );
-elseif nargin < 2 | isempty( dim ),
+elseif nargin < 2 || isempty( dim ),
     dim = cvx_default_dimension( sx );
 elseif ~cvx_check_dimension( dim, true ),
     error( 'Second argument must be a nonnegative integer.' );
 end
 sy = sx;
 nd = length( sx );
-if dim <= 0 | dim > nd | sx( dim ) == 1,
+if dim <= 0 || dim > nd || sx( dim ) == 1,
     nx  = 1;
     dim = 0;
 else
@@ -96,16 +96,16 @@ end
 % Check weight vector
 %
 
-if nargin == 3 & ischar( w ),
+if nargin == 3 && ischar( w ),
     mode = w;
     w = [];
-elseif nargin < 3 | isempty( w ),
+elseif nargin < 3 || isempty( w ),
     w = [];
-elseif numel( w ) ~= length( w ) | ~isnumeric( w ) | ~isreal( w ) | any( w < 0 ),
+elseif numel( w ) ~= length( w ) || ~isnumeric( w ) || ~isreal( w ) || any( w < 0 ),
     error( 'Third argument must be a vector of nonnegative real numbers.' );
 elseif length( w ) ~= nx,
-    error( sprintf( 'Third argument must be a vector of length %d', nx ) );
-elseif nx ~= 0 & ~any( w ),
+    error( 'Third argument must be a vector of length %d', nx );
+elseif nx ~= 0 && ~any( w ),
     error( 'At least one of the weights must be nonzero.' );
 end
 if any( w ~= floor( w ) ),
@@ -119,7 +119,7 @@ end
 
 if isempty( mode ),
     mode = 'hypo';
-elseif ~ischar( mode ) | size( mode, 1 ) > 1,
+elseif ~ischar( mode ) || size( mode, 1 ) > 1,
     error( 'Mode must be a string.' );
 else
     lmode = lower(mode);
@@ -141,20 +141,21 @@ if any( sx == 0 ),
 elseif nx == 1,
     cvx_begin_set
         variable x(sx)
-        x >= 0;
+        x >= 0; %#ok
         switch mode,
             case { 'hypo', 'func' },
                 variable y(sy)
-                x >= y;
+                x >= y; %#ok
             case 'pos',
                 variable y(sy)
-                x >= y; y >= 0;
+                x >= y;  %#ok
+                y >= 0; %#ok
             case 'abs',  
                 variable y(sy)
-                x >= abs( y );
+                x >= abs( y ); %#ok
             case 'cabs',
                 variable y(sy) complex
-                x >= abs( y );
+                x >= abs( y ); %#ok
         end
     cvx_end_set
     return
@@ -198,7 +199,7 @@ end
 % Construct the map
 %
 
-if isempty( w ) | ~any( diff( w ) ),
+if isempty( w ) || ~any( diff( w ) ),
     wbasic = true;
     wsum = nx;
     w = ones( 1, nx );
@@ -227,7 +228,7 @@ end
 n3 = nx;
 map = [];
 if ~wbasic,
-    [ ff, ee ] = log2( w );
+    [ ff, ee ] = log2( w ); %#ok
     ndx1 = find( ff ~= 0.5 & ff ~= 0 );
     while length( ndx1 ) > 1,
         % Build cross matrix
@@ -235,7 +236,7 @@ if ~wbasic,
         ww = w( ndx1 );
         ww = ones( nv, 1 ) * ww;
         [ wi, wj, ww ] = find( bitand( tril(ww,-1)', triu(ww,1) ) );
-        [ ff, ee ] = log2( ww );
+        [ ff, ee ] = log2( ww ); 
         ndx2 = find( ff ~= 0.5 );
         if isempty( ndx2 ), break; end
         % Greedy: select the largest overlap
@@ -255,7 +256,7 @@ if ~wbasic,
         w(wj_t)  = bitand( w(wj_t), wt );
         % Update the count
         ndx1 = [ ndx1, length(ndxs) ];
-        [ ff, ee ] = log2( w(ndx1) );
+        [ ff, ee ] = log2( w(ndx1) ); %#ok
         ndx1 = ndx1( ff ~= 0.5 & ff ~= 0 );
     end
 end
@@ -308,20 +309,20 @@ cvx_begin_set
             end
         case 'hypo',
             variable xa( 1, nv );
-            y <= xa;
+            y <= xa; %#ok
         case 'pos',
             if ~mused,
-                y >= 0;
+                y >= 0; %#ok
             end
         case 'abs',
             if mused,
                 variable xa( 1, nv );
-                abs( y ) <= xa;
+                abs( y ) <= xa; %#ok
             end
         case 'cabs',
             if mused,
                 variable xa( 1, nv );
-                abs( y ) <= xa;
+                abs( y ) <= xa; %#ok
             else
                 cone = hermitian_semidefinite( [2,2,1,nv] );
             end
@@ -334,13 +335,13 @@ cvx_begin_set
     else
         cone = cat( 3, semidefinite( [2,2,nm-1,nv] ), cone );
     end
-    xt = [ x ; xw ; xa ];
+    xt = [ x ; xw ; xa ]; %#ok
     xt( map(1,:), : ) == reshape( cone(1,1,:,:), [nm,nv] );
     xt( map(2,:), : ) == reshape( cone(2,2,:,:), [nm,nv] );
     xt( map(3,:), : ) == reshape( cone(2,1,:,:), [nm,nv] );
     tt = worig == 0;
     if any( tt ),
-        x( tt, : ) >= 0;
+        x( tt, : ) >= 0; %#ok
     end
 cvx_end_set
 

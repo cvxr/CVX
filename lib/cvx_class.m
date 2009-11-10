@@ -50,7 +50,7 @@ v = sparse( x, 1, 1, 16, 1 ) ~= 0;
 if nnz( v ) ~= v( 2 ),
     v( 2 ) = false;
 end
-v = strs(find( v ));
+v = strs( v );
 if length( v ) == 1,
     v = v{1};
 else

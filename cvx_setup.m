@@ -20,25 +20,25 @@ ver = version;
 verm = 0;
 temp = find( ver == '.' );
 if length( temp ) > 1,
-	verm = ver( temp( 2 ) + 1 : end );
+	verm = str2double( ver( temp( 2 ) + 1 : end ) );
     ver( temp( 2 ) : end ) = [];
 end
-needLarge = 0;
-ver = eval( ver, 'NaN' );
+ver = str2double( ver );
 
 % Octave?
-isoctave = exist( 'OCTAVE_VERSION' );
+isoctave = exist( 'OCTAVE_VERSION', 'var' );
 if isoctave,
-	if isnan( ver ) | ver < 3.0 | ( ver == 3.0 & verm < 1 ),
-		error( 'CVX requires octave 3.0.1 or later.' );
-	end
+    newext = 'mex';
+    needLarge = false;
+    if isnan( ver ) || ver < 3.0 || ( ver == 3.0 && verm < 1 ),
+        error( 'CVX requires octave 3.0.1 or later.' );
+    end
 else
-	newext = mexext;
+    newext = mexext;
     needLarge = strcmp( newext(end-1:end), '64' );
-	if isnan( ver ) | ver < 6.5 | ( ( ver < 7.3 ) & needLarge ),
-	    error( sprintf( ...
-		[ 'CVX requires 32-bit MATLAB 6.5 or later,\n', ...
-          '          or 64-bit MATLAB 7.3 or later.' ] ) );
+    if isnan( ver ) || ver < 6.5 || ( ( ver < 7.3 ) && needLarge ),
+        error( [ 'CVX requires 32-bit MATLAB 6.5 or later\n', ...
+            'or 64-bit MATLAB 7.3 or later.' ], 1 );
     end
     if ver >= 7.1,
         warning( 'off', 'MATLAB:dispatcher:ShadowedMEXExtension' );
@@ -55,9 +55,7 @@ else
 end
 
 % Mex locations
-isw32 = strcmp( newext, 'mexw32' );
 fullRecompile = any( strcmp( varargin, '-force' ) );
-newext = mexext;
 usePre75 = ~isoctave && ver < 7.5;
 
 %%%%%%%%%%%%%%%%%%%%%%%%
@@ -101,20 +99,16 @@ for k = 1 : length(solvers),
     end
 end
 if length(missing) > msolv || msolv == length(solvers),
-    error( sprintf( ...
-        [ 'The following directories in the CVX distribution are missing:\n', ...
-          '  %s\n', ...
-          'Please reinstall the distribution and try again.' ], ...
-          sprintf( ' %s', missing{:} ) ) );
+    error( [ 'The following directories in the CVX distribution are missing:\n  ', ...
+             sprintf( ' %s', missing{:} ), ...
+             '\nPlease reinstall the distribution and try again.' ], 1 );
 end
-needupd = 0;
 oldpath = path;
 if ispc, oldpath = lower(oldpath); end
 newpath = [ ps, oldpath, ps ];
 for k = 1 : length(rmpaths),
     ndxs = strfind( newpath, [ ps, rmpaths{k}, ps ] );
     if ~isempty( ndxs ),
-        needupd = 1;
         delepaths{end+1} = rmpaths{k};
         len = length( rmpaths{k} ) + 1;
         for j = 1 : length( ndxs ),
@@ -139,7 +133,7 @@ if ~fullRecompile,
     has_mex = 1;
     for k = 1 : length( mexfiles ),
         str = mexfiles{k};
-        if exist( str(1:end-2) ) ~= 3,
+        if exist( str(1:end-2), 'file' ) ~= 3,
             has_mex = 0;
             break;
         end
@@ -160,7 +154,7 @@ if fullRecompile || ~has_mex,
     for k = 1 : length( mexfiles ),
         str = mexfiles{k};
         try
-            disp( sprintf( '%s ', 'mex', mexcmd{:}, str ) );
+            fprintf( 1, '%s ', 'mex\n', mexcmd{:}, str );
             mex( mexcmd{:}, str );
         catch
             has_mex = 0;
@@ -266,7 +260,7 @@ end
 if norm( x - xls ) > 0.01 * norm( x ),
     err = norm( x - xls ) / norm( x );
     disp( '-------------------------------------------------------------' );
-    disp( sprintf( 'cvx differs from native Matlab by %g%%', 100 * err ) );
+    fprintf( 1, 'cvx differs from native Matlab by %g%%\n', 100 * err );
     disp( 'Unexpected numerical errors were found when solving the test problem.' );
     disp( 'Please report this to the authors.' );
     disp( ' ' );

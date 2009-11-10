@@ -10,7 +10,6 @@
 % positioning contrainsts on those rectangles, and minimal required areas.
 % In the current problem, 5 rectangles are given
 
-cvx_quiet(1);
 % input data
 n = 5;
 Amin = [100 100 100 100 100; ...
@@ -21,7 +20,7 @@ r = 1;          % minimum spacing constraints
 
 for iter = 1:4
     A = Amin(iter,:);
-    cvx_begin
+    cvx_begin quiet
         variables x(n) y(n) w(n) h(n) W H
         minimize ( W + H )
         x >= r;

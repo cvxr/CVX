@@ -1,5 +1,6 @@
 function z = cvxprob( varargin )
 
+global cvx___
 if ~iscellstr( varargin ),
     error( 'Arguments must be strings.' );
 end
@@ -25,8 +26,8 @@ if ~isempty( cvx___.problems ),
     ndx = find( [ cvx___.problems.depth ] >= depth );
     if ~isempty( ndx ),
         temp = cvx___.problems(ndx(1));
-        if temp.depth == depth & ( ~isempty(temp.objective) | ~isempty(temp.variables) | ~isempty(temp.duals) | nnz(temp.t_variable) > 1 );
-            warning( sprintf( 'A non-empty cvx problem already exists in this scope.\n   It is being overwritten.' ) );
+        if temp.depth == depth && ( ~isempty(temp.objective) || ~isempty(temp.variables) || ~isempty(temp.duals) || nnz(temp.t_variable) > 1 );
+            warning( 'CVX:Empty', 'A non-empty cvx problem already exists in this scope.\n   It is being overwritten.', 1 ); %#ok
         end
         cvx_pop( temp.self, 'reset' );
     end
@@ -41,12 +42,14 @@ if ~isempty( cvx___.problems ),
     ngprec = cvx___.problems( end ).gptol;
     nrprec = cvx___.problems( end ).rat_growth;
     nsolv  = cvx___.problems( end ).solver;
+    nslve  = cvx___.problems( end ).solver_exp;
     nquiet = cvx___.problems( end ).quiet;
 else
     nprec  = cvx___.precision;
     ngprec = cvx___.gptol;
     nrprec = cvx___.rat_growth;
     nsolv  = cvx___.solver;
+    nslve  = cvx___.solver_exp;
     nquiet = cvx___.quiet;
 end
 
@@ -64,6 +67,7 @@ temp = struct( ...
     'locked',        false,  ...
     'precision',     nprec,  ...
     'solver',        nsolv,  ...
+    'solver_exp',    nslve,  ...
     'gptol',         ngprec, ...
     'quiet',         nquiet, ... 
     'cputime',       cputime, ...
@@ -112,7 +116,7 @@ for k = 1 : nargin,
         case 'separable',
             temp.separable = true;
         otherwise,
-            error( sprintf( 'Invalid CVX problem modifier: %s', mode ) );
+            error( 'Invalid CVX problem modifier: %s', mode );
     end
 end
 

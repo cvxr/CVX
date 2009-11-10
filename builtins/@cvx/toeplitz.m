@@ -15,10 +15,10 @@ if nargin < 2,
     c    = vec( c );
     m    = length( c );
     p    = m;
-    c    = [ cvx_subsref( c, p : -1 : 1 ) ; conj( cvx_subsref( c, 2 : p ) ) ]
+    x    = [ cvx_subsref( c, p : -1 : 1 ) ; conj( cvx_subsref( c, 2 : p ) ) ];
 else
     temp = cvx_subsref( r, 1 ) - cvx_subsref( c, 1 );
-    if ~cvx_isconstant( temp ) | cvx_constant( temp ) ~= 0,
+    if ~cvx_isconstant( temp ) || cvx_constant( temp ) ~= 0,
         warning('MATLAB:toeplitz:DiagonalConflict',['First element of ' ...
                'input column does not match first element of input row. ' ...
                '\n         Column wins diagonal conflict.'])
@@ -34,7 +34,7 @@ end
 % Construct matrix
 %
 
-cidx = [ 0 : m - 1 ]';
+cidx = ( 0 : m - 1 )';
 ridx = p : -1 : 1;
 t    = cidx( :, ones( p, 1 ) ) + ridx( ones( m, 1 ) , : );
 t    = reshape( cvx_subsref( x, t ), size( t ) );

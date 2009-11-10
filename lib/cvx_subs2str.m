@@ -16,8 +16,8 @@ for k = 1 : length( x ),
     catch
         error( 'Invalid subscript structure: field "type" is missing.' );
     end
-    if ~ischar( tp ) | size( tp, 1 ) ~= 1,
-        error( sprintf( 'Invalid subscript entry #%d: field "type" must be a string', k ) );
+    if ~ischar( tp ) || size( tp, 1 ) ~= 1,
+        error( 'Invalid subscript entry #%d: field "type" must be a string', k );
     end
     try
         sb = x(k).subs;
@@ -26,36 +26,36 @@ for k = 1 : length( x ),
     end
     switch tp,
         case '.',
-            if ~ischar( sb ) | size( sb, 1 ) ~= 1,
-                error( sprintf( 'Invalid subscript entry #%d: field name must be a string.', k ) );
+            if ~ischar( sb ) || size( sb, 1 ) ~= 1,
+                error( 'Invalid subscript entry #%d: field name must be a string.', k );
             elseif ~isvarname( sb ),
-                error( sprintf( 'Invalid subscript entry #%d: invalid field name: %s', k, sb ) );
+                error( 'Invalid subscript entry #%d: invalid field name: %s', k, sb );
             end
             y = [ y, '.', sb ];
             needfield = 0;
         case { '()', '{}' },
-            if ~mask( 2 )& tp(1) == '(',
-                error( sprintf( 'Invalid subscript entry #%d: array subscripts not allowed here.', k ) );
-            elseif ~mask( 3 ) & tp(1) == '{',
-                error( sprintf( 'Invalid subscript entry #%d: cell subscripts not allowed here.', k ) );
+            if ~mask( 2 )&& tp(1) == '(',
+                error( 'Invalid subscript entry #%d: array subscripts not allowed here.', k );
+            elseif ~mask( 3 ) && tp(1) == '{',
+                error( 'Invalid subscript entry #%d: cell subscripts not allowed here.', k );
             elseif needfield,
-                error( sprintf( 'Invalid subscript entry #%d: structure field expected here.', k ) );
+                error( 'Invalid subscript entry #%d: structure field expected here.', k );
             elseif ~iscell( sb ),
-                error( sprintf( 'Invalid subscript entry #%d: field "subs" must be a cell array.', k ) );
+                error( 'Invalid subscript entry #%d: field "subs" must be a cell array.', k );
             elseif fieldalt,
                 needfield = 1;
             end
-            for k = 1 : length( sb ),
-                if isnumeric( sb{k} ),
-                    sb{k} = sprintf('%g',sb{k});
-                elseif ~ischar( sb{k} ) | size( sb{k}, 1 ) ~= 1,
-                    error( sprintf( 'Invalid subscript entry #%d: invalid cell/array subscript', k ) );
+            for j = 1 : length( sb ),
+                if isnumeric( sb{j} ),
+                    sb{j} = sprintf('%g',sb{j});
+                elseif ~ischar( sb{j} ) || size( sb{j}, 1 ) ~= 1,
+                    error( 'Invalid subscript entry #%d: invalid cell/array subscript', j );
                 end
             end
             sb = sprintf( '%s,', sb{:} );
             y = [ y, tp(1), sb(1:end-1), tp(2) ];
         otherwise,
-            error( sprintf( 'Invalid subscript entry #%d: invalid subscript tp: %s', k, tp ) );
+            error( 'Invalid subscript entry #%d: invalid subscript tp: %s', k, tp );
     end
 end
 

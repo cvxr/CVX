@@ -36,9 +36,6 @@
 %
 % NOTE: This file requires the auxilliary function utilfun.m to run.
 
-clear
-cvxq = cvx_quiet(true);
-
 data= [...
    4.5e-01   9.6e-01
    2.1e-01   3.4e-01
@@ -120,7 +117,7 @@ for k = 1:m
     fprintf(1,'Deciding on bundle %d of %d: ',k,m);
 
     % Check for u(k) >= u(0.5,0.5)
-    cvx_begin
+    cvx_begin quiet
         variables u(m+1) g_x(m+1) g_y(m+1)
         minimize(u(k)-u(m+1))
         subject to
@@ -135,7 +132,7 @@ for k = 1:m
     fprintf( 1,'%g', round(cvx_optval) );
 
     % Check for u(0.5,0.5) >= u(k)
-    cvx_begin
+    cvx_begin quiet
         variables u(m+1) g_x(m+1) g_y(m+1)
         maximize(u(k)-u(m+1))
         subject to
@@ -175,4 +172,3 @@ for k=1:m
 end;
 xlabel('x_1');  ylabel('x_2');
 
-cvx_quiet(cvxq);

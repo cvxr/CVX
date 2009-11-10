@@ -39,7 +39,7 @@ b  = [ 0.1 ; 0.1 ;0.5 ; -0.5 ; -0.2 ; 0.3 ; 0.4 ; -0.3 ];
 %
 
 cvx_expert true
-cvx_begin
+cvx_begin 
     variables pent(n)
     maximize( sum(entr(pent)) )
     sum(pent) == 1;
@@ -50,11 +50,10 @@ cvx_end
 % Compute the bounds on Prob(X<=a_i), i=1,...,n
 %
 
-cvxq = cvx_quiet(true);
 Ubnds = zeros(1,n);
 Lbnds = zeros(1,n);
 for t = 1 : n,
-    cvx_begin
+    cvx_begin quiet
         variable p( n )
         minimize sum( p(1:t) )
         p >= 0; 
@@ -62,7 +61,7 @@ for t = 1 : n,
         A * p <= b;
     cvx_end
     Lbnds(t) = cvx_optval;
-    cvx_begin
+    cvx_begin quiet
         variable p( n )
         maximize sum( p(1:t) )
         p >= 0; 
@@ -72,7 +71,6 @@ for t = 1 : n,
     Ubnds(t) = cvx_optval;
     disp( sprintf( '%g <= Prob(x<=%g) <= %g', Lbnds(t), a(t), Ubnds(t) ) );
 end
-cvx_quiet(cvxq);
 
 %
 % Generate the figures

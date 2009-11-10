@@ -1,4 +1,4 @@
-function s = cvx_subsref_check( nin, nin_norm, S );
+function s = cvx_subsref_check( nin, nin_norm, S )
 
 if nin < nin_norm,
     s = 'Not enough input arguments';

@@ -1,4 +1,4 @@
-function coeffs = nonneg_poly_coeffs( deg, trig, mm )
+function coeffs = nonneg_poly_coeffs( deg, trig, mm ) %#ok
 
 %NONNEG_POLY_COEFFS   Coefficients of nonnegative degree-n polynomials. 
 %   NONNEG_POLY_COEFFS(DEG), where DEG is a nonnegative integer, creates a
@@ -75,7 +75,7 @@ end
     
 if isempty( mm ),
     mm = [ -Inf, +Inf ];
-elseif ~isa( mm, 'double' ) | ~isreal( mm ) | numel( mm ) ~= 2,
+elseif ~isa( mm, 'double' ) || ~isreal( mm ) || numel( mm ) ~= 2,
     error( 'Second argument, if supplied, must be a range [ xmin xmax ].' );
 elseif any( mm(1) == mm(2) & isinf( mm(1) ) ),
     error( 'Intervals [-Inf,-Inf] and [Inf,Inf] are not accepted.' );
@@ -95,14 +95,14 @@ if trig,
         variable coeffs(deg+1) complex;
         if mm(1) == mm(2),
             % Positive at a single point
-            polyval_trig( coeffs, mm(1) ) >= 0;
+            polyval_trig( coeffs, mm(1) ) >= 0; %#ok
         elseif mm(2) > mm(1) + 2 * pi,
             % Positive over the entire unit circle
             [ii,jj,vv] = find(hermitian_semidefinite(deg+1));
             coeffs == sparse( deg+1-abs(ii-jj), 1, vv );
         elseif mm(2) > mm(1),
             % Positive over a subset of the unit circle
-            a = exp( j * ( 0.5 * ( mm(2) + mm(1) ) ) );
+            a = exp( 1i * ( 0.5 * ( mm(2) + mm(1) ) ) );
             b = cos( 0.5 * ( mm(2) - mm(1) ) );
             coeffs1 = nonneg_poly_coeffs(deg,'trig');
             coeffs2 = nonneg_poly_coeffs(deg-1,'trig');
@@ -124,7 +124,7 @@ else
         variable coeffs(deg+1);
         if mm(1) == mm(2),
             % Positive at a single point
-            polyval( coeffs, mm(1) ) >= 0;
+            polyval( coeffs, mm(1) ) >= 0; %#ok
         elseif mm(1) == -Inf,
             isodd = rem(deg,2);
             deg2 = floor(0.5*deg) + 1;
@@ -140,9 +140,9 @@ else
             end
         elseif mm(2) == +Inf,
             % [ mm(1), +Inf ]
-            coefff1 = nonneg_poly_coeffs(deg);
+            coefff1 = nonneg_poly_coeffs(deg); %#ok
             coeffs2 = nonneg_poly_coeffs(deg-1);
-            coeffs == coeffs1 + [ coeffs2 ; 0 ] - [ 0 ; mm(1) * coeffs2 ];
+            coeffs == coeffs1 + [ coeffs2 ; 0 ] - [ 0 ; mm(1) * coeffs2 ]; %#ok
         elseif mm(1) < mm(2),
             % [ mm(1), mm(2) ]
             coeffs1 = nonneg_poly_coeffs(deg);

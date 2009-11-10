@@ -106,13 +106,10 @@ N = 25;
 Pmax = linspace(10,20,N);
 min_delay = zeros(N,1);
 
-% set the quiet flag (no solver reporting)
-cvxq = cvx_quiet(true);
-
 disp('Generating the optimal tradeoff curve...')
 
 for n = 1:N
-  cvx_begin gp
+  cvx_begin gp quiet
     % optimization variables
     variable x(m)                 % scale factor
     variable T(m)                 % arrival times
@@ -182,6 +179,3 @@ plot(Pmax,min_delay);
 xlabel('Pmax'); ylabel('Dmin');
 title(['Tradeoff curve for Amax = ' num2str(Amax)])
 disp('Optimal tradeoff curve plotted.')
-
-% restore initial solver reporting state
-cvx_quiet(cvxq);

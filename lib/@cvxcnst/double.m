@@ -1,2 +1,2 @@
-function x = double( v )
-error( sprintf( 'Disciplined convex programming error:\n   Constraints may not appear in if/then statements.' ) );
+function x = double( v ) %#ok
+error( 'Disciplined convex programming error:\n   Constraints may not appear in if/then statements.', 1 ); %#ok

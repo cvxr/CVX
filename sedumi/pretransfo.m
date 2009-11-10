@@ -43,14 +43,14 @@ if ~isfield(K,'f')                       % K.f
     K.f = 0;
 elseif isempty(K.f)
     K.f = 0;
-elseif (K.f~= floor(K.f)) | (K.f < 0)
+elseif (K.f~= floor(K.f)) || (K.f < 0)
     error('K.f should be nonnegative integer')
 end
 if ~isfield(K,'l')                        % K.l
     K.l = 0;
 elseif isempty(K.l)
     K.l = 0;
-elseif (K.l~= floor(K.l)) | (K.l < 0)
+elseif (K.l~= floor(K.l)) || (K.l < 0)
     error('K.l should be nonnegative integer')
 end
 if ~isfield(K,'q')                       % K.q
@@ -58,7 +58,7 @@ if ~isfield(K,'q')                       % K.q
 elseif sum(K.q) == 0
     K.q = [];
 elseif ~isempty(K.q)
-    if (min(K.q) < 2) | any(K.q~= floor(K.q))
+    if (min(K.q) < 2) || any(K.q~= floor(K.q))
         error('K.q should contain only integers bigger than 1')
     end
     if size(K.q,1) > 1
@@ -70,7 +70,7 @@ if ~isfield(K,'r')                       % K.r
 elseif sum(K.r) == 0
     K.r = [];
 elseif ~isempty(K.r)
-    if (min(K.r) < 3) | any(K.r~= floor(K.r))
+    if (min(K.r) < 3) || any(K.r~= floor(K.r))
         error('K.r should contain only integers bigger than 2')
     end
     if size(K.r,1) > 1
@@ -82,7 +82,7 @@ if ~isfield(K,'s')                       % K.s
 elseif sum(K.s) == 0
     K.s = [];
 elseif ~isempty(K.s)
-    if min(K.s < 1) | any(K.s~= floor(K.s))
+    if min(K.s < 1) || any(K.s~= floor(K.s))
         error('K.s should contain only positive integers')
     end
     if size(K.s,1) > 1
@@ -95,7 +95,7 @@ end
 if ~isfield(K,'ycomplex')                        % K.ycomplex
     K.ycomplex = [];
 elseif ~isempty(K.ycomplex)
-    if  (min(K.ycomplex) < 1) | (min(size(K.ycomplex)) > 1) | ...
+    if  (min(K.ycomplex) < 1) || (min(size(K.ycomplex)) > 1) || ...
             any(K.ycomplex~= floor(K.ycomplex))
         error('K.ycomplex should be a list containing only positive integers')
     end
@@ -109,7 +109,7 @@ end
 if ~isfield(K,'xcomplex')                        % K.xcomplex
     K.xcomplex = [];
 elseif ~isempty(K.xcomplex)
-    if  (min(K.xcomplex) < 1) | (min(size(K.xcomplex))) > 1 | ...
+    if  (min(K.xcomplex) < 1) || (min(size(K.xcomplex))) > 1 || ...
             any(K.xcomplex~= floor(K.xcomplex))
         error('K.xcomplex should be a list containing only positive integers')
     end
@@ -123,7 +123,7 @@ end
 if ~isfield(K,'scomplex')                        % K.scomplex
     K.scomplex = [];
 elseif ~isempty(K.scomplex)
-    if  min(K.scomplex) < 1 |  min(size(K.scomplex)) > 1 | ...
+    if  min(K.scomplex) < 1 ||  min(size(K.scomplex)) > 1 || ...
             any(K.scomplex~= floor(K.scomplex))
         error('K.scomplex should be a list containing only positive integers')
     end
@@ -138,7 +138,7 @@ end
 % Check size of At,b,c (w.r.t. K)
 % Let m = #eq-constraints, N = #variables (before transformations)
 % ----------------------------------------
-if (min(size(b)) > 1) | (min(size(c)) > 1)
+if (min(size(b)) > 1) || (min(size(c)) > 1)
     error('Parameters b and c must be vectors')
 end
 m = min(size(At));
@@ -175,16 +175,16 @@ end
 % ------------------------------------------------------------
 % Check for NaN and Inf
 % ------------------------------------------------------------
-if any(any(isnan(At))) | any(isnan(b)) | any(isnan(c))
+if any(any(isnan(At))) || any(isnan(b)) || any(isnan(c))
     error('A,b,c data contains NaN values')
 end
-if any(any(isinf(At))) | any(isinf(b)) | any(isinf(c))
+if any(any(isinf(At))) || any(isinf(b)) || any(isinf(c))
     error('A,b,c data contains Inf values')
 end
 % ------------------------------------------------------------
 % Save the standardized data for further use if needed
 % ------------------------------------------------------------
-if isfield(pars,'errors') & pars.errors==1
+if isfield(pars,'errors') && pars.errors==1
     origcoeff.At=At;
     origcoeff.c=c;
     origcoeff.b=b;
@@ -244,8 +244,8 @@ end
 if cpx.dim>0
     pars.sdp=0;    % No SDP preprocessing for complex problems
 end
-if length(K.s)>1000 | max(K.s)<10
-    pars.sdp=0;
+if length(K.s) > 1000 || ~isempty(K.s) && max(K.s) < 10
+    pars.sdp = 0;
 end
 if pars.sdp==1
     Atf=At(1:K.f,:);
@@ -265,7 +265,7 @@ end
 if ~isfield(pars,'free')
     pars.free=1;
 end
-if 0 & pars.free & K.l>0 %temporarily disabled due to a bug
+if 0 && pars.free && K.l>0 %temporarily disabled due to a bug
     stest=c(K.f+1:K.f+K.l)-At(K.f+1:K.f+K.l,:)*rand(m,1);
     %Now we detect if stest contains the same vector twice, or opposite
     %vectors.

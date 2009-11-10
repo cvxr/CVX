@@ -8,7 +8,7 @@ s = x.size_;
 if nargin > 1,
     if nargout > 1,
         error( 'Too many output arguments.' );
-    elseif ~isnumeric( dim ) | length( dim ) ~= 1 | dim <= 0 | dim ~= floor( dim ),
+    elseif ~isnumeric( dim ) || length( dim ) ~= 1 || dim <= 0 || dim ~= floor( dim ),
         error( 'Dimension argument must be a positive integer scalar.' );
     elseif dim > length( s ),
         varargout{1} = 1;

@@ -33,7 +33,7 @@ function hypograph( varargin )
 
 if ~iscellstr( varargin ),
     error( 'HYPOGRAPH must be used in command mode.' );
-elseif nargin ~= 2 | ~strcmpi( varargin{1}, 'variable' ),
+elseif nargin ~= 2 || ~strcmpi( varargin{1}, 'variable' ),
     error( 'Syntax: hypograph variable <variable>' );
 elseif ~isa( evalin( 'caller', 'cvx_problem', '[]' ), 'cvxprob' ),
     error( 'HYPOGRAPH can only be used within a CVX model.' );

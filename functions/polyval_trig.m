@@ -25,7 +25,7 @@ function y = polyval_trig( p, x )
 sp = size( p );
 if isempty( p ),
     p = zeros( 1, 0 );
-elseif length( sp ) > 2 | ~any( sp == 1 ),
+elseif length( sp ) > 2 || ~any( sp == 1 ),
     error( 'First argument must be a vector.' );
 end
 n = length( p );

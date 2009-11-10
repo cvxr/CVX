@@ -10,7 +10,7 @@ function y = pow_abs( x, p )
 %       equal to one. X may be complex.
 
 error( nargchk( 2, 2, nargin ) );
-if ~isnumeric( x ) | ~isnumeric( p ),
+if ~isnumeric( x ) || ~isnumeric( p ),
     error( 'Arguments must be numeric.' );
 elseif ~isreal( p ),
     error( 'Second argument must be real.' );

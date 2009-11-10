@@ -10,7 +10,6 @@
 %           minimize    ||x - x_cor||^2 + delta*||Dx||^2
 % where x_cor is the a problem parameter, ||Dx|| is a measure of smoothness
 
-cvx_quiet(true);
 %Input data
 randn('state',0);
 n = 4000;  t = (0:n-1)';
@@ -29,7 +28,7 @@ obj2 = zeros(1,nopts);
 fprintf(1,'Generating the optimal trade-off curve for different values of delta...\n');
 for i=1:nopts
     disp(['* delta = ' num2str(lambdas(i))]);
-    cvx_begin
+    cvx_begin quiet
         variable x(n)
         minimize ( norm(x - corrupt) + lambdas(i)*norm(D*x) )
     cvx_end

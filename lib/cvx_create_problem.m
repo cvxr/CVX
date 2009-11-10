@@ -1,10 +1,11 @@
 function p = cvx_create_problem( varargin )
-error( nargchk( 0, 2, nargin ) );
+global cvx___
 
+error( nargchk( 0, 2, nargin ) );
 cvx_global
 cvx_problem = evalin( 'caller', 'cvx_problem', '[]' );
-if isa( cvx_problem, 'cvxprob' ) & cvx___.problems( index( cvx_problem ) ).depth == length( dbstack ) - 2,
-    error( sprintf( 'A cvx problem already exists in this scope.\n(To clear it and start a new one, use the command ''cvx_clear''.)' ) );
+if isa( cvx_problem, 'cvxprob' ) && cvx___.problems( index( cvx_problem ) ).depth == length( dbstack ) - 2,
+    error( 'A cvx problem already exists in this scope.\n(To clear it and start a new one, use the command ''cvx_clear''.)', 1 ); %#ok
 end
 cvx_problem = cvxprob;
 if nargin > 0,
@@ -13,7 +14,7 @@ if nargin > 0,
         mode = varargin{k};
         if isempty( mode ),
             continue;
-        elseif ~ischar( mode ) | size( mode, 1 ) ~= 1,
+        elseif ~ischar( mode ) || size( mode, 1 ) ~= 1,
             cvx_pop( cvx_problem, 'clear' );
             error( 'Arguments must be strings.' );
         end

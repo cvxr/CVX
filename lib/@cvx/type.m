@@ -1,7 +1,7 @@
 function st = type( x, usegeo )
 
 df  = x.dof_;
-if nargin > 1 & usegeo,
+if nargin > 1 && usegeo,
     geo = any( df < 0 );
 else
     geo = false;

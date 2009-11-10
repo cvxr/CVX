@@ -15,7 +15,6 @@
 %               s.t.    A'v = 0
 % where ||.||* denotes the dual norm of ||.||
 
-cvx_quiet(true);
 % Input data
 randn('state',0);
 n = 4;
@@ -28,7 +27,7 @@ q = p/(p-1);
 % Original problem
 fprintf(1,'Computing the optimal solution of problem 1... ');
 
-cvx_begin
+cvx_begin quiet
     variable x(n)
     minimize ( norm ( A*x - b , p) )
 cvx_end
@@ -39,7 +38,7 @@ opt1 = cvx_optval;
 % Reformulation 1
 fprintf(1,'Computing the optimal solution of problem 2... ');
 
-cvx_begin
+cvx_begin quiet
     variables x(n) y(m)
     minimize ( norm ( y , p ) )
     A*x - b == y;
@@ -51,7 +50,7 @@ opt2 = cvx_optval;
 % Dual of reformulation 1
 fprintf(1,'Computing the optimal solution of problem 3... ');
 
-cvx_begin
+cvx_begin quiet
     variable nu(m)
     maximize ( b'*nu )
     norm( nu , q ) <= 1;
@@ -64,7 +63,7 @@ opt3 = cvx_optval;
 % Reformulation 2
 fprintf(1,'Computing the optimal solution of problem 4... ');
 
-cvx_begin
+cvx_begin quiet
     variables x(n) y(m)
     minimize ( 0.5 * square_pos ( norm ( y , p ) ) )
     A*x - b == y;
@@ -76,7 +75,7 @@ opt4 = (2*cvx_optval).^(.5);
 % Dual of reformulation 2
 fprintf(1,'Computing the optimal solution of problem 5... ');
 
-cvx_begin
+cvx_begin quiet
     variable nu(m)
     maximize ( -0.5 * square_pos ( norm ( nu , q ) ) + b'*nu )
     A'*nu == 0;

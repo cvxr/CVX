@@ -22,7 +22,7 @@ function cvx_optval = log_det( X )
 
 error( nargchk( 1, 1, nargin ) );
 cvx_expert_check( 'log_det', X );
-if ndims( X ) > 2 | size( X, 1 ) ~= size( X, 2 ),
+if ndims( X ) > 2 || size( X, 1 ) ~= size( X, 2 ),
     error( 'Argument must be a square matrix.' );
 end
 cvx_optval = size(X,1)*log(det_rootn(X));

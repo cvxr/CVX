@@ -20,9 +20,9 @@ if ischar( name ),
         if size( name, 1 ) ~= 1,
             error( 'Second argument must be a string or a subscript structure array.' );
         elseif ~isvarname( name ),
-            error( sprintf( 'Invalid variable name: %s', name ) );
+            error( 'Invalid variable name: %s', name );
         elseif isfield( cvx___.problems( p ).variables, name ),
-            error( sprintf( 'Variable already exists: %s', name ) );
+            error( 'Variable already exists: %s', name );
         end
         nstr = struct( 'type', '.', 'subs', name );
     else
@@ -59,15 +59,15 @@ if ~isempty( nstr ),
 elseif nargin == 2,
     error( 'Second argument must be a non-empty string or subscript structure array.' );
 else
-    y = [];
+    y = []; %#ok
 end
 
 %
 % Check for conflict with dual variable
 %
 
-if ~isempty( nstr ) & isfield( cvx___.problems( p ).duals, nstr(1).subs ),
-    error( sprintf( 'Primal/dual variable name conflict: %s', nstr(1).subs ) );
+if ~isempty( nstr ) && isfield( cvx___.problems( p ).duals, nstr(1).subs ),
+    error( 'Primal/dual variable name conflict: %s', nstr(1).subs );
 end
 
 %
@@ -112,10 +112,10 @@ else
     %
 
     len = prod( siz );
-    if nargin < 4 | isempty( str ),
+    if nargin < 4 || isempty( str ),
         dof = len;
         str = [];
-    elseif ~isnumeric( str ) | ndims( str ) > 2 | size( str, 2 ) ~= len,
+    elseif ~isnumeric( str ) || ndims( str ) > 2 || size( str, 2 ) ~= len,
         error( 'Fourth argument must be a valid structure matrix.' );
     elseif nnz( str ) == 0,
         error( 'Structure matrix cannot be identically zero.' );
@@ -131,9 +131,9 @@ else
     % Geometric flag
     %
 
-    if nargin < 5 | isempty( geo ),
+    if nargin < 5 || isempty( geo ),
         geo = false;
-    elseif ~isnumeric( geo ) & ~islogical( geo ) | length( geo ) ~= 1,
+    elseif ~isnumeric( geo ) && ~islogical( geo ) || length( geo ) ~= 1,
         error( 'Fifth argument must be true or false.' );
     end
 

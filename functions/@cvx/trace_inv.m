@@ -1,4 +1,4 @@
-function cvx_optval = trace_inv( X )
+function cvx_optval = trace_inv( X ) %#ok
 
 %TRACE_INV   Internal cvx version.
 
@@ -23,8 +23,8 @@ cvx_begin sdp
     else
         variable Y(n,n) Hermitian
     end
-    minimize(trace(Y))
-    [Y,eye(n);eye(n),X] >= 0
+    minimize(trace(Y));
+    [Y,eye(n);eye(n),X] >= 0; %#ok
 cvx_end
 
 % Copyright 2009 Michael C. Grant and Stephen P. Boyd. 

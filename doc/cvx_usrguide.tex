@@ -467,11 +467,15 @@ function; \ie, $\|Ax-b\|_2$;
 status of the calculation. In this case, \verb@cvx_status@
 would contain the string \verb@Solved@. See Appendix \ref{sec:status}
 for a list of the possible values of \verb@cvx_status@ and their meaning.
+\item \verb@cvx_slvtol@: the tolerance level achieved by the solver.
+\item \verb@cvx_slvitr@: the number of iterations taken by the solver.
 \end{itemize}
 \index{cvx_optval@\texttt{cvx\_optval}}
 \index{cvx_status@\texttt{cvx\_status}}
-All three of these quantities, \verb@x@, \verb@cvx_optval@, and
-\verb@cvx_status@, may now be freely used in other Matlab
+\index{cvx_slvtol@\texttt{cvx\_slvtol}}
+\index{cvx_slvitr@\texttt{cvx\_slvitr}}
+All of these quantities, \verb@x@, \verb@cvx_optval@, and
+\verb@cvx_status@, \emph{etc.}\ may now be freely used in other Matlab
 statements, just like any other numeric or string values.\footnote{If you type
 \texttt{who} or \texttt{whos} at the command prompt, you may see other, unfamiliar
 variables as well. Any variable that begins with the prefix \texttt{cvx\_} is 
@@ -866,6 +870,24 @@ Addition of convex and concave terms is forbidden.
 \newpage
 \section{The basics}
 
+\subsection{\texttt{cvx\_begin} and \texttt{cvx\_end}}
+
+All \cvx models must be preceded by the command \verb@cvx_begin@
+and terminated with the command \verb@cvx_end@. All variable
+declarations, objective functions, and constraints should fall
+in between.
+
+The \verb@cvx_begin@ command accepts several modifiers that you 
+may find useful. For
+instance, \verb@cvx_begin@ \verb@quiet@ prevents the model from producing
+any screen output while it is being solved. Additionally,
+\verb@cvx_begin@ \verb@sdp@ and \verb@cvx_begin@ \verb@gp@ invoke special
+semidefinite and geometric programming modes, discussed in 
+\S\ref{sec:sdpmode} and \S\ref{sec:gpmode}, respectively.
+These modifiers may be combined when appropriate; for instance,
+\verb@cvx_begin sdp quiet@ invokes SDP mode and silences the solver
+output.
+
 \subsection{Data types for variables}
 \index{variable!declaring}
 \index{variable@\texttt{variable}}
@@ -954,7 +976,9 @@ one at a time, using the singular \verb@variable@ command.
 
 Declaring an objective function requires
 the use of the \verb@minimize@ or \verb@maximize@ function, as
-appropriate.  The objective function in a call to \verb@minimize@ 
+appropriate. (For the benefit of our users with a British influence,
+the synonyms \verb@minimise@ and \verb@maximise@ are provided as well.)
+The objective function in a call to \verb@minimize@ 
 must be convex; the objective function in a call to \verb@maximize@
 must be concave. At most one objective function may be declared in a 
 given \cvx specification, and the objective function must have a
@@ -1129,6 +1153,19 @@ allows us to simplify the third line to
 because \cvx follows the Matlab convention of handling array/scalar
 comparisons by comparing each element of the array independently with the scalar.
 
+If this use of equality constraints to
+represent set membership remains confusing or simply aesthetically
+displeasing, we have create a ``pseudo-operator'' \verb@<In>@ that
+you can use in its place. So, for example, the semidefinite constraint
+above can be replaced by
+\begin{code}
+	X <In> semidefinite(n);
+\end{code}
+This is exactly equivalent to using the equality constraint operator,
+but if you find it more pleasing, feel free to use it. Implementing this
+operator required some Matlab trickery, so don't expect to be able to
+use it outside of \cvx models.
+
 Sets can be combined in affine expressions, and we can constrain
 an affine expression to be in a convex set.
 For example, we can impose constraints of the form
@@ -1167,7 +1204,7 @@ as follows:
 	    variables x(n) y;
 	    minimize( y );
 	    subject to
-	        { A*x-b, y } == lorentz(m);
+	        { A*x-b, y } <In> lorentz(m);
 	cvx_end
 \end{code}
 The function call \verb@lorentz(m)@ returns
@@ -2609,71 +2646,127 @@ with the basic capabilities described above.
 \index{SDPT3}
 \index{SeDuMi}
 \index{cvx_solver@\texttt{cvx\_solver}}
+\index{cvx_solver_exp@\texttt{cvx\_solver\_exp}}
 
-\cvx currently supports two solvers: SeDuMi and SDPT3 (the default).
-To select SeDuMi as your default solver, simply type
-\begin{code2}
-	cvx_solver sedumi
-\end{code2}
-at the command line, \emph{outside} of a \cvx model. To revert to SDPT3, type
+\cvx currently supports two solvers: SeDuMi and SDPT3. With an
+exception discussed below, SeDuMi is used by default.
+We have found that SeDuMi is faster and more reliable for most 
+problems, but for your application you may find otherwise.
+To select SDPT3 as your default solver instead, simply type
 \begin{code2}
 	cvx_solver sdpt3
+\end{code2}
+at the command line. To revert to SDPT3, type
+\begin{code2}
+	cvx_solver sedumi
 \end{code2}
 To see which solver is currently selected, simply type
 \begin{code2}
 	cvx_solver
 \end{code2}
-We have found that SDPT3 is much more reliable for problems that 
-use second-order cones, which include problems involving
-absolute values, quadratics, power functions, and norms.  SDPT3 is
-currently in very active development; so if you
-encounter a problem that SDPT3 cannot solve but SeDuMi can, 
+If you issue this command inside a model, it will change the 
+solver being used \emph{only} for that model; the default will
+be preserved. If you issue this command \emph{outside} of a model,
+it will change the solver used for all future models.
+
+One group of problems for which SDPT3 is generally more reliable
+are those for which \cvx employs the successive approximation described in
+Appendix~\ref{sec:succ-approx}: that is, 
+geometric programs and problems involving logarithms, exponentials,
+and entropy functions. This is due to technical issues with our heuristic,
+not due to any problems with SeDuMI. For such problems, SDPT3
+is the default. You can use SeDuMi instead by typing
+\begin{code2}
+	cvx_solver_exp sedumi
+\end{code2}
+at the command line. As with \verb@cvx_solver@, \verb@cvx_solver_exp@
+can be issued within
+a model to select a different solver for that model only; or it can
+be issued outside of a model to change the default for all
+successive approximation models.
+
+Both solvers are being actively maintained by their authors.
+If you are having difficulty with one solver, try the other. If you
+encounter a problem that one solver can handle but the other cannot, 
 please send us a bug report and we will forward the results to
-the authors of SDPT3.
+the authors of SeDuMI or SDPT3.
 
 \subsection{Controlling solver precision}
 \label{sec:precision}
 \index{precision!changing}
 \index{cvx_precision@\texttt{cvx\_precision}}
+\index{cvx_slvtol@\texttt{cvx\_slvtol}}
 
 Numerical methods for convex optimization are not exact; they compute their results
-to within a predefined numerical precision or tolerance. The precision chosen by default in \cvx,
-which in turn is inherited from the defaults chosen by its solver SeDuMi, should
-be entirely acceptable for most applications. Nevertheless, you may wish to tighten
-or relax that precision in some applications.
+to within a predefined numerical precision or tolerance. Upon solution of your
+model, the tolerance level the solver has achieved is returned in the \verb@cvx_slvtol@
+variable. Attempts to interpret this tolerance level in any absolute sense are not
+recommended. For one thing, each solver computes it differently. For another, it
+depends heavily on the considerable transformations that \cvx applies to your 
+model before delivering it to the solver.
+So while you may find its value interesting we strongly discourage
+dependence upon it within your applications.
 
-There are several ways to call the \verb@cvx_precision@ command. If you call it with no arguments,
-it simply returns a two-element vector of the current precision settings. The first element
-in that vector is the standard precision; the precision the solver must obtain to return
-\verb@Solved@, \verb@Unbounded@, or \verb@Infeasible@. The second element in the vector is
-the ``reduced'' precision, the precision that the solver must achieve in order to
-return \verb@Solved/Inaccurate@, \verb@Unbounded/Inaccurate@, \verb@Infeasible/Inaccurate@.
-
-Calling \verb@cvx_precision@ with an argument allows you to actually \emph{change} the
-precision level. One way is to supply a string as an argument, either in command mode
-or function mode, chosen from one of five values:
+The tolerance levels that \cvx selects by default have been inherited from the 
+underlying solvers being used, with minor modifications. \cvx actually considers
+\emph{three} different tolerance levels 
+$\epsilon_{\text{solver}}\leq\epsilon_{\text{standard}}\leq\epsilon_{\text{reduced}}$
+when solving a model:
 \begin{itemize}
-	\item \verb@cvx_precision low@:      $\text{standard} = \text{reduced} = \epsilon^{1/4} \approx 1.2\times10^{-4}$.
-	\item \verb@cvx_precision medium@:   $\text{standard} = \epsilon^{3/8} \approx 1.3\times10^{-6}$, $\text{reduced} = \epsilon^{1/4}$.
-	\item \verb@cvx_precision default@:  $\text{standard} = \epsilon^{1/2} \approx 1.5\times10^{-8}$, $\text{reduced} = \epsilon^{1/4}$.
-	\item \verb@cvx_precision high@:     $\text{standard} = \epsilon^{3/4} \approx 1.1\times10^{-11}$, $\text{reduced} = \epsilon^{3/8}$.
-	\item \verb@cvx_precision best@:     $\text{standard} = 0$, $\text{``reduced''} = \epsilon^{1/2}$  (see below).
+\item The \emph{solver tolerance} $\epsilon_{\text{solver}}$ is the level requested
+      of the solver. The solver will stop as soon as it achieves this level, or until
+      no further progress is possible.
+\item The \emph{standard tolerance} $\epsilon_{\text{standard}}$ is the level at which \cvx considers the model solved
+      to full precision.
+\item The \emph{reduced tolerance} $\epsilon_{\text{reduced}}$ 
+      is the level at which \cvx considers the model ``inaccurately'' sovled,
+      returning a status with the \verb@Inaccurate/@ prefix. If this tolerance
+      cannot be achieved, \cvx returns a status of \verb@Failed@, and the
+      values of the variables should not be considered reliable.
 \end{itemize}
-In function mode, these calls look like \verb@cvx_precision('low')@, etc.
-The \verb@best@ precision setting is special: it instructs the solver to continue until it is
-completely unable to make progress. Then, as long as it reaches at least the ``reduced'' precision
-of $\epsilon^{1/2}$, it may claim a successful solution; otherwise,
-it returns a \verb@cvx_status@ value of \verb@Failed@. An \verb@Inaccurate@ status value is 
-not possible in \verb@best@ mode (nor, for that matter, in \verb@low@ mode, which
-sets the standard and reduced precisions to be identical).
+(See Appendix~\ref{sec:status} for more information about the status messages.)
+Typically,
+$\epsilon_{\text{solver}}=\epsilon_{\text{standard}}$, but
+setting $\epsilon_{\text{standard}}<\epsilon_{\text{solver}}$ has a useful
+interpretation: it allows the solver to search for more accurate solutions
+without causing an \verb@Inaccurate/@ or \verb@Failed@ condition if it cannot do
+so. 
+The default values of $[\epsilon_{\text{solver}},\epsilon_{\text{standard}},\epsilon_{\text{reduced}}]$
+are set to $[ \epsilon^{1/2}, \epsilon^{1/2}, \epsilon^{1/4} ]$, where 
+$\epsilon=2.22\times10^{-16}$ is the machine precision. This should be quite
+sufficient for most applications. 
 
-The \verb@cvx_precision@ command can also be called with either a scalar or a
-length-two vector. If you pass it a scalar, it will assume that as the standard
-precision, and it will compute a default reduced precision value for you.
+If you wish to modify the tolerances,
+you may do so using the \verb@cvx_precision@ command.
+There are three ways to invoke this command.
+Called with no arguments it will return the
+current tolerance levels as a 3-element row vector.
+
+Calling \verb@cvx_precision@ with a string argument allows you to select from a
+set of predefined precision modes:
+\begin{itemize}
+	\item \verb@cvx_precision low@:      $[ \epsilon^{3/8}, \epsilon^{1/4}, \epsilon^{1/4} ]$
+	\item \verb@cvx_precision medium@:   $[ \epsilon^{1/2}, \epsilon^{3/8}, \epsilon^{1/4} ]$
+	\item \verb@cvx_precision default@:  $[ \epsilon^{1/2}, \epsilon^{1/2}, \epsilon^{1/4} ]$
+	\item \verb@cvx_precision high@:     $[ \epsilon^{3/4}, \epsilon^{3/4}, \epsilon^{3/8} ]$
+	\item \verb@cvx_precision best@:     $[ 0, \epsilon^{1/2}, \epsilon^{1/4} ]$
+\end{itemize}
+In function mode, these calls look like \verb@cvx_precision('low')@, etc. Note
+that the \verb@best@ precision settings sets the solver target to zero, which
+means that the solver continues as long as it can make progress. It will often
+be slower than \verb@default@, but it is just as reliable, and sometimes produces
+more accurate solutions.
+
+Finally, the \verb@cvx_precision@ command can be called with a scalar,
+a length-2 vector, or a length-3 vector.
+If you pass it a scalar, it will set the solver and standard tolerances
+to that value, and it will compute a default reduced precision value for you.
 Roughly speaking, that reduced precision will be the square root of the standard
 precision, with some bounds imposed to make sure that it stays reasonable. If
-you supply a vector of values, then the smallest value will be chosen as
-the standard precision, and the larger value as the reduced precision.
+you supply two values, the smaller will be used for the 
+solver and standard tolerances, and the larger for the reduced tolerance.
+If you supply three values, their values will be sorted, and each
+tolerance will be set separately.
 
 The \verb@cvx_precision@ command can be used either \emph{within} a \cvx model or
 \emph{outside} of it; and its behavior differs in each case. If you call it from
@@ -2715,6 +2808,7 @@ equally courteous approach is to call \verb@cvx_precision@ within the \cvx
 model, as described above, so that its effect lasts only for that model.
 
 \subsection{Miscellaneous \cvx commands}
+\label{sec:misc}
 \index{cvx_problem@\texttt{cvx\_problem}}
 \index{cvx_clear@\texttt{cvx\_clear}}
 \index{cvx_quiet@\texttt{cvx\_quiet}}
@@ -2920,35 +3014,36 @@ so the indexed dual variables are symmetric matrices, not scalars.
 \index{installing \cvx}
 \index{platforms}
 \index{cvx@{\cvx}!installing}
-\cvx requires Matlab 6.1 or later.\footnote{Previous
-versions of this manual stated that \cvx required Matlab
-6.0 or later; we have since discovered that version 6.0
-is not sufficient.} Primary \cvx development is performed using
-an Intel-based Mac running Matlab 7.4, with additional
+\cvx requires Matlab 6.5.2 or later. (Previous
+versions of \cvx supported Matlab 6.1, but this has been 
+discontinued.) Primary \cvx development is performed using
+an Intel-based Mac running Matlab 7.5, with additional
 development performed on the following platforms and Matlab versions:
 \begin{itemize}
-\item Windows (32-bit): Matlab 6.1, 7.4
-\item Linux (32-bit): Matlab 6.1, 7.4
-\item Linux (64-bit): Matlab 7.1, 7.4
+\item Mac (32-bit): Matlab 7.3, 7.5, 7.9
+\item Mac (64-bit): Matlab 7.9
+\item Windows (32-bit): Matlab 6.5.2, 7.5, 7.9
+\item Linux (32-bit): Matlab 6.5.2, 7.5, 7.9
+\item Linux (64-bit): Matlab 7.3, 7.5, 7.9
 \end{itemize}
 For purposes of testing and support, we have access to most
 other versions of Matlab for Windows, Linux, and Mac (both
-Intel and PowerPC). The one significant exception is version 7.0.0,
-so we cannot provide support for it. 
+Intel and PowerPC). 
 
-Version 7.0.0 has exhibited numerical problems for at least one user;
+We strongly recommend against using version 7.0.x of Matlab
+on any platform. Version 7.0.0 has exhibited numerical problems for at least one user;
 the problems were eliminated by upgrading.
 We have also identified another issue using \cvx
 with Matlab 7.0.1 and 7.0.4; workarounds
-are provided in \S\ref{sec:sevenprob} below. 
+are provided in \S\ref{sec:sevenprob} below.
 
-Precompiled MEX files are included for Windows (32-bit), Linux (32-bit),
-and Intel Mac OS X.
-For other platforms, the MEX files will be compiled during the setup
-process; see
-\S\ref{sec:othersys}. For platforms other than those
-listed above (\eg, Solaris, HPUX), \cvx is quite likely to work,
-but we are unable to provide support.
+Precompiled MEX files are included for all of the above platorms.
+For other platforms (\eg, Solaris), \cvx will attempt to compile 
+the MEX files will be compiled during the setup
+process. While \cvx is quite likely to work for
+these platforms, we are unable to provide support. In particular
+you are responsible for making sure that your system is
+set up to compile MEX files.
 
 \subsection{Basic instructions}
 \label{sec:winlin}
@@ -2957,16 +3052,15 @@ but we are unable to provide support.
 \item Retrieve the latest version of cvx from \url{http://www.stanford.edu/~boyd/cvx}.
 You can download the package as either a \verb@.zip@ file or a \verb@.tar.gz@ 
 file.
-\item If you have been running a previous version of \cvx, \emph{remove it} or
-move it out of the way---say, by renaming it \verb@cvx_old@---before proceeding.
+\item If you have been running a previous version of \cvx, remove it or
+rename it to, say, \verb@cvx_old@---before proceeding.
 \emph{DO NOT} allow the new version of \cvx to be unpacked on top of the old.
 \item Unpack the file anywhere you like; a directory called \verb@cvx@ will be created.
-There is one important exception: do not place \cvx in Matlab's own
-\verb@toolbox@ directory. (If your previous installation of \cvx was placed
-there, you'll need to move it out of there.)
+There is one important exception: \emph{do not} place \cvx in Matlab's own
+\verb@toolbox@ directory.
 \item Start Matlab.
 \item Change the current directory to the location of \cvx.
-For example, if you unpacked \verb@cvx.zip@ on your Windows machine into the
+For example, if you unpacked \verb@cvx.zip@ into the
 directory \verb@C:\Matlab\personal@, then you would type
 \begin{code}
 		cd C:\Matlab\personal\cvx
@@ -2983,8 +3077,7 @@ at the Matlab command prompt.
 \end{code}
 at the Matlab prompt. This does two things: 
 it sets the Matlab search path so it can find all of the \cvx program files,
-and it runs a simple test problem to verify the installation. On some
-platforms, it compiles MEX files as well (see \S\ref{sec:othersys} below).
+and it runs a simple test problem to verify the installation. 
 If all goes well, the command will output the line
 \begin{code}
 	No errors! cvx has been successfully installed.
@@ -2997,34 +3090,12 @@ Matlab path for subsequent Matlab sessions. Follow the instructions provided
 by \verb@cvx_setup@ to accomplish that.
 \end{enumerate}
 
-\subsection{MEX file compilation}
-\label{sec:othersys}
-
-Precompiled MEX files are provided only for a handful of platforms;
-for others, they must be compiled by the user. The \verb@cvx_setup@ script will
-automatically detect the absence of compiled MEX files and compile them
-for SeDuMi, SDPT3, and \cvx. However, \verb@cvx_setup@ will succeed only
-if the MEX system is configured properly on your machine. If you have
-compiled MEX files before, this is likely the case; otherwise, run the command
-\begin{code}
-	mex -setup
-\end{code}
-at the Matlab prompt and answer the questions that follow. If necessary, consult documentation for
-Matlab for details on this process.
-
 \subsection{About SeDuMi and SDPT3}
 
 The \cvx distribution includes copies of the solvers SeDuMi and SDPT3 in
 the directories \verb@cvx/sedumi@ and \verb@cvx/sdpt3@, respectively. 
 We strongly recommend that you use our versions of these solvers,
 and remove any other versions that you have in your Matlab path.
-The version of SeDuMi provided with \cvx incorporates some bug fixes
-and a slight modification that is not currently found in versions
-available from the authors. This is not the case with SDPT3; however,
-the author of SDPT3 frequently posts bug fixes to the software without
-updating the version number (currently 4.0 beta). Therefore, it is
-important to be sure that any newer version of SDPT3 that you might
-wish to use was downloaded \emph{after} you obtained \cvx.
 
 \subsection{A Matlab 7.0 issue}
 \label{sec:sevenprob}
@@ -3032,8 +3103,8 @@ wish to use was downloaded \emph{after} you obtained \cvx.
 The techniques that \cvx use to embed a new modeling language inside Matlab
 seem to cause some confusion for Matlab 7.0, specifically version 7.0.4 (R14SP2). 
 We are reasonably confident
-that the issue is due to a bug in Matlab itself. It does not occur in versions
-6.5.2 and earlier, or 7.1 and later. It may occur in earlier versions of
+that the issue is due to a bug in Matlab itself. It does not occur in version
+6.5.2 or 7.1 and later. It may occur in earlier versions of
 Matlab 7.0 as well (R14,R14SP1).
 
 The bug is this: in  some circumstances, a \verb@.m@-file containing a \cvx model will cause
@@ -3533,9 +3604,10 @@ solution has been found.
 	      is set to \verb@+Inf@ for minimizations and feasibility problems,
 	      and \verb@-Inf@ for maximizations.
 \end{itemize}
-In some cases, SeDuMi is unable to achieve the numerical certainty it requires to
+In some cases, the solver is unable to achieve the numerical certainty it requires to
 make one of the above determinations---but is able to draw a weaker conclusion
-by relaxing those tolerances somewhat. In such cases, one of the following
+by relaxing those tolerances somewhat; see \S\ref{sec:precision}. 
+In such cases, one of the following
 results is returned:
 \begin{itemize}
 	\item \verb@Inaccurate/Solved@: The problem is likely to have 

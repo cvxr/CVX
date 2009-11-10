@@ -10,14 +10,14 @@ if isempty( cvx___ ),
     % behavior in those cases where back-compatability fails.
     %
 
-    isoct = exist('OCTAVE_VERSION');
+    isoct = exist( 'OCTAVE_VERSION', 'var' );
     ver = version;
     temp = find( ver == '.' );
     if length( temp ) > 1,
         ver( temp( 2 ) : end ) = [];
     end
-    ver = eval( ver, 'NaN' );
-    if ~isoct & ver >= 7.1,
+    ver = str2double( ver );
+    if ~isoct && ver >= 7.1,
         warning( 'off', 'MATLAB:dispatcher:ShadowedMEXExtension' );
     end
 
@@ -48,7 +48,8 @@ if isempty( cvx___ ),
         'profile',      false, ...
         'expert',       false, ...
         'gptol',        0.001, ...
-        'solver',       'SDPT3', ...
+        'solver',       'sedumi', ...
+        'solver_exp',   'sdpt3', ...
         'precision',    [ eps^0.5, eps^0.5, eps^0.25 ], ...
         'rat_growth',   10, ...
         'reserved',     1, ...
@@ -60,7 +61,7 @@ if isempty( cvx___ ),
         'canslack',     false, ...
         'readonly',     0,  ...
         'equalities',   [], ...
-        'needslack',    logical( zeros( 0, 1 ) ), ...
+        'needslack',    false( 0, 1 ) , ...
         'linforms',     [], ...
         'linrepls',     [], ...
         'uniforms',     [], ...
@@ -116,7 +117,7 @@ if isempty( cvx___ ),
                 if ~isempty( ndxs ),
                     if k > nsolver,
                         cvx___.path.active = true;
-                    elseif isempty( cvx___.path.sactive ) & strcmpi( cvx___.solver, base ),
+                    elseif isempty( cvx___.path.sactive ) && strcmpi( cvx___.solver, base ),
                         cvx___.path.sactive = base;
                     else
                         opath( ndxs(1) : ndxs(1) + length(temp2) - 1 ) = [];
@@ -129,18 +130,18 @@ if isempty( cvx___ ),
             elseif isempty( spaths ),
                 spaths = struct( base, temp2 );
             elseif isfield( spaths, base ),
-                spaths = setfield( spaths, base, [ getfield( spaths, base ), temp2 ] );
+                spaths.(base) = [ spaths.(base), temp2 ];
             else
-                spaths = setfield( spaths, base, temp2 );
+                spaths.(base) = temp2;
             end
         elseif k > nsolver,
-            error( sprintf( [ ...
+            error( [ ...
                 'Cannot find the required cvx subdirectory: %s\n', ...
-                'The cvx distribution is corrupt; please reinstall.' ], temp ) );
+                'The cvx distribution is corrupt; please reinstall.' ], temp );
         elseif isfield( spaths, base ),
-            error( sprintf( [ ...
+            error( [ ...
                 'The cvx solver directory %s is incomplete.\n', ...
-                'The cvx distribution is corrupt; please reinstall.' ], temp ) );
+                'The cvx distribution is corrupt; please reinstall.' ], temp );
         end
     end
     if exist( 'mosekopt', 'file' ) == 3,
@@ -153,7 +154,7 @@ if isempty( cvx___ ),
             opath = [ cvx___.path.string, opath ];
         end
         if ~isempty( cvx___.path.sactive ),
-            opath = [ getfield( spaths, cvx___.path.sactive ), opath ];
+            opath = [ spaths.(cvx___.path.sactive), opath ];
         end
         s = warning('off');
         matlabpath(opath);
@@ -164,11 +165,11 @@ if isempty( cvx___ ),
     % Create the global cvx objects
     %
 
-    cvx___.equalities = cvx( [1,0], [] );
-    cvx___.linforms   = cvx( [1,0], [] );
-    cvx___.linrepls   = cvx( [1,0], [] );
-    cvx___.uniforms   = cvx( [1,0], [] );
-    cvx___.unirepls   = cvx( [1,0], [] );
+    cvx___.equalities = cvx( [0,1], [] );
+    cvx___.linforms   = cvx( [0,1], [] );
+    cvx___.linrepls   = cvx( [0,1], [] );
+    cvx___.uniforms   = cvx( [0,1], [] );
+    cvx___.unirepls   = cvx( [0,1], [] );
     
 end
 

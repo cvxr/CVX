@@ -1,8 +1,8 @@
-function y = cvx_s_hankel( m, n )
+function y = cvx_s_upper_hankel( m, n )
 %CVX_S_UPPER_HANKEL Upper Hankel matrices.
 c  = 0 : n - 1;
 c  = c( ones( 1, m ), : );
-r  = [ 0 : m - 1 ]';
+r  = ( 0 : m - 1 )';
 r  = r( :, ones( 1, n ) );
 v  = abs( r + c ) + 1;
 temp = v <= min( m, n );

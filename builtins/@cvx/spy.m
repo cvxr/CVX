@@ -1,4 +1,5 @@
 function spy( x, mode )
+global cvx___
 
 %   SPY is not a computational function, so it can be applied to any  
 %   CVX variables. 
@@ -9,7 +10,7 @@ switch nargin,
     case 1,
         mode = '';
     case 2,
-        if ~ischar( mode ) | size( mode, 1 ) > 1,
+        if ~ischar( mode ) || size( mode, 1 ) > 1,
             error( 'Second argument must be a string.' );
         end
 end
@@ -22,7 +23,6 @@ switch mode,
         b = sum( b ~= 0, 1 );
         b = reshape( b, s );
     case { '', '3-d', '3-D', '3d', '3D' },
-        global cvx___
         p = length( cvx___.reserved ) + 1;
         if size( b, 1 ) < p, b( p, end ) = 0; end
     otherwise,

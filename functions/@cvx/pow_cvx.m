@@ -46,7 +46,7 @@ p = cvx_constant( p );
 if nnz( isinf( p ) | isnan( p ) ),
     error( 'Second argument must be Inf or NaN.' );
 end
-if ~ischar( mode ) | size( mode, 1 ) ~= 1,
+if ~ischar( mode ) || size( mode, 1 ) ~= 1,
     error( 'Third argument must be a string.' );
 end
 switch mode,
@@ -74,7 +74,7 @@ sx = size( x ); xs = all( sx == 1 );
 sp = size( p ); ps = all( sp == 1 );
 if xs,
     sy = sp;
-elseif ps | isequal( sx, sp ),
+elseif ps || isequal( sx, sp ),
     sy = sx;
 else
     error( 'Matrix dimensions must agree.' );
@@ -139,9 +139,9 @@ for k = 1 : nv,
             pt = sprintf( '%g,', unique(pt) );
             pt = [ '{', pt(1:end-1), '}' ];
             if isequal( mode, 'power' ),
-                error( sprintf( 'Disciplined convex programming error:\n    Illegal operation: {%s} .^ %s\n    (Consider POW_P, POW_POS, or POW_ABS instead.)', cvx_class( xt, true, true ), pt ) ); 
+                error( 'Disciplined convex programming error:\n    Illegal operation: {%s} .^ %s\n    (Consider POW_P, POW_POS, or POW_ABS instead.)', cvx_class( xt, true, true ), pt ); 
             else
-                error( sprintf( 'Disciplined convex programming error:\n    Illegal operation: %s( {%s}, %s )', mode, cvx_class( xt, true, true ), pt ) ); 
+                error( 'Disciplined convex programming error:\n    Illegal operation: %s( {%s}, %s )', mode, cvx_class( xt, true, true ), pt ); 
             end
         case 1,
             % Constant result
@@ -163,7 +163,7 @@ for k = 1 : nv,
             % pow_p( concave, 0 )
             yt = ones(sz);
             cvx_begin
-                xt >= 0;
+                xt >= 0; %#ok
             cvx_end
         case 6,
             % pow_p( concave, 0 < p < 1 )
@@ -178,7 +178,7 @@ for k = 1 : nv,
             % pow_p( concave, 1 )
             yt = xt;
             cvx_begin
-                xt >= 0;
+                xt >= 0; %#ok
             cvx_end
         case 9,
             % pow_pos( affine, 1 )
@@ -192,20 +192,20 @@ for k = 1 : nv,
             % pow_pos( convex, p > 1 )
             cvx_begin
                 epigraph variable yt(sz)
-                { cat( nd, yt, ones(sz) ), cvx_accept_convex(xt) } == geo_mean_cone( sw, nd, [1/pt,1-1/pt], cmode );
+                { cat( nd, yt, ones(sz) ), cvx_accept_convex(xt) } == geo_mean_cone( sw, nd, [1/pt,1-1/pt], cmode ); 
             cvx_end
         case 12,
             % pow_abs( affine, p > 1 )
             % power( affine, p even )
             cvx_begin
                 epigraph variable yt(sz)
-                { cat( nd, yt, ones(sz) ), cvx_accept_convex(xt) } == geo_mean_cone( sw, nd, [1/pt,1-1/pt], 'abs' );
+                { cat( nd, yt, ones(sz) ), cvx_accept_convex(xt) } == geo_mean_cone( sw, nd, [1/pt,1-1/pt], 'abs' ); 
             cvx_end
         case 13,
             % pow_abs( complex affine, p > 1 )
             cvx_begin
                 epigraph variable yt(sz)
-                { cat( nd, yt, ones(sz) ), cvx_accept_convex(xt) } == geo_mean_cone( sw, nd, [1/pt,1-1/pt], 'cabs' );
+                { cat( nd, yt, ones(sz) ), cvx_accept_convex(xt) } == geo_mean_cone( sw, nd, [1/pt,1-1/pt], 'cabs' ); 
             cvx_end
     end
     

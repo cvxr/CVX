@@ -11,7 +11,6 @@
 % where phi_h is the Huber penalty function, (t_i,y_i) are data points in a
 % plane.
 
-cvx_quiet(true);
 % Input data
 randn('seed',1);
 rand('seed',1);
@@ -37,7 +36,7 @@ fprintf(1,'Done! \n');
 % Huber
 fprintf(1,'Computing the solution of the huber-penalized problem...');
 
-cvx_begin
+cvx_begin quiet
     variable xhub(n)
     minimize(sum(huber(A*xhub-b)))
 cvx_end

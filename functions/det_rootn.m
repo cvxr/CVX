@@ -16,7 +16,7 @@ function cvx_optval = det_rootn( X )
 %       CVX specifications, its argument must be affine.
 
 error( nargchk( 1, 1, nargin ) );
-if ndims( X ) > 2 | size( X, 1 ) ~= size( X, 2 ),
+if ndims( X ) > 2 || size( X, 1 ) ~= size( X, 2 ),
     error( 'Second argument must be a square matrix.' );
 end
 err = X - X';

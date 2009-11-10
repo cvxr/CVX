@@ -4,7 +4,7 @@ function xi = cvx_invert_structure( x, compact )
 
 if nargin == 1,
     
-    xi = x'*inv(x*x');
+    xi = x'/(x*x');
     [ii,jj,vv] = find(xi);
     [vn,vd] = rat(vv);
     xi = sparse(ii,jj,vn./vd,size(x,2),size(x,1));
@@ -12,7 +12,7 @@ if nargin == 1,
 elseif isreal( x ),
     
     [LL,UU] = lu(x);
-    [jj,ii,vv] = find(UU');
+    [jj,ii] = find(UU');
     dd = [true;diff(ii)~=0];
     jj = jj(dd);
     [i2,j2,vv] = find( inv(UU(:,jj)) / LL );

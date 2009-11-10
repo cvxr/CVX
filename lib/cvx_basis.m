@@ -3,7 +3,7 @@ function y = cvx_basis( x )
 if isempty( x )
     y = sparse( 1, 0 );
 else
-    y = sparse( reshape( x, 1, prod( size( x ) ) ) );
+    y = sparse( reshape( x, 1, numel(  x  ) ) );
 end
 
 % Copyright 2009 Michael C. Grant and Stephen P. Boyd.

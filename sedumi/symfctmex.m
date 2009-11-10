@@ -11,7 +11,7 @@
 %
 % See also sedumi
 
-function [L,perm,xsuper,split,tmpsiz] = symfctmex(adjncy, perm, cachsz)
+function [L,perm,xsuper,split,tmpsiz] = symfctmex(adjncy, perm, cachsz) %#ok
 
 %
 % This file is part of SeDuMi 1.1 by Imre Polik and Oleksandr Romanko

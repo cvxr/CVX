@@ -1,12 +1,12 @@
 function z = svec( x, nrm )
 
-if nargin < 2 | isempty( nrm ) | isequal( nrm, 'fro' ),
+if nargin < 2 || isempty( nrm ) || isequal( nrm, 'fro' ),
     nrm = 2;
-elseif ~isnumeric( nrm ) | length( nrm ) ~= 1 | nrm < 1,
+elseif ~isnumeric( nrm ) || length( nrm ) ~= 1 || nrm < 1,
     error( 'Second argument must be a number between 1 and Inf, or ''fro''.' );
 end
 
-if ~isreal( x ) & nrm ~= 2,
+if ~isreal( x ) && nrm ~= 2,
     z = vec( x );
     return
 else

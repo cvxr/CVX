@@ -1,4 +1,4 @@
-function cvx_optpnt = nonnegative( sx )
+function cvx_optpnt = nonnegative( sx ) %#ok
 
 %NONNEGATIVE   The nonnegative orthant.
 %   NONNEGATIVE(SX), where SX is a valid size vector, creates an array
@@ -26,7 +26,7 @@ end
 cvx_begin_set
     variables x( sx )
     if all( sx ~= 0 ),
-        [ tx, dummy ] = find( cvx_basis( x ) );
+        [ tx, dummy ] = find( cvx_basis( x ) ); %#ok
         newnonl( cvx_problem, 'nonnegative', tx(:) );
     end
 cvx_end_set

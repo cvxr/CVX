@@ -1,4 +1,4 @@
-function cvx_optval = log_sum_exp( x, dim )
+function y = log_sum_exp( x, dim )
 
 %LOG_SUM_EXP   CVX internal version.
 
@@ -6,7 +6,7 @@ error( nargchk( 1, 2, nargin ) );
 cvx_expert_check( 'log_sum_exp', x );
 
 sx = size( x );
-if nargin < 2 | isempty( dim ),
+if nargin < 2 || isempty( dim ),
     dim = cvx_default_dimension( sx );
 elseif ~cvx_check_dimension( dim, true ),
     error( 'Second argument must be a valid dimension.' );
@@ -21,14 +21,14 @@ nx = sx( dim );
 sy = sx;
 sy( dim ) = 1;
 if nx == 0,
-    sx( dim ) = 1;
-    cvx_optval = -Inf * ones( sy );
+    sx( dim ) = 1; %#ok
+    y = -Inf * ones( sy );
     return
 elseif nx == 1,
-    cvx_optval = x;
+    y = x;
     return;
 elseif any( sx == 0 ),
-    cvx_optval = zeros( sy );
+    y = zeros( sy );
     return
 end
 
@@ -54,7 +54,7 @@ vu = vu([true,diff(vu)~=0]);
 nv = length( vu );
 if nv > 1,
     y = cvx( sy, [] );
-    if prod(sx(1:dim+1))>1 & prod(sx(dim+1:end))>1,
+    if prod(sx(1:dim+1))>1 && prod(sx(dim+1:end))>1,
         perm = [ dim, 1:dim-1, dim+1:length(sx) ];
         x  = permute( x, perm );
         v  = permute( v, perm );
@@ -71,13 +71,13 @@ for k = 1 : nv,
     vk = vu( k );
     if nv == 1,
         xt = x;
-        sz = sy;
+        sz = sy; %#ok
     else
         t = v == vk;
         xt = cvx_subsref( x, cvx_expand_dim( t, dim, nx ) );
         sx = size( xt );
         sz = sx;
-        sz( dim ) = 1;
+        sz( dim ) = 1; %#ok
     end
 
     %
@@ -87,7 +87,7 @@ for k = 1 : nv,
     switch vk,
         case 0,
             % Invalid
-            error( sprintf( 'Disciplined convex programming error:\n    Illegal operation: log_sum_exp( {%s} ).', cvx_class( xt ) ) );
+            error( 'Disciplined convex programming error:\n    Illegal operation: log_sum_exp( {%s} ).', cvx_class( xt ) );
         case 1,
             % Affine, convex
             cvx_begin

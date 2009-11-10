@@ -1,14 +1,14 @@
 function x = sparsify( x, mode )
-error( nargchk( 2, 2, nargin ) );
 
 global cvx___
+error( nargchk( 2, 2, nargin ) );
 persistent remap
 
 %
 % Check mode argument
 %
 
-if ~ischar( mode ) | size( mode, 1 ) ~= 1,
+if ~ischar( mode ) || size( mode, 1 ) ~= 1,
     error( 'Second arugment must be a string.' );
 end
 isobj = strcmp( mode, 'objective' );
@@ -116,6 +116,7 @@ function [ x, forms, repls ] = replcols( x, tt, mode, forms, repls, isobj )
 % Sift through the forms, removing duplicates
 %
 
+global cvx___
 bN = vec( cvx_subsref( x, tt ) );
 nO = length( forms );
 nN = length( bN );
@@ -131,13 +132,11 @@ nB = length( bN ) - nO;
 %
 
 if nB ~= 0,
-    global cvx___
     forms   = bN;
     bN      = cvx_subsref( bN, nO + 1 : nO + nB, 1 );
     newrepl = newvar( cvx___.problems( end ).self, '', nB, [], false );
-    [ ndxs, temp ] = find( newrepl.basis_ );
+    [ ndxs, temp ] = find( newrepl.basis_ ); %#ok
     repls = [ repls ; newrepl ];
-    global cvx___
     bV = cvx_vexity( bN );
     cvx___.vexity( ndxs ) = bV;
     cvx___.readonly( ndxs ) = vec( cvx_readlevel( bN ) );

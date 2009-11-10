@@ -9,7 +9,6 @@
 % It is also given by: P_K(X0)_k = sum_{i=1}^{n}max{0,lam_i}v_i*v_i'
 % s.t. X0= sum_{i=1}^{n}lam_i*v_i*v_i'is the eigenvalue decomposition of X0
 
-cvx_quiet(true);
 % Input data
 randn('seed',0);
 n  = 10;
@@ -25,7 +24,7 @@ fprintf(1,'Done! \n');
 % Solution via CVX
 fprintf(1,'Computing the optimal solution by solving an SDP...');
 
-cvx_begin sdp
+cvx_begin sdp quiet
     variable X(n,n) symmetric
     minimize ( norm(X-X0,'fro') )
     X >= 0;

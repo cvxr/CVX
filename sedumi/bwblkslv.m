@@ -12,7 +12,7 @@
 %
 % See also symbchol, fwblkslv, mldivide, mrdivide
 
-function y = bwblkslv(L,b)
+function y = bwblkslv(L,b) %#ok
 
 
  %  

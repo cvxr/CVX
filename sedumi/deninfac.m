@@ -55,7 +55,7 @@ end
 % with dj = sqrt(d.l(k)) or dj=sqrt(d.det(k)).
 % NOTE that A*P(d)*A' = ADA + Ad * Ad'.
 % --------------------------------------------------
-if length(dense.cols) > 0
+if ~isempty(dense.cols)
     i1 = dense.l+1; i2 = i1 + length(dense.q);
     Ad = [dense.A(:,1:i1-1), DAt.denq, dense.A(:,i2:end), dense.A(:,i1:i2-1)];
     smult = [d.l(dense.cols(1:dense.l)); ones(length(dense.q),1); ...
@@ -87,7 +87,7 @@ end
 % we cannot do PCG.
 % ------------------------------------------------------------
 skip = find(L.skip);
-if length(skip) > 0
+if ~isempty(skip)
     dtol = pars.canceltol * absd(L.perm(skip));
     dtol = max(dtol, pars.abstol);
     Ld(skip(Ld(skip) <= dtol)) = 1;

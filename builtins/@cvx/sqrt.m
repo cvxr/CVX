@@ -58,16 +58,16 @@ for k = 1 : nv,
     switch vk,
         case 0,
             % Invalid
-            error( sprintf( 'Disciplined convex programming error:\n    Illegal operation: sqrt( {%s} ).', cvx_class( xt, true, true ) ) );
+            error( 'Disciplined convex programming error:\n    Illegal operation: sqrt( {%s} ).', cvx_class( xt, true, true ) );
         case 1,
             % Constant
             cvx_optval = cvx( builtin( 'sqrt', cvx_constant( xt ) ) );
         case 2,
             % Real affine, concave
-            st = size( xt );
+            st = size( xt ); %#ok
             cvx_begin
                 hypograph variable w( st );
-                square( w ) <= xt;
+                square( w ) <= xt; %#ok
             cvx_end
         case 3,
             % Monomial, posynomial

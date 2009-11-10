@@ -17,9 +17,6 @@
 %           minimize sup{||u||_2 <= 1} ||(A0 + u1*A1 + u2*A2)x - b||_2)
 %      (reduces to solving an SDP, see pages 323-324 in the book)
 
-clear
-cvx_quiet(false);
-
 m = 50;
 n = 20;
 randn('state',0);
@@ -48,7 +45,7 @@ delta = .1;
 xtych =  [A0; sqrt(delta)*eye(n)] \ [b; zeros(n,1)];
 
 % Robust Least Squares solution
-cvx_begin sdp
+cvx_begin sdp quiet
     variables t lambda xrob(n)
     minimize(t+lambda)
     subject to

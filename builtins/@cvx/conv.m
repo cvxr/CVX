@@ -17,15 +17,15 @@ function z = conv(x,y)
 error(nargchk(2,2,nargin));
 sx = size(x);
 sy = size(y);
-if sum(sx~=1)>1 | sum(sy~=1)>1,
+if sum(sx~=1)>1 || sum(sy~=1)>1,
     
     error( 'Arguments must be vectors.' );
     
-elseif any(sx==0) & any(sy==0),
+elseif any(sx==0) && any(sy==0),
     
     error( 'At least one argument must be non-empty.' );
     
-elseif cvx_isconstant(x) | cvx_isconstant(y),    
+elseif cvx_isconstant(x) || cvx_isconstant(y),    
     
     sz = sy;
     sx = prod(sx);
@@ -50,7 +50,7 @@ elseif cvx_isconstant(x) | cvx_isconstant(y),
     z  = sparse( yi, yj, yv, size(yb,1), nz );
     z  = cvx( sz, z );
     if nnz( cvx_classify( z ) == 13 ),
-        error( sprintf( 'Disciplined convex programming error:\n   Illegal affine combination of convex/concave terms in convolution.' ) );
+        error( 'Disciplined convex programming error:\n   Illegal affine combination of convex/concave terms in convolution.' );
     end
     
 else

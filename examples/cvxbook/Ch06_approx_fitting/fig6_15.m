@@ -18,8 +18,6 @@
 %           minimize sup{-1<=u<=1} ||(A+tB)x - b||_2)
 %      (reduces to minimizing max{||(A-B)x - b||_2, ||(A+B)x - b||_2} )
 
-cvx_quiet(true);
-
 % Input Data
 randn('seed',0);
 m=20;  n=10;
@@ -37,7 +35,7 @@ b = randn(m,1);
 fprintf(1,'Computing the optimal solution for: \n');
 fprintf(1,'1) the nominal problem ... ');
 
-cvx_begin
+cvx_begin quiet
     variable x_nom(n)
     minimize ( norm(A*x_nom - b) )
 cvx_end
@@ -49,7 +47,7 @@ fprintf(1,'Done! \n');
 fprintf(1,'2) the stochastic robust approximation problem ... ');
 
 P = (1/3)*B'*B;
-cvx_begin
+cvx_begin quiet
     variable x_stoch(n)
     minimize (  square_pos(norm(A*x_stoch - b)) + quad_form(x_stoch,P) )
 cvx_end
@@ -60,7 +58,7 @@ fprintf(1,'Done! \n');
 
 fprintf(1,'3) the worst-case robust approximation problem ... ');
 
-cvx_begin
+cvx_begin quiet
     variable x_wc(n)
     minimize ( max( norm((A-B)*x_wc - b), norm((A+B)*x_wc - b) ) )
 cvx_end

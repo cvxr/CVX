@@ -22,7 +22,7 @@ end
 error( nargchk( 1, 2, nargin ) );
 if nargin < 2,
     p = 2;
-elseif ~isequal( p, 'fro' ) & ( ~isnumeric( p ) | ~isreal( p ) | p < 1 ),
+elseif ~isequal( p, 'fro' ) && ( ~isnumeric( p ) || ~isreal( p ) || p < 1 ),
     error( 'Second argument must be a real number between 1 and Inf, or ''fro''.' );
 end
 if ndims( x ) > 2,
@@ -30,7 +30,7 @@ if ndims( x ) > 2,
 end
 
 [m,n] = size(x);
-if m == 1 | n == 1 | isequal( p, 'fro' ),
+if m == 1 || n == 1 || isequal( p, 'fro' ),
     
     %
     % Vector norms
@@ -49,7 +49,7 @@ if m == 1 | n == 1 | isequal( p, 'fro' ),
     end
     xc = cvx_classify( x );
     if ~all( remap2( xc ) ),
-        error( sprintf( 'Disciplined convex programming error:\n    Cannot perform the operation norm( {%s}, %g )', cvx_class( x ), p ) );
+        error( 'Disciplined convex programming error:\n    Cannot perform the operation norm( {%s}, %g )', cvx_class( x ), p );
     end
     switch p,
         case 1,
@@ -96,7 +96,7 @@ else
     %
     
     if ~cvx_isaffine( x ),
-        error( sprintf( 'Disciplined convex programming error:\n    Cannot perform the operation norm( {%s}, %g )\n   when the first argument is a matrix.', cvx_class( xt ), p ) );
+        error( 'Disciplined convex programming error:\n    Cannot perform the operation norm( {%s}, %g )\n   when the first argument is a matrix.', cvx_class( xt ), p );
     end
     switch p,
         case 1,

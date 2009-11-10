@@ -29,11 +29,11 @@ function sout = cvx_quiet( flag )
 %
 %   CVX_QUIET, with no arguments, returns the current flag value.
 
+global cvx___
 if nargin == 1,
-    nflag = [];
-    if isnumeric(flag) | islogical(flag),
+    if isnumeric(flag) || islogical(flag),
         ns = double(flag) ~= 0;
-    elseif ischar(flag) & size(flag,1) == 1,
+    elseif ischar(flag) && size(flag,1) == 1,
         switch lower(flag),
             case 'true',
                 ns = true;
@@ -55,14 +55,14 @@ if isempty( cvx___.problems ),
 else
     s = cvx___.problems(end).quiet;
     if nargin > 0,
-        if s ~= ns & ~isa( evalin( 'caller', 'cvx_problem', '[]' ), 'cvxprob' ),
-            warning( 'The global CVX quiet setting cannot be changed while a model is being constructed.' );
+        if s ~= ns && ~isa( evalin( 'caller', 'cvx_problem', '[]' ), 'cvxprob' ),
+            warning( 'CVX:Quiet', 'The global CVX quiet setting cannot be changed while a model is being constructed.' );
         else
             cvx___.problems(end).quiet = ns;
         end
     end
 end
-if nargin == 0 | nargout > 0,
+if nargin == 0 || nargout > 0,
     sout = s;
 end
 

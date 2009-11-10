@@ -80,7 +80,6 @@ As2_den  = Aden(ind,:);
 %********************************************************************
 % optimization
 %********************************************************************
-cvx_quiet(true);
 
 % use bisection (on the log of vars) to solve for the min stopband atten
 Us_top = 1e-0; % 0 dB
@@ -92,7 +91,7 @@ while( 20*log10(Us_top/Us_bot) > 1)
 
   % [b_cur,a_cur] = iir_mag_design_spec_fact(w,L,U,N,M);
   % formulate and solve the magnitude design problem
-  cvx_begin
+  cvx_begin quiet
     variable c(M,1)
     variable d(N-1,1)
 
@@ -128,8 +127,6 @@ fprintf(1,'\nOptimum min stopband atten is between %3.2f and %3.2f dB.\n',...
 disp('Optimal IIR filter coefficients are: ')
 disp('Numerator: '), b
 disp('Denominator: '), a
-
-cvx_quiet(false);
 
 %*********************************************************************
 % plotting routines

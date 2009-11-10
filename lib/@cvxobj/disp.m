@@ -1,4 +1,4 @@
-function disp( x, prefix )
+function disp( x, prefix ) %#ok
 if nargin < 2, prefix = ''; end
 disp( [ prefix, 'cvx base object' ] );
 

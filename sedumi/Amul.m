@@ -47,7 +47,7 @@ if transp == 0
 else
     y = full(At*x);        % y(N) and x(m)
 end
-if length(dense.cols) > 0
+if ~isempty(dense.cols)
     if transp == 0
         y = y + dense.A*x(dense.cols);
     else

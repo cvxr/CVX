@@ -6,13 +6,13 @@ function sout = cvx_profile( flag )
 %    when the solver is being called. End users will likely not find this
 %    function to be useful.
 
+global cvx___
 cvx_global
 s = cvx___.profile;
 if nargin == 1,
-    nflag = [];
-    if isnumeric(flag) | islogical(flag),
+    if isnumeric(flag) || islogical(flag),
         ns = double(flag) ~= 0;
-    elseif ischar(flag) & size(flag,1) == 1,
+    elseif ischar(flag) && size(flag,1) == 1,
         switch lower(flag),
             case 'true',
                 ns = true;
@@ -27,14 +27,14 @@ if nargin == 1,
     if cvx___.profile ~= ns,
         cvx___.profile = ns;
         stat = profile('status');
-        if ns & ~isempty( cvx___.problems ) & ~isequal( stat.ProfilerStatus, 'on' ),
+        if ns && ~isempty( cvx___.problems ) && ~isequal( stat.ProfilerStatus, 'on' ),
             profile on
-        elseif ~ns & isequal( stat.ProfilerStatus, 'on' ),
+        elseif ~ns && isequal( stat.ProfilerStatus, 'on' ),
             profile off
         end
     end
 end
-if nargin == 0 | nargout > 0,
+if nargin == 0 || nargout > 0,
     sout = s;
 end
   

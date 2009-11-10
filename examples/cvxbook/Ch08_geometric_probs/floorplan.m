@@ -126,8 +126,7 @@ nodes_V = find(par_V>0);
 leafs_H = find(chi_H==0);
 leafs_V = find(chi_V==0);
 
-cvx_quiet(1);
-cvx_begin
+cvx_begin quiet
         variables x(n) y(n) w(n) h(n) W H
         minimize ( W + H )
         w >= 0;

@@ -12,7 +12,6 @@
 % where A is the Vandermonde matrix s.t. Aij = u_i^{j-1}
 % Two cases are considered: L2-norm and Linfty-norm
 
-cvx_quiet(true);
 % Input data
 n=6;
 m=40;
@@ -35,7 +34,7 @@ fprintf(1,'Done! \n');
 % L-infty fit
 fprintf(1,'Computing optimal polynomial in the case of Linfty-norm...');
 
-cvx_begin
+cvx_begin quiet
     variable x1(n)
     minimize (norm(A*x1 - v', inf))
 cvx_end

@@ -90,7 +90,7 @@ targets64={...
 };
 
 disp( 'Building SeDuMi binaries...' )
-ISOCTAVE = exist('OCTAVE_VERSION');
+ISOCTAVE = exist('OCTAVE_VERSION','VAR');
 COMPUTER = computer;
 VERSION  = [1,0.1]*sscanf(version,'%d.%d');
 IS64BIT  = ~ISOCTAVE & strcmp(COMPUTER(end-1:end),'64');
@@ -106,7 +106,7 @@ if ~ISOCTAVE,
         flags{end+1} = endpath;
     end
     flags{end+1} = '-O';
-    if IS64BIT & ( VERSION >= 7.3 ),
+    if IS64BIT && ( VERSION >= 7.3 ),
         flags{end+1} = '-largeArrayDims';
     elseif VERSION < 7.3,
         flags{end+1} = '-DmwIndex=int';
@@ -114,10 +114,10 @@ if ~ISOCTAVE,
         flags{end+1} = '-DmwSignedIndex=int';
     end
     if ispc,
-        if VERSION >= 7.5, libval = 'blas'; else, libval = 'lapack'; end
-        if IS64BIT, dirval = 'win64'; else, dirval = 'win32'; end
+        if VERSION >= 7.5, libval = 'blas'; else libval = 'lapack'; end
+        if IS64BIT, dirval = 'win64'; else dirval = 'win32'; end
         libs = [ matlabroot, '\extern\lib\', dirval, '\microsoft\libmw', libval, '.lib' ];
-        if ~exist( libs ),
+        if ~exist( libs, 'file' ),
             libs = [ matlabroot, '\extern\lib\', dirval, '\microsoft\msvc60\libmw', libval, '.lib' ];
         end
     elseif VERSION >= 7.5,
