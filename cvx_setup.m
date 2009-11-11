@@ -154,7 +154,8 @@ if fullRecompile || ~has_mex,
     for k = 1 : length( mexfiles ),
         str = mexfiles{k};
         try
-            fprintf( 1, '%s ', 'mex\n', mexcmd{:}, str );
+            cmd = sprintf( '%s ', 'mex', mexcmd{:}, str );
+            fprintf( 1, '%s\n', cmd );
             mex( mexcmd{:}, str );
         catch
             has_mex = 0;
