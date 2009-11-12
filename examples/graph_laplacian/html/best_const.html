@@ -1,0 +1,137 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   <!--
+This HTML is auto-generated from an M-file.
+To make changes, update the M-file and republish this document.
+      --><title>Computes the constant edge weight that yields fastest averaging.</title><meta name="generator" content="MATLAB 7.9"><meta name="date" content="2009-11-11"><meta name="m-file" content="best_const___"><style type="text/css">
+
+body {
+  background-color: white;
+  margin:10px;
+}
+
+h1 {
+  color: #990000; 
+  font-size: x-large;
+}
+
+h2 {
+  color: #990000;
+  font-size: medium;
+}
+
+/* Make the text shrink to fit narrow windows, but not stretch too far in 
+wide windows. */ 
+p,h1,h2,div.content div {
+  max-width: 600px;
+  /* Hack for IE6 */
+  width: auto !important; width: 600px;
+}
+
+pre.codeinput {
+  background: #EEEEEE;
+  padding: 10px;
+}
+@media print {
+  pre.codeinput {word-wrap:break-word; width:100%;}
+} 
+
+span.keyword {color: #0000FF}
+span.comment {color: #228B22}
+span.string {color: #A020F0}
+span.untermstring {color: #B20000}
+span.syscmd {color: #B28C00}
+
+pre.codeoutput {
+  color: #666666;
+  padding: 10px;
+}
+
+pre.error {
+  color: red;
+}
+
+p.footer {
+  text-align: right;
+  font-size: xx-small;
+  font-weight: lighter;
+  font-style: italic;
+  color: gray;
+}
+
+  </style></head><body><div class="content"><h1>Computes the constant edge weight that yields fastest averaging.</h1><pre class="codeinput"><span class="keyword">function</span> [w,rho] = best_const(A)
+<span class="comment">% [W,RHO] = BEST_CONST(A) gives a vector of the best constant edge weights</span>
+<span class="comment">% for a graph described by the incidence matrix A (NxM). N is the number of</span>
+<span class="comment">% nodes, and M is the number of edges. Each column of A has exactly one +1</span>
+<span class="comment">% and one -1.</span>
+<span class="comment">%</span>
+<span class="comment">% The best constant edge weight is the inverse of the average of</span>
+<span class="comment">% the second smallest and largest eigenvalues of the unweighted Laplacian:</span>
+<span class="comment">%    W = 2/( lambda_2(A*A') + lambda_n(A*A') )</span>
+<span class="comment">% RHO is computed from the weights W as follows:</span>
+<span class="comment">%    RHO = max(abs(eig( eye(n,n) - (1/n)*ones(n,n) - A*W*A' ))).</span>
+<span class="comment">%</span>
+<span class="comment">% For more details, see the references:</span>
+<span class="comment">% "Fast linear iterations for distributed averaging" by L. Xiao and S. Boyd</span>
+<span class="comment">% "Fastest mixing Markov chain on a graph" by S. Boyd, P. Diaconis, and L. Xiao</span>
+<span class="comment">% "Convex Optimization of Graph Laplacian Eigenvalues" by S. Boyd</span>
+<span class="comment">%</span>
+<span class="comment">% Almir Mutapcic 08/29/06</span>
+[n,m] = size(A);
+
+<span class="comment">% max degrees of the nodes</span>
+Lunw = A*A';                <span class="comment">% unweighted Laplacian matrix</span>
+eigvals = sort(eig(Lunw));
+
+<span class="comment">% max degree weigth allocation</span>
+alpha = 2/(eigvals(2) + eigvals(n));
+w = alpha*ones(m,1);
+
+<span class="comment">% compute the norm</span>
+<span class="keyword">if</span> nargout &gt; 1,
+    rho = norm( eye(n) - A*diag(w)*A' - (1/n)*ones(n) );
+<span class="keyword">end</span>
+</pre><p class="footer"><br>
+      Published with MATLAB&reg; 7.9<br></p></div><!--
+##### SOURCE BEGIN #####
+%% Computes the constant edge weight that yields fastest averaging.
+
+function [w,rho] = best_const(A)
+% [W,RHO] = BEST_CONST(A) gives a vector of the best constant edge weights
+% for a graph described by the incidence matrix A (NxM). N is the number of
+% nodes, and M is the number of edges. Each column of A has exactly one +1
+% and one -1. 
+%
+% The best constant edge weight is the inverse of the average of
+% the second smallest and largest eigenvalues of the unweighted Laplacian:
+%    W = 2/( lambda_2(A*A') + lambda_n(A*A') )
+% RHO is computed from the weights W as follows:
+%    RHO = max(abs(eig( eye(n,n) - (1/n)*ones(n,n) - A*W*A' ))).
+%
+% For more details, see the references:
+% "Fast linear iterations for distributed averaging" by L. Xiao and S. Boyd
+% "Fastest mixing Markov chain on a graph" by S. Boyd, P. Diaconis, and L. Xiao
+% "Convex Optimization of Graph Laplacian Eigenvalues" by S. Boyd
+%
+% Almir Mutapcic 08/29/06
+[n,m] = size(A);
+
+% max degrees of the nodes
+Lunw = A*A';                % unweighted Laplacian matrix
+eigvals = sort(eig(Lunw));
+
+% max degree weigth allocation
+alpha = 2/(eigvals(2) + eigvals(n));
+w = alpha*ones(m,1);
+
+% compute the norm
+if nargout > 1,
+    rho = norm( eye(n) - A*diag(w)*A' - (1/n)*ones(n) );
+end
+
+
+##### SOURCE END #####
+--></body></html>

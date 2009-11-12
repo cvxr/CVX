@@ -1,0 +1,87 @@
+/*
+ * CSS style for CVX's example library
+ * Heavily stripped and adapted from jemdoc's default
+ * and from mktree.css
+ */
+ 
+body {
+	background: white;
+	font-family: "Georgia", "Bookman Old Style", serif;
+	margin: 0;
+}
+
+a {
+	color: #224b8d;
+	text-decoration: none;
+}
+
+a:hover {
+	border-bottom: 1px gray dotted;
+}
+
+p {
+	margin-top: 0;
+	margin-bottom: 0.8em;
+	padding: 0;
+	line-height: 1.35;
+}
+
+#fwtitle {
+	background-color: #527bbd;
+	border-color: #888888;
+	border-style: solid;
+	border-width: 0px 0px 5px 0px;
+}	
+
+h1 {
+	margin: 0;
+	font-size: 165%;
+	padding: 0.35em;
+	color: #f0f0ff;
+	text-align: right;
+	font-variant: small-caps;
+}
+
+#layout-content {
+	padding-top: 0.5em;
+	padding-left: 1em;
+	padding-right: 1em;
+}
+
+@media print {
+	p.jshide { display: none; }
+	p.jsonly { display: none; }
+	ul.mktree  li p { display: inline; }
+}
+
+@media screen { 
+	p.jshide { display: none; }
+	p.jsonly { display: block; }
+	/* Turn off list bullets */
+	ul.mktree  li { list-style: none; }
+	ul.mktree  li p { display: inline; }
+	/* Control how "spaced out" the tree is */
+	ul.mktree, ul.mktree ul, ul.mktree li { margin: 0; padding: 0; }
+	ul.mktree ul li { padding-left: 20px; }
+    /* Provide space for our own "bullet" inside the LI */
+	ul.mktree  li           .bullet { padding-left: 15px; }
+	/* Show "bullets" in the links, depending on the class of the LI that the link's in */
+	ul.mktree  li.liOpen    .bullet { cursor: pointer; background: url(minus.gif)  center left no-repeat; }
+	ul.mktree  li.liClosed  .bullet { cursor: pointer; background: url(plus.gif)   center left no-repeat; }
+	ul.mktree  li.liBullet  .bullet { cursor: default; background: url(bullet.gif) center left no-repeat; }
+	/* Sublists are visible or not based on class of parent LI */
+	ul.mktree  li.liOpen    ul { display: block; }
+	ul.mktree  li.liClosed  ul { display: none; }
+}
+
+div#footer {
+	font-size: small;
+	border-top: 1px solid gray;
+	padding-top: 0.1em;
+	margin-top: 4;
+}
+
+div#footer-text {
+	float: left;
+	padding-bottom: 8px;
+}
