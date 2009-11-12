@@ -57,7 +57,9 @@ end
 
 if nargs == 0,
     
-    if isempty( sz ), sz( dim ) = nargin; end
+    if isempty( sz ), 
+        sz( dim ) = nargin; 
+    end
     y = cvx( sz, [] );
     return
     
@@ -76,39 +78,28 @@ msiz = sz( dim );
 lsiz = prod( sz( 1 : dim - 1 ) );
 rsiz = prod( sz( dim + 1 : end ) );
 psz  = lsiz * msiz * rsiz;
-if rsiz > 1 && cvx_use_sparse( [ nz, psz ], nzer, isr ),
-
-    cmsiz = 0;
-    bi = cell( 1, nargs );
-    bj = cell( 1, nargs );
-    bv = cell( 1, nargs );
-    for k = 1 : nargs,
-        x = varargin{k};
-        sx = x.size_;
-        sx(end+1:dim) = 1;
-        [ bi{k}, bj{k}, bv{k} ] = find( x.basis_ );
-        bj{k} = bj{k} + lsiz * ( cmsiz + floor((bj{k}-1)/lsiz) * msiz );
-        cmsiz = cmsiz + sx(dim);
-    end
-    bi = builtin( 'vertcat', bi{:} );
-    bj = builtin( 'vertcat', bj{:} );
-    bv = builtin( 'vertcat', bv{:} );
-    yb = sparse( bi, bj, bv, nz, psz );
-    
-else
-    
-    for k = 1 : nargs,
-        x = varargin{k}.basis_;
-        x( end + 1 : nz, end ) = 0;
-        if rsiz > 1,
-            x = reshape( x, numel(x) / rsiz, 1, rsiz );
+issp = cvx_use_sparse( [ nz, psz ], nzer, isr );
+for k = 1 : nargs,
+    x = varargin{k}.basis_;
+    if issp ~= issparse(x),
+        if issp, 
+            x = sparse(x); 
+        else
+            x = full(x); 
         end
-        varargin{k} = x;
     end
-    yb = builtin( 'cat', 2, varargin{1:nargs} );
-    yb = reshape( yb, nz, psz );
-    
+    x( end + 1 : nz, end ) = 0;
+    if rsiz > 1,
+        x = reshape( x, numel(x) / rsiz, rsiz );
+    end
+    varargin{k} = x;
 end
+if rsiz > 1,
+    yb = builtin( 'cat', 1, varargin{1:nargs} );
+else
+    yb = builtin( 'cat', 2, varargin{1:nargs} );
+end
+yb = reshape( yb, nz, psz );
  
 %
 % Create object

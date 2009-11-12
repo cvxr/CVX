@@ -90,7 +90,7 @@ targets64={...
 };
 
 disp( 'Building SeDuMi binaries...' )
-ISOCTAVE = exist('OCTAVE_VERSION','var');
+ISOCTAVE = exist('OCTAVE_VERSION','builtin');
 COMPUTER = computer;
 VERSION  = [1,0.1]*sscanf(version,'%d.%d');
 IS64BIT  = ~ISOCTAVE & strcmp(COMPUTER(end-1:end),'64');
@@ -100,7 +100,10 @@ if ispc,
 elseif isunix,
     flags = {'-DUNIX'};
 end
-if ~ISOCTAVE,
+if ISOCTAVE,
+    flags{end+1} = '-DmwSignedIndex=int';
+    libs = '-llapack';
+else
     if nargin > 1 && ~isempty(endpath),
         flags{end+1} = '-outdir';
         flags{end+1} = endpath;
