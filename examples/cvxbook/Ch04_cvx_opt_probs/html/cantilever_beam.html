@@ -6,7 +6,7 @@
    <!--
 This HTML is auto-generated from an M-file.
 To make changes, update the M-file and republish this document.
-      --><title>Exercise 4.31: Design of a cantilever beam (GP)</title><meta name="generator" content="MATLAB 7.9"><meta name="date" content="2009-11-11"><meta name="m-file" content="cantilever_beam___"><style type="text/css">
+      --><title>Exercise 4.31: Design of a cantilever beam (GP)</title><meta name="generator" content="MATLAB 7.9"><meta name="date" content="2009-11-12"><meta name="m-file" content="cantilever_beam_"><style type="text/css">
 
 body {
   background-color: white;
@@ -138,18 +138,20 @@ Successive approximation method to be employed.
    Original size: 200 variables, 65 equality constraints
    48 exponentials add 384 variables, 240 equality constraints
 -----------------------------------------------------------------
-S   Error      #     Status
------------------------------
-  6.675e+01   0/0   Solved
-  1.133e+01   0/0   Solved
-  5.149e+00   3/2   Solved
-  5.039e+00   4/2   Solved
-S 5.037e+00   4/2   Solved
-  5.231e-09  43/0   Solved
-  0.000e+00  48/0   Solved
+          Errors   
+Act Centering    Conic    Status
+-----------------------------------
+43  4.389e+00  1.960e+00  Solved
+43  7.124e-01  4.447e-02  Solved
+43  2.428e-02  4.872e-05  Solved
+43  5.446e-04  1.117e-06  Solved
+43  6.892e-05  1.117e-06S Solved
+43  4.228e-06  3.048e-07  Solved
+43  1.861e-06  1.646e-08  Solved
+43  2.810e-06S 0.000e+00  Solved
 -----------------------------------------------------------------
 Status: Solved
-Optimal value (cvx_optval): +42.3966
+Optimal value (cvx_optval): +42.3965
 The optimal widths and heights are: 
 
 w =
@@ -175,8 +177,8 @@ h =
     6.0000
     6.0000
 
-The optimal minimum volume of the beam is 42.3966.
-</pre><img vspace="5" hspace="5" src="cantilever_beam____01.png" alt=""> <p class="footer"><br>
+The optimal minimum volume of the beam is 42.3965.
+</pre><img vspace="5" hspace="5" src="cantilever_beam__01.png" alt=""> <p class="footer"><br>
       Published with MATLAB&reg; 7.9<br></p></div><!--
 ##### SOURCE BEGIN #####
 %% Exercise 4.31: Design of a cantilever beam (GP)

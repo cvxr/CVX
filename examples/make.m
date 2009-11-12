@@ -451,7 +451,7 @@ elseif force || hdate <= ndate,
     end
     name = name(1:end-2);
     if ~runonly,
-        [ fidw, message ] = fopen( [ name, '___.m' ], 'w+' );
+        [ fidw, message ] = fopen( [ name, '_.m' ], 'w+' );
         if fidw < 0,
             error( 'Cannot open the temporary file\n   %s', message );
         end
@@ -480,8 +480,8 @@ elseif force || hdate <= ndate,
             opts.evalCode = ~isfunc;
             opts.showCode = true;
             opts.catchError = false;
-            publish( [ name, '___' ], opts );
-            movefile( [ 'html', filesep, name, '___.html' ], [ 'html', filesep, name, '.html' ] );
+            publish( [ name, '_' ], opts );
+            movefile( [ 'html', filesep, name, '_.html' ], [ 'html', filesep, name, '.html' ] );
             fprintf( 1, ' done.\n' );
         end
     catch
@@ -494,7 +494,7 @@ elseif force || hdate <= ndate,
     if runonly,
         disp( out___ );
     else
-        delete( [ name, '___.m' ] );
+        delete( [ name, '_.m' ] );
     end
     cd( odir );
     if ~success && ~runonly && exist( hdir, 'dir' ),
