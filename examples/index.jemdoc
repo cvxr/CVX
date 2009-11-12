@@ -1,4 +1,4 @@
-# jemdoc: fwtitle,nodefaultcss,addcss{examples.css}
+# jemdoc: fwtitle,nodefaultcss,addcss{examples.css},addcss{mktree.css}
 = CVX Example Library
 
 Each of the examples listed in the tree below links to

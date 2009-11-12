@@ -6,8 +6,8 @@
 -- [antenna_array_design/html/broadband_array_min_sidelobe.html Minimize sidelobe level of an FIR broadband far-field antenna array] ([antenna_array_design/broadband_array_min_sidelobe.m broadband_array_min_sidelobe.m])
 -- [antenna_array_design/html/ant_array_min_sidelobe.html Minimize sidelobe level of an array with arbitrary 2-D geometry] ([antenna_array_design/ant_array_min_sidelobe.m ant_array_min_sidelobe.m])
 -- [antenna_array_design/html/ant_array_min_therm_noise.html Minimize thermal noise power of an array with arbitrary 2-D geometry] ([antenna_array_design/ant_array_min_therm_noise.m ant_array_min_therm_noise.m])
--- Utility: [antenna_array_design/html/polar_plot_ant.html Plot a polar plot of an antenna array sensitivity] ([antenna_array_design/polar_plot_ant.m polar_plot_ant.m])]
--- Utility: [antenna_array_design/html/spectral_fact.html Spectral factorization using Kolmogorov 1939 approach] ([antenna_array_design/spectral_fact.m spectral_fact.m])]
+-- Utility: [antenna_array_design/html/polar_plot_ant.html Plot a polar plot of an antenna array sensitivity] ([antenna_array_design/polar_plot_ant.m polar_plot_ant.m])
+-- Utility: [antenna_array_design/html/spectral_fact.html Spectral factorization using Kolmogorov 1939 approach] ([antenna_array_design/spectral_fact.m spectral_fact.m])
 - *Circuit design*
 -- Reference: [http://stanford.edu/~boyd/papers/rc.html Optimizing Dominant Time Constant in RC Circuits]
 -- Reference: [http://stanford.edu/~boyd/papers/rc_iccad.html Optimal Wire and Transistor Sizing for Circuits with Non-Tree Topology]
@@ -24,8 +24,8 @@
 -- [circuit_design/html/tristate_bus_sizing.html Tri-state bus sizing and topology design] ([circuit_design/tristate_bus_sizing.m tristate_bus_sizing.m])
 -- [circuit_design/html/simple_NAND2_gate_design.html Two-input NAND gate sizing (GP)] ([circuit_design/simple_NAND2_gate_design.m simple_NAND2_gate_design.m])
 -- [circuit_design/html/wire_sizing_topology.html Wire sizing and topology design] ([circuit_design/wire_sizing_topology.m wire_sizing_topology.m])
--- Utility: [circuit_design/html/simple_step.html Computes the step response of a linear system] ([circuit_design/simple_step.m simple_step.m])]
--- Utility: [circuit_design/html/plot_four_tapers.html Plots four different taper desings on a single graph.] ([circuit_design/plot_four_tapers.m plot_four_tapers.m])]
+-- Utility: [circuit_design/html/simple_step.html Computes the step response of a linear system] ([circuit_design/simple_step.m simple_step.m])
+-- Utility: [circuit_design/html/plot_four_tapers.html Plots four different taper desings on a single graph.] ([circuit_design/plot_four_tapers.m plot_four_tapers.m])
 - *Figures, examples, and exercises from the book [http://stanford.edu/~boyd/cvxbook Convex Optimization]*
 -- *Chapter 4: Convex optimization problems*
 --- [cvxbook/Ch04_cvx_opt_probs/html/chebyshev_center_2D.html Section 4.3.1: Compute and display the Chebyshev center of a 2D polyhedron] ([cvxbook/Ch04_cvx_opt_probs/chebyshev_center_2D.m chebyshev_center_2D.m])
@@ -42,7 +42,7 @@
 --- [cvxbook/Ch04_cvx_opt_probs/html/channel_capacity.html Exercise 4.57: Capacity of a communication channel] ([cvxbook/Ch04_cvx_opt_probs/channel_capacity.m channel_capacity.m])
 --- [cvxbook/Ch04_cvx_opt_probs/html/ex_4_5.html Exercise 4.5: Show the equivalence of 3 convex problem formations] ([cvxbook/Ch04_cvx_opt_probs/ex_4_5.m ex_4_5.m])
 --- [cvxbook/Ch04_cvx_opt_probs/html/logopt_investment.html Exercise 4.60: Log-optimal investment strategy] ([cvxbook/Ch04_cvx_opt_probs/logopt_investment.m logopt_investment.m])
---- Utility: [cvxbook/Ch04_cvx_opt_probs/html/cantilever_beam_plot.html Plots a cantilever beam as a 3D figure.] ([cvxbook/Ch04_cvx_opt_probs/cantilever_beam_plot.m cantilever_beam_plot.m])]
+--- Utility: [cvxbook/Ch04_cvx_opt_probs/html/cantilever_beam_plot.html Plots a cantilever beam as a 3D figure.] ([cvxbook/Ch04_cvx_opt_probs/cantilever_beam_plot.m cantilever_beam_plot.m])
 -- *Chapter 5: Duality*
 --- [cvxbook/Ch05_duality/html/qcqp.html Section 5.2.4: Solves a simple QCQP] ([cvxbook/Ch05_duality/qcqp.m qcqp.m])
 --- [cvxbook/Ch05_duality/html/matrix_games.html Section 5.2.5: Mixed strategies for matrix games] ([cvxbook/Ch05_duality/matrix_games.m matrix_games.m])
@@ -77,9 +77,9 @@
 --- [cvxbook/Ch07_statistical_estim/html/logistics_gp.html Figure 7.1: Logistic regression (GP version)] ([cvxbook/Ch07_statistical_estim/logistics_gp.m logistics_gp.m])
 --- [cvxbook/Ch07_statistical_estim/html/maxent.html Example 7.2: Maximum entropy distribution] ([cvxbook/Ch07_statistical_estim/maxent.m maxent.m])
 --- [cvxbook/Ch07_statistical_estim/html/detector2.html Example 7.4: Binary hypothesis testing] ([cvxbook/Ch07_statistical_estim/detector2.m detector2.m])
---- Utility: [cvxbook/Ch07_statistical_estim/html/cheb.html Computes Chebyshev lower bounds on probability vectors] ([cvxbook/Ch07_statistical_estim/cheb.m cheb.m])]
---- Utility: [cvxbook/Ch07_statistical_estim/html/cher.html Computes Chernoff upper bounds on probability] ([cvxbook/Ch07_statistical_estim/cher.m cher.m])]
---- Utility: [cvxbook/Ch07_statistical_estim/html/montecarlo.html estimates probability than random vector x in R2] ([cvxbook/Ch07_statistical_estim/montecarlo.m montecarlo.m])]
+--- Utility: [cvxbook/Ch07_statistical_estim/html/cheb.html Computes Chebyshev lower bounds on probability vectors] ([cvxbook/Ch07_statistical_estim/cheb.m cheb.m])
+--- Utility: [cvxbook/Ch07_statistical_estim/html/cher.html Computes Chernoff upper bounds on probability] ([cvxbook/Ch07_statistical_estim/cher.m cher.m])
+--- Utility: [cvxbook/Ch07_statistical_estim/html/montecarlo.html estimates probability than random vector x in R2] ([cvxbook/Ch07_statistical_estim/montecarlo.m montecarlo.m])
 -- *Chapter 8: Geometric problems*
 --- [cvxbook/Ch08_geometric_probs/html/separate_pt_poly.html Section 8.1.1: Separating a point from a polyhedron] ([cvxbook/Ch08_geometric_probs/separate_pt_poly.m separate_pt_poly.m])
 --- [cvxbook/Ch08_geometric_probs/html/separate_poly_2D.html Section 8.2.2: Separating polyhedra in 2D] ([cvxbook/Ch08_geometric_probs/separate_poly_2D.m separate_poly_2D.m])
@@ -111,7 +111,7 @@
 --- [cvxbook/Ch08_geometric_probs/html/quad_discr.html Quadratic discrimination (separating ellipsoid)] ([cvxbook/Ch08_geometric_probs/quad_discr.m quad_discr.m])
 --- [cvxbook/Ch08_geometric_probs/html/separate_ell_2D.html Separating ellipsoids in 2D] ([cvxbook/Ch08_geometric_probs/separate_ell_2D.m separate_ell_2D.m])
 --- [cvxbook/Ch08_geometric_probs/html/floor_plan_graphs.html Solve a floor planning problem given graphs H & V] ([cvxbook/Ch08_geometric_probs/floor_plan_graphs.m floor_plan_graphs.m])
---- Utility: [cvxbook/Ch08_geometric_probs/html/floorplan.html Computes a minimum-perimeter bounding box subject to positioning constraints] ([cvxbook/Ch08_geometric_probs/floorplan.m floorplan.m])]
+--- Utility: [cvxbook/Ch08_geometric_probs/html/floorplan.html Computes a minimum-perimeter bounding box subject to positioning constraints] ([cvxbook/Ch08_geometric_probs/floorplan.m floorplan.m])
 --- Data: [cvxbook/Ch08_geometric_probs/data_floorplan_32.mat data_floorplan_32.mat]
 --- Data: [cvxbook/Ch08_geometric_probs/data_floorplan_60.mat data_floorplan_60.mat]
 -- *Chapter 11: Interior-point methods*
@@ -130,7 +130,7 @@
 -- [filter_design/html/fir_mag_design_lowpass_min_order.html Minimize order of a lowpass FIR filter (magnitude design)] ([filter_design/fir_mag_design_lowpass_min_order.m fir_mag_design_lowpass_min_order.m])
 -- [filter_design/html/fir_lin_phase_lowpass_min_ripple.html Minimize stopband ripple of a linear phase lowpass FIR filter] ([filter_design/fir_lin_phase_lowpass_min_ripple.m fir_lin_phase_lowpass_min_ripple.m])
 -- [filter_design/html/fir_lin_phase_lowpass_min_trans.html Minimize transition bandwidth of a linear phase lowpass FIR filter] ([filter_design/fir_lin_phase_lowpass_min_trans.m fir_lin_phase_lowpass_min_trans.m])
--- Utility: [filter_design/html/spectral_fact.html Spectral factorization using Kolmogorov 1939 approach.] ([filter_design/spectral_fact.m spectral_fact.m])]
+-- Utility: [filter_design/html/spectral_fact.html Spectral factorization using Kolmogorov 1939 approach.] ([filter_design/spectral_fact.m spectral_fact.m])
 - *Examples from [http://stanford.edu/~boyd/papers/gp_tutorial.html A Tutorial on Geometric Programming]*
 -- [gp_tutorial/html/max_volume_box.html Box volume maximization] ([gp_tutorial/max_volume_box.m max_volume_box.m])
 -- [gp_tutorial/html/simple_dig_ckt_sizing.html Digital circuit sizing] ([gp_tutorial/simple_dig_ckt_sizing.m simple_dig_ckt_sizing.m])
@@ -145,13 +145,13 @@
 -- [graph_laplacian/html/larger_example.html FDLA and FMMC solutions for a 50-node, 200-edge graph] ([graph_laplacian/larger_example.m larger_example.m])
 -- [graph_laplacian/html/cut_grid_example.html FDLA and FMMC solutions for a 64-node, 95-edge cut-grid graph] ([graph_laplacian/cut_grid_example.m cut_grid_example.m])
 -- [graph_laplacian/html/small_example.html FDLA and FMMC solutions for an 8-node, 13-edge graph] ([graph_laplacian/small_example.m small_example.m])
--- Utility: [graph_laplacian/html/fmmc.html Computes fastest mixing Markov chain (FMMC) edge weights] ([graph_laplacian/fmmc.m fmmc.m])]
--- Utility: [graph_laplacian/html/mh.html Computes the Metropolis-Hastings heuristic edge weights] ([graph_laplacian/mh.m mh.m])]
--- Utility: [graph_laplacian/html/best_const.html Computes the constant edge weight that yields fastest averaging.] ([graph_laplacian/best_const.m best_const.m])]
--- Utility: [graph_laplacian/html/fdla.html Computes the fastest distributed linear averaging (FDLA) edge weights] ([graph_laplacian/fdla.m fdla.m])]
--- Utility: [graph_laplacian/html/max_deg.html Computes the maximum-degree heuristic edge weights] ([graph_laplacian/max_deg.m max_deg.m])]
--- Utility: [graph_laplacian/html/cut_grid_data.html Generate a cut-grid graph for the ICM 2006 talk example] ([graph_laplacian/cut_grid_data.m cut_grid_data.m])]
--- Utility: [graph_laplacian/html/plotgraph.html Plots a graph with each edge width proportional to its weight.] ([graph_laplacian/plotgraph.m plotgraph.m])]
+-- Utility: [graph_laplacian/html/fmmc.html Computes fastest mixing Markov chain (FMMC) edge weights] ([graph_laplacian/fmmc.m fmmc.m])
+-- Utility: [graph_laplacian/html/mh.html Computes the Metropolis-Hastings heuristic edge weights] ([graph_laplacian/mh.m mh.m])
+-- Utility: [graph_laplacian/html/best_const.html Computes the constant edge weight that yields fastest averaging.] ([graph_laplacian/best_const.m best_const.m])
+-- Utility: [graph_laplacian/html/fdla.html Computes the fastest distributed linear averaging (FDLA) edge weights] ([graph_laplacian/fdla.m fdla.m])
+-- Utility: [graph_laplacian/html/max_deg.html Computes the maximum-degree heuristic edge weights] ([graph_laplacian/max_deg.m max_deg.m])
+-- Utility: [graph_laplacian/html/cut_grid_data.html Generate a cut-grid graph for the ICM 2006 talk example] ([graph_laplacian/cut_grid_data.m cut_grid_data.m])
+-- Utility: [graph_laplacian/html/plotgraph.html Plots a graph with each edge width proportional to its weight.] ([graph_laplacian/plotgraph.m plotgraph.m])
 - *Examples employing logarithms, exponentials, and entropy functions*
 -- [log_exp/html/max_entropy.html Entropy maximization] ([log_exp/max_entropy.m max_entropy.m])
 -- [log_exp/html/sparse_covariance_est.html Sparse covariance estimation for Gaussian variables] ([log_exp/sparse_covariance_est.m sparse_covariance_est.m])

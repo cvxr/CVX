@@ -296,7 +296,7 @@ if fidc >= 0,
             if isempty( temp ),
                 fprintf( fidc, '%s%s[%s%s %s]\n', dots, pref, dpath, name, name );
             else
-                fprintf( fidc, '%s%s[%shtml/%shtml %s] ([%s%s %s])]\n', dots, pref, dpath, name(1:end-1), temp, dpath, name, name );
+                fprintf( fidc, '%s%s[%shtml/%shtml %s] ([%s%s %s])\n', dots, pref, dpath, name(1:end-1), temp, dpath, name, name );
             end
         end
     end
