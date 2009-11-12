@@ -2647,7 +2647,6 @@ with the basic capabilities described above.
 \index{SDPT3}
 \index{SeDuMi}
 \index{cvx_solver@\texttt{cvx\_solver}}
-\index{cvx_solver_exp@\texttt{cvx\_solver\_exp}}
 
 \cvx currently supports two solvers: SeDuMi and SDPT3. With an
 exception discussed below, SeDuMi is used by default.
@@ -2669,22 +2668,6 @@ If you issue this command inside a model, it will change the
 solver being used \emph{only} for that model; the default will
 be preserved. If you issue this command \emph{outside} of a model,
 it will change the solver used for all future models.
-
-One group of problems for which SDPT3 is generally more reliable
-are those for which \cvx employs the successive approximation described in
-Appendix~\ref{sec:succ-approx}: that is, 
-geometric programs and problems involving logarithms, exponentials,
-and entropy functions. This is due to technical issues with our heuristic,
-not due to any problems with SeDuMI. For such problems, SDPT3
-is the default. You can use SeDuMi instead by typing
-\begin{code2}
-	cvx_solver_exp sedumi
-\end{code2}
-at the command line. As with \verb@cvx_solver@, \verb@cvx_solver_exp@
-can be issued within
-a model to select a different solver for that model only; or it can
-be issued outside of a model to change the default for all
-successive approximation models.
 
 Both solvers are being actively maintained by their authors.
 If you are having difficulty with one solver, try the other. If you

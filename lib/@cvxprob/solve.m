@@ -74,11 +74,7 @@ elseif n ~= 0 && ~infeas && ( any( b ) || any( c ) ),
         texp = find( strcmp( { cones.type }, 'exponential' ) );
     end
     need_iter = ~isempty( texp );
-    if need_iter,
-        solv = prob.solver_exp;
-    else
-        solv = prob.solver;
-    end
+    solv = prob.solver;
     lsolv = lower(solv);
     sfunc  = [ 'cvx_solve_', lsolv ];
     cvx_setspath( solv );
@@ -195,8 +191,6 @@ elseif n ~= 0 && ~infeas && ( any( b ) || any( c ) ),
         ncone.indices    = reshape(n_ndxs(1:nQA-2,:),3,(nQA-2)*nc/3);
         ncone(2).type    = 'nonnegative';
         ncone(2).indices = n_ndxs(nQA,:);
-%       ncone(3).type    = 'lorentz';
-%       ncone(3).indices = [ tfree(:) ; new_n ]; 
         cones(texp) = [];
         cones = [ cones, ncone ];
         
@@ -205,24 +199,25 @@ elseif n ~= 0 && ~infeas && ( any( b ) || any( c ) ),
         amult = ones(1,nc);
         epow_i = 1 / epow;
         
-        best_x   = NaN * ones(n,1);
-        best_px  = Inf;
-        best_ox  = Inf;
-        best_py  = Inf;
-        best_oy  = -Inf;
-        best_y   = NaN * ones(m,1);
+        eprec = prec(2) / 10;
+        best_x = NaN * ones(n,1);
+        best_y = NaN * ones(m,1);
+        best_prec = Inf;
         if ~quiet,
-            disp( 'S   Error      #     Status' );
-            disp( '-----------------------------' );
+            disp( '          Errors   ' );
+            disp( 'Act Centering    Conic    Status' );
+            disp( '-----------------------------------' );
         end
         failed = 0;
         stagnant = 0;
         attempts = 0;
         last_err = Inf;
-        last_solved = false;
-        last_combined = 0;
-        is_stagnant = false;
-        for iter = 1 : 25,
+        last_cer = Inf;
+        last_solved = 0;
+        e_stag = false;
+        c_stag = false;
+        max_eiters = 25;
+        for iter = 1 : max_eiters,
             
             % Insert the current centerpoints into the constraints
             x0e = x0 * epow_i;
@@ -232,113 +227,110 @@ elseif n ~= 0 && ~infeas && ( any( b ) || any( c ) ),
             % Solve the approximation
             Anew2 = Anew * diag(sparse(vec(amult(orow,:))));
             [ x, y, status, tprec, iters2, z ] = feval( sfunc, [ At, Anew2 ], [ b ; bnew ], c, cones, true, prec );
-            if isequal(status,'Failed'),
-                tprec = max(tprec,prec(3));
-            elseif strfind(status,'Inaccurate'),
-                tprec = prec(3);
-            else
-                tprec = prec(2);
-            end
             iters = iters + iters2;
             
-            % The dual point should be feasible at all times
-            err = Inf;
-            y_isnan = any(isnan(y));
+            % The dual point should be feasible at all times---but that
+            % doesn't mean it will be in finite precision arithmetic.
+            % Dual cone:   -u.*exp(v/u-1)<=w
+            % Dual approx: -exp(-x0).*u.*(1-(v./u-1+x0)/(p-1)).^(1-p)<=w
             y_valid = false;
-            if ~y_isnan,
-                yold = y(1:m);
+            if any(isnan(y)),
+                acY = true(nc,1);
+                erY = 0;
+                ceY = 0;
+            else
+                y_valid = true;
                 z = z + Anew2 * y(m+1:end);
-                uuu = z( xndxs, : );
+                uuu = min( -realmin, z( xndxs, : ) );
                 vvv = z( yndxs, : );
-                www = z( zndxs, : );
-                y_valid = all( uuu <= 0 & www >= 0 );
-                if y_valid,
-                    uu2 = min( uuu, -realmin );
-                    nx2 = min( max( 1 - vvv ./ uu2, -maxw ), maxw );
-                    nx3 = min( max( - log( www ./ uu2 ), -maxw ), maxw );
-                    y_valid = all( uuu == 0 | nx3 <= nx2 );
-                    if y_valid, 
-                        if any(strfind(status,'Infeasible')), 
-                            dob = +Inf;
-                            err = 0;
-                        else
-                            dob = b' * yold; 
-                        end
-                        if tprec < best_py || ( tprec == best_py && dob > best_oy ),
-                            best_y  = yold;
-                            best_py = tprec;
-                            best_oy = dob;
-                        end
-                    end
-                end
+                www = max( +realmin, z( zndxs, : ) );
+                nyR = max( x0 + 1 - epow, 1 - vvv ./ uuu );
+                nyL = - log( - www ./ uuu );
+                wdY = nyL - nyR;
+                erY = max( 0, wdY );
+                cxY = 0.5 * ( nyR + nyL );
+                ceY = max( 0, abs( x0 - cxY ) - 0.5 * abs( wdY ) );
+                acY = (epow-1)*log(max(realmin,1+(nyR-x0)/(epow-1))) - ( nyL - x0 ) <= 1e-5*max(1,abs(nyL));
             end
             
-            % The primal point is only feasible when we're close enough
-            n_correct = 0;
-            n_centered = 0;
-            x_isnan = any(isnan(x));
+            % In exact arithmetic, the primal point is feasible only if x0
+            % is close enough to the true solution. In finite precision
+            % arithemtic, even this may not be enough.
             x_valid = false;
-            if ~x_isnan,
+            if any(isnan(x)),
+                acX = true(nc,1);
+                erX = 0;
+                ceX = 0;
+            else
+                x_valid = true;
                 xxx = x( xndxs, : );
-                yyy = x( yndxs, : );
-                zzz = x( zndxs, : );
-                x_valid = all( yyy >= 0 & zzz >= 0 );
-                if x_valid,
-                    yy2 = max( yyy, realmin );
-                    nx0 = xxx ./ yy2;
-                    nx1 = log( zzz ./ yy2 );
-                    nxe = max( 0, ( nx0 - nx1 ) .* ( yyy > 0 ) );
-                    txc = nx0 >= x0 & nx1 <= x0 & nxe;
-                    n_correct = nc - nnz( nxe );
-                    n_centered = nnz( txc );
-                    err = max( nxe );
-                    x_valid = true;
-                    if err == 0,
-                        if any(strfind(status,'Unbounded')), 
-                            pob = -Inf;
-                        else
-                            pob = c' * x; 
-                        end
-                        if tprec < best_px || ( tprec == best_px && pob < best_ox ),
-                            best_x  = x(1:n);
-                            best_px = tprec;
-                            best_ox = pob;
-                        end
-                    end
-                end
+                yyy = max( realmin, x( yndxs, : ) );
+                zzz = max( realmin, x( zndxs, : ) );
+                nxL = max( x0 - epow, xxx ./ yyy );
+                nxR = log( zzz ./ yyy );
+                wdX = nxL - nxR;
+                erX = max( 0, wdX );
+                cxX = 0.5 * ( nxL + nxR );
+                ceX = max( 0, abs( x0 - cxX ) - 0.5 * abs( wdX ) );
+                acX = wdX >= -1e-5*max(1,abs(nxR));
             end
             
-            % Determine new centerpoint
-            if x_valid,
-                tt2 = ( nx1 >= x0 ) & nxe;                 % right-shift
-                n_combined = n_correct + n_centered;
-                if y_valid,
-                    is_stagnant = ( is_stagnant || last_solved && n_combined <= last_combined ) && err > 0.9 * last_err;
-                    last_solved = true;
-                else
-                    is_stagnant = false;
-                    last_solved = false;
-                end
-                last_combined = n_combined;
-                last_err = err;
-                amult(txc) = min( amult(txc) * 10, 1e6 );
-                txc = txc | ~nxe;
-                nx0(txc) = 0.5 * ( nx0(txc) + nx1(txc) );
-                nx0(tt2) = nx1(tt2);
-            elseif y_valid,
-                last_solved = false;
-                is_stagnant = false;
-                nx0 = nx2;
+            % If either the primal or the dual constraints are clearly
+            % inacyyytive we should ignore that cone altogether
+            acXY = acX & acY;
+            if ~all(acXY),
+                erX = erX .* acXY; erY = erY .* acXY;
+                ceX = ceX .* acXY; ceY = ceY .* acXY;
             end
+            
+            % Check for stagnation
+            err = max( erX * x_valid + erY * ~x_valid );
+            cer = max( ceY * y_valid + ceY * ~y_valid );
+            solved = x_valid * 2 + y_valid;
+            c_stag = last_solved == solved && cer >= 0.9 * last_cer;
+            e_stag = last_solved == solved && err >= 0.9 * last_err;
             
             % Print status
             if ~quiet,
-                if is_stagnant, stagc = 'S'; else stagc = ' '; end
-                fprintf( 1, '%c %9.3e %3d/%-3d %s\n', stagc, err, n_correct, n_centered, status );
+                if c_stag, stagc = 'S'; else stagc = ' '; end
+                if e_stag, stage = 'S'; else stage = ' '; end
+                fprintf( 1, '%-3d %9.3e%c %9.3e%c %s\n', nnz(acXY), cer, stagc, err, stage, status );
+            end
+            
+            % Solution found or no more iterations
+            % In perfect arithmetic, erY should be all zeros---because the
+            % approximate dual should be feasible in the original, too. But
+            % in imperfect arithmetic, it may not be. So, we're using that
+            % error as a threshold to decide when the *primal* point is
+            % sufficiently accurate, too.
+            if ~x_valid || ~y_valid,
+                found = err <= eprec;
+            else
+                found = all( erX <= max( erY, eprec ) );
+            end
+            if found || iter == max_eiters,
+                if ~found,
+                    if status(1) == 'F',
+                        tprec = Inf;
+                    else
+                        tprec = prec(3);
+                    end
+                end
+                if tprec < best_prec,
+                    best_x = x;
+                    best_y = y;
+                    best_prec = prec;
+                end
+                attempts = attempts + 1;
+                if tprec <= prec(1) || attempts == 2 || ~found, 
+                    break; 
+                end
+            elseif attempts,
+                break;
             end
             
             % Several invalid points in a row?
-            if strcmp( status, 'Failed' ),
+            if status(1) == 'F',
                 failed = failed + 1;
                 if failed == 3, break; end
             else
@@ -346,26 +338,29 @@ elseif n ~= 0 && ~infeas && ( any( b ) || any( c ) ),
             end
             
             % Stagnation?
-            if is_stagnant,
-                stagnant = stagnant + 1;
-                tt = nxe ~= 0;
-                if all( amult(tt) == 1e6 ), break; end
-                amult(tt) = min( amult(tt) * 10, 1e6 ); 
-            end
-            
-            % Solution found
-            if err == 0,
-                attempts = attempts + 1;
-                if max(best_px,best_py) <= prec(1) || attempts == 2, break; end
-            elseif attempts,
-                break;
+            if c_stag || e_stag,
+                if all( amult == 1e5 ), break; end
+                amult = min( amult * 10, 1e5 ); 
+            else
+                boost = erY | ~ceX & erX;
+                amult(boost) = min( amult(boost) * 10, 1e5 );
             end
             
             % Shift centerpoint
-            if x_valid || y_valid,
+            last_solved = x_valid * 2 + y_valid;
+            last_cer = cer;
+            last_err = err;
+            if last_solved,
+                nx0 = x0;
+                if y_valid,
+                    nx0(acXY) = cxY(acXY);
+                else
+                    nx0(acXY) = cxX(acXY);
+                end
                 x0 = min( max( nx0, x0 - epow ), x0 + epow );
                 x0 = min( max( -maxw, x0 ), maxw );
             end
+            
         end
         if isnan( best_x(1) ), 
             status = 'Infeasible';
@@ -374,14 +369,13 @@ elseif n ~= 0 && ~infeas && ( any( b ) || any( c ) ),
         else
             status = 'Solved';
         end
-        tprec = max( best_px, best_py );
-        if tprec > prec(3),
+        if best_prec > prec(3),
             status = 'Failed';
-        elseif tprec > prec(2),
+        elseif best_prec > prec(2),
             status = [ 'Inaccurate/', status ];
         end
-        x = best_x;
-        y = best_y;
+        x = best_x(1:n,:);
+        y = best_y(1:m,:);
         c = c(1:n,:);
     else
         [ x, y, status, tprec, iters ] = feval( sfunc, At, b, c, cones, quiet, prec );
