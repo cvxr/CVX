@@ -1,18 +1,12 @@
 
 <!DOCTYPE html
-  PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN">
-<html xmlns:mwsh="http://www.mathworks.com/namespace/mcode/v1/syntaxhighlight.dtd">
-   <head>
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head>
       <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-   
-      <!--
+   <!--
 This HTML is auto-generated from an M-file.
 To make changes, update the M-file and republish this document.
-      -->
-      <title>Simple power control in communication systems via GP.</title>
-      <meta name="generator" content="MATLAB 7.5">
-      <meta name="date" content="2008-05-23">
-      <meta name="m-file" content="power_control"><style>
+      --><title>Simple power control in communication systems via GP.</title><meta name="generator" content="MATLAB 7.9"><meta name="date" content="2009-11-11"><meta name="m-file" content="power_control___"><style type="text/css">
 
 body {
   background-color: white;
@@ -68,10 +62,7 @@ p.footer {
   color: gray;
 }
 
-  </style></head>
-   <body>
-      <div class="content">
-         <h1>Simple power control in communication systems via GP.</h1><pre class="codeinput"><span class="comment">% Boyd, Kim, Vandenberghe, and Hassibi, "A Tutorial on Geometric Programming"</span>
+  </style></head><body><div class="content"><h1>Simple power control in communication systems via GP.</h1><pre class="codeinput"><span class="comment">% Boyd, Kim, Vandenberghe, and Hassibi, "A Tutorial on Geometric Programming"</span>
 <span class="comment">% Written for CVX by Almir Mutapcic 02/08/06</span>
 <span class="comment">% (a figure is generated)</span>
 <span class="comment">%</span>
@@ -125,20 +116,27 @@ fprintf(1,<span class="string">'\nThe minimum total transmitter power is %3.2f.\
 disp(<span class="string">'Optimal power levels are: '</span>), P
 </pre><pre class="codeoutput"> 
 Successive approximation method to be employed.
-   SDPT3 will be called several times to refine the solution.
-   Original size: 91 variables, 29 equality constraints
-   For improved efficiency, SDPT3 is solving the dual problem.
-   Approximation size: 300 variables, 159 equality constraints
+   For improved efficiency, sedumi is solving the dual problem.
+   sedumi will be called several times to refine the solution.
+   Original size: 88 variables, 26 equality constraints
+   26 exponentials add 208 variables, 130 equality constraints
 -----------------------------------------------------------------
- Target     Conic    Solver
-Precision   Error    Status
----------------------------
-1.221e-04  7.286e-01  Unbounded
-1.221e-04  2.125e-02  Solved
-1.221e-04  4.797e-05  Solved
-1.221e-04  0.000e+00  Solved
-1.490e-08  1.895e-08  Solved
-1.490e-08  0.000e+00  Solved
+S   Error      #     Status
+-----------------------------
+  3.222e-01   5/0   Unbounded
+  1.640e+01   0/0   Solved
+  6.780e-01   0/0   Solved
+  3.804e-02   0/0   Solved
+  3.123e-04   0/0   Solved
+  6.622e-06   0/0   Solved
+  1.782e-07   0/0   Solved
+  6.754e-08   0/0   Solved
+  6.754e-08   0/1   Solved
+  1.550e-08   0/0   Solved
+S 1.440e-08   0/0   Solved
+  3.635e-09   0/0   Solved
+S 3.409e-09   0/0   Solved
+  0.000e+00  26/0   Solved
 -----------------------------------------------------------------
 Status: Solved
 Optimal value (cvx_optval): +17.0014
@@ -155,9 +153,7 @@ P =
     3.0276
 
 </pre><p class="footer"><br>
-            Published with MATLAB&reg; 7.5<br></p>
-      </div>
-      <!--
+      Published with MATLAB&reg; 7.9<br></p></div><!--
 ##### SOURCE BEGIN #####
 %% Simple power control in communication systems via GP.
 
@@ -215,6 +211,4 @@ fprintf(1,'\nThe minimum total transmitter power is %3.2f.\n',cvx_optval);
 disp('Optimal power levels are: '), P
 
 ##### SOURCE END #####
--->
-   </body>
-</html>
+--></body></html>

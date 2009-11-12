@@ -1,18 +1,12 @@
 
 <!DOCTYPE html
-  PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN">
-<html xmlns:mwsh="http://www.mathworks.com/namespace/mcode/v1/syntaxhighlight.dtd">
-   <head>
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head>
       <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-   
-      <!--
+   <!--
 This HTML is auto-generated from an M-file.
 To make changes, update the M-file and republish this document.
-      -->
-      <title>Minimize transition bandwidth of a linear phase lowpass FIR filter</title>
-      <meta name="generator" content="MATLAB 7.5">
-      <meta name="date" content="2008-05-23">
-      <meta name="m-file" content="fir_lin_phase_lowpass_min_trans"><style>
+      --><title>Minimize transition bandwidth of a linear phase lowpass FIR filter</title><meta name="generator" content="MATLAB 7.9"><meta name="date" content="2009-11-11"><meta name="m-file" content="fir_lin_phase_lowpass_min_trans___"><style type="text/css">
 
 body {
   background-color: white;
@@ -68,10 +62,7 @@ p.footer {
   color: gray;
 }
 
-  </style></head>
-   <body>
-      <div class="content">
-         <h1>Minimize transition bandwidth of a linear phase lowpass FIR filter</h1><pre class="codeinput"><span class="comment">% "Filter design" lecture notes (EE364) by S. Boyd</span>
+  </style></head><body><div class="content"><h1>Minimize transition bandwidth of a linear phase lowpass FIR filter</h1><pre class="codeinput"><span class="comment">% "Filter design" lecture notes (EE364) by S. Boyd</span>
 <span class="comment">% (figures are generated)</span>
 <span class="comment">%</span>
 <span class="comment">% Designs a linear phase FIR lowpass filter such that it:</span>
@@ -113,7 +104,6 @@ w = linspace(0,pi,m);
 <span class="comment">%*********************************************************************</span>
 <span class="comment">% use bisection algorithm to solve the problem</span>
 <span class="comment">%*********************************************************************</span>
-cvx_quiet(true);
 
 wstop_bot = wpass;
 wstop_top  = wstop;
@@ -136,7 +126,7 @@ wstop_top  = wstop;
   As  = A(ind,:);
 
   <span class="comment">% formulate and solve the feasibility linear-phase lp filter design</span>
-  cvx_begin
+  cvx_begin <span class="string">quiet</span>
     variable <span class="string">h_cur(n+1,1)</span>;
     <span class="comment">% feasibility problem</span>
     <span class="comment">% passband bounds</span>
@@ -163,7 +153,6 @@ fprintf(1,[<span class="string">'\nOptimum stopband frequency for given specs is
            <span class="string">'and the minimum transition width is %3.4f*pi radians.\n'</span>],<span class="keyword">...</span>
             wstop/pi, (wstop-wpass)/pi);
 
-cvx_quiet(false);
 
 <span class="comment">%********************************************************************</span>
 <span class="comment">% plots</span>
@@ -201,10 +190,8 @@ Problem is not feasible for stopband freq = 0.6929 rads
 
 Optimum stopband frequency for given specs is 0.2208*pi rads
 and the minimum transition width is 0.1008*pi radians.
-</pre><img vspace="5" hspace="5" src="fir_lin_phase_lowpass_min_trans_01.png"> <img vspace="5" hspace="5" src="fir_lin_phase_lowpass_min_trans_02.png"> <p class="footer"><br>
-            Published with MATLAB&reg; 7.5<br></p>
-      </div>
-      <!--
+</pre><img vspace="5" hspace="5" src="fir_lin_phase_lowpass_min_trans____01.png" alt=""> <img vspace="5" hspace="5" src="fir_lin_phase_lowpass_min_trans____02.png" alt=""> <p class="footer"><br>
+      Published with MATLAB&reg; 7.9<br></p></div><!--
 ##### SOURCE BEGIN #####
 %% Minimize transition bandwidth of a linear phase lowpass FIR filter
 
@@ -250,7 +237,6 @@ w = linspace(0,pi,m);
 %*********************************************************************
 % use bisection algorithm to solve the problem
 %*********************************************************************
-cvx_quiet(true);
 
 wstop_bot = wpass;
 wstop_top  = wstop;
@@ -273,7 +259,7 @@ while( wstop_top - wstop_bot > TOL)
   As  = A(ind,:);
 
   % formulate and solve the feasibility linear-phase lp filter design
-  cvx_begin
+  cvx_begin quiet
     variable h_cur(n+1,1);
     % feasibility problem
     % passband bounds
@@ -300,7 +286,6 @@ fprintf(1,['\nOptimum stopband frequency for given specs is %3.4f*pi rads\n' ...
            'and the minimum transition width is %3.4f*pi radians.\n'],...
             wstop/pi, (wstop-wpass)/pi);
 
-cvx_quiet(false);
 
 %********************************************************************
 % plots
@@ -328,6 +313,4 @@ axis([0,pi,-pi,pi])
 xlabel('w'), ylabel('phase H(w)')
 
 ##### SOURCE END #####
--->
-   </body>
-</html>
+--></body></html>

@@ -1,18 +1,12 @@
 
 <!DOCTYPE html
-  PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN">
-<html xmlns:mwsh="http://www.mathworks.com/namespace/mcode/v1/syntaxhighlight.dtd">
-   <head>
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head>
       <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-   
-      <!--
+   <!--
 This HTML is auto-generated from an M-file.
 To make changes, update the M-file and republish this document.
-      -->
-      <title>Section 5.2.5: Mixed strategies for matrix games (LP formulation)</title>
-      <meta name="generator" content="MATLAB 7.5">
-      <meta name="date" content="2008-05-23">
-      <meta name="m-file" content="matrix_games_LP"><style>
+      --><title>Section 5.2.5: Mixed strategies for matrix games (LP formulation)</title><meta name="generator" content="MATLAB 7.9"><meta name="date" content="2009-11-11"><meta name="m-file" content="matrix_games_LP___"><style type="text/css">
 
 body {
   background-color: white;
@@ -68,10 +62,7 @@ p.footer {
   color: gray;
 }
 
-  </style></head>
-   <body>
-      <div class="content">
-         <h1>Section 5.2.5: Mixed strategies for matrix games (LP formulation)</h1><pre class="codeinput"><span class="comment">% Boyd &amp; Vandenberghe, "Convex Optimization"</span>
+  </style></head><body><div class="content"><h1>Section 5.2.5: Mixed strategies for matrix games (LP formulation)</h1><pre class="codeinput"><span class="comment">% Boyd &amp; Vandenberghe, "Convex Optimization"</span>
 <span class="comment">% Jo&euml;lle Skaf - 08/24/05</span>
 <span class="comment">%</span>
 <span class="comment">% Player 1 wishes to choose u to minimize his expected payoff u'Pv, while</span>
@@ -123,103 +114,64 @@ disp(<span class="string">'The expected payoffs for player 1 and player 2 respec
 [t1 t2]
 disp(<span class="string">'They are equal as expected!'</span>);
 </pre><pre class="codeoutput">Computing the optimal strategy for player 1 ...  
-Calling SDPT3: 25 variables, 13 equality constraints
+Calling sedumi: 25 variables, 13 equality constraints
+   For improved efficiency, sedumi is solving the dual problem.
 ------------------------------------------------------------
+SeDuMi 1.21 by AdvOL, 2005-2008 and Jos F. Sturm, 1998-2003.
+Alg = 2: xz-corrector, Adaptive Step-Differentiation, theta = 0.250, beta = 0.500
+eqs m = 13, order n = 27, dim = 27, blocks = 2
+nnz(A) = 180 + 0, nnz(ADA) = 169, nnz(L) = 91
+ it :     b*y       gap    delta  rate   t/tP*  t/tD*   feas cg cg  prec
+  0 :            8.24E+00 0.000
+  1 :  -3.40E-01 3.71E+00 0.000 0.4499 0.9000 0.9000   2.34  1  1  6.9E+00
+  2 :   1.50E-02 1.60E+00 0.000 0.4309 0.9000 0.9000   4.69  1  1  1.0E+00
+  3 :   3.90E-02 4.27E-01 0.000 0.2673 0.9000 0.9000   1.49  1  1  2.2E-01
+  4 :   4.34E-02 8.53E-02 0.000 0.1997 0.9000 0.9000   1.12  1  1  4.3E-02
+  5 :   4.47E-02 6.94E-03 0.000 0.0814 0.9900 0.9900   1.03  1  1  3.7E-03
+  6 :   4.48E-02 5.72E-05 0.000 0.0082 0.9990 0.9804   1.01  1  1  4.5E-05
+  7 :   4.48E-02 1.45E-11 0.000 0.0000 1.0000 1.0000   1.00  1  1  2.2E-11
 
- num. of constraints = 13
- dim. of linear var  = 24
- dim. of free   var  =  1 *** convert ublk to lblk
-*******************************************************************
-   SDPT3: Infeasible path-following algorithms
-*******************************************************************
- version  predcorr  gam  expon  scale_data
-    NT      1      0.000   1        0    
-it pstep dstep pinfeas dinfeas  gap      mean(obj)   cputime
--------------------------------------------------------------------
- 0|0.000|0.000|3.6e+01|1.0e+01|6.0e+02| 1.437979e-10| 0:0:00| chol  1  1 
- 1|0.917|0.853|3.0e+00|1.6e+00|8.6e+01| 5.803096e-02| 0:0:00| chol  1  1 
- 2|1.000|0.986|8.8e-07|3.3e-02|8.7e+00| 2.061331e-01| 0:0:00| chol  1  1 
- 3|1.000|0.935|1.7e-06|3.1e-03|2.4e+00|-1.806437e-01| 0:0:00| chol  1  1 
- 4|0.870|0.665|4.1e-06|1.1e-03|6.9e-01|-2.077128e-01| 0:0:00| chol  1  1 
- 5|1.000|0.088|1.9e-06|1.0e-03|6.3e-01|-2.050085e-01| 0:0:00| chol  1  1 
- 6|1.000|0.554|6.9e-07|4.6e-04|3.5e-01|-1.112454e-01| 0:0:00| chol  1  1 
- 7|0.985|0.650|3.2e-07|1.6e-04|1.1e-01|-7.743436e-02| 0:0:00| chol  1  1 
- 8|0.924|0.351|7.4e-08|1.1e-04|6.6e-02|-7.001485e-02| 0:0:00| chol  1  1 
- 9|1.000|0.428|3.1e-08|6.0e-05|3.7e-02|-5.993379e-02| 0:0:00| chol  1  1 
-10|1.000|0.497|5.8e-09|3.0e-05|1.9e-02|-5.270502e-02| 0:0:00| chol  1  1 
-11|1.000|0.414|1.5e-09|1.8e-05|1.1e-02|-4.968381e-02| 0:0:00| chol  1  1 
-12|0.983|0.858|4.5e-10|2.5e-06|1.5e-03|-4.555801e-02| 0:0:00| chol  1  1 
-13|0.988|0.985|2.5e-11|1.7e-05|2.5e-05|-4.485120e-02| 0:0:00| chol  1  1 
-14|1.000|0.989|3.4e-14|2.8e-07|5.3e-07|-4.484054e-02| 0:0:00| chol  1  1 
-15|1.000|0.989|1.1e-14|5.9e-09|9.8e-09|-4.484042e-02| 0:0:00|
-  stop: max(relative gap, infeasibilities) &lt; 1.49e-08
--------------------------------------------------------------------
- number of iterations   = 15
- primal objective value = -4.48404196e-02
- dual   objective value = -4.48404289e-02
- gap := trace(XZ)       = 9.85e-09
- relative gap           = 9.04e-09
- actual relative gap    = 8.60e-09
- rel. primal infeas     = 1.14e-14
- rel. dual   infeas     = 5.92e-09
- norm(X), norm(y), norm(Z) = 9.7e-01, 4.0e-01, 7.4e-01
- norm(A), norm(b), norm(C) = 1.4e+01, 2.0e+00, 2.4e+00
- Total CPU time (secs)  = 0.3  
- CPU time per iteration = 0.0  
- termination code       =  0
- DIMACS: 1.1e-14  0.0e+00  7.1e-09  0.0e+00  8.6e-09  9.0e-09
--------------------------------------------------------------------
+iter seconds digits       c*x               b*y
+  7      0.0  10.0  4.4840422224e-02  4.4840422219e-02
+|Ax-b| =   3.6e-12, [Ay-c]_+ =   1.8E-12, |x|=  8.5e-01, |y|=  4.4e-01
+
+Detailed timing (sec)
+   Pre          IPM          Post
+1.000E-02    3.000E-02    0.000E+00    
+Max-norms: ||b||=1, ||c|| = 1,
+Cholesky |add|=0, |skip| = 0, ||L.L|| = 3.43441.
 ------------------------------------------------------------
 Status: Solved
 Optimal value (cvx_optval): -0.0448404
 Done! 
 Computing the optimal strategy for player 2 ...  
-Calling SDPT3: 25 variables, 13 equality constraints
+Calling sedumi: 25 variables, 13 equality constraints
+   For improved efficiency, sedumi is solving the dual problem.
 ------------------------------------------------------------
+SeDuMi 1.21 by AdvOL, 2005-2008 and Jos F. Sturm, 1998-2003.
+Alg = 2: xz-corrector, Adaptive Step-Differentiation, theta = 0.250, beta = 0.500
+eqs m = 13, order n = 27, dim = 27, blocks = 2
+nnz(A) = 180 + 0, nnz(ADA) = 169, nnz(L) = 91
+ it :     b*y       gap    delta  rate   t/tP*  t/tD*   feas cg cg  prec
+  0 :            8.24E+00 0.000
+  1 :  -3.55E-01 3.64E+00 0.000 0.4423 0.9000 0.9000   2.39  1  1  6.7E+00
+  2 :  -4.06E-02 1.65E+00 0.000 0.4525 0.9000 0.9000   4.70  1  1  1.1E+00
+  3 :  -4.47E-02 4.55E-01 0.000 0.2760 0.9000 0.9000   1.52  1  1  2.4E-01
+  4 :  -4.51E-02 8.72E-02 0.000 0.1916 0.9000 0.9000   1.13  1  1  4.4E-02
+  5 :  -4.49E-02 1.66E-02 0.000 0.1900 0.9000 0.9000   1.03  1  1  8.5E-03
+  6 :  -4.49E-02 6.66E-04 0.000 0.0402 0.9900 0.8430   1.01  1  1  5.0E-04
+  7 :  -4.48E-02 1.32E-08 0.000 0.0000 1.0000 1.0000   1.00  1  1  1.6E-08
+  8 :  -4.48E-02 3.35E-15 0.000 0.0000 1.0000 1.0000   1.00  1  1  5.7E-15
 
- num. of constraints = 13
- dim. of linear var  = 24
- dim. of free   var  =  1 *** convert ublk to lblk
-*******************************************************************
-   SDPT3: Infeasible path-following algorithms
-*******************************************************************
- version  predcorr  gam  expon  scale_data
-    NT      1      0.000   1        0    
-it pstep dstep pinfeas dinfeas  gap      mean(obj)   cputime
--------------------------------------------------------------------
- 0|0.000|0.000|3.8e+01|1.0e+01|6.0e+02|-1.437979e-10| 0:0:00| chol  1  1 
- 1|0.915|0.847|3.2e+00|1.6e+00|8.8e+01| 1.352019e-01| 0:0:00| chol  1  1 
- 2|1.000|0.986|9.2e-07|3.3e-02|8.8e+00| 2.751661e-01| 0:0:00| chol  1  1 
- 3|1.000|0.899|1.7e-06|4.2e-03|2.5e+00|-1.502898e-01| 0:0:00| chol  1  1 
- 4|0.887|0.352|4.3e-06|2.8e-03|1.3e+00|-2.907480e-01| 0:0:00| chol  1  1 
- 5|1.000|0.227|4.4e-06|2.2e-03|1.1e+00|-2.153276e-01| 0:0:00| chol  1  1 
- 6|1.000|0.596|1.5e-06|8.7e-04|4.1e-01|-9.555833e-02| 0:0:00| chol  1  1 
- 7|1.000|0.277|2.2e-07|6.3e-04|3.1e-01|-5.906355e-02| 0:0:00| chol  1  1 
- 8|1.000|0.371|1.2e-07|4.0e-04|2.0e-01|-2.566743e-02| 0:0:00| chol  1  1 
- 9|1.000|0.499|3.8e-08|2.0e-04|9.9e-02| 5.671373e-03| 0:0:00| chol  1  1 
-10|1.000|0.661|7.0e-09|6.7e-05|3.2e-02| 3.014456e-02| 0:0:00| chol  1  1 
-11|1.000|0.811|6.9e-10|1.3e-05|6.0e-03| 4.196714e-02| 0:0:00| chol  1  1 
-12|0.989|0.970|6.0e-11|3.8e-07|1.8e-04| 4.475275e-02| 0:0:00| chol  1  1 
-13|0.989|0.988|3.6e-12|2.0e-06|2.3e-06| 4.483941e-02| 0:0:00| chol  1  1 
-14|1.000|0.989|1.9e-14|2.5e-08|4.7e-08| 4.484041e-02| 0:0:00| chol  1  1 
-15|1.000|0.989|5.6e-16|5.3e-10|8.9e-10| 4.484042e-02| 0:0:00|
-  stop: max(relative gap, infeasibilities) &lt; 1.49e-08
--------------------------------------------------------------------
- number of iterations   = 15
- primal objective value =  4.48404225e-02
- dual   objective value =  4.48404216e-02
- gap := trace(XZ)       = 8.93e-10
- relative gap           = 8.20e-10
- actual relative gap    = 7.80e-10
- rel. primal infeas     = 5.65e-16
- rel. dual   infeas     = 5.35e-10
- norm(X), norm(y), norm(Z) = 7.4e-01, 4.4e-01, 9.7e-01
- norm(A), norm(b), norm(C) = 1.4e+01, 2.0e+00, 2.4e+00
- Total CPU time (secs)  = 0.2  
- CPU time per iteration = 0.0  
- termination code       =  0
- DIMACS: 5.6e-16  0.0e+00  6.5e-10  0.0e+00  7.8e-10  8.2e-10
--------------------------------------------------------------------
+iter seconds digits       c*x               b*y
+  8      0.0  13.7 -4.4840422221e-02 -4.4840422221e-02
+|Ax-b| =   4.0e-15, [Ay-c]_+ =   8.6E-16, |x|=  1.1e+00, |y|=  4.0e-01
+
+Detailed timing (sec)
+   Pre          IPM          Post
+0.000E+00    4.000E-02    0.000E+00    
+Max-norms: ||b||=1, ||c|| = 1,
+Cholesky |add|=0, |skip| = 0, ||L.L|| = 1.69978.
 ------------------------------------------------------------
 Status: Solved
 Optimal value (cvx_optval): -0.0448404
@@ -228,15 +180,15 @@ Done!
 The optimal strategies for players 1 and 2 are respectively: 
     0.2695    0.0686
     0.0000    0.1619
-    0.0973    0.0000
+    0.0973   -0.0000
     0.1573    0.2000
-    0.1145    0.0000
+    0.1145   -0.0000
     0.0434    0.1545
     0.0000    0.1146
     0.0000    0.0000
     0.2511    0.1030
-    0.0670    0.0000
-    0.0000    0.0000
+    0.0670   -0.0000
+   -0.0000   -0.0000
     0.0000    0.1974
 
 The expected payoffs for player 1 and player 2 respectively are: 
@@ -247,9 +199,7 @@ ans =
 
 They are equal as expected!
 </pre><p class="footer"><br>
-            Published with MATLAB&reg; 7.5<br></p>
-      </div>
-      <!--
+      Published with MATLAB&reg; 7.9<br></p></div><!--
 ##### SOURCE BEGIN #####
 %% Section 5.2.5: Mixed strategies for matrix games (LP formulation)
 
@@ -307,6 +257,4 @@ disp('They are equal as expected!');
 
 
 ##### SOURCE END #####
--->
-   </body>
-</html>
+--></body></html>

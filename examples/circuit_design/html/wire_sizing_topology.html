@@ -1,18 +1,12 @@
 
 <!DOCTYPE html
-  PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN">
-<html xmlns:mwsh="http://www.mathworks.com/namespace/mcode/v1/syntaxhighlight.dtd">
-   <head>
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head>
       <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-   
-      <!--
+   <!--
 This HTML is auto-generated from an M-file.
 To make changes, update the M-file and republish this document.
-      -->
-      <title>Wire sizing and topology design</title>
-      <meta name="generator" content="MATLAB 7.5">
-      <meta name="date" content="2008-05-23">
-      <meta name="m-file" content="wire_sizing_topology"><style>
+      --><title>Wire sizing and topology design</title><meta name="generator" content="MATLAB 7.9"><meta name="date" content="2009-11-11"><meta name="m-file" content="wire_sizing_topology___"><style type="text/css">
 
 body {
   background-color: white;
@@ -68,10 +62,7 @@ p.footer {
   color: gray;
 }
 
-  </style></head>
-   <body>
-      <div class="content">
-         <h1>Wire sizing and topology design</h1><pre class="codeinput"><span class="comment">% Section 5.3,  L. Vandenberghe, S. Boyd, and A. El Gamal</span>
+  </style></head><body><div class="content"><h1>Wire sizing and topology design</h1><pre class="codeinput"><span class="comment">% Section 5.3,  L. Vandenberghe, S. Boyd, and A. El Gamal</span>
 <span class="comment">% "Optimizing dominant time constant in RC circuits"</span>
 <span class="comment">% Original by Lieven Vandenberghe</span>
 <span class="comment">% Adapted for CVX by Joelle Skaf - 11/25/05</span>
@@ -85,8 +76,6 @@ p.footer {
 <span class="comment">%                   s.t.        0 &lt;= xi &lt;= wmax</span>
 <span class="comment">%                               Tmax*G(x) - C(x) &gt;= 0</span>
 <span class="comment">% Please refer to the paper (section 2) to find what G(x) and C(x) are.</span>
-
-cvxq = cvx_quiet( true );
 
 <span class="comment">%</span>
 <span class="comment">% Circuit parameters</span>
@@ -183,7 +172,7 @@ sizes   = zeros(6,xnpts);
     <span class="comment">% Construct and solve the convex model</span>
     <span class="comment">%</span>
 
-    cvx_begin <span class="string">sdp</span>
+    cvx_begin <span class="string">sdp</span> <span class="string">quiet</span>
         variable <span class="string">x(6)</span>
         variable <span class="string">G(n,n)</span> <span class="string">symmetric</span>
         variable <span class="string">C(n,n)</span> <span class="string">symmetric</span>
@@ -233,7 +222,7 @@ sizes   = zeros(6,xnpts);
 <span class="comment">%</span>
 
 figure(1)
-ind = finite(areas);
+ind = isfinite(areas);
 plot(areas(ind), delays(ind));
 xlabel(<span class="string">'Area'</span>);
 ylabel(<span class="string">'Tdom'</span>);
@@ -249,8 +238,6 @@ hold <span class="string">on</span>
 
 disp([<span class="string">'Three specific solutions:'</span>]);
 sizes
-
-cvx_quiet( cvxq );
 </pre><pre class="codeoutput">Point 1 of 50 on the tradeoff curve (Tmax = 180)
 Point 2 of 50 on the tradeoff curve (Tmax = 192.653)
 Point 3 of 50 on the tradeoff curve (Tmax = 205.306)
@@ -310,15 +297,13 @@ sizes =
 
     0.0000    0.0000    0.0000
     0.0000    0.0000    0.0000
-    0.0000    0.0381    0.0273
+   -0.0000    0.0381    0.0273
     0.2303    0.0369    0.0000
-    0.0000    0.0000    0.0000
+    0.0000   -0.0000    0.0000
     0.2156    0.0361    0.0000
 
-</pre><img vspace="5" hspace="5" src="wire_sizing_topology_01.png"> <img vspace="5" hspace="5" src="wire_sizing_topology_02.png"> <img vspace="5" hspace="5" src="wire_sizing_topology_03.png"> <img vspace="5" hspace="5" src="wire_sizing_topology_04.png"> <p class="footer"><br>
-            Published with MATLAB&reg; 7.5<br></p>
-      </div>
-      <!--
+</pre><img vspace="5" hspace="5" src="wire_sizing_topology____01.png" alt=""> <img vspace="5" hspace="5" src="wire_sizing_topology____02.png" alt=""> <img vspace="5" hspace="5" src="wire_sizing_topology____03.png" alt=""> <img vspace="5" hspace="5" src="wire_sizing_topology____04.png" alt=""> <p class="footer"><br>
+      Published with MATLAB&reg; 7.9<br></p></div><!--
 ##### SOURCE BEGIN #####
 %% Wire sizing and topology design
 
@@ -336,8 +321,6 @@ sizes =
 %                   s.t.        0 <= xi <= wmax
 %                               Tmax*G(x) - C(x) >= 0
 % Please refer to the paper (section 2) to find what G(x) and C(x) are.
-
-cvxq = cvx_quiet( true );
 
 %
 % Circuit parameters
@@ -434,7 +417,7 @@ for i = 1 : npts  + xnpts,
     % Construct and solve the convex model
     %
 
-    cvx_begin sdp
+    cvx_begin sdp quiet
         variable x(6)
         variable G(n,n) symmetric
         variable C(n,n) symmetric
@@ -484,7 +467,7 @@ end
 %
 
 figure(1)
-ind = finite(areas);
+ind = isfinite(areas);
 plot(areas(ind), delays(ind));
 xlabel('Area');
 ylabel('Tdom');
@@ -501,8 +484,6 @@ end
 disp(['Three specific solutions:']);
 sizes
 
-cvx_quiet( cvxq );
+
 ##### SOURCE END #####
--->
-   </body>
-</html>
+--></body></html>

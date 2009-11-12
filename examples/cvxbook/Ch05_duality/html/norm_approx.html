@@ -1,18 +1,12 @@
 
 <!DOCTYPE html
-  PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN">
-<html xmlns:mwsh="http://www.mathworks.com/namespace/mcode/v1/syntaxhighlight.dtd">
-   <head>
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head>
       <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-   
-      <!--
+   <!--
 This HTML is auto-generated from an M-file.
 To make changes, update the M-file and republish this document.
-      -->
-      <title>Examples 5.6,5.8: An l_p norm approximation problem</title>
-      <meta name="generator" content="MATLAB 7.5">
-      <meta name="date" content="2008-05-23">
-      <meta name="m-file" content="norm_approx"><style>
+      --><title>Examples 5.6,5.8: An l_p norm approximation problem</title><meta name="generator" content="MATLAB 7.9"><meta name="date" content="2009-11-11"><meta name="m-file" content="norm_approx___"><style type="text/css">
 
 body {
   background-color: white;
@@ -68,10 +62,7 @@ p.footer {
   color: gray;
 }
 
-  </style></head>
-   <body>
-      <div class="content">
-         <h1>Examples 5.6,5.8: An l_p norm approximation problem</h1><pre class="codeinput"><span class="comment">% Boyd &amp; Vandenberghe "Convex Optimization"</span>
+  </style></head><body><div class="content"><h1>Examples 5.6,5.8: An l_p norm approximation problem</h1><pre class="codeinput"><span class="comment">% Boyd &amp; Vandenberghe "Convex Optimization"</span>
 <span class="comment">% Jo&euml;lle Skaf - 08/23/05</span>
 <span class="comment">%</span>
 <span class="comment">% The goal is to show the following problem formulations give all the same</span>
@@ -87,7 +78,6 @@ p.footer {
 <span class="comment">%               s.t.    A'v = 0</span>
 <span class="comment">% where ||.||* denotes the dual norm of ||.||</span>
 
-cvx_quiet(true);
 <span class="comment">% Input data</span>
 randn(<span class="string">'state'</span>,0);
 n = 4;
@@ -100,7 +90,7 @@ q = p/(p-1);
 <span class="comment">% Original problem</span>
 fprintf(1,<span class="string">'Computing the optimal solution of problem 1... '</span>);
 
-cvx_begin
+cvx_begin <span class="string">quiet</span>
     variable <span class="string">x(n)</span>
     minimize ( norm ( A*x - b , p) )
 cvx_end
@@ -111,7 +101,7 @@ opt1 = cvx_optval;
 <span class="comment">% Reformulation 1</span>
 fprintf(1,<span class="string">'Computing the optimal solution of problem 2... '</span>);
 
-cvx_begin
+cvx_begin <span class="string">quiet</span>
     variables <span class="string">x(n)</span> <span class="string">y(m)</span>
     minimize ( norm ( y , p ) )
     A*x - b == y;
@@ -123,7 +113,7 @@ opt2 = cvx_optval;
 <span class="comment">% Dual of reformulation 1</span>
 fprintf(1,<span class="string">'Computing the optimal solution of problem 3... '</span>);
 
-cvx_begin
+cvx_begin <span class="string">quiet</span>
     variable <span class="string">nu(m)</span>
     maximize ( b'*nu )
     norm( nu , q ) &lt;= 1;
@@ -136,7 +126,7 @@ opt3 = cvx_optval;
 <span class="comment">% Reformulation 2</span>
 fprintf(1,<span class="string">'Computing the optimal solution of problem 4... '</span>);
 
-cvx_begin
+cvx_begin <span class="string">quiet</span>
     variables <span class="string">x(n)</span> <span class="string">y(m)</span>
     minimize ( 0.5 * square_pos ( norm ( y , p ) ) )
     A*x - b == y;
@@ -148,7 +138,7 @@ opt4 = (2*cvx_optval).^(.5);
 <span class="comment">% Dual of reformulation 2</span>
 fprintf(1,<span class="string">'Computing the optimal solution of problem 5... '</span>);
 
-cvx_begin
+cvx_begin <span class="string">quiet</span>
     variable <span class="string">nu(m)</span>
     maximize ( -0.5 * square_pos ( norm ( nu , q ) ) + b'*nu )
     A'*nu == 0;
@@ -180,9 +170,7 @@ ans =
 
 They are equal as expected!
 </pre><p class="footer"><br>
-            Published with MATLAB&reg; 7.5<br></p>
-      </div>
-      <!--
+      Published with MATLAB&reg; 7.9<br></p></div><!--
 ##### SOURCE BEGIN #####
 %% Examples 5.6,5.8: An l_p norm approximation problem
 
@@ -202,7 +190,6 @@ They are equal as expected!
 %               s.t.    A'v = 0
 % where ||.||* denotes the dual norm of ||.||
 
-cvx_quiet(true);
 % Input data
 randn('state',0);
 n = 4;
@@ -215,7 +202,7 @@ q = p/(p-1);
 % Original problem
 fprintf(1,'Computing the optimal solution of problem 1... ');
 
-cvx_begin
+cvx_begin quiet
     variable x(n)
     minimize ( norm ( A*x - b , p) )
 cvx_end
@@ -226,7 +213,7 @@ opt1 = cvx_optval;
 % Reformulation 1
 fprintf(1,'Computing the optimal solution of problem 2... ');
 
-cvx_begin
+cvx_begin quiet
     variables x(n) y(m)
     minimize ( norm ( y , p ) )
     A*x - b == y;
@@ -238,7 +225,7 @@ opt2 = cvx_optval;
 % Dual of reformulation 1
 fprintf(1,'Computing the optimal solution of problem 3... ');
 
-cvx_begin
+cvx_begin quiet
     variable nu(m)
     maximize ( b'*nu )
     norm( nu , q ) <= 1;
@@ -251,7 +238,7 @@ opt3 = cvx_optval;
 % Reformulation 2
 fprintf(1,'Computing the optimal solution of problem 4... ');
 
-cvx_begin
+cvx_begin quiet
     variables x(n) y(m)
     minimize ( 0.5 * square_pos ( norm ( y , p ) ) )
     A*x - b == y;
@@ -263,7 +250,7 @@ opt4 = (2*cvx_optval).^(.5);
 % Dual of reformulation 2
 fprintf(1,'Computing the optimal solution of problem 5... ');
 
-cvx_begin
+cvx_begin quiet
     variable nu(m)
     maximize ( -0.5 * square_pos ( norm ( nu , q ) ) + b'*nu )
     A'*nu == 0;
@@ -279,6 +266,4 @@ disp('The optimal residual values for problems 1,2,3,4 and 5 are respectively:')
 disp('They are equal as expected!');
 
 ##### SOURCE END #####
--->
-   </body>
-</html>
+--></body></html>

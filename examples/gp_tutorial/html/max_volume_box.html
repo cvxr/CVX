@@ -1,18 +1,12 @@
 
 <!DOCTYPE html
-  PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN">
-<html xmlns:mwsh="http://www.mathworks.com/namespace/mcode/v1/syntaxhighlight.dtd">
-   <head>
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head>
       <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-   
-      <!--
+   <!--
 This HTML is auto-generated from an M-file.
 To make changes, update the M-file and republish this document.
-      -->
-      <title>Box volume maximization</title>
-      <meta name="generator" content="MATLAB 7.5">
-      <meta name="date" content="2008-05-23">
-      <meta name="m-file" content="max_volume_box"><style>
+      --><title>Box volume maximization</title><meta name="generator" content="MATLAB 7.9"><meta name="date" content="2009-11-11"><meta name="m-file" content="max_volume_box___"><style type="text/css">
 
 body {
   background-color: white;
@@ -68,10 +62,7 @@ p.footer {
   color: gray;
 }
 
-  </style></head>
-   <body>
-      <div class="content">
-         <h1>Box volume maximization</h1><pre class="codeinput"><span class="comment">% Boyd, Kim, Vandenberghe, and Hassibi, "A Tutorial on Geometric Programming"</span>
+  </style></head><body><div class="content"><h1>Box volume maximization</h1><pre class="codeinput"><span class="comment">% Boyd, Kim, Vandenberghe, and Hassibi, "A Tutorial on Geometric Programming"</span>
 <span class="comment">% Written for CVX by Almir Mutapcic 02/08/06</span>
 <span class="comment">% (a figure is generated)</span>
 <span class="comment">%</span>
@@ -103,8 +94,7 @@ disp(<span class="string">'Computing optimal box volume for:'</span>)
   <span class="keyword">for</span> n = 1:N
     <span class="comment">% resolve the problem with varying parameters</span>
     Afloor_n = Afloor(n);
-    cvx_begin <span class="string">gp</span>
-      cvx_quiet <span class="string">true</span>
+    cvx_begin <span class="string">gp</span> <span class="string">quiet</span>
       variables <span class="string">h</span> <span class="string">w</span> <span class="string">d</span>
       <span class="comment">% objective function is the box volume</span>
       maximize( h*w*d )
@@ -138,30 +128,28 @@ xlabel(<span class="string">'Afloor'</span>); ylabel(<span class="string">'V'</s
   Awall =   100   Afloor =  359.38   max_volume = 192.45
   Awall =   100   Afloor =  599.48   max_volume = 192.45
   Awall =   100   Afloor = 1000.00   max_volume = 192.45
-  Awall =  1000   Afloor =   10.00   max_volume = 89.44
-  Awall =  1000   Afloor =   16.68   max_volume = 192.70
+  Awall =  1000   Afloor =   10.00   max_volume = NaN
+  Awall =  1000   Afloor =   16.68   max_volume = NaN
   Awall =  1000   Afloor =   27.83   max_volume = 415.16
-  Awall =  1000   Afloor =   46.42   max_volume = 894.43
-  Awall =  1000   Afloor =   77.43   max_volume = 1926.98
+  Awall =  1000   Afloor =   46.42   max_volume = NaN
+  Awall =  1000   Afloor =   77.43   max_volume = NaN
   Awall =  1000   Afloor =  129.15   max_volume = 2841.16
   Awall =  1000   Afloor =  215.44   max_volume = 3669.50
   Awall =  1000   Afloor =  359.38   max_volume = 4739.34
   Awall =  1000   Afloor =  599.48   max_volume = 5998.71
   Awall =  1000   Afloor = 1000.00   max_volume = 6085.81
-  Awall = 10000   Afloor =   10.00   max_volume = 89.44
-  Awall = 10000   Afloor =   16.68   max_volume = 192.70
-  Awall = 10000   Afloor =   27.83   max_volume = 415.16
-  Awall = 10000   Afloor =   46.42   max_volume = 894.43
-  Awall = 10000   Afloor =   77.43   max_volume = 1926.98
-  Awall = 10000   Afloor =  129.15   max_volume = 4151.56
+  Awall = 10000   Afloor =   10.00   max_volume = NaN
+  Awall = 10000   Afloor =   16.68   max_volume = NaN
+  Awall = 10000   Afloor =   27.83   max_volume = NaN
+  Awall = 10000   Afloor =   46.42   max_volume = NaN
+  Awall = 10000   Afloor =   77.43   max_volume = NaN
+  Awall = 10000   Afloor =  129.15   max_volume = NaN
   Awall = 10000   Afloor =  215.44   max_volume = 8944.27
   Awall = 10000   Afloor =  359.38   max_volume = 19269.85
-  Awall = 10000   Afloor =  599.48   max_volume = 41515.63
-  Awall = 10000   Afloor = 1000.00   max_volume = 77459.65
-</pre><img vspace="5" hspace="5" src="max_volume_box_01.png"> <p class="footer"><br>
-            Published with MATLAB&reg; 7.5<br></p>
-      </div>
-      <!--
+  Awall = 10000   Afloor =  599.48   max_volume = NaN
+  Awall = 10000   Afloor = 1000.00   max_volume = 77459.68
+</pre><img vspace="5" hspace="5" src="max_volume_box____01.png" alt=""> <p class="footer"><br>
+      Published with MATLAB&reg; 7.9<br></p></div><!--
 ##### SOURCE BEGIN #####
 %% Box volume maximization
 
@@ -197,8 +185,7 @@ for k = 1:length(Awall)
   for n = 1:N
     % resolve the problem with varying parameters
     Afloor_n = Afloor(n);
-    cvx_begin gp
-      cvx_quiet true
+    cvx_begin gp quiet
       variables h w d
       % objective function is the box volume
       maximize( h*w*d )
@@ -223,6 +210,4 @@ loglog(Afloor,opt_volumes(1,:), Afloor,opt_volumes(2,:), Afloor,opt_volumes(3,:)
 xlabel('Afloor'); ylabel('V');
 
 ##### SOURCE END #####
--->
-   </body>
-</html>
+--></body></html>

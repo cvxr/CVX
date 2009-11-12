@@ -18,4 +18,5 @@
 %  equality_constr_norm_min.m  - Equality constrained norm minimization.
 %  min_phase_spectral_fact.m   - Minimal phase spectral factorization
 %  nonneg_matrix_fact.m        - Nonnegative matrix factorization
+%  index.dat                   - (no title)
 help Contents

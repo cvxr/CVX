@@ -1,18 +1,12 @@
 
 <!DOCTYPE html
-  PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN">
-<html xmlns:mwsh="http://www.mathworks.com/namespace/mcode/v1/syntaxhighlight.dtd">
-   <head>
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head>
       <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-   
-      <!--
+   <!--
 This HTML is auto-generated from an M-file.
 To make changes, update the M-file and republish this document.
-      -->
-      <title>Euclidean projection on the semidefinite cone</title>
-      <meta name="generator" content="MATLAB 7.5">
-      <meta name="date" content="2008-05-23">
-      <meta name="m-file" content="eucl_proj_cone2"><style>
+      --><title>Euclidean projection on the semidefinite cone</title><meta name="generator" content="MATLAB 7.9"><meta name="date" content="2009-11-11"><meta name="m-file" content="eucl_proj_cone2___"><style type="text/css">
 
 body {
   background-color: white;
@@ -68,10 +62,7 @@ p.footer {
   color: gray;
 }
 
-  </style></head>
-   <body>
-      <div class="content">
-         <h1>Euclidean projection on the semidefinite cone</h1><pre class="codeinput"><span class="comment">% Sec. 8.1.1, Boyd &amp; Vandenberghe "Convex Optimization"</span>
+  </style></head><body><div class="content"><h1>Euclidean projection on the semidefinite cone</h1><pre class="codeinput"><span class="comment">% Sec. 8.1.1, Boyd &amp; Vandenberghe "Convex Optimization"</span>
 <span class="comment">% Joelle Skaf - 10/07/05</span>
 <span class="comment">%</span>
 <span class="comment">% The projection of X0 on the proper cone K = S+^n is given by</span>
@@ -81,7 +72,6 @@ p.footer {
 <span class="comment">% It is also given by: P_K(X0)_k = sum_{i=1}^{n}max{0,lam_i}v_i*v_i'</span>
 <span class="comment">% s.t. X0= sum_{i=1}^{n}lam_i*v_i*v_i'is the eigenvalue decomposition of X0</span>
 
-cvx_quiet(true);
 <span class="comment">% Input data</span>
 randn(<span class="string">'seed'</span>,0);
 n  = 10;
@@ -97,7 +87,7 @@ fprintf(1,<span class="string">'Done! \n'</span>);
 <span class="comment">% Solution via CVX</span>
 fprintf(1,<span class="string">'Computing the optimal solution by solving an SDP...'</span>);
 
-cvx_begin <span class="string">sdp</span>
+cvx_begin <span class="string">sdp</span> <span class="string">quiet</span>
     variable <span class="string">X(n,n)</span> <span class="string">symmetric</span>
     minimize ( norm(X-X0,<span class="string">'fro'</span>) )
     X &gt;= 0;
@@ -119,13 +109,11 @@ via CVX are equal by computing ||X_star - P_K(X0)||_F:
 
 ans =
 
-   3.3645e-05
+   1.2906e-04
 
 Hence X_star and P_K(X0) are equal to working precision.
 </pre><p class="footer"><br>
-            Published with MATLAB&reg; 7.5<br></p>
-      </div>
-      <!--
+      Published with MATLAB&reg; 7.9<br></p></div><!--
 ##### SOURCE BEGIN #####
 %% Euclidean projection on the semidefinite cone
 
@@ -139,7 +127,6 @@ Hence X_star and P_K(X0) are equal to working precision.
 % It is also given by: P_K(X0)_k = sum_{i=1}^{n}max{0,lam_i}v_i*v_i'
 % s.t. X0= sum_{i=1}^{n}lam_i*v_i*v_i'is the eigenvalue decomposition of X0
 
-cvx_quiet(true);
 % Input data
 randn('seed',0);
 n  = 10;
@@ -155,7 +142,7 @@ fprintf(1,'Done! \n');
 % Solution via CVX
 fprintf(1,'Computing the optimal solution by solving an SDP...');
 
-cvx_begin sdp
+cvx_begin sdp quiet
     variable X(n,n) symmetric
     minimize ( norm(X-X0,'fro') )
     X >= 0;
@@ -175,6 +162,4 @@ disp('Hence X_star and P_K(X0) are equal to working precision.');
 
 
 ##### SOURCE END #####
--->
-   </body>
-</html>
+--></body></html>

@@ -1,18 +1,12 @@
 
 <!DOCTYPE html
-  PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN">
-<html xmlns:mwsh="http://www.mathworks.com/namespace/mcode/v1/syntaxhighlight.dtd">
-   <head>
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head>
       <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-   
-      <!--
+   <!--
 This HTML is auto-generated from an M-file.
 To make changes, update the M-file and republish this document.
-      -->
-      <title>Exercise 5.19c: Markovitz portfolio optimization w/ diversification constraint</title>
-      <meta name="generator" content="MATLAB 7.5">
-      <meta name="date" content="2008-05-23">
-      <meta name="m-file" content="ex_5_19"><style>
+      --><title>Exercise 5.19c: Markovitz portfolio optimization w/ diversification constraint</title><meta name="generator" content="MATLAB 7.9"><meta name="date" content="2009-11-11"><meta name="m-file" content="ex_5_19___"><style type="text/css">
 
 body {
   background-color: white;
@@ -68,10 +62,7 @@ p.footer {
   color: gray;
 }
 
-  </style></head>
-   <body>
-      <div class="content">
-         <h1>Exercise 5.19c: Markovitz portfolio optimization w/ diversification constraint</h1><pre class="codeinput"><span class="comment">% Boyd &amp; Vandenberghe, "Convex Optimization"</span>
+  </style></head><body><div class="content"><h1>Exercise 5.19c: Markovitz portfolio optimization w/ diversification constraint</h1><pre class="codeinput"><span class="comment">% Boyd &amp; Vandenberghe, "Convex Optimization"</span>
 <span class="comment">% Jo&euml;lle Skaf - 08/29/05</span>
 <span class="comment">%</span>
 <span class="comment">% Solves an extension of the classical Markovitz portfolio optimization</span>
@@ -138,116 +129,78 @@ disp([x1 x2])
 disp(<span class="string">'They are equal as expected!'</span>);
 </pre><pre class="codeoutput">Computing the optimal Markovitz portfolio: 
 # using the original formulation ...  
-Calling SDPT3: 105 variables, 52 equality constraints
-   For improved efficiency, SDPT3 is solving the dual problem.
+Calling sedumi: 105 variables, 52 equality constraints
+   For improved efficiency, sedumi is solving the dual problem.
 ------------------------------------------------------------
+SeDuMi 1.21 by AdvOL, 2005-2008 and Jos F. Sturm, 1998-2003.
+Alg = 2: xz-corrector, Adaptive Step-Differentiation, theta = 0.250, beta = 0.500
+eqs m = 52, order n = 81, dim = 107, blocks = 3
+nnz(A) = 528 + 0, nnz(ADA) = 1452, nnz(L) = 1107
+Handling 1 + 1 dense columns.
+ it :     b*y       gap    delta  rate   t/tP*  t/tD*   feas cg cg  prec
+  0 :            1.31E+00 0.000
+  1 :  -9.14E+00 5.48E-01 0.000 0.4184 0.9000 0.9000   2.52  1  1  1.1E+01
+  2 :  -2.32E+01 3.19E-01 0.000 0.5817 0.9000 0.9000   4.27  1  1  2.4E+00
+  3 :  -2.65E+01 1.24E-01 0.000 0.3904 0.9000 0.9000   3.26  1  1  4.3E-01
+  4 :  -2.70E+01 2.98E-02 0.000 0.2397 0.9000 0.9000   1.59  1  1  8.0E-02
+  5 :  -2.71E+01 8.92E-03 0.000 0.2992 0.9000 0.9000   1.16  1  1  2.3E-02
+  6 :  -2.71E+01 2.31E-03 0.000 0.2590 0.9000 0.9000   1.05  1  1  5.7E-03
+  7 :  -2.71E+01 4.49E-04 0.000 0.1945 0.9000 0.9000   1.02  1  1  1.1E-03
+  8 :  -2.71E+01 4.33E-06 0.462 0.0096 0.9900 0.0000   1.00  1  1  1.3E-04
+  9 :  -2.71E+01 6.50E-08 0.000 0.0150 0.9901 0.9900   1.00  1  1  2.4E-06
+ 10 :  -2.71E+01 1.15E-08 0.000 0.1766 0.9066 0.9000   1.00  1  2  4.6E-07
+ 11 :  -2.71E+01 2.28E-09 0.000 0.1986 0.9035 0.9000   1.00  2  2  9.4E-08
+ 12 :  -2.71E+01 3.73E-10 0.000 0.1634 0.9000 0.9059   1.00  7  7  1.5E-08
+ 13 :  -2.71E+01 7.72E-11 0.000 0.2071 0.9000 0.8650   1.00 13 13  3.2E-09
 
- num. of constraints = 52
- dim. of socp   var  = 27,   num. of socp blk  =  1
- dim. of linear var  = 76
- dim. of free   var  =  2 *** convert ublk to lblk
-*******************************************************************
-   SDPT3: Infeasible path-following algorithms
-*******************************************************************
- version  predcorr  gam  expon  scale_data
-    NT      1      0.000   1        0    
-it pstep dstep pinfeas dinfeas  gap      mean(obj)   cputime
--------------------------------------------------------------------
- 0|0.000|0.000|2.5e+02|5.0e+01|6.5e+05|-2.341526e+02| 0:0:00| chol  1  1 
- 1|1.000|0.655|4.8e-05|1.8e+01|2.1e+05| 3.567198e+02| 0:0:00| chol  1  1 
- 2|1.000|0.968|5.4e-06|6.4e-01|8.5e+03| 5.145679e+02| 0:0:00| chol  1  1 
- 3|1.000|0.944|2.1e-07|6.1e-02|1.5e+03| 3.751807e+02| 0:0:00| chol  1  1 
- 4|0.937|0.835|1.1e-06|1.7e-02|3.4e+02| 1.026083e+02| 0:0:00| chol  1  1 
- 5|0.988|0.359|1.4e-07|1.2e-02|6.4e+01|-3.922982e+00| 0:0:00| chol  1  1 
- 6|1.000|0.898|4.9e-08|1.4e-03|1.0e+01|-2.289518e+01| 0:0:00| chol  1  1 
- 7|0.941|0.525|9.9e-09|6.8e-04|3.9e+00|-2.565841e+01| 0:0:00| chol  1  1 
- 8|0.774|0.374|7.4e-09|4.3e-04|2.4e+00|-2.623376e+01| 0:0:00| chol  1  1 
- 9|1.000|0.335|2.2e-09|2.8e-04|1.0e+00|-2.681380e+01| 0:0:00| chol  1  1 
-10|1.000|0.503|1.0e-09|1.4e-04|4.2e-01|-2.702729e+01| 0:0:00| chol  1  1 
-11|1.000|0.394|1.9e-10|8.6e-05|2.1e-01|-2.708326e+01| 0:0:00| chol  1  1 
-12|0.944|0.530|9.5e-11|4.0e-05|8.7e-02|-2.710668e+01| 0:0:00| chol  1  1 
-13|1.000|0.609|5.1e-11|1.6e-05|2.4e-02|-2.711395e+01| 0:0:00| chol  1  1 
-14|0.885|0.939|1.6e-11|9.7e-07|1.9e-03|-2.710932e+01| 0:0:00| chol  1  1 
-15|0.990|0.554|1.0e-12|5.4e-06|5.0e-04|-2.710950e+01| 0:0:00| chol  1  1 
-16|1.000|0.916|5.0e-14|1.4e-06|4.2e-05|-2.710933e+01| 0:0:01| chol  1  1 
-17|1.000|0.886|1.1e-11|1.2e-07|1.4e-05|-2.710932e+01| 0:0:01| chol  1  1 
-18|1.000|0.980|2.1e-13|3.9e-08|7.2e-07|-2.710932e+01| 0:0:01| chol  1  2 
-19|1.000|0.988|9.0e-14|2.0e-09|1.2e-08|-2.710932e+01| 0:0:01|
-  stop: max(relative gap, infeasibilities) &lt; 1.49e-08
--------------------------------------------------------------------
- number of iterations   = 19
- primal objective value = -2.71093203e+01
- dual   objective value = -2.71093203e+01
- gap := trace(XZ)       = 1.25e-08
- relative gap           = 2.26e-10
- actual relative gap    = 1.79e-10
- rel. primal infeas     = 8.98e-14
- rel. dual   infeas     = 2.03e-09
- norm(X), norm(y), norm(Z) = 3.9e+01, 6.5e-01, 1.3e+00
- norm(A), norm(b), norm(C) = 3.0e+01, 5.4e+01, 3.3e+00
- Total CPU time (secs)  = 0.6  
- CPU time per iteration = 0.0  
- termination code       =  0
- DIMACS: 9.0e-14  0.0e+00  3.3e-09  0.0e+00  1.8e-10  2.3e-10
--------------------------------------------------------------------
+iter seconds digits       c*x               b*y
+ 13      0.1   Inf -2.7109320284e+01 -2.7109320270e+01
+|Ax-b| =   3.1e-08, [Ay-c]_+ =   1.9E-09, |x|=  4.0e+01, |y|=  6.4e-01
+
+Detailed timing (sec)
+   Pre          IPM          Post
+1.000E-02    9.000E-02    0.000E+00    
+Max-norms: ||b||=5.271830e+01, ||c|| = 1,
+Cholesky |add|=0, |skip| = 25, ||L.L|| = 8.37008.
 ------------------------------------------------------------
 Status: Solved
 Optimal value (cvx_optval): +0.75017
 Done! 
 # using an equivalent formulation by replacing the diversification
   constraint by an equivalent set of linear constraints... 
-Calling SDPT3: 105 variables, 52 equality constraints
-   For improved efficiency, SDPT3 is solving the dual problem.
+Calling sedumi: 105 variables, 52 equality constraints
+   For improved efficiency, sedumi is solving the dual problem.
 ------------------------------------------------------------
+SeDuMi 1.21 by AdvOL, 2005-2008 and Jos F. Sturm, 1998-2003.
+Alg = 2: xz-corrector, Adaptive Step-Differentiation, theta = 0.250, beta = 0.500
+eqs m = 52, order n = 81, dim = 107, blocks = 3
+nnz(A) = 528 + 0, nnz(ADA) = 1452, nnz(L) = 1107
+Handling 1 + 1 dense columns.
+ it :     b*y       gap    delta  rate   t/tP*  t/tD*   feas cg cg  prec
+  0 :            1.31E+00 0.000
+  1 :  -9.14E+00 5.48E-01 0.000 0.4184 0.9000 0.9000   2.52  1  1  1.1E+01
+  2 :  -2.32E+01 3.19E-01 0.000 0.5817 0.9000 0.9000   4.27  1  1  2.4E+00
+  3 :  -2.65E+01 1.24E-01 0.000 0.3904 0.9000 0.9000   3.26  1  1  4.3E-01
+  4 :  -2.70E+01 2.98E-02 0.000 0.2397 0.9000 0.9000   1.59  1  1  8.0E-02
+  5 :  -2.71E+01 8.92E-03 0.000 0.2992 0.9000 0.9000   1.16  1  1  2.3E-02
+  6 :  -2.71E+01 2.31E-03 0.000 0.2590 0.9000 0.9000   1.05  1  1  5.7E-03
+  7 :  -2.71E+01 4.49E-04 0.000 0.1945 0.9000 0.9000   1.02  1  1  1.1E-03
+  8 :  -2.71E+01 4.33E-06 0.462 0.0096 0.9900 0.0000   1.00  1  1  1.3E-04
+  9 :  -2.71E+01 6.50E-08 0.000 0.0150 0.9901 0.9900   1.00  1  1  2.4E-06
+ 10 :  -2.71E+01 1.15E-08 0.000 0.1766 0.9066 0.9000   1.00  1  2  4.6E-07
+ 11 :  -2.71E+01 2.28E-09 0.000 0.1986 0.9035 0.9000   1.00  2  2  9.4E-08
+ 12 :  -2.71E+01 3.73E-10 0.000 0.1633 0.9000 0.9059   1.00  7  7  1.5E-08
+ 13 :  -2.71E+01 7.64E-11 0.000 0.2052 0.9000 0.8650   1.00  9 13  3.1E-09
 
- num. of constraints = 52
- dim. of socp   var  = 27,   num. of socp blk  =  1
- dim. of linear var  = 76
- dim. of free   var  =  2 *** convert ublk to lblk
-*******************************************************************
-   SDPT3: Infeasible path-following algorithms
-*******************************************************************
- version  predcorr  gam  expon  scale_data
-    NT      1      0.000   1        0    
-it pstep dstep pinfeas dinfeas  gap      mean(obj)   cputime
--------------------------------------------------------------------
- 0|0.000|0.000|2.5e+02|5.0e+01|6.5e+05|-2.341526e+02| 0:0:00| chol  1  1 
- 1|1.000|0.655|4.5e-05|1.8e+01|2.1e+05| 3.567197e+02| 0:0:00| chol  1  1 
- 2|1.000|0.968|4.4e-06|6.4e-01|8.5e+03| 5.145678e+02| 0:0:00| chol  1  1 
- 3|1.000|0.944|1.9e-07|6.1e-02|1.5e+03| 3.751807e+02| 0:0:00| chol  1  1 
- 4|0.937|0.835|5.5e-07|1.7e-02|3.4e+02| 1.026083e+02| 0:0:00| chol  1  1 
- 5|0.988|0.359|6.4e-08|1.2e-02|6.4e+01|-3.922994e+00| 0:0:00| chol  1  1 
- 6|1.000|0.898|2.3e-08|1.4e-03|1.0e+01|-2.289519e+01| 0:0:00| chol  1  1 
- 7|0.941|0.525|9.2e-09|6.8e-04|3.9e+00|-2.565841e+01| 0:0:00| chol  1  1 
- 8|0.774|0.374|7.8e-09|4.3e-04|2.4e+00|-2.623376e+01| 0:0:00| chol  1  1 
- 9|1.000|0.335|2.4e-09|2.8e-04|1.0e+00|-2.681380e+01| 0:0:00| chol  1  1 
-10|1.000|0.503|9.9e-10|1.4e-04|4.2e-01|-2.702729e+01| 0:0:00| chol  1  1 
-11|1.000|0.394|2.4e-10|8.6e-05|2.1e-01|-2.708326e+01| 0:0:00| chol  1  1 
-12|0.944|0.530|7.1e-11|4.0e-05|8.7e-02|-2.710668e+01| 0:0:00| chol  1  1 
-13|1.000|0.609|6.3e-11|1.6e-05|2.4e-02|-2.711395e+01| 0:0:00| chol  1  1 
-14|0.885|0.939|1.9e-11|9.7e-07|1.9e-03|-2.710932e+01| 0:0:00| chol  1  1 
-15|0.990|0.554|8.9e-13|5.4e-06|5.0e-04|-2.710950e+01| 0:0:00| chol  1  1 
-16|1.000|0.916|3.1e-14|1.4e-06|4.2e-05|-2.710933e+01| 0:0:00| chol  1  1 
-17|1.000|0.886|4.0e-11|1.2e-07|1.4e-05|-2.710932e+01| 0:0:00| chol  1  1 
-18|1.000|0.980|1.2e-12|3.9e-08|7.2e-07|-2.710932e+01| 0:0:00| chol  1  2 
-19|1.000|0.988|4.9e-14|2.0e-09|1.2e-08|-2.710932e+01| 0:0:01|
-  stop: max(relative gap, infeasibilities) &lt; 1.49e-08
--------------------------------------------------------------------
- number of iterations   = 19
- primal objective value = -2.71093203e+01
- dual   objective value = -2.71093203e+01
- gap := trace(XZ)       = 1.25e-08
- relative gap           = 2.26e-10
- actual relative gap    = 1.80e-10
- rel. primal infeas     = 4.94e-14
- rel. dual   infeas     = 2.03e-09
- norm(X), norm(y), norm(Z) = 3.9e+01, 6.5e-01, 1.3e+00
- norm(A), norm(b), norm(C) = 3.0e+01, 5.4e+01, 3.3e+00
- Total CPU time (secs)  = 0.5  
- CPU time per iteration = 0.0  
- termination code       =  0
- DIMACS: 4.9e-14  0.0e+00  3.3e-09  0.0e+00  1.8e-10  2.3e-10
--------------------------------------------------------------------
+iter seconds digits       c*x               b*y
+ 13      0.1   Inf -2.7109320284e+01 -2.7109320270e+01
+|Ax-b| =   3.0e-08, [Ay-c]_+ =   1.9E-09, |x|=  4.0e+01, |y|=  6.4e-01
+
+Detailed timing (sec)
+   Pre          IPM          Post
+0.000E+00    8.000E-02    0.000E+00    
+Max-norms: ||b||=5.271830e+01, ||c|| = 1,
+Cholesky |add|=0, |skip| = 25, ||L.L|| = 8.37021.
 ------------------------------------------------------------
 Status: Solved
 Optimal value (cvx_optval): +0.75017
@@ -256,7 +209,7 @@ Done!
 The optimal portfolios obtained from the original problem formulation and
 from the equivalent formulation are respectively: 
     0.0000    0.0000
-    0.0000    0.0000
+   -0.0000   -0.0000
     0.1342    0.1342
     0.0000    0.0000
     0.0000    0.0000
@@ -267,25 +220,23 @@ from the equivalent formulation are respectively:
     0.0256    0.0256
     0.0451    0.0451
     0.0437    0.0437
-    0.0000    0.0000
+   -0.0000   -0.0000
     0.1435    0.1435
-    0.0000    0.0000
+   -0.0000   -0.0000
     0.0086    0.0086
     0.1177    0.1177
     0.0000    0.0000
     0.0000    0.0000
-    0.0000    0.0000
+   -0.0000   -0.0000
     0.0000    0.0000
     0.0000    0.0000
     0.0313    0.0313
     0.1164    0.1164
-    0.0000    0.0000
+   -0.0000   -0.0000
 
 They are equal as expected!
 </pre><p class="footer"><br>
-            Published with MATLAB&reg; 7.5<br></p>
-      </div>
-      <!--
+      Published with MATLAB&reg; 7.9<br></p></div><!--
 ##### SOURCE BEGIN #####
 %% Exercise 5.19c: Markovitz portfolio optimization w/ diversification constraint
 
@@ -356,6 +307,4 @@ disp([x1 x2])
 disp('They are equal as expected!');
 
 ##### SOURCE END #####
--->
-   </body>
-</html>
+--></body></html>

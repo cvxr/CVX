@@ -1,15 +1,12 @@
-<html xmlns:mwsh="http://www.mathworks.com/namespace/mcode/v1/syntaxhighlight.dtd">
-   <head>
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head>
       <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-   
-      <!--
+   <!--
 This HTML is auto-generated from an M-file.
 To make changes, update the M-file and republish this document.
-      -->
-      <title>Computes the step response of a linear system (function)</title>
-      <meta name="generator" content="MATLAB 7.1">
-      <meta name="date" content="2006-03-08">
-      <meta name="m-file" content="simple_step"><style>
+      --><title>Computes the step response of a linear system</title><meta name="generator" content="MATLAB 7.9"><meta name="date" content="2009-11-11"><meta name="m-file" content="simple_step___"><style type="text/css">
 
 body {
   background-color: white;
@@ -27,20 +24,20 @@ h2 {
 }
 
 /* Make the text shrink to fit narrow windows, but not stretch too far in 
-wide windows.  On Gecko-based browsers, the shrink-to-fit doesn't work. */ 
+wide windows. */ 
 p,h1,h2,div.content div {
-  /* for MATLAB's browser */
-  width: 600px;
-  /* for Mozilla, but the "width" tag overrides it anyway */
   max-width: 600px;
-  /* for IE */
-  width:expression(document.body.clientWidth > 620 ? "600px": "auto" );
+  /* Hack for IE6 */
+  width: auto !important; width: 600px;
 }
 
 pre.codeinput {
   background: #EEEEEE;
   padding: 10px;
 }
+@media print {
+  pre.codeinput {word-wrap:break-word; width:100%;}
+} 
 
 span.keyword {color: #0000FF}
 span.comment {color: #228B22}
@@ -65,12 +62,9 @@ p.footer {
   color: gray;
 }
 
-  </style></head>
-   <body>
-      <div class="content">
-         <h1>Computes the step response of a linear system (function)</h1><pre class="codeinput"><span class="keyword">function</span> X = simple_step(A,B,DT,N)
+  </style></head><body><div class="content"><h1>Computes the step response of a linear system</h1><pre class="codeinput"><span class="keyword">function</span> X = simple_step(A,B,DT,N)
 n  = size(A,1);
-Ad = expm( A * DT );
+Ad = expm( full( A * DT ) );
 Bd = ( Ad - eye(n) ) * B;
 Bd = A \ Bd;
 X  = zeros(n,N);
@@ -78,15 +72,13 @@ X  = zeros(n,N);
     X(:,k) = Ad*X(:,k-1)+Bd;
 <span class="keyword">end</span>
 </pre><p class="footer"><br>
-            Published with MATLAB&reg; 7.1<br></p>
-      </div>
-      <!--
+      Published with MATLAB&reg; 7.9<br></p></div><!--
 ##### SOURCE BEGIN #####
-%% Computes the step response of a linear system (function)
+%% Computes the step response of a linear system
 
 function X = simple_step(A,B,DT,N)
 n  = size(A,1);
-Ad = expm( A * DT );
+Ad = expm( full( A * DT ) );
 Bd = ( Ad - eye(n) ) * B;
 Bd = A \ Bd;
 X  = zeros(n,N);
@@ -97,6 +89,4 @@ end
 
 
 ##### SOURCE END #####
--->
-   </body>
-</html>
+--></body></html>

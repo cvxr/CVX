@@ -1,18 +1,12 @@
 
 <!DOCTYPE html
-  PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN">
-<html xmlns:mwsh="http://www.mathworks.com/namespace/mcode/v1/syntaxhighlight.dtd">
-   <head>
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head>
       <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-   
-      <!--
+   <!--
 This HTML is auto-generated from an M-file.
 To make changes, update the M-file and republish this document.
-      -->
-      <title>Section 5.2.4: Solves a simple QCQP</title>
-      <meta name="generator" content="MATLAB 7.5">
-      <meta name="date" content="2008-05-23">
-      <meta name="m-file" content="qcqp"><style>
+      --><title>Section 5.2.4: Solves a simple QCQP</title><meta name="generator" content="MATLAB 7.9"><meta name="date" content="2009-11-11"><meta name="m-file" content="qcqp___"><style type="text/css">
 
 body {
   background-color: white;
@@ -68,10 +62,7 @@ p.footer {
   color: gray;
 }
 
-  </style></head>
-   <body>
-      <div class="content">
-         <h1>Section 5.2.4: Solves a simple QCQP</h1><pre class="codeinput"><span class="comment">% Boyd &amp; Vandenberghe, "Convex Optimization"</span>
+  </style></head><body><div class="content"><h1>Section 5.2.4: Solves a simple QCQP</h1><pre class="codeinput"><span class="comment">% Boyd &amp; Vandenberghe, "Convex Optimization"</span>
 <span class="comment">% Jo&euml;lle Skaf - 08/23/05</span>
 <span class="comment">%</span>
 <span class="comment">% Solved a QCQP with 3 inequalities:</span>
@@ -113,58 +104,44 @@ disp(<span class="string">'-----------------------------------------------------
 disp(<span class="string">'The duality gap is equal to '</span>);
 disp(obj1-obj2)
 </pre><pre class="codeoutput">Computing the optimal value of the QCQP and its dual...  
-Calling SDPT3: 35 variables, 10 equality constraints
-   For improved efficiency, SDPT3 is solving the dual problem.
+Calling sedumi: 35 variables, 10 equality constraints
+   For improved efficiency, sedumi is solving the dual problem.
 ------------------------------------------------------------
+SeDuMi 1.21 by AdvOL, 2005-2008 and Jos F. Sturm, 1998-2003.
+Alg = 2: xz-corrector, Adaptive Step-Differentiation, theta = 0.250, beta = 0.500
+eqs m = 10, order n = 11, dim = 37, blocks = 6
+nnz(A) = 113 + 0, nnz(ADA) = 94, nnz(L) = 52
+ it :     b*y       gap    delta  rate   t/tP*  t/tD*   feas cg cg  prec
+  0 :            8.45E+00 0.000
+  1 :   1.19E-02 2.07E+00 0.000 0.2452 0.9000 0.9000   1.63  1  1  1.6E+00
+  2 :  -3.78E+00 3.87E-01 0.000 0.1867 0.9000 0.9000   2.29  1  1  1.6E-01
+  3 :  -4.39E+00 7.69E-02 0.000 0.1990 0.9000 0.9000   1.08  1  1  2.8E-02
+  4 :  -4.66E+00 6.65E-03 0.000 0.0865 0.9900 0.9900   0.84  1  1  2.2E-03
+  5 :  -4.71E+00 2.01E-04 0.000 0.0302 0.9900 0.9900   0.98  1  1  1.1E-04
+  6 :  -4.71E+00 2.62E-07 0.000 0.0013 0.9901 0.9900   1.00  1  1  1.1E-06
+  7 :  -4.71E+00 3.20E-09 0.000 0.0122 0.8709 0.9000   1.00  1  1  2.2E-07
+  8 :  -4.71E+00 2.35E-10 0.089 0.0735 0.9900 0.9900   1.00  1  1  1.6E-08
+  9 :  -4.71E+00 5.45E-11 0.000 0.2318 0.9092 0.9000   1.00  2  2  3.4E-09
 
- num. of constraints = 10
- dim. of socp   var  = 32,   num. of socp blk  =  4
- dim. of free   var  =  3 *** convert ublk to lblk
-*******************************************************************
-   SDPT3: Infeasible path-following algorithms
-*******************************************************************
- version  predcorr  gam  expon  scale_data
-    NT      1      0.000   1        0    
-it pstep dstep pinfeas dinfeas  gap      mean(obj)   cputime
--------------------------------------------------------------------
- 0|0.000|0.000|2.0e+00|9.5e+00|2.0e+04| 3.922878e-09| 0:0:00| chol  1  1 
- 1|1.000|0.987|8.3e-06|1.4e-01|8.0e+01| 1.606382e+00| 0:0:00| chol  1  1 
- 2|0.990|0.978|7.0e-07|5.2e-03|9.9e-01|-4.476244e+00| 0:0:00| chol  1  1 
- 3|0.956|0.936|2.1e-07|5.4e-04|4.3e-02|-4.693911e+00| 0:0:00| chol  1  1 
- 4|0.942|0.938|3.7e-08|5.5e-05|2.4e-03|-4.712252e+00| 0:0:00| chol  1  1 
- 5|0.907|0.921|1.4e-08|6.7e-06|2.3e-04|-4.714186e+00| 0:0:00| chol  1  1 
- 6|0.906|0.911|4.5e-09|6.2e-07|2.3e-05|-4.714441e+00| 0:0:00| chol  1  1 
- 7|0.981|0.962|5.7e-10|5.3e-08|1.5e-06|-4.714466e+00| 0:0:00| chol  1  1 
- 8|0.977|0.949|5.1e-11|3.5e-09|8.5e-08|-4.714467e+00| 0:0:00|
-  stop: max(relative gap, infeasibilities) &lt; 1.49e-08
--------------------------------------------------------------------
- number of iterations   =  8
- primal objective value = -4.71446662e+00
- dual   objective value = -4.71446658e+00
- gap := trace(XZ)       = 8.47e-08
- relative gap           = 8.12e-09
- actual relative gap    = -4.00e-09
- rel. primal infeas     = 5.08e-11
- rel. dual   infeas     = 3.46e-09
- norm(X), norm(y), norm(Z) = 1.4e+01, 1.4e+00, 1.7e+00
- norm(A), norm(b), norm(C) = 2.8e+01, 1.1e+01, 1.4e+01
- Total CPU time (secs)  = 0.2  
- CPU time per iteration = 0.0  
- termination code       =  0
- DIMACS: 5.2e-11  0.0e+00  6.2e-09  0.0e+00  -4.0e-09  8.1e-09
--------------------------------------------------------------------
+iter seconds digits       c*x               b*y
+  9      0.0   Inf -4.7144665661e+00 -4.7144665032e+00
+|Ax-b| =   7.5e-09, [Ay-c]_+ =   6.6E-09, |x|=  1.6e+01, |y|=  1.4e+00
+
+Detailed timing (sec)
+   Pre          IPM          Post
+1.000E-02    5.000E-02    0.000E+00    
+Max-norms: ||b||=9.588449e+00, ||c|| = 6.667862e+00,
+Cholesky |add|=0, |skip| = 0, ||L.L|| = 31.0251.
 ------------------------------------------------------------
 Status: Solved
 Optimal value (cvx_optval): -0.895296
 Done! 
 ------------------------------------------------------------------------
 The duality gap is equal to 
-  -6.0636e-08
+  -1.2235e-07
 
 </pre><p class="footer"><br>
-            Published with MATLAB&reg; 7.5<br></p>
-      </div>
-      <!--
+      Published with MATLAB&reg; 7.9<br></p></div><!--
 ##### SOURCE BEGIN #####
 %% Section 5.2.4: Solves a simple QCQP
 
@@ -211,6 +188,4 @@ disp('The duality gap is equal to ');
 disp(obj1-obj2)
 
 ##### SOURCE END #####
--->
-   </body>
-</html>
+--></body></html>

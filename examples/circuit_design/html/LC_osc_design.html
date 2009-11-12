@@ -1,18 +1,12 @@
 
 <!DOCTYPE html
-  PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN">
-<html xmlns:mwsh="http://www.mathworks.com/namespace/mcode/v1/syntaxhighlight.dtd">
-   <head>
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head>
       <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-   
-      <!--
+   <!--
 This HTML is auto-generated from an M-file.
 To make changes, update the M-file and republish this document.
-      -->
-      <title>LC oscillator design (GP)</title>
-      <meta name="generator" content="MATLAB 7.5">
-      <meta name="date" content="2008-05-23">
-      <meta name="m-file" content="LC_osc_design"><style>
+      --><title>LC oscillator design (GP)</title><meta name="generator" content="MATLAB 7.9"><meta name="date" content="2009-11-11"><meta name="m-file" content="LC_osc_design___"><style type="text/css">
 
 body {
   background-color: white;
@@ -68,10 +62,7 @@ p.footer {
   color: gray;
 }
 
-  </style></head>
-   <body>
-      <div class="content">
-         <h1>LC oscillator design (GP)</h1><pre class="codeinput"><span class="comment">% Boyd, Kim, and Mohan, "Geometric programming and its</span>
+  </style></head><body><div class="content"><h1>LC oscillator design (GP)</h1><pre class="codeinput"><span class="comment">% Boyd, Kim, and Mohan, "Geometric programming and its</span>
 <span class="comment">% applications to EDA Problems", (DATE Tutorial 2005), pp.102-113.</span>
 <span class="comment">% Original code by S. Mohan</span>
 <span class="comment">% Written for CVX by Almir Mutapcic 02/08/06</span>
@@ -107,8 +98,6 @@ CvarRatio = 3;       <span class="comment">% maximum to minimum value of CVar</s
 CswBits   = 3;
 CswSegs   = 2^(CswBits);
 CvarCswLSBOverlap = 2;
-
-<span class="comment">% set the quiet flag (no solver reporting)</span>
 
 disp(<span class="string">'Generating the optimal tradeoff curve...'</span>)
 
@@ -217,7 +206,7 @@ powers = [];
 <span class="keyword">end</span>
 
 <span class="comment">% plot the tradeoff curve</span>
-PNSpec = [0.7e-12:0.2e-12:1e-11];
+PNSpec = 0.7e-12:0.2e-12:1e-11;
 plot(10*log10(PNSpec),powers/1e-3);
 xlabel(<span class="string">'Phase Noise (dBc/Hz)'</span>)
 ylabel(<span class="string">'Power (mW)'</span>)
@@ -271,10 +260,8 @@ disp(<span class="string">'Optimal tradeoff curve plotted.'</span>)
   PNSpec = -110.13 (dBc/Hz)   min_power = 2.23 (mW)
   PNSpec = -110.04 (dBc/Hz)   min_power = 2.21 (mW)
 Optimal tradeoff curve plotted.
-</pre><img vspace="5" hspace="5" src="LC_osc_design_01.png"> <p class="footer"><br>
-            Published with MATLAB&reg; 7.5<br></p>
-      </div>
-      <!--
+</pre><img vspace="5" hspace="5" src="LC_osc_design____01.png" alt=""> <p class="footer"><br>
+      Published with MATLAB&reg; 7.9<br></p></div><!--
 ##### SOURCE BEGIN #####
 %% LC oscillator design (GP)
 
@@ -314,8 +301,6 @@ CvarRatio = 3;       % maximum to minimum value of CVar
 CswBits   = 3;
 CswSegs   = 2^(CswBits);
 CvarCswLSBOverlap = 2;
-
-% set the quiet flag (no solver reporting)
 
 disp('Generating the optimal tradeoff curve...')
 
@@ -424,13 +409,11 @@ for PNSpec=0.7e-12:0.2e-12:1e-11
 end
 
 % plot the tradeoff curve
-PNSpec = [0.7e-12:0.2e-12:1e-11];
+PNSpec = 0.7e-12:0.2e-12:1e-11;
 plot(10*log10(PNSpec),powers/1e-3);
 xlabel('Phase Noise (dBc/Hz)')
 ylabel('Power (mW)')
 disp('Optimal tradeoff curve plotted.')
 
 ##### SOURCE END #####
--->
-   </body>
-</html>
+--></body></html>

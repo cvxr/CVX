@@ -1,18 +1,12 @@
 
 <!DOCTYPE html
-  PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN">
-<html xmlns:mwsh="http://www.mathworks.com/namespace/mcode/v1/syntaxhighlight.dtd">
-   <head>
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head>
       <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-   
-      <!--
+   <!--
 This HTML is auto-generated from an M-file.
 To make changes, update the M-file and republish this document.
-      -->
-      <title>Digital circuit sizing</title>
-      <meta name="generator" content="MATLAB 7.5">
-      <meta name="date" content="2008-05-23">
-      <meta name="m-file" content="simple_dig_ckt_sizing"><style>
+      --><title>Digital circuit sizing</title><meta name="generator" content="MATLAB 7.9"><meta name="date" content="2009-11-11"><meta name="m-file" content="simple_dig_ckt_sizing___"><style type="text/css">
 
 body {
   background-color: white;
@@ -68,10 +62,7 @@ p.footer {
   color: gray;
 }
 
-  </style></head>
-   <body>
-      <div class="content">
-         <h1>Digital circuit sizing</h1><pre class="codeinput"><span class="comment">% Boyd, Kim, Vandenberghe, and Hassibi, "A Tutorial on Geometric Programming"</span>
+  </style></head><body><div class="content"><h1>Digital circuit sizing</h1><pre class="codeinput"><span class="comment">% Boyd, Kim, Vandenberghe, and Hassibi, "A Tutorial on Geometric Programming"</span>
 <span class="comment">% Written for CVX by Almir Mutapcic 02/08/06</span>
 <span class="comment">% (a figure is generated)</span>
 <span class="comment">%</span>
@@ -116,9 +107,7 @@ disp(<span class="string">'Generating the optimal tradeoff curve...'</span>)
 
 <span class="keyword">for</span> k = 1:length(Amax)
   <span class="keyword">for</span> n = 1:N
-    cvx_begin <span class="string">gp</span>
-      cvx_quiet <span class="string">true</span>
-
+    cvx_begin <span class="string">gp</span> <span class="string">quiet</span>
       <span class="comment">% optimization variables</span>
       variable <span class="string">x(m)</span>           <span class="comment">% scale factors</span>
 
@@ -252,10 +241,8 @@ disp(<span class="string">'Optimal tradeoff curve plotted.'</span>)
   Amax = 100   Pmax =  96.25   delay = 3.63
   Amax = 100   Pmax = 100.00   delay = 3.57
 Optimal tradeoff curve plotted.
-</pre><img vspace="5" hspace="5" src="simple_dig_ckt_sizing_01.png"> <p class="footer"><br>
-            Published with MATLAB&reg; 7.5<br></p>
-      </div>
-      <!--
+</pre><img vspace="5" hspace="5" src="simple_dig_ckt_sizing____01.png" alt=""> <p class="footer"><br>
+      Published with MATLAB&reg; 7.9<br></p></div><!--
 ##### SOURCE BEGIN #####
 %% Digital circuit sizing
 
@@ -304,9 +291,7 @@ disp('Generating the optimal tradeoff curve...')
 
 for k = 1:length(Amax)
   for n = 1:N
-    cvx_begin gp
-      cvx_quiet true
-      
+    cvx_begin gp quiet
       % optimization variables
       variable x(m)           % scale factors
 
@@ -365,6 +350,4 @@ xlabel('Pmax'); ylabel('Dmin');
 disp('Optimal tradeoff curve plotted.')
 
 ##### SOURCE END #####
--->
-   </body>
-</html>
+--></body></html>

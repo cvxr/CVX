@@ -1,18 +1,12 @@
 
 <!DOCTYPE html
-  PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN">
-<html xmlns:mwsh="http://www.mathworks.com/namespace/mcode/v1/syntaxhighlight.dtd">
-   <head>
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head>
       <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-   
-      <!--
+   <!--
 This HTML is auto-generated from an M-file.
 To make changes, update the M-file and republish this document.
-      -->
-      <title>Euclidean projection on a halfspace</title>
-      <meta name="generator" content="MATLAB 7.5">
-      <meta name="date" content="2008-05-23">
-      <meta name="m-file" content="eucl_proj_hlf"><style>
+      --><title>Euclidean projection on a halfspace</title><meta name="generator" content="MATLAB 7.9"><meta name="date" content="2009-11-11"><meta name="m-file" content="eucl_proj_hlf___"><style type="text/css">
 
 body {
   background-color: white;
@@ -68,10 +62,7 @@ p.footer {
   color: gray;
 }
 
-  </style></head>
-   <body>
-      <div class="content">
-         <h1>Euclidean projection on a halfspace</h1><pre class="codeinput"><span class="comment">% Sec. 8.1.1, Boyd &amp; Vandenberghe "Convex Optimization"</span>
+  </style></head><body><div class="content"><h1>Euclidean projection on a halfspace</h1><pre class="codeinput"><span class="comment">% Sec. 8.1.1, Boyd &amp; Vandenberghe "Convex Optimization"</span>
 <span class="comment">% Joelle Skaf - 10/04/05</span>
 <span class="comment">%</span>
 <span class="comment">% The projection of x0 on a halfspace C = {x | a'*x &lt;= b} is given by</span>
@@ -80,7 +71,6 @@ p.footer {
 <span class="comment">% It is also given by P_C(x0) = x0 + (b - a'*x0)*a/||a||^2 if a'*x0 &gt; b</span>
 <span class="comment">%                           and x0                         if a'*x0 &lt;=b</span>
 
-cvx_quiet(true);
 <span class="comment">% Input data</span>
 randn(<span class="string">'seed'</span>,0);
 n  = 10;
@@ -99,7 +89,7 @@ fprintf(1,<span class="string">'Done! \n'</span>);
 
 <span class="comment">% Solution via QP</span>
 fprintf(1,<span class="string">'Computing the solution of the QP for the case where a^T*x0 &lt;=b...'</span>);
-cvx_begin
+cvx_begin <span class="string">quiet</span>
     variable <span class="string">xs0(n)</span>
     minimize ( square_pos(norm(xs0 - x0)) )
     a'*xs0 &lt;= b;
@@ -107,7 +97,7 @@ cvx_end
 fprintf(1,<span class="string">'Done! \n'</span>);
 
 fprintf(1,<span class="string">'Computing the solution of the QP for the case where a^T*x0 &gt; b...'</span>);
-cvx_begin
+cvx_begin <span class="string">quiet</span>
     variable <span class="string">xs1(n)</span>
     minimize ( square_pos(norm(xs1 - x1)) )
     a'*xs1 &lt;= b;
@@ -128,15 +118,13 @@ Computing the solution of the QP for the case where a^T*x0 &lt;=b...Done!
 Computing the solution of the QP for the case where a^T*x0 &gt; b...Done! 
 -----------------------------------------------------------------
 Verifying that p_C(x0) and x0_star are equal in the case where a^T*x0 &lt;=b
-||p_C(x0) - x0_star|| = 5.3511e-07
+||p_C(x0) - x0_star|| = 6.2522e-10
 Hence they are equal to working precision
 Verifying that p_C(x1) and x1_star are equal in the case where a^T*x1 &gt; b
-||p_C(x1) - x1_star|| = 2.628e-10
+||p_C(x1) - x1_star|| = 9.6098e-11
 Hence they are equal to working precision
 </pre><p class="footer"><br>
-            Published with MATLAB&reg; 7.5<br></p>
-      </div>
-      <!--
+      Published with MATLAB&reg; 7.9<br></p></div><!--
 ##### SOURCE BEGIN #####
 %% Euclidean projection on a halfspace
 
@@ -149,7 +137,6 @@ Hence they are equal to working precision
 % It is also given by P_C(x0) = x0 + (b - a'*x0)*a/||a||^2 if a'*x0 > b
 %                           and x0                         if a'*x0 <=b
 
-cvx_quiet(true);
 % Input data
 randn('seed',0);
 n  = 10;
@@ -168,7 +155,7 @@ fprintf(1,'Done! \n');
 
 % Solution via QP
 fprintf(1,'Computing the solution of the QP for the case where a^T*x0 <=b...');
-cvx_begin
+cvx_begin quiet
     variable xs0(n)
     minimize ( square_pos(norm(xs0 - x0)) )
     a'*xs0 <= b;
@@ -176,7 +163,7 @@ cvx_end
 fprintf(1,'Done! \n');
 
 fprintf(1,'Computing the solution of the QP for the case where a^T*x0 > b...');
-cvx_begin
+cvx_begin quiet
     variable xs1(n)
     minimize ( square_pos(norm(xs1 - x1)) )
     a'*xs1 <= b;
@@ -191,7 +178,6 @@ disp('Hence they are equal to working precision');
 disp('Verifying that p_C(x1) and x1_star are equal in the case where a^T*x1 > b');
 disp(['||p_C(x1) - x1_star|| = ' num2str(norm(xs1 - pc_x1))]);
 disp('Hence they are equal to working precision');
+
 ##### SOURCE END #####
--->
-   </body>
-</html>
+--></body></html>

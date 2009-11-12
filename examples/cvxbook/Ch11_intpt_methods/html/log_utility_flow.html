@@ -1,18 +1,12 @@
 
 <!DOCTYPE html
-  PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN">
-<html xmlns:mwsh="http://www.mathworks.com/namespace/mcode/v1/syntaxhighlight.dtd">
-   <head>
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head>
       <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-   
-      <!--
+   <!--
 This HTML is auto-generated from an M-file.
 To make changes, update the M-file and republish this document.
-      -->
-      <title>Section 11.8.4: Network rate optimization</title>
-      <meta name="generator" content="MATLAB 7.5">
-      <meta name="date" content="2008-05-23">
-      <meta name="m-file" content="log_utility_flow"><style>
+      --><title>Section 11.8.4: Network rate optimization</title><meta name="generator" content="MATLAB 7.9"><meta name="date" content="2009-11-11"><meta name="m-file" content="log_utility_flow___"><style type="text/css">
 
 body {
   background-color: white;
@@ -68,10 +62,7 @@ p.footer {
   color: gray;
 }
 
-  </style></head>
-   <body>
-      <div class="content">
-         <h1>Section 11.8.4: Network rate optimization</h1><pre class="codeinput"><span class="comment">% Boyd &amp; Vandenberghe "Convex Optimization"</span>
+  </style></head><body><div class="content"><h1>Section 11.8.4: Network rate optimization</h1><pre class="codeinput"><span class="comment">% Boyd &amp; Vandenberghe "Convex Optimization"</span>
 <span class="comment">% Argyrios Zymnis - 05/03/08</span>
 <span class="comment">%</span>
 <span class="comment">% We consider a network with n flows and L links. Each flow i,</span>
@@ -118,45 +109,41 @@ cvx_end
 dual_obj = cvx_optval;
 </pre><pre class="codeoutput"> 
 Successive approximation method to be employed.
-   SDPT3 will be called several times to refine the solution.
+   For improved efficiency, sedumi is solving the dual problem.
+   sedumi will be called several times to refine the solution.
    Original size: 50 variables, 20 equality constraints
-   For improved efficiency, SDPT3 is solving the dual problem.
-   Approximation size: 131 variables, 70 equality constraints
+   10 exponentials add 80 variables, 50 equality constraints
 -----------------------------------------------------------------
- Target     Conic    Solver
-Precision   Error    Status
----------------------------
-1.221e-04  2.561e+00  Solved
-1.221e-04  9.274e-02  Solved
-1.221e-04  1.195e-04  Solved
-1.221e-04  0.000e+00  Solved
-1.490e-08  2.606e-07  Solved
-1.490e-08  0.000e+00  Solved
+S   Error      #     Status
+-----------------------------
+  2.563e+00   0/0   Solved
+  2.847e-01   0/0   Solved
+  3.993e-04   0/0   Solved
+  7.571e-06   0/0   Solved
+  1.364e-07   5/0   Solved
+  0.000e+00  10/0   Solved
 -----------------------------------------------------------------
 Status: Solved
 Optimal value (cvx_optval): -31.5685
  
 Successive approximation method to be employed.
-   SDPT3 will be called several times to refine the solution.
+   sedumi will be called several times to refine the solution.
    Original size: 50 variables, 20 equality constraints
-   Approximation size: 131 variables, 70 equality constraints
+   10 exponentials add 80 variables, 50 equality constraints
 -----------------------------------------------------------------
- Target     Conic    Solver
-Precision   Error    Status
----------------------------
-1.221e-04  1.546e+00  Solved
-1.221e-04  3.353e-02  Solved
-1.221e-04  2.447e-05  Solved
-1.221e-04  0.000e+00  Solved
-1.490e-08  5.021e-08  Solved
-1.490e-08  0.000e+00  Solved
+S   Error      #     Status
+-----------------------------
+  1.547e+00   0/0   Solved
+  1.311e-01   0/0   Solved
+  4.121e-04   0/0   Solved
+  7.120e-06   0/0   Solved
+  1.318e-07   0/0   Solved
+  0.000e+00  10/0   Solved
 -----------------------------------------------------------------
 Status: Solved
 Optimal value (cvx_optval): -31.5685
 </pre><p class="footer"><br>
-            Published with MATLAB&reg; 7.5<br></p>
-      </div>
-      <!--
+      Published with MATLAB&reg; 7.9<br></p></div><!--
 ##### SOURCE BEGIN #####
 %% Section 11.8.4: Network rate optimization
 
@@ -207,6 +194,4 @@ cvx_end
 dual_obj = cvx_optval;
 
 ##### SOURCE END #####
--->
-   </body>
-</html>
+--></body></html>

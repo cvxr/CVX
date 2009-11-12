@@ -1,18 +1,12 @@
 
 <!DOCTYPE html
-  PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN">
-<html xmlns:mwsh="http://www.mathworks.com/namespace/mcode/v1/syntaxhighlight.dtd">
-   <head>
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head>
       <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-   
-      <!--
+   <!--
 This HTML is auto-generated from an M-file.
 To make changes, update the M-file and republish this document.
-      -->
-      <title>Minimize sidelobe level of an FIR broadband far-field antenna array</title>
-      <meta name="generator" content="MATLAB 7.5">
-      <meta name="date" content="2008-05-23">
-      <meta name="m-file" content="broadband_array_min_sidelobe"><style>
+      --><title>Minimize sidelobe level of an FIR broadband far-field antenna array</title><meta name="generator" content="MATLAB 7.9"><meta name="date" content="2009-11-11"><meta name="m-file" content="broadband_array_min_sidelobe___"><style type="text/css">
 
 body {
   background-color: white;
@@ -68,10 +62,7 @@ p.footer {
   color: gray;
 }
 
-  </style></head>
-   <body>
-      <div class="content">
-         <h1>Minimize sidelobe level of an FIR broadband far-field antenna array</h1><pre class="codeinput"><span class="comment">% "Antenna array pattern synthesis via convex optimization"</span>
+  </style></head><body><div class="content"><h1>Minimize sidelobe level of an FIR broadband far-field antenna array</h1><pre class="codeinput"><span class="comment">% "Antenna array pattern synthesis via convex optimization"</span>
 <span class="comment">% by H. Lebret and S. Boyd</span>
 <span class="comment">% (figures are generated)</span>
 <span class="comment">%</span>
@@ -232,75 +223,56 @@ subplot(2,2,2); polar_plot_ant(abs( Atotal(:,:,3)*w ),theta_tar,bw,<span class="
 subplot(2,2,3); polar_plot_ant(abs( Atotal(:,:,4)*w ),theta_tar,bw,<span class="string">'f = 2000 (pass)'</span>);
 subplot(2,2,4); polar_plot_ant(abs( Atotal(:,:,5)*w ),theta_tar,bw,<span class="string">'f = 2500 (stop)'</span>);
 </pre><pre class="codeoutput"> 
-Calling SDPT3: 3184 variables, 145 equality constraints
-   For improved efficiency, SDPT3 is solving the dual problem.
+Calling sedumi: 3184 variables, 145 equality constraints
+   For improved efficiency, sedumi is solving the dual problem.
 ------------------------------------------------------------
+SeDuMi 1.21 by AdvOL, 2005-2008 and Jos F. Sturm, 1998-2003.
+Alg = 2: xz-corrector, Adaptive Step-Differentiation, theta = 0.250, beta = 0.500
+eqs m = 145, order n = 2123, dim = 3186, blocks = 1062
+nnz(A) = 304322 + 0, nnz(ADA) = 21025, nnz(L) = 10585
+ it :     b*y       gap    delta  rate   t/tP*  t/tD*   feas cg cg  prec
+  0 :            1.06E+03 0.000
+  1 :  -1.80E+00 3.57E+02 0.000 0.3363 0.9000 0.9000   1.37  1  1  9.7E+02
+  2 :  -2.44E+00 8.95E+01 0.000 0.2504 0.9000 0.9000   0.55  1  1  2.4E+02
+  3 :  -8.45E-01 2.29E+01 0.000 0.2559 0.9000 0.9000   3.64  1  1  2.0E+01
+  4 :  -7.47E-01 1.25E+01 0.000 0.5458 0.9000 0.9000   1.99  1  1  9.5E+00
+  5 :  -6.25E-01 5.52E+00 0.000 0.4414 0.9000 0.9000   1.53  1  1  3.5E+00
+  6 :  -5.62E-01 2.77E+00 0.000 0.5018 0.9000 0.9000   1.33  1  1  1.6E+00
+  7 :  -5.40E-01 1.72E+00 0.000 0.6218 0.9000 0.9000   1.20  1  1  9.3E-01
+  8 :  -5.18E-01 9.22E-01 0.000 0.5355 0.9000 0.9000   1.15  1  1  4.8E-01
+  9 :  -5.05E-01 4.43E-01 0.000 0.4809 0.9000 0.9000   1.09  1  1  2.2E-01
+ 10 :  -4.97E-01 1.67E-01 0.000 0.3758 0.9000 0.9000   1.05  1  1  8.3E-02
+ 11 :  -4.96E-01 7.94E-02 0.000 0.4769 0.9000 0.1736   1.02  1  1  4.0E-02
+ 12 :  -4.93E-01 1.98E-02 0.000 0.2490 0.9201 0.9000   1.02  1  1  1.0E-02
+ 13 :  -4.92E-01 7.99E-03 0.000 0.4039 0.9068 0.9000   1.01  1  1  4.1E-03
+ 14 :  -4.92E-01 3.00E-03 0.000 0.3758 0.9051 0.9000   1.00  1  1  1.6E-03
+ 15 :  -4.92E-01 1.12E-03 0.000 0.3741 0.9161 0.9000   1.00  1  1  5.8E-04
+ 16 :  -4.92E-01 4.95E-04 0.000 0.4410 0.9000 0.9091   1.00  1  1  2.6E-04
+ 17 :  -4.92E-01 2.03E-04 0.000 0.4093 0.9000 0.9165   1.00  2  2  1.0E-04
+ 18 :  -4.92E-01 6.79E-05 0.000 0.3348 0.9000 0.9154   1.00  2  2  3.5E-05
+ 19 :  -4.92E-01 1.77E-05 0.000 0.2614 0.9000 0.9061   1.00  2  2  9.1E-06
+ 20 :  -4.92E-01 4.26E-06 0.000 0.2400 0.9000 0.9013   1.00  3  3  2.2E-06
+ 21 :  -4.92E-01 6.81E-07 0.000 0.1600 0.9082 0.9000   1.00  4  4  3.5E-07
+ 22 :  -4.92E-01 3.21E-08 0.000 0.0472 0.9901 0.9900   1.00  7  8  1.6E-08
+ 23 :  -4.92E-01 2.34E-09 0.000 0.0730 0.9902 0.9900   1.00 24 24  1.2E-09
 
- num. of constraints = 145
- dim. of socp   var  = 3180,   num. of socp blk  = 1060
- dim. of free   var  =  4 *** convert ublk to lblk
-*******************************************************************
-   SDPT3: Infeasible path-following algorithms
-*******************************************************************
- version  predcorr  gam  expon  scale_data
-    NT      1      0.000   1        0    
-it pstep dstep pinfeas dinfeas  gap      mean(obj)   cputime
--------------------------------------------------------------------
- 0|0.000|0.000|9.2e+02|3.6e+02|6.3e+04|-1.673648e-10| 0:0:01| chol  1  1 
- 1|0.983|0.978|1.6e+01|8.0e+00|1.1e+03|-1.649364e+01| 0:0:02| chol  1  1 
- 2|1.000|0.992|7.6e-07|7.4e-02|3.1e+01|-1.574643e+01| 0:0:03| chol  1  1 
- 3|1.000|0.961|7.0e-06|3.8e-03|1.2e+00|-6.175155e-01| 0:0:05| chol  1  1 
- 4|1.000|0.219|5.7e-06|3.0e-03|9.8e-01|-5.374376e-01| 0:0:06| chol  1  1 
- 5|0.799|0.293|1.3e-06|2.1e-03|7.0e-01|-4.953416e-01| 0:0:07| chol  1  1 
- 6|0.576|0.326|9.6e-07|1.4e-03|4.6e-01|-4.986182e-01| 0:0:09| chol  2  1 
- 7|0.814|0.350|9.0e-07|9.4e-04|2.5e-01|-5.186082e-01| 0:0:10| chol  1  1 
- 8|0.898|0.334|3.1e-07|6.2e-04|1.5e-01|-5.181563e-01| 0:0:12| chol  2  2 
- 9|1.000|0.735|3.4e-08|1.7e-04|4.8e-02|-4.912010e-01| 0:0:13| chol  1  2 
-10|0.556|0.750|2.6e-09|4.2e-05|2.2e-02|-4.866625e-01| 0:0:14| chol  2  2 
-11|0.722|0.702|5.4e-10|1.3e-05|7.9e-03|-4.896244e-01| 0:0:16| chol  2  2 
-12|0.598|0.665|3.4e-10|4.3e-06|3.6e-03|-4.906491e-01| 0:0:17| chol  2  2 
-13|0.752|0.787|2.1e-10|1.0e-06|1.2e-03|-4.914282e-01| 0:0:18| chol  2  2 
-14|0.764|0.767|4.6e-10|2.7e-07|3.5e-04|-4.917374e-01| 0:0:20| chol  2  2 
-15|0.525|0.886|3.0e-10|5.7e-08|1.8e-04|-4.917958e-01| 0:0:21| chol  2  2 
-16|0.814|0.939|3.6e-10|2.7e-08|4.6e-05|-4.918576e-01| 0:0:22| chol  3  3 
-17|0.913|0.854|1.4e-09|6.9e-09|7.9e-06|-4.918758e-01| 0:0:24| chol  3  3 
-18|0.566|0.895|1.4e-09|1.2e-09|4.1e-06|-4.918774e-01| 0:0:25| chol  4  3 
-19|0.555|0.943|1.9e-09|6.4e-10|2.2e-06|-4.918783e-01| 0:0:27| chol  4  4 
-20|0.542|0.943|1.9e-09|4.2e-10|1.2e-06|-4.918787e-01| 0:0:28| chol  3  4 
-21|0.540|0.943|2.0e-09|4.3e-10|6.5e-07|-4.918790e-01| 0:0:29| chol  4  4 
-22|0.542|0.943|1.4e-09|4.4e-10|3.6e-07|-4.918791e-01| 0:0:31| chol  4  4 
-23|0.544|0.943|1.3e-09|3.2e-10|2.0e-07|-4.918792e-01| 0:0:32| chol  4  5 
-24|0.547|0.942|1.1e-09|2.8e-10|1.1e-07|-4.918793e-01| 0:0:33| chol  4  6 
-25|0.549|0.942|1.1e-09|2.5e-10|5.8e-08|-4.918793e-01| 0:0:35| chol  6  6 
-26|0.551|0.943|1.2e-09|2.4e-10|3.2e-08|-4.918793e-01| 0:0:36| chol  6  5 
-27|0.553|0.943|1.2e-09|2.5e-10|1.7e-08|-4.918793e-01| 0:0:38|
-  stop: max(relative gap, infeasibilities) &lt; 1.49e-08
--------------------------------------------------------------------
- number of iterations   = 27
- primal objective value = -4.91879292e-01
- dual   objective value = -4.91879305e-01
- gap := trace(XZ)       = 1.71e-08
- relative gap           = 8.61e-09
- actual relative gap    = 6.85e-09
- rel. primal infeas     = 1.17e-09
- rel. dual   infeas     = 2.51e-10
- norm(X), norm(y), norm(Z) = 6.7e-01, 7.0e+00, 2.0e+01
- norm(A), norm(b), norm(C) = 3.9e+02, 2.0e+00, 3.0e+00
- Total CPU time (secs)  = 37.6  
- CPU time per iteration = 1.4  
- termination code       =  0
- DIMACS: 1.2e-09  0.0e+00  3.8e-10  0.0e+00  6.9e-09  8.6e-09
--------------------------------------------------------------------
+iter seconds digits       c*x               b*y
+ 23      4.0   9.3 -4.9187930504e-01 -4.9187930526e-01
+|Ax-b| =   1.2e-09, [Ay-c]_+ =   2.4E-12, |x|=  9.1e-01, |y|=  7.0e+00
+
+Detailed timing (sec)
+   Pre          IPM          Post
+4.500E-01    3.960E+00    1.000E-02    
+Max-norms: ||b||=1, ||c|| = 1,
+Cholesky |add|=1, |skip| = 3, ||L.L|| = 7975.18.
 ------------------------------------------------------------
 Status: Solved
 Optimal value (cvx_optval): +0.491879
 Problem is Solved
 The minimum sidelobe level is -6.16 dB.
 
-</pre><img vspace="5" hspace="5" src="broadband_array_min_sidelobe_01.png"> <img vspace="5" hspace="5" src="broadband_array_min_sidelobe_02.png"> <img vspace="5" hspace="5" src="broadband_array_min_sidelobe_03.png"> <p class="footer"><br>
-            Published with MATLAB&reg; 7.5<br></p>
-      </div>
-      <!--
+</pre><img vspace="5" hspace="5" src="broadband_array_min_sidelobe____01.png" alt=""> <img vspace="5" hspace="5" src="broadband_array_min_sidelobe____02.png" alt=""> <img vspace="5" hspace="5" src="broadband_array_min_sidelobe____03.png" alt=""> <p class="footer"><br>
+      Published with MATLAB&reg; 7.9<br></p></div><!--
 ##### SOURCE BEGIN #####
 %% Minimize sidelobe level of an FIR broadband far-field antenna array
 
@@ -466,6 +438,4 @@ subplot(2,2,3); polar_plot_ant(abs( Atotal(:,:,4)*w ),theta_tar,bw,'f = 2000 (pa
 subplot(2,2,4); polar_plot_ant(abs( Atotal(:,:,5)*w ),theta_tar,bw,'f = 2500 (stop)');
 
 ##### SOURCE END #####
--->
-   </body>
-</html>
+--></body></html>

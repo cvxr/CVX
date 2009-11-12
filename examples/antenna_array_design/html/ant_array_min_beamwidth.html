@@ -1,18 +1,12 @@
 
 <!DOCTYPE html
-  PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN">
-<html xmlns:mwsh="http://www.mathworks.com/namespace/mcode/v1/syntaxhighlight.dtd">
-   <head>
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head>
       <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-   
-      <!--
+   <!--
 This HTML is auto-generated from an M-file.
 To make changes, update the M-file and republish this document.
-      -->
-      <title>Minimize beamwidth of an array with arbitrary 2-D geometry</title>
-      <meta name="generator" content="MATLAB 7.5">
-      <meta name="date" content="2008-05-23">
-      <meta name="m-file" content="ant_array_min_beamwidth"><style>
+      --><title>Minimize beamwidth of an array with arbitrary 2-D geometry</title><meta name="generator" content="MATLAB 7.9"><meta name="date" content="2009-11-11"><meta name="m-file" content="ant_array_min_beamwidth___"><style type="text/css">
 
 body {
   background-color: white;
@@ -68,10 +62,7 @@ p.footer {
   color: gray;
 }
 
-  </style></head>
-   <body>
-      <div class="content">
-         <h1>Minimize beamwidth of an array with arbitrary 2-D geometry</h1><pre class="codeinput"><span class="comment">% "Convex optimization examples" lecture notes (EE364) by S. Boyd</span>
+  </style></head><body><div class="content"><h1>Minimize beamwidth of an array with arbitrary 2-D geometry</h1><pre class="codeinput"><span class="comment">% "Convex optimization examples" lecture notes (EE364) by S. Boyd</span>
 <span class="comment">% "Antenna array pattern synthesis via convex optimization"</span>
 <span class="comment">% by H. Lebret and S. Boyd</span>
 <span class="comment">% (figures are generated)</span>
@@ -162,7 +153,6 @@ Atar = A(ind_closest,:);
 <span class="comment">%*********************************************************************</span>
 <span class="comment">% use bisection algorithm to solve the problem</span>
 <span class="comment">%*********************************************************************</span>
-cvx_quiet(true);
 
 halfbeam_bot = 1;
 halfbeam_top = max_half_beam;
@@ -181,7 +171,7 @@ disp(<span class="string">' '</span>)
   As = A(ind,:);
 
   <span class="comment">% formulate and solve the feasibility antenna array problem</span>
-  cvx_begin
+  cvx_begin <span class="string">quiet</span>
     variable <span class="string">w(n)</span> <span class="string">complex</span>
     <span class="comment">% feasibility problem</span>
     Atar*w == 1;
@@ -208,15 +198,13 @@ fprintf(1,<span class="string">'\nOptimum half beam-width for given specs is %d.
 ind = find(theta &lt;= (theta_tar-halfbeam) | <span class="keyword">...</span>
            theta &gt;= (theta_tar+halfbeam) );
 As = A(ind,:);
-cvx_begin
+cvx_begin <span class="string">quiet</span>
   variable <span class="string">w(n)</span> <span class="string">complex</span>
   minimize( norm( w ) )
   subject <span class="string">to</span>
     Atar*w == 1;
     abs(As*w) &lt;= 10^(min_sidelobe/20);
 cvx_end
-
-cvx_quiet(false);
 
 <span class="comment">%********************************************************************</span>
 <span class="comment">% plots</span>
@@ -266,10 +254,8 @@ Problem is feasible for half beam-width = 10 degress
 Problem is not feasible for half beam-width = 9 degress
 
 Optimum half beam-width for given specs is 10.
-</pre><img vspace="5" hspace="5" src="ant_array_min_beamwidth_01.png"> <img vspace="5" hspace="5" src="ant_array_min_beamwidth_02.png"> <img vspace="5" hspace="5" src="ant_array_min_beamwidth_03.png"> <p class="footer"><br>
-            Published with MATLAB&reg; 7.5<br></p>
-      </div>
-      <!--
+</pre><img vspace="5" hspace="5" src="ant_array_min_beamwidth____01.png" alt=""> <img vspace="5" hspace="5" src="ant_array_min_beamwidth____02.png" alt=""> <img vspace="5" hspace="5" src="ant_array_min_beamwidth____03.png" alt=""> <p class="footer"><br>
+      Published with MATLAB&reg; 7.9<br></p></div><!--
 ##### SOURCE BEGIN #####
 %% Minimize beamwidth of an array with arbitrary 2-D geometry
 
@@ -364,7 +350,6 @@ Atar = A(ind_closest,:);
 %*********************************************************************
 % use bisection algorithm to solve the problem
 %*********************************************************************
-cvx_quiet(true);
 
 halfbeam_bot = 1;
 halfbeam_top = max_half_beam;
@@ -383,7 +368,7 @@ while( halfbeam_top - halfbeam_bot > 1)
   As = A(ind,:);
 
   % formulate and solve the feasibility antenna array problem
-  cvx_begin
+  cvx_begin quiet
     variable w(n) complex
     % feasibility problem
     Atar*w == 1;
@@ -410,15 +395,13 @@ fprintf(1,'\nOptimum half beam-width for given specs is %d.\n',halfbeam);
 ind = find(theta <= (theta_tar-halfbeam) | ...
            theta >= (theta_tar+halfbeam) );
 As = A(ind,:);
-cvx_begin
+cvx_begin quiet
   variable w(n) complex
   minimize( norm( w ) )
   subject to
     Atar*w == 1;
     abs(As*w) <= 10^(min_sidelobe/20);
 cvx_end
-
-cvx_quiet(false);
 
 %********************************************************************
 % plots
@@ -459,6 +442,4 @@ plot([0 55*cos(theta_2*pi/180)], [0 55*sin(theta_2*pi/180)], 'k:')
 hold off
 
 ##### SOURCE END #####
--->
-   </body>
-</html>
+--></body></html>

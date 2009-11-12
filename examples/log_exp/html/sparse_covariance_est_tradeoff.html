@@ -1,18 +1,12 @@
 
 <!DOCTYPE html
-  PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN">
-<html xmlns:mwsh="http://www.mathworks.com/namespace/mcode/v1/syntaxhighlight.dtd">
-   <head>
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head>
       <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-   
-      <!--
+   <!--
 This HTML is auto-generated from an M-file.
 To make changes, update the M-file and republish this document.
-      -->
-      <title>Sparse covariance estimation for Gaussian variables</title>
-      <meta name="generator" content="MATLAB 7.5">
-      <meta name="date" content="2008-05-23">
-      <meta name="m-file" content="sparse_covariance_est_tradeoff"><style>
+      --><title>Sparse covariance estimation for Gaussian variables</title><meta name="generator" content="MATLAB 7.9"><meta name="date" content="2009-11-11"><meta name="m-file" content="sparse_covariance_est_tradeoff___"><style type="text/css">
 
 body {
   background-color: white;
@@ -68,10 +62,7 @@ p.footer {
   color: gray;
 }
 
-  </style></head>
-   <body>
-      <div class="content">
-         <h1>Sparse covariance estimation for Gaussian variables</h1><pre class="codeinput"><span class="comment">% Jo&Atilde;&laquo;lle Skaf - 04/24/08</span>
+  </style></head><body><div class="content"><h1>Sparse covariance estimation for Gaussian variables</h1><pre class="codeinput"><span class="comment">% Jo&Atilde;&laquo;lle Skaf - 04/24/08</span>
 <span class="comment">% (a figure is generated)</span>
 <span class="comment">%</span>
 <span class="comment">% Suppose y \in\reals^n is a Gaussian random variable with zero mean and</span>
@@ -101,12 +92,10 @@ Nlambda = 20;
 lambda = logspace(-2, 3, Nlambda);
 nnz = zeros(1,Nlambda);
 
-
 <span class="keyword">for</span> i=1:Nlambda
     disp([<span class="string">'i = '</span> num2str(i) <span class="string">', lambda(i) = '</span> num2str(lambda(i))]);
     <span class="comment">% Maximum likelihood estimate of R^{-1}</span>
-    cvx_begin <span class="string">sdp</span>
-        cvx_quiet <span class="string">false</span>
+    cvx_begin <span class="string">sdp</span> <span class="string">quiet</span>
         variable <span class="string">S(n,n)</span> <span class="string">symmetric</span>
         maximize <span class="string">log_det(S)</span> <span class="string">-</span> <span class="string">trace(S*Y)</span> <span class="string">-</span> <span class="string">lambda(i)*sum(sum(abs(S)))</span>
         S &gt;= 0
@@ -121,416 +110,27 @@ semilogx(lambda, nnz_true*ones(1,Nlambda),<span class="string">'r'</span>);
 xlabel(<span class="string">'\lambda'</span>);
 legend(<span class="string">'nonzeros in S'</span>, <span class="string">'nonzeros in R^{-1}'</span>);
 </pre><pre class="codeoutput">i = 1, lambda(i) = 0.01
- 
-Successive approximation method to be employed.
-   SDPT3 will be called several times to refine the solution.
-   Original size: 501 variables, 222 equality constraints
-   For improved efficiency, SDPT3 is solving the dual problem.
-   Approximation size: 510 variables, 227 equality constraints
------------------------------------------------------------------
- Target     Conic    Solver
-Precision   Error    Status
----------------------------
-1.221e-04  7.007e-01  Solved
-1.221e-04  4.471e-04  Solved
-1.221e-04  4.409e-06  Solved
-1.221e-04  0.000e+00  Solved
-1.490e-08  0.000e+00  Solved
------------------------------------------------------------------
-Status: Solved
-Optimal value (cvx_optval): -31.3012
 i = 2, lambda(i) = 0.01833
- 
-Successive approximation method to be employed.
-   SDPT3 will be called several times to refine the solution.
-   Original size: 501 variables, 222 equality constraints
-   For improved efficiency, SDPT3 is solving the dual problem.
-   Approximation size: 510 variables, 227 equality constraints
------------------------------------------------------------------
- Target     Conic    Solver
-Precision   Error    Status
----------------------------
-1.221e-04  7.030e-01  Solved
-1.221e-04  4.408e-04  Solved
-1.221e-04  2.636e-06  Solved
-1.221e-04  0.000e+00  Solved
-1.490e-08  4.854e-11  Solved
-1.490e-08  0.000e+00  Solved
------------------------------------------------------------------
-Status: Solved
-Optimal value (cvx_optval): -31.3504
 i = 3, lambda(i) = 0.033598
- 
-Successive approximation method to be employed.
-   SDPT3 will be called several times to refine the solution.
-   Original size: 501 variables, 222 equality constraints
-   For improved efficiency, SDPT3 is solving the dual problem.
-   Approximation size: 510 variables, 227 equality constraints
------------------------------------------------------------------
- Target     Conic    Solver
-Precision   Error    Status
----------------------------
-1.221e-04  7.071e-01  Solved
-1.221e-04  4.294e-04  Solved
-1.221e-04  0.000e+00  Solved
-1.490e-08  3.572e-08  Solved
-1.490e-08  0.000e+00  Solved
------------------------------------------------------------------
-Status: Solved
-Optimal value (cvx_optval): -31.4368
 i = 4, lambda(i) = 0.061585
- 
-Successive approximation method to be employed.
-   SDPT3 will be called several times to refine the solution.
-   Original size: 501 variables, 222 equality constraints
-   For improved efficiency, SDPT3 is solving the dual problem.
-   Approximation size: 510 variables, 227 equality constraints
------------------------------------------------------------------
- Target     Conic    Solver
-Precision   Error    Status
----------------------------
-1.221e-04  7.142e-01  Solved
-1.221e-04  4.035e-04  Solved
-1.221e-04  0.000e+00  Solved
-1.490e-08  5.274e-08  Solved
-1.490e-08  8.038e-11  Solved
-1.490e-08  0.000e+00  Solved
------------------------------------------------------------------
-Status: Solved
-Optimal value (cvx_optval): -31.5845
 i = 5, lambda(i) = 0.11288
- 
-Successive approximation method to be employed.
-   SDPT3 will be called several times to refine the solution.
-   Original size: 501 variables, 222 equality constraints
-   For improved efficiency, SDPT3 is solving the dual problem.
-   Approximation size: 510 variables, 227 equality constraints
------------------------------------------------------------------
- Target     Conic    Solver
-Precision   Error    Status
----------------------------
-1.221e-04  7.260e-01  Solved
-1.221e-04  4.017e-04  Solved
-1.221e-04  2.108e-06  Solved
-1.221e-04  0.000e+00  Solved
-1.490e-08  1.654e-09  Solved
-1.490e-08  0.000e+00  Solved
------------------------------------------------------------------
-Status: Solved
-Optimal value (cvx_optval): -31.8272
 i = 6, lambda(i) = 0.20691
- 
-Successive approximation method to be employed.
-   SDPT3 will be called several times to refine the solution.
-   Original size: 501 variables, 222 equality constraints
-   For improved efficiency, SDPT3 is solving the dual problem.
-   Approximation size: 510 variables, 227 equality constraints
------------------------------------------------------------------
- Target     Conic    Solver
-Precision   Error    Status
----------------------------
-1.221e-04  7.450e-01  Solved
-1.221e-04  3.628e-04  Solved
-1.221e-04  3.567e-07  Solved
-1.221e-04  0.000e+00  Solved
-1.490e-08  3.221e-09  Solved
-1.490e-08  0.000e+00  Solved
------------------------------------------------------------------
-Status: Solved
-Optimal value (cvx_optval): -32.2113
 i = 7, lambda(i) = 0.37927
- 
-Successive approximation method to be employed.
-   SDPT3 will be called several times to refine the solution.
-   Original size: 501 variables, 222 equality constraints
-   For improved efficiency, SDPT3 is solving the dual problem.
-   Approximation size: 510 variables, 227 equality constraints
------------------------------------------------------------------
- Target     Conic    Solver
-Precision   Error    Status
----------------------------
-1.221e-04  7.746e-01  Solved
-1.221e-04  3.072e-04  Solved
-1.221e-04  0.000e+00  Solved
-1.490e-08  3.307e-08  Solved
-1.490e-08  0.000e+00  Solved
------------------------------------------------------------------
-Status: Solved
-Optimal value (cvx_optval): -32.8011
 i = 8, lambda(i) = 0.69519
- 
-Successive approximation method to be employed.
-   SDPT3 will be called several times to refine the solution.
-   Original size: 501 variables, 222 equality constraints
-   For improved efficiency, SDPT3 is solving the dual problem.
-   Approximation size: 510 variables, 227 equality constraints
------------------------------------------------------------------
- Target     Conic    Solver
-Precision   Error    Status
----------------------------
-1.221e-04  8.191e-01  Solved
-1.221e-04  2.413e-04  Solved
-1.221e-04  3.665e-07  Solved
-1.221e-04  0.000e+00  Solved
-1.490e-08  8.590e-10  Solved
-1.490e-08  0.000e+00  Solved
------------------------------------------------------------------
-Status: Solved
-Optimal value (cvx_optval): -33.6657
 i = 9, lambda(i) = 1.2743
- 
-Successive approximation method to be employed.
-   SDPT3 will be called several times to refine the solution.
-   Original size: 501 variables, 222 equality constraints
-   For improved efficiency, SDPT3 is solving the dual problem.
-   Approximation size: 510 variables, 227 equality constraints
------------------------------------------------------------------
- Target     Conic    Solver
-Precision   Error    Status
----------------------------
-1.221e-04  8.837e-01  Solved
-1.221e-04  1.496e-04  Solved
-1.221e-04  0.000e+00  Solved
-1.490e-08  1.380e-08  Solved
-1.490e-08  0.000e+00  Solved
------------------------------------------------------------------
-Status: Solved
-Optimal value (cvx_optval): -34.876
 i = 10, lambda(i) = 2.3357
- 
-Successive approximation method to be employed.
-   SDPT3 will be called several times to refine the solution.
-   Original size: 501 variables, 222 equality constraints
-   For improved efficiency, SDPT3 is solving the dual problem.
-   Approximation size: 510 variables, 227 equality constraints
------------------------------------------------------------------
- Target     Conic    Solver
-Precision   Error    Status
----------------------------
-1.221e-04  9.749e-01  Solved
-1.221e-04  4.715e-05  Solved
-1.221e-04  0.000e+00  Solved
-1.490e-08  6.232e-09  Solved
-1.490e-08  0.000e+00  Solved
------------------------------------------------------------------
-Status: Solved
-Optimal value (cvx_optval): -36.4981
 i = 11, lambda(i) = 4.2813
- 
-Successive approximation method to be employed.
-   SDPT3 will be called several times to refine the solution.
-   Original size: 501 variables, 222 equality constraints
-   For improved efficiency, SDPT3 is solving the dual problem.
-   Approximation size: 510 variables, 227 equality constraints
------------------------------------------------------------------
- Target     Conic    Solver
-Precision   Error    Status
----------------------------
-1.221e-04  1.098e+00  Solved
-1.221e-04  0.000e+00  Solved
-1.490e-08  1.464e-10  Solved
-1.490e-08  0.000e+00  Solved
------------------------------------------------------------------
-Status: Solved
-Optimal value (cvx_optval): -38.5618
 i = 12, lambda(i) = 7.8476
- 
-Successive approximation method to be employed.
-   SDPT3 will be called several times to refine the solution.
-   Original size: 501 variables, 222 equality constraints
-   For improved efficiency, SDPT3 is solving the dual problem.
-   Approximation size: 510 variables, 227 equality constraints
------------------------------------------------------------------
- Target     Conic    Solver
-Precision   Error    Status
----------------------------
-1.221e-04  1.262e+00  Solved
-1.221e-04  8.950e-05  Solved
-1.221e-04  0.000e+00  Solved
-1.490e-08  3.844e-09  Solved
-1.490e-08  0.000e+00  Solved
------------------------------------------------------------------
-Status: Solved
-Optimal value (cvx_optval): -41.092
 i = 13, lambda(i) = 14.3845
- 
-Successive approximation method to be employed.
-   SDPT3 will be called several times to refine the solution.
-   Original size: 501 variables, 222 equality constraints
-   For improved efficiency, SDPT3 is solving the dual problem.
-   Approximation size: 510 variables, 227 equality constraints
------------------------------------------------------------------
- Target     Conic    Solver
-Precision   Error    Status
----------------------------
-1.221e-04  1.474e+00  Solved
-1.221e-04  5.403e-04  Solved
-1.221e-04  4.158e-06  Solved
-1.221e-04  0.000e+00  Solved
-1.490e-08  0.000e+00  Solved
------------------------------------------------------------------
-Status: Solved
-Optimal value (cvx_optval): -44.1061
 i = 14, lambda(i) = 26.3665
- 
-Successive approximation method to be employed.
-   SDPT3 will be called several times to refine the solution.
-   Original size: 501 variables, 222 equality constraints
-   For improved efficiency, SDPT3 is solving the dual problem.
-   Approximation size: 510 variables, 227 equality constraints
------------------------------------------------------------------
- Target     Conic    Solver
-Precision   Error    Status
----------------------------
-1.221e-04  1.755e+00  Solved
-1.221e-04  1.832e-03  Solved
-1.221e-04  2.661e-05  Solved
-1.221e-04  0.000e+00  Solved
-1.490e-08  1.327e-08  Solved
-1.490e-08  0.000e+00  Solved
------------------------------------------------------------------
-Status: Solved
-Optimal value (cvx_optval): -47.7294
 i = 15, lambda(i) = 48.3293
- 
-Successive approximation method to be employed.
-   SDPT3 will be called several times to refine the solution.
-   Original size: 501 variables, 222 equality constraints
-   For improved efficiency, SDPT3 is solving the dual problem.
-   Approximation size: 510 variables, 227 equality constraints
------------------------------------------------------------------
- Target     Conic    Solver
-Precision   Error    Status
----------------------------
-1.221e-04  2.123e+00  Solved
-1.221e-04  4.810e-03  Solved
-1.221e-04  8.608e-05  Solved
-1.221e-04  7.479e-07  Solved
-1.221e-04  5.790e-07  Solved
-1.221e-04S 5.898e-07  Solved
-1.221e-04  0.000e+00  Solved
-1.490e-08  0.000e+00  Solved
------------------------------------------------------------------
-Status: Solved
-Optimal value (cvx_optval): -51.9812
 i = 16, lambda(i) = 88.5867
- 
-Successive approximation method to be employed.
-   SDPT3 will be called several times to refine the solution.
-   Original size: 501 variables, 222 equality constraints
-   For improved efficiency, SDPT3 is solving the dual problem.
-   Approximation size: 510 variables, 227 equality constraints
------------------------------------------------------------------
- Target     Conic    Solver
-Precision   Error    Status
----------------------------
-1.221e-04  2.591e+00  Solved
-1.221e-04  1.118e-02  Solved
-1.221e-04  2.137e-04  Solved
-1.221e-04  2.297e-06  Solved
-1.221e-04S 4.418e-06  Solved
-1.221e-04  1.321e-06  Solved
-1.221e-04S 1.321e-06  Solved
-1.490e-08  6.281e-10  Solved
-1.490e-08S 6.336e-10  Solved
-1.490e-08  0.000e+00  Solved
------------------------------------------------------------------
-Status: Solved
-Optimal value (cvx_optval): -56.7913
 i = 17, lambda(i) = 162.3777
- 
-Successive approximation method to be employed.
-   SDPT3 will be called several times to refine the solution.
-   Original size: 501 variables, 222 equality constraints
-   For improved efficiency, SDPT3 is solving the dual problem.
-   Approximation size: 510 variables, 227 equality constraints
------------------------------------------------------------------
- Target     Conic    Solver
-Precision   Error    Status
----------------------------
-1.221e-04  3.170e+00  Solved
-1.221e-04  2.286e-02  Solved
-1.221e-04  4.716e-04  Solved
-1.221e-04  2.627e-05  Solved
-1.221e-04S 3.282e-05  Solved
-1.221e-04S 1.228e-04  Solved
-1.490e-08  1.000e-08  Solved
-1.490e-08S 1.006e-08  Solved
-1.490e-08  6.810e-09  Solved
-1.490e-08S 6.212e-09  Solved
------------------------------------------------------------------
-Status: Inaccurate/Solved
-Optimal value (cvx_optval): -62.0108
 i = 18, lambda(i) = 297.6351
- 
-Successive approximation method to be employed.
-   SDPT3 will be called several times to refine the solution.
-   Original size: 501 variables, 222 equality constraints
-   For improved efficiency, SDPT3 is solving the dual problem.
-   Approximation size: 510 variables, 227 equality constraints
------------------------------------------------------------------
- Target     Conic    Solver
-Precision   Error    Status
----------------------------
-1.221e-04  3.865e+00  Solved
-1.221e-04  4.331e-02  Solved
-1.221e-04  9.697e-04  Solved
-1.221e-04  1.744e-04  Solved
-1.221e-04S 1.883e-04  Solved
-1.221e-04S 2.066e-04  Solved
-1.490e-08  0.000e+00  Solved
------------------------------------------------------------------
-Status: Solved
-Optimal value (cvx_optval): -67.6118
 i = 19, lambda(i) = 545.5595
- 
-Successive approximation method to be employed.
-   SDPT3 will be called several times to refine the solution.
-   Original size: 501 variables, 222 equality constraints
-   For improved efficiency, SDPT3 is solving the dual problem.
-   Approximation size: 510 variables, 227 equality constraints
------------------------------------------------------------------
- Target     Conic    Solver
-Precision   Error    Status
----------------------------
-1.221e-04  4.681e+00  Solved
-1.221e-04  2.661e-02  Solved
-1.221e-04  5.282e-04  Solved
-1.221e-04  1.033e-04  Solved
-1.221e-04S 1.112e-04  Solved
-1.221e-04S 1.091e-04  Solved
-1.490e-08  2.328e-09  Solved
-1.490e-08  0.000e+00  Solved
------------------------------------------------------------------
-Status: Solved
-Optimal value (cvx_optval): -73.3839
 i = 20, lambda(i) = 1000
- 
-Successive approximation method to be employed.
-   SDPT3 will be called several times to refine the solution.
-   Original size: 501 variables, 222 equality constraints
-   For improved efficiency, SDPT3 is solving the dual problem.
-   Approximation size: 510 variables, 227 equality constraints
------------------------------------------------------------------
- Target     Conic    Solver
-Precision   Error    Status
----------------------------
-1.221e-04  5.623e+00  Solved
-1.221e-04  2.838e-04  Solved
-1.221e-04  4.058e-05  Solved
-1.221e-04S 4.460e-05  Solved
-1.221e-04  1.182e-05  Solved
-1.221e-04S 1.182e-05  Solved
-1.490e-08  6.540e-09  Solved
-1.490e-08S 6.531e-09  Solved
-1.490e-08  0.000e+00  Solved
------------------------------------------------------------------
-Status: Solved
-Optimal value (cvx_optval): -79.2801
-</pre><img vspace="5" hspace="5" src="sparse_covariance_est_tradeoff_01.png"> <p class="footer"><br>
-            Published with MATLAB&reg; 7.5<br></p>
-      </div>
-      <!--
+</pre><img vspace="5" hspace="5" src="sparse_covariance_est_tradeoff____01.png" alt=""> <p class="footer"><br>
+      Published with MATLAB&reg; 7.9<br></p></div><!--
 ##### SOURCE BEGIN #####
 %% Sparse covariance estimation for Gaussian variables
 
@@ -564,12 +164,10 @@ Nlambda = 20;
 lambda = logspace(-2, 3, Nlambda);
 nnz = zeros(1,Nlambda);
 
-
 for i=1:Nlambda
     disp(['i = ' num2str(i) ', lambda(i) = ' num2str(lambda(i))]);        
     % Maximum likelihood estimate of R^{-1}
-    cvx_begin sdp
-        cvx_quiet false
+    cvx_begin sdp quiet
         variable S(n,n) symmetric
         maximize log_det(S) - trace(S*Y) - lambda(i)*sum(sum(abs(S)))
         S >= 0
@@ -586,6 +184,4 @@ legend('nonzeros in S', 'nonzeros in R^{-1}');
 
 
 ##### SOURCE END #####
--->
-   </body>
-</html>
+--></body></html>

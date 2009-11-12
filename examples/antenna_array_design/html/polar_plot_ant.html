@@ -1,15 +1,12 @@
-<html xmlns:mwsh="http://www.mathworks.com/namespace/mcode/v1/syntaxhighlight.dtd">
-   <head>
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head>
       <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-   
-      <!--
+   <!--
 This HTML is auto-generated from an M-file.
 To make changes, update the M-file and republish this document.
-      -->
-      <title>Plot a polar plot of an antenna array sensitivity (function)</title>
-      <meta name="generator" content="MATLAB 7.1">
-      <meta name="date" content="2006-03-03">
-      <meta name="m-file" content="polar_plot_ant"><style>
+      --><title>Plot a polar plot of an antenna array sensitivity</title><meta name="generator" content="MATLAB 7.9"><meta name="date" content="2009-11-11"><meta name="m-file" content="polar_plot_ant___"><style type="text/css">
 
 body {
   background-color: white;
@@ -27,20 +24,20 @@ h2 {
 }
 
 /* Make the text shrink to fit narrow windows, but not stretch too far in 
-wide windows.  On Gecko-based browsers, the shrink-to-fit doesn't work. */ 
+wide windows. */ 
 p,h1,h2,div.content div {
-  /* for MATLAB's browser */
-  width: 600px;
-  /* for Mozilla, but the "width" tag overrides it anyway */
   max-width: 600px;
-  /* for IE */
-  width:expression(document.body.clientWidth > 620 ? "600px": "auto" );
+  /* Hack for IE6 */
+  width: auto !important; width: 600px;
 }
 
 pre.codeinput {
   background: #EEEEEE;
   padding: 10px;
 }
+@media print {
+  pre.codeinput {word-wrap:break-word; width:100%;}
+} 
 
 span.keyword {color: #0000FF}
 span.comment {color: #228B22}
@@ -65,10 +62,7 @@ p.footer {
   color: gray;
 }
 
-  </style></head>
-   <body>
-      <div class="content">
-         <h1>Plot a polar plot of an antenna array sensitivity (function)</h1><pre class="codeinput"><span class="comment">% with lines denoting the target direction and beamwidth.</span>
+  </style></head><body><div class="content"><h1>Plot a polar plot of an antenna array sensitivity</h1><pre class="codeinput"><span class="comment">% with lines denoting the target direction and beamwidth.</span>
 <span class="comment">% This is a helper function used in the broadband antenna examples.</span>
 <span class="comment">%</span>
 <span class="comment">% Inputs:</span>
@@ -105,11 +99,9 @@ text(-1,1.1,label);
 
 axis <span class="string">off</span>;
 </pre><p class="footer"><br>
-            Published with MATLAB&reg; 7.1<br></p>
-      </div>
-      <!--
+      Published with MATLAB&reg; 7.9<br></p></div><!--
 ##### SOURCE BEGIN #####
-%% Plot a polar plot of an antenna array sensitivity (function)
+%% Plot a polar plot of an antenna array sensitivity
 
 % with lines denoting the target direction and beamwidth.
 % This is a helper function used in the broadband antenna examples.
@@ -149,6 +141,4 @@ text(-1,1.1,label);
 axis off;
 
 ##### SOURCE END #####
--->
-   </body>
-</html>
+--></body></html>

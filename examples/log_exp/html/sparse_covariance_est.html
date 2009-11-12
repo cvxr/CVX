@@ -1,18 +1,12 @@
 
 <!DOCTYPE html
-  PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN">
-<html xmlns:mwsh="http://www.mathworks.com/namespace/mcode/v1/syntaxhighlight.dtd">
-   <head>
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head>
       <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-   
-      <!--
+   <!--
 This HTML is auto-generated from an M-file.
 To make changes, update the M-file and republish this document.
-      -->
-      <title>Sparse covariance estimation for Gaussian variables</title>
-      <meta name="generator" content="MATLAB 7.5">
-      <meta name="date" content="2008-05-23">
-      <meta name="m-file" content="sparse_covariance_est"><style>
+      --><title>Sparse covariance estimation for Gaussian variables</title><meta name="generator" content="MATLAB 7.9"><meta name="date" content="2009-11-11"><meta name="m-file" content="sparse_covariance_est___"><style type="text/css">
 
 body {
   background-color: white;
@@ -68,10 +62,7 @@ p.footer {
   color: gray;
 }
 
-  </style></head>
-   <body>
-      <div class="content">
-         <h1>Sparse covariance estimation for Gaussian variables</h1><pre class="codeinput"><span class="comment">% Jo&Atilde;&laquo;lle Skaf - 04/24/08</span>
+  </style></head><body><div class="content"><h1>Sparse covariance estimation for Gaussian variables</h1><pre class="codeinput"><span class="comment">% Jo&Atilde;&laquo;lle Skaf - 04/24/08</span>
 <span class="comment">% (a figure is generated)</span>
 <span class="comment">%</span>
 <span class="comment">% Suppose y \in\reals^n is a Gaussian random variable with zero mean and</span>
@@ -116,26 +107,22 @@ spy(S)
 title(<span class="string">'Inverse of estimated covariance matrix'</span>)
 </pre><pre class="codeoutput"> 
 Successive approximation method to be employed.
-   SDPT3 will be called several times to refine the solution.
+   For improved efficiency, sedumi is solving the dual problem.
+   sedumi will be called several times to refine the solution.
    Original size: 501 variables, 221 equality constraints
-   For improved efficiency, SDPT3 is solving the dual problem.
-   Approximation size: 510 variables, 226 equality constraints
+   1 exponentials add 8 variables, 5 equality constraints
 -----------------------------------------------------------------
- Target     Conic    Solver
-Precision   Error    Status
----------------------------
-1.221e-04  6.977e-01  Solved
-1.221e-04  4.490e-04  Solved
-1.221e-04  5.906e-06  Solved
-1.221e-04  0.000e+00  Solved
-1.490e-08  0.000e+00  Solved
+S   Error      #     Status
+-----------------------------
+  6.978e-01   0/0   Solved
+  7.498e-03   0/0   Solved
+  3.431e-06   0/0   Solved
+  0.000e+00   1/0   Solved
 -----------------------------------------------------------------
 Status: Solved
-Optimal value (cvx_optval): -31.2401
-</pre><img vspace="5" hspace="5" src="sparse_covariance_est_01.png"> <p class="footer"><br>
-            Published with MATLAB&reg; 7.5<br></p>
-      </div>
-      <!--
+Optimal value (cvx_optval): -31.24
+</pre><img vspace="5" hspace="5" src="sparse_covariance_est____01.png" alt=""> <p class="footer"><br>
+      Published with MATLAB&reg; 7.9<br></p></div><!--
 ##### SOURCE BEGIN #####
 %% Sparse covariance estimation for Gaussian variables
 
@@ -184,6 +171,4 @@ spy(S)
 title('Inverse of estimated covariance matrix')
 
 ##### SOURCE END #####
--->
-   </body>
-</html>
+--></body></html>

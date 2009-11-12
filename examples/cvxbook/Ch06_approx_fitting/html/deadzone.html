@@ -1,18 +1,12 @@
 
 <!DOCTYPE html
-  PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN">
-<html xmlns:mwsh="http://www.mathworks.com/namespace/mcode/v1/syntaxhighlight.dtd">
-   <head>
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head>
       <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-   
-      <!--
+   <!--
 This HTML is auto-generated from an M-file.
 To make changes, update the M-file and republish this document.
-      -->
-      <title>Section 6.1.2: Residual minimization with deadzone penalty</title>
-      <meta name="generator" content="MATLAB 7.5">
-      <meta name="date" content="2008-05-23">
-      <meta name="m-file" content="deadzone"><style>
+      --><title>Section 6.1.2: Residual minimization with deadzone penalty</title><meta name="generator" content="MATLAB 7.9"><meta name="date" content="2009-11-11"><meta name="m-file" content="deadzone___"><style type="text/css">
 
 body {
   background-color: white;
@@ -68,10 +62,7 @@ p.footer {
   color: gray;
 }
 
-  </style></head>
-   <body>
-      <div class="content">
-         <h1>Section 6.1.2: Residual minimization with deadzone penalty</h1><pre class="codeinput"><span class="comment">% Boyd &amp; Vandenberghe "Convex Optimization"</span>
+  </style></head><body><div class="content"><h1>Section 6.1.2: Residual minimization with deadzone penalty</h1><pre class="codeinput"><span class="comment">% Boyd &amp; Vandenberghe "Convex Optimization"</span>
 <span class="comment">% Joelle Skaf - 08/17/05</span>
 <span class="comment">%</span>
 <span class="comment">% The penalty function approximation problem has the form:</span>
@@ -105,69 +96,48 @@ disp( [ <span class="string">'   A*x-b = [ '</span>, sprintf( <span class="strin
 disp( <span class="string">' '</span> );
 </pre><pre class="codeoutput">Computing the optimal solution of the deadzone approximation problem: 
  
-Calling SDPT3: 48 variables, 24 equality constraints
-   For improved efficiency, SDPT3 is solving the dual problem.
+Calling sedumi: 48 variables, 24 equality constraints
+   For improved efficiency, sedumi is solving the dual problem.
 ------------------------------------------------------------
+SeDuMi 1.21 by AdvOL, 2005-2008 and Jos F. Sturm, 1998-2003.
+Alg = 2: xz-corrector, Adaptive Step-Differentiation, theta = 0.250, beta = 0.500
+eqs m = 24, order n = 49, dim = 49, blocks = 17
+nnz(A) = 160 + 0, nnz(ADA) = 336, nnz(L) = 180
+ it :     b*y       gap    delta  rate   t/tP*  t/tD*   feas cg cg  prec
+  0 :            1.29E+01 0.000
+  1 :   3.10E+00 4.39E+00 0.000 0.3402 0.9000 0.9000   3.82  1  1  1.1E+00
+  2 :   8.64E-01 1.12E+00 0.000 0.2558 0.9000 0.9000   1.24  1  1  4.1E-01
+  3 :   1.38E-02 2.26E-02 0.000 0.0202 0.9900 0.9900   1.06  1  1  2.5E-01
+  4 :   1.01E-07 1.54E-07 0.000 0.0000 1.0000 1.0000   1.00  1  1  6.4E-05
+  5 :   1.62E-14 3.11E-14 0.000 0.0000 1.0000 1.0000   1.00  1  1  1.2E-11
 
- num. of constraints = 24
- dim. of socp   var  = 32,   num. of socp blk  = 16
- dim. of linear var  = 16
-*******************************************************************
-   SDPT3: Infeasible path-following algorithms
-*******************************************************************
- version  predcorr  gam  expon  scale_data
-    NT      1      0.000   1        0    
-it pstep dstep pinfeas dinfeas  gap      mean(obj)   cputime
--------------------------------------------------------------------
- 0|0.000|0.000|3.5e+00|4.2e+00|4.0e+02| 1.131371e+01| 0:0:00| chol  1  1 
- 1|1.000|1.000|9.4e-07|8.9e-02|4.9e+01|-1.963977e+01| 0:0:00| chol  1  1 
- 2|1.000|0.927|8.7e-08|1.5e-02|3.5e+00| 7.092649e-01| 0:0:00| chol  1  1 
- 3|0.961|0.927|2.2e-08|1.9e-03|2.1e-01| 2.356638e-02| 0:0:00| chol  1  1 
- 4|0.986|0.986|6.8e-09|1.1e-04|2.9e-03| 1.111115e-03| 0:0:00| chol  1  1 
- 5|0.989|0.989|6.5e-11|1.0e-05|3.2e-05| 9.138164e-05| 0:0:00| chol  1  1 
- 6|0.994|0.996|4.0e-10|4.2e-08|4.0e-07| 3.988559e-07| 0:0:00| chol  1  1 
- 7|0.562|1.000|8.1e-10|1.9e-11|1.5e-07| 3.958563e-08| 0:0:00| chol  1  1 
- 8|0.568|1.000|6.9e-10|2.9e-11|8.4e-08| 2.063452e-08| 0:0:00| chol  1  1 
- 9|0.569|1.000|4.7e-10|4.4e-11|4.5e-08| 1.098730e-08| 0:0:00| chol  1  1 
-10|0.568|1.000|2.0e-10|6.6e-11|2.5e-08| 5.876924e-09| 0:0:00| chol  1  1 
-11|0.570|1.000|8.7e-11|4.0e-11|1.3e-08| 3.126465e-09| 0:0:00|
-  stop: max(relative gap, infeasibilities) &lt; 1.49e-08
--------------------------------------------------------------------
- number of iterations   = 11
- primal objective value =  9.47832403e-09
- dual   objective value = -3.22539364e-09
- gap := trace(XZ)       = 1.34e-08
- relative gap           = 1.34e-08
- actual relative gap    = 1.27e-08
- rel. primal infeas     = 8.68e-11
- rel. dual   infeas     = 4.04e-11
- norm(X), norm(y), norm(Z) = 4.0e+00, 1.3e+00, 4.5e+00
- norm(A), norm(b), norm(C) = 1.3e+01, 5.0e+00, 6.4e+00
- Total CPU time (secs)  = 0.3  
- CPU time per iteration = 0.0  
- termination code       =  0
- DIMACS: 2.2e-10  0.0e+00  1.0e-10  0.0e+00  1.3e-08  1.3e-08
--------------------------------------------------------------------
+iter seconds digits       c*x               b*y
+  5      0.0   8.9  5.3462956066e-14  1.6188637402e-14
+|Ax-b| =   5.3e-15, [Ay-c]_+ =   1.6E-15, |x|=  4.0e+00, |y|=  1.3e+00
+
+Detailed timing (sec)
+   Pre          IPM          Post
+1.000E-02    2.000E-02    0.000E+00    
+Max-norms: ||b||=1, ||c|| = 1.488490e+00,
+Cholesky |add|=0, |skip| = 0, ||L.L|| = 1.
 ------------------------------------------------------------
 Status: Solved
-Optimal value (cvx_optval): +3.22539e-09
+Optimal value (cvx_optval): -1.61886e-14
 Done! 
 
 Results:
 --------
 sum(max(abs(A*x-b)-1,0)): 0.0000
-cvx_optval: 0.0000
+cvx_optval: -0.0000
 cvx_status: Solved
 
 Optimal vector:
-   x     = [  0.3277  0.1286 -0.3457  0.0835  0.6215  0.3876 -0.6669  0.7427 ]
+   x     = [  0.3169  0.1304 -0.3499  0.0768  0.6316  0.3917 -0.6683  0.7309 ]
 Residual vector:
-   A*x-b = [  0.6014  0.3841 -0.8444 -0.3032  0.3440  0.4154 -0.6405 -0.6744 -0.4713  0.7752  0.1084 -0.1713  0.4948  0.7508  0.3017 -0.3906 ]
+   A*x-b = [  0.6074  0.4106 -0.8179 -0.3119  0.3648  0.4208 -0.6525 -0.6823 -0.4734  0.7688  0.1175 -0.1827  0.5050  0.7438  0.3279 -0.3912 ]
  
 </pre><p class="footer"><br>
-            Published with MATLAB&reg; 7.5<br></p>
-      </div>
-      <!--
+      Published with MATLAB&reg; 7.9<br></p></div><!--
 ##### SOURCE BEGIN #####
 %% Section 6.1.2: Residual minimization with deadzone penalty
 
@@ -205,6 +175,4 @@ disp( [ '   A*x-b = [ ', sprintf( '%7.4f ', A*x-b ), ']' ] );
 disp( ' ' );
 
 ##### SOURCE END #####
--->
-   </body>
-</html>
+--></body></html>

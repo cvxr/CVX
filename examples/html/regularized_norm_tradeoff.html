@@ -1,18 +1,12 @@
 
 <!DOCTYPE html
-  PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN">
-<html xmlns:mwsh="http://www.mathworks.com/namespace/mcode/v1/syntaxhighlight.dtd">
-   <head>
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head>
       <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-   
-      <!--
+   <!--
 This HTML is auto-generated from an M-file.
 To make changes, update the M-file and republish this document.
-      -->
-      <title>Builds a norm minimization tradeoff curve</title>
-      <meta name="generator" content="MATLAB 7.5">
-      <meta name="date" content="2008-05-23">
-      <meta name="m-file" content="regularized_norm_tradeoff"><style>
+      --><title>Builds a norm minimization tradeoff curve</title><meta name="generator" content="MATLAB 7.9"><meta name="date" content="2009-11-11"><meta name="m-file" content="regularized_norm_tradeoff___"><style type="text/css">
 
 body {
   background-color: white;
@@ -68,17 +62,13 @@ p.footer {
   color: gray;
 }
 
-  </style></head>
-   <body>
-      <div class="content">
-         <h1>Builds a norm minimization tradeoff curve</h1><pre class="codeinput"><span class="comment">% This script solves a family of problems of the form</span>
+  </style></head><body><div class="content"><h1>Builds a norm minimization tradeoff curve</h1><pre class="codeinput"><span class="comment">% This script solves a family of problems of the form</span>
 <span class="comment">%     minimize || A*x-b ||_1 + gamma * || x ||_Inf</span>
 <span class="comment">% for varying values of gamma. For gamma = 0, this is simply an</span>
 <span class="comment">% unconstrained norm minimization; for gamma = Inf, x = 0 and</span>
 <span class="comment">% || A x - b || = || b || are optimal. Varying gamma allows us</span>
 <span class="comment">% to genreate a tradeoff curve between these extremes.</span>
 
-cvx_quiet( true );
 n = 10;
 A = randn(2*n,n);
 b = randn(2*n,1);
@@ -89,7 +79,7 @@ fprintf( 1, <span class="string">'Gamma: '</span> );
 <span class="keyword">for</span> k = 1 : length( gamma ),
    <span class="keyword">if</span> k &gt; 1 &amp; rem( k, 10 ) == 1, fprintf( 1, <span class="string">'\n       '</span> ); <span class="keyword">end</span>
    fprintf( 1, <span class="string">'%g '</span>, gamma( k ) );
-   cvx_begin
+   cvx_begin <span class="string">quiet</span>
       variable <span class="string">x(n)</span>
       minimize( norm( A * x - b, 1 ) + gamma( k ) * norm( x, Inf ) )
    cvx_end
@@ -109,10 +99,8 @@ ylabel( <span class="string">'|| A * x - b ||_1'</span> );
        4.29193 5.17947 6.25055 7.54312 9.10298 10.9854 13.2571 15.9986 19.307 23.2995 
        28.1177 33.9322 40.9492 49.4171 59.6362 71.9686 86.8511 104.811 126.486 152.642 
        184.207 222.3 268.27 323.746 390.694 471.487 568.987 686.649 828.643 1000 done.
-</pre><img vspace="5" hspace="5" src="regularized_norm_tradeoff_01.png"> <img vspace="5" hspace="5" src="regularized_norm_tradeoff_02.png"> <p class="footer"><br>
-            Published with MATLAB&reg; 7.5<br></p>
-      </div>
-      <!--
+</pre><img vspace="5" hspace="5" src="regularized_norm_tradeoff____01.png" alt=""> <img vspace="5" hspace="5" src="regularized_norm_tradeoff____02.png" alt=""> <p class="footer"><br>
+      Published with MATLAB&reg; 7.9<br></p></div><!--
 ##### SOURCE BEGIN #####
 %% Builds a norm minimization tradeoff curve
 
@@ -123,7 +111,6 @@ ylabel( <span class="string">'|| A * x - b ||_1'</span> );
 % || A x - b || = || b || are optimal. Varying gamma allows us
 % to genreate a tradeoff curve between these extremes.
 
-cvx_quiet( true );
 n = 10;
 A = randn(2*n,n);
 b = randn(2*n,1);
@@ -134,7 +121,7 @@ fprintf( 1, 'Gamma: ' );
 for k = 1 : length( gamma ),
    if k > 1 & rem( k, 10 ) == 1, fprintf( 1, '\n       ' ); end
    fprintf( 1, '%g ', gamma( k ) );
-   cvx_begin
+   cvx_begin quiet
       variable x(n)
       minimize( norm( A * x - b, 1 ) + gamma( k ) * norm( x, Inf ) )
    cvx_end
@@ -151,6 +138,4 @@ xlabel( '|| x ||_{\infty}' );
 ylabel( '|| A * x - b ||_1' );
 
 ##### SOURCE END #####
--->
-   </body>
-</html>
+--></body></html>

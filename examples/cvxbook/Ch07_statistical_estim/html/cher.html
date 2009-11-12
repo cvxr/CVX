@@ -1,15 +1,12 @@
-<html xmlns:mwsh="http://www.mathworks.com/namespace/mcode/v1/syntaxhighlight.dtd">
-   <head>
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head>
       <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-   
-      <!--
+   <!--
 This HTML is auto-generated from an M-file.
 To make changes, update the M-file and republish this document.
-      -->
-      <title>Computes Chernoff upper bounds on probability (function)</title>
-      <meta name="generator" content="MATLAB 7.1">
-      <meta name="date" content="2006-02-25">
-      <meta name="m-file" content="cher"><style>
+      --><title>Computes Chernoff upper bounds on probability</title><meta name="generator" content="MATLAB 7.9"><meta name="date" content="2009-11-11"><meta name="m-file" content="cher___"><style type="text/css">
 
 body {
   background-color: white;
@@ -27,20 +24,20 @@ h2 {
 }
 
 /* Make the text shrink to fit narrow windows, but not stretch too far in 
-wide windows.  On Gecko-based browsers, the shrink-to-fit doesn't work. */ 
+wide windows. */ 
 p,h1,h2,div.content div {
-  /* for MATLAB's browser */
-  width: 600px;
-  /* for Mozilla, but the "width" tag overrides it anyway */
   max-width: 600px;
-  /* for IE */
-  width:expression(document.body.clientWidth > 620 ? "600px": "auto" );
+  /* Hack for IE6 */
+  width: auto !important; width: 600px;
 }
 
 pre.codeinput {
   background: #EEEEEE;
   padding: 10px;
 }
+@media print {
+  pre.codeinput {word-wrap:break-word; width:100%;}
+} 
 
 span.keyword {color: #0000FF}
 span.comment {color: #228B22}
@@ -65,17 +62,14 @@ p.footer {
   color: gray;
 }
 
-  </style></head>
-   <body>
-      <div class="content">
-         <h1>Computes Chernoff upper bounds on probability (function)</h1><pre class="codeinput"><span class="keyword">function</span> prob = cher( A, b, Sigma );
+  </style></head><body><div class="content"><h1>Computes Chernoff upper bounds on probability</h1><pre class="codeinput"><span class="keyword">function</span> prob = cher( A, b, Sigma );
 
 <span class="comment">% Computes a bound on the probability that a Gaussian random vector</span>
 <span class="comment">% N(0,Sigma) satisfies A x &lt;= b, by solving a QP</span>
 <span class="comment">%</span>
 
 [ m, n ] = size( A );
-cvx_begin
+cvx_begin <span class="string">quiet</span>
     variable <span class="string">u( m )</span>
     minimize( b' * u + 0.5 * sum_square( chol( Sigma ) * A' * u ) )
     subject <span class="string">to</span>
@@ -83,11 +77,9 @@ cvx_begin
 cvx_end
 prob = exp( cvx_optval );
 </pre><p class="footer"><br>
-            Published with MATLAB&reg; 7.1<br></p>
-      </div>
-      <!--
+      Published with MATLAB&reg; 7.9<br></p></div><!--
 ##### SOURCE BEGIN #####
-%% Computes Chernoff upper bounds on probability (function)
+%% Computes Chernoff upper bounds on probability
 
 function prob = cher( A, b, Sigma );
 
@@ -96,7 +88,7 @@ function prob = cher( A, b, Sigma );
 %
 
 [ m, n ] = size( A );
-cvx_begin
+cvx_begin quiet
     variable u( m )
     minimize( b' * u + 0.5 * sum_square( chol( Sigma ) * A' * u ) )
     subject to
@@ -105,6 +97,4 @@ cvx_end
 prob = exp( cvx_optval );
 
 ##### SOURCE END #####
--->
-   </body>
-</html>
+--></body></html>

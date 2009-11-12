@@ -1,18 +1,12 @@
 
 <!DOCTYPE html
-  PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN">
-<html xmlns:mwsh="http://www.mathworks.com/namespace/mcode/v1/syntaxhighlight.dtd">
-   <head>
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head>
       <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-   
-      <!--
+   <!--
 This HTML is auto-generated from an M-file.
 To make changes, update the M-file and republish this document.
-      -->
-      <title>Elmore delay sizing for a straight wire (GP)</title>
-      <meta name="generator" content="MATLAB 7.5">
-      <meta name="date" content="2008-05-23">
-      <meta name="m-file" content="elmore_straight_wire"><style>
+      --><title>Elmore delay sizing for a straight wire (GP)</title><meta name="generator" content="MATLAB 7.9"><meta name="date" content="2009-11-11"><meta name="m-file" content="elmore_straight_wire___"><style type="text/css">
 
 body {
   background-color: white;
@@ -68,10 +62,7 @@ p.footer {
   color: gray;
 }
 
-  </style></head>
-   <body>
-      <div class="content">
-         <h1>Elmore delay sizing for a straight wire (GP)</h1><pre class="codeinput"><span class="comment">% Boyd, "Problems in VLSI design" (Lecture)</span>
+  </style></head><body><div class="content"><h1>Elmore delay sizing for a straight wire (GP)</h1><pre class="codeinput"><span class="comment">% Boyd, "Problems in VLSI design" (Lecture)</span>
 <span class="comment">% Written for CVX by Almir Mutapcic 02/08/06</span>
 <span class="comment">%</span>
 <span class="comment">% We consider the problem of finding optimal width profile</span>
@@ -131,14 +122,12 @@ leafs = [];
 <span class="comment">%********************************************************************</span>
 <span class="comment">% optimization</span>
 <span class="comment">%********************************************************************</span>
-<span class="comment">% set the quiet flag (no solver reporting)</span>
-cvxq = cvx_quiet(true);
 
 disp(<span class="string">'Generating the tradeoff curve...'</span>)
 
 Darray = []; widths = [];
 <span class="keyword">for</span> Amax = [10.05 10.5 11 12:2:20 22.5 25:5:60]
-  cvx_begin <span class="string">gp</span>
+  cvx_begin <span class="string">gp</span> <span class="string">quiet</span>
     <span class="comment">% optimization variables</span>
     variable <span class="string">w(N-1)</span>     <span class="comment">% wire width</span>
     variable <span class="string">T(N)</span>       <span class="comment">% arrival time (Elmore delay to node i)</span>
@@ -194,9 +183,6 @@ Darray = []; widths = [];
   widths = [widths w];
 <span class="keyword">end</span>
 
-<span class="comment">% restore initial solver reporting state</span>
-cvx_quiet(cvxq);
-
 <span class="comment">% indices of four taper designs on the tradeoff curve</span>
 Amax = [10.05 10.5 11 12:2:20 22.5 25:5:60];
 A11ind = find(Amax == 11);
@@ -240,10 +226,8 @@ plot_four_tapers(w1,w2,w3,w4);
   Amax = 55.00   delay = 101.76
   Amax = 60.00   delay = 101.60
 Optimal tradeoff curve plotted.
-</pre><img vspace="5" hspace="5" src="elmore_straight_wire_01.png"> <img vspace="5" hspace="5" src="elmore_straight_wire_02.png"> <p class="footer"><br>
-            Published with MATLAB&reg; 7.5<br></p>
-      </div>
-      <!--
+</pre><img vspace="5" hspace="5" src="elmore_straight_wire____01.png" alt=""> <img vspace="5" hspace="5" src="elmore_straight_wire____02.png" alt=""> <p class="footer"><br>
+      Published with MATLAB&reg; 7.9<br></p></div><!--
 ##### SOURCE BEGIN #####
 %% Elmore delay sizing for a straight wire (GP)
 
@@ -307,14 +291,12 @@ end
 %********************************************************************
 % optimization
 %********************************************************************
-% set the quiet flag (no solver reporting)
-cvxq = cvx_quiet(true);
 
 disp('Generating the tradeoff curve...')
 
 Darray = []; widths = [];
 for Amax = [10.05 10.5 11 12:2:20 22.5 25:5:60]
-  cvx_begin gp
+  cvx_begin gp quiet
     % optimization variables
     variable w(N-1)     % wire width
     variable T(N)       % arrival time (Elmore delay to node i)
@@ -370,9 +352,6 @@ for Amax = [10.05 10.5 11 12:2:20 22.5 25:5:60]
   widths = [widths w];
 end
 
-% restore initial solver reporting state
-cvx_quiet(cvxq);
-
 % indices of four taper designs on the tradeoff curve
 Amax = [10.05 10.5 11 12:2:20 22.5 25:5:60];
 A11ind = find(Amax == 11);
@@ -399,6 +378,4 @@ w4 = widths(:,A11ind);
 plot_four_tapers(w1,w2,w3,w4);
 
 ##### SOURCE END #####
--->
-   </body>
-</html>
+--></body></html>

@@ -1,18 +1,12 @@
 
 <!DOCTYPE html
-  PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN">
-<html xmlns:mwsh="http://www.mathworks.com/namespace/mcode/v1/syntaxhighlight.dtd">
-   <head>
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head>
       <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-   
-      <!--
+   <!--
 This HTML is auto-generated from an M-file.
 To make changes, update the M-file and republish this document.
-      -->
-      <title>Minimize order of a lowpass FIR filter (magnitude design)</title>
-      <meta name="generator" content="MATLAB 7.5">
-      <meta name="date" content="2008-05-23">
-      <meta name="m-file" content="fir_mag_design_lowpass_min_order"><style>
+      --><title>Minimize order of a lowpass FIR filter (magnitude design)</title><meta name="generator" content="MATLAB 7.9"><meta name="date" content="2009-11-11"><meta name="m-file" content="fir_mag_design_lowpass_min_order___"><style type="text/css">
 
 body {
   background-color: white;
@@ -68,10 +62,7 @@ p.footer {
   color: gray;
 }
 
-  </style></head>
-   <body>
-      <div class="content">
-         <h1>Minimize order of a lowpass FIR filter (magnitude design)</h1><pre class="codeinput"><span class="comment">% "FIR Filter Design via Spectral Factorization and Convex Optimization"</span>
+  </style></head><body><div class="content"><h1>Minimize order of a lowpass FIR filter (magnitude design)</h1><pre class="codeinput"><span class="comment">% "FIR Filter Design via Spectral Factorization and Convex Optimization"</span>
 <span class="comment">% by S.-P. Wu, S. Boyd, and L. Vandenberghe</span>
 <span class="comment">% (figures are generated)</span>
 <span class="comment">%</span>
@@ -120,7 +111,6 @@ w = linspace(0,pi,m);
 <span class="comment">%*********************************************************************</span>
 <span class="comment">% use bisection algorithm to solve the problem</span>
 <span class="comment">%*********************************************************************</span>
-cvx_quiet(true);
 
 n_bot = 1;
 n_top = max_order;
@@ -145,7 +135,7 @@ n_top = max_order;
   As  = A(ind,:);
 
   <span class="comment">% formulate and solve the feasibility linear-phase lp filter design</span>
-  cvx_begin
+  cvx_begin <span class="string">quiet</span>
     variable <span class="string">r(n_cur,1)</span>;
     <span class="comment">% feasibility problem</span>
     <span class="comment">% passband bounds</span>
@@ -172,7 +162,6 @@ n_top = max_order;
 n = n_top;
 fprintf(1,<span class="string">'\nOptimum number of filter taps for given specs is %d.\n'</span>,n);
 
-cvx_quiet(false);
 
 <span class="comment">%********************************************************************</span>
 <span class="comment">% plots</span>
@@ -204,10 +193,8 @@ Problem is feasible for filter order = 18 taps
 Problem is feasible for filter order = 17 taps
 
 Optimum number of filter taps for given specs is 17.
-</pre><img vspace="5" hspace="5" src="fir_mag_design_lowpass_min_order_01.png"> <img vspace="5" hspace="5" src="fir_mag_design_lowpass_min_order_02.png"> <p class="footer"><br>
-            Published with MATLAB&reg; 7.5<br></p>
-      </div>
-      <!--
+</pre><img vspace="5" hspace="5" src="fir_mag_design_lowpass_min_order____01.png" alt=""> <img vspace="5" hspace="5" src="fir_mag_design_lowpass_min_order____02.png" alt=""> <p class="footer"><br>
+      Published with MATLAB&reg; 7.9<br></p></div><!--
 ##### SOURCE BEGIN #####
 %% Minimize order of a lowpass FIR filter (magnitude design)
 
@@ -260,7 +247,6 @@ w = linspace(0,pi,m);
 %*********************************************************************
 % use bisection algorithm to solve the problem
 %*********************************************************************
-cvx_quiet(true);
 
 n_bot = 1;
 n_top = max_order;
@@ -285,7 +271,7 @@ while( n_top - n_bot > 1)
   As  = A(ind,:);
 
   % formulate and solve the feasibility linear-phase lp filter design
-  cvx_begin
+  cvx_begin quiet
     variable r(n_cur,1);
     % feasibility problem
     % passband bounds
@@ -312,7 +298,6 @@ end
 n = n_top;
 fprintf(1,'\nOptimum number of filter taps for given specs is %d.\n',n);
 
-cvx_quiet(false);
 
 %********************************************************************
 % plots
@@ -340,6 +325,4 @@ axis([0,pi,-pi,pi])
 xlabel('w'), ylabel('phase H(w)')
 
 ##### SOURCE END #####
--->
-   </body>
-</html>
+--></body></html>

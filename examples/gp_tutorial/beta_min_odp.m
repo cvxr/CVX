@@ -39,7 +39,7 @@ pwj = 1+g1-g2;
 
 v_array = [];
 for k = 1:length(beta_min_GE)
-  cvx_begin gp quiet
+  cvx_begin gp
     % optimization variables
     variables v(M) y(M) w(M)
 

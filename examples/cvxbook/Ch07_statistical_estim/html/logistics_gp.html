@@ -1,18 +1,12 @@
 
 <!DOCTYPE html
-  PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN">
-<html xmlns:mwsh="http://www.mathworks.com/namespace/mcode/v1/syntaxhighlight.dtd">
-   <head>
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head>
       <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-   
-      <!--
+   <!--
 This HTML is auto-generated from an M-file.
 To make changes, update the M-file and republish this document.
-      -->
-      <title>Figure 7.1: Logistic regression (GP version)</title>
-      <meta name="generator" content="MATLAB 7.5">
-      <meta name="date" content="2008-05-23">
-      <meta name="m-file" content="logistics_gp"><style>
+      --><title>Figure 7.1: Logistic regression (GP version)</title><meta name="generator" content="MATLAB 7.9"><meta name="date" content="2009-11-11"><meta name="m-file" content="logistics_gp___"><style type="text/css">
 
 body {
   background-color: white;
@@ -68,10 +62,7 @@ p.footer {
   color: gray;
 }
 
-  </style></head>
-   <body>
-      <div class="content">
-         <h1>Figure 7.1: Logistic regression (GP version)</h1><pre class="codeinput"><span class="comment">% Section 7.1.1</span>
+  </style></head><body><div class="content"><h1>Figure 7.1: Logistic regression (GP version)</h1><pre class="codeinput"><span class="comment">% Section 7.1.1</span>
 <span class="comment">% Boyd &amp; Vandenberghe, "Convex Optimization"</span>
 <span class="comment">% Kim &amp; Mutapcic, "Logistic regression via geometric programming"</span>
 <span class="comment">% Written for CVX by Almir Mutapcic 02/08/06</span>
@@ -138,26 +129,39 @@ plot(us,ps,<span class="string">'-'</span>, u(ind_true),y(ind_true),<span class=
 axis([-1, 11,-0.1,1.1]);
 </pre><pre class="codeoutput"> 
 Successive approximation method to be employed.
-   SDPT3 will be called several times to refine the solution.
+   For improved efficiency, sedumi is solving the dual problem.
+   sedumi will be called several times to refine the solution.
    Original size: 653 variables, 255 equality constraints
-   For improved efficiency, SDPT3 is solving the dual problem.
-   Approximation size: 2254 variables, 1255 equality constraints
+   200 exponentials add 1600 variables, 1000 equality constraints
 -----------------------------------------------------------------
- Target     Conic    Solver
-Precision   Error    Status
----------------------------
-1.221e-04  2.481e+00  Solved
-1.221e-04  2.933e-03  Solved
-1.221e-04  0.000e+00  Solved
-1.490e-08  7.324e-07  Solved
-1.490e-08  0.000e+00  Solved
+S   Error      #     Status
+-----------------------------
+  2.483e+00   0/0   Inaccurate/Solved
+  4.994e-02   0/0   Inaccurate/Solved
+  3.185e-04   0/0   Inaccurate/Solved
+  6.070e-06  11/0   Inaccurate/Solved
+  2.969e-06   4/0   Inaccurate/Solved
+  1.739e-06  47/0   Inaccurate/Solved
+  1.976e-06  51/0   Inaccurate/Solved
+S 2.022e-06  48/2   Inaccurate/Solved
+S 1.633e-05   6/1   Inaccurate/Solved
+S 3.813e-02 183/6   Failed
+  4.227e-05  16/1   Inaccurate/Solved
+  3.163e-05  18/0   Inaccurate/Solved
+  6.569e-05  17/11  Inaccurate/Solved
+  1.251e-03  54/0   Failed
+  8.248e-04  95/1   Failed
+  2.546e-04 196/0   Inaccurate/Solved
+S 2.385e-04 194/2   Inaccurate/Solved
+  1.447e-06 199/0   Inaccurate/Solved
+S 6.141e-06 196/1   Inaccurate/Solved
+  0.000e+00 200/0   Inaccurate/Solved
+  0.000e+00 200/0   Inaccurate/Solved
 -----------------------------------------------------------------
-Status: Solved
+Status: Inaccurate/Solved
 Optimal value (cvx_optval): +2.10331e+14
-</pre><img vspace="5" hspace="5" src="logistics_gp_01.png"> <p class="footer"><br>
-            Published with MATLAB&reg; 7.5<br></p>
-      </div>
-      <!--
+</pre><img vspace="5" hspace="5" src="logistics_gp____01.png" alt=""> <p class="footer"><br>
+      Published with MATLAB&reg; 7.9<br></p></div><!--
 ##### SOURCE BEGIN #####
 %% Figure 7.1: Logistic regression (GP version)
 
@@ -228,6 +232,4 @@ plot(us,ps,'-', u(ind_true),y(ind_true),'o', ...
 axis([-1, 11,-0.1,1.1]);
 
 ##### SOURCE END #####
--->
-   </body>
-</html>
+--></body></html>

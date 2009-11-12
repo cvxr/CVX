@@ -1,18 +1,12 @@
 
 <!DOCTYPE html
-  PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN">
-<html xmlns:mwsh="http://www.mathworks.com/namespace/mcode/v1/syntaxhighlight.dtd">
-   <head>
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head>
       <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-   
-      <!--
+   <!--
 This HTML is auto-generated from an M-file.
 To make changes, update the M-file and republish this document.
-      -->
-      <title>Example 6.2: Robust regression using the Huber penalty</title>
-      <meta name="generator" content="MATLAB 7.5">
-      <meta name="date" content="2008-05-23">
-      <meta name="m-file" content="fig6_5"><style>
+      --><title>Example 6.2: Robust regression using the Huber penalty</title><meta name="generator" content="MATLAB 7.9"><meta name="date" content="2009-11-11"><meta name="m-file" content="fig6_5___"><style type="text/css">
 
 body {
   background-color: white;
@@ -68,10 +62,7 @@ p.footer {
   color: gray;
 }
 
-  </style></head>
-   <body>
-      <div class="content">
-         <h1>Example 6.2: Robust regression using the Huber penalty</h1><pre class="codeinput"><span class="comment">% Section 6.1.2, Figure 6.5</span>
+  </style></head><body><div class="content"><h1>Example 6.2: Robust regression using the Huber penalty</h1><pre class="codeinput"><span class="comment">% Section 6.1.2, Figure 6.5</span>
 <span class="comment">% Boyd &amp; Vandenberghe "Convex Optimization"</span>
 <span class="comment">% Original by Lieven Vandenberghe</span>
 <span class="comment">% Adapted for CVX by Joelle Skaf - 09/07/05</span>
@@ -83,7 +74,6 @@ p.footer {
 <span class="comment">% where phi_h is the Huber penalty function, (t_i,y_i) are data points in a</span>
 <span class="comment">% plane.</span>
 
-cvx_quiet(true);
 <span class="comment">% Input data</span>
 randn(<span class="string">'seed'</span>,1);
 rand(<span class="string">'seed'</span>,1);
@@ -109,7 +99,7 @@ fprintf(1,<span class="string">'Done! \n'</span>);
 <span class="comment">% Huber</span>
 fprintf(1,<span class="string">'Computing the solution of the huber-penalized problem...'</span>);
 
-cvx_begin
+cvx_begin <span class="string">quiet</span>
     variable <span class="string">xhub(n)</span>
     minimize(sum(huber(A*xhub-b)))
 cvx_end
@@ -128,10 +118,8 @@ legend(<span class="string">'Data points'</span>,<span class="string">'Huber pen
 <span class="comment">%print -deps robustls.eps</span>
 </pre><pre class="codeoutput">Computing the solution of the least-squares problem...Done! 
 Computing the solution of the huber-penalized problem...Done! 
-</pre><img vspace="5" hspace="5" src="fig6_5_01.png"> <p class="footer"><br>
-            Published with MATLAB&reg; 7.5<br></p>
-      </div>
-      <!--
+</pre><img vspace="5" hspace="5" src="fig6_5____01.png" alt=""> <p class="footer"><br>
+      Published with MATLAB&reg; 7.9<br></p></div><!--
 ##### SOURCE BEGIN #####
 %% Example 6.2: Robust regression using the Huber penalty
 
@@ -147,7 +135,6 @@ Computing the solution of the huber-penalized problem...Done!
 % where phi_h is the Huber penalty function, (t_i,y_i) are data points in a
 % plane.
 
-cvx_quiet(true);
 % Input data
 randn('seed',1);
 rand('seed',1);
@@ -173,7 +160,7 @@ fprintf(1,'Done! \n');
 % Huber
 fprintf(1,'Computing the solution of the huber-penalized problem...');
 
-cvx_begin
+cvx_begin quiet
     variable xhub(n)
     minimize(sum(huber(A*xhub-b)))
 cvx_end
@@ -192,6 +179,4 @@ legend('Data points','Huber penalty','Regular LS','Location','Best');
 %print -deps robustls.eps
 
 ##### SOURCE END #####
--->
-   </body>
-</html>
+--></body></html>

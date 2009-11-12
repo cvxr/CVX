@@ -1,18 +1,12 @@
 
 <!DOCTYPE html
-  PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN">
-<html xmlns:mwsh="http://www.mathworks.com/namespace/mcode/v1/syntaxhighlight.dtd">
-   <head>
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head>
       <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-   
-      <!--
+   <!--
 This HTML is auto-generated from an M-file.
 To make changes, update the M-file and republish this document.
-      -->
-      <title>Maximize stopband attenuation of a lowpass IIR filter</title>
-      <meta name="generator" content="MATLAB 7.5">
-      <meta name="date" content="2008-05-23">
-      <meta name="m-file" content="iir_mag_design_lowpass_max_atten"><style>
+      --><title>Maximize stopband attenuation of a lowpass IIR filter</title><meta name="generator" content="MATLAB 7.9"><meta name="date" content="2009-11-11"><meta name="m-file" content="iir_mag_design_lowpass_max_atten___"><style type="text/css">
 
 body {
   background-color: white;
@@ -68,10 +62,7 @@ p.footer {
   color: gray;
 }
 
-  </style></head>
-   <body>
-      <div class="content">
-         <h1>Maximize stopband attenuation of a lowpass IIR filter</h1><pre class="codeinput"><span class="comment">% "Linear Programming Design of IIR Digital Filters with Arbitrary</span>
+  </style></head><body><div class="content"><h1>Maximize stopband attenuation of a lowpass IIR filter</h1><pre class="codeinput"><span class="comment">% "Linear Programming Design of IIR Digital Filters with Arbitrary</span>
 <span class="comment">%  Magnitude Functions" by L.R. Rabiner, N.Y. Graham, and H.D. Helms</span>
 <span class="comment">% (figures are generated)</span>
 <span class="comment">%</span>
@@ -143,7 +134,6 @@ As_den  = Aden(ind,:);
 <span class="comment">%********************************************************************</span>
 <span class="comment">% optimization</span>
 <span class="comment">%********************************************************************</span>
-cvx_quiet(true);
 
 <span class="comment">% use bisection (on the log of vars) to solve for the min stopband atten</span>
 Us_top = 1e-0; <span class="comment">% 0 dB</span>
@@ -154,7 +144,7 @@ Us_bot = 1e-6; <span class="comment">% -60 dB (in original variables)</span>
   Us_cur = sqrt(Us_top*Us_bot);
 
   <span class="comment">% formulate and solve the magnitude design problem</span>
-  cvx_begin
+  cvx_begin <span class="string">quiet</span>
     variable <span class="string">c(M,1)</span>
     variable <span class="string">d(N-1,1)</span>
 
@@ -190,8 +180,6 @@ disp(<span class="string">'Optimal IIR filter coefficients are: '</span>)
 disp(<span class="string">'Numerator: '</span>), b
 disp(<span class="string">'Denominator: '</span>), a
 
-cvx_quiet(false);
-
 <span class="comment">%*********************************************************************</span>
 <span class="comment">% plotting routines</span>
 <span class="comment">%*********************************************************************</span>
@@ -215,37 +203,37 @@ plot(w,angle(H))
 axis([0,pi,-pi,pi])
 xlabel(<span class="string">'w'</span>), ylabel(<span class="string">'phase H(w)'</span>)
 </pre><pre class="codeoutput">Problem is feasible for stopband atten = -30.00 dB
-Problem not feasible for stopband atten = -45.00 dB
-Problem is feasible for stopband atten = -37.50 dB
-Problem not feasible for stopband atten = -41.25 dB
-Problem not feasible for stopband atten = -39.38 dB
-Problem is feasible for stopband atten = -38.44 dB
-Problem not feasible for stopband atten = -38.91 dB
+Problem is feasible for stopband atten = -45.00 dB
+Problem is feasible for stopband atten = -52.50 dB
+Problem is feasible for stopband atten = -56.25 dB
+Problem is feasible for stopband atten = -58.12 dB
+Problem is feasible for stopband atten = -59.06 dB
+Problem is feasible for stopband atten = -59.53 dB
 
-Optimum min stopband atten is between -38.91 and -38.44 dB.
+Optimum min stopband atten is between -60.00 and -59.53 dB.
 Optimal IIR filter coefficients are: 
 Numerator: 
 
 b =
 
-    0.0046
-   -0.0034
-    0.0012
-    0.0025
+   1.0e-03 *
+
+    0.8441
+    0.8441
+    0.8441
+    0.8441
 
 Denominator: 
 
 a =
 
-    0.2644
-   -0.6955
-    0.6370
-   -0.2017
+    0.2573
+   -0.6908
+    0.6433
+   -0.2069
 
-</pre><img vspace="5" hspace="5" src="iir_mag_design_lowpass_max_atten_01.png"> <p class="footer"><br>
-            Published with MATLAB&reg; 7.5<br></p>
-      </div>
-      <!--
+</pre><img vspace="5" hspace="5" src="iir_mag_design_lowpass_max_atten____01.png" alt=""> <p class="footer"><br>
+      Published with MATLAB&reg; 7.9<br></p></div><!--
 ##### SOURCE BEGIN #####
 %% Maximize stopband attenuation of a lowpass IIR filter
 
@@ -321,7 +309,6 @@ As_den  = Aden(ind,:);
 %********************************************************************
 % optimization
 %********************************************************************
-cvx_quiet(true);
 
 % use bisection (on the log of vars) to solve for the min stopband atten
 Us_top = 1e-0; % 0 dB
@@ -332,7 +319,7 @@ while( 20*log10(Us_top/Us_bot) > 1)
   Us_cur = sqrt(Us_top*Us_bot);
 
   % formulate and solve the magnitude design problem
-  cvx_begin
+  cvx_begin quiet
     variable c(M,1)
     variable d(N-1,1)
 
@@ -368,8 +355,6 @@ disp('Optimal IIR filter coefficients are: ')
 disp('Numerator: '), b
 disp('Denominator: '), a
 
-cvx_quiet(false);
-
 %*********************************************************************
 % plotting routines
 %*********************************************************************
@@ -394,6 +379,4 @@ axis([0,pi,-pi,pi])
 xlabel('w'), ylabel('phase H(w)')
 
 ##### SOURCE END #####
--->
-   </body>
-</html>
+--></body></html>

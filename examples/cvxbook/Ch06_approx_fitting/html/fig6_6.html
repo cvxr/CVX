@@ -1,18 +1,12 @@
 
 <!DOCTYPE html
-  PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN">
-<html xmlns:mwsh="http://www.mathworks.com/namespace/mcode/v1/syntaxhighlight.dtd">
-   <head>
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head>
       <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-   
-      <!--
+   <!--
 This HTML is auto-generated from an M-file.
 To make changes, update the M-file and republish this document.
-      -->
-      <title>Example 6.3: Optimal input design</title>
-      <meta name="generator" content="MATLAB 7.5">
-      <meta name="date" content="2008-05-23">
-      <meta name="m-file" content="fig6_6"><style>
+      --><title>Example 6.3: Optimal input design</title><meta name="generator" content="MATLAB 7.9"><meta name="date" content="2009-11-11"><meta name="m-file" content="fig6_6___"><style type="text/css">
 
 body {
   background-color: white;
@@ -68,10 +62,7 @@ p.footer {
   color: gray;
 }
 
-  </style></head>
-   <body>
-      <div class="content">
-         <h1>Example 6.3: Optimal input design</h1><pre class="codeinput"><span class="comment">% Section 6.3.2, Figure 6.6</span>
+  </style></head><body><div class="content"><h1>Example 6.3: Optimal input design</h1><pre class="codeinput"><span class="comment">% Section 6.3.2, Figure 6.6</span>
 <span class="comment">% Boyd &amp; Vandenberghe "Convex Optimization"</span>
 <span class="comment">% Original by Lieven Vandenberghe</span>
 <span class="comment">% Adapted for CVX by Joelle Skaf - 09/26/05</span>
@@ -85,7 +76,6 @@ p.footer {
 <span class="comment">%       J_mag   = 1/(N+1) sum_{t=0}^N u(t)^2</span>
 <span class="comment">%       J_der   = 1/N sum_{t=0}^{N-1} (u(t+1) - u(t))^2</span>
 
-cvx_quiet(true);
 <span class="comment">% Input data</span>
 m = 201;  n = 201;  N=200;
 t = [0:m-1]';
@@ -104,7 +94,7 @@ eta = [0.005 0.05 0.05];
 disp(<span class="string">'Finding the optimal input for '</span>);
 <span class="keyword">for</span> i = 1:length(delta)
     disp([<span class="string">'* delta = '</span> num2str(delta(i)) <span class="string">' and eta = '</span> num2str(eta(i))]);
-    cvx_begin
+    cvx_begin <span class="string">quiet</span>
     variable <span class="string">u(N+1)</span>
     minimize ( square_pos(norm(H*u - y_des))/(N+1) + <span class="keyword">...</span>
                eta(i)*square_pos(norm(u))/(N+1) + <span class="keyword">...</span>
@@ -138,10 +128,8 @@ disp(<span class="string">'Finding the optimal input for '</span>);
 * delta = 0 and eta = 0.005
 * delta = 0 and eta = 0.05
 * delta = 0.3 and eta = 0.05
-</pre><img vspace="5" hspace="5" src="fig6_6_01.png"> <img vspace="5" hspace="5" src="fig6_6_02.png"> <img vspace="5" hspace="5" src="fig6_6_03.png"> <img vspace="5" hspace="5" src="fig6_6_04.png"> <img vspace="5" hspace="5" src="fig6_6_05.png"> <img vspace="5" hspace="5" src="fig6_6_06.png"> <p class="footer"><br>
-            Published with MATLAB&reg; 7.5<br></p>
-      </div>
-      <!--
+</pre><img vspace="5" hspace="5" src="fig6_6____01.png" alt=""> <img vspace="5" hspace="5" src="fig6_6____02.png" alt=""> <img vspace="5" hspace="5" src="fig6_6____03.png" alt=""> <img vspace="5" hspace="5" src="fig6_6____04.png" alt=""> <img vspace="5" hspace="5" src="fig6_6____05.png" alt=""> <img vspace="5" hspace="5" src="fig6_6____06.png" alt=""> <p class="footer"><br>
+      Published with MATLAB&reg; 7.9<br></p></div><!--
 ##### SOURCE BEGIN #####
 %% Example 6.3: Optimal input design
 
@@ -159,7 +147,6 @@ disp(<span class="string">'Finding the optimal input for '</span>);
 %       J_mag   = 1/(N+1) sum_{t=0}^N u(t)^2
 %       J_der   = 1/N sum_{t=0}^{N-1} (u(t+1) - u(t))^2
 
-cvx_quiet(true);
 % Input data
 m = 201;  n = 201;  N=200;
 t = [0:m-1]';
@@ -178,7 +165,7 @@ eta = [0.005 0.05 0.05];
 disp('Finding the optimal input for ');
 for i = 1:length(delta)
     disp(['* delta = ' num2str(delta(i)) ' and eta = ' num2str(eta(i))]);
-    cvx_begin
+    cvx_begin quiet
     variable u(N+1)
     minimize ( square_pos(norm(H*u - y_des))/(N+1) + ...
                eta(i)*square_pos(norm(u))/(N+1) + ...
@@ -210,6 +197,4 @@ for i = 1:length(delta)
 end
 
 ##### SOURCE END #####
--->
-   </body>
-</html>
+--></body></html>

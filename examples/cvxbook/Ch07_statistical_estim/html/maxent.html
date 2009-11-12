@@ -1,18 +1,12 @@
 
 <!DOCTYPE html
-  PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN">
-<html xmlns:mwsh="http://www.mathworks.com/namespace/mcode/v1/syntaxhighlight.dtd">
-   <head>
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head>
       <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-   
-      <!--
+   <!--
 This HTML is auto-generated from an M-file.
 To make changes, update the M-file and republish this document.
-      -->
-      <title>Example 7.2: Maximum entropy distribution</title>
-      <meta name="generator" content="MATLAB 7.5">
-      <meta name="date" content="2008-05-23">
-      <meta name="m-file" content="maxent"><style>
+      --><title>Example 7.2: Maximum entropy distribution</title><meta name="generator" content="MATLAB 7.9"><meta name="date" content="2009-11-11"><meta name="m-file" content="maxent___"><style type="text/css">
 
 body {
   background-color: white;
@@ -68,10 +62,7 @@ p.footer {
   color: gray;
 }
 
-  </style></head>
-   <body>
-      <div class="content">
-         <h1>Example 7.2: Maximum entropy distribution</h1><pre class="codeinput"><span class="comment">% Section 7.2, Figures 7.2-7.3</span>
+  </style></head><body><div class="content"><h1>Example 7.2: Maximum entropy distribution</h1><pre class="codeinput"><span class="comment">% Section 7.2, Figures 7.2-7.3</span>
 <span class="comment">% Boyd &amp; Vandenberghe, "Convex Optimization"</span>
 <span class="comment">% Originally by Lieven Vandenberghe</span>
 <span class="comment">% Adapted for CVX by Michael Grant 4/11/06</span>
@@ -122,11 +113,10 @@ cvx_end
 <span class="comment">% Compute the bounds on Prob(X&lt;=a_i), i=1,...,n</span>
 <span class="comment">%</span>
 
-cvxq = cvx_quiet(true);
 Ubnds = zeros(1,n);
 Lbnds = zeros(1,n);
 <span class="keyword">for</span> t = 1 : n,
-    cvx_begin
+    cvx_begin <span class="string">quiet</span>
         variable <span class="string">p( n )</span>
         minimize <span class="string">sum( p(1:t) )</span>
         p &gt;= 0;
@@ -134,7 +124,7 @@ Lbnds = zeros(1,n);
         A * p &lt;= b;
     cvx_end
     Lbnds(t) = cvx_optval;
-    cvx_begin
+    cvx_begin <span class="string">quiet</span>
         variable <span class="string">p( n )</span>
         maximize <span class="string">sum( p(1:t) )</span>
         p &gt;= 0;
@@ -144,7 +134,6 @@ Lbnds = zeros(1,n);
     Ubnds(t) = cvx_optval;
     disp( sprintf( <span class="string">'%g &lt;= Prob(x&lt;=%g) &lt;= %g'</span>, Lbnds(t), a(t), Ubnds(t) ) );
 <span class="keyword">end</span>
-cvx_quiet(cvxq);
 
 <span class="comment">%</span>
 <span class="comment">% Generate the figures</span>
@@ -169,32 +158,39 @@ ylabel( <span class="string">'CDF( x )'</span> );
 hold <span class="string">off</span>
 </pre><pre class="codeoutput"> 
 Successive approximation method to be employed.
-   SDPT3 will be called several times to refine the solution.
+   sedumi will be called several times to refine the solution.
    Original size: 308 variables, 109 equality constraints
-   Approximation size: 1109 variables, 609 equality constraints
+   100 exponentials add 800 variables, 500 equality constraints
 -----------------------------------------------------------------
- Target     Conic    Solver
-Precision   Error    Status
----------------------------
-1.221e-04  2.684e+00  Solved
-1.221e-04  8.873e-03  Solved
-1.221e-04  0.000e+00  Solved
-1.490e-08  6.524e-07  Inaccurate/Solved
-1.490e-08  0.000e+00  Inaccurate/Solved
+S   Error      #     Status
+-----------------------------
+  2.690e+00   0/0   Solved
+  9.970e-02   0/0   Solved
+  6.207e-04   0/0   Solved
+  8.531e-08   0/0   Solved
+  7.789e-09  60/0   Solved
+S 2.231e-07   0/0   Solved
+  1.309e-07   0/0   Solved
+  1.134e-07   0/11  Solved
+S 1.256e-07   0/4   Solved
+  1.076e-07  93/0   Inaccurate/Solved
+S 1.127e-07  93/0   Inaccurate/Solved
+  0.000e+00 100/0   Inaccurate/Solved
+  0.000e+00 100/0   Inaccurate/Solved
 -----------------------------------------------------------------
 Status: Inaccurate/Solved
 Optimal value (cvx_optval): +4.38629
-2.26172e-11 &lt;= Prob(x&lt;=-1) &lt;= 0.329406
-2.8871e-11 &lt;= Prob(x&lt;=-0.979798) &lt;= 0.344777
-2.25055e-10 &lt;= Prob(x&lt;=-0.959596) &lt;= 0.360771
-1.63251e-10 &lt;= Prob(x&lt;=-0.939394) &lt;= 0.377365
-9.05118e-12 &lt;= Prob(x&lt;=-0.919192) &lt;= 0.394532
-4.78857e-11 &lt;= Prob(x&lt;=-0.89899) &lt;= 0.4
-2.63853e-11 &lt;= Prob(x&lt;=-0.878788) &lt;= 0.4
-6.29575e-11 &lt;= Prob(x&lt;=-0.858586) &lt;= 0.4
-5.85922e-10 &lt;= Prob(x&lt;=-0.838384) &lt;= 0.4
-4.11171e-11 &lt;= Prob(x&lt;=-0.818182) &lt;= 0.4
-2.53232e-10 &lt;= Prob(x&lt;=-0.79798) &lt;= 0.4
+0 &lt;= Prob(x&lt;=-1) &lt;= 0.329406
+0 &lt;= Prob(x&lt;=-0.979798) &lt;= 0.344777
+0 &lt;= Prob(x&lt;=-0.959596) &lt;= 0.360771
+0 &lt;= Prob(x&lt;=-0.939394) &lt;= 0.377365
+0 &lt;= Prob(x&lt;=-0.919192) &lt;= 0.394532
+0 &lt;= Prob(x&lt;=-0.89899) &lt;= 0.4
+0 &lt;= Prob(x&lt;=-0.878788) &lt;= 0.4
+0 &lt;= Prob(x&lt;=-0.858586) &lt;= 0.4
+0 &lt;= Prob(x&lt;=-0.838384) &lt;= 0.4
+0 &lt;= Prob(x&lt;=-0.818182) &lt;= 0.4
+0 &lt;= Prob(x&lt;=-0.79798) &lt;= 0.4
 0.0116304 &lt;= Prob(x&lt;=-0.777778) &lt;= 0.4
 0.0331953 &lt;= Prob(x&lt;=-0.757576) &lt;= 0.4
 0.0519157 &lt;= Prob(x&lt;=-0.737374) &lt;= 0.4
@@ -284,10 +280,8 @@ Optimal value (cvx_optval): +4.38629
 0.74974 &lt;= Prob(x&lt;=0.959596) &lt;= 1
 0.764914 &lt;= Prob(x&lt;=0.979798) &lt;= 1
 1 &lt;= Prob(x&lt;=1) &lt;= 1
-</pre><img vspace="5" hspace="5" src="maxent_01.png"> <img vspace="5" hspace="5" src="maxent_02.png"> <p class="footer"><br>
-            Published with MATLAB&reg; 7.5<br></p>
-      </div>
-      <!--
+</pre><img vspace="5" hspace="5" src="maxent____01.png" alt=""> <img vspace="5" hspace="5" src="maxent____02.png" alt=""> <p class="footer"><br>
+      Published with MATLAB&reg; 7.9<br></p></div><!--
 ##### SOURCE BEGIN #####
 %% Example 7.2: Maximum entropy distribution
 
@@ -331,7 +325,7 @@ b  = [ 0.1 ; 0.1 ;0.5 ; -0.5 ; -0.2 ; 0.3 ; 0.4 ; -0.3 ];
 %
 
 cvx_expert true
-cvx_begin
+cvx_begin 
     variables pent(n)
     maximize( sum(entr(pent)) )
     sum(pent) == 1;
@@ -342,11 +336,10 @@ cvx_end
 % Compute the bounds on Prob(X<=a_i), i=1,...,n
 %
 
-cvxq = cvx_quiet(true);
 Ubnds = zeros(1,n);
 Lbnds = zeros(1,n);
 for t = 1 : n,
-    cvx_begin
+    cvx_begin quiet
         variable p( n )
         minimize sum( p(1:t) )
         p >= 0; 
@@ -354,7 +347,7 @@ for t = 1 : n,
         A * p <= b;
     cvx_end
     Lbnds(t) = cvx_optval;
-    cvx_begin
+    cvx_begin quiet
         variable p( n )
         maximize sum( p(1:t) )
         p >= 0; 
@@ -364,7 +357,6 @@ for t = 1 : n,
     Ubnds(t) = cvx_optval;
     disp( sprintf( '%g <= Prob(x<=%g) <= %g', Lbnds(t), a(t), Ubnds(t) ) );
 end
-cvx_quiet(cvxq);
 
 %
 % Generate the figures
@@ -389,6 +381,4 @@ ylabel( 'CDF( x )' );
 hold off
 
 ##### SOURCE END #####
--->
-   </body>
-</html>
+--></body></html>

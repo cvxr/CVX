@@ -1,18 +1,12 @@
 
 <!DOCTYPE html
-  PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN">
-<html xmlns:mwsh="http://www.mathworks.com/namespace/mcode/v1/syntaxhighlight.dtd">
-   <head>
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head>
       <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-   
-      <!--
+   <!--
 This HTML is auto-generated from an M-file.
 To make changes, update the M-file and republish this document.
-      -->
-      <title>Example 6.8: Spline fitting</title>
-      <meta name="generator" content="MATLAB 7.5">
-      <meta name="date" content="2008-05-23">
-      <meta name="m-file" content="fig6_20"><style>
+      --><title>Example 6.8: Spline fitting</title><meta name="generator" content="MATLAB 7.9"><meta name="date" content="2009-11-11"><meta name="m-file" content="fig6_20___"><style type="text/css">
 
 body {
   background-color: white;
@@ -68,10 +62,7 @@ p.footer {
   color: gray;
 }
 
-  </style></head>
-   <body>
-      <div class="content">
-         <h1>Example 6.8: Spline fitting</h1><pre class="codeinput"><span class="comment">% Section 6.5.3, Figure 6.20</span>
+  </style></head><body><div class="content"><h1>Example 6.8: Spline fitting</h1><pre class="codeinput"><span class="comment">% Section 6.5.3, Figure 6.20</span>
 <span class="comment">% Boyd &amp; Vandenberghe "Convex Optimization"</span>
 <span class="comment">% Original by Lieven Vandenberghe</span>
 <span class="comment">% Adapted for CVX by Joelle Skaf - 10/03/05</span>
@@ -168,99 +159,69 @@ ylabel(<span class="string">'f(u)'</span>);
 legend(<span class="string">'L_2 norm'</span>,<span class="string">'Data points'</span>,<span class="string">'L_{\infty} norm'</span>, <span class="string">'Location'</span>,<span class="string">'Best'</span>);
 <span class="comment">% print -deps splineapprox.eps</span>
 </pre><pre class="codeoutput">Computing splines in the case of L2-norm... 
-Calling SDPT3: 47 variables, 13 equality constraints
-   For improved efficiency, SDPT3 is solving the dual problem.
+Calling sedumi: 47 variables, 13 equality constraints
+   For improved efficiency, sedumi is solving the dual problem.
 ------------------------------------------------------------
+SeDuMi 1.21 by AdvOL, 2005-2008 and Jos F. Sturm, 1998-2003.
+Alg = 2: xz-corrector, Adaptive Step-Differentiation, theta = 0.250, beta = 0.500
+eqs m = 13, order n = 5, dim = 49, blocks = 3
+nnz(A) = 197 + 0, nnz(ADA) = 169, nnz(L) = 91
+ it :     b*y       gap    delta  rate   t/tP*  t/tD*   feas cg cg  prec
+  0 :            4.15E+00 0.000
+  1 :  -1.74E-01 8.17E-01 0.000 0.1969 0.9000 0.9000   1.71  1  1  1.2E+00
+  2 :  -8.96E-02 1.72E-01 0.000 0.2111 0.9000 0.9000   1.25  1  1  3.0E-01
+  3 :  -1.16E-01 5.70E-03 0.000 0.0331 0.9900 0.9900   0.91  1  1  4.3E-03
+  4 :  -1.17E-01 4.68E-05 0.302 0.0082 0.9990 0.9990   1.00  1  1  4.1E-05
+  5 :  -1.17E-01 3.23E-06 0.000 0.0691 0.9900 0.9900   1.00  1  1  4.0E-06
+  6 :  -1.17E-01 1.30E-08 0.152 0.0040 0.9990 0.9990   1.00  1  1  1.6E-08
+  7 :  -1.17E-01 4.75E-10 0.000 0.0366 0.9900 0.9902   1.00  1  1  1.1E-09
 
- num. of constraints = 13
- dim. of socp   var  = 41,   num. of socp blk  =  1
- dim. of free   var  =  6 *** convert ublk to lblk
-*******************************************************************
-   SDPT3: Infeasible path-following algorithms
-*******************************************************************
- version  predcorr  gam  expon  scale_data
-    NT      1      0.000   1        0    
-it pstep dstep pinfeas dinfeas  gap      mean(obj)   cputime
--------------------------------------------------------------------
- 0|0.000|0.000|2.7e+00|3.7e+01|5.3e+03| 0.000000e+00| 0:0:00| chol  1  1 
- 1|1.000|0.992|5.5e-06|4.0e-01|1.6e+01|-2.240770e+00| 0:0:00| chol  1  1 
- 2|1.000|0.964|5.9e-07|2.4e-02|2.9e-01|-8.901858e-02| 0:0:00| chol  1  1 
- 3|0.940|0.914|2.5e-07|3.0e-03|1.6e-02|-1.172493e-01| 0:0:00| chol  1  1 
- 4|0.986|0.986|1.3e-07|1.4e-04|2.1e-04|-1.165695e-01| 0:0:00| chol  1  1 
- 5|0.989|0.988|7.2e-09|8.8e-06|4.1e-06|-1.165984e-01| 0:0:00| chol  1  1 
- 6|0.992|0.985|1.8e-09|1.4e-07|6.4e-08|-1.166033e-01| 0:0:00| chol  1  1 
- 7|1.000|0.961|1.3e-11|4.7e-09|1.4e-09|-1.166034e-01| 0:0:00|
-  stop: max(relative gap, infeasibilities) &lt; 1.49e-08
--------------------------------------------------------------------
- number of iterations   =  7
- primal objective value = -1.16603357e-01
- dual   objective value = -1.16603352e-01
- gap := trace(XZ)       = 1.38e-09
- relative gap           = 1.12e-09
- actual relative gap    = -4.42e-09
- rel. primal infeas     = 1.27e-11
- rel. dual   infeas     = 4.74e-09
- norm(X), norm(y), norm(Z) = 1.5e+00, 1.9e+00, 1.6e-01
- norm(A), norm(b), norm(C) = 1.3e+01, 2.0e+00, 1.7e+00
- Total CPU time (secs)  = 0.2  
- CPU time per iteration = 0.0  
- termination code       =  0
- DIMACS: 1.3e-11  0.0e+00  6.8e-09  0.0e+00  -4.4e-09  1.1e-09
--------------------------------------------------------------------
+iter seconds digits       c*x               b*y
+  7      0.0   8.9 -1.1660335735e-01 -1.1660335750e-01
+|Ax-b| =   1.5e-10, [Ay-c]_+ =   2.3E-11, |x|=  2.6e+00, |y|=  1.9e+00
+
+Detailed timing (sec)
+   Pre          IPM          Post
+0.000E+00    4.000E-02    0.000E+00    
+Max-norms: ||b||=1, ||c|| = 2.018994e-01,
+Cholesky |add|=0, |skip| = 0, ||L.L|| = 6.24939.
 ------------------------------------------------------------
 Status: Solved
 Optimal value (cvx_optval): +0.116603
 Done! 
 Computing splines in the case of Linfty-norm... 
-Calling SDPT3: 86 variables, 13 equality constraints
-   For improved efficiency, SDPT3 is solving the dual problem.
+Calling sedumi: 86 variables, 13 equality constraints
+   For improved efficiency, sedumi is solving the dual problem.
 ------------------------------------------------------------
+SeDuMi 1.21 by AdvOL, 2005-2008 and Jos F. Sturm, 1998-2003.
+Alg = 2: xz-corrector, Adaptive Step-Differentiation, theta = 0.250, beta = 0.500
+eqs m = 13, order n = 83, dim = 88, blocks = 42
+nnz(A) = 236 + 0, nnz(ADA) = 169, nnz(L) = 91
+ it :     b*y       gap    delta  rate   t/tP*  t/tD*   feas cg cg  prec
+  0 :            6.90E+01 0.000
+  1 :  -4.45E-01 3.18E+01 0.000 0.4602 0.9000 0.9000   2.37  1  1  2.7E+01
+  2 :  -2.73E-02 1.30E+01 0.000 0.4100 0.9000 0.9000  10.91  1  1  1.0E+00
+  3 :  -3.19E-02 5.36E+00 0.000 0.4111 0.9000 0.9000   1.65  1  1  4.0E-01
+  4 :  -3.16E-02 1.80E+00 0.000 0.3363 0.9000 0.9000   1.23  1  1  1.3E-01
+  5 :  -3.19E-02 3.83E-01 0.000 0.2129 0.9000 0.9000   1.04  1  1  2.7E-02
+  6 :  -3.20E-02 1.06E-03 0.000 0.0028 0.9990 0.9990   1.01  1  1  7.7E-05
+  7 :  -3.20E-02 3.97E-11 0.496 0.0000 1.0000 1.0000   1.00  1  1  1.5E-11
 
- num. of constraints = 13
- dim. of socp   var  = 80,   num. of socp blk  = 40
- dim. of free   var  =  6 *** convert ublk to lblk
-*******************************************************************
-   SDPT3: Infeasible path-following algorithms
-*******************************************************************
- version  predcorr  gam  expon  scale_data
-    NT      1      0.000   1        0    
-it pstep dstep pinfeas dinfeas  gap      mean(obj)   cputime
--------------------------------------------------------------------
- 0|0.000|0.000|2.8e+01|4.5e+01|5.6e+03| 0.000000e+00| 0:0:00| chol  1  1 
- 1|1.000|0.990|1.2e-05|5.3e-01|1.8e+01|-3.488167e+00| 0:0:00| chol  1  1 
- 2|1.000|0.983|1.4e-05|1.8e-02|1.8e-01|-5.808630e-02| 0:0:00| chol  1  1 
- 3|1.000|0.801|1.6e-06|4.5e-03|3.8e-02|-2.326026e-02| 0:0:00| chol  1  1 
- 4|0.530|0.772|2.7e-06|1.1e-03|2.1e-02|-3.011469e-02| 0:0:00| chol  1  1 
- 5|0.982|0.572|4.5e-08|4.8e-04|6.6e-03|-3.299069e-02| 0:0:00| chol  1  1 
- 6|1.000|0.809|1.3e-08|1.1e-04|9.7e-04|-3.230400e-02| 0:0:00| chol  1  1 
- 7|0.985|0.981|1.5e-09|1.1e-05|1.9e-05|-3.204242e-02| 0:0:00| chol  1  1 
- 8|0.990|0.989|7.1e-11|2.1e-07|3.3e-07|-3.203834e-02| 0:0:00| chol  1  1 
- 9|0.990|0.989|3.5e-12|3.6e-09|5.1e-09|-3.203833e-02| 0:0:00|
-  stop: max(relative gap, infeasibilities) &lt; 1.49e-08
--------------------------------------------------------------------
- number of iterations   =  9
- primal objective value = -3.20383318e-02
- dual   objective value = -3.20383363e-02
- gap := trace(XZ)       = 5.14e-09
- relative gap           = 4.83e-09
- actual relative gap    = 4.22e-09
- rel. primal infeas     = 3.52e-12
- rel. dual   infeas     = 3.60e-09
- norm(X), norm(y), norm(Z) = 6.8e-01, 2.4e+00, 2.4e-01
- norm(A), norm(b), norm(C) = 1.5e+01, 2.0e+00, 1.7e+00
- Total CPU time (secs)  = 0.2  
- CPU time per iteration = 0.0  
- termination code       =  0
- DIMACS: 3.5e-12  0.0e+00  5.1e-09  0.0e+00  4.2e-09  4.8e-09
--------------------------------------------------------------------
+iter seconds digits       c*x               b*y
+  7      0.0   Inf -3.2038334523e-02 -3.2038334522e-02
+|Ax-b| =   7.9e-12, [Ay-c]_+ =   1.8E-12, |x|=  7.3e-01, |y|=  2.4e+00
+
+Detailed timing (sec)
+   Pre          IPM          Post
+0.000E+00    4.000E-02    0.000E+00    
+Max-norms: ||b||=1, ||c|| = 2.018994e-01,
+Cholesky |add|=0, |skip| = 0, ||L.L|| = 12.6297.
 ------------------------------------------------------------
 Status: Solved
 Optimal value (cvx_optval): +0.0320383
 Done! 
-</pre><img vspace="5" hspace="5" src="fig6_20_01.png"> <p class="footer"><br>
-            Published with MATLAB&reg; 7.5<br></p>
-      </div>
-      <!--
+</pre><img vspace="5" hspace="5" src="fig6_20____01.png" alt=""> <p class="footer"><br>
+      Published with MATLAB&reg; 7.9<br></p></div><!--
 ##### SOURCE BEGIN #####
 %% Example 6.8: Spline fitting
 
@@ -361,6 +322,4 @@ ylabel('f(u)');
 legend('L_2 norm','Data points','L_{\infty} norm', 'Location','Best');
 % print -deps splineapprox.eps
 ##### SOURCE END #####
--->
-   </body>
-</html>
+--></body></html>

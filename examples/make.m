@@ -1,52 +1,6 @@
 function make( varargin )
 
 %
-% Quick wrapper to save base workspace
-%
-
-vernum = version;
-temp = find( vernum == '.' );
-if length( temp ) > 1,
-    vernum( temp( 2 ) : end ) = [];
-end
-vernum = eval( vernum, 'NaN' );
-evalin( 'base', 'global cvx___ws___' );
-vars = evalin( 'base', 'who' );
-varg = evalin( 'base', 'who( ''global'' )' );
-varg = intersect( varg, vars );
-vars = setdiff( vars, varg );
-temp = sprintf( '%s,', vars{:} );
-evalin( 'base', [ 'cvx___ws___ = {', temp(1:end-1), '};' ] );
-evalin( 'base', 'clear' );
-%try
-    make2( varargin{:} );
-    lerr = [];
-    %catch
-   % if vernum >= 6.5,
-    %    lerr = lasterror;
-    %else
-    %    lerr = lasterr;
-    %end
-    %end
-evalin( 'base', 'clear' );
-if ~isempty( varg ),
-    evalin( 'base', sprintf( '%s ', 'global', varg{:} ) );
-end
-if ~isempty( vars ),
-    evalin( 'base', [ '[', temp(1:end-1), '] = deal( cvx___ws___{:} );' ] );
-end
-clear global cvx___ws___
-if ~isempty( lerr ),
-    if vernum >= 6.5,
-        rethrow( lerr );
-    else
-        error( lerr );
-    end
-end
-
-function make2( varargin )
-
-%
 % Determine the base path
 %
 
@@ -79,8 +33,6 @@ temp = strcmp( args, '-indexonly' );
 indexonly = any( temp );
 if indexonly, args(temp) = []; end
 if isempty( args ), args = { base }; end
-vernum = version;
-if vernum(1) < '7', runonly = 1; end
 
 %
 % Process the arguments
@@ -103,7 +55,7 @@ for k = 1 : length( args ),
         file = files{j};
         switch exist( file, 'file' ),
             case 0,
-                error( sprintf( 'Cannot find file or directory: %s', file ) );
+                error( 'Cannot find file or directory: %s', file );
             case 2,
                 file = which( file );
                 if isempty( file ), 
@@ -115,10 +67,10 @@ for k = 1 : length( args ),
                 [ mpath, file, ext, versn ] = fileparts( file );
                 file = [ file, ext, versn ];
                 if ~strcmp( ext, '.m' ),
-                    error( sprintf( 'Must be an m-file: %s', file ) );
-                elseif strcmp( file, 'Contents.m' ) & length( files ) > 1,
+                    error( 'Must be an m-file: %s' );
+                elseif strcmp( file, 'Contents.m' ) && length( files ) > 1,
                     continue;
-                elseif strcmp( file, 'make.m' ) & strcmp( mpath, base ),
+                elseif strcmp( file, 'make.m' ) && strcmp( mpath, base ),
                     continue;
                 end
             case 7,
@@ -129,37 +81,19 @@ for k = 1 : length( args ),
             otherwise,
                 error( 'Invalid file: %s', file );
         end
-        if length( mpath ) < length( base ) | strncmpi( mpath, base, length( base ) ) == 0,
-            error( sprintf( 'Not a valid a subdirectory of cvx/examples/: %s', mpath ) );
+        if length( mpath ) < length( base ) || strncmpi( mpath, base, length( base ) ) == 0,
+            error( 'Not a valid a subdirectory of cvx/examples/: %s', mpath );
         end
 
         %
         % Process the file or directory
         %
 
-        if ~runonly & isempty( file ) & strcmp( mpath, base ),
-            cd( base );
-            [ fidr, message ] = fopen( 'index.jemdoc', 'r' );
-            if fidr < 0,
-                error( 'Cannot open index.jemdoc\n   %s', message );
-            end
-            t_head = fread( fidr, Inf, 'uint8=>char' )';
-            t_tail = strfind( t_head, '{{</div>}}' );
-            if length( t_tail ) ~= 1
-                error( 'Corrupt index.jemdoc file, cannot proceed.' );
-            end
-            t_tail = t_head( t_tail : end );
-            n_head = strfind( t_head, '{{<div class="mktree" id="tree1">}}' );
-            if length( n_head ) ~= 1,
-                error( 'Corrupt index.jemdoc file, cannot proceed.' );
-            end
-            t_head( n_head + length( '{{<div class="mktree" id="tree1">}}' ) + 1 : end ) = [];
-            fclose( fidr );
-            [ fidw, message ] = fopen( 'index.jemdoc.new', 'w+' );
+        if ~runonly && isempty( file ) && strcmp( mpath, base ),
+            [ fidw, message ] = fopen( 'index.dat.new', 'w+' );
             if fidw < 0,
-                error( 'Cannot open index.jemdoc.new\n   %s', message );
+                error( 'Cannot open index.dat.new\n   %s', message );
             end
-            fwrite( fidw, t_head, 'char' );
         else
             fidw = -1;
         end
@@ -171,10 +105,9 @@ for k = 1 : length( args ),
         end
         cd( odir );
         if fidw >= 0,
-            fwrite( fidw, t_tail, 'char' );
             fclose( fidw );
             cd( mpath )
-            compare_and_replace( '', 'index.jemdoc' );
+            compare_and_replace( '', 'index.dat' );
         end
     end
 end
@@ -182,7 +115,7 @@ end
 function [ title, files ] = generate_directory( mpath, prefix, force, runonly, indexonly, fidc, base, depth )
 if nargin < 8, depth = 1; end
 
-disp( sprintf( '%sDirectory: %s', prefix, mpath ) );
+fprintf( 1, '%sDirectory: %s\n', prefix, mpath );
 prefix = [ prefix, '   ' ];
 cd( mpath );
 mpath = cd;
@@ -198,16 +131,16 @@ if ~runonly,
     [ fidr, message ] = fopen( 'Contents.m', 'r' );
     if fidr >= 0,
         temp = fgetl( fidr );
-        if length( temp ) > 2 & temp( 1 ) == '%' & temp( 2 ) == ' ' & temp( 3 ) ~= ' ',
+        if length( temp ) > 2 && temp( 1 ) == '%' && temp( 2 ) == ' ' && temp( 3 ) ~= ' ',
             title = temp( min( find( temp ~= '%' & temp ~= ' ' ) ) : end );
             while ~feof( fidr ),
                 temp = fgetl( fidr );
-                if isempty(temp) | temp( 1 ) ~= '%' | ~any( temp ~= '%' & temp ~= ' ' ), break; end
+                if isempty(temp) || temp( 1 ) ~= '%' || ~any( temp ~= '%' & temp ~= ' ' ), break; end
                 temp = temp( min( find( temp ~= '%' & temp ~= ' ' ) ) : end );
                 if strcmp(title(end-2:end),'...'),
                     title = [ title(1:end-3), temp ];
                 else
-                    if ~isempty(fcomments) & strcmp( fcomments{end}(end-2:end),'...' ),
+                    if ~isempty(fcomments) && strcmp( fcomments{end}(end-2:end),'...' ),
                         fcomments{end} = [ fcomments{end}(1:end-3), temp ];
                     else
                         fcomments{end+1} = temp;
@@ -235,7 +168,7 @@ files = struct( 'name', {}, 'title', {}, 'type', {} );
 for k = 1 : length( dd ),
     name = dd(k).name;
     if dd(k).isdir,
-        if name(1) == '.' | strcmp( name, 'eqs' ) | strcmp( name, 'html' ), continue; end
+        if name(1) == '.' || strcmp( name, 'eqs' ) || strcmp( name, 'html' ), continue; end
         name(end+1) = '/';
         files( end + 1 ) = struct( 'name', name, 'title', '', 'type', 'dir' );
     elseif length( name ) > 2,
@@ -243,7 +176,7 @@ for k = 1 : length( dd ),
         if isempty( ndx ), continue; end
         switch name(ndx+1:end),
             case 'm',
-                if strcmp( name, 'Contents.m' ) | strcmp( name, 'make.m' ), continue; end
+                if strcmp( name, 'Contents.m' ) || strcmp( name, 'make.m' ) || name(end-2) == '_', continue; end
                 [ temp, isfunc ] = generate_file( name, prefix, force, runonly, indexonly );
                 if isfunc, type = 'func'; else type = 'script'; end
                 files( end + 1 ) = struct( 'name', name, 'title', temp, 'type', type );
@@ -311,13 +244,8 @@ if fidc >= 0,
         fprintf( fidc, '%s *%s*\n', dots, title );
     end
     
-    if tdoc(2) >= tdoc(1) | ~isempty( fcomments ),
-        if 1, % tdoc(2) - tdoc(1) + length(fcomments) == 0,
-            pref = '- Reference: ';
-        else
-            fprintf( fidc, '%s- References:\n', dots );
-            pref = '-- ';
-        end
+    if tdoc(2) >= tdoc(1) || ~isempty( fcomments ),
+        pref = '- Reference: ';
         for k = tdoc(1) : tdoc(2),
             name = files( k ).name;
             if strcmp( files(k).type, 'tex' ),
@@ -360,12 +288,7 @@ if fidc >= 0,
     end
 
     if tfun(2) >= tfun(1),
-        if 1, % tfun(1) == tfun(2),
-            pref = '- Utility: ';
-        else
-            fprintf( fidc, '%s- Utilities:\n', dots );
-            pref = '-- ';
-        end
+        pref = '- Utility: ';
         for k = tfun(1) : tfun(2),
             name = files( k ).name;
             temp = files( k ).title;
@@ -378,12 +301,7 @@ if fidc >= 0,
     end
     
     if tdat(2) >= tdat(1),
-        if 1, % tfun(1) == tfun(2),
-            pref = '- Data: ';
-        else
-            fprintf( fidc, '%s- Data:\n', dots );
-            pref = '-- ';
-        end
+        pref = '- Data: ';
         for k = tdat(1) : tdat(2),
             name = files( k ).name;
             temp = files( k ).title;
@@ -449,7 +367,7 @@ end
 
 function [ title, isfunc ] = generate_file( name, prefix, force, runonly, indexonly )
 
-if length( name ) < 2 | ~strcmp( name(end-1:end), '.m' ),
+if length( name ) < 2 || ~strcmp( name(end-1:end), '.m' ),
     error( 'Not an m-file.' );
 elseif strcmp( name, 'Contents.m' ),
     error( 'To generate the Contents.m file, you must run this function on the entire directory.' );
@@ -468,7 +386,7 @@ isfunc = false;
 lasttitle = false;
 founddata = false;
 prefixes = {};
-while ~feof( fidr ) & ( ~founddata | isempty( title ) | lasttitle ),
+while ~feof( fidr ) && ( ~founddata || isempty( title ) || lasttitle ),
     temp1 = fgetl( fidr );
     if isempty( temp1 ),
         if lasttitle, continue; end
@@ -498,19 +416,16 @@ while ~feof( fidr ) & ( ~founddata | isempty( title ) | lasttitle ),
             lasttitle = false;
             founddata = true;
             temp2 = temp1(temp2(1):temp2(end));
-            if strncmp( temp2, 'function', 8 ) & ( length( temp2 ) == 8 | ~isvarname( temp2( 1 : 9 ) ) ),
+            if strncmp( temp2, 'function', 8 ) && ( length( temp2 ) == 8 || ~isvarname( temp2( 1 : 9 ) ) ),
                 isfunc = true;
             end
         end
     end
     prefixes{end+1} = temp1;
 end
-if isfunc,
-    fprintf( 1, 'function.\n' );
+if runonly,
     fclose( fidr );
-    return
-elseif runonly,
-    fclose( fidr );
+    if isfunc, return; end
 end
 hfile = [ name(1:end-1), 'html' ];
 odir = cd;
@@ -526,7 +441,7 @@ if exist( hdir, 'dir' ),
 end
 if indexonly,
     fprintf( 1, 'done.\n' );
-elseif force | hdate <= ndate,
+elseif force || hdate <= ndate,
     if runonly,
         fprintf( 1, 'running %s ...', name );
     elseif hdate == 0,
@@ -534,9 +449,9 @@ elseif force | hdate <= ndate,
     else
         fprintf( 1, 'updating %s ...', hfile );
     end
+    name = name(1:end-2);
     if ~runonly,
-        name2 = [ name, '__' ];
-        [ fidw, message ] = fopen( name2, 'w+' );
+        [ fidw, message ] = fopen( [ name, '___.m' ], 'w+' );
         if fidw < 0,
             error( 'Cannot open the temporary file\n   %s', message );
         end
@@ -553,46 +468,36 @@ elseif force | hdate <= ndate,
     evalin( 'base', 'clear' );
     cvx_quiet( false );
     cvx_precision default;
-    success = false;
+    success = true;
     try
         if runonly,
-            out___ = run_clean( name(1:end-2) );
+            out___ = run_clean( name );
+            fprintf( 1, ' done.\n' );
         else
-            publish( name2, struct( 'format', 'html', 'useNewFigure', false, 'createThumbnail', false ) );
+            opts.format = 'html';
+            opts.useNewFigure = false;
+            opts.createThumbnail =  false;
+            opts.evalCode = ~isfunc;
+            opts.showCode = true;
+            opts.catchError = false;
+            publish( [ name, '___' ], opts );
+            movefile( [ 'html', filesep, name, '___.html' ], [ 'html', filesep, name, '.html' ] );
+            fprintf( 1, ' done.\n' );
         end
-        fprintf( 1, ' done.\n' );
-        if runonly,
-            disp(out___);
-        end
-        success = true;
     catch
-        vernum = version;
-        temp = find( vernum == '.' );
-        if length( temp ) > 1,
-            vernum( temp( 2 ) : end ) = [];
-        end
-        vernum = eval( vernum, 'NaN' );
-        if vernum >= 6.5,
-            err = lasterror;
-        else
-            err = lasterr;
-        end
+        err = lasterror;
         fprintf( 1, ' aborted.\n' );
         cd( odir );
-        if vernum >= 6.5,
-            disp( sprintf( '===> ERROR: %s', err.message ) );
-        else
-            disp( sprintf( '===> ERROR: %s', err ) );
-        end
+        fprintf( 1, '===> ERROR: %s\n', err.message );
+        success = false;
     end
-    if ~runonly,
-        delete( name2 );
-        if ~isempty( dir( name2 ) ),
-            error( 'Cannot delete the temporary file' );
-        end
+    if runonly,
+        disp( out___ );
+    else
+        delete( [ name, '___.m' ] );
     end
     cd( odir );
-    if ~success & ~runonly & exist( hdir, 'dir' ),
+    if ~success && ~runonly && exist( hdir, 'dir' ),
         cd( hdir );
         df = dir( hfile );
         if length( df ) == 1,
@@ -607,7 +512,7 @@ end
 
 function title = generate_doc( name, prefix, force )
 
-if length( name ) < 5 | ~strcmp( name(end-3:end), '.tex' ),
+if length( name ) < 5 || ~strcmp( name(end-3:end), '.tex' ),
     error( 'Not an valid TeX file.' );
 else
     fprintf( 1, '%s%s: ', prefix, name );
@@ -635,7 +540,7 @@ df = dir( pdffile );
 if length( df ) == 1,
     hdate = date_convert( df.date );
 end
-if force | hdate < ndate,
+if force || hdate < ndate,
     if hdate == 0,
         fprintf( 1, 'creating %s:', hfile );
     else
@@ -670,7 +575,7 @@ fids = [];
 c = {};
 for k = 1 : 2,
     [ fids(k), message ] = fopen( names{k}, 'r' );
-    if fids(k) < 0 & ~isempty( dir( names{k} ) ),
+    if fids(k) < 0 && ~isempty( dir( names{k} ) ),
         error( 'Cannot open file %s for reading:\n   %s', names{k}, message );
     end
     c{k} = fread( fids(k), Inf, 'uint8' );
@@ -682,7 +587,7 @@ if isempty( c{2} ),
         delete( oldname );
     end
     delete( names{2} );
-elseif length( c{1} ) ~= length( c{2} ) | any( c{1} ~= c{2} ),
+elseif length( c{1} ) ~= length( c{2} ) || any( c{1} ~= c{2} ),
     [ success, message ] = movefile( names{2}, names{1}, 'f' );
     if ~success,
         error( 'Cannot move %s into place\n   %s', names{2}, message );

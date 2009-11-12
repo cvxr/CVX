@@ -1,18 +1,12 @@
 
 <!DOCTYPE html
-  PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN">
-<html xmlns:mwsh="http://www.mathworks.com/namespace/mcode/v1/syntaxhighlight.dtd">
-   <head>
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head>
       <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-   
-      <!--
+   <!--
 This HTML is auto-generated from an M-file.
 To make changes, update the M-file and republish this document.
-      -->
-      <title>Exercise 4.47: Maximum determinant PSD matrix completion</title>
-      <meta name="generator" content="MATLAB 7.5">
-      <meta name="date" content="2008-05-23">
-      <meta name="m-file" content="max_det_psd_completion"><style>
+      --><title>Exercise 4.47: Maximum determinant PSD matrix completion</title><meta name="generator" content="MATLAB 7.9"><meta name="date" content="2009-11-11"><meta name="m-file" content="max_det_psd_completion___"><style type="text/css">
 
 body {
   background-color: white;
@@ -68,10 +62,7 @@ p.footer {
   color: gray;
 }
 
-  </style></head>
-   <body>
-      <div class="content">
-         <h1>Exercise 4.47: Maximum determinant PSD matrix completion</h1><pre class="codeinput"><span class="comment">% Boyd &amp; Vandenberghe "Convex Optimization"</span>
+  </style></head><body><div class="content"><h1>Exercise 4.47: Maximum determinant PSD matrix completion</h1><pre class="codeinput"><span class="comment">% Boyd &amp; Vandenberghe "Convex Optimization"</span>
 <span class="comment">% Almir Mutapcic - Jan 2006</span>
 <span class="comment">%</span>
 <span class="comment">% Given a symmetric matrix A in R^(n-by-n) with some entries unspecified</span>
@@ -114,17 +105,19 @@ disp([<span class="string">'Its eigenvalues are:'</span>])
 eigs = eig(A)
 </pre><pre class="codeoutput"> 
 Successive approximation method to be employed.
-   SDPT3 will be called several times to refine the solution.
+   For improved efficiency, sedumi is solving the dual problem.
+   sedumi will be called several times to refine the solution.
    Original size: 58 variables, 17 equality constraints
-   For improved efficiency, SDPT3 is solving the dual problem.
-   Approximation size: 67 variables, 22 equality constraints
+   1 exponentials add 8 variables, 5 equality constraints
 -----------------------------------------------------------------
- Target     Conic    Solver
-Precision   Error    Status
----------------------------
-1.221e-04  4.919e-03  Solved
-1.221e-04  0.000e+00  Solved
-1.490e-08  0.000e+00  Solved
+S   Error      #     Status
+-----------------------------
+  4.916e-03   0/0   Solved
+  1.134e-04   0/0   Solved
+  2.219e-06   0/0   Solved
+  4.512e-08   0/0   Solved
+  6.061e-10   0/0   Solved
+  0.000e+00   1/0   Solved
 -----------------------------------------------------------------
 Status: Solved
 Optimal value (cvx_optval): +3.02422
@@ -147,9 +140,7 @@ eigs =
     5.0355
 
 </pre><p class="footer"><br>
-            Published with MATLAB&reg; 7.5<br></p>
-      </div>
-      <!--
+      Published with MATLAB&reg; 7.9<br></p></div><!--
 ##### SOURCE BEGIN #####
 %% Exercise 4.47: Maximum determinant PSD matrix completion
 
@@ -196,6 +187,4 @@ disp(['Its eigenvalues are:'])
 eigs = eig(A)
 
 ##### SOURCE END #####
--->
-   </body>
-</html>
+--></body></html>

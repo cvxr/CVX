@@ -1,18 +1,12 @@
 
 <!DOCTYPE html
-  PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN">
-<html xmlns:mwsh="http://www.mathworks.com/namespace/mcode/v1/syntaxhighlight.dtd">
-   <head>
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head>
       <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-   
-      <!--
+   <!--
 This HTML is auto-generated from an M-file.
 To make changes, update the M-file and republish this document.
-      -->
-      <title>Exercise 4.57: Capacity of a communication channel</title>
-      <meta name="generator" content="MATLAB 7.5">
-      <meta name="date" content="2008-05-23">
-      <meta name="m-file" content="channel_capacity"><style>
+      --><title>Exercise 4.57: Capacity of a communication channel</title><meta name="generator" content="MATLAB 7.9"><meta name="date" content="2009-11-11"><meta name="m-file" content="channel_capacity___"><style type="text/css">
 
 body {
   background-color: white;
@@ -68,10 +62,7 @@ p.footer {
   color: gray;
 }
 
-  </style></head>
-   <body>
-      <div class="content">
-         <h1>Exercise 4.57: Capacity of a communication channel</h1><pre class="codeinput"><span class="comment">% Boyd &amp; Vandenberghe "Convex Optimization"</span>
+  </style></head><body><div class="content"><h1>Exercise 4.57: Capacity of a communication channel</h1><pre class="codeinput"><span class="comment">% Boyd &amp; Vandenberghe "Convex Optimization"</span>
 <span class="comment">% Jo&Atilde;&laquo;lle Skaf - 04/24/08</span>
 <span class="comment">%</span>
 <span class="comment">% We consider a discrete memoryless communication channel, with input</span>
@@ -107,27 +98,26 @@ C = cvx_optval;
 display([<span class="string">'The channel capacity is: '</span> num2str(C) <span class="string">' bits.'</span>])
 </pre><pre class="codeoutput"> 
 Successive approximation method to be employed.
-   SDPT3 will be called several times to refine the solution.
+   sedumi will be called several times to refine the solution.
    Original size: 45 variables, 21 equality constraints
-   Approximation size: 126 variables, 71 equality constraints
+   10 exponentials add 80 variables, 50 equality constraints
 -----------------------------------------------------------------
- Target     Conic    Solver
-Precision   Error    Status
----------------------------
-1.221e-04  4.915e-01  Solved
-1.221e-04  2.013e-03  Solved
-1.221e-04  1.504e-05  Solved
-1.221e-04  0.000e+00  Solved
-1.490e-08  2.332e-09  Solved
-1.490e-08  0.000e+00  Solved
+S   Error      #     Status
+-----------------------------
+  4.909e-01   0/0   Solved
+  2.470e-03   0/0   Solved
+  4.730e-07   0/0   Solved
+  8.492e-08   0/0   Solved
+  8.481e-08   0/2   Solved
+S 8.503e-08   0/0   Solved
+  2.571e-09   3/0   Solved
+  0.000e+00  10/0   Solved
 -----------------------------------------------------------------
 Status: Solved
 Optimal value (cvx_optval): +0.296291
 The channel capacity is: 0.29629 bits.
 </pre><p class="footer"><br>
-            Published with MATLAB&reg; 7.5<br></p>
-      </div>
-      <!--
+      Published with MATLAB&reg; 7.9<br></p></div><!--
 ##### SOURCE BEGIN #####
 %% Exercise 4.57: Capacity of a communication channel
 
@@ -168,6 +158,4 @@ display(['The channel capacity is: ' num2str(C) ' bits.'])
 
 
 ##### SOURCE END #####
--->
-   </body>
-</html>
+--></body></html>
