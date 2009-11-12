@@ -187,6 +187,7 @@ for k = 1 : length( dd ),
                 if any( strcmp( { dd.name }, [name(1:ndx+1),'tex'] ) ), continue; end
                 files( end + 1 ) = struct( 'name', name, 'title', '', 'type', 'doc' );
             case { 'dat', 'mat', 'txt' },
+                if strcmp( name, 'index.dat' ), continue; end
                 files( end + 1 ) = struct( 'name', name, 'title', '', 'type', 'dat' );
             otherwise,
                 continue;
@@ -295,7 +296,7 @@ if fidc >= 0,
             if isempty( temp ),
                 fprintf( fidc, '%s%s[%s%s %s]\n', dots, pref, dpath, name, name );
             else
-                fprintf( fidc, '%s%s[%s%s %s (%s)]\n', dots, pref, dpath, name, temp, name );
+                fprintf( fidc, '%s%s[%shtml/%shtml %s] ([%s%s %s])]\n', dots, pref, dpath, name(1:end-1), temp, dpath, name, name );
             end
         end
     end
