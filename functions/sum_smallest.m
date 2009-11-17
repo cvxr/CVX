@@ -1,4 +1,4 @@
-function cvx_optval = sum_smallest( x, k, dim )
+function cvx_optval = sum_smallest( x, varargin )
 
 %SUM_SMALLEST Sum of the smallest k elements of a vector.
 %   For a real vector X and an integer k between 1 and length(X) inclusive,
@@ -28,11 +28,7 @@ function cvx_optval = sum_smallest( x, k, dim )
 %       must both be constant.
 
 error( nargchk( 2, 3, nargin ) );
-if nargin == 2,
-    cvx_optval = - sum_largest( - x, k );
-else
-    cvx_optval = - sum_largest( - x, k, dim );
-end
+cvx_optval = -sum_largest( -x, varargin{:} );
 
 % Copyright 2009 Michael C. Grant and Stephen P. Boyd.
 % See the file COPYING.txt for full copyright information.
