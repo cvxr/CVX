@@ -322,7 +322,7 @@ elseif n ~= 0 && ~infeas && ( any( b ) || any( c ) ),
                     best_prec = prec;
                 end
                 attempts = attempts + 1;
-                if tprec <= prec(1) || attempts == 2 || ~found, 
+                if tprec <= prec(1) || attempts == 2 || ~found,
                     break; 
                 end
             elseif attempts,
@@ -450,10 +450,15 @@ if dualized,
     end
 end
 
+trick = false;
 if gobj,
     switch status,
-        case 'Unbounded', status = 'Solved';
-        case 'Inaccurate/Unbounded', status = 'Inaccurate/Solved';
+        case 'Unbounded', 
+            status = 'Solved';
+            trick = true;
+        case 'Inaccurate/Unbounded', 
+            status = 'Inaccurate/Solved';
+            trick = true;
     end
 end
 
@@ -472,16 +477,18 @@ cvx___.problems( p ).tol = tprec;
 x = full( Q * [ pval ; x ] );
 y = full( P * [ dval ; y ] );
 if dualized,
+    if trick, y = P(:,1) + realmax * sign(y); end
     cvx___.x = y;
     cvx___.y = x(2:end);
 else
+    if trick, x = Q(:,1) + realmax * sign(x); end
     cvx___.x = x;
     cvx___.y = y(2:end);
 end
 if nnz( cvx___.exponential ),
     esrc = find( cvx___.exponential );
     edst = cvx___.exponential( esrc );
-    cvx___.x( edst ) = exp( cvx___.x( esrc ) );
+    cvx___.x( edst ) = min( 1e300, exp( cvx___.x( esrc ) ) );
 end
 
 %

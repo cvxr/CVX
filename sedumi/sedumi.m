@@ -675,7 +675,7 @@ else  % (if x0>0)
         my_fprintf(pars.fid, 'Dual infeasible, primal improving direction found.\n');
     end
     if dinf < pars.bigeps * by
-        info.r0 = abs(pinf/cx);
+        info.r0 = abs(dinf/by);
         info.pinf = 1;
         dinf = dinf / by;
         normy = normy / by;
