@@ -40,7 +40,6 @@ if isempty( cvx___.problems ),
     s = cvx___.solver;
     if nargin > 0,
         cvx___.solver = flag;
-        cvx___.solver_exp = flag;
     end
 else
     s = cvx___.problems(end).solver;
@@ -49,7 +48,6 @@ else
             warning( 'CVX:Solver', 'The global CVX solver selection cannot be changed while a model is being constructed.' );
         else
             cvx___.problems(end).solver = flag;
-            cvx___.problems(end).solver_exp = flag;
         end
     end
 end
