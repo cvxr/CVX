@@ -6,10 +6,8 @@ function sout = cvx_solver( flag )
 %   The solver string is case-insensitive; e.g., 'sdpt3' is fine.
 %
 %   The default solver is SeDuMi. For most models, this will be the best
-%   choice. An exception to this rule is when successive approximation is
-%   employed, in which case SDPT3's infeasible algorithm is superior. For
-%   that reason, SDPT3 is selected as the default for such problems. To
-%   change that default, use the command CVX_SOLVER_EXP.
+%   choice. Nevertheless, for your problems you may find that SDPT3 is
+%   more accurate or reliable, hence the need for this command.
 %
 %   If CVX_SOLVER is called within a model---that is, between the statements
 %   CVX_BEGIN and CVX_END---then the new solver selection applies only to that
