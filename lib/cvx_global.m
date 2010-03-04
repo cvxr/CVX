@@ -89,68 +89,65 @@ if isempty( cvx___ ),
     end
     temp = strfind( s, fs );
     s( temp(end-1) + 1 : end ) = [];
+    subs = { 'sedumi/pre7.5', 'sedumi', 'sdpt3', 'sdpt3/Solver', 'sdpt3/HSDSolver', 'sdpt3/Solver/Mexfun/pre7.5', 'sdpt3/Solver/Mexfun', 'sdpt3/Linsysolver/spchol', 'keywords', 'sets' };
     if cvx___.octave,
-        subs = {                  'sedumi', 'sdpt3', 'sdpt3/Solver', 'sdpt3/HSDSolver',                               'sdpt3/Solver/Mexfun', 'sdpt3/Linsysolver/spchol' };
+        smap = [ 0, 1, 1, 1, 1, 0, 1, 1, 1, 1 ];
+    elseif cvx___.mversion < 7.0,
+        smap = [ 1, 1, 1, 1, 1, 1, 0, 1, 0, 0 ];
     elseif cvx___.mversion < 7.3,
-        subs = { 'sedumi/pre7.5', 'sedumi', 'sdpt3', 'sdpt3/Solver', 'sdpt3/HSDSolver', 'sdpt3/Solver/Mexfun/pre7.5',                        'sdpt3/Linsysolver/spchol' };
+        smap = [ 1, 1, 1, 1, 1, 1, 0, 1, 1, 1 ];
     elseif cvx___.mversion < 7.5,
-        subs = { 'sedumi/pre7.5', 'sedumi', 'sdpt3', 'sdpt3/Solver', 'sdpt3/HSDSolver', 'sdpt3/Solver/Mexfun/pre7.5',                                                   };
+        smap = [ 1, 1, 1, 1, 1, 1, 0, 0, 1, 1 ];
     else
-        subs = {                  'sedumi', 'sdpt3', 'sdpt3/Solver', 'sdpt3/HSDSolver',                               'sdpt3/Solver/Mexfun',                            };
-    end        
-    nsolver = length(subs);
-    if cvx___.octave || cvx___.mversion >= 7.0,
-        subs{end+1} = 'keywords';
-        subs{end+1} = 'sets';
+        smap = [ 0, 1, 1, 1, 1, 0, 1, 0, 1, 1 ];
     end
     npath = '';
     spaths = [];
     needupd = false;
     miss_solv = 0;
-    for k = 1 : length( subs ),
+    nsolv = length(subs) - 2;
+    for k = 1 : nsolv + 2,
         tsub = subs{k};
         tt = tsub == '/';
-        if any( tt ),
+        if k > nsolv,
+            base = '';
+        elseif any(tt),
             base = tsub(1:min(find(tt))-1);
-            tsub(tt) = fs;
         else
             base = tsub;
         end
+        tsub(tt) = fs;
         temp = [ s, tsub ];
         if exist( temp, 'dir' ),
             temp2 = [ temp, ps ];
             ndxs = strfind( opath, temp2 );
             if ~isempty( ndxs ),
-                if k > nsolver,
-                    cvx___.path.active = true;
-                elseif isempty( cvx___.path.sactive ) && strcmpi( cvx___.solver, base ),
-                    cvx___.path.sactive = base;
-                else
-                    opath( ndxs(1) : ndxs(1) + length(temp2) - 1 ) = [];
+                if smap(k),
+                    if k > nsolver,
+                        cvx___.path.active = true;
+                    elseif isempty( cvx___.path.sactive ) && strcmpi( cvx___.solver, base ),
+                        cvx___.path.sactive = base;
+                    end
                 end
+                opath( ndxs(1) : ndxs(1) + length(temp2) - 1 ) = [];
                 needupd = true;
             end
-            if k > nsolver,
-                npath = [ npath, temp2 ];
-            elseif isempty( spaths ),
-                spaths = struct( base, temp2 );
-            elseif isfield( spaths, base ),
-                spaths.(base) = [ spaths.(base), temp2 ];
-            else
-                spaths.(base) = temp2;
+            if smap(k),
+                if isempty( base ),
+                    npath = [ npath, temp2 ];
+                elseif isempty( spaths ),
+                    spaths = struct( base, temp2 );
+                elseif isfield( spaths, base ),
+                    spaths.(base) = [ spaths.(base), temp2 ];
+                else
+                    spaths.(base) = temp2;
+                end
             end
-        elseif k > nsolver,
+        elseif isempty(base) || smap(k) && ~isempty( spaths ) && isfield( spaths, base ),
             error( [ ...
                 'Cannot find the required cvx subdirectory: %s\n', ...
                 'The cvx distribution is corrupt; please reinstall.' ], temp );
-        elseif isfield( spaths, base ),
-            error( [ ...
-                'The cvx solver directory %s is incomplete.\n', ...
-                'The cvx distribution is corrupt; please reinstall.' ], temp );
         end
-    end
-    if exist( 'mosekopt', 'file' ) == 3,
-        spaths.mosek = '';
     end
     cvx___.path.solvers = spaths;
     cvx___.path.string  = npath;
