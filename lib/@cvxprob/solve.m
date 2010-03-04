@@ -416,6 +416,7 @@ elseif infeas,
         disp( 'Trivial infeasibilities detected; solution determined analytically.' );
     end
     status = 'Infeasible';
+    tprec = 0;
     x = NaN * ones( n, 1 );
     b( ~tt ) = 0;
     y = - b / ( b' * b );
@@ -433,6 +434,7 @@ else
         disp( 'Homogeneous problem detected; solution determined analytically.' );
     end
     status = 'Solved';
+    tprec = 0;
     x = zeros( n, 1 );
     y = zeros( m, 1 );
     oval  = sgn * d;

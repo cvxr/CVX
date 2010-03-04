@@ -89,9 +89,16 @@ if isempty( cvx___ ),
     end
     temp = strfind( s, fs );
     s( temp(end-1) + 1 : end ) = [];
-    subs = { 'sdpt3', 'sdpt3/Solver', 'sdpt3/HSDSolver', 'sdpt3/Solver/Mexfun/pre7.5', 'sdpt3/Solver/Mexfun', 'sdpt3/Linsysolver/spchol', 'sedumi/pre7.5', 'sedumi' };
-    nsolver = length( subs );
-    miss_solv = 0;
+    if cvx___.octave,
+        subs = {                  'sedumi', 'sdpt3', 'sdpt3/Solver', 'sdpt3/HSDSolver',                               'sdpt3/Solver/Mexfun', 'sdpt3/Linsysolver/spchol' };
+    elseif cvx___.mversion < 7.3,
+        subs = { 'sedumi/pre7.5', 'sedumi', 'sdpt3', 'sdpt3/Solver', 'sdpt3/HSDSolver', 'sdpt3/Solver/Mexfun/pre7.5',                        'sdpt3/Linsysolver/spchol' };
+    elseif cvx___.mversion < 7.5,
+        subs = { 'sedumi/pre7.5', 'sedumi', 'sdpt3', 'sdpt3/Solver', 'sdpt3/HSDSolver', 'sdpt3/Solver/Mexfun/pre7.5',                                                   };
+    else
+        subs = {                  'sedumi', 'sdpt3', 'sdpt3/Solver', 'sdpt3/HSDSolver',                               'sdpt3/Solver/Mexfun',                            };
+    end        
+    nsolver = length(subs);
     if cvx___.octave || cvx___.mversion >= 7.0,
         subs{end+1} = 'keywords';
         subs{end+1} = 'sets';
@@ -99,6 +106,7 @@ if isempty( cvx___ ),
     npath = '';
     spaths = [];
     needupd = false;
+    miss_solv = 0;
     for k = 1 : length( subs ),
         tsub = subs{k};
         tt = tsub == '/';
@@ -110,19 +118,17 @@ if isempty( cvx___ ),
         end
         temp = [ s, tsub ];
         if exist( temp, 'dir' ),
-            if ~strcmp( temp(end-5:end), 'pre7.5' ) || ~cvx___.octave && cvx___.mversion < 7.5,
-                temp2 = [ temp, ps ];
-                ndxs = strfind( opath, temp2 );
-                if ~isempty( ndxs ),
-                    if k > nsolver,
-                        cvx___.path.active = true;
-                    elseif isempty( cvx___.path.sactive ) && strcmpi( cvx___.solver, base ),
-                        cvx___.path.sactive = base;
-                    else
-                        opath( ndxs(1) : ndxs(1) + length(temp2) - 1 ) = [];
-                    end
-                    needupd = true;
+            temp2 = [ temp, ps ];
+            ndxs = strfind( opath, temp2 );
+            if ~isempty( ndxs ),
+                if k > nsolver,
+                    cvx___.path.active = true;
+                elseif isempty( cvx___.path.sactive ) && strcmpi( cvx___.solver, base ),
+                    cvx___.path.sactive = base;
+                else
+                    opath( ndxs(1) : ndxs(1) + length(temp2) - 1 ) = [];
                 end
+                needupd = true;
             end
             if k > nsolver,
                 npath = [ npath, temp2 ];
