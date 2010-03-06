@@ -91,13 +91,13 @@ if isempty( cvx___ ),
     s( temp(end-1) + 1 : end ) = [];
     subs = { 'sedumi/pre7.5', 'sedumi', 'sdpt3', 'sdpt3/Solver', 'sdpt3/HSDSolver', 'sdpt3/Solver/Mexfun/pre7.5', 'sdpt3/Solver/Mexfun', 'sdpt3/Linsysolver/spchol', 'keywords', 'sets' };
     if cvx___.octave,
-        smap = [ 0, 1, 1, 1, 1, 0, 1, 1, 1, 1 ];
+        smap = [ 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 ];
     elseif cvx___.mversion < 7.0,
-        smap = [ 1, 1, 1, 1, 1, 1, 0, 1, 0, 0 ];
+        smap = [ 1, 1, 1, 1, 1, 1, 1, 1, 0, 0 ];
     elseif cvx___.mversion < 7.3,
-        smap = [ 1, 1, 1, 1, 1, 1, 0, 1, 1, 1 ];
+        smap = [ 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 ];
     elseif cvx___.mversion < 7.5,
-        smap = [ 1, 1, 1, 1, 1, 1, 0, 0, 1, 1 ];
+        smap = [ 1, 1, 1, 1, 1, 1, 1, 0, 1, 1 ];
     else
         smap = [ 0, 1, 1, 1, 1, 0, 1, 0, 1, 1 ];
     end
