@@ -17,30 +17,26 @@ cvx___ = [];
 
 % Numeric version
 ver = version;
-verm = 0;
-temp = find( ver == '.' );
-if length( temp ) > 1,
-	verm = str2double( ver( temp( 2 ) + 1 : end ) );
-    ver( temp( 2 ) : end ) = [];
-end
-ver = str2double( ver );
+ver(ver=='.') = ' ';
+ver = sscanf(ver,'%d');
+ver = ver(1) + 0.01 * ( ver(2) + 0.01 * ver(3) );
 
 % Octave?
 isoctave = exist( 'OCTAVE_VERSION', 'var' );
 if isoctave,
     newext = 'mex';
     needLarge = false;
-    if isnan( ver ) || ver < 3.0 || ( ver == 3.0 && verm < 1 ),
-        error( 'CVX requires octave 3.0.1 or later.' );
+    if isnan( ver ) || ver < 3.0202,
+        error( 'CVX requires octave 3.2.2 or later.' );
     end
 else
     newext = mexext;
     needLarge = strcmp( newext(end-1:end), '64' );
-    if isnan( ver ) || ver < 6.5 || ( ( ver < 7.3 ) && needLarge ),
+    if isnan( ver ) || ver < 6.05 || ( ( ver < 7.03 ) && needLarge ),
         error( [ 'CVX requires 32-bit MATLAB 6.5 or later\n', ...
             'or 64-bit MATLAB 7.3 or later.' ], 1 );
     end
-    if ver >= 7.1,
+    if ver >= 7.01,
         warning( 'off', 'MATLAB:dispatcher:ShadowedMEXExtension' );
     end
 end
@@ -56,7 +52,7 @@ end
 
 % Mex locations
 fullRecompile = any( strcmp( varargin, '-force' ) );
-usePre75 = ~isoctave && ver < 7.5;
+usePre75 = ~isoctave && ver < 7.05;
 
 %%%%%%%%%%%%%%%%%%%%%%%%
 % Set up the CVX paths %
@@ -183,7 +179,7 @@ if exist( sedpath, 'dir' ),
     has_mex = 0;
     if ~fullRecompile,
         has_mex = ~isempty( dir( [ sedpath, fs, '*.', newext ] ) );
-        if ~has_mex && ~isoctave && ver < 7.5,
+        if ~has_mex && ~isoctave && ver < 7.05,
             has_mex = ~isempty( dir( [ sedpath, fs, 'pre7.5', fs, '*.', newext ] ) );
         end
     end
@@ -217,7 +213,7 @@ if exist( sedpath, 'dir' ),
     has_mex = 0;
     if ~fullRecompile,
         has_mex = ~isempty( dir( [ mexpath, fs, '*.', newext ] ) );
-        if ~has_mex && ~isoctave && ver < 7.5,
+        if ~has_mex && ~isoctave && ver < 7.05,
             has_mex = ~isempty( dir( [ mexpath, fs, 'pre7.5', fs, '*.', newext ] ) );
         end
     end

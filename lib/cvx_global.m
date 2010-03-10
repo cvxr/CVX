@@ -12,12 +12,10 @@ if isempty( cvx___ ),
 
     isoct = exist( 'OCTAVE_VERSION', 'var' );
     ver = version;
-    temp = find( ver == '.' );
-    if length( temp ) > 1,
-        ver( temp( 2 ) : end ) = [];
-    end
-    ver = str2double( ver );
-    if ~isoct && ver >= 7.1,
+    ver(ver=='.') = ' ';
+    ver = sscanf(ver,'%d');
+    ver = ver(1) + 0.01 * ( ver(2) + 0.01 * ver(3) );
+    if ~isoct && ver >= 7.01,
         warning( 'off', 'MATLAB:dispatcher:ShadowedMEXExtension' );
     end
 
@@ -41,7 +39,7 @@ if isempty( cvx___ ),
         'problems',     [],    ...
         'octave',       isoct, ...
         'mversion',     ver,   ...
-        'hcellfun',     isoct | ver > 7.1, ... 
+        'hcellfun',     isoct | ver > 7.01, ... 
         'id',           0,     ...
         'pause',        false, ...
         'quiet',        false, ...
@@ -92,11 +90,11 @@ if isempty( cvx___ ),
     subs = { 'sedumi/pre7.5', 'sedumi', 'sdpt3', 'sdpt3/Solver', 'sdpt3/HSDSolver', 'sdpt3/Solver/Mexfun/pre7.5', 'sdpt3/Solver/Mexfun', 'sdpt3/Linsysolver/spchol', 'keywords', 'sets' };
     if cvx___.octave,
         smap = [ 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 ];
-    elseif cvx___.mversion < 7.0,
+    elseif cvx___.mversion < 7.00,
         smap = [ 1, 1, 1, 1, 1, 1, 1, 1, 0, 0 ];
-    elseif cvx___.mversion < 7.3,
+    elseif cvx___.mversion < 7.03,
         smap = [ 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 ];
-    elseif cvx___.mversion < 7.5,
+    elseif cvx___.mversion < 7.05,
         smap = [ 1, 1, 1, 1, 1, 1, 1, 0, 1, 1 ];
     else
         smap = [ 0, 1, 1, 1, 1, 0, 1, 0, 1, 1 ];
