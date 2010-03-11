@@ -342,7 +342,7 @@ elseif n ~= 0 && ~infeas && ( any( b ) || any( c ) ),
                 if all( amult == 1e5 ), break; end
                 amult = min( amult * 10, 1e5 ); 
             else
-                boost = erY | ~ceX & erX;
+                boost = erY | ( ~ceX & erX );
                 amult(boost) = min( amult(boost) * 10, 1e5 );
             end
             

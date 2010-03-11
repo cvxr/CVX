@@ -91,7 +91,7 @@ if isempty( cvx___ ),
     if cvx___.octave,
         smap = [ 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 ];
     elseif cvx___.mversion < 7.00,
-        smap = [ 1, 1, 1, 1, 1, 1, 1, 1, 0, 0 ];
+        smap = [ 1, 1, 1, 1, 1, 1, 1, 1, -1, -1 ];
     elseif cvx___.mversion < 7.03,
         smap = [ 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 ];
     elseif cvx___.mversion < 7.05,
@@ -120,14 +120,16 @@ if isempty( cvx___ ),
             temp2 = [ temp, ps ];
             ndxs = strfind( opath, temp2 );
             if ~isempty( ndxs ),
-                if smap(k),
+                if smap(k) > 0,
                     if k > nsolver,
                         cvx___.path.active = true;
                     elseif isempty( cvx___.path.sactive ) && strcmpi( cvx___.solver, base ),
                         cvx___.path.sactive = base;
                     end
                 end
-                opath( ndxs(1) : ndxs(1) + length(temp2) - 1 ) = [];
+                if smap(k) >= 0,
+                    opath( ndxs(1) : ndxs(1) + length(temp2) - 1 ) = [];
+                end
                 needupd = true;
             end
             if smap(k),
