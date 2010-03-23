@@ -126,8 +126,8 @@ for k = 1 : length( varargin ),
     else
         nm = strs( 1 : xt(1) - 1 );
         strx.name = nm;
-        strx.args = evalin( 'caller', [ '{', strs(xt(1)+1:xt(1)-1), '}' ], 'NaN' );
-        if ~iscell( strx ),
+        strx.args = evalin( 'caller', [ '{', strs(xt(1)+1:end-1), '}' ], 'NaN' );
+        if ~iscell( strx.args ),
             valid = false;
         end
         varargin{k} = strx;
