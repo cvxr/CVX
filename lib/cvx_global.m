@@ -121,7 +121,7 @@ if isempty( cvx___ ),
             ndxs = strfind( opath, temp2 );
             if ~isempty( ndxs ),
                 if smap(k) > 0,
-                    if k > nsolver,
+                    if k > nsolv,
                         cvx___.path.active = true;
                     elseif isempty( cvx___.path.sactive ) && strcmpi( cvx___.solver, base ),
                         cvx___.path.sactive = base;
