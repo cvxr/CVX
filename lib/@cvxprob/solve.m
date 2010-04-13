@@ -250,12 +250,14 @@ elseif n ~= 0 && ~infeas && ( any( b ) || any( c ) ),
                 erY = max( 0, wdY );
                 cxY = 0.5 * ( nyR + nyL );
                 ceY = max( 0, abs( x0 - cxY ) - 0.5 * abs( wdY ) );
-                acY = (epow-1)*log(max(realmin,1+(nyR-x0)/(epow-1))) - ( nyL - x0 ) <= 1e-5*max(1,abs(nyL));
+                acY = (epow-1)*log(max(realmin,1-(x0-nyR)/(epow-1))) - ( nyL - x0 ) <= 0.1;
             end
             
             % In exact arithmetic, the primal point is feasible only if x0
             % is close enough to the true solution. In finite precision
             % arithemtic, even this may not be enough.
+            % Primal cone: y.*exp(x/y)<=z
+            % Dual cone: exp(x0).*y.*pow_pos(1+(x/y-x0)/p,p)<=z
             x_valid = false;
             if any(isnan(x)),
                 acX = true(nc,1);
@@ -272,11 +274,11 @@ elseif n ~= 0 && ~infeas && ( any( b ) || any( c ) ),
                 erX = max( 0, wdX );
                 cxX = 0.5 * ( nxL + nxR );
                 ceX = max( 0, abs( x0 - cxX ) - 0.5 * abs( wdX ) );
-                acX = wdX >= -1e-5*max(1,abs(nxR));
+                acX = nxR - x0 - epow * log( 1 + (nxL-x0) / epow ) <= 0.1;
             end
             
             % If either the primal or the dual constraints are clearly
-            % inacyyytive we should ignore that cone altogether
+            % inactive we should ignore that cone altogether
             acXY = acX & acY;
             if ~all(acXY),
                 erX = erX .* acXY; erY = erY .* acXY;
