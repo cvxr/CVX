@@ -53,6 +53,13 @@ end
 % Mex locations
 fullRecompile = any( strcmp( varargin, '-force' ) );
 usePre75 = ~isoctave && ver < 7.05;
+if ~fullRecompile && ver >= 7.10 && strcmp( mexext, 'mexa64' ),
+    warning( [ 'CVX needs to recompile its MEX files for Matlab\n', ...
+      '7.10 on 64-bit Linux. If this fails, please make sure that\n', ...
+      'the GCC compiler has been properly installed on your system,\n' ...
+      'and that the Matlab MEX system has been properly configured.' ], 1 );
+    fullRecompile = true;
+end
 
 %%%%%%%%%%%%%%%%%%%%%%%%
 % Set up the CVX paths %
