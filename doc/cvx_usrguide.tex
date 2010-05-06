@@ -3287,13 +3287,13 @@ as \verb@berhu(x,M,t)@, which computes \verb@t+t*berhu(x/t,M)@,
 useful for concomitant scale estimation (see \cite{Owen}).
 
 \item \verb@det_inv@: determinant of inverse of a symmetric (or Hermitian)
-positive definite matrix, $(\det X^{-1})$, which is the same as the
-sum of the inverses of the eigenvalues.
+positive definite matrix, $\det X^{-1}$, which is the same as the
+product of the inverses of the eigenvalues.
 When used inside a \cvx specification, \verb@det_inv@ constrains
 the matrix to be symmetric (if real) or Hermitian (if complex) and 
 positive semidefinite. 
 When used with numerical arguments, \verb@det_inv@ returns 
-\verb@-Inf@ if these constraints are not met. Concave.
+\verb@+Inf@ if these constraints are not met. Convex.
 
 \item \verb@det_rootn@: $n$-th root of the determinant of a semidefinite matrix,
 $(\det X)^{1/n}$. When used inside a \cvx specification, \verb@det_rootn@ constrains
