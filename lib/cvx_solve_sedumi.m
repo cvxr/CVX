@@ -81,6 +81,11 @@ if add_row,
 end
 
 [ xx, yy, info ] = sedumi( At, b, c, K, pars );
+if ~isfield( info, 'r0' ) && info.pinf,
+    info.r0 = 0;
+    info.iter = 0;
+    info.numerr = 0;
+end
 tol = info.r0;
 iters = info.iter;
 xx = full( xx );
