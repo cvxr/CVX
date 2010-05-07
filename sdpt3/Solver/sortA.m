@@ -14,6 +14,9 @@
 
    global spdensity smallblkdim
 %%
+   if isempty(spdensity); spdensity = 0.4; end
+   if isempty(smallblkdim); smallblkdim = 50; end
+%%
    numblk = size(blk,1); 
    m = length(b); 
    nnzA = zeros(numblk,m); 

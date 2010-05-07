@@ -24,23 +24,28 @@
              elseif (nargout == 2);
                 [V,d] = eig(full(X));
                 d = diag(d);  
-                [d,idx] = sort(d);
-                V = V(:,idx);  
              end
           else
              if (nargout == 2); 
                 V = sparse(length(X),length(X));  
-             end;
-             s = [0 cumsum(blktmp)]; 
+             end
+	     d = zeros(sum(blktmp),1); 
+             xx = mexsvec(blk,X,0); 
+             blktmp2 = blktmp.*(blktmp+1)/2;
+             s2 = [0, cumsum(blktmp2)];
+             blksub{1,1} = 's'; blksub{1,2} = 0; 
+             s = [0, cumsum(blktmp)]; 
              for i = 1:length(blktmp)
-                pos = [s(i)+1 : s(i+1)];   
+                pos = [s(i)+1 : s(i+1)];
+                blksub{2} = blktmp(i); 
+                Xsub = mexsmat(blksub,xx(s2(i)+1:s2(i+1)),0); 
                 if (nargout == 1); 
-                   lam = eig(full(X(pos,pos))); 
+                   lam = eig(Xsub); 
                 elseif (nargout == 2);           
-                   [evec,lam] = eig(full(X(pos,pos))); 
-                   lam  = diag(lam);
+                   [evec,lam] = eig(Xsub); 
+                   lam = diag(lam);
                    V(pos,pos) = sparse(evec); 
-                end; 
+                end 
                 d(pos,1) = lam;
              end
           end
@@ -50,8 +55,8 @@
                 V = sparse(V);  
              else
                 V = full(V); 
-             end; 
-          end; 
+             end 
+          end 
        elseif strcmp(blk{1},'l');
           if (nargout == 2); 
              V = ones(size(X)); d = X; 
@@ -64,7 +69,7 @@
           V = cell(size(X));  d = cell(size(X));  
           for p = 1:size(blk,1); 
 	     [d{p},V{p}] = blkeig(blk(p,:),X{p}); 
-          end;
+          end
        elseif (nargout == 1); 
           d = cell(size(X));  
           for p = 1:size(blk,1); 

@@ -6,7 +6,7 @@
 *  y = mextriangsp(Uinput,b,options)
 *
 *  Important: U is assumed to be sparse. 
-*  If options = 1, Uinput must be U'. 
+*  If options = 1, Uinput must be Utranspose. 
 *   
 *********************************************************************/
 
@@ -89,7 +89,7 @@ void fwsolve2(int n, double *U, mwIndex *irU, mwIndex *jcU,
 
    n = mxGetM(prhs[0]); 
    if (mxGetN(prhs[0]) != n) {
-      mexErrMsgTxt("mextriangsp: U must be square and upper triangular."); }
+      mexErrMsgTxt("mextriangsp: U must be square."); }
    U = mxGetPr(prhs[0]);
    isspU = mxIsSparse(prhs[0]);   
    if (!isspU) {

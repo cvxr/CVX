@@ -21,17 +21,8 @@
          if (pblk{2} > convertlen); return; end
          AAt = At{p}*At{p}';
          mexschurfun(AAt,1e-15*max(1,diag(AAt)));      
-         indef = 0;   
-         if (par.matlabversion < 7.3)
-            [Lsymb,flag] = symbcholfun(AAt,cachesize);
-            if (flag==0)
-               L = sparcholfun(Lsymb,AAt);
-               if ~any(L.skip); indef = 1; end
-            end
-         else
-            [L.R,indef,L.perm] = chol(AAt,'vector'); 
-            L.d = full(diag(L.R)).^2; 
-         end
+         [L.R,indef,L.perm] = chol(AAt,'vector');
+         L.d = full(diag(L.R)).^2; 
          if (~indef) & (max(L.d)/min(L.d) < 1e6) 
             ublk2lblk(p) = 0; 
             msg = '*** no conversion for ublk'; 

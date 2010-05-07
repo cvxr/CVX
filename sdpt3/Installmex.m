@@ -3,20 +3,8 @@
 %%
 
    function Installmex 
-
    curdir = pwd;  
    fprintf(' current directory is:  %s\n',curdir);    
-%%
-%% generate mex files in Mexfun
-%%
-   isoctave = exist('OCTAVE_VERSION');
-   if isoctave | strcmp(computer,'PCWIN64') | strcmp(computer,'GLNXA64')
-      computer_model = 64; 
-   else
-      computer_model = 32; 
-   end
-   matlabversion = sscanf(version,'%f');
-   matlabversion = matlabversion(1);
    fsp = filesep;
 %%
 %%
@@ -41,11 +29,9 @@
    fname{13} = 'mexMatvec';
    fname{14} = 'mextriang';
    fname{15} = 'mextriangsp';
-
-   if isoctave
+   
+   if exist('OCTAVE_VERSION'),
       mexcmd = 'mex ';
-   elseif (matlabversion < 7.3) 
-      mexcmd = 'mex  -O  '; 
    else
       mexcmd = 'mex  -O -largeArrayDims  '; 
    end
@@ -56,29 +42,4 @@
    end 
    cd .. 
    cd ..
-%%
-%% generate mex files in spchol
-%%
-   if ~isoctave & (matlabversion < 7.3) 
-      clear fname
-      src = [curdir,fsp,'Linsysolver',fsp,'spchol']; 
-      eval(['cd ','Linsysolver',fsp,'spchol']); 
-      fprintf ('\n Now compiling the mexFunctions in:\n'); 
-      fprintf (' %s\n',src);    
 
-      fname{1} = 'mexordmmd.c ordmmd.c';
-      fname{2} = 'mexsymbfct.c  symbfct.c';
-      fname{3} = 'choltmpsiz.c';
-      fname{4} = 'cholsplit.c';
-      fname{5} = 'mexsparchol.c sparchol2.c sdmauxFill.c sdmauxScalarmul.c';
-      fname{6} = 'mexfwblkslv.c sdmauxScalarmul.c';
-      fname{7} = 'mexbwblkslv.c sdmauxFill.c sdmauxRdot.c';
-      mexcmd = 'mex  -O  '; 
-      for k = 1:length(fname)
-       cmd = [mexcmd,fname{k}];
-       disp( cmd );
-       eval( cmd );
-      end      
-      cd .. 
-      cd ..
-   end

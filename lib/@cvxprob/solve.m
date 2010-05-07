@@ -235,7 +235,7 @@ elseif n ~= 0 && ~infeas && ( any( b ) || any( c ) ),
             % Dual approx: -exp(-x0).*u.*(1-(v./u-1+x0)/(p-1)).^(1-p)<=w
             y_valid = false;
             if any(isnan(y)),
-                acY = true(nc,1);
+                acY = false(nc,1);
                 erY = 0;
                 ceY = 0;
             else
@@ -250,7 +250,6 @@ elseif n ~= 0 && ~infeas && ( any( b ) || any( c ) ),
                 erY = max( 0, wdY );
                 cxY = 0.5 * ( nyR + nyL );
                 ceY = max( 0, abs( x0 - cxY ) - 0.5 * abs( wdY ) );
-                acY = (epow-1)*log(max(realmin,1-(x0-nyR)/(epow-1))) - ( nyL - x0 ) <= 0.1;
             end
             
             % In exact arithmetic, the primal point is feasible only if x0
@@ -260,7 +259,7 @@ elseif n ~= 0 && ~infeas && ( any( b ) || any( c ) ),
             % Dual cone: exp(x0).*y.*pow_pos(1+(x/y-x0)/p,p)<=z
             x_valid = false;
             if any(isnan(x)),
-                acX = true(nc,1);
+                acX = false(nc,1);
                 erX = 0;
                 ceX = 0;
             else
@@ -274,20 +273,33 @@ elseif n ~= 0 && ~infeas && ( any( b ) || any( c ) ),
                 erX = max( 0, wdX );
                 cxX = 0.5 * ( nxL + nxR );
                 ceX = max( 0, abs( x0 - cxX ) - 0.5 * abs( wdX ) );
-                acX = nxR - x0 - epow * log( 1 + (nxL-x0) / epow ) <= 0.1;
             end
             
             % If either the primal or the dual constraints are clearly
             % inactive we should ignore that cone altogether
-            acXY = acX & acY;
-            if ~all(acXY),
-                erX = erX .* acXY; erY = erY .* acXY;
-                ceX = ceX .* acXY; ceY = ceY .* acXY;
+            if x_valid && y_valid,
+                kkt_error = ...
+                    abs( xxx .* uuu + yyy .* vvv + zzz .* www ) ./ ...
+                    sqrt( xxx.^2 + yyy.^2 + zzz.^2 ) ./ ...
+                    sqrt( uuu.^2 + vvv.^2 + www.^2 );
+                active = kkt_error <= 1e-5;
+            elseif x_valid,
+                active = erX ~= 0;
+            elseif y_valid,
+                active = erY ~= 0;
+            end
+            if x_valid,
+                ceX = ceX .* active;
+                erX = erX .* active;
+            end
+            if y_valid,
+                ceY = ceY .* active;
+                erY = erY .* active;
             end
             
             % Check for stagnation
             err = max( erX * x_valid + erY * ~x_valid );
-            cer = max( ceY * y_valid + ceY * ~y_valid );
+            cer = max( ceY * y_valid + ceX * ~y_valid );
             solved = x_valid * 2 + y_valid;
             c_stag = last_solved == solved && cer >= 0.9 * last_cer;
             e_stag = last_solved == solved && err >= 0.9 * last_err;
@@ -296,7 +308,7 @@ elseif n ~= 0 && ~infeas && ( any( b ) || any( c ) ),
             if ~quiet,
                 if c_stag, stagc = 'S'; else stagc = ' '; end
                 if e_stag, stage = 'S'; else stage = ' '; end
-                fprintf( 1, '%-3d %9.3e%c %9.3e%c %s\n', nnz(acXY), cer, stagc, err, stage, status );
+                fprintf( 1, '%-3d %9.3e%c %9.3e%c %s\n', nnz(active), cer, stagc, err, stage, status );
             end
             
             % Solution found or no more iterations
@@ -355,9 +367,9 @@ elseif n ~= 0 && ~infeas && ( any( b ) || any( c ) ),
             if last_solved,
                 nx0 = x0;
                 if y_valid,
-                    nx0(acXY) = cxY(acXY);
+                    nx0(active) = cxY(active);
                 else
-                    nx0(acXY) = cxX(acXY);
+                    nx0(active) = cxX(active);
                 end
                 x0 = min( max( nx0, x0 - epow ), x0 + epow );
                 x0 = min( max( -maxw, x0 ), maxw );

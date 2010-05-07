@@ -17,7 +17,6 @@
    randstate = rand('state');  randnstate = randn('state');
    rand('state',0);   randn('state',0);
 %%
-   matlabversion = par.matlabversion;
    vers          = par.vers;
    predcorr      = par.predcorr;
    gam           = par.gam; 
@@ -31,7 +30,6 @@
    scale_data    = par.scale_data;
    spdensity     = par.spdensity;
    rmdepconstr   = par.rmdepconstr;
-   cachesize     = par.cachesize; 
    smallblkdim   = par.smallblkdim;
    schurfun      = par.schurfun;
    schurfun_par  = par.schurfun_par;

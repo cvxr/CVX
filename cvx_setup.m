@@ -53,13 +53,6 @@ end
 % Mex locations
 fullRecompile = any( strcmp( varargin, '-force' ) );
 usePre75 = ~isoctave && ver < 7.05;
-if ~fullRecompile && ver >= 7.10 && strcmp( mexext, 'mexa64' ),
-    warning( [ 'CVX needs to recompile its MEX files for Matlab\n', ...
-      '7.10 on 64-bit Linux. If this fails, please make sure that\n', ...
-      'the GCC compiler has been properly installed on your system,\n' ...
-      'and that the Matlab MEX system has been properly configured.' ], 1 );
-    fullRecompile = true;
-end
 
 %%%%%%%%%%%%%%%%%%%%%%%%
 % Set up the CVX paths %
@@ -216,7 +209,11 @@ end
 
 sedpath = [ mpath, fs, 'sdpt3' ];
 mexpath = [ sedpath, fs, 'Solver', fs, 'Mexfun' ];
-if exist( sedpath, 'dir' ),
+if ~isoctave && ver < 7.03
+    disp( 'Warning: SDPT3 is no longer supported for this version of MATLAB.' );
+    disp( 'SeDuMi will be the only solver available. To use SDPT3, please use' );
+    disp( 'Matlab version 7.3 or later.' );
+elseif exist( sedpath, 'dir' ),
     has_mex = 0;
     if ~fullRecompile,
         has_mex = ~isempty( dir( [ mexpath, fs, '*.', newext ] ) );

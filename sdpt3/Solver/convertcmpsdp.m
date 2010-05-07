@@ -55,7 +55,7 @@
         AR = cell(1,m); Ctmp = sparse(2*n,2*n);  
         if (size(A{p},1)==n2 & size(A{p},2)==m); 
            Atype = 1; 
-        elseif (size(A(p),1)==1 & size(A(p),2)==m); 
+        elseif (size(A(p),1)==1 & size(A(p),2)==1); 
            Atype = 2; 
         else
            error('convertcmp: At is not properly coded');  

@@ -65,12 +65,13 @@
           tmp2 = mexMatvec(At{p,1},EinvRc{p},1);         
           hEinvRc = hEinvRc + tmp2;
        elseif strcmp(pblk{1},'s') 
-	  if iscell(sigmu)
-	     ss = [0,cumsum(pblk{2})]; 
-             sigmuvec = zeros(n,1); 
-             for k = 1:length(pblk{2}); 
-                sigmuvec(ss(k)+1:ss(k+1)) = sigmu{p}(k)*ones(pblk{2}(k),1); 
-             end
+	  if iscell(sigmu)	    
+             %%ss = [0,cumsum(pblk{2})]; 
+             %%sigmuvec = zeros(n,1); 
+             %%for k = 1:length(pblk{2}); 
+             %%   sigmuvec(ss(k)+1:ss(k+1)) = sigmu{p}(k)*ones(pblk{2}(k),1); 
+             %%end
+             sigmuvec = mexexpand(pblk{2},sigmu{p}); 
              EinvRc{p} = par.Zinv{p}*spdiags(sigmuvec,0,n,n) -X{p};
           else
              EinvRc{p} = sigmu*par.Zinv{p} -X{p};

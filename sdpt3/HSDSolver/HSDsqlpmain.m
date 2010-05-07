@@ -5,11 +5,12 @@
 %%  [obj,X,y,Z,info,runhist] = 
 %%      HSDsqlp(blk,At,C,b,OPTIONS,X0,y0,Z0,kap0,tau0,theta0);
 %%
-%%  Input: blk: a cell array describing the block diagonal structure of SQL data.
-%%          At: a cell array with At{p} = [svec(Ap1) ... svec(Apm)] 
-%%         b,C: data for the SQL instance.
-%%     OPTIONS: a structure that specifies parameters required in HSDsqlp.m,
-%%              (if it is not given, the default in sqlparameters.m is used). 
+%%  Input: 
+%%  blk    : a cell array describing the block diagonal structure of SQL data.
+%%   At    : a cell array with At{p} = [svec(Ap1) ... svec(Apm)] 
+%%  b,C    : data for the SQL instance.
+%%  OPTIONS: a structure that specifies parameters required in HSDsqlp.m,
+%%           (if it is not given, the default in sqlparameters.m is used). 
 %%
 %%  (X0,y0,Z0): an initial iterate (if it is not given, the default is used).
 %%  (kap0,tau0,theta0): initial parameters (if not given, the default is used).
@@ -57,7 +58,6 @@
    randstate = rand('state');  randnstate = randn('state');
    rand('state',0);  randn('state',0);
 %%
-   matlabversion = par.matlabversion;
    vers          = par.vers;
    predcorr      = par.predcorr;
    gam           = par.gam; 
@@ -71,7 +71,6 @@
    scale_data    = par.scale_data;
    spdensity     = par.spdensity;
    rmdepconstr   = par.rmdepconstr;
-   cachesize     = par.cachesize; 
    smallblkdim   = par.smallblkdim;
    schurfun      = par.schurfun;
    schurfun_par  = par.schurfun_par;
@@ -531,9 +530,10 @@
          elseif any(pinfeas_bad)
             if (stoplevel) & (max(pstep,dstep)<=1) & (kap < 1e-3)
                msg = 'stop: primal infeas has deteriorated too much'; 
-               if (printlevel); fprintf('\n  %s, %2.1e',msg,prim_infeasnew); end
-	       fprintf(' %2.1d,%2.1d,%2.1d',...
-               pinfeas_bad(1),pinfeas_bad(2),pinfeas_bad(3))
+               if (printlevel); fprintf('\n  %s, %2.1e',msg,prim_infeasnew); 
+	          fprintf(' %2.1d,%2.1d,%2.1d',...
+		  pinfeas_bad(1),pinfeas_bad(2),pinfeas_bad(3)); 
+               end
                termcode = -7; 
                breakyes = 1; 
             end

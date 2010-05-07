@@ -14,7 +14,7 @@
    
    function [xx,coeff,L,resnrm] = HSDlinsysolve(par,schur,UU,EE,Bmat,rhs); 
    
-    global solve_ok existspcholsymb msg
+    global solve_ok msg
     global nnzmat nnzmatold matfct_options matfct_options_old use_LU
     global Lsymb 
 
@@ -48,7 +48,7 @@
        if (len > 0 & len < 5) & (norm(rhs(idx)) < tol) 
           pertdiagschur(idx) = 1*ones(length(idx),1); 
           mexschurfun(schur,pertdiagschur); 
-          if (printlevel>2); fprintf('$'); end
+          if (printlevel); fprintf('$'); end
        end
     end
 %%
@@ -91,65 +91,28 @@
        if (nnzmat > spdensity*m^2) | (m < 500) 
           matfct_options = 'chol';
        else
-          if (par.matlabversion >= 7.3) %% & (par.computer == 64)
-             matfct_options = 'spchol'; 
-	  else
-             matfct_options = 'myspchol'; 
-          end
+          matfct_options = 'spchol'; 
        end
        if (printlevel > 2); fprintf(' %s',matfct_options); end 
        if strcmp(matfct_options,'chol')
           if issparse(schur); schur = full(schur); end;
-          if (iter<=5); %% to fix strange anonmaly in Matlab
+          if (iter<=5); %%--- to fix strange anonmaly in Matlab
              mexschurfun(schur,1e-20,2); 
           end 
           L.matfct_options = 'chol';    
-          L.perm = [1:m];
           [L.R,indef] = chol(schur); 
-          if (indef)
- 	     solve_ok = -2; solvesys = 0; 
-             msg = 'chol: Schur complement matrix not pos. def. '; 
-             if (printlevel); fprintf('\n  %s',msg); end
-          end
+          L.perm = [1:m];
       elseif strcmp(matfct_options,'spchol')
           if ~issparse(schur); schur = sparse(schur); end;
           L.matfct_options = 'spchol'; 
           [L.R,indef,L.perm] = chol(schur,'vector'); 
           L.Rt = L.R'; 
-          if (indef)
- 	     solve_ok = -2; solvesys = 0; 
-             msg = 'chol: Schur complement matrix not pos. def. '; 
-             if (printlevel); fprintf('\n  %s',msg); end
-          end
-       elseif strcmp(matfct_options,'myspchol')
-          if ~issparse(schur), schur = sparse(schur); end;
-          if (nnzmatdiff | ~strcmp(matfct_options,matfct_options_old))
-             [Lsymb,flag] = symbcholfun(schur,par.cachesize);
-             if (flag) 
-                solve_ok = -2; solvesys = 0;
-                existspcholsymb = 0; 
-                use_LU = 1; 
-                msg = 'myspchol: symbolic factorization fails';
-                if (printlevel); fprintf('\n  %s',msg); end 
-             else 
-                existspcholsymb = 1;
-             end
-          end 
-          if (existspcholsymb)
-             L = sparcholfun(Lsymb,schur);
-             L.matfct_options  = 'myspchol';  
-             L.d(find(L.skip)) = 1e20; %% default=1e20  
-             if any(L.skip) & (ncolU)
-                solve_ok = -3; solvesys = 0;
-                existspcholsymb = 0; 
-                use_LU = 1; 
-                if (printlevel)
-                   fprintf('\n  myspchol: L.skip exists but ncolU > 0.'); 
-                   fprintf('\n  switch to LU factor.');
-                end
-             end          
-          end
        end    
+       if (indef)
+          solve_ok = -2; solvesys = 0; 
+          msg = 'HSDlinsysolve: Schur complement matrix not positive definite'; 
+          if (printlevel); fprintf('\n  %s',msg); end
+       end
        if (solvesys)
           if (ncolU)
              tmp = coeff.mat12'*linsysolvefun(L,coeff.mat12)-coeff.mat22;
@@ -161,7 +124,7 @@
              if ~isempty(idx) | (condest > 1e30*sqrt(norm(par.diagAAt))); %% default=1e25 
                 solvesys = 0; solve_ok = -4; 
                 use_LU = 1; 
-                msg = 'SMW too ill-conditioned, switch to LU factor'; 
+                msg = 'SMW too ill-conditioned, switch to LDL factor'; 
                 if (printlevel); fprintf('\n  %s, %2.1e.',msg,condest); end
              end         
           end
@@ -174,15 +137,14 @@
        end
        if (solve_ok < 0) 
           if (m < 6000 & strcmp(matfct_options,'chol')) | ...
-             (m < 1e5 & strcmp(matfct_options,'spchol')) | ...
-             (m < 1e5 & strcmp(matfct_options,'myspchol')) 
+             (m < 1e5 & strcmp(matfct_options,'spchol')) 
              use_LU = 1;
-             if (printlevel); fprintf('\n  switch to LU factor'); end
+             if (printlevel); fprintf('\n  switch to LDL factor'); end
           end
        end
     end
 %%
-%% symmetric indefinite or LU factorization
+%% symmetric indefinite LDL factorization
 %%
     if (use_LU)
        nnzmat = mexnnz(coeff.mat11)+mexnnz(coeff.mat12); 
@@ -194,35 +156,21 @@
           raugmat = coeff.mat11; 
        end
        if (nnzmat > spdensity*m^2) | (m+ncolU < 500) 
-          matfct_options = 'lu'; 
+          matfct_options = 'ldl'; 
        else
-          matfct_options = 'splu';
+          matfct_options = 'spldl';
        end
        if (printlevel > 2); fprintf(' %s ',matfct_options); end 
-       if strcmp(matfct_options,'lu') 
+       if strcmp(matfct_options,'ldl') 
           if issparse(raugmat); raugmat = full(raugmat); end
-          [L.l,L.u,L.p] = lu(raugmat); 
-          L.matfct_options = 'lu'; 
-          L.p = sparse(L.p); 
-          idx = find(abs(diag(L.u)) < 1e-30); 
-          if ~isempty(idx)
-             msg = 'lu: matrix is singular'; 
-             if (printlevel); fprintf('\n  %s',msg); end
-	     solvesys = 0; 
-          end
-          [ii,jj] = find(L.p); [dummy,idx] = sort(ii); L.perm = jj(idx); 
-       end
-       if strcmp(matfct_options,'splu') 
+          L.matfct_options = 'ldl'; 
+          [L.L,L.D] = ldl(raugmat); 
+          L.perm = [1:length(raugmat)]';        
+       elseif strcmp(matfct_options,'spldl') 
           if ~issparse(raugmat); raugmat = sparse(raugmat); end  
-          L.perm = [1:length(raugmat)];  
-          L.matfct_options = 'splu';  
-          L.symmatrix = 0; 
-          try,
-             [L.l,L.u,L.p,L.q] = lu(raugmat);
-          catch
-             L.q = speye(length(raugmat)); 
-             [L.l,L.u,L.p] = lu(raugmat);
-          end
+          L.matfct_options = 'spldl';  
+          [L.L,L.D,L.perm] = ldl(raugmat,'vector');
+          L.Lt = L.L';
        end
        [xx,resnrm,solve_ok] = HSDbicgstab(coeff,rhs,L,[],[],printlevel);
        if (solve_ok<=0) & (printlevel)

@@ -12,7 +12,7 @@
 *          permA = a permutation vector.  
 *          U,V  = real symmetric matrices.
 *          type = 0, compute Trace(Ai*(U Aj V + V Aj U)/2)) = Trace(Ai*(U Aj V))
-*                = 1, compute Trace(Ai*(U Aj U)).
+*               = 1, compute Trace(Ai*(U Aj U)).
 *
 * SDPT3: version 3.0
 * Copyright (c) 1997 by
@@ -306,7 +306,7 @@ void mexFunction(int nlhs,   mxArray  *plhs[],
     if (nrhs < 10) {
        mexErrMsgTxt(" mexschur: must have at least 10 inputs"); }
     if (!mxIsCell(prhs[0])) {
-       mexErrMsgTxt("mexschur: 1ST input must be the cell array blk"); }  
+       mexErrMsgTxt("mexschur: 1st input must be the cell array blk"); }  
     if (mxGetM(prhs[0])>1) {
        mexErrMsgTxt("mexschur: blk can have only 1 row"); }  
     subs[0] = 0; 

@@ -20,7 +20,7 @@
 %%
     solve_ok = 1; resnrm = norm(rhs);
     if strcmp(matfct_options,'chol') | strcmp(matfct_options,'spchol') ...
-       | strcmp(matfct_options,'myspchol')
+       | strcmp(matfct_options,'ldl') | strcmp(matfct_options,'spldl')
        [xx,resnrm,solve_ok] = symqmr(coeff,rhs,L,[],[],printlevel);
        if (solve_ok<=0) & (printlevel)
           fprintf('\n  warning: symqmr fails: %3.1f.',solve_ok); 

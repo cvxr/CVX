@@ -18,7 +18,7 @@
    iter = par.iter; 
    smallblkdim = par.smallblkdim; 
 
-   if isempty(smallblkdim); smallblkdim = 15; end
+   if isempty(smallblkdim); smallblkdim = 50; end
    if (nargin == 7); symm = 0; else; symm = 1; Y = X; end; 
    m = length(schur);    
    pblk = blk(p,:); 
@@ -27,7 +27,7 @@
       nzlistschur = cell(size(blk,1),1); 
    end
 %%
-   if (max(pblk{2}) > smallblkdim) 
+   if (max(pblk{2}) > smallblkdim) | (length(pblk{2}) <= 10)
       %%
       %% compute schur for matrices that are very sparse. 
       %%
@@ -83,7 +83,7 @@
                else
                   tmp = Prod3(pblk,X{p},Ak,Y{p},symm);
                end
-            else %% for low rank constraints
+            else %%--- for low rank constraints
                idx = [ss(k-m1)+1 :ss(k-m1+1)]; 
                tmp = XVD(:,idx)* (Y{p}*At{p,2}(:,idx))';
             end
@@ -112,14 +112,14 @@
          end
       end
    else  
-      %% for SDP block where each sub-block is small dimensional
+      %%--- for SDP block where each sub-block is small dimensional
       if issparse(X{p}) & ~issparse(Y{p}); Y{p} = sparse(Y{p}); end
       if ~issparse(X{p}) & issparse(Y{p}); X{p} = sparse(X{p}); end
       tmp = mexskron(pblk,X{p},Y{p});
       schurtmp = At{p,1}'*tmp*At{p,1};      
       %% schurtmp = 0.5*(schurtmp + schurtmp');
       if (norm(par.permA(p,:)-[1:m]) > 0)
-         Perm = spconvert([(1:m)' par.permA(p,:)' ones(m,1)]); 
+         Perm = spconvert([(1:m)', par.permA(p,:)', ones(m,1)]); 
          schur = schur + Perm'*schurtmp*Perm;
       else
          schur = schur + schurtmp;

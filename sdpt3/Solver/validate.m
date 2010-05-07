@@ -139,7 +139,7 @@
          error(' blk: some fields are not specified correctly'); 
       end
    end
-   if (sum(ntotal) <= m) 
+   if (sum(ntotal) < m) 
       error(' total dimension of C should be > length(b)'); 
    end
 %%

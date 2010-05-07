@@ -68,11 +68,12 @@
         elseif strcmp(pblk{1},'s') 
            n2 = pblk{2}.*(pblk{2}+1)/2; 
 	   if iscell(sigmu)
-     	      ss = [0,cumsum(pblk{2})]; 
-              sigmuvec = zeros(n,1); 
-              for k = 1:length(pblk{2}); 
-                 sigmuvec(ss(k)+1:ss(k+1)) = sigmu{p}(k)*ones(pblk{2}(k),1); 
-              end
+     	      %%ss = [0,cumsum(pblk{2})]; 
+              %%sigmuvec = zeros(n,1); 
+              %%for k = 1:length(pblk{2}); 
+              %%   sigmuvec(ss(k)+1:ss(k+1)) = sigmu{p}(k)*ones(pblk{2}(k),1); 
+              %%end
+              sigmuvec = mexexpand(pblk{2},sigmu{p}); 
               tmp = spdiags(sigmuvec./par.sv{p} -par.sv{p},0,n,n);
            else
               tmp = spdiags(sigmu./par.sv{p} -par.sv{p},0,n,n);

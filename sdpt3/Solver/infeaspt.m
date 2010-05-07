@@ -78,7 +78,7 @@
                pos = [ss(i)+1 : ss(i+1)];  ni = length(pos);
                tmp = C{p}(pos,pos);
                normCni = 1+sqrt(sum(sum(tmp.*tmp)));
-               const = 1; 
+               const  = 10; %%--- old: const = 1; 
                constX = max([const,sqrt(ni),ni*(b2./normAni)]); 
                constZ = max([const,sqrt(ni),normAni,normCni]);
                X0{p}(pos,pos) = constX*spdiags(1+1e-10*rand(ni,1),0,ni,ni);
@@ -100,7 +100,7 @@
          elseif strcmp(pblk{1},'l');
             normC = 1+norm(C{p});
             normA = 1+sqrt(sum(At{p,1}.*At{p,1}));
-            const = 1; 
+            const = 10; %%--- old: const =1; 
             constX = max([const,sqrt(n),sqrt(n)*b2./normA]); 
             constZ = max([const,sqrt(n),normA,normC]);
             X0{p} = constX*(1+1e-10*rand(n,1));

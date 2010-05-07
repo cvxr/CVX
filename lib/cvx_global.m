@@ -87,17 +87,17 @@ if isempty( cvx___ ),
     end
     temp = strfind( s, fs );
     s( temp(end-1) + 1 : end ) = [];
-    subs = { 'sedumi/pre7.5', 'sedumi', 'sdpt3', 'sdpt3/Solver', 'sdpt3/HSDSolver', 'sdpt3/Solver/Mexfun/pre7.5', 'sdpt3/Solver/Mexfun', 'sdpt3/Linsysolver/spchol', 'keywords', 'sets' };
+    subs = { 'sedumi/pre7.5', 'sedumi', 'sdpt3', 'sdpt3/Solver', 'sdpt3/HSDSolver', 'sdpt3/Solver/Mexfun/pre7.5', 'sdpt3/Solver/Mexfun', 'keywords', 'sets' };
     if cvx___.octave,
-        smap = [ 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 ];
+        smap = [ 0, 1, 1, 1, 1, 0, 1, +1, +1 ];
     elseif cvx___.mversion < 7.00,
-        smap = [ 1, 1, 1, 1, 1, 1, 1, 1, -1, -1 ];
+        smap = [ 1, 1, 0, 0, 0, 0, 0, -1, -1 ];
     elseif cvx___.mversion < 7.03,
-        smap = [ 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 ];
+        smap = [ 1, 1, 0, 0, 0, 0, 0, +1, +1 ];
     elseif cvx___.mversion < 7.05,
-        smap = [ 1, 1, 1, 1, 1, 1, 1, 0, 1, 1 ];
+        smap = [ 1, 1, 1, 1, 1, 1, 1, +1, +1 ];
     else
-        smap = [ 0, 1, 1, 1, 1, 0, 1, 0, 1, 1 ];
+        smap = [ 0, 1, 1, 1, 1, 0, 1, +1, +1 ];
     end
     npath = '';
     spaths = [];

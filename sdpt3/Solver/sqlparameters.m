@@ -83,8 +83,7 @@
    OPTIONS.scale_data     = 0; 
    OPTIONS.spdensity      = 0.4; 
    OPTIONS.rmdepconstr    = 0; 
-   OPTIONS.cachesize      = 128; 
-   OPTIONS.smallblkdim    = 15;
+   OPTIONS.smallblkdim    = 50;
    OPTIONS.parbarrier     = []; 
    OPTIONS.schurfun       = [];
    OPTIONS.schurfun_par   = [];

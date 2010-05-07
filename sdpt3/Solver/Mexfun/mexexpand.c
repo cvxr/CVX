@@ -5,7 +5,7 @@
 * 
 *   Input: blk   = [n1, n2, ..., nk]
 *
-*   Output: [x1 x1...x1  x2 x2 ... x2 .... xk xk ...xk]'    
+*   Output: [x1 x1...x1,  x2 x2...x2, ...., xk xk...xk]'    
 *            n1          n2                nk
 *
 * SDPT3: version 3.0
@@ -52,6 +52,8 @@ void mexFunction(int nlhs, mxArray  *plhs[],
         cols = cols + (int)blksize[k]; 
     } 
     x = mxGetPr(prhs[1]); 
+    if (mxIsSparse(prhs[1])) { 
+        mexErrMsgTxt("mexexpand: sparse x not allowed"); }
     if (MAX(mxGetM(prhs[1]),mxGetN(prhs[1])) != numblk) {
         mexErrMsgTxt("mexexpand: size of blk and x incompatible."); }
     plhs[0] = mxCreateDoubleMatrix(cols,1,mxREAL); 

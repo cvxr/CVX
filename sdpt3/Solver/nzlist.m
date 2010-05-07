@@ -45,7 +45,7 @@
 %%
   for p = 1:size(blk,1)
      pblk = blk(p,:); 
-     if strcmp(pblk{1},'s') & (max(pblk{2}) > smallblkdim)
+     if strcmp(pblk{1},'s') & ((max(pblk{2}) > smallblkdim) | (length(pblk{2}) <= 10))
         numblk = length(pblk{2}); 
         n = sum(pblk{2});
         n2 = sum(pblk{2}.*pblk{2});  

@@ -29,7 +29,7 @@
 
    N = length(b); 
    if (nargin < 6); printlevel = 1; end
-   if (nargin < 5) | isempty(maxit); maxit = max(50,length(A.mat22)); end;
+   if (nargin < 5) | isempty(maxit); maxit = max(30,length(A.mat22)); end;
    if (nargin < 4) | isempty(tol); tol = 1e-10; end; 
    tolb = min(1e-4,tol*norm(b));
 

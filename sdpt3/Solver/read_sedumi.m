@@ -19,7 +19,7 @@
   function [blk,Avec,C,b,perm] = read_sedumi(fname,b,c,K,smallblkdim);
 
   if (nargin < 5) 
-     smallblkdim = 40; 
+     smallblkdim = 50; 
   end
 
   A = 0;
@@ -137,19 +137,15 @@
              pblk{1,1} = 's'; pblk{1,2} = n;
              blk(idxblk,:) = pblk; 
              Atmp = At(rowidx+blknnz(deblkidx(p))+[1:n*n],:); 
-             Avec{idxblk,1} = sparse(n*(n+1)/2,m);
-             warning_yes = 1;  
-             for k = 1:m 
-                 Ak = mexmat(pblk,Atmp(:,k),1);
-                 if (norm(Ak-Ak','fro') > 1e-13);
-                    if (warning_yes)
-                       fprintf(' matrix not symmetric, use 0.5*(Ak+Ak'')\n');
-                       warning_yes = 0; 
-                    end
-                    Ak = 0.5*(Ak+Ak'); 
-                 end
-                 Avec{idxblk,1}(:,k) = svec(pblk,Ak,1); 
-             end
+             h = [1:n]'; e = ones(n,1); 
+             tmp = triu(h*e' + e*((h-1).*h/2)'); 
+             tmp = tmp(:); 
+             tmp2 = sqrt(2)*triu(ones(n),1) + speye(n,n); 
+             tmp2 = tmp2(:); 
+             symidx = find(tmp(:));  
+             dd = tmp2(find(tmp2)); 
+             n2 = n*(n+1)/2; 
+             Avec{idxblk,1} = spdiags(dd,0,n2,n2)*Atmp(symidx,:);
              Ctmp = c(rowidx+blknnz(deblkidx(p))+[1:n*n]);
              Ctmp = mexmat(pblk,Ctmp,1);
              C{idxblk,1} = 0.5*(Ctmp+Ctmp');
@@ -158,28 +154,31 @@
       end
       spblkidx = find(blksize <= smallblkdim);
       if ~isempty(spblkidx)
-         pos = []; len = 0;
+         cnt = 0;  cnt2 = 0;        
+         spblksize = blksize(spblkidx); 
+         nn  = sum(spblksize.*spblksize); 
+         nn2 = sum(spblksize.*(spblksize+1)/2); 
+         pos = zeros(nn,1); 
+         dd  = zeros(nn2,1); 
+         symidx = zeros(nn2,1); 
          for p = 1:length(spblkidx)
-             n = blksize(spblkidx(p)); 
-             len = len + n*(n+1)/2; 
-             pos = [pos, rowidx+blknnz(spblkidx(p))+[1:n*n]];
+            n = blksize(spblkidx(p)); 
+            n2 = n*(n+1)/2; 
+            pos(cnt+[1:n*n]) = rowidx+blknnz(spblkidx(p))+[1:n*n];
+            h = [1:n]'; e = ones(n,1); 
+            tmp  = triu(h*e' + e*((h-1).*h/2)'); 
+            tmp  = tmp(:); 
+            tmp2 = sqrt(2)*triu(ones(n),1) + speye(n,n); 
+            tmp2 = tmp2(:); 
+            symidx(cnt2+[1:n2]) = cnt+find(tmp(:)); 
+            dd(cnt2+[1:n2])     = tmp2(find(tmp2)); 
+	    cnt  = cnt + n*n;   
+	    cnt2 = cnt2 + n2; 
          end 
          idxblk = idxblk + 1; 
          blk{idxblk,1} = 's';  blk{idxblk,2} = blksize(spblkidx); 
-         Avec{idxblk,1} = sparse(len,m); 
          Atmp = At(pos,:); 
-         warning_yes = 1; 
-         for k = 1:m
-             Ak = mexmat(blk(idxblk,:),Atmp(:,k),1); 
-             if (norm(Ak-Ak','fro') > 1e-13);
-                if (warning_yes)
-                   fprintf(' matrix not symmetric, use 0.5*(Ak+Ak'')\n');
-                   warning_yes = 0; 
-                end
-                Ak = 0.5*(Ak+Ak'); 
-             end
-             Avec{idxblk,1}(:,k) = svec(blk(idxblk,:),Ak,1); 
-         end
+	 Avec{idxblk,1} = spdiags(dd,0,length(dd),length(dd))*Atmp(symidx,:); 
          Ctmp = c(pos); 
          Ctmp = mexmat(blk(idxblk,:),Ctmp,1); 
          C{idxblk,1} = 0.5*(Ctmp+Ctmp');  

@@ -16,11 +16,13 @@
   for k=1:size(b,2)
      if strcmp(L.matfct_options,'chol')
         x(L.perm,k) = mextriang(L.R, mextriang(L.R,b(L.perm,k),2) ,1); 
-        %%x(L.perm,k) = L.R \ (b(L.perm,k)' / L.R)';
+        %% x(L.perm,k) = L.R \ (b(L.perm,k)' / L.R)';
      elseif strcmp(L.matfct_options,'spchol')
         x(L.perm,k) = mextriangsp(L.Rt,mextriangsp(L.R,b(L.perm,k),2),1);
-     elseif strcmp(L.matfct_options,'myspchol')
-        x(:,k) = bwblkslvfun(L, fwblkslvfun(L,b(:,k)) ./ L.d);
+     elseif strcmp(L.matfct_options,'ldl')
+	x(L.perm,k) = ((L.D\ (L.L \ b(L.perm,k)))' / L.L)';
+     elseif strcmp(L.matfct_options,'spldl')
+	x(L.perm,k) = L.Lt\ (L.D\ (L.L \ b(L.perm,k)));
      elseif strcmp(L.matfct_options,'lu')
         x(:,k) = L.u \ (L.l \ b(L.perm,k));
      elseif strcmp(L.matfct_options,'splu')    

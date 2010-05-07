@@ -18,7 +18,7 @@
        pblksize = sum(pblk{2});
        if (any(isnan(dX{p})) | any(isinf(dX{p}))); xstep = 0; break; end; 
        if strcmp(pblk{1},'s') 
-          if (max(pblk{2}) >= 200);  
+          if (max(pblk{2}) >= 200) 
              use_lanczos = 1; 
           else
              use_lanczos = 0; 
@@ -37,7 +37,11 @@
              end
 	     tmp = Prod2(pblk,dX{p},invXchol{p},0); 
              M = Prod2(pblk,invXchol{p}',tmp,1); 
-             d = blkeig(pblk,-M); 
+             if (exist('mexblkeig')==3)
+                d = mexblkeig(pblk,-M); 
+             else
+                d = blkeig(pblk,-M); 
+             end
           end
           tmp = max(d) + 1e-15*max(abs(d)); 
           if (tmp > 0);  

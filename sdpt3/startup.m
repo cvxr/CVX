@@ -14,14 +14,14 @@
    eval(['addpath ',strcat(SDPT3Home,'/')]);
    eval(['addpath ',strcat(SDPT3Home,'/Solver')]);
    eval(['addpath ',strcat(SDPT3Home,'/Solver/Mexfun')]);
-   eval(['addpath ',strcat(SDPT3Home,'/Linsysolver/spchol')]);
    eval(['addpath ',strcat(SDPT3Home,'/HSDSolver')]);
    eval(['addpath ',strcat(SDPT3Home,'/Examples')]);
-   eval(['addpath ',strcat(SDPT3Home,'/testdir')]);
+%%
+%% obsolete: eval(['addpath ',strcat(SDPT3Home,'/Linsysolver/spchol')]);
 %%
 %% specify default parameters for sqlp.m,
 %% they are specified in the structure called OPTIONS. 
-%% 
+%%
    OPTIONS = sqlparameters;  
 %%*************************************************************************
 

@@ -49,13 +49,12 @@
 %%
    warning off; 
 
-   matlabversion = sscanf(version,'%f');
    if strcmp(computer,'PCWIN64') | strcmp(computer,'GLNXA64')
       par.computer = 64; 
    else
       par.computer = 32; 
    end
-   par.matlabversion = matlabversion(1); 
+   par.matlabversion = [1,0.01]*sscanf(version'%d.%d@');
    par.vers        = 0; 
    par.predcorr    = 1; 
    par.gam         = 0; 
@@ -69,8 +68,7 @@
    par.scale_data  = 0;
    par.spdensity   = 0.4; 
    par.rmdepconstr = 0; 
-   par.cachesize   = 256; 
-   par.smallblkdim = 15; 
+   par.smallblkdim = 40; 
    par.schurfun     = cell(size(blk,1),1);
    par.schurfun_par = cell(size(blk,1),1); 
 %%
@@ -99,7 +97,6 @@
       if isfield(OPTIONS,'scale_data');  par.scale_data  = OPTIONS.scale_data; end
       if isfield(OPTIONS,'spdensity');   par.spdensity   = OPTIONS.spdensity; end
       if isfield(OPTIONS,'rmdepconstr'); par.rmdepconstr = OPTIONS.rmdepconstr; end
-      if isfield(OPTIONS,'cachesize');   par.cachesize   = OPTIONS.cachesize; end
       if isfield(OPTIONS,'smallblkdim'); par.smallblkdim = OPTIONS.smallblkdim; end
       if isfield(OPTIONS,'parbarrier');     
          parbarrier = OPTIONS.parbarrier;
@@ -135,6 +132,7 @@
        numblk = size(blk,1); 
        blk{numblk+1,1} = 'l'; blk{numblk+1,2} = 1;  
        At{numblk+1,1} = 1; C{numblk+1,1} = 0; 
+       parbarrier{numblk+1} = 0; 
        isemptyAtb = 1; 
     end
 %%
@@ -233,7 +231,7 @@
    end
    par.blkdim   = blkdim;
    par.ublksize = ublksize;
-   if (~exist_analytic_term) & (ublksize > 0 & blkdim(1) > 0)
+   if (~exist_analytic_term) & (ublksize > 0 | blkdim(1) > 0)
       if (nargin <= 5) | (isempty(X0) | isempty(y0) | isempty(Z0)); 
          if (max([ops(At3,'norm'),ops(C3,'norm'),norm(b)]) > 1e2)
             [X03,y03,Z03] = infeaspt(blk3,At3,C3,b,1);
