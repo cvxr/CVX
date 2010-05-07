@@ -15,7 +15,7 @@ for k = 1 : length( nonls ),
     tt = nonls( k ).type;
     n_in = n_in + nnv;
     n_out = n_out + nnv;
-    if nn == 1 || isequal( tt, 'nonengative' ),
+    if nn == 1 || isequal( tt, 'nonnegative' ),
         K.l = K.l + nn * nv;
         reord.l = [ reord.l ; temp( : ) ];
     elseif isequal( tt, 'lorentz' ),
