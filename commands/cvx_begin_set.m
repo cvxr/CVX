@@ -15,6 +15,6 @@ function cvx_begin_set( varargin )
 if ~iscellstr( varargin ), error( 'Arguments must be strings.' ); end
 assignin( 'caller', 'cvx_problem', cvxprob( 'set', varargin{:} ) );
 
-% Copyright 2009 Michael C. Grant and Stephen P. Boyd. 
+% Copyright 2010 Michael C. Grant and Stephen P. Boyd. 
 % See the file COPYING.txt for full copyright information.
 % The command 'cvx_where' will show where this file is located.

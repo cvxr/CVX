@@ -1,5 +1,5 @@
 CVX: A system for disciplined convex programming
-Copyright (C) 2005 Michael C. Grant and Stephen P. Boyd.
+Copyright (C) 2005-2010 Michael C. Grant and Stephen P. Boyd.
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
