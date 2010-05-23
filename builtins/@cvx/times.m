@@ -124,8 +124,8 @@ end
 vx = cvx_classify( x );
 vy = cvx_classify( y );
 vr = remap( vx + size( remap, 1 ) * ( vy - 1 ) );
-vu = sort( vr );
-vu = vu([true,diff(vu)~=0]);
+vu = sort( vr(:) );
+vu = vu([true;diff(vu)~=0]);
 nv = length( vu );
 if vu(1) == 1 && nv > 1,
     vr(vr==1) == vu(2);

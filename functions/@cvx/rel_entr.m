@@ -39,8 +39,8 @@ vr = remap_z( vx + 3 * vy + 1 );
 % Perform the computations for each expression type separately
 %
 
-vu = sort( vr );
-vu = vu([true,diff(vu)~=0]);
+vu = sort( vr(:) );
+vu = vu([true;diff(vu)~=0]);
 nv = length( vu );
 sz = size( x );
 xt = x;

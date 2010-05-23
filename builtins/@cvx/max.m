@@ -47,8 +47,8 @@ if nargin == 2,
     vx = cvx_classify( x );
     vy = cvx_classify( y );
     vr = remap( vx + size( remap, 1 ) * ( vy - 1 ) );
-    vu = sort( vr );
-    vu = vu([true,diff(vu)~=0]);
+    vu = sort( vr(:) );
+    vu = vu([true;diff(vu)~=0]);
     nv = length( vu );
 
     %

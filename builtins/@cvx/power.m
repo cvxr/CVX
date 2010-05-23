@@ -80,8 +80,8 @@ x  = cvx_constant( x );
 vy = cvx_classify( y );
 vx = 1 + isreal( x ) .* ( ( x >= 0 ) + ( x > 0 ) + ( x >= 1 ) + ( x > 1 ) );
 vr = remap( vx + size( remap, 1 ) * ( vy - 1 ) );
-vu = sort( vr );
-vu = vu([true,diff(vu)~=0]);
+vu = sort( vr(:) );
+vu = vu([true;diff(vu)~=0]);
 nv = length( vu );
 
 %

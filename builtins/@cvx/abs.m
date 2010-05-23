@@ -27,8 +27,8 @@ v = remap( cvx_classify( x ) );
 % Process each type of expression one piece at a time
 %
 
-vu = sort( v );
-vu = vu([true,diff(vu)~=0]);
+vu = sort( v(:) );
+vu = vu([true;diff(vu)~=0]);
 nv = length( vu );
 sx = x.size_;
 if nv ~= 1,

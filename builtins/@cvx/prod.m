@@ -64,7 +64,7 @@ t2 = all( reshape( remap_2( vx ), sx ), dim ) | ...
 t3 = t2 & t0;
 ta = ( t1 | t3 ) + 2 * ( t2 & ~t3 );
 nu = sort( ta(:) );
-nu = nu([true,diff(nu)~=0]);
+nu = nu([true;diff(nu)~=0]);
 nk = length( nu );
 
 %

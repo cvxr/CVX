@@ -31,8 +31,8 @@ v = remap( cvx_classify( x ) );
 % Process each type of expression one piece at a time
 %
 
-vu = sort( v );
-vu = vu([true,diff(vu)~=0]);
+vu = sort( v(:) );
+vu = vu([true;diff(vu)~=0]);
 nv = length( vu );
 if nv ~= 1,
     y = cvx( size( x ), [] );
@@ -82,8 +82,8 @@ for k = 1 : nv,
             sx = xt.size_;
             xt = xt.basis_;
             rc = full( sum( xt ~= 0, 1 ) );
-            ru = sort( rc );
-            ru = ru([true,diff(ru)~=0]);
+            ru = sort( rc(:) );
+            ru = ru([true;diff(ru)~=0]);
             nu = length( ru );
             if nu ~= 1,
                 yt = cvx( sx, [] );
