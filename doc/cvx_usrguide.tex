@@ -2235,7 +2235,7 @@ convex QPs, parameterized by $x$:
 	\begin{array}{ll}
 		\text{minimize}   & 2 v + w^2 \\
 		\text{subject to} & | x | \leq v + w \\
-		                  & w \leq 1,
+		                  & w \leq 1, ~ v \geq 0
 	\end{array}
 \end{equation}
 with scalar variables $v$ and $w$.
@@ -2252,7 +2252,7 @@ We can implement the Huber penalty function in \cvx as follows:
 	    minimize( w^2 + 2 * v );
 	    subject to
 	        abs( x ) <= w + v;
-	        w <= 1;
+	        w <= 1; v >= 0;
 	cvx_end
 \end{code}
 If \verb@huber@ is called with a numeric value of \verb@x@, then
@@ -2345,7 +2345,7 @@ version of the problem:
 	    minimize( w .^ 2 + 2 * v );
 	    subject to
 	        abs( x ) <= w + v;
-	        w <= 1;
+	        w <= 1; v >= 0;
 	cvx_end
 \end{code}
 This version of \verb@huber@ will in effect create \verb@sx@ ``instances''
@@ -2371,15 +2371,16 @@ the proper version to use:
 	        minimize( w .^ 2 + 2 * v );
 	        subject to
 	            abs( x ) <= w + v;
-	            w <= 1;
+	            w <= 1; v >= 0;
 	    cvx_end
 	end
 \end{code}
 Alternatively, you can create two separate versions of the function, one 
 for numeric input and one for \cvx expressions, and 
-place the numeric version in a subdirectory called
-\verb+@double+. Matlab will call the \verb+@double+ version only when its
-arguments are numeric, and it will call your \cvx version in other cases.
+place the \cvx version in a subdirectory called
+\verb+@cvx+. (Do not include this directory in your Matlab \verb@path@;
+only include its parent.) Matlab will automatically call the version in the 
+\verb+@cvx+ directory when one of the arguments is a \cvx variable.
 This is the approach taken for the version of \verb@huber@ found in the \cvx
 atom library.
 
