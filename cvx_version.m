@@ -1,13 +1,19 @@
 function [ cvx_ver, cvx_bld ] = cvx_version
 cvx_ver = 1.21;
 cvx_bld = ':::BUILD:::';
+cvx_bdate = ':::BDATE:::';
+cvx_dbld = ':::DBUILD:::';
+cvx_ddate = ':::DDATE:::';
 if nargout == 0,
-   fprintf( 1, 'CVX version %g (build %s)\n', cvx_ver, cvx_bld );
+   fprintf( 'CVX version %g\n', cvx_ver );
+   fprintf( '    Code: build %s, %s\n', cvx_bld, cvx_bdate );
+   fprintf( '    Documentation: build %s, %s\n', cvx_dbld, cvx_ddate );
    if exist( 'OCTAVE_VERSION', 'var' ),
-       fprintf( 1, 'GNU Octave %s on %s\n', version, computer );
+       fprintf( 'GNU Octave %s on %s\n', version, computer );
+       fprintf( 'NOTE: Sorry, Octave support is not yet functional.\n' );
    else
        verd = ver('MATLAB');
-       fprintf( 1, 'MATLAB version %s %s on %s\n', verd.Version, verd.Release, computer );
+       fprintf( 'MATLAB version %s %s on %s\n', verd.Version, verd.Release, computer );
    end
 end
 cvx_bld = str2double(cvx_bld);
