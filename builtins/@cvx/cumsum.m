@@ -19,7 +19,7 @@ switch nargin,
     case 1,
         dim = cvx_default_dimension( s );
     case 2,
-        if cvx_check_dimension( dim, false ),
+        if ~cvx_check_dimension( dim, false ),
             error( 'Second argument must be a dimension.' );
         end
 end

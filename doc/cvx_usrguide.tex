@@ -3648,36 +3648,28 @@ factors has delayed the use of other types of solvers with \cvx.
 
 For this reason, we have constructed a \emph{successive approximation} method
 that allows symmetric primal/dual solvers to support the exponential family
-of functions. The precise nature of the method will be published elsewhere, but
-we can provide a highly simplified description here. First, 
+of functions. The precise nature of the method will be published elsewhere,
+but we can provide a highly simplified description here. First, 
 we construct a global approximation for \verb@exp@ (or \verb@log@,
 \etc.) which is accurate within a neighborhood of some center point $x_0$.
 Solving this approximation yields an approximate optimal point $\bar{x}$. We
 shift the center point $x_0$ towards $\bar{x}$, construct a new approximation,
 and solve again. This process is repeated until $|\bar{x}-x_0|$ is small enough to conclude
-that our approximate is accurate enough to represent the original model.
-Again, this is a highly simplified description of the approach; for instance, we
-are also monitoring the dual problem as well to guide our judgements for shifting
-$x_0$ and terminating.
+that our approximation is accurate enough to represent the original model.
+Again, this is a highly simplified description of the approach; for instance, 
+we actually employ both the primal and dual solutions to
+guide our judgements for shifting $x_0$ and terminating.
 
-\iffalse
-So far, we have been quite pleased with the stability and accuracy of the successive 
-approximation method. Nevertheless, we believe that the approach needs to be
-tested further before it can be fully deployed, so \cvx ships with it
-deactivated by default. To activate it, and thereby enable the use of functions
-in the exponential family, insert the command
+So far, we have been pleased with the effectiveness of the successive 
+approximation method. Nevertheless, we believe that it is necessary to issue a warning
+when it is used so that users understand its experimental nature. Therefore,
+the first time that you solve a problem that will require successive approximation,
+\cvx will issue a warning saying so. If you wish to suppress this
+warning, insert the command
 \begin{code}
 cvx_expert true
 \end{code}
-into your model \emph{before} the \verb@cvx_begin@ command. 
-
-Once we accumulate
-wider experience with this approach, we will enable its use by default, and the
-\verb@cvx_expert@ command will no longer be necessary (though we will leave it
-in place for back-compatibility). In addition, we hope to find ways to integrate
-the successive approximation method more tightly with the underlying solvers to
-greatly improve its performance.
-\fi
+into your model before the first use of such features.
 
 \iffalse
 \subsection{The GP/SDP approximation}
