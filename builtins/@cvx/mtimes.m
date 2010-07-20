@@ -258,11 +258,10 @@ if quad,
             error( 'Disciplined convex programming error:\n   Invalid quadratic form: product is complex.', 1 ); %#ok
         else
             xx = cvx( zb, sparse( dx, 1 : zb, 1 ) );
-            [ z2, success ] = quad_form( xx, P );
+            [ z2, success ] = quad_form( xx, P, Q, R );
             if ~success,
                 error( 'Disciplined convex programming error:\n   Invalid quadratic form: neither convex nor concave.', 1 ); %#ok
             end
-            z2 = z2 + Q' * xx + R;
         end
     end
     if first, z = z2; first = false; else z = z + z2; end

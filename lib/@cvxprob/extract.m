@@ -124,8 +124,12 @@ if any( ineqs ),
         oterms = dbcA( slacks, 1 );
         if nnz( sterms ),
             sdirec = cvx___.vexity( slacks );
-            pslack = sum( sterms < 0, 2 ) == 1 & sdirec >= 0 & ~any( oterms > 0, 2 );
-            nslack = sum( sterms > 0, 2 ) == 1 & sdirec <= 0 & ~any( oterms < 0, 2 );
+            pterms = sum( sterms < 0, 2 );      
+            nterms = sum( sterms > 0, 2 );
+%           pslack = nterms == 1 & sdirec >= 0 & ~any( oterms > 0, 2 );
+%           nslack = pterms == 1 & sdirec <= 0 & ~any( oterms < 0, 2 );
+            pslack = nterms == 1 & pterms == 0 & sdirec >= 0 & ~any( oterms > 0, 2 );
+            nslack = pterms == 1 & nterms == 0 & sdirec <= 0 & ~any( oterms < 0, 2 );
             qslack = pslack & nslack;
             temp = any( sterms( pslack & ~nslack, : ) < 0, 1 ) | ...
                    any( sterms( nslack & ~pslack, : ) > 0, 1 );
