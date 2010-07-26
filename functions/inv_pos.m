@@ -1,7 +1,7 @@
 function y = inv_pos( x )
 
 %INV_POS   Reciprocal of a positive quantity.
-%    INV_POS(X) returns 1./X if X is positive, and +Inf if X is nonnegative.
+%    INV_POS(X) returns 1./X if X is positive, and +Inf otherwise.
 %    X must be real.
 %
 %    For matrices and N-D arrays, the function is applied to each element.
