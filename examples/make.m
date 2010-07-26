@@ -471,6 +471,7 @@ elseif force || hdate <= ndate,
     cvx_precision default;
     success = true;
     try
+        out___ = [];
         if runonly,
             out___ = run_clean( name );
             fprintf( 1, ' done.\n' );
