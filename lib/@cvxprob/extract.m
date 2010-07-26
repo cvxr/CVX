@@ -1,5 +1,6 @@
-function [ dbcA, cones, dir, Q, P ] = extract( pp, destructive )
-if nargin < 2 || nargout < 7, destructive = false; end
+function [ dbcA, cones, dir, Q, P, ineqs ] = extract( pp, destructive, doineqs )
+if nargin < 3 || nargout < 6, doineqs = true; end
+if nargin < 2 || nargout < 5, destructive = false; end
 
 global cvx___
 p = cvx___.problems( index( pp ) );
@@ -113,37 +114,34 @@ elseif n < nA,
 end
 
 %
-% Determine which inequalities need slack variables
+% Determine which inequalities need slack variables. Not all of them do,
+% because some may contain variables which themselves can absorb any slack,
+% and thus can be converted to equations without sacrificing equivalence.
+% We are somewhat conservative in our determinations here: the variable
+% must appear *only* in this inequality, and has been identified as free
+% to grow without further constraint in the direction of slack. For
+% example, consider the inequality
+%   x + y <= z
+% where y is an epigraph variable of a convex constraint f(w) <= y. If y
+% does not *also* appear in the objective coerced against growth, then we
+% are free to replace the inequality with the equation
+%   x + y == z
+% and equivalence is preserved. We attempt to be very conservative here,
+% so it is possible that we do not catch all of the cases where
+% inequalities may be converted to equations.
 %
 
-if any( ineqs ),
-    slacks = cvx___.canslack;
-    if any( slacks ),
-        ndxs   = find( ineqs );
-        sterms = dbcA( slacks, ineqs );
-        oterms = dbcA( slacks, 1 );
-        if nnz( sterms ),
-            sdirec = cvx___.vexity( slacks );
-            pterms = sum( sterms < 0, 2 );      
-            nterms = sum( sterms > 0, 2 );
-%           pslack = nterms == 1 & sdirec >= 0 & ~any( oterms > 0, 2 );
-%           nslack = pterms == 1 & sdirec <= 0 & ~any( oterms < 0, 2 );
-            pslack = nterms == 1 & pterms == 0 & sdirec >= 0 & ~any( oterms > 0, 2 );
-            nslack = pterms == 1 & nterms == 0 & sdirec <= 0 & ~any( oterms < 0, 2 );
-            qslack = pslack & nslack;
-            temp = any( sterms( pslack & ~nslack, : ) < 0, 1 ) | ...
-                   any( sterms( nslack & ~pslack, : ) > 0, 1 );
-            ineqs( ndxs( temp ) ) = false;
-            if any( qslack ),
-                ndxs = ndxs( ~temp );
-                [ rr, cc, vv ] = find( sterms( qslack, ~temp ) ); %#ok
-                [ c1, ci ] = unique( cc ); [ c2, ri ] = unique( rr( ci ) );
-                [ c2, rj ] = unique( rr ); [ c2, cj ] = unique( cc( rj ) ); %#ok
-                if length( c2 ) < length( ri ), c2 = c1( ri ); end
-                ineqs( ndxs( c2 ) ) = false;
-            end
-        end
-    end
+if any( ineqs ) && any( cvx___.canslack ),
+    slacks = find( cvx___.canslack );
+    sterms = dbcA( slacks, : );
+    oterms = sterms( :, 1 );
+    ecount = sum( sterms( :, ~ineqs ) ~= 0, 2 ) - ( oterms ~= 0 );
+    sterms = sterms( :, ineqs );
+    icount = sum( sterms ~= 0, 2 );
+    sterms = sum( sterms, 2 );
+    sdirec = cvx___.vexity( slacks );
+    nslack = icount == 1 & ecount == 0 & sterms .* sdirec <= 0 & sterms .* oterms >= 0;
+    ineqs( any( dbcA( slacks( nslack ), : ), 1 ) ) = false;
 end
 
 %
@@ -186,20 +184,25 @@ end
 % Add the slack variables
 %
 
-nsl = nnz( ineqs );
-if nsl ~= 0,
-    dbcA = [ dbcA ; sparse( 1 : nsl, find( ineqs ), -1, nsl, length( ineqs ) ) ];
-    ncone = struct( 'type', 'nonnegative', 'indices', n+1:n+nsl );
-    if isempty( cones ),
-        cones = ncone;
-    else
-        tt = find(strcmp({cones.type},'nonnnegative'));
-        if ~isempty( tt ),
-            cones(tt(1)).indices = [ cones(tt(1)).indices, ncone.indices ];
+if doineqs,
+    nsl = nnz( ineqs );
+    if nsl ~= 0,
+        dbcA = [ dbcA ; sparse( 1 : nsl, find( ineqs ), -1, nsl, length( ineqs ) ) ];
+        ncone = struct( 'type', 'nonnegative', 'indices', n+1:n+nsl );
+        if isempty( cones ),
+            cones = ncone;
         else
-            cones = [ ncone, cones ];
+            tt = find(strcmp({cones.type},'nonnnegative'));
+            if ~isempty( tt ),
+                cones(tt(1)).indices = [ cones(tt(1)).indices, ncone.indices ];
+            else
+                cones = [ ncone, cones ];
+            end
         end
     end
+    ineqs = [];
+else
+    ineqs = find(ineqs);
 end
 
 %

@@ -198,7 +198,7 @@ else
             vbar = 0.5 * sg * vbar;
         end
         wbar = w - sg * vbar' * vbar;
-        cvx_optval = cvx_optval + sg * alpha * sum_square_abs( ( R * x + vbar ) / sqrt(alpha) ) + v' * x + wbar;
+        cvx_optval = cvx_optval + sg * alpha * sum_square_abs( ( R * x + vbar ) / sqrt(alpha) ) + sum( v' * x ) + wbar;
         success = true;
         break;
         
