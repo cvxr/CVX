@@ -82,10 +82,10 @@ else
     % Constant matrix Q, affine x
     %
 
-    cvx_optval = [];
+    cvx_optval = 0;
     while true,
         Q = cvx_constant( Q );
-        cvx_optval = 0;
+        Q = 0.5 * ( Q + Q' );
         
         %
         % Quick exit for a zero Q
@@ -108,11 +108,12 @@ else
             tt = dQ ~= 0;
             Q = Q( tt, tt );
             if nnz( Q ) ~= nnzQ,
+                success = false;
                 break
             end
             dQ = dQ( tt );
             if nnz( v ),
-                cvx_optval = cvx_optval + v( ~tt, : )' * cvx_subsref( x, ~tt, ':' );
+                cvx_optval = v( ~tt, : )' * cvx_subsref( x, ~tt, ':' );
                 v = v( tt, : );
             end
             x = cvx_subsref( x, tt, ':' );
@@ -127,6 +128,7 @@ else
         if all( dQ ),
             sg = +1;
         elseif any( dQ ),
+            success = false;
             break
         else
             sg = -1;
@@ -177,7 +179,10 @@ else
             end
             D = diag( D );
             Derr = tol * max( D );
-            if min( D ) < - Derr, break; end
+            if min( D ) < - Derr, 
+                success = false;
+                break; 
+            end
             tt = D > Derr;
             V = V( :, tt );
             D = D( tt );
@@ -199,17 +204,12 @@ else
         end
         wbar = w - sg * vbar' * vbar;
         cvx_optval = cvx_optval + sg * alpha * sum_square_abs( ( R * x + vbar ) / sqrt(alpha) ) + sum( v' * x ) + wbar;
-        success = true;
         break;
         
     end
     
-    if isempty( cvx_optval ),
-        if nargout > 1,
-            success = false;
-        else
-            error( 'The second argument must be positive or negative semidefinite.' );
-        end
+    if ~success,
+        error( 'The second argument must be positive or negative semidefinite.' );
     end
 
 end
