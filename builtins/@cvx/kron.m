@@ -15,10 +15,10 @@ sx = size( x );
 sy = size( y );
 if length( sx ) > 2 || length( sy ) > 2,
     error( 'N-D arrays not supported.' );
-elseif sx( 2 ) == 1 && sy( 1 ) == 1,
+elseif sx( 2 ) == 1 && ( sx( 1 ) == 1 || sy( 1 ) == 1 ),
     z = mtimes( x, y );
     return
-elseif sx( 1 ) == 1 && sy( 2 ) == 1,
+elseif sy( 2 ) == 1 && ( sy( 1 ) == 1 || sx( 1 ) == 1 ),
     z = mtimes( y, x );
     return
 else
@@ -31,14 +31,18 @@ end
 
 [ ix, jx, vx ] = find(x);
 [ iy, jy, vy ] = find(y);
-ix = ix(:); jx = jx(:); nx = numel(ix); kx = ones(nx,1);
-iy = iy(:); jy = jy(:); ny = numel(iy); ky = ones(ny,1);
-t  = sy(1) * ( ix - 1 )';
-iz = t( ky, : ) + iy( :, kx );
-t  = sy(2) * ( jx - 1 )';
-jz = t( ky, : ) + jy( :, kx );
-z  = reshape( vy, ny, 1 ) * reshape( vx, 1, nx );
-z  = sparse( iz, jz, z, sz(1), sz(2) );
+if isempty( vx ) || isempty( vy ),
+    z = cvx( sparse( [], [], [], sz(1), sz(2) ) );
+else
+    ix = ix(:); jx = jx(:); nx = numel(ix); kx = ones(nx,1);
+    iy = iy(:); jy = jy(:); ny = numel(iy); ky = ones(ny,1);
+    t  = sy(1) * ( ix - 1 )';
+    iz = t( ky, : ) + iy( :, kx );
+    t  = sy(2) * ( jx - 1 )';
+    jz = t( ky, : ) + jy( :, kx );
+    z  = reshape( vy, ny, 1 ) * reshape( vx, 1, nx );
+    z  = sparse( iz, jz, z, sz(1), sz(2) );
+end
 
 % Copyright 2010 Michael C. Grant and Stephen P. Boyd.
 % See the file COPYING.txt for full copyright information.

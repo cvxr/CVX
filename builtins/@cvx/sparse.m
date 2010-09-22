@@ -2,7 +2,7 @@ function z = sparse( i, j, x, m, n )
 
 %   Disciplined convex/geometric programming information for SPARSE:
 %       For a CVX variable X, SPARSE(X) just returns X. In the three-
-%       and five-argument versions SPARSE(I,J,V,[M,N]), the index
+%       and five-argument versions SPARSE(I,J,V,M,N), the index
 %       arguments I and J and size arguments M and N must be constant.
 %       If any of the index pairs (I(k),J(k)) are repeated, then the
 %       corresponding elements V(k) will be added together. Therefore,
@@ -21,19 +21,15 @@ end
 % Check sizes and indices
 %
 
-ni = numel(  i  );
-nj = numel(  j  );
-nk = prod( x.size_ );
-nz = [ ni, nj, nk ];
-if any( diff( nz( nz ~= 1 ) ) ~= 0 ),
-    error( 'Vectors must be the same length.' );
-elseif ( ~isnumeric( i ) && ~ischar( i ) ) || ( ~isnumeric( j ) && ~ischar( j ) ),
-    error( 'Indices into a matrix must be numeric.' );
-elseif any( i <= 0 ) || any( j <= 0 ) || any( i ~= floor( i ) ) || any( j ~= floor( j ) ),
-    error( 'Indices into a matrix must be positive integers.' );
+if ( ~isnumeric( i ) && ~ischar( i ) ) || ( ~isnumeric( j ) && ~ischar( j ) ),
+    error( 'The first two arguments must be numeric.' );
 end
-i = i( : );
-j = j( : );
+nn = [ numel( i ), numel( j ), prod( x.size_ ) ];
+nz = max( nn );
+if any( nn(nn~=nz) ~= 1 ),
+    error( 'Vectors must be the same lengths.' );
+end
+i = i( : ); j = j( : );
 if nargin == 3,
     m = max( i );
     n = max( j );
@@ -44,21 +40,15 @@ elseif any( i > m ) || any( j > n ),
 end
 
 %
-% Recalculate indices
-%
-
-nz = max( nz );
-ij = i + m * ( j - 1 );
-if length( ij ) < nz,
-    ij = ij( ones( nz, 1 ), : );
-end
-
-%
-% Reconstruct basis matrices
+% Reconstruct basis matrices and indices
 %
 
 [ ix, jx, vx ] = find( x.basis_ );
-xb = sparse( ix, ij(jx), vx, max(ix), m * n );
+ij = i + m * ( j - 1 );
+if length(ij) > 1,
+    ij = ij(jx);
+end
+xb = sparse( ix, ij, vx, max(ix), m * n );
 z = cvx( [ m, n ], xb );
 
 %
