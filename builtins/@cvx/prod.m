@@ -88,10 +88,10 @@ if nk > 1 || ( any( nu > 1 ) && nx > 1 ),
         ta   = permute( ta, perm );
         % sx   = sx( perm );
         sy   = sy( perm );
-        dim  = 1;
     end
-    nv = prod( sy );
-    x  = reshape( x, nx, nv );
+    nv  = prod( sy );
+    x   = reshape( x, nx, nv );
+    dim = 1;
 end
 
 %
