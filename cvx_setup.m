@@ -24,6 +24,7 @@ ver = ver(1) + 0.01 * ( ver(2) + 0.01 * ver(3) );
 % Octave?
 isoctave = exist( 'OCTAVE_VERSION', 'var' );
 if isoctave,
+    error( 'Sorry, CVX does not yet run under octave.' );
     newext = 'mex';
     needLarge = false;
     if isnan( ver ) || ver < 3.0202,
