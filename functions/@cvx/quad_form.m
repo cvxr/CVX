@@ -7,7 +7,7 @@ function [ cvx_optval, success ] = quad_form( x, Q, v, w )
 %
 
 error( nargchk( 2, 4, nargin ) );
-tol = 4 * eps;
+tol = 10 * eps;
 if nargin < 4,
     w = 0;
     if nargin < 3,
@@ -15,65 +15,72 @@ if nargin < 4,
     end
 end
 sx = size( x );
-if length( sx ) ~= 2 || all( sx > 1 ),
-    error( 'The first argument must be a row or column.' );
+if length( sx ) ~= 2 || all( sx ~= 1 ),
+    error( 'The first argument must be a vector.' );
 else
     sx = prod( sx );
 end
 sQ = size( Q );
 if length( sQ ) ~= 2 || sQ( 1 ) ~= sQ( 2 ),
     error( 'The second argument must be a scalar or a square matrix.' );
-elseif sQ( 1 ) ~= sx && sQ( 1 ) ~= 1,
-    error( 'Sizes are incompatible.' );
+elseif all( sQ( 1 ) ~= [ 1, sx ] ),
+    error( 'The size of Q is incompatible with the size of x.' );
 end
 sv = size( v );
-if all( prod( sv ) ~= [ 1, sx ]  ),
-    error( 'Sizes are incompatible.' );
-elseif nnz( sv ~= 1 ) > 1,
+if length( sv ) > 2 || all( sv ~= 1 ),
     error( 'The third argument must be a vector.' );
+elseif all( prod( sv ) ~= [ 1, sx ] ),   
+    error( 'The size of v is incompatible with the size of x.' );
+else
+    sv = prod( sv );
 end
 if numel( w ) ~= 1,
-    error( 'The fourth argument must be a scalar.' );
+    error( 'The fourth argument must be a real scalar.' );
 end
 
+w = real( w );
 v = vec( v );
 x = vec( x );
 success = true;
 if cvx_isconstant( x ),
+    
+    %
+    % Constant x, affine Q
+    %
 
-    if isreal( Q ) || isreal( x ),
-
-        %
-        % Constant x, affine Q, real case
-        %
-
-        x = real( x );
-        Q = real( Q );
-        cvx_optval = x' * ( Q * x ) + v' * x + w;
-
-    else
-
-        %
-        % Constant x, affine Q, complex case
-        %
-
-        xR = real( x );
-        xI = imag( x );
-        cvx_optval = xR' * ( real( v ) + real( Q ) * xR ) + xI' * ( imag( v ) + imag( Q ) * xI ) + w;
-
-    end
+    x = cvx_constant( x );
+    cvx_optval = real( x' * Q * x ) + sum( real( v' * x ) ) + w;
+    return
 
 elseif ~cvx_isaffine( x ),
 
     error( 'First argument must be affine.' );
     
-elseif sQ( 1 ) == 1 && cvx_constant( Q ) ~= 0,
+elseif ~cvx_isconstant( Q ) || ~cvx_isconstant( v ),
+    
+    error( 'Either x or (Q,v) must be constant.' );
+    
+end
+Q = cvx_constant( Q );
+v = cvx_constant( v );
+if nnz( Q ) == 0,
+    
+    %
+    % Zero Q, affine x
+    %
+
+    cvx_optval = sum( real( v' * x ) ) + w;
+    return
+    
+elseif sQ( 1 ) == 1,
     
     %
     % Constant scalar Q, affine x
     %
     
-    cvx_optval = real( Q ) * sum_square_abs( x ) + v' * x + w;
+    x = x + 0.5 * ( v / Q );
+    w = w - 0.25 * ( v' * v ) / Q;
+    cvx_optval = real( Q ) * sum_square_abs( x ) + w;
     return
     
 else
@@ -82,19 +89,9 @@ else
     % Constant matrix Q, affine x
     %
 
+    if sv < sx, v = v(ones(sx,1),1); end
     cvx_optval = 0;
     while true,
-        Q = cvx_constant( Q );
-        Q = 0.5 * ( Q + Q' );
-        
-        %
-        % Quick exit for a zero Q
-        %
-
-        nnzQ = nnz( Q );
-        if nnzQ == 0,
-            break
-        end
         
         %
         % Remove zero rows and columns from Q. If a diagonal element of Q is
@@ -102,6 +99,7 @@ else
         % then we know that neither Q nor -Q is PSD.
         %
         
+        Q = 0.5 * ( Q + Q' );
         dQ = diag( Q );
         trQ = sum(dQ);
         if ~all( dQ ),
@@ -113,7 +111,7 @@ else
             end
             dQ = dQ( tt );
             if nnz( v ),
-                cvx_optval = v( ~tt, : )' * cvx_subsref( x, ~tt, ':' );
+                cvx_optval = real( v( ~tt, : )' * cvx_subsref( x, ~tt, ':' ) );
                 v = v( tt, : );
             end
             x = cvx_subsref( x, tt, ':' );
@@ -143,7 +141,6 @@ else
 
         vbar = 0;
         valid = false;
-        Q = 0.5 * ( Q + Q' );
         if cvx_use_sparse( Q ),
             Q = sparse( Q );
             prm = symamd( Q );
@@ -155,7 +152,8 @@ else
                 R( tt, : ) = []; 
             end
         else
-            [ R, p ] = chol(full(Q));
+            Q = full( Q );
+            [ R, p ] = chol( Q );
             valid = p == 0;
             if ~valid,
                 R = [ R , R' \ Q(1:p-1,p:end) ];
@@ -203,7 +201,7 @@ else
             vbar = 0.5 * sg * vbar;
         end
         wbar = w - sg * vbar' * vbar;
-        cvx_optval = cvx_optval + sg * alpha * sum_square_abs( ( R * x + vbar ) / sqrt(alpha) ) + sum( v' * x ) + wbar;
+        cvx_optval = cvx_optval + sg * alpha * sum_square_abs( ( R * x + vbar ) / sqrt(alpha) ) + real( v' * x ) + wbar;
         break;
         
     end
