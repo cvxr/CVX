@@ -185,7 +185,7 @@ the minimum and maximum eigenvalues of a symmetric matrix,
 power functions $x^p$, and $\ell_p$ norms (both for $p$ rational).
 %A few obscure functions have also been included, 
 %such as the sum of the $k$ largest entries of a vector, and the
-%convex envelope of a nonconvex polynomial.
+%convex envelope of a non-convex polynomial.
 
 \paragraph{Problems handled with (good) approximations.}
 For a few functions, \cvx will make a (good) approximation to transform the
@@ -2195,7 +2195,7 @@ by $x$,
 \]
 with optimization variable $y$.
 
-One special case should be very familar: if $m=1$ and
+One special case should be very familiar: if $m=1$ and
 $g(x,y)\triangleq y$, then
 \[
 	f(x) \triangleq \inf\Condset{y}{\exists y,~(x,y)\in S}
@@ -2230,7 +2230,7 @@ Consider the unit-halfwidth Huber penalty function $h(x)$:
 \end{equation}
 %The Huber penalty function cannot be used in an optimization algorithm
 %utilizing Newton's method,
-%because its Hessian is discontiuous at $x = \pm 1$, and in
+%because its Hessian is discontinuous at $x = \pm 1$, and in
 %any case zero for $|x|\geq 1$. 
 We can express the Huber function in terms of the following family of 
 convex QPs, parameterized by $x$:
@@ -2587,7 +2587,7 @@ the geometry of GPs and GGPs.
 
 Three types of constraints may be specified in geometric programs:
 \begin{itemize}
-\item An \emph{equality constraint}, consrtucted using \verb@==@,
+\item An \emph{equality constraint}, constructed using \verb@==@,
 where both sides are monomials.
 \item A \emph{less-than inequality constraint} \verb@<=@, \verb@<@ 
 where the left side is a generalized posynomial and the right side is a monomial.
@@ -2782,7 +2782,7 @@ If you call \verb@cvx_precision@ in function mode, either with a string or a num
 value, it will return as its output the \emph{previous} precision vector---the same
 result you would obtain if you called it with no arguments. This may
 seem confusing at first, but this is done so that you can save the previous value
-in a variable, and restore it at the end of your calcuations; e.g.,
+in a variable, and restore it at the end of your calculations; e.g.,
 \begin{code}
 	cvxp = cvx_precision( 'high' );
 	cvx_begin
@@ -2996,7 +2996,7 @@ so the indexed dual variables are symmetric matrices, not scalars.
 \newpage
 \appendix
 
-\section{Installation and compatability}
+\section{Installation and compatibility}
 \label{s-installing}
 
 \index{installing \cvx}
@@ -3025,7 +3025,7 @@ We have also identified another issue using \cvx
 with Matlab 7.0.1 and 7.0.4; workarounds
 are provided in \S\ref{sec:sevenprob} below.
 
-Precompiled MEX files are included for all of the above platorms.
+Precompiled MEX files are included for all of the above platforms.
 For other platforms (\eg, Solaris), \cvx will attempt to compile 
 the MEX files will be compiled during the setup
 process. While \cvx is quite likely to work for
@@ -3132,7 +3132,7 @@ We have no idea why this workaround works, but it does---reliably.
 \index{operators}
 \index{cvx@{\cvx}!operators}
 \index{cvx@{\cvx}!functions}
-\index{function!\cvx libary}
+\index{function!\cvx library}
 
 \subsection{Basic operators and linear functions}
 
@@ -3155,7 +3155,7 @@ For example:
       of appropriate dimensions; or it can be left-divided by a non-singular 
       constant matrix of appropriate dimension.
 \end{itemize}
-Numerious other combinations are possible, of course.
+Numerous other combinations are possible, of course.
 For example, the use of the exponentiation operators \verb@^@
 \verb@.^@ are somewhat limited; see \S\ref{sec:nonl} below.
 
@@ -3905,7 +3905,7 @@ above is \emph{complete}; it is interpreted as a feasibility problem.
 If we used \verb@cvx_begin@ in this function, then when we call it,
 \cvx forms the feasibility problem, discovers that it is complete,
 and therefore solves it when it reaches the \verb@cvx_end@ command.
-This problem is obivously feasible, so \verb@cvx_optval@ is \verb@0@,
+This problem is obviously feasible, so \verb@cvx_optval@ is \verb@0@,
 so our function would simply always return \verb@0@.
 
 XXX is it \verb@cvx_optval@ we want returned or \verb@x@?
@@ -3939,7 +3939,7 @@ $\exp$ is an elementwise exponential function; \ie,
 	\exp(y) \eqbydef \bmat{e^{y_1} & \dots & e^{y_n}}^T.
 \end{equation}
 Monomials are log-log-affine and posynomials are log-log-convex, so
-GPs are a protypical class of log-log-convex optimization problems.
+GPs are a prototypical class of log-log-convex optimization problems.
 
 The mapping $f\rightarrow\log\circ f\circ \exp$, which we will henceforth
 call the \emph{log-log mapping}, can be used to create a nearly direct
@@ -4040,7 +4040,7 @@ summation is \emph{log-log-convex} in the geometric context.
 Disciplined geometric programming introduces three new categories 
 for the curvature of functions: \emph{log-log-affine},
 \emph{log-log-convex}, and \emph{log-log-concave}. Likewise,
-three new categories of montonicity are introduced: \emph{p-nondecreasing},
+three new categories of monotonicity are introduced: \emph{p-nondecreasing},
 \emph{p-nonincreasing}, and \emph{p-nonmonotonic}. The ``p-'' denotes
 that the determination of monotonicity is made only over the nonnegative
 orthant, instead of over the entire input space.
