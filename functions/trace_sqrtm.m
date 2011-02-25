@@ -1,13 +1,13 @@
 function z = trace_sqrtm( Y )
 
 % TRACE_SQRTM   Trace of the square root of a PSD matrix.
-%     For square matrix X, TRACE_INV(X) is TRACE(INV(X)) if X is Hermitian
+%     For square matrix X, TRACE_SQRTM(X) is TRACE(SQRTM(X)) if X is Hermitian
 %     or symmetric and positive definite; and +Inf otherwise.
 %
 %     An error results if X is not a square matrix.
 %
 %     Disciplined convex programming information:
-%         TRACE_INV is convex and nonmonotonic (at least with respect to
+%         TRACE_SQRTM is convex and nonmonotonic (at least with respect to
 %         elementwise comparison), so its argument must be affine.
 
 error( nargchk( 1, 1, nargin ) );

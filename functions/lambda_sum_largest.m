@@ -1,6 +1,7 @@
 function z = lambda_sum_largest( Y, k )
 
-% LAMBDA_SUM_SMALLEST    Sum of the k smallest eigenvalues of a symmetric matrix.
+% LAMBDA_SUM_LARGEST   Sum of the k largest eigenvalues of a symmetric matrix.
+%
 %     For square matrix X, LAMBDA_SUM_LARGEST(X,K) is SUM_LARGEST(EIG(X),k)
 %     if X is Hermitian or symmetric and real; and +Inf otherwise.
 %
