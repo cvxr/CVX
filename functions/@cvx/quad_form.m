@@ -103,6 +103,7 @@ else
         dQ = diag( Q );
         trQ = sum(dQ);
         if ~all( dQ ),
+            nnzQ = nnz( Q );
             tt = dQ ~= 0;
             Q = Q( tt, tt );
             if nnz( Q ) ~= nnzQ,
@@ -112,8 +113,8 @@ else
             dQ = dQ( tt );
             if nnz( v ),
                 cvx_optval = real( v( ~tt, : )' * cvx_subsref( x, ~tt, ':' ) );
-                v = v( tt, : );
             end
+            v = v( tt, : );
             x = cvx_subsref( x, tt, ':' );
         end
         
