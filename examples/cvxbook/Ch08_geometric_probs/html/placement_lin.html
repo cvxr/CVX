@@ -1,68 +1,25 @@
-
-<!DOCTYPE html
-  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
-<html><head>
-      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-   <!--
-This HTML is auto-generated from an M-file.
-To make changes, update the M-file and republish this document.
-      --><title>Figure 8.15: Linear placement problem</title><meta name="generator" content="MATLAB 7.9"><meta name="date" content="2009-11-12"><meta name="m-file" content="placement_lin_"><style type="text/css">
-
-body {
-  background-color: white;
-  margin:10px;
-}
-
-h1 {
-  color: #990000; 
-  font-size: x-large;
-}
-
-h2 {
-  color: #990000;
-  font-size: medium;
-}
-
-/* Make the text shrink to fit narrow windows, but not stretch too far in 
-wide windows. */ 
-p,h1,h2,div.content div {
-  max-width: 600px;
-  /* Hack for IE6 */
-  width: auto !important; width: 600px;
-}
-
-pre.codeinput {
-  background: #EEEEEE;
-  padding: 10px;
-}
-@media print {
-  pre.codeinput {word-wrap:break-word; width:100%;}
-} 
-
-span.keyword {color: #0000FF}
-span.comment {color: #228B22}
-span.string {color: #A020F0}
-span.untermstring {color: #B20000}
-span.syscmd {color: #B28C00}
-
-pre.codeoutput {
-  color: #666666;
-  padding: 10px;
-}
-
-pre.error {
-  color: red;
-}
-
-p.footer {
-  text-align: right;
-  font-size: xx-small;
-  font-weight: lighter;
-  font-style: italic;
-  color: gray;
-}
-
-  </style></head><body><div class="content"><h1>Figure 8.15: Linear placement problem</h1><pre class="codeinput"><span class="comment">% Section 8.7.3, Boyd &amp; Vandenberghe "Convex Optimization"</span>
+<!DOCTYPE HTML>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Figure 8.15: Linear placement problem</title>
+<link rel="canonical" href="http://cvxr.com/cvx/examples/cvxbook/Ch08_geometric_probs/html/placement_lin.html">
+<link rel="stylesheet" href="../../../examples.css" type="text/css">
+</head>
+<body>
+<div id="header">
+<h1>Figure 8.15: Linear placement problem</h1>
+Jump to:&nbsp;&nbsp;&nbsp;&nbsp;
+<a href="#source">Source code</a>&nbsp;&nbsp;&nbsp;&nbsp;
+<a href="#output">Text output</a>
+&nbsp;&nbsp;&nbsp;&nbsp;
+<a href="#plots">Plots</a>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="../../../index.html">Library index</a>
+</div>
+<div id="content">
+<a id="source"></a>
+<pre class="codeinput">
+<span class="comment">% Section 8.7.3, Boyd &amp; Vandenberghe "Convex Optimization"</span>
 <span class="comment">% Original by Lieven Vandenberghe</span>
 <span class="comment">% Adapted for CVX by Joelle Skaf - 10/24/05</span>
 <span class="comment">% (a figure is generated)</span>
@@ -156,7 +113,10 @@ hold <span class="string">on</span>
 plot([0 2], [0 0 ], <span class="string">'k-'</span>);
 title(<span class="string">'Distribution of the 27 link lengths'</span>);
 <span class="comment">% print -deps placement-lin-hist.eps</span>
-</pre><pre class="codeoutput">Computing the optimal locations of the 6 free points... 
+</pre>
+<a id="output"></a>
+<pre class="codeoutput">
+Computing the optimal locations of the 6 free points... 
 Calling sedumi: 81 variables, 39 equality constraints
    For improved efficiency, sedumi is solving the dual problem.
 ------------------------------------------------------------
@@ -173,121 +133,28 @@ nnz(A) = 101 + 0, nnz(ADA) = 279, nnz(L) = 167
   5 :  -2.19E+01 6.81E-05 0.165 0.0971 0.9900 0.9900   1.00  1  1  5.1E-04
   6 :  -2.19E+01 1.20E-06 0.198 0.0177 0.9900 0.9236   1.00  1  1  4.6E-05
   7 :  -2.19E+01 6.13E-08 0.136 0.0509 0.9900 0.9900   1.00  1  1  2.4E-06
-  8 :  -2.19E+01 1.48E-08 0.000 0.2416 0.9009 0.9000   1.00  1  1  5.7E-07
-  9 :  -2.19E+01 1.33E-09 0.401 0.0896 0.9900 0.9699   1.00  1  1  5.1E-08
- 10 :  -2.19E+01 4.16E-10 0.000 0.3135 0.9275 0.9000   1.00  2  2  1.4E-08
+  8 :  -2.19E+01 1.48E-08 0.000 0.2415 0.9009 0.9000   1.00  1  1  5.7E-07
+  9 :  -2.19E+01 1.32E-09 0.401 0.0893 0.9900 0.9699   1.00  1  1  5.1E-08
+ 10 :  -2.19E+01 4.16E-10 0.000 0.3146 0.9275 0.9000   1.00  2  2  1.4E-08
 
 iter seconds digits       c*x               b*y
- 10      0.0   Inf -2.1908263691e+01 -2.1908263520e+01
+ 10      0.1   Inf -2.1908263691e+01 -2.1908263520e+01
 |Ax-b| =   1.1e-08, [Ay-c]_+ =   1.3E-08, |x|=  7.3e+00, |y|=  5.2e+00
 
 Detailed timing (sec)
    Pre          IPM          Post
-0.000E+00    5.000E-02    0.000E+00    
+1.000E-02    6.000E-02    0.000E+00    
 Max-norms: ||b||=1, ||c|| = 2,
 Cholesky |add|=0, |skip| = 0, ||L.L|| = 1.
 ------------------------------------------------------------
 Status: Solved
 Optimal value (cvx_optval): +21.9083
 Done! 
-</pre><img vspace="5" hspace="5" src="placement_lin__01.png" alt=""> <img vspace="5" hspace="5" src="placement_lin__02.png" alt=""> <p class="footer"><br>
-      Published with MATLAB&reg; 7.9<br></p></div><!--
-##### SOURCE BEGIN #####
-%% Figure 8.15: Linear placement problem
-
-% Section 8.7.3, Boyd & Vandenberghe "Convex Optimization"
-% Original by Lieven Vandenberghe
-% Adapted for CVX by Joelle Skaf - 10/24/05
-% (a figure is generated)
-%
-% Placement problem with 6 free points, 8 fixed points and 27 links.
-% The coordinates of the free points minimize the sum of the Euclidean
-% lengths of the links, i.e.
-%           minimize    sum_{i<j) h(||x_i - x_j||)
-% where h(z) = z.
-
-linewidth = 1;      % in points;  width of dotted lines
-markersize = 5;    % in points;  marker size
-
-% Input Data
-fixed = [ 1   1  -1 -1    1   -1  -0.2  0.1; % coordinates of fixed points
-          1  -1  -1  1 -0.5 -0.2    -1    1]';
-M = size(fixed,1);  % number of fixed points
-N = 6;              % number of free points
-
-% first N columns of A correspond to free points,
-% last M columns correspond to fixed points
-
-A = [ 1  0  0 -1  0  0    0  0  0  0  0  0  0  0
-      1  0 -1  0  0  0    0  0  0  0  0  0  0  0
-      1  0  0  0 -1  0    0  0  0  0  0  0  0  0
-      1  0  0  0  0  0   -1  0  0  0  0  0  0  0
-      1  0  0  0  0  0    0 -1  0  0  0  0  0  0
-      1  0  0  0  0  0    0  0  0  0 -1  0  0  0
-      1  0  0  0  0  0    0  0  0  0  0  0  0 -1
-      0  1 -1  0  0  0    0  0  0  0  0  0  0  0
-      0  1  0 -1  0  0    0  0  0  0  0  0  0  0
-      0  1  0  0  0 -1    0  0  0  0  0  0  0  0
-      0  1  0  0  0  0    0 -1  0  0  0  0  0  0
-      0  1  0  0  0  0    0  0 -1  0  0  0  0  0
-      0  1  0  0  0  0    0  0  0  0  0  0 -1  0
-      0  0  1 -1  0  0    0  0  0  0  0  0  0  0
-      0  0  1  0  0  0    0 -1  0  0  0  0  0  0
-      0  0  1  0  0  0    0  0  0  0 -1  0  0  0
-      0  0  0  1 -1  0    0  0  0  0  0  0  0  0
-      0  0  0  1  0  0    0  0 -1  0  0  0  0  0
-      0  0  0  1  0  0    0  0  0 -1  0  0  0  0
-      0  0  0  1  0  0    0  0  0  0  0 -1  0  0
-      0  0  0  1  0 -1    0  0  0  0  0 -1  0  0        % error in data!!!
-      0  0  0  0  1 -1    0  0  0  0  0  0  0  0
-      0  0  0  0  1  0   -1  0  0  0  0  0  0  0
-      0  0  0  0  1  0    0  0  0 -1  0  0  0  0
-      0  0  0  0  1  0    0  0  0  0  0  0  0 -1
-      0  0  0  0  0  1    0  0 -1  0  0  0  0  0
-      0  0  0  0  0  1    0  0  0  0 -1  0  0  0 ];
-nolinks = size(A,1);    % number of links
-
-fprintf(1,'Computing the optimal locations of the 6 free points...');
-
-cvx_begin
-    variable x(N+M,2)
-    minimize ( sum(norms( A*x,2,2 )))
-    x(N+[1:M],:) == fixed;
-cvx_end
-
-fprintf(1,'Done! \n');
-
-% Plots
-free_sum = x(1:N,:);
-figure(1);
-dots = plot(free_sum(:,1), free_sum(:,2), 'or', fixed(:,1), fixed(:,2), 'bs');
-set(dots(1),'MarkerFaceColor','red');
-hold on
-legend('Free points','Fixed points','Location','Best');
-for i=1:nolinks
-  ind = find(A(i,:));
-  line2 = plot(x(ind,1), x(ind,2), ':k');
-  hold on
-  set(line2,'LineWidth',linewidth);
-end
-axis([-1.1 1.1 -1.1 1.1]) ;
-axis equal;
-title('Linear placement problem');
-% print -deps placement-lin.eps
-
-figure(2)
-all = [free_sum; fixed];
-bins = 0.05:0.1:1.95;
-lengths = sqrt(sum((A*all).^2')');
-[N2,hist2] = hist(lengths,bins);
-bar(hist2,N2);
-hold on;
-xx = linspace(0,2,1000);  yy = 2*xx;
-plot(xx,yy,'REPLACE_WITH_DASH_DASH');
-axis([0 2 0 4.5]);
-hold on
-plot([0 2], [0 0 ], 'k-');
-title('Distribution of the 27 link lengths');
-% print -deps placement-lin-hist.eps
-##### SOURCE END #####
---></body></html>
+</pre>
+<a id="plots"></a>
+<div id="plotoutput">
+<img src="placement_lin__01.png" alt=""> <img src="placement_lin__02.png" alt=""> 
+</div>
+</div>
+</body>
+</html>

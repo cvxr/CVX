@@ -1,68 +1,25 @@
-
-<!DOCTYPE html
-  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
-<html><head>
-      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-   <!--
-This HTML is auto-generated from an M-file.
-To make changes, update the M-file and republish this document.
-      --><title>Maximize stopband attenuation of a linear phase lowpass FIR filter</title><meta name="generator" content="MATLAB 7.9"><meta name="date" content="2009-11-12"><meta name="m-file" content="fir_lin_phase_lowpass_max_atten_"><style type="text/css">
-
-body {
-  background-color: white;
-  margin:10px;
-}
-
-h1 {
-  color: #990000; 
-  font-size: x-large;
-}
-
-h2 {
-  color: #990000;
-  font-size: medium;
-}
-
-/* Make the text shrink to fit narrow windows, but not stretch too far in 
-wide windows. */ 
-p,h1,h2,div.content div {
-  max-width: 600px;
-  /* Hack for IE6 */
-  width: auto !important; width: 600px;
-}
-
-pre.codeinput {
-  background: #EEEEEE;
-  padding: 10px;
-}
-@media print {
-  pre.codeinput {word-wrap:break-word; width:100%;}
-} 
-
-span.keyword {color: #0000FF}
-span.comment {color: #228B22}
-span.string {color: #A020F0}
-span.untermstring {color: #B20000}
-span.syscmd {color: #B28C00}
-
-pre.codeoutput {
-  color: #666666;
-  padding: 10px;
-}
-
-pre.error {
-  color: red;
-}
-
-p.footer {
-  text-align: right;
-  font-size: xx-small;
-  font-weight: lighter;
-  font-style: italic;
-  color: gray;
-}
-
-  </style></head><body><div class="content"><h1>Maximize stopband attenuation of a linear phase lowpass FIR filter</h1><pre class="codeinput"><span class="comment">% "Filter design" lecture notes (EE364) by S. Boyd</span>
+<!DOCTYPE HTML>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Maximize stopband attenuation of a linear phase lowpass FIR filter</title>
+<link rel="canonical" href="http://cvxr.com/cvx/examples/filter_design/html/fir_lin_phase_lowpass_max_atten.html">
+<link rel="stylesheet" href="../../examples.css" type="text/css">
+</head>
+<body>
+<div id="header">
+<h1>Maximize stopband attenuation of a linear phase lowpass FIR filter</h1>
+Jump to:&nbsp;&nbsp;&nbsp;&nbsp;
+<a href="#source">Source code</a>&nbsp;&nbsp;&nbsp;&nbsp;
+<a href="#output">Text output</a>
+&nbsp;&nbsp;&nbsp;&nbsp;
+<a href="#plots">Plots</a>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="../../index.html">Library index</a>
+</div>
+<div id="content">
+<a id="source"></a>
+<pre class="codeinput">
+<span class="comment">% "Filter design" lecture notes (EE364) by S. Boyd</span>
 <span class="comment">% (figures are generated)</span>
 <span class="comment">%</span>
 <span class="comment">% Designs a linear phase FIR lowpass filter such that it:</span>
@@ -157,145 +114,53 @@ subplot(2,1,2)
 plot(w,angle(H))
 axis([0,pi,-pi,pi])
 xlabel(<span class="string">'w'</span>), ylabel(<span class="string">'phase H(w)'</span>)
-</pre><pre class="codeoutput"> 
-Calling sedumi: 528 variables, 12 equality constraints
+</pre>
+<a id="output"></a>
+<pre class="codeoutput">
+ 
+Calling sedumi: 756 variables, 240 equality constraints
    For improved efficiency, sedumi is solving the dual problem.
 ------------------------------------------------------------
 SeDuMi 1.21 by AdvOL, 2005-2008 and Jos F. Sturm, 1998-2003.
 Alg = 2: xz-corrector, Adaptive Step-Differentiation, theta = 0.250, beta = 0.500
-eqs m = 12, order n = 529, dim = 529, blocks = 229
-nnz(A) = 3528 + 0, nnz(ADA) = 144, nnz(L) = 78
+eqs m = 240, order n = 757, dim = 757, blocks = 229
+nnz(A) = 3984 + 0, nnz(ADA) = 5844, nnz(L) = 3042
  it :     b*y       gap    delta  rate   t/tP*  t/tD*   feas cg cg  prec
-  0 :            1.99E+02 0.000
-  1 :  -1.99E-01 1.11E+02 0.000 0.5599 0.9000 0.9000   8.15  1  1  5.6E+01
-  2 :  -1.16E-01 3.86E+01 0.000 0.3470 0.9000 0.9000   4.89  1  1  6.8E+00
-  3 :  -4.46E-02 2.30E+01 0.000 0.5951 0.9000 0.9000   3.30  1  1  2.0E+00
-  4 :  -2.97E-02 1.61E+01 0.000 0.7026 0.9000 0.9000   2.43  1  1  1.1E+00
-  5 :  -2.12E-02 8.21E+00 0.000 0.5089 0.9000 0.9000   1.82  1  1  4.8E-01
-  6 :  -1.91E-02 4.11E+00 0.000 0.5005 0.9000 0.9000   1.28  1  1  2.3E-01
-  7 :  -1.77E-02 1.25E+00 0.000 0.3048 0.9000 0.9000   1.13  1  1  6.6E-02
-  8 :  -1.75E-02 3.96E-01 0.000 0.3165 0.9000 0.9000   1.03  1  1  2.1E-02
-  9 :  -1.75E-02 8.68E-02 0.000 0.2190 0.9074 0.9000   1.01  1  1  4.7E-03
- 10 :  -1.75E-02 1.64E-02 0.000 0.1885 0.9063 0.9000   1.00  1  1  9.1E-04
- 11 :  -1.75E-02 1.63E-03 0.000 0.0999 0.9092 0.9000   1.00  1  1  9.7E-05
- 12 :  -1.75E-02 1.88E-06 0.093 0.0011 0.9990 0.8122   1.00  1  1  5.2E-07
- 13 :  -1.75E-02 4.76E-11 0.273 0.0000 1.0000 1.0000   1.00  1  1  1.3E-11
+  0 :            1.39E+02 0.000
+  1 :  -3.00E-01 8.08E+01 0.000 0.5827 0.9000 0.9000   8.96  1  1  5.5E+01
+  2 :  -1.49E-01 3.46E+01 0.000 0.4283 0.9000 0.9000   5.70  1  1  7.3E+00
+  3 :  -4.45E-02 2.15E+01 0.000 0.6216 0.9000 0.9000   4.20  1  1  1.9E+00
+  4 :  -3.29E-02 1.63E+01 0.000 0.7578 0.9000 0.9000   2.40  1  1  1.2E+00
+  5 :  -2.26E-02 8.85E+00 0.000 0.5426 0.9000 0.9000   1.92  1  1  5.5E-01
+  6 :  -1.96E-02 4.22E+00 0.000 0.4767 0.9000 0.9000   1.36  1  1  2.4E-01
+  7 :  -1.78E-02 1.37E+00 0.000 0.3249 0.9000 0.9000   1.15  1  1  7.6E-02
+  8 :  -1.74E-02 4.24E-01 0.000 0.3092 0.9000 0.9000   1.04  1  1  2.3E-02
+  9 :  -1.75E-02 9.63E-02 0.000 0.2273 0.9063 0.9000   1.01  1  1  5.4E-03
+ 10 :  -1.75E-02 1.87E-02 0.000 0.1937 0.9055 0.9000   1.00  1  1  1.1E-03
+ 11 :  -1.75E-02 2.14E-03 0.000 0.1147 0.9093 0.9000   1.00  1  1  1.3E-04
+ 12 :  -1.75E-02 6.14E-06 0.000 0.0029 0.9990 0.9990   1.00  1  1  4.6E-07
+ 13 :  -1.75E-02 7.84E-13 0.000 0.0000 1.0000 1.0000   1.00  1  1  7.7E-14
 
 iter seconds digits       c*x               b*y
- 13      0.1   Inf -1.7476196634e-02 -1.7476196631e-02
-|Ax-b| =   6.9e-12, [Ay-c]_+ =   4.2E-12, |x|=  6.1e-01, |y|=  3.1e-01
+ 13      0.1   Inf -1.7476196636e-02 -1.7476196636e-02
+|Ax-b| =   3.5e-13, [Ay-c]_+ =   3.1E-15, |x|=  7.4e-01, |y|=  3.2e-01
 
 Detailed timing (sec)
    Pre          IPM          Post
-0.000E+00    7.000E-02    1.000E-02    
+1.000E-02    9.000E-02    0.000E+00    
 Max-norms: ||b||=1, ||c|| = 1.122018e+00,
-Cholesky |add|=0, |skip| = 0, ||L.L|| = 1.418.
+Cholesky |add|=0, |skip| = 0, ||L.L|| = 1.1929.
 ------------------------------------------------------------
 Status: Solved
 Optimal value (cvx_optval): +0.0174762
 Problem is Solved
 The minimum attenuation in the stopband is -35.15 dB.
 
-</pre><img vspace="5" hspace="5" src="fir_lin_phase_lowpass_max_atten__01.png" alt=""> <img vspace="5" hspace="5" src="fir_lin_phase_lowpass_max_atten__02.png" alt=""> <p class="footer"><br>
-      Published with MATLAB&reg; 7.9<br></p></div><!--
-##### SOURCE BEGIN #####
-%% Maximize stopband attenuation of a linear phase lowpass FIR filter
-
-% "Filter design" lecture notes (EE364) by S. Boyd
-% (figures are generated)
-%
-% Designs a linear phase FIR lowpass filter such that it:
-% - minimizes maximum stopband attenuation
-% - has a constraint on the maximum passband ripple
-%
-% This is a convex problem (when sampled it can be represented as an LP).
-%
-%   minimize   max |H(w)|                     for w in the stopband
-%       s.t.   1/delta <= |H(w)| <= delta     for w in the passband
-%
-% where H is the frequency response function and variable is
-% h (the filter impulse response). delta is allowed passband ripple.
-%
-% Written for CVX by Almir Mutapcic 02/02/06
-
-%********************************************************************
-% user's filter specifications
-%********************************************************************
-% filter order is 2n+1 (symmetric around the half-point)
-n = 10;
-
-wpass = 0.12*pi;        % passband cutoff freq (in radians)
-wstop = 0.24*pi;        % stopband start freq (in radians)
-max_pass_ripple = 1;    % (delta) max allowed passband ripple in dB
-                        % ideal passband gain is 0 dB
-
-%********************************************************************
-% create optimization parameters
-%********************************************************************
-N = 30*n;                              % freq samples (rule-of-thumb)
-w = linspace(0,pi,N);
-A = [ones(N,1) 2*cos(kron(w',[1:n]))]; % matrix of cosines
-
-% passband 0 <= w <= w_pass
-ind = find((0 <= w) & (w <= wpass));    % passband
-Lp  = 10^(-max_pass_ripple/20)*ones(length(ind),1);
-Up  = 10^(max_pass_ripple/20)*ones(length(ind),1);
-Ap  = A(ind,:);
-
-% transition band is not constrained (w_pass <= w <= w_stop)
-
-% stopband (w_stop <= w)
-ind = find((wstop <= w) & (w <= pi));   % stopband
-As  = A(ind,:);
-
-%********************************************************************
-% optimization
-%********************************************************************
-% formulate and solve the linear-phase lowpass filter design
-cvx_begin
-  variable h(n+1,1);
-
-  minimize( max( abs( As*h ) ) )
-  subject to
-    % passband bounds
-    Lp <= Ap*h;
-    Ap*h <= Up;
-cvx_end
-
-% check if problem was successfully solved
-disp(['Problem is ' cvx_status])
-if ~strfind(cvx_status,'Solved')
-  return
-else
-  fprintf(1,'The minimum attenuation in the stopband is %3.2f dB.\n\n',...
-          20*log10(cvx_optval));
-  % construct the full impulse response
-  h = [flipud(h(2:end)); h];
-end
-
-%********************************************************************
-% plots
-%********************************************************************
-figure(1)
-% FIR impulse response
-plot([0:2*n],h','o',[0:2*n],h','b:')
-xlabel('t'), ylabel('h(t)')
-
-figure(2)
-% frequency response
-H = exp(-j*kron(w',[0:2*n]))*h;
-% magnitude
-subplot(2,1,1)
-plot(w,20*log10(abs(H)),...
-     [0 wpass],[max_pass_ripple max_pass_ripple],'rREPLACE_WITH_DASH_DASH',...
-     [0 wpass],[-max_pass_ripple -max_pass_ripple],'rREPLACE_WITH_DASH_DASH');
-axis([0,pi,-50,10])
-xlabel('w'), ylabel('mag H(w) in dB')
-% phase
-subplot(2,1,2)
-plot(w,angle(H))
-axis([0,pi,-pi,pi])
-xlabel('w'), ylabel('phase H(w)')
-
-##### SOURCE END #####
---></body></html>
+</pre>
+<a id="plots"></a>
+<div id="plotoutput">
+<img src="fir_lin_phase_lowpass_max_atten__01.png" alt=""> <img src="fir_lin_phase_lowpass_max_atten__02.png" alt=""> 
+</div>
+</div>
+</body>
+</html>

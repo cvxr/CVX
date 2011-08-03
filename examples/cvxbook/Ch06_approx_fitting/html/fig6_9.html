@@ -1,68 +1,25 @@
-
-<!DOCTYPE html
-  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
-<html><head>
-      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-   <!--
-This HTML is auto-generated from an M-file.
-To make changes, update the M-file and republish this document.
-      --><title>Figure 6.9: An optimal tradeoff curve</title><meta name="generator" content="MATLAB 7.9"><meta name="date" content="2009-11-12"><meta name="m-file" content="fig6_9_"><style type="text/css">
-
-body {
-  background-color: white;
-  margin:10px;
-}
-
-h1 {
-  color: #990000; 
-  font-size: x-large;
-}
-
-h2 {
-  color: #990000;
-  font-size: medium;
-}
-
-/* Make the text shrink to fit narrow windows, but not stretch too far in 
-wide windows. */ 
-p,h1,h2,div.content div {
-  max-width: 600px;
-  /* Hack for IE6 */
-  width: auto !important; width: 600px;
-}
-
-pre.codeinput {
-  background: #EEEEEE;
-  padding: 10px;
-}
-@media print {
-  pre.codeinput {word-wrap:break-word; width:100%;}
-} 
-
-span.keyword {color: #0000FF}
-span.comment {color: #228B22}
-span.string {color: #A020F0}
-span.untermstring {color: #B20000}
-span.syscmd {color: #B28C00}
-
-pre.codeoutput {
-  color: #666666;
-  padding: 10px;
-}
-
-pre.error {
-  color: red;
-}
-
-p.footer {
-  text-align: right;
-  font-size: xx-small;
-  font-weight: lighter;
-  font-style: italic;
-  color: gray;
-}
-
-  </style></head><body><div class="content"><h1>Figure 6.9: An optimal tradeoff curve</h1><pre class="codeinput"><span class="comment">% Section 6.3.3</span>
+<!DOCTYPE HTML>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Figure 6.9: An optimal tradeoff curve</title>
+<link rel="canonical" href="http://cvxr.com/cvx/examples/cvxbook/Ch06_approx_fitting/html/fig6_9.html">
+<link rel="stylesheet" href="../../../examples.css" type="text/css">
+</head>
+<body>
+<div id="header">
+<h1>Figure 6.9: An optimal tradeoff curve</h1>
+Jump to:&nbsp;&nbsp;&nbsp;&nbsp;
+<a href="#source">Source code</a>&nbsp;&nbsp;&nbsp;&nbsp;
+<a href="#output">Text output</a>
+&nbsp;&nbsp;&nbsp;&nbsp;
+<a href="#plots">Plots</a>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="../../../index.html">Library index</a>
+</div>
+<div id="content">
+<a id="source"></a>
+<pre class="codeinput">
+<span class="comment">% Section 6.3.3</span>
 <span class="comment">% Boyd &amp; Vandenberghe "Convex Optimization"</span>
 <span class="comment">% Original by Lieven Vandenberghe</span>
 <span class="comment">% Adapted for CVX Joelle Skaf - 09/29/05</span>
@@ -106,7 +63,10 @@ xlabel(<span class="string">'||x - x_{cor}||_2'</span>);
 ylabel(<span class="string">'||Dx||_2'</span>);
 title(<span class="string">'Optimal trade-off curve'</span>);
 <span class="comment">% print -deps smoothrec_tradeoff.eps</span>
-</pre><pre class="codeoutput">Generating the optimal trade-off curve for different values of delta...
+</pre>
+<a id="output"></a>
+<pre class="codeoutput">
+Generating the optimal trade-off curve for different values of delta...
 * delta = 1e-10
 * delta = 2.5595e-10
 * delta = 6.5513e-10
@@ -158,55 +118,11 @@ title(<span class="string">'Optimal trade-off curve'</span>);
 * delta = 3906939937.0546
 * delta = 10000000000
 Done! 
-</pre><img vspace="5" hspace="5" src="fig6_9__01.png" alt=""> <p class="footer"><br>
-      Published with MATLAB&reg; 7.9<br></p></div><!--
-##### SOURCE BEGIN #####
-%% Figure 6.9: An optimal tradeoff curve
-
-% Section 6.3.3
-% Boyd & Vandenberghe "Convex Optimization"
-% Original by Lieven Vandenberghe
-% Adapted for CVX Joelle Skaf - 09/29/05
-% (a figure is generated)
-%
-% Plots the optimal trade-off curve between ||Dx||_2 and ||x-x_cor||_2 by
-% solving the following problem for different values of delta:
-%           minimize    ||x - x_cor||^2 + delta*||Dx||^2
-% where x_cor is the a problem parameter, ||Dx|| is a measure of smoothness
-
-%Input data
-randn('state',0);
-n = 4000;  t = (0:n-1)';
-exact = 0.5*sin((2*pi/n)*t).*sin(0.01*t);
-corrupt = exact + 0.05*randn(size(exact));
-
-e = ones(n,1);
-D = spdiags([-e e], -1:0, n, n);
-
-% tradeoff curve
-nopts = 50;
-lambdas = logspace(-10,10,nopts);
-obj1 = zeros(1,nopts);
-obj2 = zeros(1,nopts);
-
-fprintf(1,'Generating the optimal trade-off curve for different values of delta...\n');
-for i=1:nopts
-    disp(['* delta = ' num2str(lambdas(i))]);
-    cvx_begin quiet
-        variable x(n)
-        minimize ( norm(x - corrupt) + lambdas(i)*norm(D*x) )
-    cvx_end
-    obj1(i) = norm(x - corrupt);
-    obj2(i) = norm(D*x);
-end
-fprintf(1,'Done! \n');
-
-% Plots
-plot(obj1, obj2)
-xlabel('||x - x_{cor}||_2');
-ylabel('||Dx||_2');
-title('Optimal trade-off curve');
-% print -deps smoothrec_tradeoff.eps
-
-##### SOURCE END #####
---></body></html>
+</pre>
+<a id="plots"></a>
+<div id="plotoutput">
+<img src="fig6_9__01.png" alt=""> 
+</div>
+</div>
+</body>
+</html>

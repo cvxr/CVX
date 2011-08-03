@@ -1,6 +1,5 @@
 % Graph Laplacian eigenvalue optimization
-% [http://stanford.edu/~boyd/cvx_opt_graph_lapl_eigs.html ...
-% Convex Optimization of Graph Laplacian Eigenvalues]
+% <a href="http://stanford.edu/~boyd/cvx_opt_graph_lapl_eigs.html">Convex Optimization of Graph Laplacian Eigenvalues</a>
 %
 %  larger_example.m   - FDLA and FMMC solutions for a 50-node, 200-edge graph
 %  cut_grid_example.m - FDLA and FMMC solutions for a 64-node, 95-edge cut-grid graph

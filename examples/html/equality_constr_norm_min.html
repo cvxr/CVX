@@ -1,68 +1,25 @@
-
-<!DOCTYPE html
-  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
-<html><head>
-      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-   <!--
-This HTML is auto-generated from an M-file.
-To make changes, update the M-file and republish this document.
-      --><title>Equality constrained norm minimization.</title><meta name="generator" content="MATLAB 7.9"><meta name="date" content="2009-11-12"><meta name="m-file" content="equality_constr_norm_min_"><style type="text/css">
-
-body {
-  background-color: white;
-  margin:10px;
-}
-
-h1 {
-  color: #990000; 
-  font-size: x-large;
-}
-
-h2 {
-  color: #990000;
-  font-size: medium;
-}
-
-/* Make the text shrink to fit narrow windows, but not stretch too far in 
-wide windows. */ 
-p,h1,h2,div.content div {
-  max-width: 600px;
-  /* Hack for IE6 */
-  width: auto !important; width: 600px;
-}
-
-pre.codeinput {
-  background: #EEEEEE;
-  padding: 10px;
-}
-@media print {
-  pre.codeinput {word-wrap:break-word; width:100%;}
-} 
-
-span.keyword {color: #0000FF}
-span.comment {color: #228B22}
-span.string {color: #A020F0}
-span.untermstring {color: #B20000}
-span.syscmd {color: #B28C00}
-
-pre.codeoutput {
-  color: #666666;
-  padding: 10px;
-}
-
-pre.error {
-  color: red;
-}
-
-p.footer {
-  text-align: right;
-  font-size: xx-small;
-  font-weight: lighter;
-  font-style: italic;
-  color: gray;
-}
-
-  </style></head><body><div class="content"><h1>Equality constrained norm minimization.</h1><pre class="codeinput"><span class="comment">% This script constructs a random equality-constrained norm minimization</span>
+<!DOCTYPE HTML>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Equality constrained norm minimization.</title>
+<link rel="canonical" href="http://cvxr.com/cvx/examples/html/equality_constr_norm_min.html">
+<link rel="stylesheet" href="../examples.css" type="text/css">
+</head>
+<body>
+<div id="header">
+<h1>Equality constrained norm minimization.</h1>
+Jump to:&nbsp;&nbsp;&nbsp;&nbsp;
+<a href="#source">Source code</a>&nbsp;&nbsp;&nbsp;&nbsp;
+<a href="#output">Text output</a>
+&nbsp;&nbsp;&nbsp;&nbsp;
+Plots
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="../index.html">Library index</a>
+</div>
+<div id="content">
+<a id="source"></a>
+<pre class="codeinput">
+<span class="comment">% This script constructs a random equality-constrained norm minimization</span>
 <span class="comment">% problem and solves it using CVX. You can also change p to +2 or +Inf</span>
 <span class="comment">% to produce different results. Alternatively, you an replace</span>
 <span class="comment">%     norm( A * x - b, p )</span>
@@ -99,7 +56,10 @@ disp( [ <span class="string">'   C*x   = [ '</span>, sprintf( <span class="strin
 disp( [ <span class="string">'   d     = [ '</span>, sprintf( <span class="string">'%7.4f '</span>, d   ), <span class="string">']'</span> ] );
 disp( <span class="string">'Lagrange multiplier for C*x==d:'</span> );
 disp( [ <span class="string">'   y     = [ '</span>, sprintf( <span class="string">'%7.4f '</span>, y ), <span class="string">']'</span> ] );
-</pre><pre class="codeoutput"> 
+</pre>
+<a id="output"></a>
+<pre class="codeoutput">
+ 
 Calling sedumi: 50 variables, 25 equality constraints
 ------------------------------------------------------------
 SeDuMi 1.21 by AdvOL, 2005-2008 and Jos F. Sturm, 1998-2003.
@@ -122,7 +82,7 @@ iter seconds digits       c*x               b*y
 
 Detailed timing (sec)
    Pre          IPM          Post
-2.000E-02    1.200E-01    1.000E-02    
+2.000E-02    8.000E-02    0.000E+00    
 Max-norms: ||b||=1.858593e+00, ||c|| = 1,
 Cholesky |add|=0, |skip| = 0, ||L.L|| = 2.65245.
 ------------------------------------------------------------
@@ -139,48 +99,7 @@ Equality constraints:
    d     = [ -0.0638  0.6113  0.1093  1.8140  0.3120 ]
 Lagrange multiplier for C*x==d:
    y     = [ -1.5037  1.2411 -2.9373  5.5888  2.3990 ]
-</pre><p class="footer"><br>
-      Published with MATLAB&reg; 7.9<br></p></div><!--
-##### SOURCE BEGIN #####
-%% Equality constrained norm minimization.
-
-% This script constructs a random equality-constrained norm minimization
-% problem and solves it using CVX. You can also change p to +2 or +Inf
-% to produce different results. Alternatively, you an replace
-%     norm( A * x - b, p )
-% with
-%     norm_largest( A * x - b, 'largest', p )
-% for 1 <= p <= 2 * n.
-
-% Generate data
-p = 1;
-n = 10; m = 2*n; q=0.5*n;
-A = randn(m,n);
-b = randn(m,1);
-C = randn(q,n);
-d = randn(q,1);
-
-% Create and solve problem
-cvx_begin
-   variable x(n)
-   dual variable y
-   minimize( norm( A * x - b, p ) )
-   subject to
-        y : C * x == d;
-cvx_end
-
-% Display results
-disp( sprintf( 'norm(A*x-b,%g):', p ) );
-disp( [ '   ans   =   ', sprintf( '%7.4f', norm(A*x-b,p) ) ] );
-disp( 'Optimal vector:' );
-disp( [ '   x     = [ ', sprintf( '%7.4f ', x ), ']' ] );
-disp( 'Residual vector:' );
-disp( [ '   A*x-b = [ ', sprintf( '%7.4f ', A*x-b ), ']' ] );
-disp( 'Equality constraints:' );
-disp( [ '   C*x   = [ ', sprintf( '%7.4f ', C*x ), ']' ] );
-disp( [ '   d     = [ ', sprintf( '%7.4f ', d   ), ']' ] );
-disp( 'Lagrange multiplier for C*x==d:' );
-disp( [ '   y     = [ ', sprintf( '%7.4f ', y ), ']' ] );
-
-##### SOURCE END #####
---></body></html>
+</pre>
+</div>
+</body>
+</html>

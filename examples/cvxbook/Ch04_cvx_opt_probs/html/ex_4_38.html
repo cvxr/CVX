@@ -1,68 +1,25 @@
-
-<!DOCTYPE html
-  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
-<html><head>
-      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-   <!--
-This HTML is auto-generated from an M-file.
-To make changes, update the M-file and republish this document.
-      --><title>Exercise 4.38(b): Linear matrix inequalities with one variable</title><meta name="generator" content="MATLAB 7.9"><meta name="date" content="2009-11-12"><meta name="m-file" content="ex_4_38_"><style type="text/css">
-
-body {
-  background-color: white;
-  margin:10px;
-}
-
-h1 {
-  color: #990000; 
-  font-size: x-large;
-}
-
-h2 {
-  color: #990000;
-  font-size: medium;
-}
-
-/* Make the text shrink to fit narrow windows, but not stretch too far in 
-wide windows. */ 
-p,h1,h2,div.content div {
-  max-width: 600px;
-  /* Hack for IE6 */
-  width: auto !important; width: 600px;
-}
-
-pre.codeinput {
-  background: #EEEEEE;
-  padding: 10px;
-}
-@media print {
-  pre.codeinput {word-wrap:break-word; width:100%;}
-} 
-
-span.keyword {color: #0000FF}
-span.comment {color: #228B22}
-span.string {color: #A020F0}
-span.untermstring {color: #B20000}
-span.syscmd {color: #B28C00}
-
-pre.codeoutput {
-  color: #666666;
-  padding: 10px;
-}
-
-pre.error {
-  color: red;
-}
-
-p.footer {
-  text-align: right;
-  font-size: xx-small;
-  font-weight: lighter;
-  font-style: italic;
-  color: gray;
-}
-
-  </style></head><body><div class="content"><h1>Exercise 4.38(b): Linear matrix inequalities with one variable</h1><pre class="codeinput"><span class="comment">% From Boyd &amp; Vandenberghe, "Convex Optimization"</span>
+<!DOCTYPE HTML>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Exercise 4.38(b): Linear matrix inequalities with one variable</title>
+<link rel="canonical" href="http://cvxr.com/cvx/examples/cvxbook/Ch04_cvx_opt_probs/html/ex_4_38.html">
+<link rel="stylesheet" href="../../../examples.css" type="text/css">
+</head>
+<body>
+<div id="header">
+<h1>Exercise 4.38(b): Linear matrix inequalities with one variable</h1>
+Jump to:&nbsp;&nbsp;&nbsp;&nbsp;
+<a href="#source">Source code</a>&nbsp;&nbsp;&nbsp;&nbsp;
+<a href="#output">Text output</a>
+&nbsp;&nbsp;&nbsp;&nbsp;
+Plots
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="../../../index.html">Library index</a>
+</div>
+<div id="content">
+<a id="source"></a>
+<pre class="codeinput">
+<span class="comment">% From Boyd &amp; Vandenberghe, "Convex Optimization"</span>
 <span class="comment">% Jo&euml;lle Skaf - 09/26/05</span>
 <span class="comment">%</span>
 <span class="comment">% Finds the optimal t that would maximize c*t while still having A - t*B</span>
@@ -90,36 +47,37 @@ cvx_end
 disp(<span class="string">'------------------------------------------------------------------------'</span>);
 disp(<span class="string">'The optimal t obtained is'</span>);
 disp(t);
-</pre><pre class="codeoutput"> 
-Calling sedumi: 10 variables, 1 equality constraints
-   For improved efficiency, sedumi is solving the dual problem.
+</pre>
+<a id="output"></a>
+<pre class="codeoutput">
+ 
+Calling sedumi: 10 variables, 9 equality constraints
 ------------------------------------------------------------
 SeDuMi 1.21 by AdvOL, 2005-2008 and Jos F. Sturm, 1998-2003.
 Alg = 2: xz-corrector, Adaptive Step-Differentiation, theta = 0.250, beta = 0.500
-eqs m = 1, order n = 5, dim = 17, blocks = 2
-nnz(A) = 10 + 0, nnz(ADA) = 1, nnz(L) = 1
+eqs m = 9, order n = 5, dim = 17, blocks = 2
+nnz(A) = 18 + 0, nnz(ADA) = 81, nnz(L) = 45
  it :     b*y       gap    delta  rate   t/tP*  t/tD*   feas cg cg  prec
-  0 :            8.07E+00 0.000
-  1 :  -6.80E-01 1.51E+00 0.000 0.1867 0.9000 0.9000   0.45  1  1  1.9E+00
-  2 :  -2.18E+00 3.25E-01 0.000 0.2156 0.9000 0.9000   0.04  1  1  1.1E+00
-  3 :  -1.52E+01 2.54E-02 0.000 0.0781 0.9900 0.9900  -0.60  1  1  5.7E-01
-  4 :  -4.19E+01 2.24E-03 0.000 0.0881 0.9900 0.9900  -0.27  1  1  1.2E-01
-  5 :  -4.72E+01 3.75E-04 0.000 0.1678 0.9000 0.9000   0.96  1  1  2.0E-02
-  6 :  -4.83E+01 8.86E-07 0.149 0.0024 0.9955 0.9990   0.99  1  1  1.5E-04
-  7 :  -4.83E+01 1.70E-07 0.000 0.1923 0.9000 0.6868   1.00  1  1  2.9E-05
-  8 :  -4.83E+01 4.71E-09 0.058 0.0277 0.9903 0.9900   1.00  1  1  6.7E-07
-  9 :  -4.83E+01 6.95E-10 0.000 0.1475 0.9000 0.8343   1.00  1  1  1.3E-07
- 10 :  -4.83E+01 3.33E-11 0.360 0.0479 0.9905 0.9900   1.00  1  1  5.6E-09
+  0 :            7.41E+00 0.000
+  1 :   1.50E+00 1.38E+00 0.000 0.1864 0.9000 0.9000   0.26  1  1  1.9E+00
+  2 :   6.02E+00 2.83E-01 0.000 0.2051 0.9000 0.9000  -0.08  1  1  1.1E+00
+  3 :   4.20E+01 2.00E-02 0.000 0.0706 0.9900 0.9900  -0.62  1  1  5.4E-01
+  4 :   6.03E+01 1.87E-03 0.000 0.0937 0.9900 0.9900  -0.13  1  1  1.0E-01
+  5 :   4.85E+01 7.65E-05 0.444 0.0409 0.9900 0.9900   0.98  1  1  4.1E-03
+  6 :   4.81E+01 4.33E-07 0.000 0.0057 0.9769 0.9900   0.99  1  1  9.4E-05
+  7 :   4.81E+01 2.02E-08 0.214 0.0466 0.9900 0.9585   1.00  1  1  4.4E-06
+  8 :   4.81E+01 6.37E-10 0.000 0.0316 0.9900 0.9900   1.00  2  2  1.4E-07
+  9 :   4.81E+01 3.40E-11 0.065 0.0533 0.9900 0.9900   1.00  2  2  7.4E-09
 
 iter seconds digits       c*x               b*y
- 10      0.1   Inf -4.8318982940e+01 -4.8318982370e+01
-|Ax-b| =   6.4e-10, [Ay-c]_+ =   8.5E-09, |x|=  1.1e+02, |y|=  2.6e+02
+  9      0.0   Inf  4.8119383092e+01  4.8119383403e+01
+|Ax-b| =   1.5e-08, [Ay-c]_+ =   1.2E-09, |x|=  4.8e+02, |y|=  1.2e+02
 
 Detailed timing (sec)
    Pre          IPM          Post
-2.000E-02    1.000E-01    0.000E+00    
-Max-norms: ||b||=1.877157e-01, ||c|| = 2.895108e+00,
-Cholesky |add|=0, |skip| = 0, ||L.L|| = 1.
+1.000E-02    5.000E-02    0.000E+00    
+Max-norms: ||b||=2.368443e+00, ||c|| = 5.424573e-01,
+Cholesky |add|=0, |skip| = 0, ||L.L|| = 176.719.
 ------------------------------------------------------------
 Status: Solved
 Optimal value (cvx_optval): +48.354
@@ -127,39 +85,7 @@ Optimal value (cvx_optval): +48.354
 The optimal t obtained is
   -48.3540
 
-</pre><p class="footer"><br>
-      Published with MATLAB&reg; 7.9<br></p></div><!--
-##### SOURCE BEGIN #####
-%% Exercise 4.38(b): Linear matrix inequalities with one variable
-
-% From Boyd & Vandenberghe, "Convex Optimization"
-% Joëlle Skaf - 09/26/05
-%
-% Finds the optimal t that would maximize c*t while still having A - t*B
-% positive semidefinite by solving the following SDP:
-%           minimize    c*t
-%               s.t.    t*B <= A
-% c can either be a positive or negative real number
-
-% Generate input data
-randn('state',0);
-n = 4;
-A = randn(n); A = 0.5*(A'+A); %A = A'*A;
-B = randn(n); B = B'*B;
-% can modify the value of c (>0 or <0)
-c = -1;
-
-% Create and solve the model
-cvx_begin sdp
-    variable t
-    minimize ( c*t )
-    A >= t * B;
-cvx_end
-
-% Display results
-disp('REPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASH');
-disp('The optimal t obtained is');
-disp(t);
-
-##### SOURCE END #####
---></body></html>
+</pre>
+</div>
+</body>
+</html>

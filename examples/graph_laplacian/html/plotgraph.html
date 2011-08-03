@@ -1,68 +1,25 @@
-
-<!DOCTYPE html
-  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
-<html><head>
-      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-   <!--
-This HTML is auto-generated from an M-file.
-To make changes, update the M-file and republish this document.
-      --><title>Plots a graph with each edge width proportional to its weight.</title><meta name="generator" content="MATLAB 7.9"><meta name="date" content="2009-11-12"><meta name="m-file" content="plotgraph_"><style type="text/css">
-
-body {
-  background-color: white;
-  margin:10px;
-}
-
-h1 {
-  color: #990000; 
-  font-size: x-large;
-}
-
-h2 {
-  color: #990000;
-  font-size: medium;
-}
-
-/* Make the text shrink to fit narrow windows, but not stretch too far in 
-wide windows. */ 
-p,h1,h2,div.content div {
-  max-width: 600px;
-  /* Hack for IE6 */
-  width: auto !important; width: 600px;
-}
-
-pre.codeinput {
-  background: #EEEEEE;
-  padding: 10px;
-}
-@media print {
-  pre.codeinput {word-wrap:break-word; width:100%;}
-} 
-
-span.keyword {color: #0000FF}
-span.comment {color: #228B22}
-span.string {color: #A020F0}
-span.untermstring {color: #B20000}
-span.syscmd {color: #B28C00}
-
-pre.codeoutput {
-  color: #666666;
-  padding: 10px;
-}
-
-pre.error {
-  color: red;
-}
-
-p.footer {
-  text-align: right;
-  font-size: xx-small;
-  font-weight: lighter;
-  font-style: italic;
-  color: gray;
-}
-
-  </style></head><body><div class="content"><h1>Plots a graph with each edge width proportional to its weight.</h1><pre class="codeinput"><span class="keyword">function</span> plotgraph(A,xy,weights)
+<!DOCTYPE HTML>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Plots a graph with each edge width proportional to its weight.</title>
+<link rel="canonical" href="http://cvxr.com/cvx/examples/graph_laplacian/html/plotgraph.html">
+<link rel="stylesheet" href="../../examples.css" type="text/css">
+</head>
+<body>
+<div id="header">
+<h1>Plots a graph with each edge width proportional to its weight.</h1>
+Jump to:&nbsp;&nbsp;&nbsp;&nbsp;
+<a href="#source">Source code</a>&nbsp;&nbsp;&nbsp;&nbsp;
+Text output
+&nbsp;&nbsp;&nbsp;&nbsp;
+Plots
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="../../index.html">Library index</a>
+</div>
+<div id="content">
+<a id="source"></a>
+<pre class="codeinput">
+<span class="keyword">function</span> plotgraph(A,xy,weights)
 <span class="comment">% Edges with positive weights are drawn in blue; negative weights in red.</span>
 <span class="comment">%</span>
 <span class="comment">% Input parameters:</span>
@@ -152,101 +109,7 @@ yd = y0 + DrawCoordinates(2,:);
 
 <span class="comment">% draw the edge</span>
 patch( xd, yd, color );
-</pre><p class="footer"><br>
-      Published with MATLAB&reg; 7.9<br></p></div><!--
-##### SOURCE BEGIN #####
-%% Plots a graph with each edge width proportional to its weight.
-
-function plotgraph(A,xy,weights)
-% Edges with positive weights are drawn in blue; negative weights in red.
-%
-% Input parameters:
-% A       REPLACE_WITH_DASH_DASH- incidence matrix of the graph (size is n x m)
-%             (n is the number of nodes and m is the number of edges)
-% xy      REPLACE_WITH_DASH_DASH- horizontal and vertical positions of the nodes (n x 2 matrix)
-% weights REPLACE_WITH_DASH_DASH- m vector giving edge weights
-%
-% Original by Lin Xiao
-% Modified by Almir Mutapcic
-
-% graph size
-[n,m]= size(A);
-
-% set the graph scale and normalize the coordinates to lay in [-1,1] square
-R = max(max(abs(xy))); % maximum abs value of the xy coordinates
-x = xy(:,1)/R; y = xy(:,2)/R;
-
-% normalize weight vector to range between +1 and -1
-weights = weights/max(abs(weights));
-
-% internal parameters (tune these parameters to make the plot look pretty)
-% (note that the graph coordinates and the weights have been rescaled
-% to a common unity scale)
-%rNode = 0.005;     % radius of the node circles
-rNode = 0;          % set the node radius to zero if you do not want the nodes
-wNode = 2;          % line width of the node circles
-PWColor = [0 0 1];  % color of the edges with positive weights
-NWColor = [1 0 0];  % color of the edges with negative weights
-Wmin = 0.0001;      % minimum weight value for which we draw an edge
-max_width = 0.05;   % drawn width of edge with maximum absolute weight
-
-% first draw the edges with patch widths proportional to the weights
-for i=1:m
-  if ( abs(weights(i)) > Wmin )
-    Isrc = find( sign(weights(i))*A(:,i)>0 );
-    Idst = find( sign(weights(i))*A(:,i)<0 );
-  else
-    Isrc = find( A(:,i)>0 );
-    Idst = find( A(:,i)<0 );
-  end
-
-  % obtain edge patch coordinates
-  xdelta = x(Idst) - x(Isrc); ydelta = y(Idst) - y(Isrc);
-  RotAgl = atan2( ydelta, xdelta );
-  xstart = x(Isrc) + rNode*cos(RotAgl); ystart = y(Isrc) + rNode*sin(RotAgl);
-  xend   = x(Idst) - rNode*cos(RotAgl); yend   = y(Idst) - rNode*sin(RotAgl);
-  L = sqrt( xdelta^2 + ydelta^2 ) - 2*rNode;
-
-  if ( weights(i) > Wmin )
-    W = abs(weights(i))*max_width;
-    drawedge(xstart, ystart, RotAgl, L, W, PWColor);
-    hold on;
-  elseif ( weights(i) < -Wmin )
-    W = abs(weights(i))*max_width;
-    drawedge(xstart, ystart, RotAgl, L, W, NWColor);
-    hold on;
-  else
-    plot([xstart xend],[ystart yend],'k:','LineWidth',2.5);
-  end
-end
-
-% the circle to draw around each node
-angle = linspace(0,2*pi,100);
-xbd = rNode*cos(angle);
-ybd = rNode*sin(angle);
-
-% draw the nodes
-for i=1:n
-  plot( x(i)+xbd, y(i)+ybd, 'k', 'LineWidth', wNode );
-end;
-axis equal;
-set(gca,'Visible','off');
-hold off;
-
-%********************************************************************
-% helper function to draw edges in the graph 
-%********************************************************************
-function drawedge( x0, y0, RotAngle, L, W, color )
-xp = [     0   L      L    L   L     L     0      0  ];
-yp = [-0.5*W -0.5*W -0.5*W 0 0.5*W 0.5*W 0.5*W -0.5*W];
-RotMat = [cos(RotAngle) -sin(RotAngle); sin(RotAngle) cos(RotAngle)];
-
-DrawCoordinates = RotMat*[ xp; yp ];
-xd = x0 + DrawCoordinates(1,:);
-yd = y0 + DrawCoordinates(2,:);
-
-% draw the edge
-patch( xd, yd, color );
-
-##### SOURCE END #####
---></body></html>
+</pre>
+</div>
+</body>
+</html>

@@ -1,68 +1,25 @@
-
-<!DOCTYPE html
-  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
-<html><head>
-      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-   <!--
-This HTML is auto-generated from an M-file.
-To make changes, update the M-file and republish this document.
-      --><title>Computing a sparse solution of a set of linear inequalities</title><meta name="generator" content="MATLAB 7.9"><meta name="date" content="2009-11-12"><meta name="m-file" content="sparse_solution_"><style type="text/css">
-
-body {
-  background-color: white;
-  margin:10px;
-}
-
-h1 {
-  color: #990000; 
-  font-size: x-large;
-}
-
-h2 {
-  color: #990000;
-  font-size: medium;
-}
-
-/* Make the text shrink to fit narrow windows, but not stretch too far in 
-wide windows. */ 
-p,h1,h2,div.content div {
-  max-width: 600px;
-  /* Hack for IE6 */
-  width: auto !important; width: 600px;
-}
-
-pre.codeinput {
-  background: #EEEEEE;
-  padding: 10px;
-}
-@media print {
-  pre.codeinput {word-wrap:break-word; width:100%;}
-} 
-
-span.keyword {color: #0000FF}
-span.comment {color: #228B22}
-span.string {color: #A020F0}
-span.untermstring {color: #B20000}
-span.syscmd {color: #B28C00}
-
-pre.codeoutput {
-  color: #666666;
-  padding: 10px;
-}
-
-pre.error {
-  color: red;
-}
-
-p.footer {
-  text-align: right;
-  font-size: xx-small;
-  font-weight: lighter;
-  font-style: italic;
-  color: gray;
-}
-
-  </style></head><body><div class="content"><h1>Computing a sparse solution of a set of linear inequalities</h1><pre class="codeinput"><span class="comment">% Section 6.2, Boyd &amp; Vandenberghe "Convex Optimization"</span>
+<!DOCTYPE HTML>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Computing a sparse solution of a set of linear inequalities</title>
+<link rel="canonical" href="http://cvxr.com/cvx/examples/sparse_heuristics/html/sparse_solution.html">
+<link rel="stylesheet" href="../../examples.css" type="text/css">
+</head>
+<body>
+<div id="header">
+<h1>Computing a sparse solution of a set of linear inequalities</h1>
+Jump to:&nbsp;&nbsp;&nbsp;&nbsp;
+<a href="#source">Source code</a>&nbsp;&nbsp;&nbsp;&nbsp;
+<a href="#output">Text output</a>
+&nbsp;&nbsp;&nbsp;&nbsp;
+<a href="#plots">Plots</a>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="../../index.html">Library index</a>
+</div>
+<div id="content">
+<a id="source"></a>
+<pre class="codeinput">
+<span class="comment">% Section 6.2, Boyd &amp; Vandenberghe "Convex Optimization"</span>
 <span class="comment">% "Just relax: Convex programming methods for subset selection</span>
 <span class="comment">%  and sparse approximation" by J. A. Tropp</span>
 <span class="comment">% Written for CVX by Almir Mutapcic - 02/28/06</span>
@@ -166,7 +123,10 @@ plot(1:NUM_RUNS, nnzs, [1 NUM_RUNS],[nnzs(1) nnzs(1)],<span class="string">'--'<
 axis([1 NUM_RUNS 0 n])
 xlabel(<span class="string">'iteration'</span>), ylabel(<span class="string">'number of nonzeros (cardinality)'</span>);
 legend(<span class="string">'log heuristic'</span>,<span class="string">'l1-norm heuristic'</span>,<span class="string">'Location'</span>,<span class="string">'SouthEast'</span>)
-</pre><pre class="codeoutput">Finding a sparse feasible point using l1-norm heuristic ... 
+</pre>
+<a id="output"></a>
+<pre class="codeoutput">
+Finding a sparse feasible point using l1-norm heuristic ... 
 Calling sedumi: 200 variables, 100 equality constraints
    For improved efficiency, sedumi is solving the dual problem.
 ------------------------------------------------------------
@@ -190,17 +150,17 @@ nnz(A) = 5100 + 0, nnz(ADA) = 2650, nnz(L) = 1375
  12 :  -3.59E+01 3.72E-08 0.000 0.1774 0.9124 0.9000   1.00  1  1  9.7E-06
  13 :  -3.59E+01 6.12E-09 0.000 0.1645 0.9133 0.9000   1.00  1  1  1.7E-06
  14 :  -3.59E+01 1.12E-10 0.000 0.0183 0.9900 0.9902   1.00  1  1  3.0E-08
- 15 :  -3.59E+01 4.75E-15 0.000 0.0000 1.0000 1.0000   1.00  1  1  1.2E-12
+ 15 :  -3.59E+01 2.34E-15 0.000 0.0000 1.0000 1.0000   1.00  1  1  6.0E-13
 
 iter seconds digits       c*x               b*y
  15      0.1   Inf -3.5940776942e+01 -3.5940776942e+01
-|Ax-b| =   2.3e-12, [Ay-c]_+ =   2.8E-12, |x|=  9.9e+00, |y|=  1.0e+01
+|Ax-b| =   1.1e-12, [Ay-c]_+ =   1.4E-12, |x|=  9.9e+00, |y|=  1.0e+01
 
 Detailed timing (sec)
    Pre          IPM          Post
-1.000E-02    8.000E-02    0.000E+00    
+2.000E-02    1.300E-01    0.000E+00    
 Max-norms: ||b||=1, ||c|| = 2.494989e+01,
-Cholesky |add|=0, |skip| = 0, ||L.L|| = 1.88599.
+Cholesky |add|=0, |skip| = 0, ||L.L|| = 1.74642.
 ------------------------------------------------------------
 Status: Solved
 Optimal value (cvx_optval): +35.9408
@@ -212,128 +172,24 @@ Log-based heuristic:
    found a solution with 44 nonzeros...
    found a solution with 44 nonzeros...
    found a solution with 44 nonzeros...
-   found a solution with 44 nonzeros...
-   found a solution with 43 nonzeros...
-   found a solution with 42 nonzeros...
+   found a solution with 40 nonzeros...
    found a solution with 40 nonzeros...
    found a solution with 39 nonzeros...
-   found a solution with 39 nonzeros...
-   found a solution with 39 nonzeros...
-   found a solution with 39 nonzeros...
    found a solution with 38 nonzeros...
-   found a solution with 38 nonzeros...
-   found a solution with 38 nonzeros...
+   found a solution with 37 nonzeros...
+   found a solution with 37 nonzeros...
+   found a solution with 37 nonzeros...
+   found a solution with 37 nonzeros...
+   found a solution with 37 nonzeros...
+   found a solution with 36 nonzeros...
+   found a solution with 37 nonzeros...
 
-Found a feasible x in R^50 that has 38 nonzeros using the log heuristic.
-</pre><img vspace="5" hspace="5" src="sparse_solution__01.png" alt=""> <p class="footer"><br>
-      Published with MATLAB&reg; 7.9<br></p></div><!--
-##### SOURCE BEGIN #####
-%% Computing a sparse solution of a set of linear inequalities
-
-% Section 6.2, Boyd & Vandenberghe "Convex Optimization"
-% "Just relax: Convex programming methods for subset selection
-%  and sparse approximation" by J. A. Tropp
-% Written for CVX by Almir Mutapcic - 02/28/06
-%
-% We consider a set of linear inequalities A*x <= b which are
-% feasible. We apply two heuristics to find a sparse point x that
-% satisfies these inequalities.
-%
-% The (standard) l1-norm heuristic for finding a sparse solution is:
-%
-%   minimize   ||x||_1
-%       s.t.   Ax <= b
-%
-% The log-based heuristic is an iterative method for finding
-% a sparse solution, by finding a local optimal point for the problem:
-%
-%   minimize   sum(log( delta + |x_i| ))
-%       s.t.   Ax <= b
-%
-% where delta is a small threshold value (determines what is close to zero).
-% We cannot solve this problem since it is a minimization of a concave
-% function and thus it is not a convex problem. However, we can apply
-% a heuristic in which we linearize the objective, solve, and re-iterate.
-% This becomes a weighted l1-norm heuristic:
-%
-%   minimize sum( W_i * |x_i| )
-%       s.t. Ax <= b
-%
-% which in each iteration re-adjusts the weights W_i based on the rule:
-%
-%   W_i = 1/(delta + |x_i|), where delta is a small threshold value
-%
-% This algorithm is described in papers:
-% "An Affine Scaling Methodology for Best Basis Selection"
-%  by B. D. Rao and K. Kreutz-Delgado
-% "Portfolio optimization with linear and ï¬?xed transaction costs"
-%  by M. S. Lobo, M. Fazel, and S. Boyd
-
-% fix random number generator so we can repeat the experiment
-seed = 0;
-randn('state',seed);
-rand('state',seed);
-
-% the threshold value below which we consider an element to be zero
-delta = 1e-8;
-
-% problem dimensions (m inequalities in n-dimensional space)
-m = 100;
-n = 50;
-
-% construct a feasible set of inequalities
-% (this system is feasible for the x0 point)
-A  = randn(m,n);
-x0 = randn(n,1);
-b  = A*x0 + rand(m,1); 
-
-% l1-norm heuristic for finding a sparse solution
-fprintf(1, 'Finding a sparse feasible point using l1-norm heuristic ...')
-cvx_begin
-  variable x_l1(n)
-  minimize( norm( x_l1, 1 ) )
-  subject to
-    A*x_l1 <= b;
-cvx_end
-
-% number of nonzero elements in the solution (its cardinality or diversity)
-nnz = length(find( abs(x_l1) > delta ));
-fprintf(1,['\nFound a feasible x in R^%d that has %d nonzeros ' ...
-           'using the l1-norm heuristic.\n'],n,nnz);
-
-% iterative log heuristic
-NUM_RUNS = 15;
-nnzs = [];
-W = ones(n,1); % initial weights
-
-disp([char(10) 'Log-based heuristic:']);
-for k = 1:NUM_RUNS
-  cvx_begin quiet
-    variable x_log(n)
-    minimize( sum( W.*abs(x_log) ) )
-    subject to
-      A*x_log <= b;
-  cvx_end
-
-  % display new number of nonzeros in the solution vector
-  nnz = length(find( abs(x_log) > delta ));
-  nnzs = [nnzs nnz];
-  fprintf(1,'   found a solution with %d nonzeros...\n', nnz);
-
-  % adjust the weights and re-iterate
-  W = 1./(delta + abs(x_log));
-end
-
-% number of nonzero elements in the solution (its cardinality or diversity)
-nnz = length(find( abs(x_log) > delta ));
-fprintf(1,['\nFound a feasible x in R^%d that has %d nonzeros ' ...
-           'using the log heuristic.\n'],n,nnz);
-
-% plot number of nonzeros versus iteration
-plot(1:NUM_RUNS, nnzs, [1 NUM_RUNS],[nnzs(1) nnzs(1)],'REPLACE_WITH_DASH_DASH');
-axis([1 NUM_RUNS 0 n])
-xlabel('iteration'), ylabel('number of nonzeros (cardinality)');
-legend('log heuristic','l1-norm heuristic','Location','SouthEast')
-
-##### SOURCE END #####
---></body></html>
+Found a feasible x in R^50 that has 37 nonzeros using the log heuristic.
+</pre>
+<a id="plots"></a>
+<div id="plotoutput">
+<img src="sparse_solution__01.png" alt=""> 
+</div>
+</div>
+</body>
+</html>

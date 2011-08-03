@@ -1,68 +1,25 @@
-
-<!DOCTYPE html
-  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
-<html><head>
-      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-   <!--
-This HTML is auto-generated from an M-file.
-To make changes, update the M-file and republish this document.
-      --><title>Example 7.2: Maximum entropy distribution</title><meta name="generator" content="MATLAB 7.9"><meta name="date" content="2009-11-12"><meta name="m-file" content="maxent_"><style type="text/css">
-
-body {
-  background-color: white;
-  margin:10px;
-}
-
-h1 {
-  color: #990000; 
-  font-size: x-large;
-}
-
-h2 {
-  color: #990000;
-  font-size: medium;
-}
-
-/* Make the text shrink to fit narrow windows, but not stretch too far in 
-wide windows. */ 
-p,h1,h2,div.content div {
-  max-width: 600px;
-  /* Hack for IE6 */
-  width: auto !important; width: 600px;
-}
-
-pre.codeinput {
-  background: #EEEEEE;
-  padding: 10px;
-}
-@media print {
-  pre.codeinput {word-wrap:break-word; width:100%;}
-} 
-
-span.keyword {color: #0000FF}
-span.comment {color: #228B22}
-span.string {color: #A020F0}
-span.untermstring {color: #B20000}
-span.syscmd {color: #B28C00}
-
-pre.codeoutput {
-  color: #666666;
-  padding: 10px;
-}
-
-pre.error {
-  color: red;
-}
-
-p.footer {
-  text-align: right;
-  font-size: xx-small;
-  font-weight: lighter;
-  font-style: italic;
-  color: gray;
-}
-
-  </style></head><body><div class="content"><h1>Example 7.2: Maximum entropy distribution</h1><pre class="codeinput"><span class="comment">% Section 7.2, Figures 7.2-7.3</span>
+<!DOCTYPE HTML>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Example 7.2: Maximum entropy distribution</title>
+<link rel="canonical" href="http://cvxr.com/cvx/examples/cvxbook/Ch07_statistical_estim/html/maxent.html">
+<link rel="stylesheet" href="../../../examples.css" type="text/css">
+</head>
+<body>
+<div id="header">
+<h1>Example 7.2: Maximum entropy distribution</h1>
+Jump to:&nbsp;&nbsp;&nbsp;&nbsp;
+<a href="#source">Source code</a>&nbsp;&nbsp;&nbsp;&nbsp;
+<a href="#output">Text output</a>
+&nbsp;&nbsp;&nbsp;&nbsp;
+<a href="#plots">Plots</a>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="../../../index.html">Library index</a>
+</div>
+<div id="content">
+<a id="source"></a>
+<pre class="codeinput">
+<span class="comment">% Section 7.2, Figures 7.2-7.3</span>
 <span class="comment">% Boyd &amp; Vandenberghe, "Convex Optimization"</span>
 <span class="comment">% Originally by Lieven Vandenberghe</span>
 <span class="comment">% Adapted for CVX by Michael Grant 4/11/06</span>
@@ -156,7 +113,10 @@ axis([-1.1 1.1 -0.1 1.1]);
 xlabel( <span class="string">'x'</span> );
 ylabel( <span class="string">'CDF( x )'</span> );
 hold <span class="string">off</span>
-</pre><pre class="codeoutput"> 
+</pre>
+<a id="output"></a>
+<pre class="codeoutput">
+ 
 Successive approximation method to be employed.
    sedumi will be called several times to refine the solution.
    Original size: 308 variables, 109 equality constraints
@@ -167,16 +127,17 @@ Act Centering    Conic    Status
 -----------------------------------
 100 5.052e+00  2.690e+00  Solved
 100 3.462e-01  1.011e-02  Solved
-100 4.968e-02  1.990e-04  Solved
-100 5.975e-03  2.811e-06  Solved
-100 8.766e-04  2.984e-07  Solved
-100 4.122e-05  5.375e-08  Solved
-100 1.012e-04S 5.946e-08S Solved
-100 2.187e-05  1.230e-07S Solved
-100 8.054e-07  1.280e-07S Solved
-100 1.786e-05S 6.395e-08  Inaccurate/Solved
-100 1.825e-05S 0.000e+00  Inaccurate/Solved
-100 3.803e-04S 7.343e-09S Inaccurate/Solved
+100 4.938e-02  1.981e-04  Solved
+100 6.322e-03  3.092e-06  Solved
+100 9.627e-04  1.135e-06  Solved
+100 5.390e-05  1.509e-07  Solved
+100 9.386e-06  1.261e-07  Solved
+100 1.470e-04S 9.699e-09  Solved
+100 1.308e-04  1.373e-07S Solved
+100 1.364e-05  1.272e-07S Solved
+100 1.823e-04S 5.354e-09  Solved
+100 6.053e-05  0.000e+00  Inaccurate/Solved
+100 1.033e-04S 0.000e+00S Inaccurate/Solved
 -----------------------------------------------------------------
 Status: Solved
 Optimal value (cvx_optval): +4.38629
@@ -280,105 +241,11 @@ Optimal value (cvx_optval): +4.38629
 0.74974 &lt;= Prob(x&lt;=0.959596) &lt;= 1
 0.764914 &lt;= Prob(x&lt;=0.979798) &lt;= 1
 1 &lt;= Prob(x&lt;=1) &lt;= 1
-</pre><img vspace="5" hspace="5" src="maxent__01.png" alt=""> <img vspace="5" hspace="5" src="maxent__02.png" alt=""> <p class="footer"><br>
-      Published with MATLAB&reg; 7.9<br></p></div><!--
-##### SOURCE BEGIN #####
-%% Example 7.2: Maximum entropy distribution
-
-% Section 7.2, Figures 7.2-7.3
-% Boyd & Vandenberghe, "Convex Optimization"
-% Originally by Lieven Vandenberghe
-% Adapted for CVX by Michael Grant 4/11/06
-%
-% We consider a probability distribution on 100 equidistant points in the
-% interval [-1,1]. We impose the following prior assumptions:
-%
-%    -0.1 <= E(X) <= +0.1
-%    +0.5 <= E(X^2) <= +0.6
-%    -0.3 <= E(3*X^3-2*X) <= -0.2
-%    +0.3 <= Pr(X<0) <= 0.4
-%
-% Along with the constraints sum(p) == 1, p >= 0, these constraints
-% describe a polyhedron of probability distrubtions. In the first figure,
-% the distribution that maximizes entropy is computed. In the second
-% figure, we compute upper and lower bounds for Prob(X<=a_i) for each
-% point -1 <= a_i <= +1 in the distribution, as well as the maximum
-% entropy CDF.
-
-%
-% Represent the polyhedron as follows:
-%     A * p <= b
-%     sum( p ) == 1
-%     p >= 0
-%
-
-n  = 100;
-a  = linspace(-1,1,n);
-a2 = a .^ 2;
-a3 = 3 * ( a.^ 3 ) - 2 * a;
-ap = +( a < 0 );
-A  = [ a   ; -a  ; a2 ; -a2  ; a3 ; -a3 ; ap ; -ap ];
-b  = [ 0.1 ; 0.1 ;0.5 ; -0.5 ; -0.2 ; 0.3 ; 0.4 ; -0.3 ];
-
-%
-% Compute the maximum entropy distribution
-%
-
-cvx_expert true
-cvx_begin 
-    variables pent(n)
-    maximize( sum(entr(pent)) )
-    sum(pent) == 1;
-    A * pent <= b;
-cvx_end
-
-%
-% Compute the bounds on Prob(X<=a_i), i=1,...,n
-%
-
-Ubnds = zeros(1,n);
-Lbnds = zeros(1,n);
-for t = 1 : n,
-    cvx_begin quiet
-        variable p( n )
-        minimize sum( p(1:t) )
-        p >= 0; 
-        sum( p ) == 1;
-        A * p <= b;
-    cvx_end
-    Lbnds(t) = cvx_optval;
-    cvx_begin quiet
-        variable p( n )
-        maximize sum( p(1:t) )
-        p >= 0; 
-        sum( p ) == 1;
-        A * p <= b;
-    cvx_end
-    Ubnds(t) = cvx_optval;
-    disp( sprintf( '%g <= Prob(x<=%g) <= %g', Lbnds(t), a(t), Ubnds(t) ) );
-end
-
-%
-% Generate the figures
-%
-
-figure( 1 )
-stairs( a, pent );
-xlabel( 'x' );
-ylabel( 'PDF( x )' );
-
-figure( 2 )
-stairs( a, cumsum( pent ) );
-grid on;
-hold on
-d = stairs(a, Lbnds,'r-');  set(d,'Color',[0 0.5 0]);
-d = stairs(a, Ubnds,'r-');  set(d,'Color',[0 0.5 0]);
-d = plot([-1,-1], [Lbnds(1), Ubnds(1)],'r-');
-set(d,'Color',[0 0.5 0]);
-axis([-1.1 1.1 -0.1 1.1]);
-xlabel( 'x' );
-ylabel( 'CDF( x )' );
-hold off
-
-##### SOURCE END #####
---></body></html>
+</pre>
+<a id="plots"></a>
+<div id="plotoutput">
+<img src="maxent__01.png" alt=""> <img src="maxent__02.png" alt=""> 
+</div>
+</div>
+</body>
+</html>

@@ -1,68 +1,25 @@
-
-<!DOCTYPE html
-  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
-<html><head>
-      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-   <!--
-This HTML is auto-generated from an M-file.
-To make changes, update the M-file and republish this document.
-      --><title>Euclidean projection on a rectangle</title><meta name="generator" content="MATLAB 7.9"><meta name="date" content="2009-11-12"><meta name="m-file" content="eucl_proj_rect_"><style type="text/css">
-
-body {
-  background-color: white;
-  margin:10px;
-}
-
-h1 {
-  color: #990000; 
-  font-size: x-large;
-}
-
-h2 {
-  color: #990000;
-  font-size: medium;
-}
-
-/* Make the text shrink to fit narrow windows, but not stretch too far in 
-wide windows. */ 
-p,h1,h2,div.content div {
-  max-width: 600px;
-  /* Hack for IE6 */
-  width: auto !important; width: 600px;
-}
-
-pre.codeinput {
-  background: #EEEEEE;
-  padding: 10px;
-}
-@media print {
-  pre.codeinput {word-wrap:break-word; width:100%;}
-} 
-
-span.keyword {color: #0000FF}
-span.comment {color: #228B22}
-span.string {color: #A020F0}
-span.untermstring {color: #B20000}
-span.syscmd {color: #B28C00}
-
-pre.codeoutput {
-  color: #666666;
-  padding: 10px;
-}
-
-pre.error {
-  color: red;
-}
-
-p.footer {
-  text-align: right;
-  font-size: xx-small;
-  font-weight: lighter;
-  font-style: italic;
-  color: gray;
-}
-
-  </style></head><body><div class="content"><h1>Euclidean projection on a rectangle</h1><pre class="codeinput"><span class="comment">% Section 8.1.1, Boyd &amp; Vandenberghe "Convex Optimization"</span>
+<!DOCTYPE HTML>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Euclidean projection on a rectangle</title>
+<link rel="canonical" href="http://cvxr.com/cvx/examples/cvxbook/Ch08_geometric_probs/html/eucl_proj_rect.html">
+<link rel="stylesheet" href="../../../examples.css" type="text/css">
+</head>
+<body>
+<div id="header">
+<h1>Euclidean projection on a rectangle</h1>
+Jump to:&nbsp;&nbsp;&nbsp;&nbsp;
+<a href="#source">Source code</a>&nbsp;&nbsp;&nbsp;&nbsp;
+<a href="#output">Text output</a>
+&nbsp;&nbsp;&nbsp;&nbsp;
+Plots
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="../../../index.html">Library index</a>
+</div>
+<div id="content">
+<a id="source"></a>
+<pre class="codeinput">
+<span class="comment">% Section 8.1.1, Boyd &amp; Vandenberghe "Convex Optimization"</span>
 <span class="comment">% Joelle Skaf - 10/07/05</span>
 <span class="comment">%</span>
 <span class="comment">% The projection of x0 on a rectangle C = {x | l &lt;= x &lt;= u} is given by</span>
@@ -101,7 +58,10 @@ fprintf(1,<span class="string">'Done! \n'</span>);
 disp(<span class="string">'-----------------------------------------------------------------'</span>);
 disp(<span class="string">'Verifying that the analytical solution and the solution obtained via QP are equal: '</span>);
 [pc_x0 x]
-</pre><pre class="codeoutput">Computing the analytical solution ...Done! 
+</pre>
+<a id="output"></a>
+<pre class="codeoutput">
+Computing the analytical solution ...Done! 
 Computing the optimal solution by solving a QP ...Done! 
 -----------------------------------------------------------------
 Verifying that the analytical solution and the solution obtained via QP are equal: 
@@ -115,54 +75,11 @@ ans =
     0.5135    0.5135
     0.3967    0.3967
     0.0196    0.0196
-    0.4005    0.4005
+    0.4005    0.4004
    -0.9318   -0.9318
     0.3750    0.3750
 
-</pre><p class="footer"><br>
-      Published with MATLAB&reg; 7.9<br></p></div><!--
-##### SOURCE BEGIN #####
-%% Euclidean projection on a rectangle
-
-% Section 8.1.1, Boyd & Vandenberghe "Convex Optimization"
-% Joelle Skaf - 10/07/05
-%
-% The projection of x0 on a rectangle C = {x | l <= x <= u} is given by
-%           minimize || x - x0 ||^2
-%               s.t.    l <= x <= u
-% It is also given by P_C(x0)_k = l_k       if  x0_k <= l_k
-%                                 x0_k      if  l_k <= x0_k <= u_k
-%                                 u_k       if  x0_k >= u_k
-
-% Input data: generate vectors l and u such that l < 0 < u
-n  = 10;
-l  = -rand(n,1);
-u  = rand(n,1);
-x0 = randn(n,1);
-
-% Analytical solution
-fprintf(1,'Computing the analytical solution ...');
-pc_x0 = x0;
-pc_x0(find(x0<=l)) = l(find(x0<=l));
-pc_x0(find(x0>=u)) = u(find(x0>=u));
-fprintf(1,'Done! \n');
-
-% Solution via QP
-fprintf(1,'Computing the optimal solution by solving a QP ...');
-
-cvx_begin quiet
-    variable x(n)
-    minimize ( norm(x-x0) )
-    x <= u;
-    x >= l;
-cvx_end
-
-fprintf(1,'Done! \n');
-
-% Verification
-disp('REPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASH-');
-disp('Verifying that the analytical solution and the solution obtained via QP are equal: ');
-[pc_x0 x]
-
-##### SOURCE END #####
---></body></html>
+</pre>
+</div>
+</body>
+</html>

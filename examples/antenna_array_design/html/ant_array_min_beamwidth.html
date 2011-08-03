@@ -1,68 +1,25 @@
-
-<!DOCTYPE html
-  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
-<html><head>
-      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-   <!--
-This HTML is auto-generated from an M-file.
-To make changes, update the M-file and republish this document.
-      --><title>Minimize beamwidth of an array with arbitrary 2-D geometry</title><meta name="generator" content="MATLAB 7.9"><meta name="date" content="2009-11-12"><meta name="m-file" content="ant_array_min_beamwidth_"><style type="text/css">
-
-body {
-  background-color: white;
-  margin:10px;
-}
-
-h1 {
-  color: #990000; 
-  font-size: x-large;
-}
-
-h2 {
-  color: #990000;
-  font-size: medium;
-}
-
-/* Make the text shrink to fit narrow windows, but not stretch too far in 
-wide windows. */ 
-p,h1,h2,div.content div {
-  max-width: 600px;
-  /* Hack for IE6 */
-  width: auto !important; width: 600px;
-}
-
-pre.codeinput {
-  background: #EEEEEE;
-  padding: 10px;
-}
-@media print {
-  pre.codeinput {word-wrap:break-word; width:100%;}
-} 
-
-span.keyword {color: #0000FF}
-span.comment {color: #228B22}
-span.string {color: #A020F0}
-span.untermstring {color: #B20000}
-span.syscmd {color: #B28C00}
-
-pre.codeoutput {
-  color: #666666;
-  padding: 10px;
-}
-
-pre.error {
-  color: red;
-}
-
-p.footer {
-  text-align: right;
-  font-size: xx-small;
-  font-weight: lighter;
-  font-style: italic;
-  color: gray;
-}
-
-  </style></head><body><div class="content"><h1>Minimize beamwidth of an array with arbitrary 2-D geometry</h1><pre class="codeinput"><span class="comment">% "Convex optimization examples" lecture notes (EE364) by S. Boyd</span>
+<!DOCTYPE HTML>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Minimize beamwidth of an array with arbitrary 2-D geometry</title>
+<link rel="canonical" href="http://cvxr.com/cvx/examples/antenna_array_design/html/ant_array_min_beamwidth.html">
+<link rel="stylesheet" href="../../examples.css" type="text/css">
+</head>
+<body>
+<div id="header">
+<h1>Minimize beamwidth of an array with arbitrary 2-D geometry</h1>
+Jump to:&nbsp;&nbsp;&nbsp;&nbsp;
+<a href="#source">Source code</a>&nbsp;&nbsp;&nbsp;&nbsp;
+<a href="#output">Text output</a>
+&nbsp;&nbsp;&nbsp;&nbsp;
+<a href="#plots">Plots</a>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="../../index.html">Library index</a>
+</div>
+<div id="content">
+<a id="source"></a>
+<pre class="codeinput">
+<span class="comment">% "Convex optimization examples" lecture notes (EE364) by S. Boyd</span>
 <span class="comment">% "Antenna array pattern synthesis via convex optimization"</span>
 <span class="comment">% by H. Lebret and S. Boyd</span>
 <span class="comment">% (figures are generated)</span>
@@ -243,7 +200,10 @@ plot([0 55*cos(theta_tar*pi/180)], [0 55*sin(theta_tar*pi/180)], <span class="st
 plot([0 55*cos(theta_1*pi/180)], [0 55*sin(theta_1*pi/180)], <span class="string">'k:'</span>)
 plot([0 55*cos(theta_2*pi/180)], [0 55*sin(theta_2*pi/180)], <span class="string">'k:'</span>)
 hold <span class="string">off</span>
-</pre><pre class="codeoutput">We are only considering integer values of the half beam-width
+</pre>
+<a id="output"></a>
+<pre class="codeoutput">
+We are only considering integer values of the half beam-width
 (since we are sampling the angle with 1 degree resolution).
  
 Problem is feasible for half beam-width = 26 degress
@@ -254,192 +214,11 @@ Problem is feasible for half beam-width = 10 degress
 Problem is not feasible for half beam-width = 9 degress
 
 Optimum half beam-width for given specs is 10.
-</pre><img vspace="5" hspace="5" src="ant_array_min_beamwidth__01.png" alt=""> <img vspace="5" hspace="5" src="ant_array_min_beamwidth__02.png" alt=""> <img vspace="5" hspace="5" src="ant_array_min_beamwidth__03.png" alt=""> <p class="footer"><br>
-      Published with MATLAB&reg; 7.9<br></p></div><!--
-##### SOURCE BEGIN #####
-%% Minimize beamwidth of an array with arbitrary 2-D geometry
-
-% "Convex optimization examples" lecture notes (EE364) by S. Boyd
-% "Antenna array pattern synthesis via convex optimization"
-% by H. Lebret and S. Boyd
-% (figures are generated)
-%
-% Designs an antenna array such that:
-% - it has unit sensitivity at some target direction
-% - it obeys a constraint on a minimum sidelobe level outside the beam
-% - it minimizes the beamwidth of the pattern
-%
-% This is a quasiconvex problem and can be solved using a bisection.
-%
-%   minimize   max |y(theta)|     for theta outside the beam
-%       s.t.   y(theta_tar) = 1
-%
-% where y is the antenna array gain pattern (complex function) and
-% variables are w (antenna array weights or shading coefficients).
-% Gain pattern is a linear function of w: y(theta) = w'*a(theta)
-% for some a(theta) describing antenna array configuration and specs.
-%
-% Written for CVX by Almir Mutapcic 02/02/06
-
-% select array geometry
-ARRAY_GEOMETRY = '2D_RANDOM';
-% ARRAY_GEOMETRY = '1D_UNIFORM_LINE';
-% ARRAY_GEOMETRY = '2D_UNIFORM_LATTICE';
-
-%********************************************************************
-% problem specs
-%********************************************************************
-lambda = 1;           % wavelength
-theta_tar = 60;       % target direction
-min_sidelobe = -20;   % maximum sidelobe level in dB
-
-max_half_beam = 50;   % starting half beamwidth (must be feasible)
-
-%********************************************************************
-% random array of n antenna elements
-%********************************************************************
-if strcmp( ARRAY_GEOMETRY, '2D_RANDOM' )
-  % set random seed to repeat experiments
-  rand('state',0);
-
-  % (uniformly distributed on [0,L]-by-[0,L] square)
-  n = 36;
-  L = 5;
-  loc = L*rand(n,2);
-
-%********************************************************************
-% uniform 1D array with n elements with inter-element spacing d
-%********************************************************************
-elseif strcmp( ARRAY_GEOMETRY, '1D_UNIFORM_LINE' )
-  % (unifrom array on a line)
-  n = 30;
-  d = 0.45*lambda;
-  loc = [d*[0:n-1]' zeros(n,1)];
-
-%********************************************************************
-% uniform 2D array with m-by-m element with d spacing
-%********************************************************************
-elseif strcmp( ARRAY_GEOMETRY, '2D_UNIFORM_LATTICE' )
-  m = 6; n = m^2;
-  d = 0.45*lambda;
-
-  loc = zeros(n,2);
-  for x = 0:m-1
-    for y = 0:m-1
-      loc(m*y+x+1,:) = [x y];
-    end
-  end
-  loc = loc*d;
-
-else
-  error('Undefined array geometry')
-end
-
-%********************************************************************
-% construct optimization data
-%********************************************************************
-% build matrix A that relates w and y(theta), ie, y = A*w
-theta = [1:360]';
-A = kron(cos(pi*theta/180), loc(:,1)') + kron(sin(pi*theta/180), loc(:,2)');
-A = exp(2*pi*i/lambda*A);
-
-% target constraint matrix
-[diff_closest, ind_closest] = min( abs(theta - theta_tar) );
-Atar = A(ind_closest,:);
-
-%*********************************************************************
-% use bisection algorithm to solve the problem
-%*********************************************************************
-
-halfbeam_bot = 1;
-halfbeam_top = max_half_beam;
-
-disp('We are only considering integer values of the half beam-width')
-disp('(since we are sampling the angle with 1 degree resolution).')
-disp(' ')
-
-while( halfbeam_top - halfbeam_bot > 1)
-  % try to find a feasible design for given specs
-  halfbeam_cur = ceil( (halfbeam_top + halfbeam_bot)/2 );
-
-  % create optimization matrices for the stopband
-  ind = find(theta <= (theta_tar-halfbeam_cur) | ...
-             theta >= (theta_tar+halfbeam_cur) );
-  As = A(ind,:);
-
-  % formulate and solve the feasibility antenna array problem
-  cvx_begin quiet
-    variable w(n) complex
-    % feasibility problem
-    Atar*w == 1;
-    abs(As*w) <= 10^(min_sidelobe/20);
-  cvx_end
-
-  % bisection
-  if strfind(cvx_status,'Solved') % feasible
-    fprintf(1,'Problem is feasible for half beam-width = %d degress\n',...
-               halfbeam_cur);
-    halfbeam_top = halfbeam_cur;
-  else % not feasible
-    fprintf(1,'Problem is not feasible for half beam-width = %d degress\n',...
-               halfbeam_cur);
-    halfbeam_bot = halfbeam_cur;
-  end
-end
-
-% optimal beamwidth
-halfbeam = halfbeam_top;
-fprintf(1,'\nOptimum half beam-width for given specs is %d.\n',halfbeam);
-
-% compute the minimum noise design for the optimal beamwidth
-ind = find(theta <= (theta_tar-halfbeam) | ...
-           theta >= (theta_tar+halfbeam) );
-As = A(ind,:);
-cvx_begin quiet
-  variable w(n) complex
-  minimize( norm( w ) )
-  subject to
-    Atar*w == 1;
-    abs(As*w) <= 10^(min_sidelobe/20);
-cvx_end
-
-%********************************************************************
-% plots
-%********************************************************************
-figure(1), clf
-plot(loc(:,1),loc(:,2),'o')
-title('Antenna locations')
-
-% plot array pattern
-y = A*w;
-
-figure(2), clf
-ymin = -40; ymax = 0;
-plot([1:360], 20*log10(abs(y)), ...
-     [theta_tar theta_tar],[ymin ymax],'gREPLACE_WITH_DASH_DASH',...
-     [theta_tar+halfbeam theta_tar+halfbeam],[ymin ymax],'rREPLACE_WITH_DASH_DASH',...
-     [theta_tar-halfbeam theta_tar-halfbeam],[ymin ymax],'rREPLACE_WITH_DASH_DASH');
-xlabel('look angle'), ylabel('mag y(theta) in dB');
-axis([0 360 ymin ymax]);
-
-% polar plot
-figure(3), clf
-zerodB = 50;
-dBY = 20*log10(abs(y)) + zerodB;
-plot(dBY.*cos(pi*theta/180), dBY.*sin(pi*theta/180), '-');
-axis([-zerodB zerodB -zerodB zerodB]), axis('off'), axis('square')
-hold on
-plot(zerodB*cos(pi*theta/180),zerodB*sin(pi*theta/180),'k:') % 0 dB
-plot( (min_sidelobe + zerodB)*cos(pi*theta/180), ...
-      (min_sidelobe + zerodB)*sin(pi*theta/180),'k:')  % min level
-text(-zerodB,0,'0 dB')
-text(-(min_sidelobe + zerodB),0,sprintf('%0.1f dB',min_sidelobe));
-theta_1 = theta_tar+halfbeam;
-theta_2 = theta_tar-halfbeam;
-plot([0 55*cos(theta_tar*pi/180)], [0 55*sin(theta_tar*pi/180)], 'k:')
-plot([0 55*cos(theta_1*pi/180)], [0 55*sin(theta_1*pi/180)], 'k:')
-plot([0 55*cos(theta_2*pi/180)], [0 55*sin(theta_2*pi/180)], 'k:')
-hold off
-
-##### SOURCE END #####
---></body></html>
+</pre>
+<a id="plots"></a>
+<div id="plotoutput">
+<img src="ant_array_min_beamwidth__01.png" alt=""> <img src="ant_array_min_beamwidth__02.png" alt=""> <img src="ant_array_min_beamwidth__03.png" alt=""> 
+</div>
+</div>
+</body>
+</html>

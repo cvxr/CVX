@@ -1,68 +1,25 @@
-
-<!DOCTYPE html
-  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
-<html><head>
-      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-   <!--
-This HTML is auto-generated from an M-file.
-To make changes, update the M-file and republish this document.
-      --><title>Example 8.3: Bounding correlation coefficients</title><meta name="generator" content="MATLAB 7.9"><meta name="date" content="2009-11-12"><meta name="m-file" content="ex_8_3_"><style type="text/css">
-
-body {
-  background-color: white;
-  margin:10px;
-}
-
-h1 {
-  color: #990000; 
-  font-size: x-large;
-}
-
-h2 {
-  color: #990000;
-  font-size: medium;
-}
-
-/* Make the text shrink to fit narrow windows, but not stretch too far in 
-wide windows. */ 
-p,h1,h2,div.content div {
-  max-width: 600px;
-  /* Hack for IE6 */
-  width: auto !important; width: 600px;
-}
-
-pre.codeinput {
-  background: #EEEEEE;
-  padding: 10px;
-}
-@media print {
-  pre.codeinput {word-wrap:break-word; width:100%;}
-} 
-
-span.keyword {color: #0000FF}
-span.comment {color: #228B22}
-span.string {color: #A020F0}
-span.untermstring {color: #B20000}
-span.syscmd {color: #B28C00}
-
-pre.codeoutput {
-  color: #666666;
-  padding: 10px;
-}
-
-pre.error {
-  color: red;
-}
-
-p.footer {
-  text-align: right;
-  font-size: xx-small;
-  font-weight: lighter;
-  font-style: italic;
-  color: gray;
-}
-
-  </style></head><body><div class="content"><h1>Example 8.3: Bounding correlation coefficients</h1><pre class="codeinput"><span class="comment">% Boyd &amp; Vandenberghe "Convex Optimization"</span>
+<!DOCTYPE HTML>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Example 8.3: Bounding correlation coefficients</title>
+<link rel="canonical" href="http://cvxr.com/cvx/examples/cvxbook/Ch08_geometric_probs/html/ex_8_3.html">
+<link rel="stylesheet" href="../../../examples.css" type="text/css">
+</head>
+<body>
+<div id="header">
+<h1>Example 8.3: Bounding correlation coefficients</h1>
+Jump to:&nbsp;&nbsp;&nbsp;&nbsp;
+<a href="#source">Source code</a>&nbsp;&nbsp;&nbsp;&nbsp;
+<a href="#output">Text output</a>
+&nbsp;&nbsp;&nbsp;&nbsp;
+Plots
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="../../../index.html">Library index</a>
+</div>
+<div id="content">
+<a id="source"></a>
+<pre class="codeinput">
+<span class="comment">% Boyd &amp; Vandenberghe "Convex Optimization"</span>
 <span class="comment">% Joelle Skaf - 10/09/05</span>
 <span class="comment">%</span>
 <span class="comment">% Let C be a correlation matrix. Given lower and upper bounds on</span>
@@ -122,66 +79,67 @@ disp([<span class="string">'The minimum and maximum values of rho_14 are: '</spa
 disp(<span class="string">'with corresponding correlation matrices: '</span>);
 disp(C2)
 disp(C1)
-</pre><pre class="codeoutput">Solving the upper bound SDP ... 
-Calling sedumi: 18 variables, 6 equality constraints
-   For improved efficiency, sedumi is solving the dual problem.
+</pre>
+<a id="output"></a>
+<pre class="codeoutput">
+Solving the upper bound SDP ... 
+Calling sedumi: 18 variables, 12 equality constraints
 ------------------------------------------------------------
 SeDuMi 1.21 by AdvOL, 2005-2008 and Jos F. Sturm, 1998-2003.
 Alg = 2: xz-corrector, Adaptive Step-Differentiation, theta = 0.250, beta = 0.500
-eqs m = 6, order n = 13, dim = 25, blocks = 2
-nnz(A) = 14 + 0, nnz(ADA) = 36, nnz(L) = 21
+eqs m = 12, order n = 13, dim = 25, blocks = 2
+nnz(A) = 20 + 0, nnz(ADA) = 144, nnz(L) = 78
  it :     b*y       gap    delta  rate   t/tP*  t/tD*   feas cg cg  prec
-  0 :            6.09E+00 0.000
-  1 :   4.91E-01 1.80E+00 0.000 0.2954 0.9000 0.9000   1.63  1  1  1.6E+00
-  2 :   3.94E-01 4.91E-01 0.000 0.2726 0.9000 0.9000   1.48  1  1  5.5E-01
-  3 :   2.46E-01 3.95E-02 0.000 0.0806 0.9900 0.9900   1.55  1  1  7.0E-02
-  4 :   2.31E-01 2.31E-03 0.355 0.0584 0.9900 0.9900   1.08  1  1  4.5E-03
-  5 :   2.30E-01 9.41E-05 0.000 0.0408 0.9900 0.9900   1.00  1  1  1.8E-04
-  6 :   2.30E-01 3.88E-07 0.292 0.0041 0.9990 0.9459   1.00  1  1  1.2E-06
-  7 :   2.30E-01 8.10E-09 0.000 0.0209 0.9900 0.9900   1.00  3  3  2.5E-08
-  8 :   2.30E-01 1.59E-09 0.113 0.1968 0.9000 0.9000   1.00  3  3  4.9E-09
+  0 :            1.49E+00 0.000
+  1 :  -2.96E-01 4.40E-01 0.000 0.2954 0.9000 0.9000   1.63  1  1  1.2E+00
+  2 :  -4.38E-01 1.20E-01 0.000 0.2726 0.9000 0.9000   1.48  1  1  3.0E-01
+  3 :  -2.52E-01 9.66E-03 0.000 0.0806 0.9900 0.9900   1.55  1  1  2.4E-02
+  4 :  -2.31E-01 5.64E-04 0.355 0.0584 0.9900 0.9900   1.08  1  1  1.4E-03
+  5 :  -2.30E-01 2.30E-05 0.000 0.0408 0.9900 0.9900   1.00  1  1  5.7E-05
+  6 :  -2.30E-01 1.31E-07 0.325 0.0057 0.9853 0.9990   1.00  1  1  5.0E-07
+  7 :  -2.30E-01 8.11E-09 0.000 0.0617 0.9900 0.9900   1.00  1  1  3.1E-08
+  8 :  -2.30E-01 2.90E-10 0.389 0.0358 0.9900 0.9900   1.00  2  2  1.1E-09
 
 iter seconds digits       c*x               b*y
-  8      0.0   Inf  2.2990908942e-01  2.2990909282e-01
-|Ax-b| =   2.9e-10, [Ay-c]_+ =   3.1E-09, |x|=  2.8e+00, |y|=  1.4e+00
+  8      0.0   Inf -2.2990908487e-01 -2.2990908453e-01
+|Ax-b| =   1.7e-09, [Ay-c]_+ =   2.4E-10, |x|=  2.8e+00, |y|=  2.3e+00
 
 Detailed timing (sec)
    Pre          IPM          Post
-0.000E+00    4.000E-02    0.000E+00    
+0.000E+00    3.000E-02    0.000E+00    
 Max-norms: ||b||=1, ||c|| = 1,
-Cholesky |add|=1, |skip| = 0, ||L.L|| = 3230.45.
+Cholesky |add|=0, |skip| = 0, ||L.L|| = 1159.47.
 ------------------------------------------------------------
 Status: Solved
 Optimal value (cvx_optval): +0.229909
 Done! 
 Solving the lower bound SDP ... 
-Calling sedumi: 18 variables, 6 equality constraints
-   For improved efficiency, sedumi is solving the dual problem.
+Calling sedumi: 18 variables, 12 equality constraints
 ------------------------------------------------------------
 SeDuMi 1.21 by AdvOL, 2005-2008 and Jos F. Sturm, 1998-2003.
 Alg = 2: xz-corrector, Adaptive Step-Differentiation, theta = 0.250, beta = 0.500
-eqs m = 6, order n = 13, dim = 25, blocks = 2
-nnz(A) = 14 + 0, nnz(ADA) = 36, nnz(L) = 21
+eqs m = 12, order n = 13, dim = 25, blocks = 2
+nnz(A) = 20 + 0, nnz(ADA) = 144, nnz(L) = 78
  it :     b*y       gap    delta  rate   t/tP*  t/tD*   feas cg cg  prec
-  0 :            6.09E+00 0.000
-  1 :   5.01E-01 1.85E+00 0.000 0.3033 0.9000 0.9000   1.63  1  1  1.6E+00
-  2 :   4.85E-01 5.25E-01 0.000 0.2843 0.9000 0.9000   1.52  1  1  5.3E-01
-  3 :   4.03E-01 4.95E-02 0.000 0.0943 0.9900 0.9900   1.62  1  1  5.5E-02
-  4 :   3.93E-01 9.96E-04 0.000 0.0201 0.9900 0.9900   1.11  1  1  1.1E-03
-  5 :   3.93E-01 5.17E-05 0.145 0.0520 0.9900 0.9900   1.00  1  1  5.7E-05
-  6 :   3.93E-01 7.15E-07 0.000 0.0138 0.9900 0.8308   1.00  1  1  1.8E-06
-  7 :   3.93E-01 2.36E-08 0.224 0.0331 0.9900 0.9900   1.00  1  1  5.9E-08
-  8 :   3.93E-01 4.65E-09 0.000 0.1969 0.9000 0.9000   1.00  1  1  1.2E-08
+  0 :            1.49E+00 0.000
+  1 :  -3.13E-01 4.52E-01 0.000 0.3033 0.9000 0.9000   1.63  1  1  1.2E+00
+  2 :  -5.41E-01 1.28E-01 0.000 0.2843 0.9000 0.9000   1.52  1  1  3.1E-01
+  3 :  -4.09E-01 1.21E-02 0.000 0.0943 0.9900 0.9900   1.62  1  1  2.3E-02
+  4 :  -3.93E-01 2.43E-04 0.000 0.0201 0.9900 0.9900   1.11  1  1  4.4E-04
+  5 :  -3.93E-01 1.26E-05 0.145 0.0520 0.9900 0.9900   1.00  1  1  2.3E-05
+  6 :  -3.93E-01 1.76E-07 0.000 0.0139 0.9574 0.9900   1.00  1  1  5.8E-07
+  7 :  -3.93E-01 6.52E-09 0.030 0.0371 0.9900 0.9900   1.00  1  1  2.2E-08
+  8 :  -3.93E-01 1.30E-09 0.061 0.1986 0.9000 0.9000   1.00  2  2  4.3E-09
 
 iter seconds digits       c*x               b*y
-  8      0.0   Inf  3.9282033240e-01  3.9282034134e-01
-|Ax-b| =   5.2e-10, [Ay-c]_+ =   7.0E-09, |x|=  2.2e+00, |y|=  1.4e+00
+  8      0.0   Inf -3.9282032728e-01 -3.9282032606e-01
+|Ax-b| =   6.6e-09, [Ay-c]_+ =   9.6E-10, |x|=  2.8e+00, |y|=  1.8e+00
 
 Detailed timing (sec)
    Pre          IPM          Post
-0.000E+00    4.000E-02    0.000E+00    
+0.000E+00    3.000E-02    0.000E+00    
 Max-norms: ||b||=1, ||c|| = 1,
-Cholesky |add|=0, |skip| = 0, ||L.L|| = 836.636.
+Cholesky |add|=0, |skip| = 0, ||L.L|| = 2421.03.
 ------------------------------------------------------------
 Status: Solved
 Optimal value (cvx_optval): -0.39282
@@ -189,80 +147,17 @@ Done!
 --------------------------------------------------------------------------------
 The minimum and maximum values of rho_14 are: -0.39282 and 0.22991
 with corresponding correlation matrices: 
-    1.0000    0.6000    0.8482   -0.3928
-    0.6000    1.0000    0.2946    0.5000
-    0.8482    0.2946    1.0000   -0.5795
-   -0.3928    0.5000   -0.5795    1.0000
+    1.0000    0.6000    0.8486   -0.3928
+    0.6000    1.0000    0.2940    0.5000
+    0.8486    0.2940    1.0000   -0.5807
+   -0.3928    0.5000   -0.5807    1.0000
 
-    1.0000    0.7270    0.8000    0.2299
-    0.7270    1.0000    0.3182    0.5944
-    0.8000    0.3182    1.0000   -0.4000
-    0.2299    0.5944   -0.4000    1.0000
+    1.0000    0.7291    0.8000    0.2299
+    0.7291    1.0000    0.3202    0.5943
+    0.8000    0.3202    1.0000   -0.4000
+    0.2299    0.5943   -0.4000    1.0000
 
-</pre><p class="footer"><br>
-      Published with MATLAB&reg; 7.9<br></p></div><!--
-##### SOURCE BEGIN #####
-%% Example 8.3: Bounding correlation coefficients
-
-% Boyd & Vandenberghe "Convex Optimization"
-% Joelle Skaf - 10/09/05
-%
-% Let C be a correlation matrix. Given lower and upper bounds on
-% some of the angles (or correlation coeff.), find the maximum and minimum
-% possible values of rho_14 by solving 2 SDP's
-%           minimize/maximize   rho_14
-%                        s.t.   C >=0
-%                               0.6 <= rho_12 <=  0.9
-%                               0.8 <= rho_13 <=  0.9
-%                               0.5 <= rho_24 <=  0.7
-%                              -0.8 <= rho_34 <= -0.4
-
-n = 4;
-
-% Upper bound SDP
-fprintf(1,'Solving the upper bound SDP ...');
-
-cvx_begin sdp
-    variable C1(n,n) symmetric
-    maximize ( C1(1,4) )
-    C1 >= 0;
-    diag(C1) == ones(n,1);
-    C1(1,2) >= 0.6;
-    C1(1,2) <= 0.9;
-    C1(1,3) >= 0.8;
-    C1(1,3) <= 0.9;
-    C1(2,4) >= 0.5;
-    C1(2,4) <= 0.7;
-    C1(3,4) >= -0.8;
-    C1(3,4) <= -0.4;
-cvx_end
-
-fprintf(1,'Done! \n');
-
-% Lower bound SDP
-fprintf(1,'Solving the lower bound SDP ...');
-
-cvx_begin sdp
-    variable C2(n,n) symmetric
-    minimize ( C2(1,4) )
-    C2 >= 0;
-    diag(C2) == ones(n,1);
-    C2(1,2) >= 0.6;
-    C2(1,2) <= 0.9;
-    C2(1,3) >= 0.8;
-    C2(1,3) <= 0.9;
-    C2(2,4) >= 0.5;
-    C2(2,4) <= 0.7;
-    C2(3,4) >= -0.8;
-    C2(3,4) <= -0.4;
-cvx_end
-
-fprintf(1,'Done! \n');
-% Displaying results
-disp('REPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASH');
-disp(['The minimum and maximum values of rho_14 are: ' num2str(C2(1,4)) ' and ' num2str(C1(1,4))]);
-disp('with corresponding correlation matrices: ');
-disp(C2)
-disp(C1)
-##### SOURCE END #####
---></body></html>
+</pre>
+</div>
+</body>
+</html>

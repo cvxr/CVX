@@ -1,68 +1,25 @@
-
-<!DOCTYPE html
-  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
-<html><head>
-      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-   <!--
-This HTML is auto-generated from an M-file.
-To make changes, update the M-file and republish this document.
-      --><title>Example 8.4: One free point localization</title><meta name="generator" content="MATLAB 7.9"><meta name="date" content="2009-11-12"><meta name="m-file" content="ex_8_4_"><style type="text/css">
-
-body {
-  background-color: white;
-  margin:10px;
-}
-
-h1 {
-  color: #990000; 
-  font-size: x-large;
-}
-
-h2 {
-  color: #990000;
-  font-size: medium;
-}
-
-/* Make the text shrink to fit narrow windows, but not stretch too far in 
-wide windows. */ 
-p,h1,h2,div.content div {
-  max-width: 600px;
-  /* Hack for IE6 */
-  width: auto !important; width: 600px;
-}
-
-pre.codeinput {
-  background: #EEEEEE;
-  padding: 10px;
-}
-@media print {
-  pre.codeinput {word-wrap:break-word; width:100%;}
-} 
-
-span.keyword {color: #0000FF}
-span.comment {color: #228B22}
-span.string {color: #A020F0}
-span.untermstring {color: #B20000}
-span.syscmd {color: #B28C00}
-
-pre.codeoutput {
-  color: #666666;
-  padding: 10px;
-}
-
-pre.error {
-  color: red;
-}
-
-p.footer {
-  text-align: right;
-  font-size: xx-small;
-  font-weight: lighter;
-  font-style: italic;
-  color: gray;
-}
-
-  </style></head><body><div class="content"><h1>Example 8.4: One free point localization</h1><pre class="codeinput"><span class="comment">% Section 8.7.1, Boyd &amp; Vandenberghe "Convex Optimization"</span>
+<!DOCTYPE HTML>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Example 8.4: One free point localization</title>
+<link rel="canonical" href="http://cvxr.com/cvx/examples/cvxbook/Ch08_geometric_probs/html/ex_8_4.html">
+<link rel="stylesheet" href="../../../examples.css" type="text/css">
+</head>
+<body>
+<div id="header">
+<h1>Example 8.4: One free point localization</h1>
+Jump to:&nbsp;&nbsp;&nbsp;&nbsp;
+<a href="#source">Source code</a>&nbsp;&nbsp;&nbsp;&nbsp;
+<a href="#output">Text output</a>
+&nbsp;&nbsp;&nbsp;&nbsp;
+Plots
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="../../../index.html">Library index</a>
+</div>
+<div id="content">
+<a id="source"></a>
+<pre class="codeinput">
+<span class="comment">% Section 8.7.1, Boyd &amp; Vandenberghe "Convex Optimization"</span>
 <span class="comment">% Joelle Skaf - 10/23/05</span>
 <span class="comment">%</span>
 <span class="comment">% K fixed points (u1,v1),..., (uK,vK) in R^2 are given and the goal is to place</span>
@@ -106,7 +63,10 @@ disp(<span class="string">'The optimal point location for the L1-norm case is: '
 disp(x1);
 disp(<span class="string">'The optimal point location for the L2-norm case is: '</span>);
 disp(x2);
-</pre><pre class="codeoutput">Minimizing the L1-norm of the sum of the distances to fixed points... 
+</pre>
+<a id="output"></a>
+<pre class="codeoutput">
+Minimizing the L1-norm of the sum of the distances to fixed points... 
 Calling sedumi: 44 variables, 20 equality constraints
 ------------------------------------------------------------
 SeDuMi 1.21 by AdvOL, 2005-2008 and Jos F. Sturm, 1998-2003.
@@ -124,12 +84,12 @@ nnz(A) = 40 + 0, nnz(ADA) = 200, nnz(L) = 110
   7 :   1.39E+01 2.67E-10 0.026 0.0003 0.9999 0.9999   1.00  1  1  1.7E-11
 
 iter seconds digits       c*x               b*y
-  7      0.0  10.7  1.3868099975e+01  1.3868099974e+01
+  7      0.1  10.7  1.3868099975e+01  1.3868099974e+01
 |Ax-b| =   1.0e-11, [Ay-c]_+ =   2.5E-12, |x|=  5.8e+00, |y|=  4.2e+00
 
 Detailed timing (sec)
    Pre          IPM          Post
-1.000E-02    3.000E-02    0.000E+00    
+1.000E-02    5.000E-02    0.000E+00    
 Max-norms: ||b||=3.848770e+00, ||c|| = 1,
 Cholesky |add|=0, |skip| = 0, ||L.L|| = 1.
 ------------------------------------------------------------
@@ -137,35 +97,34 @@ Status: Solved
 Optimal value (cvx_optval): +13.8681
 Done! 
 Minimizing the L2-norm of the sum of the distances to fixed points... 
-Calling sedumi: 33 variables, 13 equality constraints
-   For improved efficiency, sedumi is solving the dual problem.
+Calling sedumi: 33 variables, 20 equality constraints
 ------------------------------------------------------------
 SeDuMi 1.21 by AdvOL, 2005-2008 and Jos F. Sturm, 1998-2003.
 Alg = 2: xz-corrector, Adaptive Step-Differentiation, theta = 0.250, beta = 0.500
-eqs m = 13, order n = 23, dim = 34, blocks = 12
-nnz(A) = 33 + 0, nnz(ADA) = 59, nnz(L) = 36
+eqs m = 20, order n = 23, dim = 34, blocks = 12
+nnz(A) = 40 + 0, nnz(ADA) = 400, nnz(L) = 210
  it :     b*y       gap    delta  rate   t/tP*  t/tD*   feas cg cg  prec
-  0 :            9.24E-01 0.000
-  1 :  -4.97E+00 2.59E-01 0.000 0.2808 0.9000 0.9000   2.94  1  1  7.2E-01
-  2 :  -9.93E+00 5.34E-02 0.000 0.2060 0.9000 0.9000   1.12  1  1  1.4E-01
-  3 :  -1.14E+01 4.34E-03 0.000 0.0812 0.9900 0.9900   1.01  1  1  1.2E-02
-  4 :  -1.15E+01 2.74E-04 0.000 0.0631 0.9900 0.9900   1.00  1  1  7.3E-04
-  5 :  -1.15E+01 2.60E-05 0.318 0.0950 0.9900 0.9900   1.00  1  1  6.9E-05
-  6 :  -1.15E+01 1.08E-06 0.000 0.0416 0.9000 0.5609   1.00  1  1  2.6E-05
-  7 :  -1.15E+01 5.54E-08 0.455 0.0512 0.9900 0.9761   1.00  1  1  1.3E-06
-  8 :  -1.15E+01 5.28E-09 0.204 0.0952 0.9900 0.9900   1.00  1  1  1.3E-07
-  9 :  -1.15E+01 1.48E-09 0.000 0.2811 0.9000 0.9000   1.00  2  2  3.6E-08
- 10 :  -1.15E+01 3.00E-10 0.000 0.2022 0.9047 0.9000   1.00  2  2  7.2E-09
+  0 :            3.51E+01 0.000
+  1 :   7.89E+00 9.87E+00 0.000 0.2808 0.9000 0.9000   2.94  1  1  8.2E-01
+  2 :   1.05E+01 2.03E+00 0.000 0.2060 0.9000 0.9000   1.12  1  1  1.8E-01
+  3 :   1.14E+01 1.65E-01 0.000 0.0812 0.9900 0.9900   1.01  1  1  1.5E-02
+  4 :   1.15E+01 1.04E-02 0.000 0.0631 0.9900 0.9900   1.00  1  1  9.7E-04
+  5 :   1.15E+01 9.90E-04 0.318 0.0950 0.9900 0.9900   1.00  1  1  9.4E-05
+  6 :   1.15E+01 1.90E-04 0.000 0.1918 0.9060 0.9000   1.00  1  1  1.8E-05
+  7 :   1.15E+01 3.42E-05 0.000 0.1802 0.9125 0.9000   1.00  1  1  3.1E-06
+  8 :   1.15E+01 5.45E-06 0.000 0.1592 0.9105 0.9000   1.00  1  1  5.2E-07
+  9 :   1.15E+01 8.33E-07 0.000 0.1529 0.9068 0.9000   1.00  1  1  8.8E-08
+ 10 :   1.15E+01 5.77E-08 0.000 0.0693 0.9900 0.9900   1.00  1  1  6.9E-09
 
 iter seconds digits       c*x               b*y
- 10      0.1   Inf -1.1483929221e+01 -1.1483929196e+01
-|Ax-b| =   7.0e-09, [Ay-c]_+ =   9.6E-09, |x|=  4.7e+00, |y|=  4.5e+00
+ 10      0.0   8.2  1.1483929331e+01  1.1483929255e+01
+|Ax-b| =   1.3e-09, [Ay-c]_+ =   1.8E-09, |x|=  5.8e+00, |y|=  3.2e+00
 
 Detailed timing (sec)
    Pre          IPM          Post
-1.000E-02    6.000E-02    0.000E+00    
-Max-norms: ||b||=1, ||c|| = 3.848770e+00,
-Cholesky |add|=0, |skip| = 0, ||L.L|| = 1.
+1.000E-02    5.000E-02    1.000E-02    
+Max-norms: ||b||=3.848770e+00, ||c|| = 1,
+Cholesky |add|=0, |skip| = 0, ||L.L|| = 8.90459.
 ------------------------------------------------------------
 Status: Solved
 Optimal value (cvx_optval): +11.4839
@@ -179,54 +138,7 @@ The optimal point location for the L2-norm case is:
     0.1251
     0.1716
 
-</pre><p class="footer"><br>
-      Published with MATLAB&reg; 7.9<br></p></div><!--
-##### SOURCE BEGIN #####
-%% Example 8.4: One free point localization
-
-% Section 8.7.1, Boyd & Vandenberghe "Convex Optimization"
-% Joelle Skaf - 10/23/05
-%
-% K fixed points (u1,v1),..., (uK,vK) in R^2 are given and the goal is to place
-% one additional point (u,v) such that:
-% 1) the L1-norm is minimized, i.e.
-%           minimize    sum_{i=1}^K ( |u - u_i| + |v - v_i| )
-%    the solution in this case is any median of the fixed points
-% 2) the L2-norm is minimized, i.e.
-%           minimize    sum_{i=1}^K ( |u - u_i|^2 + |v - v_i|^2 )^.5
-%    the solution in this case is the Weber point of the fixed points
-
-% Data generation
-n = 2;
-K = 11;
-randn('state',0);
-P = randn(n,K);
-
-% L1 - norm
-fprintf(1,'Minimizing the L1-norm of the sum of the distances to fixed points...');
-
-cvx_begin
-    variable x1(2)
-    minimize ( sum(norms(x1*ones(1,K) - P,1)) )
-cvx_end
-
-fprintf(1,'Done! \n');
-
-% L2 - norm
-fprintf(1,'Minimizing the L2-norm of the sum of the distances to fixed points...');
-
-cvx_begin
-    variable x2(2)
-    minimize ( sum(norms(x2*ones(1,K) - P,2)) )
-cvx_end
-
-fprintf(1,'Done! \n');
-
-% Displaying results
-disp('REPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASH');
-disp('The optimal point location for the L1-norm case is: ');
-disp(x1);
-disp('The optimal point location for the L2-norm case is: ');
-disp(x2);
-##### SOURCE END #####
---></body></html>
+</pre>
+</div>
+</body>
+</html>

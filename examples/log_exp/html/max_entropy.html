@@ -1,68 +1,25 @@
-
-<!DOCTYPE html
-  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
-<html><head>
-      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-   <!--
-This HTML is auto-generated from an M-file.
-To make changes, update the M-file and republish this document.
-      --><title>Entropy maximization</title><meta name="generator" content="MATLAB 7.9"><meta name="date" content="2009-11-12"><meta name="m-file" content="max_entropy_"><style type="text/css">
-
-body {
-  background-color: white;
-  margin:10px;
-}
-
-h1 {
-  color: #990000; 
-  font-size: x-large;
-}
-
-h2 {
-  color: #990000;
-  font-size: medium;
-}
-
-/* Make the text shrink to fit narrow windows, but not stretch too far in 
-wide windows. */ 
-p,h1,h2,div.content div {
-  max-width: 600px;
-  /* Hack for IE6 */
-  width: auto !important; width: 600px;
-}
-
-pre.codeinput {
-  background: #EEEEEE;
-  padding: 10px;
-}
-@media print {
-  pre.codeinput {word-wrap:break-word; width:100%;}
-} 
-
-span.keyword {color: #0000FF}
-span.comment {color: #228B22}
-span.string {color: #A020F0}
-span.untermstring {color: #B20000}
-span.syscmd {color: #B28C00}
-
-pre.codeoutput {
-  color: #666666;
-  padding: 10px;
-}
-
-pre.error {
-  color: red;
-}
-
-p.footer {
-  text-align: right;
-  font-size: xx-small;
-  font-weight: lighter;
-  font-style: italic;
-  color: gray;
-}
-
-  </style></head><body><div class="content"><h1>Entropy maximization</h1><pre class="codeinput"><span class="comment">% Jo&Atilde;&laquo;lle Skaf - 04/24/08</span>
+<!DOCTYPE HTML>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Entropy maximization</title>
+<link rel="canonical" href="http://cvxr.com/cvx/examples/log_exp/html/max_entropy.html">
+<link rel="stylesheet" href="../../examples.css" type="text/css">
+</head>
+<body>
+<div id="header">
+<h1>Entropy maximization</h1>
+Jump to:&nbsp;&nbsp;&nbsp;&nbsp;
+<a href="#source">Source code</a>&nbsp;&nbsp;&nbsp;&nbsp;
+<a href="#output">Text output</a>
+&nbsp;&nbsp;&nbsp;&nbsp;
+Plots
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="../../index.html">Library index</a>
+</div>
+<div id="content">
+<a id="source"></a>
+<pre class="codeinput">
+<span class="comment">% Jo&Atilde;&laquo;lle Skaf - 04/24/08</span>
 <span class="comment">%</span>
 <span class="comment">% Consider the linear inequality constrained entroy maximization problem</span>
 <span class="comment">%           maximize    -sum_{i=1}^n x_i*log(x_i)</span>
@@ -94,7 +51,10 @@ cvx_end
 <span class="comment">% Results</span>
 display(<span class="string">'The optimal solution is:'</span> );
 disp(x);
-</pre><pre class="codeoutput"> 
+</pre>
+<a id="output"></a>
+<pre class="codeoutput">
+ 
 Successive approximation method to be employed.
    sedumi will be called several times to refine the solution.
    Original size: 65 variables, 35 equality constraints
@@ -105,14 +65,14 @@ Act Centering    Conic    Status
 -----------------------------------
 20  1.496e+00  1.965e-01  Solved
 20  7.829e-02  5.043e-04  Solved
-20  8.273e-03  5.224e-06  Solved
-20  1.036e-03  1.936e-07  Solved
-20  1.297e-04  1.576e-07  Solved
-20  1.629e-05  1.567e-07S Solved
-20  1.673e-04S 3.731e-08  Solved
-20  9.919e-05  8.009e-09  Solved
-20  1.243e-05  7.994e-09S Solved
-20  4.871e-05S 3.930e-10  Solved
+20  8.273e-03  5.226e-06  Solved
+20  1.038e-03  1.935e-07  Solved
+20  1.297e-04  1.575e-07  Solved
+20  1.618e-05  1.561e-07S Solved
+20  1.671e-04S 3.745e-08  Solved
+20  9.922e-05  7.983e-09  Solved
+20  1.235e-05  8.023e-09S Solved
+20  4.881e-05S 3.901e-10  Solved
 -----------------------------------------------------------------
 Status: Solved
 Optimal value (cvx_optval): +5.70335
@@ -138,43 +98,7 @@ The optimal solution is:
     0.3106
     0.6131
 
-</pre><p class="footer"><br>
-      Published with MATLAB&reg; 7.9<br></p></div><!--
-##### SOURCE BEGIN #####
-%% Entropy maximization
-
-% JoÃ«lle Skaf - 04/24/08
-%
-% Consider the linear inequality constrained entroy maximization problem 
-%           maximize    -sum_{i=1}^n x_i*log(x_i) 
-%           subject to  sum(x) = 1 
-%                       Fx <= g
-% where the variable is x \in \reals^{n} 
-
-% Input data 
-randn('state', 0); 
-rand('state', 0); 
-n = 20; 
-m = 10; 
-p = 5; 
-
-tmp = rand(n,1); 
-A = randn(m,n); 
-b = A*tmp; 
-F = randn(p,n); 
-g = F*tmp + rand(p,1); 
-
-% Entropy maximization 
-cvx_begin
-    variable x(n) 
-    maximize sum(entr(x)) 
-    A*x == b 
-    F*x <= g
-cvx_end
-
-% Results 
-display('The optimal solution is:' );
-disp(x); 
-
-##### SOURCE END #####
---></body></html>
+</pre>
+</div>
+</body>
+</html>

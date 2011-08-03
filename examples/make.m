@@ -64,8 +64,8 @@ for k = 1 : length( args ),
                         file = [ base, filesep, file ];
                     end
                 end
-                [ mpath, file, ext, versn ] = fileparts( file );
-                file = [ file, ext, versn ];
+                [ mpath, file, ext ] = fileparts( file );
+                file = [ file, ext ];
                 if ~strcmp( ext, '.m' ),
                     error( 'Must be an m-file: %s' );
                 elseif strcmp( file, 'Contents.m' ) && length( files ) > 1,
@@ -90,9 +90,24 @@ for k = 1 : length( args ),
         %
 
         if ~runonly && isempty( file ) && strcmp( mpath, base ),
-            [ fidw, message ] = fopen( 'index.dat.new', 'w+' );
+            [ fidr, message ] = fopen( 'index.html', 'r' );
+            if fidr < 0,
+                error( 'Cannot open index.html\n   %s', message );
+            end
+            [ fidw, message ] = fopen( 'index.html.new', 'w+' );
             if fidw < 0,
-                error( 'Cannot open index.dat.new\n   %s', message );
+                error( 'Cannot open index.html.new\n   %s', message );
+            end
+            while ~feof( fidr ),
+                temp = fgetl( fidr );
+                fprintf( fidw, '%s\n', temp );
+                if strcmp(temp,'<ul class="mktree" id="tree1">'),
+                    while ~feof( fidr ),
+                        temp = fgetl( fidr );
+                        if strcmp(temp,'</ul>'), break; end
+                    end
+                    break;
+                end
             end
         else
             fidw = -1;
@@ -105,15 +120,20 @@ for k = 1 : length( args ),
         end
         cd( odir );
         if fidw >= 0,
+            fprintf( fidw, '</ul>\n' );
+            while ~feof( fidr ),
+                fprintf( fidw, '%s\n', fgetl( fidr ) );
+            end
+            fclose( fidr );
             fclose( fidw );
             cd( mpath )
-            compare_and_replace( '', 'index.dat' );
+            compare_and_replace( '', 'index.html' );
         end
     end
 end
 
 function [ title, files ] = generate_directory( mpath, prefix, force, runonly, indexonly, fidc, base, depth )
-if nargin < 8, depth = 1; end
+if nargin < 8, depth = 0; end
 
 fprintf( 1, '%sDirectory: %s\n', prefix, mpath );
 prefix = [ prefix, '   ' ];
@@ -233,20 +253,19 @@ end
 
 if fidc >= 0,
     
-    dots = '-';
-    dots = dots(ones(1,depth-1));
+    dots = sprintf('\t');
+    dots = dots(ones(1,depth+1));
     dpath = mpath( length(base) + 2 : end );
     dpath(dpath=='\') = '/';
     if ~isempty(dpath), dpath(end+1) = '/'; end
     
     % Directory title---skip for the top level
     
-    if depth > 1,
-        fprintf( fidc, '%s *%s*\n', dots, title );
+    if depth,
+        fprintf( fidc, '%s<li><b>%s</b><ul>\n', dots(1:end-1), title );
     end
     
     if tdoc(2) >= tdoc(1) || ~isempty( fcomments ),
-        pref = '- Reference: ';
         for k = tdoc(1) : tdoc(2),
             name = files( k ).name;
             if strcmp( files(k).type, 'tex' ),
@@ -254,13 +273,13 @@ if fidc >= 0,
             end
             temp = files( k ).title;
             if isempty( temp ),
-                fprintf( fidc, '%s%s[%s%s %s]\n', dots, pref, dpath, name, name );
+                fprintf( fidc, '%s<li>Reference: <a href="%s%s" target="_blank">%s</a></li>\n', dots, dpath, name, name );
             else
-                fprintf( fidc, '%s%s[%s%s %s (%s)]\n', dots, pref, dpath, name, temp, name );
+                fprintf( fidc, '%s<li>Reference: <a href="%s%s" target="_blank">%s (%s)</a></li>\n', dots, dpath, name, temp, name );
             end
         end
         for k = 1 : length(fcomments),
-            fprintf( fidc, '%s%s%s\n', dots, pref, fcomments{k} );
+            fprintf( fidc, '%s<li>Reference: %s</li>\n', dots, fcomments{k} );
         end
     end
 
@@ -269,34 +288,37 @@ if fidc >= 0,
         cd(mpath);
     end
     
-    if depth==1,
-        dots(end+1) = '-';
-    end
-    
     if tscr(2) >= tscr(1),
-        if depth == 1,
-            fprintf( fidc, '%s *Miscellaneous examples*\n', dots );
+        if ~depth,
+            fprintf( fidc, '%s<li><b>Miscellaneous examples</b>\n', dots );
+            dots(end+1) = dots(end);
+            fprintf( fidc, '%s<ul>\n', dots );
         end
         for k = tscr(1) : tscr(2),
             name = files( k ).name;
             temp = files( k ).title;
             if isempty( temp ),
-                fprintf( fidc, '%s- [%s%s %s]\n', dots, dpath, name, name );
+                fprintf( fidc, '%s<li><a href="%s%s">%s</a></li>\n', dots, dpath, name, name );
             else
-                fprintf( fidc, '%s- [%shtml/%shtml %s] ([%s%s %s])\n', dots, dpath, name(1:end-1), temp, dpath, name, name );
+                fprintf( fidc, '%s<li><a href="%shtml/%shtml">%s</a> (<a href="%s%s">%s</a>)</li>\n', dots, dpath, name(1:end-1), temp, dpath, name, name );
             end
+        end
+        if ~depth,
+            fprintf( fidc, '%s</ul>\n', dots );
+            dots(end) = [];
+            fprintf( fidc, '%s</li>\n', dots );
         end
     end
 
     if tfun(2) >= tfun(1),
-        pref = '- Utility: ';
+        pref = 'Utility: ';
         for k = tfun(1) : tfun(2),
             name = files( k ).name;
             temp = files( k ).title;
             if isempty( temp ),
-                fprintf( fidc, '%s%s[%s%s %s]\n', dots, pref, dpath, name, name );
+                fprintf( fidc, '%s<li>Utility: <a href="%s%s">%s</a></li>\n', dots, dpath, name, name );
             else
-                fprintf( fidc, '%s%s[%shtml/%shtml %s] ([%s%s %s])\n', dots, pref, dpath, name(1:end-1), temp, dpath, name, name );
+                fprintf( fidc, '%s<li>Utility: <a href="%shtml/%shtml">%s</a> (<a href="%s%s">%s</a>)</li>\n', dots, dpath, name(1:end-1), temp, dpath, name, name );
             end
         end
     end
@@ -307,13 +329,17 @@ if fidc >= 0,
             name = files( k ).name;
             temp = files( k ).title;
             if isempty( temp ),
-                fprintf( fidc, '%s%s[%s%s %s]\n', dots, pref, dpath, name, name );
+                fprintf( fidc, '%s<li>Data: <a href="%s%s">%s</a></li>\n', dots, dpath, name, name );
             else
-                fprintf( fidc, '%s%s[%s%s %s (%s)]\n', dots, pref, dpath, name, temp, name );
+                fprintf( fidc, '%s<li>Data: <a href="%s%s">%s (%s)</a></li>\n', dots, dpath, name, temp, name );
             end
         end
     end
     
+    if depth, 
+        fprintf( fidc, '%s</ul></li>\n', dots(1:end-1) );
+    end
+        
 elseif any( tdir ),
     
     for k = 1 : length( files ),
@@ -483,7 +509,49 @@ elseif force || hdate <= ndate,
             opts.showCode = true;
             opts.catchError = false;
             publish( [ name, '_' ], opts );
-            movefile( [ 'html', filesep, name, '_.html' ], [ 'html', filesep, name, '.html' ] );
+            prefixes = { '<style', '<!--', '<p class="footer"', '<meta name=', '<link rel=' };
+            suffixes = { '</style>', '-->', '</p>', '>', '>' };
+            suffix = '';
+            f_in = fopen( [ 'html', filesep, name, '_.html' ], 'r' );
+            data = fread( f_in, Inf, 'uint8=>char' )';
+            fclose( f_in );
+            backpath = '';
+            for k = 1 : 10,
+                if exist( [ backpath, filesep, 'examples.css' ], 'file' ), break; end
+                backpath = [ '..', filesep, backpath ];
+            end
+            backpath = [ '..', filesep, backpath ];
+            canon = [regexprep(pwd,'.*/cvx/examples','http://cvxr.com/cvx/examples'),'/html/',hfile];
+            data = regexprep( data, '<!--.*?-->|<link rel=.*?>|<style.*?</style>|<meta name=.*?>|<p class="footer".*?</p>', '' );
+            data = regexprep( data, '</head>', sprintf( '\n<link rel="canonical" href="%s"/>\n<link rel="stylesheet" href="%sexamples.css" type="text/css"/>\n</head>', canon, backpath ) );
+            data = regexprep( data, '<div class="content"><h1>(.*?)</h1>','<div id="header">\n<h1>$1</h1>\n<!--control--></div><div id="content">' );
+            data = regexprep( data, '<pre class="codeinput">\n?', '\n<a id="source"></a><pre class="codeinput">\n' );
+            if ~isempty( regexp( data, '<pre class="codeoutput">' ) ),
+                control_o = '<a href="#output">Text output</a>\n';
+                data = regexprep( data, '<pre class="codeoutput">\n?', '\n<a id="output"></a><pre class="codeoutput">\n' );
+            else
+                control_o = 'Text output\n';
+            end
+            if ~isempty( regexp( data, '</pre>\s*<img', 'once' ) ),
+                control_p = '<a href="#plots">Plots</a>\n';
+                data = regexprep( data, '</pre>\s*<img', '</pre>\n<a id="plots"></a><div id="plotoutput">\n<img' );
+                data = regexprep( data, '</div>\s*</body>', '</div></div></body>' );
+            else
+                control_p = 'Plots\n';
+            end
+            control = sprintf( 'Jump to:&nbsp;&nbsp;&nbsp;&nbsp;\n<a href="#source">Source code</a>&nbsp;&nbsp;&nbsp;&nbsp;\n%s&nbsp;&nbsp;&nbsp;&nbsp;\n%s&nbsp;&nbsp;&nbsp;&nbsp;<a href="%sindex.html">Library index</a>', control_o, control_p, backpath );
+            data = regexprep( data, '<!--control-->', control );
+            data = regexprep( data, '<html>', '<html>\n' );
+            data = regexprep( data, '(<div|<pre|</div>|<body>|</body>|</html>)', '\n$1' );
+            data = regexprep( data, '^\s*<!DOCTYPE.*?>','<!DOCTYPE HTML>' );
+            data = regexprep( data, '<meta http-equiv.*?>', '<meta charset="UTF-8">' );
+            data = regexprep( data, '\s*((v|h)space=\S*)', '' );
+            data = regexprep( data, '\s*(<meta|<title)','\n$1' );
+            data = regexprep( data, '/>', '>' );
+            f_out = fopen( [ 'html', filesep, name, '.html' ], 'w' );
+            fwrite( f_out, data );
+            fclose( f_out );
+            delete( [ 'html', filesep, name, '_.html' ] );
             fprintf( 1, ' done.\n' );
         end
     catch

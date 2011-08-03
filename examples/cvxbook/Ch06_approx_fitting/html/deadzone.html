@@ -1,68 +1,25 @@
-
-<!DOCTYPE html
-  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
-<html><head>
-      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-   <!--
-This HTML is auto-generated from an M-file.
-To make changes, update the M-file and republish this document.
-      --><title>Section 6.1.2: Residual minimization with deadzone penalty</title><meta name="generator" content="MATLAB 7.9"><meta name="date" content="2009-11-12"><meta name="m-file" content="deadzone_"><style type="text/css">
-
-body {
-  background-color: white;
-  margin:10px;
-}
-
-h1 {
-  color: #990000; 
-  font-size: x-large;
-}
-
-h2 {
-  color: #990000;
-  font-size: medium;
-}
-
-/* Make the text shrink to fit narrow windows, but not stretch too far in 
-wide windows. */ 
-p,h1,h2,div.content div {
-  max-width: 600px;
-  /* Hack for IE6 */
-  width: auto !important; width: 600px;
-}
-
-pre.codeinput {
-  background: #EEEEEE;
-  padding: 10px;
-}
-@media print {
-  pre.codeinput {word-wrap:break-word; width:100%;}
-} 
-
-span.keyword {color: #0000FF}
-span.comment {color: #228B22}
-span.string {color: #A020F0}
-span.untermstring {color: #B20000}
-span.syscmd {color: #B28C00}
-
-pre.codeoutput {
-  color: #666666;
-  padding: 10px;
-}
-
-pre.error {
-  color: red;
-}
-
-p.footer {
-  text-align: right;
-  font-size: xx-small;
-  font-weight: lighter;
-  font-style: italic;
-  color: gray;
-}
-
-  </style></head><body><div class="content"><h1>Section 6.1.2: Residual minimization with deadzone penalty</h1><pre class="codeinput"><span class="comment">% Boyd &amp; Vandenberghe "Convex Optimization"</span>
+<!DOCTYPE HTML>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Section 6.1.2: Residual minimization with deadzone penalty</title>
+<link rel="canonical" href="http://cvxr.com/cvx/examples/cvxbook/Ch06_approx_fitting/html/deadzone.html">
+<link rel="stylesheet" href="../../../examples.css" type="text/css">
+</head>
+<body>
+<div id="header">
+<h1>Section 6.1.2: Residual minimization with deadzone penalty</h1>
+Jump to:&nbsp;&nbsp;&nbsp;&nbsp;
+<a href="#source">Source code</a>&nbsp;&nbsp;&nbsp;&nbsp;
+<a href="#output">Text output</a>
+&nbsp;&nbsp;&nbsp;&nbsp;
+Plots
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="../../../index.html">Library index</a>
+</div>
+<div id="content">
+<a id="source"></a>
+<pre class="codeinput">
+<span class="comment">% Boyd &amp; Vandenberghe "Convex Optimization"</span>
 <span class="comment">% Joelle Skaf - 08/17/05</span>
 <span class="comment">%</span>
 <span class="comment">% The penalty function approximation problem has the form:</span>
@@ -94,85 +51,51 @@ disp( [ <span class="string">'   x     = [ '</span>, sprintf( <span class="strin
 disp( <span class="string">'Residual vector:'</span> );
 disp( [ <span class="string">'   A*x-b = [ '</span>, sprintf( <span class="string">'%7.4f '</span>, A*x-b ), <span class="string">']'</span> ] );
 disp( <span class="string">' '</span> );
-</pre><pre class="codeoutput">Computing the optimal solution of the deadzone approximation problem: 
+</pre>
+<a id="output"></a>
+<pre class="codeoutput">
+Computing the optimal solution of the deadzone approximation problem: 
  
-Calling sedumi: 48 variables, 24 equality constraints
-   For improved efficiency, sedumi is solving the dual problem.
+Calling sedumi: 72 variables, 32 equality constraints
 ------------------------------------------------------------
 SeDuMi 1.21 by AdvOL, 2005-2008 and Jos F. Sturm, 1998-2003.
 Alg = 2: xz-corrector, Adaptive Step-Differentiation, theta = 0.250, beta = 0.500
-eqs m = 24, order n = 49, dim = 49, blocks = 17
-nnz(A) = 160 + 0, nnz(ADA) = 336, nnz(L) = 180
+eqs m = 32, order n = 67, dim = 74, blocks = 18
+nnz(A) = 192 + 0, nnz(ADA) = 304, nnz(L) = 168
  it :     b*y       gap    delta  rate   t/tP*  t/tD*   feas cg cg  prec
-  0 :            1.29E+01 0.000
-  1 :   3.10E+00 4.39E+00 0.000 0.3402 0.9000 0.9000   3.82  1  1  1.1E+00
-  2 :   8.64E-01 1.12E+00 0.000 0.2558 0.9000 0.9000   1.24  1  1  4.1E-01
-  3 :   1.38E-02 2.26E-02 0.000 0.0202 0.9900 0.9900   1.06  1  1  2.5E-01
-  4 :   1.01E-07 1.54E-07 0.000 0.0000 1.0000 1.0000   1.00  1  1  6.4E-05
-  5 :   1.62E-14 3.11E-14 0.000 0.0000 1.0000 1.0000   1.00  1  1  1.2E-11
+  0 :            7.39E+00 0.000
+  1 :  -1.04E+00 2.91E+00 0.000 0.3933 0.9000 0.9000   4.82  1  1  1.3E+00
+  2 :  -4.04E-01 7.01E-01 0.000 0.2412 0.9000 0.9000   1.53  1  1  6.4E-01
+  3 :  -2.22E-02 3.24E-02 0.000 0.0463 0.9900 0.9900   1.19  1  1  5.2E-01
+  4 :  -2.12E-06 2.96E-06 0.000 0.0001 1.0000 1.0000   1.01  1  1  1.2E-03
+  5 :  -5.13E-12 7.19E-12 0.000 0.0000 1.0000 1.0000   1.00  1  1  3.0E-09
 
 iter seconds digits       c*x               b*y
-  5      0.0   8.9  5.3462956066e-14  1.6188637402e-14
-|Ax-b| =   5.3e-15, [Ay-c]_+ =   1.6E-15, |x|=  4.0e+00, |y|=  1.3e+00
+  5      0.0   6.5  5.7935716355e-12 -5.1316848646e-12
+|Ax-b| =   2.9e-12, [Ay-c]_+ =   5.2E-13, |x|=  4.5e+00, |y|=  1.2e-11
 
 Detailed timing (sec)
    Pre          IPM          Post
 1.000E-02    3.000E-02    0.000E+00    
-Max-norms: ||b||=1, ||c|| = 1.488490e+00,
-Cholesky |add|=0, |skip| = 0, ||L.L|| = 1.
+Max-norms: ||b||=1.488490e+00, ||c|| = 1,
+Cholesky |add|=0, |skip| = 0, ||L.L|| = 1.25712.
 ------------------------------------------------------------
 Status: Solved
-Optimal value (cvx_optval): -1.61886e-14
+Optimal value (cvx_optval): +5.79357e-12
 Done! 
 
 Results:
 --------
 sum(max(abs(A*x-b)-1,0)): 0.0000
-cvx_optval: -0.0000
+cvx_optval: 0.0000
 cvx_status: Solved
 
 Optimal vector:
-   x     = [  0.3169  0.1304 -0.3499  0.0768  0.6316  0.3917 -0.6683  0.7309 ]
+   x     = [  0.3023  0.1182 -0.3480  0.0536  0.6051  0.3615 -0.6435  0.6963 ]
 Residual vector:
-   A*x-b = [  0.6074  0.4106 -0.8179 -0.3119  0.3648  0.4208 -0.6525 -0.6823 -0.4734  0.7688  0.1175 -0.1827  0.5050  0.7438  0.3279 -0.3912 ]
+   A*x-b = [  0.5909  0.4012 -0.8187 -0.3095  0.3704  0.3451 -0.6436 -0.7036 -0.5004  0.7746  0.1716 -0.1756  0.5314  0.7545  0.2744 -0.3799 ]
  
-</pre><p class="footer"><br>
-      Published with MATLAB&reg; 7.9<br></p></div><!--
-##### SOURCE BEGIN #####
-%% Section 6.1.2: Residual minimization with deadzone penalty
-
-% Boyd & Vandenberghe "Convex Optimization"
-% Joelle Skaf - 08/17/05
-%
-% The penalty function approximation problem has the form:
-%               minimize    sum(deadzone(Ax - b))
-% where 'deadzone' is the deadzone penalty function
-%               deadzone(y) = max(abs(y)-1,0)
-
-% Input data
-randn('state',0);
-m = 16; n = 8;
-A = randn(m,n);
-b = randn(m,1);
-
-% deadzone penalty
-% original formulation
-fprintf(1,'Computing the optimal solution of the deadzone approximation problem: \n');
-
-cvx_begin
-    variable x(n)
-    minimize( sum(max(abs(A*x-b)-1,0)) )
-cvx_end
-
-fprintf(1,'Done! \n');
-
-% Compare
-disp( sprintf( '\nResults:\nREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASH\nsum(max(abs(A*x-b)-1,0)): %6.4f\ncvx_optval: %6.4f\ncvx_status: %s\n', sum(max(abs(A*x-b)-1,0)), cvx_optval, cvx_status ) );
-disp( 'Optimal vector:' );
-disp( [ '   x     = [ ', sprintf( '%7.4f ', x ), ']' ] );
-disp( 'Residual vector:' );
-disp( [ '   A*x-b = [ ', sprintf( '%7.4f ', A*x-b ), ']' ] );
-disp( ' ' );
-
-##### SOURCE END #####
---></body></html>
+</pre>
+</div>
+</body>
+</html>

@@ -1,68 +1,25 @@
-
-<!DOCTYPE html
-  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
-<html><head>
-      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-   <!--
-This HTML is auto-generated from an M-file.
-To make changes, update the M-file and republish this document.
-      --><title>Section 5.2.4: Solves a simple QCQP</title><meta name="generator" content="MATLAB 7.9"><meta name="date" content="2009-11-12"><meta name="m-file" content="qcqp_"><style type="text/css">
-
-body {
-  background-color: white;
-  margin:10px;
-}
-
-h1 {
-  color: #990000; 
-  font-size: x-large;
-}
-
-h2 {
-  color: #990000;
-  font-size: medium;
-}
-
-/* Make the text shrink to fit narrow windows, but not stretch too far in 
-wide windows. */ 
-p,h1,h2,div.content div {
-  max-width: 600px;
-  /* Hack for IE6 */
-  width: auto !important; width: 600px;
-}
-
-pre.codeinput {
-  background: #EEEEEE;
-  padding: 10px;
-}
-@media print {
-  pre.codeinput {word-wrap:break-word; width:100%;}
-} 
-
-span.keyword {color: #0000FF}
-span.comment {color: #228B22}
-span.string {color: #A020F0}
-span.untermstring {color: #B20000}
-span.syscmd {color: #B28C00}
-
-pre.codeoutput {
-  color: #666666;
-  padding: 10px;
-}
-
-pre.error {
-  color: red;
-}
-
-p.footer {
-  text-align: right;
-  font-size: xx-small;
-  font-weight: lighter;
-  font-style: italic;
-  color: gray;
-}
-
-  </style></head><body><div class="content"><h1>Section 5.2.4: Solves a simple QCQP</h1><pre class="codeinput"><span class="comment">% Boyd &amp; Vandenberghe, "Convex Optimization"</span>
+<!DOCTYPE HTML>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Section 5.2.4: Solves a simple QCQP</title>
+<link rel="canonical" href="http://cvxr.com/cvx/examples/cvxbook/Ch05_duality/html/qcqp.html">
+<link rel="stylesheet" href="../../../examples.css" type="text/css">
+</head>
+<body>
+<div id="header">
+<h1>Section 5.2.4: Solves a simple QCQP</h1>
+Jump to:&nbsp;&nbsp;&nbsp;&nbsp;
+<a href="#source">Source code</a>&nbsp;&nbsp;&nbsp;&nbsp;
+<a href="#output">Text output</a>
+&nbsp;&nbsp;&nbsp;&nbsp;
+Plots
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="../../../index.html">Library index</a>
+</div>
+<div id="content">
+<a id="source"></a>
+<pre class="codeinput">
+<span class="comment">% Boyd &amp; Vandenberghe, "Convex Optimization"</span>
 <span class="comment">% Jo&euml;lle Skaf - 08/23/05</span>
 <span class="comment">%</span>
 <span class="comment">% Solved a QCQP with 3 inequalities:</span>
@@ -103,89 +60,46 @@ fprintf(1,<span class="string">'Done! \n'</span>);
 disp(<span class="string">'------------------------------------------------------------------------'</span>);
 disp(<span class="string">'The duality gap is equal to '</span>);
 disp(obj1-obj2)
-</pre><pre class="codeoutput">Computing the optimal value of the QCQP and its dual...  
+</pre>
+<a id="output"></a>
+<pre class="codeoutput">
+Computing the optimal value of the QCQP and its dual...  
 Calling sedumi: 35 variables, 10 equality constraints
    For improved efficiency, sedumi is solving the dual problem.
 ------------------------------------------------------------
 SeDuMi 1.21 by AdvOL, 2005-2008 and Jos F. Sturm, 1998-2003.
 Alg = 2: xz-corrector, Adaptive Step-Differentiation, theta = 0.250, beta = 0.500
-eqs m = 10, order n = 11, dim = 37, blocks = 6
-nnz(A) = 113 + 0, nnz(ADA) = 94, nnz(L) = 52
+eqs m = 10, order n = 12, dim = 36, blocks = 5
+nnz(A) = 113 + 0, nnz(ADA) = 88, nnz(L) = 49
  it :     b*y       gap    delta  rate   t/tP*  t/tD*   feas cg cg  prec
-  0 :            8.45E+00 0.000
-  1 :   1.19E-02 2.07E+00 0.000 0.2452 0.9000 0.9000   1.63  1  1  1.6E+00
-  2 :  -3.78E+00 3.87E-01 0.000 0.1867 0.9000 0.9000   2.29  1  1  1.6E-01
-  3 :  -4.39E+00 7.69E-02 0.000 0.1990 0.9000 0.9000   1.08  1  1  2.8E-02
-  4 :  -4.66E+00 6.65E-03 0.000 0.0865 0.9900 0.9900   0.84  1  1  2.2E-03
-  5 :  -4.71E+00 2.01E-04 0.000 0.0302 0.9900 0.9900   0.98  1  1  1.1E-04
-  6 :  -4.71E+00 2.62E-07 0.000 0.0013 0.9901 0.9900   1.00  1  1  1.1E-06
-  7 :  -4.71E+00 3.20E-09 0.000 0.0122 0.8709 0.9000   1.00  1  1  2.2E-07
-  8 :  -4.71E+00 2.35E-10 0.089 0.0735 0.9900 0.9900   1.00  1  1  1.6E-08
-  9 :  -4.71E+00 5.45E-11 0.000 0.2318 0.9092 0.9000   1.00  2  2  3.4E-09
+  0 :            3.06E+01 0.000
+  1 :  -5.35E-01 8.38E+00 0.000 0.2740 0.9000 0.9000   1.67  1  1  3.4E+00
+  2 :  -2.66E+00 1.59E+00 0.000 0.1893 0.9000 0.9000   2.27  1  1  5.3E-01
+  3 :  -3.12E+00 1.26E-01 0.000 0.0792 0.9900 0.9900   1.12  1  1  3.6E-02
+  4 :  -3.20E+00 3.24E-02 0.000 0.2574 0.9000 0.9000   1.05  1  1  9.1E-03
+  5 :  -3.22E+00 1.96E-03 0.000 0.0605 0.9900 0.9900   0.99  1  1  5.8E-04
+  6 :  -3.23E+00 6.86E-06 0.374 0.0035 0.9990 0.9990   1.00  1  1  2.0E-06
+  7 :  -3.23E+00 2.26E-07 0.000 0.0329 0.9148 0.9000   1.00  1  1  2.0E-07
+  8 :  -3.23E+00 6.52E-10 0.485 0.0029 0.9814 0.9900   1.00  1  1  1.1E-08
 
 iter seconds digits       c*x               b*y
-  9      0.0   Inf -4.7144665661e+00 -4.7144665032e+00
-|Ax-b| =   7.5e-09, [Ay-c]_+ =   6.6E-09, |x|=  1.6e+01, |y|=  1.4e+00
+  8      0.0   Inf -3.2259383635e+00 -3.2259383320e+00
+|Ax-b| =   4.3e-08, [Ay-c]_+ =   1.2E-08, |x|=  1.0e+01, |y|=  1.5e+00
 
 Detailed timing (sec)
    Pre          IPM          Post
-0.000E+00    4.000E-02    1.000E-02    
-Max-norms: ||b||=9.588449e+00, ||c|| = 6.667862e+00,
-Cholesky |add|=0, |skip| = 0, ||L.L|| = 31.0251.
+1.000E-02    4.000E-02    0.000E+00    
+Max-norms: ||b||=6.611392e+00, ||c|| = 4.981209e+00,
+Cholesky |add|=0, |skip| = 0, ||L.L|| = 6.7188.
 ------------------------------------------------------------
 Status: Solved
 Optimal value (cvx_optval): -0.895296
 Done! 
 ------------------------------------------------------------------------
 The duality gap is equal to 
-  -1.2235e-07
+  -1.0519e-07
 
-</pre><p class="footer"><br>
-      Published with MATLAB&reg; 7.9<br></p></div><!--
-##### SOURCE BEGIN #####
-%% Section 5.2.4: Solves a simple QCQP
-
-% Boyd & Vandenberghe, "Convex Optimization"
-% Joëlle Skaf - 08/23/05
-%
-% Solved a QCQP with 3 inequalities:
-%           minimize    1/2 x'*P0*x + q0'*r + r0
-%               s.t.    1/2 x'*Pi*x + qi'*r + ri <= 0   for i=1,2,3
-% and verifies that strong duality holds.
-
-% Input data
-randn('state',13);
-n = 6;
-P0 = randn(n); P0 = P0'*P0 + eps*eye(n);
-P1 = randn(n); P1 = P1'*P1;
-P2 = randn(n); P2 = P2'*P2;
-P3 = randn(n); P3 = P3'*P3;
-q0 = randn(n,1); q1 = randn(n,1); q2 = randn(n,1); q3 = randn(n,1);
-r0 = randn(1); r1 = randn(1); r2 = randn(1); r3 = randn(1);
-
-fprintf(1,'Computing the optimal value of the QCQP and its dual... ');
-
-cvx_begin
-    variable x(n)
-    dual variables lam1 lam2 lam3
-    minimize( 0.5*quad_form(x,P0) + q0'*x + r0 )
-    lam1: 0.5*quad_form(x,P1) + q1'*x + r1 <= 0;
-    lam2: 0.5*quad_form(x,P2) + q2'*x + r2 <= 0;
-    lam3: 0.5*quad_form(x,P3) + q3'*x + r3 <= 0;
-cvx_end
-
-obj1 = cvx_optval;
-P_lam = P0 + lam1*P1 + lam2*P2 + lam3*P3;
-q_lam = q0 + lam1*q1 + lam2*q2 + lam3*q3;
-r_lam = r0 + lam1*r1 + lam2*r2 + lam3*r3;
-obj2 = -0.5*q_lam'*inv(P_lam)*q_lam + r_lam;
-
-fprintf(1,'Done! \n');
-
-% Displaying results
-disp('REPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASH');
-disp('The duality gap is equal to ');
-disp(obj1-obj2)
-
-##### SOURCE END #####
---></body></html>
+</pre>
+</div>
+</body>
+</html>

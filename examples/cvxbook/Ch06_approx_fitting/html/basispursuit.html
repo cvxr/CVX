@@ -1,68 +1,25 @@
-
-<!DOCTYPE html
-  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
-<html><head>
-      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-   <!--
-This HTML is auto-generated from an M-file.
-To make changes, update the M-file and republish this document.
-      --><title>Figures 6.21-6.23: Basis pursuit using Gabor functions</title><meta name="generator" content="MATLAB 7.9"><meta name="date" content="2009-11-12"><meta name="m-file" content="basispursuit_"><style type="text/css">
-
-body {
-  background-color: white;
-  margin:10px;
-}
-
-h1 {
-  color: #990000; 
-  font-size: x-large;
-}
-
-h2 {
-  color: #990000;
-  font-size: medium;
-}
-
-/* Make the text shrink to fit narrow windows, but not stretch too far in 
-wide windows. */ 
-p,h1,h2,div.content div {
-  max-width: 600px;
-  /* Hack for IE6 */
-  width: auto !important; width: 600px;
-}
-
-pre.codeinput {
-  background: #EEEEEE;
-  padding: 10px;
-}
-@media print {
-  pre.codeinput {word-wrap:break-word; width:100%;}
-} 
-
-span.keyword {color: #0000FF}
-span.comment {color: #228B22}
-span.string {color: #A020F0}
-span.untermstring {color: #B20000}
-span.syscmd {color: #B28C00}
-
-pre.codeoutput {
-  color: #666666;
-  padding: 10px;
-}
-
-pre.error {
-  color: red;
-}
-
-p.footer {
-  text-align: right;
-  font-size: xx-small;
-  font-weight: lighter;
-  font-style: italic;
-  color: gray;
-}
-
-  </style></head><body><div class="content"><h1>Figures 6.21-6.23: Basis pursuit using Gabor functions</h1><pre class="codeinput"><span class="comment">% Section 6.5.4</span>
+<!DOCTYPE HTML>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Figures 6.21-6.23: Basis pursuit using Gabor functions</title>
+<link rel="canonical" href="http://cvxr.com/cvx/examples/cvxbook/Ch06_approx_fitting/html/basispursuit.html">
+<link rel="stylesheet" href="../../../examples.css" type="text/css">
+</head>
+<body>
+<div id="header">
+<h1>Figures 6.21-6.23: Basis pursuit using Gabor functions</h1>
+Jump to:&nbsp;&nbsp;&nbsp;&nbsp;
+<a href="#source">Source code</a>&nbsp;&nbsp;&nbsp;&nbsp;
+<a href="#output">Text output</a>
+&nbsp;&nbsp;&nbsp;&nbsp;
+<a href="#plots">Plots</a>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="../../../index.html">Library index</a>
+</div>
+<div id="content">
+<a id="source"></a>
+<pre class="codeinput">
+<span class="comment">% Section 6.5.4</span>
 <span class="comment">% Boyd &amp; Vandenberghe "Convex Optimization"</span>
 <span class="comment">% Original by Lieven Vandenberghe</span>
 <span class="comment">% Adapted for CVX by Argyris Zymnis - 11/27/2005</span>
@@ -177,7 +134,10 @@ hold <span class="string">on</span>;
 xlabel(<span class="string">'t'</span>); ylabel(<span class="string">'w'</span>);
 title(<span class="string">'Instantaneous frequency'</span>)
 hold <span class="string">off</span>;
-</pre><pre class="codeoutput">Building dictionary matrix...done.
+</pre>
+<a id="output"></a>
+<pre class="codeoutput">
+Building dictionary matrix...done.
 Solving Basis Pursuit problem...
  
 Calling sedumi: 61625 variables, 502 equality constraints
@@ -202,151 +162,37 @@ nnz(A) = 3742304 + 0, nnz(ADA) = 252004, nnz(L) = 126253
  12 :   1.28E+01 4.60E-01 0.000 0.6604 0.9000 0.9216   1.00  1  1  1.2E-02
  13 :   1.28E+01 2.34E-01 0.000 0.5082 0.9039 0.9000   1.00  1  1  6.3E-03
  14 :   1.28E+01 1.44E-01 0.000 0.6167 0.9000 0.9219   1.00  1  1  3.9E-03
- 15 :   1.28E+01 6.69E-02 0.000 0.4641 0.9000 0.9000   1.00  1  1  1.8E-03
- 16 :   1.28E+01 2.54E-02 0.000 0.3791 0.9049 0.9000   1.00  1  1  7.0E-04
- 17 :   1.28E+01 4.12E-03 0.000 0.1622 0.9095 0.9000   1.00  2  2  1.1E-04
- 18 :   1.28E+01 3.67E-04 0.000 0.0892 0.9900 0.9900   1.00  2  2  1.0E-05
- 19 :   1.28E+01 8.20E-05 0.000 0.2234 0.9000 0.9000   1.00  2  2  2.3E-06
- 20 :   1.28E+01 2.69E-05 0.000 0.3280 0.9000 0.9042   1.00  2  2  7.4E-07
- 21 :   1.28E+01 9.48E-06 0.000 0.3522 0.9000 0.9012   1.00  2  2  2.6E-07
- 22 :   1.28E+01 3.55E-06 0.000 0.3746 0.9000 0.9000   1.00  3  3  9.8E-08
- 23 :   1.28E+01 1.15E-06 0.249 0.3253 0.9000 0.9000   1.00  3  3  3.2E-08
- 24 :   1.28E+01 1.16E-07 0.494 0.1007 0.9290 0.9000   1.00  4  4  3.2E-09
+ 15 :   1.28E+01 4.40E-02 0.000 0.3054 0.9211 0.9000   1.00  1  1  1.2E-03
+ 16 :   1.28E+01 2.71E-02 0.000 0.6154 0.5027 0.4500   1.00  2  3  7.5E-04
+ 17 :   1.28E+01 3.89E-03 0.000 0.1435 0.9193 0.9000   1.00  3  3  1.1E-04
+ 18 :   1.28E+01 3.94E-04 0.000 0.1014 0.9097 0.9000   1.00  3  3  1.1E-05
+ 19 :   1.28E+01 1.31E-04 0.000 0.3323 0.6788 0.6750   1.00  4  4  3.6E-06
+ 20 :   1.28E+01 6.00E-05 0.000 0.4579 0.9000 0.9221   1.00  4  4  1.6E-06
+ 21 :   1.28E+01 1.88E-05 0.000 0.3124 0.9000 0.9029   1.00  4  4  5.1E-07
+ 22 :   1.28E+01 7.07E-06 0.000 0.3768 0.9000 0.9040   1.00  4  4  1.9E-07
+ 23 :   1.28E+01 2.84E-06 0.000 0.4015 0.9000 0.9000   1.00  4  4  7.7E-08
+ 24 :   1.28E+01 1.07E-06 0.000 0.3776 0.9073 0.9000   1.00  5  5  2.9E-08
+ 25 :   1.28E+01 4.62E-07 0.000 0.4315 0.9000 0.9000   1.00  5  5  1.3E-08
 
 iter seconds digits       c*x               b*y
- 24    246.1   8.0  1.2845155802e+01  1.2845155686e+01
-|Ax-b| =   1.9e-11, [Ay-c]_+ =   3.8E-13, |x|=  3.5e+00, |y|=  9.9e-01
+ 25    246.2   4.3  1.2845846717e+01  1.2845140282e+01
+|Ax-b| =   1.2e-03, [Ay-c]_+ =   0.0E+00, |x|=  3.5e+00, |y|=  9.9e-01
 
 Detailed timing (sec)
    Pre          IPM          Post
-1.081E+01    2.461E+02    7.000E-02    
+9.620E+00    2.462E+02    1.300E-01    
 Max-norms: ||b||=1.497811e+00, ||c|| = 1,
-Cholesky |add|=0, |skip| = 0, ||L.L|| = 3304.27.
+Cholesky |add|=0, |skip| = 0, ||L.L|| = 3302.14.
 ------------------------------------------------------------
 Status: Solved
-Optimal value (cvx_optval): +12.8452
+Optimal value (cvx_optval): +12.8458
 done
-Elapsed time is 201.717853 seconds.
-</pre><img vspace="5" hspace="5" src="basispursuit__01.png" alt=""> <img vspace="5" hspace="5" src="basispursuit__02.png" alt=""> <img vspace="5" hspace="5" src="basispursuit__03.png" alt=""> <p class="footer"><br>
-      Published with MATLAB&reg; 7.9<br></p></div><!--
-##### SOURCE BEGIN #####
-%% Figures 6.21-6.23: Basis pursuit using Gabor functions
-
-% Section 6.5.4
-% Boyd & Vandenberghe "Convex Optimization"
-% Original by Lieven Vandenberghe
-% Adapted for CVX by Argyris Zymnis - 11/27/2005
-%
-% Here we find a sparse basis for a signal y out of
-% a set of Gabor functions. We do this by solving
-%       minimize  ||A*x-y||_2 + ||x||_1
-%
-% where the columns of A are sampled Gabor functions.
-% We then fix the sparsity pattern obtained and solve
-%       minimize  ||A*x-y||_2
-%
-% NOTE: The file takes a while to run
-
-clear
-
-% Problem parameters
-sigma = 0.05;  % Size of Gaussian function
-Tinv  = 500;   % Inverse of sample time
-Thr   = 0.001; % Basis signal threshold
-kmax  = 30;    % Number of signals are 2*kmax+1
-w0    = 5;     % Base frequency (w0 * kmax should be 150 for good results)
-
-% Build sine/cosine basis
-fprintf(1,'Building dictionary matrix...');
-% Gaussian kernels
-TK = (Tinv+1)*(2*kmax+1);
-t  = (0:Tinv)'/Tinv;
-A  = exp(-t.^2/(sigma^2));
-ns = nnz(A>=Thr)-1;
-A  = A([ns+1:-1:1,2:ns+1],:);
-ii = (0:2*ns)';
-jj = ones(2*ns+1,1)*(1:Tinv+1);
-oT = ones(1,Tinv+1);
-A  = sparse(ii(:,oT)+jj,jj,A(:,oT));
-A  = A(ns+1:ns+Tinv+1,:);
-% Sine/Cosine basis
-k  = [ 0, reshape( [ 1 : kmax ; 1 : kmax ], 1, 2 * kmax ) ];
-p  = zeros(1,2*kmax+1); p(3:2:end) = -pi/2;
-SC = cos(w0*t*k+ones(Tinv+1,1)*p);
-% Multiply
-ii = 1:numel(SC);
-jj = rem(ii-1,Tinv+1)+1;
-A  = sparse(ii,jj,SC(:)) * A;
-A  = reshape(A,Tinv+1,(Tinv+1)*(2*kmax+1));
-fprintf(1,'done.\n');
-
-% Construct example signal
-a = 0.5*sin(t*11)+1;
-theta = sin(5*t)*30;
-b = a.*sin(theta);
-
-% Solve the Basis Pursuit problem
-disp('Solving Basis Pursuit problem...');
-tic
-cvx_begin
-    variable x(30561)
-    minimize(sum_square(A*x-b)+norm(x,1))
-cvx_end
-disp('done');
-toc
-
-% Reoptimize problem over nonzero coefficients
-p = find(abs(x) > 1e-5);
-A2 = A(:,p);
-x2 = A2 \ b;
-
-% Constants
-M = 61; % Number of different Basis signals
-sk = 250; % Index of s = 0.5
-
-% Plot example basis functions;
-%if (0) % to do this, re-run basispursuit.m to create A
-figure(1); clf;
-subplot(3,1,1); plot(t,A(:,M*sk+1)); axis([0 1 -1 1]);
-title('Basis function 1');
-subplot(3,1,2); plot(t,A(:,M*sk+31)); axis([0 1 -1 1]);
-title('Basis function 2');
-subplot(3,1,3); plot(t,A(:,M*sk+61)); axis([0 1 -1 1]);
-title('Basis function 3');
-%print -deps bp-dict_helv.eps
-
-% Plot reconstructed signal
-figure(2); clf;
-subplot(2,1,1);
-plot(t,A2*x2,'REPLACE_WITH_DASH_DASH',t,b,'-'); axis([0 1 -1.5 1.5]);
-xlabel('t'); ylabel('y_{hat} and y');
-title('Original and Reconstructed signals')
-subplot(2,1,2);
-plot(t,A2*x2-b); axis([0 1 -0.06 0.06]);
-title('Reconstruction error')
-xlabel('t'); ylabel('y - y_{hat}');
-%print -deps bp-approx_helv.eps
-
-% Plot frequency plot
-figure(3); clf;
-
-subplot(2,1,1);
-plot(t,b); xlabel('t'); ylabel('y'); axis([0 1 -1.5 1.5]);
-title('Original Signal')
-subplot(2,1,2);
-plot(t,150*abs(cos(w0*t)),'REPLACE_WITH_DASH_DASH');
-hold on;
-for k = 1:length(t);
-  if(abs(x((k-1)*M+1)) > 1e-5), plot(t(k),0,'o'); end;
-  for j = 2:2:kmax*2
-    if((abs(x((k-1)*M+j)) > 1e-5) | (abs(x((k-1)*M+j+1)) > 1e-5)),
-      plot(t(k),w0*j/2,'o');
-    end;
-  end;
-end;
-xlabel('t'); ylabel('w');
-title('Instantaneous frequency')
-hold off;
-
-##### SOURCE END #####
---></body></html>
+Elapsed time is 204.515683 seconds.
+</pre>
+<a id="plots"></a>
+<div id="plotoutput">
+<img src="basispursuit__01.png" alt=""> <img src="basispursuit__02.png" alt=""> <img src="basispursuit__03.png" alt=""> 
+</div>
+</div>
+</body>
+</html>

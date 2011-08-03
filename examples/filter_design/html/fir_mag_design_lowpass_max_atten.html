@@ -1,68 +1,25 @@
-
-<!DOCTYPE html
-  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
-<html><head>
-      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-   <!--
-This HTML is auto-generated from an M-file.
-To make changes, update the M-file and republish this document.
-      --><title>Maximize stopband attenuation of a lowpass FIR filter (magnitude design)</title><meta name="generator" content="MATLAB 7.9"><meta name="date" content="2009-11-12"><meta name="m-file" content="fir_mag_design_lowpass_max_atten_"><style type="text/css">
-
-body {
-  background-color: white;
-  margin:10px;
-}
-
-h1 {
-  color: #990000; 
-  font-size: x-large;
-}
-
-h2 {
-  color: #990000;
-  font-size: medium;
-}
-
-/* Make the text shrink to fit narrow windows, but not stretch too far in 
-wide windows. */ 
-p,h1,h2,div.content div {
-  max-width: 600px;
-  /* Hack for IE6 */
-  width: auto !important; width: 600px;
-}
-
-pre.codeinput {
-  background: #EEEEEE;
-  padding: 10px;
-}
-@media print {
-  pre.codeinput {word-wrap:break-word; width:100%;}
-} 
-
-span.keyword {color: #0000FF}
-span.comment {color: #228B22}
-span.string {color: #A020F0}
-span.untermstring {color: #B20000}
-span.syscmd {color: #B28C00}
-
-pre.codeoutput {
-  color: #666666;
-  padding: 10px;
-}
-
-pre.error {
-  color: red;
-}
-
-p.footer {
-  text-align: right;
-  font-size: xx-small;
-  font-weight: lighter;
-  font-style: italic;
-  color: gray;
-}
-
-  </style></head><body><div class="content"><h1>Maximize stopband attenuation of a lowpass FIR filter (magnitude design)</h1><pre class="codeinput"><span class="comment">% "FIR Filter Design via Spectral Factorization and Convex Optimization"</span>
+<!DOCTYPE HTML>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Maximize stopband attenuation of a lowpass FIR filter (magnitude design)</title>
+<link rel="canonical" href="http://cvxr.com/cvx/examples/filter_design/html/fir_mag_design_lowpass_max_atten.html">
+<link rel="stylesheet" href="../../examples.css" type="text/css">
+</head>
+<body>
+<div id="header">
+<h1>Maximize stopband attenuation of a lowpass FIR filter (magnitude design)</h1>
+Jump to:&nbsp;&nbsp;&nbsp;&nbsp;
+<a href="#source">Source code</a>&nbsp;&nbsp;&nbsp;&nbsp;
+<a href="#output">Text output</a>
+&nbsp;&nbsp;&nbsp;&nbsp;
+<a href="#plots">Plots</a>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="../../index.html">Library index</a>
+</div>
+<div id="content">
+<a id="source"></a>
+<pre class="codeinput">
+<span class="comment">% "FIR Filter Design via Spectral Factorization and Convex Optimization"</span>
 <span class="comment">% by S.-P. Wu, S. Boyd, and L. Vandenberghe</span>
 <span class="comment">% (figures are generated)</span>
 <span class="comment">%</span>
@@ -175,169 +132,61 @@ subplot(2,1,2)
 plot(w,angle(H))
 axis([0,pi,-pi,pi])
 xlabel(<span class="string">'w'</span>), ylabel(<span class="string">'phase H(w)'</span>)
-</pre><pre class="codeoutput"> 
-Calling sedumi: 828 variables, 21 equality constraints
+</pre>
+<a id="output"></a>
+<pre class="codeoutput">
+ 
+Calling sedumi: 1056 variables, 249 equality constraints
    For improved efficiency, sedumi is solving the dual problem.
 ------------------------------------------------------------
 SeDuMi 1.21 by AdvOL, 2005-2008 and Jos F. Sturm, 1998-2003.
 Alg = 2: xz-corrector, Adaptive Step-Differentiation, theta = 0.250, beta = 0.500
-eqs m = 21, order n = 829, dim = 829, blocks = 229
-nnz(A) = 12228 + 0, nnz(ADA) = 441, nnz(L) = 231
+eqs m = 249, order n = 1057, dim = 1057, blocks = 229
+nnz(A) = 12684 + 0, nnz(ADA) = 10245, nnz(L) = 5247
  it :     b*y       gap    delta  rate   t/tP*  t/tD*   feas cg cg  prec
-  0 :            1.25E+02 0.000
-  1 :  -8.10E-01 4.27E+01 0.000 0.3408 0.9000 0.9000   4.90  1  1  7.7E+01
-  2 :  -6.93E-01 1.09E+01 0.000 0.2556 0.9000 0.9000   2.08  1  1  1.2E+01
-  3 :  -3.57E-01 4.67E+00 0.000 0.4282 0.9000 0.9000   2.20  1  1  3.0E+00
-  4 :  -7.18E-02 2.30E+00 0.000 0.4935 0.9000 0.9000   3.56  1  1  6.3E-01
-  5 :  -2.40E-02 1.01E+00 0.000 0.4372 0.9000 0.9000   1.84  1  1  2.2E-01
-  6 :  -8.79E-03 3.98E-01 0.000 0.3955 0.9000 0.9000   1.31  1  1  8.8E-02
-  7 :  -4.47E-03 2.04E-01 0.000 0.5118 0.9000 0.9000   1.11  1  1  5.1E-02
-  8 :  -1.95E-03 8.02E-02 0.000 0.3931 0.9000 0.9000   1.07  1  1  2.7E-02
-  9 :  -9.23E-04 3.51E-02 0.000 0.4375 0.9000 0.9000   1.01  1  1  1.8E-02
- 10 :  -2.58E-04 3.98E-03 0.000 0.1135 0.9145 0.9000   0.98  1  1  7.1E-03
- 11 :  -1.65E-04 1.21E-03 0.000 0.3036 0.9331 0.9000   1.00  1  1  4.3E-03
- 12 :  -1.65E-04 7.62E-04 0.410 0.6307 0.9000 0.0000   0.99  1  1  3.9E-03
- 13 :  -1.44E-04 5.85E-04 0.162 0.7670 0.9000 0.9000   0.98  1  1  3.0E-03
- 14 :  -1.27E-04 2.80E-04 0.000 0.4782 0.9439 0.9000   0.95  1  1  2.1E-03
- 15 :  -1.07E-04 5.69E-05 0.000 0.2035 0.9194 0.9000   0.99  1  1  6.2E-04
- 16 :  -1.05E-04 1.20E-05 0.000 0.2109 0.9118 0.9000   0.99  1  1  1.4E-04
- 17 :  -1.05E-04 2.46E-06 0.000 0.2050 0.9080 0.9000   1.00  1  1  3.1E-05
- 18 :  -1.05E-04 2.86E-07 0.000 0.1162 0.9070 0.9000   1.00  1  1  3.7E-06
- 19 :  -1.05E-04 1.38E-09 0.000 0.0048 0.9990 0.9601   1.00  2  2  1.3E-08
+  0 :            9.82E+01 0.000
+  1 :  -1.27E+00 3.48E+01 0.000 0.3548 0.9000 0.9000   5.05  1  1  7.9E+01
+  2 :  -9.96E-01 1.08E+01 0.000 0.3110 0.9000 0.9000   2.24  1  1  1.4E+01
+  3 :  -4.44E-01 5.29E+00 0.000 0.4886 0.9000 0.9000   2.64  1  1  3.5E+00
+  4 :  -8.99E-02 2.78E+00 0.000 0.5246 0.9000 0.9000   3.86  1  1  7.8E-01
+  5 :  -3.24E-02 1.30E+00 0.000 0.4678 0.9000 0.9000   1.89  1  1  2.9E-01
+  6 :  -1.45E-02 6.25E-01 0.000 0.4810 0.9000 0.9000   1.37  1  1  1.3E-01
+  7 :  -6.24E-03 2.74E-01 0.000 0.4395 0.9000 0.9000   1.16  1  1  6.1E-02
+  8 :  -2.92E-03 1.25E-01 0.000 0.4550 0.9000 0.9000   1.07  1  1  3.3E-02
+  9 :  -1.43E-03 5.43E-02 0.000 0.4349 0.9000 0.9000   1.04  1  1  1.9E-02
+ 10 :  -1.43E-03 1.53E-02 0.000 0.2808 0.9000 0.0000   0.98  1  1  2.4E-02
+ 11 :  -8.57E-04 3.88E-03 0.022 0.2542 0.9000 0.4730   0.99  1  1  2.2E-02
+ 12 :  -2.44E-04 5.86E-04 0.141 0.1513 0.9151 0.9000   1.00  1  1  6.4E-03
+ 13 :  -1.45E-04 3.97E-04 0.000 0.6772 0.9000 0.9428   1.00  1  1  3.5E-03
+ 14 :  -1.20E-04 2.82E-04 0.000 0.7098 0.9000 0.9338   0.99  1  1  2.3E-03
+ 15 :  -1.13E-04 2.11E-04 0.000 0.7478 0.9000 0.9276   0.97  1  1  1.7E-03
+ 16 :  -1.08E-04 7.22E-05 0.000 0.3424 0.9000 0.6894   0.99  1  1  6.1E-04
+ 17 :  -1.05E-04 1.63E-05 0.000 0.2260 0.9092 0.9000   1.00  1  1  1.5E-04
+ 18 :  -1.05E-04 2.61E-06 0.000 0.1601 0.9119 0.9000   1.00  1  1  2.6E-05
+ 19 :  -1.05E-04 2.77E-07 0.000 0.1060 0.9104 0.9000   1.00  1  1  3.0E-06
+ 20 :  -1.05E-04 6.35E-09 0.000 0.0229 0.9900 0.9111   1.00  2  2  8.6E-08
+ 21 :  -1.05E-04 7.77E-14 0.000 0.0000 1.0000 1.0000   1.00  2  2  1.2E-12
 
 iter seconds digits       c*x               b*y
- 19      0.1   6.1 -1.0483614480e-04 -1.0483646538e-04
-|Ax-b| =   6.6e-10, [Ay-c]_+ =   3.2E-10, |x|=  7.5e-01, |y|=  3.1e-01
+ 21      0.2   9.5 -1.0483675435e-04 -1.0483675451e-04
+|Ax-b| =   1.5e-12, [Ay-c]_+ =   2.0E-14, |x|=  8.6e-01, |y|=  3.1e-01
 
 Detailed timing (sec)
    Pre          IPM          Post
-1.000E-02    1.200E-01    0.000E+00    
+2.000E-02    1.700E-01    0.000E+00    
 Max-norms: ||b||=1, ||c|| = 1.258925e+00,
-Cholesky |add|=0, |skip| = 0, ||L.L|| = 2.26418.
+Cholesky |add|=0, |skip| = 0, ||L.L|| = 2.33046.
 ------------------------------------------------------------
 Status: Solved
-Optimal value (cvx_optval): +0.000104836
+Optimal value (cvx_optval): +0.000104837
 Problem is Solved
 The max attenuation in the stopband is -39.79 dB.
 
-</pre><img vspace="5" hspace="5" src="fir_mag_design_lowpass_max_atten__01.png" alt=""> <img vspace="5" hspace="5" src="fir_mag_design_lowpass_max_atten__02.png" alt=""> <p class="footer"><br>
-      Published with MATLAB&reg; 7.9<br></p></div><!--
-##### SOURCE BEGIN #####
-%% Maximize stopband attenuation of a lowpass FIR filter (magnitude design)
-
-% "FIR Filter Design via Spectral Factorization and Convex Optimization"
-% by S.-P. Wu, S. Boyd, and L. Vandenberghe
-% (figures are generated)
-%
-% Designs an FIR lowpass filter using spectral factorization method where we:
-% - minimize maximum stopband attenuation
-% - have a constraint on the maximum passband ripple
-%
-%   minimize   max |H(w)|                      for w in the stopband
-%       s.t.   1/delta <= |H(w)| <= delta      for w in the passband
-%
-% We change variables via spectral factorization method and get:
-%
-%   minimize   max R(w)                        for w in the stopband
-%       s.t.   (1/delta)^2 <= R(w) <= delta^2  for w in the passband
-%              R(w) >= 0                       for all w
-%
-% where R(w) is the squared magnited of the frequency response
-% (and the Fourier transform of the autocorrelation coefficients r).
-% Variables are coeffients r. delta is the allowed passband ripple.
-% This is a convex problem (can be formulated as an LP after sampling).
-%
-% Written for CVX by Almir Mutapcic 02/02/06
-
-%*********************************************************************
-% user's filter specs (for a low-pass filter example)
-%*********************************************************************
-% number of FIR coefficients (including the zeroth one)
-n = 20;
-
-wpass = 0.12*pi;   % end of the passband
-wstop = 0.24*pi;   % start of the stopband
-delta = 1;         % maximum passband ripple in dB (+/- around 0 dB)
-
-%*********************************************************************
-% create optimization parameters
-%*********************************************************************
-% rule-of-thumb discretization (from Cheney's Approx. Theory book)
-m = 15*n;
-w = linspace(0,pi,m)'; % omega
-
-% A is the matrix used to compute the power spectrum
-% A(w,:) = [1 2*cos(w) 2*cos(2*w) ... 2*cos(n*w)]
-A = [ones(m,1) 2*cos(kron(w,[1:n-1]))];
-
-% passband 0 <= w <= w_pass
-ind = find((0 <= w) & (w <= wpass));    % passband
-Lp  = 10^(-delta/20)*ones(length(ind),1);
-Up  = 10^(+delta/20)*ones(length(ind),1);
-Ap  = A(ind,:);
-
-% transition band is not constrained (w_pass <= w <= w_stop)
-
-% stopband (w_stop <= w)
-ind = find((wstop <= w) & (w <= pi));   % stopband
-As  = A(ind,:);
-
-%********************************************************************
-% optimization
-%********************************************************************
-% formulate and solve the magnitude design problem
-cvx_begin
-  variable r(n,1)
-
-  % this is a feasibility problem
-  minimize( max( abs( As*r ) ) )
-  subject to
-    % passband constraints
-    Ap*r >= (Lp.^2);
-    Ap*r <= (Up.^2);
-    % nonnegative-real constraint for all frequencies (a bit redundant)
-    A*r >= 0;
-cvx_end
-
-% check if problem was successfully solved
-disp(['Problem is ' cvx_status])
-if ~strfind(cvx_status,'Solved')
-  return
-end
-
-% compute the spectral factorization
-h = spectral_fact(r);
-
-% compute the max attenuation in the stopband (convert to original vars)
-Ustop = 10*log10(cvx_optval);
-fprintf(1,'The max attenuation in the stopband is %3.2f dB.\n\n',Ustop);
-
-%*********************************************************************
-% plotting routines
-%*********************************************************************
-% frequency response of the designed filter, where j = sqrt(-1)
-H = [exp(-j*kron(w,[0:n-1]))]*h;
-
-figure(1)
-% FIR impulse response
-plot([0:n-1],h','o',[0:n-1],h','b:')
-xlabel('t'), ylabel('h(t)')
-
-figure(2)
-% magnitude
-subplot(2,1,1)
-plot(w,20*log10(abs(H)), ...
-     [0 wpass],[delta delta],'rREPLACE_WITH_DASH_DASH', ...
-     [0 wpass],[-delta -delta],'rREPLACE_WITH_DASH_DASH', ...
-     [wstop pi],[Ustop Ustop],'rREPLACE_WITH_DASH_DASH')
-xlabel('w')
-ylabel('mag H(w) in dB')
-axis([0 pi -50 5])
-% phase
-subplot(2,1,2)
-plot(w,angle(H))
-axis([0,pi,-pi,pi])
-xlabel('w'), ylabel('phase H(w)')
-
-##### SOURCE END #####
---></body></html>
+</pre>
+<a id="plots"></a>
+<div id="plotoutput">
+<img src="fir_mag_design_lowpass_max_atten__01.png" alt=""> <img src="fir_mag_design_lowpass_max_atten__02.png" alt=""> 
+</div>
+</div>
+</body>
+</html>

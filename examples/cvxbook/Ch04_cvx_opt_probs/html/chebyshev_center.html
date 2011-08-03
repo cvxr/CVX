@@ -1,68 +1,25 @@
-
-<!DOCTYPE html
-  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
-<html><head>
-      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-   <!--
-This HTML is auto-generated from an M-file.
-To make changes, update the M-file and republish this document.
-      --><title>Section 4.3.1: Compute the Chebyshev center of a polyhedron</title><meta name="generator" content="MATLAB 7.9"><meta name="date" content="2009-11-12"><meta name="m-file" content="chebyshev_center_"><style type="text/css">
-
-body {
-  background-color: white;
-  margin:10px;
-}
-
-h1 {
-  color: #990000; 
-  font-size: x-large;
-}
-
-h2 {
-  color: #990000;
-  font-size: medium;
-}
-
-/* Make the text shrink to fit narrow windows, but not stretch too far in 
-wide windows. */ 
-p,h1,h2,div.content div {
-  max-width: 600px;
-  /* Hack for IE6 */
-  width: auto !important; width: 600px;
-}
-
-pre.codeinput {
-  background: #EEEEEE;
-  padding: 10px;
-}
-@media print {
-  pre.codeinput {word-wrap:break-word; width:100%;}
-} 
-
-span.keyword {color: #0000FF}
-span.comment {color: #228B22}
-span.string {color: #A020F0}
-span.untermstring {color: #B20000}
-span.syscmd {color: #B28C00}
-
-pre.codeoutput {
-  color: #666666;
-  padding: 10px;
-}
-
-pre.error {
-  color: red;
-}
-
-p.footer {
-  text-align: right;
-  font-size: xx-small;
-  font-weight: lighter;
-  font-style: italic;
-  color: gray;
-}
-
-  </style></head><body><div class="content"><h1>Section 4.3.1: Compute the Chebyshev center of a polyhedron</h1><pre class="codeinput"><span class="comment">% Boyd &amp; Vandenberghe "Convex Optimization"</span>
+<!DOCTYPE HTML>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Section 4.3.1: Compute the Chebyshev center of a polyhedron</title>
+<link rel="canonical" href="http://cvxr.com/cvx/examples/cvxbook/Ch04_cvx_opt_probs/html/chebyshev_center.html">
+<link rel="stylesheet" href="../../../examples.css" type="text/css">
+</head>
+<body>
+<div id="header">
+<h1>Section 4.3.1: Compute the Chebyshev center of a polyhedron</h1>
+Jump to:&nbsp;&nbsp;&nbsp;&nbsp;
+<a href="#source">Source code</a>&nbsp;&nbsp;&nbsp;&nbsp;
+<a href="#output">Text output</a>
+&nbsp;&nbsp;&nbsp;&nbsp;
+Plots
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="../../../index.html">Library index</a>
+</div>
+<div id="content">
+<a id="source"></a>
+<pre class="codeinput">
+<span class="comment">% Boyd &amp; Vandenberghe "Convex Optimization"</span>
 <span class="comment">% Jo&euml;lle Skaf - 08/16/05</span>
 <span class="comment">%</span>
 <span class="comment">% The goal is to find the largest Euclidean ball (i.e. its center and</span>
@@ -92,7 +49,10 @@ fprintf(1,<span class="string">'The Chebyshev center coordinates are: \n'</span>
 disp(x_c);
 fprintf(1,<span class="string">'The radius of the largest Euclidean ball is: \n'</span>);
 disp(r);
-</pre><pre class="codeoutput">Computing Chebyshev center... 
+</pre>
+<a id="output"></a>
+<pre class="codeoutput">
+Computing Chebyshev center... 
 Calling sedumi: 20 variables, 11 equality constraints
    For improved efficiency, sedumi is solving the dual problem.
 ------------------------------------------------------------
@@ -113,8 +73,8 @@ nnz(A) = 220 + 0, nnz(ADA) = 121, nnz(L) = 66
   9 :   3.36E-01 1.62E-03 0.000 0.1468 0.9167 0.9000   1.00  1  1  2.3E-03
  10 :   3.37E-01 3.67E-05 0.000 0.0226 0.9901 0.9900   1.00  1  1  
 iter seconds digits       c*x               b*y
- 10      0.0  15.5  3.3705939820e-01  3.3705939820e-01
-|Ax-b| =   6.6e-17, [Ay-c]_+ =   1.3E-15, |x|=  1.5e-01, |y|=  7.7e+00
+ 10      0.0   Inf  3.3705939820e-01  3.3705939820e-01
+|Ax-b| =   3.4e-16, [Ay-c]_+ =   2.0E-15, |x|=  1.5e-01, |y|=  7.7e+00
 
 Detailed timing (sec)
    Pre          IPM          Post
@@ -140,41 +100,7 @@ The Chebyshev center coordinates are:
 The radius of the largest Euclidean ball is: 
     0.3371
 
-</pre><p class="footer"><br>
-      Published with MATLAB&reg; 7.9<br></p></div><!--
-##### SOURCE BEGIN #####
-%% Section 4.3.1: Compute the Chebyshev center of a polyhedron
-
-% Boyd & Vandenberghe "Convex Optimization"
-% Joëlle Skaf - 08/16/05
-%
-% The goal is to find the largest Euclidean ball (i.e. its center and
-% radius) that lies in a polyhedron described by linear inequalites in this
-% fashion: P = {x : a_i'*x <= b_i, i=1,...,m}
-
-% Generate the data
-randn('state',0);
-n = 10; m = 2*n;
-A = randn(m,n);
-b = A*rand(n,1) + 2*rand(m,1);
-norm_ai = sum(A.^2,2).^(.5);
-
-% Build and execute model
-fprintf(1,'Computing Chebyshev center...');
-cvx_begin
-    variable r(1)
-    variable x_c(n)
-    dual variable y
-    maximize ( r )
-    y: A*x_c + r*norm_ai <= b;
-cvx_end
-fprintf(1,'Done! \n');
-
-% Display results
-fprintf(1,'The Chebyshev center coordinates are: \n');
-disp(x_c);
-fprintf(1,'The radius of the largest Euclidean ball is: \n');
-disp(r);
-
-##### SOURCE END #####
---></body></html>
+</pre>
+</div>
+</body>
+</html>

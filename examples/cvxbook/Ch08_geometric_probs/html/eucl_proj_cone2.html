@@ -1,68 +1,25 @@
-
-<!DOCTYPE html
-  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
-<html><head>
-      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-   <!--
-This HTML is auto-generated from an M-file.
-To make changes, update the M-file and republish this document.
-      --><title>Euclidean projection on the semidefinite cone</title><meta name="generator" content="MATLAB 7.9"><meta name="date" content="2009-11-12"><meta name="m-file" content="eucl_proj_cone2_"><style type="text/css">
-
-body {
-  background-color: white;
-  margin:10px;
-}
-
-h1 {
-  color: #990000; 
-  font-size: x-large;
-}
-
-h2 {
-  color: #990000;
-  font-size: medium;
-}
-
-/* Make the text shrink to fit narrow windows, but not stretch too far in 
-wide windows. */ 
-p,h1,h2,div.content div {
-  max-width: 600px;
-  /* Hack for IE6 */
-  width: auto !important; width: 600px;
-}
-
-pre.codeinput {
-  background: #EEEEEE;
-  padding: 10px;
-}
-@media print {
-  pre.codeinput {word-wrap:break-word; width:100%;}
-} 
-
-span.keyword {color: #0000FF}
-span.comment {color: #228B22}
-span.string {color: #A020F0}
-span.untermstring {color: #B20000}
-span.syscmd {color: #B28C00}
-
-pre.codeoutput {
-  color: #666666;
-  padding: 10px;
-}
-
-pre.error {
-  color: red;
-}
-
-p.footer {
-  text-align: right;
-  font-size: xx-small;
-  font-weight: lighter;
-  font-style: italic;
-  color: gray;
-}
-
-  </style></head><body><div class="content"><h1>Euclidean projection on the semidefinite cone</h1><pre class="codeinput"><span class="comment">% Sec. 8.1.1, Boyd &amp; Vandenberghe "Convex Optimization"</span>
+<!DOCTYPE HTML>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Euclidean projection on the semidefinite cone</title>
+<link rel="canonical" href="http://cvxr.com/cvx/examples/cvxbook/Ch08_geometric_probs/html/eucl_proj_cone2.html">
+<link rel="stylesheet" href="../../../examples.css" type="text/css">
+</head>
+<body>
+<div id="header">
+<h1>Euclidean projection on the semidefinite cone</h1>
+Jump to:&nbsp;&nbsp;&nbsp;&nbsp;
+<a href="#source">Source code</a>&nbsp;&nbsp;&nbsp;&nbsp;
+<a href="#output">Text output</a>
+&nbsp;&nbsp;&nbsp;&nbsp;
+Plots
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="../../../index.html">Library index</a>
+</div>
+<div id="content">
+<a id="source"></a>
+<pre class="codeinput">
+<span class="comment">% Sec. 8.1.1, Boyd &amp; Vandenberghe "Convex Optimization"</span>
 <span class="comment">% Joelle Skaf - 10/07/05</span>
 <span class="comment">%</span>
 <span class="comment">% The projection of X0 on the proper cone K = S+^n is given by</span>
@@ -101,7 +58,10 @@ disp(<span class="string">'Verifying that the analytical solution and the soluti
 disp(<span class="string">'via CVX are equal by computing ||X_star - P_K(X0)||_F: '</span>);
 norm(X-pk_X0,<span class="string">'fro'</span>)
 disp(<span class="string">'Hence X_star and P_K(X0) are equal to working precision.'</span>);
-</pre><pre class="codeoutput">Computing the analytical solution...Done! 
+</pre>
+<a id="output"></a>
+<pre class="codeoutput">
+Computing the analytical solution...Done! 
 Computing the optimal solution by solving an SDP...Done! 
 -----------------------------------------------------------------
 Verifying that the analytical solution and the solution obtained 
@@ -112,54 +72,7 @@ ans =
    1.2906e-04
 
 Hence X_star and P_K(X0) are equal to working precision.
-</pre><p class="footer"><br>
-      Published with MATLAB&reg; 7.9<br></p></div><!--
-##### SOURCE BEGIN #####
-%% Euclidean projection on the semidefinite cone
-
-% Sec. 8.1.1, Boyd & Vandenberghe "Convex Optimization"
-% Joelle Skaf - 10/07/05
-%
-% The projection of X0 on the proper cone K = S+^n is given by
-%           minimize    ||X - X0||_F
-%               s.t.    X >=0
-% where X is a nxn matrix and ||.||_F is the Frobenius norm
-% It is also given by: P_K(X0)_k = sum_{i=1}^{n}max{0,lam_i}v_i*v_i'
-% s.t. X0= sum_{i=1}^{n}lam_i*v_i*v_i'is the eigenvalue decomposition of X0
-
-% Input data
-randn('seed',0);
-n  = 10;
-X0 = randn(n);
-X0 = 0.5 * (X0 + X0');
-[V,lam] = eig(X0);
-
-fprintf(1,'Computing the analytical solution...');
-% Analytical solution
-pk_X0 = V*max(lam,0)*V';
-fprintf(1,'Done! \n');
-
-% Solution via CVX
-fprintf(1,'Computing the optimal solution by solving an SDP...');
-
-cvx_begin sdp quiet
-    variable X(n,n) symmetric
-    minimize ( norm(X-X0,'fro') )
-    X >= 0;
-cvx_end
-
-fprintf(1,'Done! \n');
-
-% Verification
-disp('REPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASH-');
-disp('Verifying that the analytical solution and the solution obtained ');
-disp('via CVX are equal by computing ||X_star - P_K(X0)||_F: ');
-norm(X-pk_X0,'fro')
-disp('Hence X_star and P_K(X0) are equal to working precision.');
-
-
-
-
-
-##### SOURCE END #####
---></body></html>
+</pre>
+</div>
+</body>
+</html>

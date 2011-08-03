@@ -1,68 +1,25 @@
-
-<!DOCTYPE html
-  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
-<html><head>
-      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-   <!--
-This HTML is auto-generated from an M-file.
-To make changes, update the M-file and republish this document.
-      --><title>Section 8.2.2: Separating polyhedra in 2D</title><meta name="generator" content="MATLAB 7.9"><meta name="date" content="2009-11-12"><meta name="m-file" content="separate_poly_2D_"><style type="text/css">
-
-body {
-  background-color: white;
-  margin:10px;
-}
-
-h1 {
-  color: #990000; 
-  font-size: x-large;
-}
-
-h2 {
-  color: #990000;
-  font-size: medium;
-}
-
-/* Make the text shrink to fit narrow windows, but not stretch too far in 
-wide windows. */ 
-p,h1,h2,div.content div {
-  max-width: 600px;
-  /* Hack for IE6 */
-  width: auto !important; width: 600px;
-}
-
-pre.codeinput {
-  background: #EEEEEE;
-  padding: 10px;
-}
-@media print {
-  pre.codeinput {word-wrap:break-word; width:100%;}
-} 
-
-span.keyword {color: #0000FF}
-span.comment {color: #228B22}
-span.string {color: #A020F0}
-span.untermstring {color: #B20000}
-span.syscmd {color: #B28C00}
-
-pre.codeoutput {
-  color: #666666;
-  padding: 10px;
-}
-
-pre.error {
-  color: red;
-}
-
-p.footer {
-  text-align: right;
-  font-size: xx-small;
-  font-weight: lighter;
-  font-style: italic;
-  color: gray;
-}
-
-  </style></head><body><div class="content"><h1>Section 8.2.2: Separating polyhedra in 2D</h1><pre class="codeinput"><span class="comment">% Boyd &amp; Vandenberghe "Convex Optimization"</span>
+<!DOCTYPE HTML>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Section 8.2.2: Separating polyhedra in 2D</title>
+<link rel="canonical" href="http://cvxr.com/cvx/examples/cvxbook/Ch08_geometric_probs/html/separate_poly_2D.html">
+<link rel="stylesheet" href="../../../examples.css" type="text/css">
+</head>
+<body>
+<div id="header">
+<h1>Section 8.2.2: Separating polyhedra in 2D</h1>
+Jump to:&nbsp;&nbsp;&nbsp;&nbsp;
+<a href="#source">Source code</a>&nbsp;&nbsp;&nbsp;&nbsp;
+<a href="#output">Text output</a>
+&nbsp;&nbsp;&nbsp;&nbsp;
+<a href="#plots">Plots</a>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="../../../index.html">Library index</a>
+</div>
+<div id="content">
+<a id="source"></a>
+<pre class="codeinput">
+<span class="comment">% Boyd &amp; Vandenberghe "Convex Optimization"</span>
 <span class="comment">% Joelle Skaf - 10/09/05</span>
 <span class="comment">% (a figure is generated)</span>
 <span class="comment">%</span>
@@ -116,31 +73,36 @@ axis <span class="string">square</span>
 hold <span class="string">on</span>;
 plot(t,p)
 title(<span class="string">'Separating 2 polyhedra by a hyperplane'</span>);
-</pre><pre class="codeoutput">Finding a separating hyperplane between the 2 polyhedra... 
-Calling sedumi: 11 variables, 5 equality constraints
+</pre>
+<a id="output"></a>
+<pre class="codeoutput">
+Finding a separating hyperplane between the 2 polyhedra... 
+Calling sedumi: 12 variables, 5 equality constraints
 ------------------------------------------------------------
 SeDuMi 1.21 by AdvOL, 2005-2008 and Jos F. Sturm, 1998-2003.
 Alg = 2: xz-corrector, Adaptive Step-Differentiation, theta = 0.250, beta = 0.500
-eqs m = 5, order n = 11, dim = 12, blocks = 2
-nnz(A) = 17 + 0, nnz(ADA) = 25, nnz(L) = 15
+eqs m = 5, order n = 12, dim = 13, blocks = 2
+nnz(A) = 18 + 0, nnz(ADA) = 25, nnz(L) = 15
  it :     b*y       gap    delta  rate   t/tP*  t/tD*   feas cg cg  prec
-  0 :            1.53E+01 0.000
-  1 :  -2.21E+00 4.16E+00 0.000 0.2727 0.9000 0.9000   1.77  1  1  2.4E+00
-  2 :  -2.32E+00 8.44E-01 0.000 0.2028 0.9000 0.9000   1.45  1  1  3.6E-01
-  3 :  -2.12E+00 4.88E-02 0.000 0.0578 0.9900 0.9900   1.07  1  1  2.1E-02
-  4 :  -2.12E+00 1.71E-04 0.000 0.0035 0.9990 0.9990   1.01  1  1  7.8E-05
-  5 :  -2.12E+00 6.83E-07 0.000 0.0040 0.9990 0.9990   1.00  1  1  3.1E-07
-  6 :  -2.12E+00 9.97E-09 0.000 0.0146 0.9901 0.9900   1.00  2  2  5.0E-09
+  0 :            1.26E+01 0.000
+  1 :  -1.46E+00 4.21E+00 0.000 0.3333 0.9000 0.9000   2.47  1  1  2.1E+00
+  2 :  -2.14E+00 4.21E-01 0.000 0.1000 0.9900 0.9900   1.34  1  1  1.9E-01
+  3 :  -2.12E+00 2.81E-02 0.000 0.0668 0.9900 0.9900   1.03  1  1  1.2E-02
+  4 :  -2.12E+00 2.77E-03 0.019 0.0986 0.9900 0.9900   1.00  1  1  1.3E-03
+  5 :  -2.12E+00 8.19E-06 0.000 0.0030 0.9990 0.9990   1.00  1  1  3.8E-06
+  6 :  -2.12E+00 2.62E-07 0.000 0.0321 0.9900 0.9900   1.00  1  1  1.4E-07
+  7 :  -2.12E+00 1.04E-08 0.207 0.0397 0.9900 0.5501   1.00  1  2  1.6E-08
+  8 :  -2.12E+00 1.64E-10 0.000 0.0157 0.9902 0.9900   1.00  2  2  4.0E-10
 
 iter seconds digits       c*x               b*y
-  6      0.0   8.3 -2.1213203358e+00 -2.1213203460e+00
-|Ax-b| =   4.9e-10, [Ay-c]_+ =   2.6E-09, |x|=  1.9e+00, |y|=  2.6e+00
+  8      0.0   Inf -2.1213203424e+00 -2.1213203423e+00
+|Ax-b| =   2.2e-11, [Ay-c]_+ =   1.3E-09, |x|=  1.9e+00, |y|=  3.9e+00
 
 Detailed timing (sec)
    Pre          IPM          Post
-1.000E-02    3.000E-02    0.000E+00    
-Max-norms: ||b||=1, ||c|| = 3,
-Cholesky |add|=0, |skip| = 0, ||L.L|| = 944.813.
+0.000E+00    5.000E-02    0.000E+00    
+Max-norms: ||b||=1, ||c|| = 5,
+Cholesky |add|=0, |skip| = 0, ||L.L|| = 2170.39.
 ------------------------------------------------------------
 Status: Solved
 Optimal value (cvx_optval): +2.12132
@@ -148,67 +110,11 @@ Done!
 ------------------------------------------------------------------
 The distance between the 2 polyhedra C and D is: 
 dist(C,D) = 2.1213
-</pre><img vspace="5" hspace="5" src="separate_poly_2D__01.png" alt=""> <p class="footer"><br>
-      Published with MATLAB&reg; 7.9<br></p></div><!--
-##### SOURCE BEGIN #####
-%% Section 8.2.2: Separating polyhedra in 2D
-
-% Boyd & Vandenberghe "Convex Optimization"
-% Joelle Skaf - 10/09/05
-% (a figure is generated)
-%
-% If the two polyhedra C = {x | A1*x <= b1} and D = {y | A2*y <= b2} can be
-% separated by a hyperplane, it will be of the  form
-%           z'*x - z'*y >= -lambda'*b1 - mu'*b2 > 0
-% where z, lambda and mu are the optimal variables of the problem:
-%           maximize    -b1'*lambda - b2'*mu
-%               s.t.    A1'*lambda + z = 0
-%                       A2'*mu  - z = 0
-%                       norm*(z) <= 1
-%                       lambda >=0 , mu >= 0
-% Note: here x is in R^2
-
-% Input data
-randn('seed',0);
-n  = 2;
-m = 2*n;
-A1 = [1 1; 1 -1; -1 1; -1 -1];
-A2 = [1 0; -1 0; 0 1; 0 -1];
-b1 = 2*ones(m,1);
-b2 = [5; -3; 4; -2];
-
-% Solving with CVX
-fprintf(1,'Finding a separating hyperplane between the 2 polyhedra...');
-
-cvx_begin
-    variables lam(m) muu(m) z(n)
-    maximize ( -b1'*lam - b2'*muu)
-    A1'*lam + z == 0;
-    A2'*muu - z == 0;
-    norm(z) <= 1;
-    -lam <=0;
-    -muu <=0;
-cvx_end
-
-fprintf(1,'Done! \n');
-
-% Displaying results
-disp('REPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASH');
-disp('The distance between the 2 polyhedra C and D is: ' );
-disp(['dist(C,D) = ' num2str(cvx_optval)]);
-
-% Plotting
-t = linspace(-3,6,100);
-p = -z(1)*t/z(2) + (muu'*b2 - lam'*b1)/(2*z(2));
-figure;
-fill([-2; 0; 2; 0],[0;2;0;-2],'b', [3;5;5;3],[2;2;4;4],'r')
-axis([-3 6 -3 6])
-axis square
-hold on;
-plot(t,p)
-title('Separating 2 polyhedra by a hyperplane');
-
-
-
-##### SOURCE END #####
---></body></html>
+</pre>
+<a id="plots"></a>
+<div id="plotoutput">
+<img src="separate_poly_2D__01.png" alt=""> 
+</div>
+</div>
+</body>
+</html>

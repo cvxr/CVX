@@ -1,68 +1,25 @@
-
-<!DOCTYPE html
-  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
-<html><head>
-      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-   <!--
-This HTML is auto-generated from an M-file.
-To make changes, update the M-file and republish this document.
-      --><title>Sizing of clock meshes</title><meta name="generator" content="MATLAB 7.9"><meta name="date" content="2009-11-12"><meta name="m-file" content="clock_mesh_"><style type="text/css">
-
-body {
-  background-color: white;
-  margin:10px;
-}
-
-h1 {
-  color: #990000; 
-  font-size: x-large;
-}
-
-h2 {
-  color: #990000;
-  font-size: medium;
-}
-
-/* Make the text shrink to fit narrow windows, but not stretch too far in 
-wide windows. */ 
-p,h1,h2,div.content div {
-  max-width: 600px;
-  /* Hack for IE6 */
-  width: auto !important; width: 600px;
-}
-
-pre.codeinput {
-  background: #EEEEEE;
-  padding: 10px;
-}
-@media print {
-  pre.codeinput {word-wrap:break-word; width:100%;}
-} 
-
-span.keyword {color: #0000FF}
-span.comment {color: #228B22}
-span.string {color: #A020F0}
-span.untermstring {color: #B20000}
-span.syscmd {color: #B28C00}
-
-pre.codeoutput {
-  color: #666666;
-  padding: 10px;
-}
-
-pre.error {
-  color: red;
-}
-
-p.footer {
-  text-align: right;
-  font-size: xx-small;
-  font-weight: lighter;
-  font-style: italic;
-  color: gray;
-}
-
-  </style></head><body><div class="content"><h1>Sizing of clock meshes</h1><pre class="codeinput"><span class="comment">% Section 4, L. Vandenberghe, S. Boyd, and A. El Gamal</span>
+<!DOCTYPE HTML>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Sizing of clock meshes</title>
+<link rel="canonical" href="http://cvxr.com/cvx/examples/circuit_design/html/clock_mesh.html">
+<link rel="stylesheet" href="../../examples.css" type="text/css">
+</head>
+<body>
+<div id="header">
+<h1>Sizing of clock meshes</h1>
+Jump to:&nbsp;&nbsp;&nbsp;&nbsp;
+<a href="#source">Source code</a>&nbsp;&nbsp;&nbsp;&nbsp;
+<a href="#output">Text output</a>
+&nbsp;&nbsp;&nbsp;&nbsp;
+<a href="#plots">Plots</a>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="../../index.html">Library index</a>
+</div>
+<div id="content">
+<a id="source"></a>
+<pre class="codeinput">
+<span class="comment">% Section 4, L. Vandenberghe, S. Boyd, and A. El Gamal</span>
 <span class="comment">% "Optimal Wire and Transistor Sizing for Circuits with Non-Tree Topology"</span>
 <span class="comment">% Original by Lieven Vanderberghe</span>
 <span class="comment">% Adapted to CVX by Argyris Zymnis - 12/04/05</span>
@@ -244,7 +201,10 @@ hold <span class="string">on</span>
 <span class="keyword">for</span> k = 1 : xnpts,
     text( xareas(k), xdelays(k), sprintf( <span class="string">'(%d)'</span>, k ) );
 <span class="keyword">end</span>
-</pre><pre class="codeoutput">Point 1 of 50 on the tradeoff curve (Tmax = 50)
+</pre>
+<a id="output"></a>
+<pre class="codeoutput">
+Point 1 of 50 on the tradeoff curve (Tmax = 50)
 Point 2 of 50 on the tradeoff curve (Tmax = 52.0408)
 Point 3 of 50 on the tradeoff curve (Tmax = 54.0816)
 Point 4 of 50 on the tradeoff curve (Tmax = 56.1224)
@@ -300,18 +260,18 @@ Vertical segments:
 
 ans =
 
-    0.6539    0.4378    0.5239    0.4709    0.2363
+    0.6536    0.4385    0.5236    0.4709    0.2363
     1.0000    0.8536    1.0000    0.9360    0.5700
     0.9232    0.2956    0.8004    1.0000    1.0000
-    0.4130    0.1355    0.2664    0.6708    0.8894
+    0.4130    0.1355    0.2668    0.6705    0.8894
 
 Horizontal segments:
 
 ans =
 
-    0.1954    0.1418   -0.0000   -0.0000   -0.0000
-    0.0706    0.0640   -0.0000   -0.0000   -0.0000
-   -0.0000   -0.0000   -0.0000    0.0954    0.1575
+    0.1957    0.1415   -0.0000   -0.0000   -0.0000
+    0.0710    0.0636   -0.0000   -0.0000   -0.0000
+   -0.0000   -0.0000   -0.0000    0.0950    0.1579
     0.0000    0.0000    0.0000    0.0837    0.0541
 
 Particular solution 2 of 2 (Tmax = 100)
@@ -336,194 +296,11 @@ ans =
     0.0813   -0.1935   -0.1955   -0.1908    0.0737
     0.0991   -0.1851   -0.2120   -0.2055    0.0602
 
-</pre><img vspace="5" hspace="5" src="clock_mesh__01.png" alt=""> <img vspace="5" hspace="5" src="clock_mesh__02.png" alt=""> <img vspace="5" hspace="5" src="clock_mesh__03.png" alt=""> <p class="footer"><br>
-      Published with MATLAB&reg; 7.9<br></p></div><!--
-##### SOURCE BEGIN #####
-%% Sizing of clock meshes
-
-% Section 4, L. Vandenberghe, S. Boyd, and A. El Gamal
-% "Optimal Wire and Transistor Sizing for Circuits with Non-Tree Topology"
-% Original by Lieven Vanderberghe
-% Adapted to CVX by Argyris Zymnis - 12/04/05
-% Modified by Michael Grant - 3/8/06
-%
-% We consider the problem of sizing a clock mesh, so as to minimize the
-% total dissipated power under a constraint on the dominant time constant.
-% The numbers of nodes in the mesh is N per row or column (thus n=(N+1)^2
-% in total). We divide the wire into m segments of width xi, i = 1,...,m
-% which is constrained as 0 <= xi <= Wmax. We use a pi-model of each wire
-% segment, with capacitance beta_i*xi and conductance alpha_i*xi.
-% Defining C(x) = C0+x1*C1+x2*C2+...+xm*Cm we have that the dissipated
-% power is equal to ones(1,n)*C(x)*ones(n,1). Thus to minimize the
-% dissipated power subject to a constraint in the widths and a constraint
-% in the dominant time constant, we solve the SDP
-%               minimize        ones(1,m)*C(x)*ones(m,1)
-%                   s.t.        Tmax*G(x) - C(x) >= 0
-%                               0 <= xi <= Wmax
-
-%
-% Circuit parameters
-%
-
-dim=4;           % grid is dimxdim (assume dim is even)
-n=(dim+1)^2;     % number of nodes
-m=2*dim*(dim+1); % number of wires
-                 % 1...dim(dim+1) are horizontal segments
-                 % (numbered rowwise);
-                 % dim(dim+1)+1 ... 2*dim(dim+1) are vertical
-                 % (numbered columnwise)
-beta = 0.5;      % capacitance per segment is twice beta times xi
-alpha = 1;       % conductance per segment is alpha times xi
-G0 = 1;          % source conductance
-C0 = [ 10     2     7     5     3;
-        8     3     9     5     5;
-        1     8     4     9     3;
-        7     3     6     8     2;
-        5     2     1     9    10 ];
-wmax = 1;       % upper bound on x
-
-%
-% Build capacitance and conductance matrices
-%
-
-CC = zeros(dim+1,dim+1,dim+1,dim+1,m+1);
-GG = zeros(dim+1,dim+1,dim+1,dim+1,m+1);
-
-% constant term
-CC(:,:,:,:,1) = reshape( diag(C0(:)), dim+1, dim+1, dim+1, dim+1 );
-zo13 = reshape( [1,0;0,1],   2, 1, 2, 1 );
-zo24 = reshape( zo13,        1, 2, 1, 2 );
-pn13 = reshape( [1,-1;-1,1], 2, 1, 2, 1 );
-pn24 = reshape( pn13,        1, 2, 1, 2 );
-for i = 1 : dim+1,
-    % source conductance
-    % first driver in the middle of row 1
-    GG(dim/2+1,i,dim/2+1,i,1) = G0;
-    for j = 1 : dim,
-        % horizontal segments
-        node = 1 + j + ( i - 1 ) * dim;
-        CC([j,j+1],i,[j,j+1],i,node) = beta * zo13;
-        GG([j,j+1],i,[j,j+1],i,node) = alpha * pn13;
-        % vertical segments
-        node = node + dim * ( dim + 1 );
-        CC(i,[j,j+1],i,[j,j+1],node) = beta * zo24;
-        GG(i,[j,j+1],i,[j,j+1],node) = alpha * pn24;
-    end
-end
-% reshape for ease of use in Matlab
-CC = reshape( CC, n*n, m+1 );
-GG = reshape( GG, n*n, m+1 );
-
-%
-% Compute points the tradeoff curve, and the three sample points
-%
-
-npts    = 50;
-delays  = linspace( 50, 150, npts );
-xdelays = [ 50, 100 ];
-xnpts   = length( xdelays );
-areas   = zeros(1,npts);
-for i = 1 : npts  + xnpts,
-
-    if i > npts,
-        xi = i - npts;
-        delay = xdelays(xi);
-        disp( sprintf( 'Particular solution %d of %d (Tmax = %g)', xi, xnpts, delay ) );
-    else,
-        delay = delays(i);
-        disp( sprintf( 'Point %d of %d on the tradeoff curve (Tmax = %g)', i, npts, delay ) );
-    end
-
-    %
-    % Construct and solve the convex model
-    %
-
-    cvx_begin sdp quiet
-        variable x(m)
-        variable G(n,n) symmetric
-        variable C(n,n) symmetric
-        dual variables Y1 Y2 Y3 Y4 Y5
-        minimize( sum( C(:) ) )
-        subject to
-            G == reshape( GG * [ 1 ; x ], n, n );
-            C == reshape( CC * [ 1 ; x ], n, n );
-            delay * G - C >= 0;
-            x >= 0;
-            x <= wmax;
-    cvx_end
-
-    if i <= npts,
-        areas(i) = sum(x);
-    else,
-        xareas(xi) = sum(x);
-
-        %
-        % Display sizes
-        %
-
-        disp( sprintf( 'Solution %d:', xi ) );
-        disp( 'Vertical segments:' );
-        reshape( x(1:dim*(dim+1),1), dim, dim+1 )
-        disp( 'Horizontal segments:' );
-        reshape( x(dim*(dim+1)+1:end), dim, dim+1 )
-
-        %
-        % Determine the step responses
-        %
-
-        figure(xi+1);
-        A = -inv(C)*G;
-        B = -A*ones(n,1);
-        T = linspace(0,500,2000);
-        Y = simple_step(A,B,T(2),length(T));
-        indmax = 0;
-        indmin = Inf;
-        for j = 1 : size(Y,1),
-           inds = min(find(Y(j,:) >= 0.5));
-           if ( inds > indmax )
-              indmax = inds;
-              jmax = j;
-           end;
-           if ( inds < indmin )
-              indmin = inds;
-              jmin = j;
-           end;
-        end;
-        tthres = T(indmax);
-        GinvC  = full( G \ C );
-        tdom   = max(eig(GinvC));
-        elmore = max(sum(GinvC'));
-        hold off; plot(T,Y(jmax,:),'-',T,Y(jmin,:));  hold on;
-        plot( tdom   * [1;1], [0;1], 'REPLACE_WITH_DASH_DASH', ...
-              elmore * [1;1], [0;1], 'REPLACE_WITH_DASH_DASH', ...
-              tthres * [1;1], [0;1], 'REPLACE_WITH_DASH_DASH');
-        axis([0 500 0 1])
-        text(tdom,1,'d');
-        text(elmore,1,'e');
-        text(tthres,1,'t');
-        text( T(600), Y(jmax,600), sprintf( 'v%d', jmax ) );
-        text( T(600), Y(jmin,600), sprintf( 'v%d', jmin ) );
-        title( sprintf( 'Solution %d (Tmax=%g), fastest and slowest step responses', xi, delay ) );
-
-    end
-
-end;
-
-%
-% Plot the tradeoff curve
-%
-
-figure(1)
-ind = isfinite(areas);
-plot(areas(ind), delays(ind));
-xlabel('Area');
-ylabel('Tdom');
-title('Area-delay tradeoff curve');
-hold on
-for k = 1 : xnpts,
-    text( xareas(k), xdelays(k), sprintf( '(%d)', k ) );
-end
-
-
-##### SOURCE END #####
---></body></html>
+</pre>
+<a id="plots"></a>
+<div id="plotoutput">
+<img src="clock_mesh__01.png" alt=""> <img src="clock_mesh__02.png" alt=""> <img src="clock_mesh__03.png" alt=""> 
+</div>
+</div>
+</body>
+</html>

@@ -1,68 +1,25 @@
-
-<!DOCTYPE html
-  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
-<html><head>
-      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-   <!--
-This HTML is auto-generated from an M-file.
-To make changes, update the M-file and republish this document.
-      --><title>Section 8.1.1: Separating a point from a polyhedron</title><meta name="generator" content="MATLAB 7.9"><meta name="date" content="2009-11-12"><meta name="m-file" content="separate_pt_poly_"><style type="text/css">
-
-body {
-  background-color: white;
-  margin:10px;
-}
-
-h1 {
-  color: #990000; 
-  font-size: x-large;
-}
-
-h2 {
-  color: #990000;
-  font-size: medium;
-}
-
-/* Make the text shrink to fit narrow windows, but not stretch too far in 
-wide windows. */ 
-p,h1,h2,div.content div {
-  max-width: 600px;
-  /* Hack for IE6 */
-  width: auto !important; width: 600px;
-}
-
-pre.codeinput {
-  background: #EEEEEE;
-  padding: 10px;
-}
-@media print {
-  pre.codeinput {word-wrap:break-word; width:100%;}
-} 
-
-span.keyword {color: #0000FF}
-span.comment {color: #228B22}
-span.string {color: #A020F0}
-span.untermstring {color: #B20000}
-span.syscmd {color: #B28C00}
-
-pre.codeoutput {
-  color: #666666;
-  padding: 10px;
-}
-
-pre.error {
-  color: red;
-}
-
-p.footer {
-  text-align: right;
-  font-size: xx-small;
-  font-weight: lighter;
-  font-style: italic;
-  color: gray;
-}
-
-  </style></head><body><div class="content"><h1>Section 8.1.1: Separating a point from a polyhedron</h1><pre class="codeinput"><span class="comment">% Boyd &amp; Vandenberghe "Convex Optimization"</span>
+<!DOCTYPE HTML>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Section 8.1.1: Separating a point from a polyhedron</title>
+<link rel="canonical" href="http://cvxr.com/cvx/examples/cvxbook/Ch08_geometric_probs/html/separate_pt_poly.html">
+<link rel="stylesheet" href="../../../examples.css" type="text/css">
+</head>
+<body>
+<div id="header">
+<h1>Section 8.1.1: Separating a point from a polyhedron</h1>
+Jump to:&nbsp;&nbsp;&nbsp;&nbsp;
+<a href="#source">Source code</a>&nbsp;&nbsp;&nbsp;&nbsp;
+<a href="#output">Text output</a>
+&nbsp;&nbsp;&nbsp;&nbsp;
+Plots
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="../../../index.html">Library index</a>
+</div>
+<div id="content">
+<a id="source"></a>
+<pre class="codeinput">
+<span class="comment">% Boyd &amp; Vandenberghe "Convex Optimization"</span>
 <span class="comment">% Joelle Skaf - 10/09/05</span>
 <span class="comment">%</span>
 <span class="comment">% The goal is to produce a hyperplane separating x0 and the polyhedron</span>
@@ -98,53 +55,15 @@ disp(<span class="string">'-----------------------------------------------------
 disp(<span class="string">'Note that 0 is in {x | Ax &lt;= b} by construction...'</span> );
 disp(<span class="string">'Verifying that x0 is separated from {x | Ax &lt;= b} i.e. mu^T*x0 &gt; 0'</span>);
 disp([<span class="string">' mu^T*x0 = '</span> num2str(muu'*x0) ]);
-</pre><pre class="codeoutput">Finding a separating hyperplane between the 2 polyhedra...Done! 
+</pre>
+<a id="output"></a>
+<pre class="codeoutput">
+Finding a separating hyperplane between the 2 polyhedra...Done! 
 ------------------------------------------------------------------
 Note that 0 is in {x | Ax &lt;= b} by construction...
 Verifying that x0 is separated from {x | Ax &lt;= b} i.e. mu^T*x0 &gt; 0
  mu^T*x0 = 2.7667
-</pre><p class="footer"><br>
-      Published with MATLAB&reg; 7.9<br></p></div><!--
-##### SOURCE BEGIN #####
-%% Section 8.1.1: Separating a point from a polyhedron
-
-% Boyd & Vandenberghe "Convex Optimization"
-% Joelle Skaf - 10/09/05
-%
-% The goal is to produce a hyperplane separating x0 and the polyhedron
-% defined as {x | Ax <= b}
-%           minimize    mu'*x0 - b'*lambda
-%                       A'*lambda = mu
-%                       norm(mu)* <= 1
-%                       lambda >= 0
-
-% Input data
-randn('seed',0);
-n  = 10;
-m  = 2*n;
-x0 = randn(n,1);
-A  = randn(m,n);
-b  = rand(m,1);
-
-% CVX solution
-fprintf(1,'Finding a separating hyperplane between the 2 polyhedra...');
-
-cvx_begin quiet
-    variables muu(n) lambda(m)
-    maximize ( muu'*x0 - b'*lambda )
-    A'*lambda == muu;
-    norm(muu) <= 1;
-    lambda >= 0;
-cvx_end
-
-fprintf(1,'Done! \n');
-
-% Verification
-disp('REPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASH');
-disp('Note that 0 is in {x | Ax <= b} by construction...' );
-disp('Verifying that x0 is separated from {x | Ax <= b} i.e. mu^T*x0 > 0');
-disp([' mu^T*x0 = ' num2str(muu'*x0) ]);
-
-
-##### SOURCE END #####
---></body></html>
+</pre>
+</div>
+</body>
+</html>

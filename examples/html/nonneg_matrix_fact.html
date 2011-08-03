@@ -1,68 +1,25 @@
-
-<!DOCTYPE html
-  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
-<html><head>
-      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-   <!--
-This HTML is auto-generated from an M-file.
-To make changes, update the M-file and republish this document.
-      --><title>Nonnegative matrix factorization</title><meta name="generator" content="MATLAB 7.9"><meta name="date" content="2009-11-12"><meta name="m-file" content="nonneg_matrix_fact_"><style type="text/css">
-
-body {
-  background-color: white;
-  margin:10px;
-}
-
-h1 {
-  color: #990000; 
-  font-size: x-large;
-}
-
-h2 {
-  color: #990000;
-  font-size: medium;
-}
-
-/* Make the text shrink to fit narrow windows, but not stretch too far in 
-wide windows. */ 
-p,h1,h2,div.content div {
-  max-width: 600px;
-  /* Hack for IE6 */
-  width: auto !important; width: 600px;
-}
-
-pre.codeinput {
-  background: #EEEEEE;
-  padding: 10px;
-}
-@media print {
-  pre.codeinput {word-wrap:break-word; width:100%;}
-} 
-
-span.keyword {color: #0000FF}
-span.comment {color: #228B22}
-span.string {color: #A020F0}
-span.untermstring {color: #B20000}
-span.syscmd {color: #B28C00}
-
-pre.codeoutput {
-  color: #666666;
-  padding: 10px;
-}
-
-pre.error {
-  color: red;
-}
-
-p.footer {
-  text-align: right;
-  font-size: xx-small;
-  font-weight: lighter;
-  font-style: italic;
-  color: gray;
-}
-
-  </style></head><body><div class="content"><h1>Nonnegative matrix factorization</h1><pre class="codeinput"><span class="comment">% Argyris Zymnis, Joelle Skaf, Stephen Boyd</span>
+<!DOCTYPE HTML>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Nonnegative matrix factorization</title>
+<link rel="canonical" href="http://cvxr.com/cvx/examples/html/nonneg_matrix_fact.html">
+<link rel="stylesheet" href="../examples.css" type="text/css">
+</head>
+<body>
+<div id="header">
+<h1>Nonnegative matrix factorization</h1>
+Jump to:&nbsp;&nbsp;&nbsp;&nbsp;
+<a href="#source">Source code</a>&nbsp;&nbsp;&nbsp;&nbsp;
+<a href="#output">Text output</a>
+&nbsp;&nbsp;&nbsp;&nbsp;
+<a href="#plots">Plots</a>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="../index.html">Library index</a>
+</div>
+<div id="content">
+<a id="source"></a>
+<pre class="codeinput">
+<span class="comment">% Argyris Zymnis, Joelle Skaf, Stephen Boyd</span>
 <span class="comment">%</span>
 <span class="comment">% We are given a matrix A in R^{m*n}</span>
 <span class="comment">% and are interested in solving the problem:</span>
@@ -116,7 +73,10 @@ disp( X );
 disp( <span class="string">'Residual A - Y * X:'</span> );
 disp( A - Y * X );
 fprintf( <span class="string">'Residual after %d iterations: %g\n'</span>, iter, cvx_optval );
-</pre><pre class="codeoutput">Iteration 1, residual norm 1.46776
+</pre>
+<a id="output"></a>
+<pre class="codeoutput">
+Iteration 1, residual norm 1.46776
 Iteration 2, residual norm 0.534056
 Iteration 3, residual norm 0.263532
 Iteration 4, residual norm 0.151849
@@ -190,67 +150,11 @@ Residual A - Y * X:
     0.0003    0.0001    0.0003   -0.0004   -0.0001    0.0003    0.0005   -0.0013    0.0002    0.0003
 
 Residual after 30 iterations: 0.0084509
-</pre><img vspace="5" hspace="5" src="nonneg_matrix_fact__01.png" alt=""> <p class="footer"><br>
-      Published with MATLAB&reg; 7.9<br></p></div><!--
-##### SOURCE BEGIN #####
-%% Nonnegative matrix factorization
-
-% Argyris Zymnis, Joelle Skaf, Stephen Boyd
-%
-% We are given a matrix A in R^{m*n}
-% and are interested in solving the problem:
-%
-% minimize    ||A - Y*X||_F
-% subject to  Y >= 0, X >= 0
-%
-% where Y in R{m*k} and X in R{k*n}.
-% This script generates a random matrix A and obtains an
-% *approximate* solution to the above problem by first generating
-% a random initial guess for Y and the alternatively minimizing
-% over X and Y for a fixed number of iterations.
-
-% Generate data matrix A
-m = 10; n = 10; k = 5;
-A = rand(m,k)*rand(k,n);
-
-% Initialize Y randomly
-Y = rand(m,k);
-
-% Perform alternating minimization
-MAX_ITERS = 30;
-residual = zeros(1,MAX_ITERS);
-for iter = 1:MAX_ITERS
-    cvx_begin quiet
-        if mod(iter,2) == 1
-            variable X(k,n)
-        else
-            variable Y(m,k)
-        end
-        X >= 0; 
-        Y >= 0;
-        minimize(norm(A - Y*X,'fro'));
-    cvx_end
-    fprintf(1,'Iteration %d, residual norm %g\n',iter,cvx_optval);
-    residual(iter) = cvx_optval;
-end
-
-% Plot residuals
-plot(residual); 
-xlabel('Iteration Number');
-ylabel('Residual Norm');
-
-% Display results
-disp( 'Original matrix:' );
-disp( A );
-disp( 'Left factor Y:' );
-disp( Y );
-disp( 'Right factor X:' );
-disp( X );
-disp( 'Residual A - Y * X:' );
-disp( A - Y * X );
-fprintf( 'Residual after %d iterations: %g\n', iter, cvx_optval );
-
-
-
-##### SOURCE END #####
---></body></html>
+</pre>
+<a id="plots"></a>
+<div id="plotoutput">
+<img src="nonneg_matrix_fact__01.png" alt=""> 
+</div>
+</div>
+</body>
+</html>

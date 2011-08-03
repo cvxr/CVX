@@ -1,68 +1,25 @@
-
-<!DOCTYPE html
-  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
-<html><head>
-      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-   <!--
-This HTML is auto-generated from an M-file.
-To make changes, update the M-file and republish this document.
-      --><title>Simple power control in communication systems via GP.</title><meta name="generator" content="MATLAB 7.9"><meta name="date" content="2009-11-12"><meta name="m-file" content="power_control_"><style type="text/css">
-
-body {
-  background-color: white;
-  margin:10px;
-}
-
-h1 {
-  color: #990000; 
-  font-size: x-large;
-}
-
-h2 {
-  color: #990000;
-  font-size: medium;
-}
-
-/* Make the text shrink to fit narrow windows, but not stretch too far in 
-wide windows. */ 
-p,h1,h2,div.content div {
-  max-width: 600px;
-  /* Hack for IE6 */
-  width: auto !important; width: 600px;
-}
-
-pre.codeinput {
-  background: #EEEEEE;
-  padding: 10px;
-}
-@media print {
-  pre.codeinput {word-wrap:break-word; width:100%;}
-} 
-
-span.keyword {color: #0000FF}
-span.comment {color: #228B22}
-span.string {color: #A020F0}
-span.untermstring {color: #B20000}
-span.syscmd {color: #B28C00}
-
-pre.codeoutput {
-  color: #666666;
-  padding: 10px;
-}
-
-pre.error {
-  color: red;
-}
-
-p.footer {
-  text-align: right;
-  font-size: xx-small;
-  font-weight: lighter;
-  font-style: italic;
-  color: gray;
-}
-
-  </style></head><body><div class="content"><h1>Simple power control in communication systems via GP.</h1><pre class="codeinput"><span class="comment">% Boyd, Kim, Vandenberghe, and Hassibi, "A Tutorial on Geometric Programming"</span>
+<!DOCTYPE HTML>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Simple power control in communication systems via GP.</title>
+<link rel="canonical" href="http://cvxr.com/cvx/examples/gp_tutorial/html/power_control.html">
+<link rel="stylesheet" href="../../examples.css" type="text/css">
+</head>
+<body>
+<div id="header">
+<h1>Simple power control in communication systems via GP.</h1>
+Jump to:&nbsp;&nbsp;&nbsp;&nbsp;
+<a href="#source">Source code</a>&nbsp;&nbsp;&nbsp;&nbsp;
+<a href="#output">Text output</a>
+&nbsp;&nbsp;&nbsp;&nbsp;
+Plots
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="../../index.html">Library index</a>
+</div>
+<div id="content">
+<a id="source"></a>
+<pre class="codeinput">
+<span class="comment">% Boyd, Kim, Vandenberghe, and Hassibi, "A Tutorial on Geometric Programming"</span>
 <span class="comment">% Written for CVX by Almir Mutapcic 02/08/06</span>
 <span class="comment">% (a figure is generated)</span>
 <span class="comment">%</span>
@@ -114,26 +71,27 @@ cvx_end
 
 fprintf(1,<span class="string">'\nThe minimum total transmitter power is %3.2f.\n'</span>,cvx_optval);
 disp(<span class="string">'Optimal power levels are: '</span>), P
-</pre><pre class="codeoutput"> 
+</pre>
+<a id="output"></a>
+<pre class="codeoutput">
+ 
 Successive approximation method to be employed.
    For improved efficiency, sedumi is solving the dual problem.
    sedumi will be called several times to refine the solution.
-   Original size: 88 variables, 26 equality constraints
+   Original size: 98 variables, 36 equality constraints
    26 exponentials add 208 variables, 130 equality constraints
 -----------------------------------------------------------------
           Errors   
 Act Centering    Conic    Status
 -----------------------------------
-21  0.000e+00  3.222e-01  Unbounded
-26  2.697e+00  6.778e-01  Solved
-26  3.000e-01  7.561e-03  Solved
-26  3.136e-03  8.413e-07  Solved
-26  3.598e-07  7.256e-08  Solved
-26  0.000e+00  7.256e-08S Solved
-26  6.667e-08S 1.567e-08  Solved
-26  1.413e-08  3.524e-09  Solved
-26  0.000e+00  3.524e-09S Solved
-26  1.187e-07S 0.000e+00  Solved
+21  3.053e+00  3.243e-01  Unbounded
+26  2.697e+00  6.777e-01  Solved
+26  2.999e-01  7.560e-03  Solved
+26  3.139e-03  1.080e-06  Solved
+26  3.373e-07  1.904e-07  Solved
+26  0.000e+00  1.904e-07S Solved
+26  2.816e-07S 3.376e-08  Solved
+26  1.240e-07  0.000e+00  Solved
 -----------------------------------------------------------------
 Status: Solved
 Optimal value (cvx_optval): +17.0014
@@ -149,63 +107,7 @@ P =
     4.1647
     3.0276
 
-</pre><p class="footer"><br>
-      Published with MATLAB&reg; 7.9<br></p></div><!--
-##### SOURCE BEGIN #####
-%% Simple power control in communication systems via GP.
-
-% Boyd, Kim, Vandenberghe, and Hassibi, "A Tutorial on Geometric Programming"
-% Written for CVX by Almir Mutapcic 02/08/06
-% (a figure is generated)
-%
-% Solves the power control problem in communication systems, where
-% we want to minimize the total transmitter power for n transmitters,
-% subject to minimum SINR level, and lower and upper bounds on powers.
-% This results in a GP:
-%
-%   minimize   sum(P)
-%       s.t.   Pmin <= P <= Pmax
-%              SINR >= SINR_min
-%
-% where variables are transmitter powers P.
-% Numerical data for the specific examples was made up.
-
-% problem constants
-n = 5;                 % number of transmitters and receivers
-sigma = 0.5*ones(n,1); % noise power at the receiver i
-Pmin = 0.1*ones(n,1);  % minimum power at the transmitter i
-Pmax = 5*ones(n,1);    % maximum power at the transmitter i
-SINR_min = 2;          % threshold SINR for each receiver
-
-% path gain matrix
-G = [1.0  0.1  0.2  0.1  0.0
-     0.1  1.0  0.1  0.1  0.0
-     0.2  0.1  2.0  0.2  0.2
-     0.1  0.1  0.2  1.0  0.1
-     0.0  0.0  0.2  0.1  1.0];
-
-% variables are power levels
-cvx_begin gp
-  variable P(n)
-
-  % objective function is the total transmitter power
-  minimize( sum(P) )
-  subject to
-
-    % formulate the inverse SINR at each receiver using vectorize features
-    Gdiag = diag(G);          % the main diagonal of G matrix
-    Gtilde = G - diag(Gdiag); % G matrix without the main diagonal
-    % inverse SINR
-    inverseSINR = (sigma + Gtilde*P)./(Gdiag.*P);
-
-    % constraints are power limits and minimum SINR level
-    P >= Pmin;
-    P <= Pmax;
-    inverseSINR <= (1/SINR_min);
-cvx_end
-
-fprintf(1,'\nThe minimum total transmitter power is %3.2f.\n',cvx_optval);
-disp('Optimal power levels are: '), P
-
-##### SOURCE END #####
---></body></html>
+</pre>
+</div>
+</body>
+</html>

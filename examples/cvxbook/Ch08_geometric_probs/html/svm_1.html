@@ -1,68 +1,25 @@
-
-<!DOCTYPE html
-  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
-<html><head>
-      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-   <!--
-This HTML is auto-generated from an M-file.
-To make changes, update the M-file and republish this document.
-      --><title>Figure 8.10: Approximate linear discrimination via linear programming</title><meta name="generator" content="MATLAB 7.9"><meta name="date" content="2009-11-12"><meta name="m-file" content="svm_1_"><style type="text/css">
-
-body {
-  background-color: white;
-  margin:10px;
-}
-
-h1 {
-  color: #990000; 
-  font-size: x-large;
-}
-
-h2 {
-  color: #990000;
-  font-size: medium;
-}
-
-/* Make the text shrink to fit narrow windows, but not stretch too far in 
-wide windows. */ 
-p,h1,h2,div.content div {
-  max-width: 600px;
-  /* Hack for IE6 */
-  width: auto !important; width: 600px;
-}
-
-pre.codeinput {
-  background: #EEEEEE;
-  padding: 10px;
-}
-@media print {
-  pre.codeinput {word-wrap:break-word; width:100%;}
-} 
-
-span.keyword {color: #0000FF}
-span.comment {color: #228B22}
-span.string {color: #A020F0}
-span.untermstring {color: #B20000}
-span.syscmd {color: #B28C00}
-
-pre.codeoutput {
-  color: #666666;
-  padding: 10px;
-}
-
-pre.error {
-  color: red;
-}
-
-p.footer {
-  text-align: right;
-  font-size: xx-small;
-  font-weight: lighter;
-  font-style: italic;
-  color: gray;
-}
-
-  </style></head><body><div class="content"><h1>Figure 8.10: Approximate linear discrimination via linear programming</h1><pre class="codeinput"><span class="comment">% Section 8.6.1, Boyd &amp; Vandenberghe "Convex Optimization"</span>
+<!DOCTYPE HTML>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Figure 8.10: Approximate linear discrimination via linear programming</title>
+<link rel="canonical" href="http://cvxr.com/cvx/examples/cvxbook/Ch08_geometric_probs/html/svm_1.html">
+<link rel="stylesheet" href="../../../examples.css" type="text/css">
+</head>
+<body>
+<div id="header">
+<h1>Figure 8.10: Approximate linear discrimination via linear programming</h1>
+Jump to:&nbsp;&nbsp;&nbsp;&nbsp;
+<a href="#source">Source code</a>&nbsp;&nbsp;&nbsp;&nbsp;
+<a href="#output">Text output</a>
+&nbsp;&nbsp;&nbsp;&nbsp;
+<a href="#plots">Plots</a>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="../../../index.html">Library index</a>
+</div>
+<div id="content">
+<a id="source"></a>
+<pre class="codeinput">
+<span class="comment">% Section 8.6.1, Boyd &amp; Vandenberghe "Convex Optimization"</span>
 <span class="comment">% Original by Lieven Vandenberghe</span>
 <span class="comment">% Adapted for CVX by Joelle Skaf - 10/16/05</span>
 <span class="comment">% (a figure is generated)</span>
@@ -115,7 +72,10 @@ plot(tt,p, <span class="string">'-r'</span>, tt,p1, <span class="string">'--r'</
 axis <span class="string">equal</span>
 title(<span class="string">'Approximate linear discrimination via linear programming'</span>);
 <span class="comment">% print -deps svc-discr.eps</span>
-</pre><pre class="codeoutput"> 
+</pre>
+<a id="output"></a>
+<pre class="codeoutput">
+ 
 Calling sedumi: 203 variables, 100 equality constraints
 ------------------------------------------------------------
 SeDuMi 1.21 by AdvOL, 2005-2008 and Jos F. Sturm, 1998-2003.
@@ -124,100 +84,40 @@ eqs m = 100, order n = 203, dim = 205, blocks = 2
 nnz(A) = 200 + 300, nnz(ADA) = 100, nnz(L) = 100
 Handling 4 + 1 dense columns.
  it :     b*y       gap    delta  rate   t/tP*  t/tD*   feas cg cg  prec
-  0 :            4.41E+00 0.000
-  1 :   2.53E+02 3.79E-01 0.000 0.0860 0.9900 0.9900  -0.18  1  1  4.9E-01
-  2 :  -7.96E+00 1.93E-01 0.000 0.5088 0.9000 0.9000   4.00  1  1  6.0E-01
-  3 :  -6.52E+01 7.28E-02 0.000 0.3774 0.9000 0.9000   3.75  1  1  1.4E-02
-  4 :  -7.51E+01 3.36E-02 0.000 0.4616 0.9000 0.9000   1.05  1  1  7.0E-03
-  5 :  -8.05E+01 1.65E-02 0.000 0.4911 0.9000 0.9000   0.68  1  1  3.9E-03
-  6 :  -8.46E+01 7.66E-03 0.000 0.4636 0.9000 0.9000   0.59  1  1  2.1E-03
-  7 :  -8.70E+01 3.86E-03 0.000 0.5038 0.9000 0.9000   0.63  1  1  1.2E-03
-  8 :  -8.81E+01 2.36E-03 0.000 0.6116 0.9000 0.9000   0.64  1  1  8.3E-04
-  9 :  -8.88E+01 1.63E-03 0.000 0.6907 0.9000 0.9000   0.55  1  1  6.2E-04
- 10 :  -8.94E+01 1.06E-03 0.000 0.6528 0.9000 0.9000   0.49  1  1  4.6E-04
- 11 :  -8.98E+01 5.01E-04 0.000 0.4709 0.9000 0.9000   0.30  1  1  3.3E-04
- 12 :  -9.02E+01 2.93E-04 0.000 0.5853 0.9000 0.9000  -0.30  1  1  3.0E-04
- 13 :  -9.17E+01 1.56E-04 0.000 0.5334 0.9000 0.9000   0.18  1  1  1.6E-04
- 14 :  -9.19E+01 1.09E-04 0.000 0.6959 0.9000 0.9000   0.42  1  1  1.3E-04
- 15 :  -9.21E+01 8.46E-05 0.000 0.7775 0.9000 0.9000   0.13  1  1  1.2E-04
- 16 :  -9.29E+01 4.58E-05 0.000 0.5413 0.9000 0.9000   0.61  1  1  6.2E-05
- 17 :  -9.34E+01 1.90E-05 0.000 0.4141 0.9000 0.9000   0.75  1  1  2.8E-05
- 18 :  -9.36E+01 9.05E-06 0.000 0.4774 0.9000 0.9000   0.86  1  1  1.4E-05
- 19 :  -9.37E+01 4.81E-06 0.000 0.5317 0.9000 0.9000   0.78  1  1  7.9E-06
- 20 :  -9.38E+01 2.08E-07 0.000 0.0433 0.9900 0.9900   0.98  1  1  3.5E-07
- 21 :  -9.39E+01 6.14E-11 0.000 0.0003 0.9999 0.9999   1.00  1  1  1.5E-10
+  0 :            5.32E+01 0.000
+  1 :   1.53E+01 2.38E+01 0.000 0.4482 0.9000 0.9000   2.92  1  1  1.6E+00
+  2 :   1.38E+01 7.12E+00 0.000 0.2987 0.9000 0.9000   1.34  1  1  6.4E-01
+  3 :   1.12E+01 2.16E+00 0.000 0.3032 0.9000 0.9000   0.87  1  1  3.2E-01
+  4 :   1.03E+01 1.08E+00 0.000 0.4980 0.9000 0.9000   0.79  1  1  2.2E-01
+  5 :   9.94E+00 7.05E-01 0.000 0.6560 0.9000 0.9000   0.68  1  1  1.9E-01
+  6 :   9.50E+00 2.44E-01 0.000 0.3464 0.9000 0.9000   0.37  1  1  1.8E-01
+  7 :   8.22E+00 1.37E-01 0.000 0.5622 0.9000 0.9000   0.13  1  1  1.4E-01
+  8 :   7.83E+00 9.19E-02 0.000 0.6694 0.9000 0.9000   0.62  1  1  1.2E-01
+  9 :   7.65E+00 7.28E-02 0.000 0.7918 0.9000 0.9000   0.27  1  1  1.2E-01
+ 10 :   6.79E+00 3.18E-02 0.000 0.4374 0.9000 0.9000   0.79  1  1  6.2E-02
+ 11 :   6.47E+00 1.47E-02 0.000 0.4609 0.9000 0.9000   0.85  1  1  3.3E-02
+ 12 :   6.36E+00 8.07E-03 0.000 0.5501 0.9000 0.9000   0.83  1  1  2.2E-02
+ 13 :   6.21E+00 2.38E-03 0.000 0.2954 0.9000 0.9000   0.93  1  1  6.7E-03
+ 14 :   6.15E+00 1.07E-04 0.000 0.0451 0.9900 0.9900   0.96  1  1  3.1E-04
+ 15 :   6.15E+00 3.31E-09 0.000 0.0000 1.0000 1.0000   1.00  1  1  9.8E-09
 
 iter seconds digits       c*x               b*y
- 21      0.1  10.6 -9.3851428799e+01 -9.3851428801e+01
-|Ax-b| =   2.9e-10, [Ay-c]_+ =   7.0E-09, |x|=  8.9e+01, |y|=  9.7e+00
+ 15      0.1   8.4  6.1485695285e+00  6.1485695020e+00
+|Ax-b| =   1.3e-09, [Ay-c]_+ =   2.0E-10, |x|=  8.9e+01, |y|=  2.4e+00
 
 Detailed timing (sec)
    Pre          IPM          Post
-0.000E+00    9.000E-02    1.000E-02    
-Max-norms: ||b||=1, ||c|| = 1.878335e+02,
+1.000E-02    9.000E-02    0.000E+00    
+Max-norms: ||b||=1, ||c|| = 1,
 Cholesky |add|=0, |skip| = 0, ||L.L|| = 1.
 ------------------------------------------------------------
 Status: Solved
 Optimal value (cvx_optval): +6.14857
-</pre><img vspace="5" hspace="5" src="svm_1__01.png" alt=""> <p class="footer"><br>
-      Published with MATLAB&reg; 7.9<br></p></div><!--
-##### SOURCE BEGIN #####
-%% Figure 8.10: Approximate linear discrimination via linear programming
-
-% Section 8.6.1, Boyd & Vandenberghe "Convex Optimization"
-% Original by Lieven Vandenberghe
-% Adapted for CVX by Joelle Skaf - 10/16/05
-% (a figure is generated)
-%
-% The goal is to find a function f(x) = a'*x - b that classifies the non-
-% separable points {x_1,...,x_N} and {y_1,...,y_M} by allowing some
-% misclassification. a and b can be obtained by solving the following
-% problem:
-%           minimize    1'*u + 1'*v
-%               s.t.    a'*x_i - b >= 1 - u_i        for i = 1,...,N
-%                       a'*y_i - b <= -(1 - v_i)     for i = 1,...,M
-%                       u >= 0 and v >= 0
-
-% data generation
-n = 2;
-randn('state',2);
-N = 50; M = 50;
-Y = [1.5+0.9*randn(1,0.6*N), 1.5+0.7*randn(1,0.4*N);
-     2*(randn(1,0.6*N)+1), 2*(randn(1,0.4*N)-1)];
-X = [-1.5+0.9*randn(1,0.6*M),  -1.5+0.7*randn(1,0.4*M);
-      2*(randn(1,0.6*M)-1), 2*(randn(1,0.4*M)+1)];
-T = [-1 1; 1 1];
-Y = T*Y;  X = T*X;
-
-% Solution via CVX
-cvx_begin
-    variables a(n) b(1) u(N) v(M)
-    minimize (ones(1,N)*u + ones(1,M)*v)
-    X'*a - b >= 1 - u;
-    Y'*a - b <= -(1 - v);
-    u >= 0;
-    v >= 0;
-cvx_end
-
-% Displaying results
-linewidth = 0.5;  % for the squares and circles
-t_min = min([X(1,:),Y(1,:)]);
-t_max = max([X(1,:),Y(1,:)]);
-tt = linspace(t_min-1,t_max+1,100);
-p = -a(1)*tt/a(2) + b/a(2);
-p1 = -a(1)*tt/a(2) + (b+1)/a(2);
-p2 = -a(1)*tt/a(2) + (b-1)/a(2);
-
-graph = plot(X(1,:),X(2,:), 'o', Y(1,:), Y(2,:), 'o');
-set(graph(1),'LineWidth',linewidth);
-set(graph(2),'LineWidth',linewidth);
-set(graph(2),'MarkerFaceColor',[0 0.5 0]);
-hold on;
-plot(tt,p, '-r', tt,p1, 'REPLACE_WITH_DASH_DASHr', tt,p2, 'REPLACE_WITH_DASH_DASHr');
-axis equal
-title('Approximate linear discrimination via linear programming');
-% print -deps svc-discr.eps
-
-
-##### SOURCE END #####
---></body></html>
+</pre>
+<a id="plots"></a>
+<div id="plotoutput">
+<img src="svm_1__01.png" alt=""> 
+</div>
+</div>
+</body>
+</html>

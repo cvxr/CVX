@@ -1,68 +1,25 @@
-
-<!DOCTYPE html
-  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
-<html><head>
-      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-   <!--
-This HTML is auto-generated from an M-file.
-To make changes, update the M-file and republish this document.
-      --><title>Sparse covariance estimation for Gaussian variables</title><meta name="generator" content="MATLAB 7.9"><meta name="date" content="2009-11-12"><meta name="m-file" content="sparse_covariance_est_tradeoff_"><style type="text/css">
-
-body {
-  background-color: white;
-  margin:10px;
-}
-
-h1 {
-  color: #990000; 
-  font-size: x-large;
-}
-
-h2 {
-  color: #990000;
-  font-size: medium;
-}
-
-/* Make the text shrink to fit narrow windows, but not stretch too far in 
-wide windows. */ 
-p,h1,h2,div.content div {
-  max-width: 600px;
-  /* Hack for IE6 */
-  width: auto !important; width: 600px;
-}
-
-pre.codeinput {
-  background: #EEEEEE;
-  padding: 10px;
-}
-@media print {
-  pre.codeinput {word-wrap:break-word; width:100%;}
-} 
-
-span.keyword {color: #0000FF}
-span.comment {color: #228B22}
-span.string {color: #A020F0}
-span.untermstring {color: #B20000}
-span.syscmd {color: #B28C00}
-
-pre.codeoutput {
-  color: #666666;
-  padding: 10px;
-}
-
-pre.error {
-  color: red;
-}
-
-p.footer {
-  text-align: right;
-  font-size: xx-small;
-  font-weight: lighter;
-  font-style: italic;
-  color: gray;
-}
-
-  </style></head><body><div class="content"><h1>Sparse covariance estimation for Gaussian variables</h1><pre class="codeinput"><span class="comment">% Jo&Atilde;&laquo;lle Skaf - 04/24/08</span>
+<!DOCTYPE HTML>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Sparse covariance estimation for Gaussian variables</title>
+<link rel="canonical" href="http://cvxr.com/cvx/examples/log_exp/html/sparse_covariance_est_tradeoff.html">
+<link rel="stylesheet" href="../../examples.css" type="text/css">
+</head>
+<body>
+<div id="header">
+<h1>Sparse covariance estimation for Gaussian variables</h1>
+Jump to:&nbsp;&nbsp;&nbsp;&nbsp;
+<a href="#source">Source code</a>&nbsp;&nbsp;&nbsp;&nbsp;
+<a href="#output">Text output</a>
+&nbsp;&nbsp;&nbsp;&nbsp;
+<a href="#plots">Plots</a>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="../../index.html">Library index</a>
+</div>
+<div id="content">
+<a id="source"></a>
+<pre class="codeinput">
+<span class="comment">% Jo&Atilde;&laquo;lle Skaf - 04/24/08</span>
 <span class="comment">% (a figure is generated)</span>
 <span class="comment">%</span>
 <span class="comment">% Suppose y \in\reals^n is a Gaussian random variable with zero mean and</span>
@@ -109,431 +66,388 @@ hold <span class="string">on</span>;
 semilogx(lambda, nnz_true*ones(1,Nlambda),<span class="string">'r'</span>);
 xlabel(<span class="string">'\lambda'</span>);
 legend(<span class="string">'nonzeros in S'</span>, <span class="string">'nonzeros in R^{-1}'</span>);
-</pre><pre class="codeoutput">i = 1, lambda(i) = 0.01
+</pre>
+<a id="output"></a>
+<pre class="codeoutput">
+i = 1, lambda(i) = 0.01
  
 Successive approximation method to be employed.
-   For improved efficiency, sedumi is solving the dual problem.
    sedumi will be called several times to refine the solution.
-   Original size: 501 variables, 222 equality constraints
+   Original size: 502 variables, 279 equality constraints
    1 exponentials add 8 variables, 5 equality constraints
 -----------------------------------------------------------------
           Errors   
 Act Centering    Conic    Status
 -----------------------------------
-1   2.739e+00  7.007e-01  Solved
-1   7.415e-02  4.502e-04  Solved
-1   9.096e-03  6.756e-06  Solved
-1   1.134e-03  1.244e-07  Solved
-1   1.317e-04  0.000e+00  Solved
+1   1.837e+00  3.355e-01  Solved
+1   1.453e-01  1.747e-03  Solved
+1   7.642e-04  7.314e-08  Solved
+1   3.546e-09  2.463e-08  Solved
 -----------------------------------------------------------------
 Status: Solved
 Optimal value (cvx_optval): -31.3012
 i = 2, lambda(i) = 0.01833
  
 Successive approximation method to be employed.
-   For improved efficiency, sedumi is solving the dual problem.
    sedumi will be called several times to refine the solution.
-   Original size: 501 variables, 222 equality constraints
+   Original size: 502 variables, 279 equality constraints
    1 exponentials add 8 variables, 5 equality constraints
 -----------------------------------------------------------------
           Errors   
 Act Centering    Conic    Status
 -----------------------------------
-1   2.743e+00  7.030e-01  Solved
-1   7.377e-02  4.458e-04  Solved
-1   9.051e-03  6.737e-06  Solved
-1   1.129e-03  1.595e-07  Solved
-1   1.410e-04  5.814e-08  Solved
+1   1.840e+00  3.370e-01  Solved
+1   1.459e-01  1.763e-03  Solved
+1   7.709e-04  9.338e-08  Solved
+1   1.632e-08  4.127e-08  Solved
+1   4.811e-08S 4.099e-09  Solved
+1   3.655e-09  1.180e-09  Solved
 -----------------------------------------------------------------
 Status: Solved
 Optimal value (cvx_optval): -31.3504
 i = 3, lambda(i) = 0.033598
  
 Successive approximation method to be employed.
-   For improved efficiency, sedumi is solving the dual problem.
    sedumi will be called several times to refine the solution.
-   Original size: 501 variables, 222 equality constraints
+   Original size: 502 variables, 279 equality constraints
    1 exponentials add 8 variables, 5 equality constraints
 -----------------------------------------------------------------
           Errors   
 Act Centering    Conic    Status
 -----------------------------------
-1   2.751e+00  7.072e-01  Solved
-1   7.312e-02  4.379e-04  Solved
-1   8.964e-03  6.563e-06  Solved
-1   1.118e-03  1.101e-07  Solved
-1   1.394e-04  1.829e-09  Solved
+1   1.847e+00  3.396e-01  Solved
+1   1.470e-01  1.791e-03  Solved
+1   7.828e-04  1.208e-07  Solved
+1   2.147e-08  6.490e-08  Solved
+1   8.856e-08S 9.286e-09  Solved
+1   1.183e-08  1.409e-09  Solved
 -----------------------------------------------------------------
 Status: Solved
 Optimal value (cvx_optval): -31.4368
 i = 4, lambda(i) = 0.061585
  
 Successive approximation method to be employed.
-   For improved efficiency, sedumi is solving the dual problem.
    sedumi will be called several times to refine the solution.
-   Original size: 501 variables, 222 equality constraints
+   Original size: 502 variables, 279 equality constraints
    1 exponentials add 8 variables, 5 equality constraints
 -----------------------------------------------------------------
           Errors   
 Act Centering    Conic    Status
 -----------------------------------
-1   2.764e+00  7.143e-01  Solved
-1   7.201e-02  4.247e-04  Solved
-1   8.839e-03  6.407e-06  Solved
-1   1.102e-03  1.364e-07  Solved
-1   1.320e-04  2.596e-09  Solved
+1   1.857e+00  3.441e-01  Solved
+1   1.489e-01  1.837e-03  Solved
+1   8.033e-04  1.785e-07  Solved
+1   1.582e-08  1.218e-07  Solved
+1   1.393e-07S 1.235e-08  Solved
+1   1.730e-08  4.937e-10  Solved
 -----------------------------------------------------------------
 Status: Solved
 Optimal value (cvx_optval): -31.5845
 i = 5, lambda(i) = 0.11288
  
 Successive approximation method to be employed.
-   For improved efficiency, sedumi is solving the dual problem.
    sedumi will be called several times to refine the solution.
-   Original size: 501 variables, 222 equality constraints
+   Original size: 502 variables, 279 equality constraints
    1 exponentials add 8 variables, 5 equality constraints
 -----------------------------------------------------------------
           Errors   
 Act Centering    Conic    Status
 -----------------------------------
-1   2.785e+00  7.261e-01  Solved
-1   7.014e-02  4.030e-04  Solved
-1   8.614e-03  6.130e-06  Solved
-1   1.074e-03  1.724e-07  Solved
-1   1.311e-04  3.342e-09  Solved
+1   1.875e+00  3.515e-01  Solved
+1   1.521e-01  1.916e-03  Solved
+1   8.382e-04  1.865e-07  Solved
+1   1.560e-08  1.278e-07  Solved
+1   1.627e-07S 3.303e-09  Solved
+1   4.063e-09  7.706e-10  Solved
 -----------------------------------------------------------------
 Status: Solved
 Optimal value (cvx_optval): -31.8272
 i = 6, lambda(i) = 0.20691
  
 Successive approximation method to be employed.
-   For improved efficiency, sedumi is solving the dual problem.
    sedumi will be called several times to refine the solution.
-   Original size: 501 variables, 222 equality constraints
+   Original size: 502 variables, 279 equality constraints
    1 exponentials add 8 variables, 5 equality constraints
 -----------------------------------------------------------------
           Errors   
 Act Centering    Conic    Status
 -----------------------------------
-1   2.818e+00  7.450e-01  Solved
-1   6.711e-02  3.687e-04  Solved
-1   8.248e-03  5.534e-06  Solved
-1   1.029e-03  8.373e-08  Solved
+1   1.903e+00  3.633e-01  Solved
+1   1.572e-01  2.047e-03  Solved
+1   8.955e-04  1.293e-07  Solved
+1   2.758e-08  6.254e-08  Solved
+1   0.000e+00  6.252e-08S Solved
+1   9.209e-08S 1.439e-08  Solved
+1   2.500e-08  1.703e-09  Solved
+1   1.549e-09  0.000e+00  Solved
 -----------------------------------------------------------------
 Status: Solved
 Optimal value (cvx_optval): -32.2113
 i = 7, lambda(i) = 0.37927
  
 Successive approximation method to be employed.
-   For improved efficiency, sedumi is solving the dual problem.
    sedumi will be called several times to refine the solution.
-   Original size: 501 variables, 222 equality constraints
+   Original size: 502 variables, 279 equality constraints
    1 exponentials add 8 variables, 5 equality constraints
 -----------------------------------------------------------------
           Errors   
 Act Centering    Conic    Status
 -----------------------------------
-1   2.870e+00  7.746e-01  Solved
-1   6.224e-02  3.171e-04  Solved
-1   7.659e-03  4.794e-06  Solved
-1   9.556e-04  8.354e-08  Solved
-1   1.195e-04  1.073e-08  Solved
+1   1.946e+00  3.818e-01  Solved
+1   1.651e-01  2.260e-03  Solved
+1   9.887e-04  1.080e-07  Solved
+1   3.177e-08  2.613e-08  Solved
+1   2.917e-08S 2.202e-09  Solved
+1   2.656e-09  1.996e-10  Solved
 -----------------------------------------------------------------
 Status: Solved
 Optimal value (cvx_optval): -32.8011
 i = 8, lambda(i) = 0.69519
  
 Successive approximation method to be employed.
-   For improved efficiency, sedumi is solving the dual problem.
    sedumi will be called several times to refine the solution.
-   Original size: 501 variables, 222 equality constraints
+   Original size: 502 variables, 279 equality constraints
    1 exponentials add 8 variables, 5 equality constraints
 -----------------------------------------------------------------
           Errors   
 Act Centering    Conic    Status
 -----------------------------------
-1   2.946e+00  8.191e-01  Solved
-1   5.465e-02  2.444e-04  Solved
-1   6.738e-03  3.821e-06  Solved
-1   8.408e-04  1.898e-07  Solved
-1   9.273e-05  6.843e-09  Solved
-1   8.694e-06  0.000e+00  Solved
+1   2.008e+00  4.098e-01  Solved
+1   1.770e-01  2.602e-03  Solved
+1   1.138e-03  2.216e-07  Solved
+1   4.334e-08  1.146e-07  Solved
+1   0.000e+00  1.144e-07S Solved
+1   1.606e-07S 4.687e-09  Solved
+1   4.729e-10  1.400e-10  Solved
 -----------------------------------------------------------------
 Status: Solved
 Optimal value (cvx_optval): -33.6657
 i = 9, lambda(i) = 1.2743
  
 Successive approximation method to be employed.
-   For improved efficiency, sedumi is solving the dual problem.
    sedumi will be called several times to refine the solution.
-   Original size: 501 variables, 222 equality constraints
+   Original size: 502 variables, 279 equality constraints
    1 exponentials add 8 variables, 5 equality constraints
 -----------------------------------------------------------------
           Errors   
 Act Centering    Conic    Status
 -----------------------------------
-1   3.052e+00  8.839e-01  Solved
-1   4.310e-02  1.518e-04  Solved
-1   5.330e-03  2.308e-06  Solved
-1   6.655e-04  4.051e-08  Solved
-1   7.645e-05  0.000e+00  Solved
+1   2.094e+00  4.503e-01  Solved
+1   1.942e-01  3.140e-03  Solved
+1   1.373e-03  2.357e-07  Solved
+1   6.492e-08  7.527e-08  Solved
+1   0.000e+00  7.494e-08S Solved
+1   1.064e-07S 7.441e-09  Solved
+1   1.010e-08  6.243e-10  Solved
 -----------------------------------------------------------------
 Status: Solved
 Optimal value (cvx_optval): -34.876
 i = 10, lambda(i) = 2.3357
  
 Successive approximation method to be employed.
-   For improved efficiency, sedumi is solving the dual problem.
    sedumi will be called several times to refine the solution.
-   Original size: 501 variables, 222 equality constraints
+   Original size: 502 variables, 279 equality constraints
    1 exponentials add 8 variables, 5 equality constraints
 -----------------------------------------------------------------
           Errors   
 Act Centering    Conic    Status
 -----------------------------------
-1   3.194e+00  9.750e-01  Solved
-1   2.591e-02  5.477e-05  Solved
-1   3.217e-03  8.400e-07  Solved
-1   4.018e-04  1.823e-08  Solved
+1   2.206e+00  5.072e-01  Solved
+1   2.184e-01  3.979e-03  Solved
+1   1.740e-03  3.273e-07  Solved
+1   1.067e-07  7.459e-08  Solved
+1   0.000e+00  7.452e-08S Solved
+1   9.018e-08S 1.349e-08  Solved
+1   1.276e-08  4.276e-10  Solved
 -----------------------------------------------------------------
 Status: Solved
 Optimal value (cvx_optval): -36.4981
 i = 11, lambda(i) = 4.2813
  
 Successive approximation method to be employed.
-   For improved efficiency, sedumi is solving the dual problem.
    sedumi will be called several times to refine the solution.
-   Original size: 501 variables, 222 equality constraints
+   Original size: 502 variables, 279 equality constraints
    1 exponentials add 8 variables, 5 equality constraints
 -----------------------------------------------------------------
           Errors   
 Act Centering    Conic    Status
 -----------------------------------
-1   3.374e+00  1.099e+00  Solved
-1   1.193e-03  1.111e-07  Solved
-1   1.490e-04  1.188e-09  Solved
+1   2.345e+00  5.839e-01  Solved
+1   2.509e-01  5.261e-03  Solved
+1   2.302e-03  4.760e-07  Solved
+1   1.859e-07  5.585e-08  Solved
+1   0.000e+00  5.581e-08S Solved
+1   6.138e-08S 1.155e-08  Solved
+1   1.452e-08  6.719e-10  Solved
 -----------------------------------------------------------------
 Status: Solved
 Optimal value (cvx_optval): -38.5618
 i = 12, lambda(i) = 7.8476
  
 Successive approximation method to be employed.
-   For improved efficiency, sedumi is solving the dual problem.
    sedumi will be called several times to refine the solution.
-   Original size: 501 variables, 222 equality constraints
+   Original size: 502 variables, 279 equality constraints
    1 exponentials add 8 variables, 5 equality constraints
 -----------------------------------------------------------------
           Errors   
 Act Centering    Conic    Status
 -----------------------------------
-1   3.596e+00  1.262e+00  Solved
-1   3.359e-02  9.264e-05  Solved
-1   4.243e-03  1.481e-06  Solved
-1   5.312e-04  6.969e-09  Solved
+1   2.511e+00  6.842e-01  Solved
+1   2.930e-01  7.209e-03  Solved
+1   3.154e-03  8.354e-07  Solved
+1   3.481e-07  1.386e-09  Solved
 -----------------------------------------------------------------
 Status: Solved
 Optimal value (cvx_optval): -41.092
 i = 13, lambda(i) = 14.3845
  
 Successive approximation method to be employed.
-   For improved efficiency, sedumi is solving the dual problem.
    sedumi will be called several times to refine the solution.
-   Original size: 501 variables, 222 equality constraints
+   Original size: 502 variables, 279 equality constraints
    1 exponentials add 8 variables, 5 equality constraints
 -----------------------------------------------------------------
           Errors   
 Act Centering    Conic    Status
 -----------------------------------
-1   3.859e+00  1.474e+00  Solved
-1   8.126e-02  5.454e-04  Solved
-1   1.044e-02  9.122e-06  Solved
-1   1.311e-03  1.343e-07  Solved
+1   2.700e+00  8.127e-01  Solved
+1   3.466e-01  1.015e-02  Solved
+1   4.435e-03  1.988e-04  Solved
+1   6.918e-07  0.000e+00  Solved
 -----------------------------------------------------------------
 Status: Solved
 Optimal value (cvx_optval): -44.1061
 i = 14, lambda(i) = 26.3665
  
 Successive approximation method to be employed.
-   For improved efficiency, sedumi is solving the dual problem.
    sedumi will be called several times to refine the solution.
-   Original size: 501 variables, 222 equality constraints
+   Original size: 502 variables, 279 equality constraints
    1 exponentials add 8 variables, 5 equality constraints
 -----------------------------------------------------------------
           Errors   
 Act Centering    Conic    Status
 -----------------------------------
-1   4.176e+00  1.755e+00  Solved
-1   1.482e-01  1.822e-03  Solved
-1   1.940e-02  3.103e-05  Solved
-1   2.440e-03  4.918e-07  Solved
-1   3.049e-04  0.000e+00  Solved
+1   2.917e+00  9.786e-01  Solved
+1   4.153e-01  1.466e-02  Solved
+1   6.412e-03  3.326e-06  Solved
+1   1.463e-06  0.000e+00  Solved
 -----------------------------------------------------------------
 Status: Solved
 Optimal value (cvx_optval): -47.7294
 i = 15, lambda(i) = 48.3293
  
 Successive approximation method to be employed.
-   For improved efficiency, sedumi is solving the dual problem.
    sedumi will be called several times to refine the solution.
-   Original size: 501 variables, 222 equality constraints
+   Original size: 502 variables, 279 equality constraints
    1 exponentials add 8 variables, 5 equality constraints
 -----------------------------------------------------------------
           Errors   
 Act Centering    Conic    Status
 -----------------------------------
-1   4.548e+00  2.123e+00  Solved
-1   2.397e-01  4.805e-03  Solved
-1   3.217e-02  8.560e-05  Solved
-1   4.072e-03  1.423e-06  Solved
-1   5.102e-04  0.000e+00  Solved
+1   3.157e+00  1.191e+00  Solved
+1   5.015e-01  2.157e-02  Solved
+1   9.431e-03  7.240e-06  Solved
+1   3.173e-06  0.000e+00  Solved
 -----------------------------------------------------------------
 Status: Solved
 Optimal value (cvx_optval): -51.9812
 i = 16, lambda(i) = 88.5867
  
 Successive approximation method to be employed.
-   For improved efficiency, sedumi is solving the dual problem.
    sedumi will be called several times to refine the solution.
-   Original size: 501 variables, 222 equality constraints
+   Original size: 502 variables, 279 equality constraints
    1 exponentials add 8 variables, 5 equality constraints
 -----------------------------------------------------------------
           Errors   
 Act Centering    Conic    Status
 -----------------------------------
-1   4.969e+00  2.591e+00  Solved
-1   3.611e-01  1.103e-02  Solved
-1   5.034e-02  2.085e-04  Solved
-1   6.393e-03  3.359e-06  Solved
-1   4.940e-04  0.000e+00  Solved
------------------------------------------------------------------
-Status: Solved
-Optimal value (cvx_optval): -56.7913
-i = 17, lambda(i) = 162.3777
- 
-Successive approximation method to be employed.
-   For improved efficiency, sedumi is solving the dual problem.
-   sedumi will be called several times to refine the solution.
-   Original size: 501 variables, 222 equality constraints
-   1 exponentials add 8 variables, 5 equality constraints
------------------------------------------------------------------
-          Errors   
-Act Centering    Conic    Status
------------------------------------
-1   5.429e+00  3.170e+00  Solved
-1   5.146e-01  2.278e-02  Solved
-1   7.513e-02  4.704e-04  Solved
-1   9.608e-03  8.311e-06  Solved
-1   1.204e-03  1.684e-07  Solved
------------------------------------------------------------------
-Status: Solved
-Optimal value (cvx_optval): -62.0441
-i = 18, lambda(i) = 297.6351
- 
-Successive approximation method to be employed.
-   For improved efficiency, sedumi is solving the dual problem.
-   sedumi will be called several times to refine the solution.
-   Original size: 501 variables, 222 equality constraints
-   1 exponentials add 8 variables, 5 equality constraints
------------------------------------------------------------------
-          Errors   
-Act Centering    Conic    Status
------------------------------------
-1   5.917e+00  3.865e+00  Solved
+1   3.412e+00  1.448e+00  Solved
+1   6.055e-01  3.178e-02  Solved
 0   0.000e+00  0.000e+00  Failed
 0   0.000e+00S 0.000e+00S Failed
 -----------------------------------------------------------------
 Status: Solved
-Optimal value (cvx_optval): -2.05492e+07
+Optimal value (cvx_optval): -64831.7
+i = 17, lambda(i) = 162.3777
+ 
+Successive approximation method to be employed.
+   sedumi will be called several times to refine the solution.
+   Original size: 502 variables, 279 equality constraints
+   1 exponentials add 8 variables, 5 equality constraints
+-----------------------------------------------------------------
+          Errors   
+Act Centering    Conic    Status
+-----------------------------------
+1   3.672e+00  1.751e+00  Solved
+1   7.258e-01  4.744e-02  Solved
+1   2.020e-02  3.317e-05  Solved
+1   1.281e-05  1.765e-04S Inaccurate/Solved
+1   0.000e+00  1.763e-04S Inaccurate/Solved
+1   0.000e+00S 1.763e-04S Failed
+1   0.000e+00S 1.763e-04S Failed
+1   0.000e+00S 1.763e-04S Failed
+-----------------------------------------------------------------
+Status: Failed
+Optimal value (cvx_optval): NaN
+i = 18, lambda(i) = 297.6351
+ 
+Successive approximation method to be employed.
+   sedumi will be called several times to refine the solution.
+   Original size: 502 variables, 279 equality constraints
+   1 exponentials add 8 variables, 5 equality constraints
+-----------------------------------------------------------------
+          Errors   
+Act Centering    Conic    Status
+-----------------------------------
+1   3.926e+00  2.097e+00  Solved
+1   8.599e-01  6.575e-02  Inaccurate/Solved
+1   2.874e-02  5.900e-04  Inaccurate/Solved
+1   2.912e-05  7.235e-05  Inaccurate/Solved
+1   0.000e+00  1.118e-04S Inaccurate/Solved
+1   0.000e+00S 7.758e-05  Failed
+1   0.000e+00S 1.119e-04S Failed
+1   0.000e+00S 1.119e-04S Failed
+-----------------------------------------------------------------
+Status: Failed
+Optimal value (cvx_optval): NaN
 i = 19, lambda(i) = 545.5595
  
 Successive approximation method to be employed.
-   For improved efficiency, sedumi is solving the dual problem.
    sedumi will be called several times to refine the solution.
-   Original size: 501 variables, 222 equality constraints
+   Original size: 502 variables, 279 equality constraints
    1 exponentials add 8 variables, 5 equality constraints
 -----------------------------------------------------------------
           Errors   
 Act Centering    Conic    Status
 -----------------------------------
-1   6.421e+00  4.682e+00  Solved
-1   5.551e-01  2.662e-02  Solved
-1   8.148e-02  5.597e-04  Solved
-1   1.057e-02  1.048e-05  Solved
-1   1.338e-03  1.376e-07  Solved
+1   4.170e+00  2.479e+00  Solved
+1   1.005e+00  9.489e-02  Failed
+1   3.949e-02  0.000e+00  Failed
+1   9.884e-05  0.000e+00S Inaccurate/Solved
 -----------------------------------------------------------------
 Status: Solved
-Optimal value (cvx_optval): -73.3838
+Optimal value (cvx_optval): -73.4074
 i = 20, lambda(i) = 1000
  
 Successive approximation method to be employed.
-   For improved efficiency, sedumi is solving the dual problem.
    sedumi will be called several times to refine the solution.
-   Original size: 501 variables, 222 equality constraints
+   Original size: 502 variables, 279 equality constraints
    1 exponentials add 8 variables, 5 equality constraints
 -----------------------------------------------------------------
           Errors   
 Act Centering    Conic    Status
 -----------------------------------
-1   6.938e+00  5.623e+00  Solved
-1   6.186e-02  3.225e-04  Solved
-1   7.926e-03  5.818e-06  Solved
-1   9.939e-04  0.000e+00  Solved
+1   4.398e+00  2.883e+00  Failed
+1   1.158e+00  1.231e-01  Solved
+1   5.187e-02  0.000e+00  Failed
+1   8.298e-05  1.702e-04S Inaccurate/Solved
 -----------------------------------------------------------------
 Status: Solved
-Optimal value (cvx_optval): -79.28
-</pre><img vspace="5" hspace="5" src="sparse_covariance_est_tradeoff__01.png" alt=""> <p class="footer"><br>
-      Published with MATLAB&reg; 7.9<br></p></div><!--
-##### SOURCE BEGIN #####
-%% Sparse covariance estimation for Gaussian variables
-
-% JoÃ«lle Skaf - 04/24/08 
-% (a figure is generated)
-% 
-% Suppose y \in\reals^n is a Gaussian random variable with zero mean and 
-% covariance matrix R = \Expect(yy^T), with sparse inverse S = R^{-1} 
-% (S_ij = 0 means that y_i and y_j are conditionally independent).
-% We want to estimate the covariance matrix R based on N independent 
-% samples y1,...,yN drawn from the distribution, and using prior knowledge 
-% that S is sparse
-% A good heuristic for estimating R is to solve the problem 
-%           maximize    logdet(S) - tr(SY) - lambda*sum(sum(abs(S)))
-%           subject to  S >= 0
-% where Y is the sample covariance of y1,...,yN, and lambda is a sparsity
-% parameter to be chosen or tuned. 
-% A figure showing the sparsity (number of nonzeros) of S versus lambda 
-% is generated.
-
-% Input data 
-randn('state',0);
-n = 10; 
-N = 100; 
-Strue = sprandsym(n,0.5,0.01,1);
-nnz_true = sum(Strue(:)>1e-4);
-R = inv(full(Strue));
-y_sample = sqrtm(R)*randn(n,N); 
-Y = cov(y_sample'); 
-Nlambda = 20;
-lambda = logspace(-2, 3, Nlambda);
-nnz = zeros(1,Nlambda);
-
-for i=1:Nlambda
-    disp(['i = ' num2str(i) ', lambda(i) = ' num2str(lambda(i))]);        
-    % Maximum likelihood estimate of R^{-1}
-    cvx_begin sdp
-        variable S(n,n) symmetric
-        maximize log_det(S) - trace(S*Y) - lambda(i)*sum(sum(abs(S)))
-        S >= 0
-    cvx_end
-    nnz(i) = sum(S(:)>1e-4);
-end
-
-figure; 
-semilogx(lambda, nnz); 
-hold on; 
-semilogx(lambda, nnz_true*ones(1,Nlambda),'r');
-xlabel('\lambda');
-legend('nonzeros in S', 'nonzeros in R^{-1}');  
-
-
-##### SOURCE END #####
---></body></html>
+Optimal value (cvx_optval): -79.332
+</pre>
+<a id="plots"></a>
+<div id="plotoutput">
+<img src="sparse_covariance_est_tradeoff__01.png" alt=""> 
+</div>
+</div>
+</body>
+</html>

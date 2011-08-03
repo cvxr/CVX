@@ -1,68 +1,25 @@
-
-<!DOCTYPE html
-  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
-<html><head>
-      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-   <!--
-This HTML is auto-generated from an M-file.
-To make changes, update the M-file and republish this document.
-      --><title>Exercise 4.47: Maximum determinant PSD matrix completion</title><meta name="generator" content="MATLAB 7.9"><meta name="date" content="2009-11-12"><meta name="m-file" content="max_det_psd_completion_"><style type="text/css">
-
-body {
-  background-color: white;
-  margin:10px;
-}
-
-h1 {
-  color: #990000; 
-  font-size: x-large;
-}
-
-h2 {
-  color: #990000;
-  font-size: medium;
-}
-
-/* Make the text shrink to fit narrow windows, but not stretch too far in 
-wide windows. */ 
-p,h1,h2,div.content div {
-  max-width: 600px;
-  /* Hack for IE6 */
-  width: auto !important; width: 600px;
-}
-
-pre.codeinput {
-  background: #EEEEEE;
-  padding: 10px;
-}
-@media print {
-  pre.codeinput {word-wrap:break-word; width:100%;}
-} 
-
-span.keyword {color: #0000FF}
-span.comment {color: #228B22}
-span.string {color: #A020F0}
-span.untermstring {color: #B20000}
-span.syscmd {color: #B28C00}
-
-pre.codeoutput {
-  color: #666666;
-  padding: 10px;
-}
-
-pre.error {
-  color: red;
-}
-
-p.footer {
-  text-align: right;
-  font-size: xx-small;
-  font-weight: lighter;
-  font-style: italic;
-  color: gray;
-}
-
-  </style></head><body><div class="content"><h1>Exercise 4.47: Maximum determinant PSD matrix completion</h1><pre class="codeinput"><span class="comment">% Boyd &amp; Vandenberghe "Convex Optimization"</span>
+<!DOCTYPE HTML>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Exercise 4.47: Maximum determinant PSD matrix completion</title>
+<link rel="canonical" href="http://cvxr.com/cvx/examples/cvxbook/Ch04_cvx_opt_probs/html/max_det_psd_completion.html">
+<link rel="stylesheet" href="../../../examples.css" type="text/css">
+</head>
+<body>
+<div id="header">
+<h1>Exercise 4.47: Maximum determinant PSD matrix completion</h1>
+Jump to:&nbsp;&nbsp;&nbsp;&nbsp;
+<a href="#source">Source code</a>&nbsp;&nbsp;&nbsp;&nbsp;
+<a href="#output">Text output</a>
+&nbsp;&nbsp;&nbsp;&nbsp;
+Plots
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="../../../index.html">Library index</a>
+</div>
+<div id="content">
+<a id="source"></a>
+<pre class="codeinput">
+<span class="comment">% Boyd &amp; Vandenberghe "Convex Optimization"</span>
 <span class="comment">% Almir Mutapcic - Jan 2006</span>
 <span class="comment">%</span>
 <span class="comment">% Given a symmetric matrix A in R^(n-by-n) with some entries unspecified</span>
@@ -103,19 +60,26 @@ disp([<span class="string">'Matrix A with maximum determinant ('</span> num2str(
 A
 disp([<span class="string">'Its eigenvalues are:'</span>])
 eigs = eig(A)
-</pre><pre class="codeoutput"> 
+</pre>
+<a id="output"></a>
+<pre class="codeoutput">
+ 
 Successive approximation method to be employed.
-   For improved efficiency, sedumi is solving the dual problem.
    sedumi will be called several times to refine the solution.
-   Original size: 58 variables, 17 equality constraints
+   Original size: 59 variables, 41 equality constraints
    1 exponentials add 8 variables, 5 equality constraints
 -----------------------------------------------------------------
           Errors   
 Act Centering    Conic    Status
 -----------------------------------
-1   2.439e-01  4.916e-03  Solved
-1   2.150e-03  3.610e-07  Solved
-1   8.547e-08  0.000e+00  Solved
+1   6.615e-01  3.688e-02  Solved
+1   6.857e-02  3.854e-04  Solved
+1   8.423e-03  5.891e-06  Solved
+1   1.050e-03  1.586e-07  Solved
+1   1.312e-04  6.616e-08  Solved
+1   1.640e-05  6.439e-08S Solved
+1   1.547e-05S 7.439e-09  Solved
+1   8.152e-06  3.170e-10  Solved
 -----------------------------------------------------------------
 Status: Solved
 Optimal value (cvx_optval): +3.02422
@@ -137,52 +101,7 @@ eigs =
     3.2773
     5.0355
 
-</pre><p class="footer"><br>
-      Published with MATLAB&reg; 7.9<br></p></div><!--
-##### SOURCE BEGIN #####
-%% Exercise 4.47: Maximum determinant PSD matrix completion
-
-% Boyd & Vandenberghe "Convex Optimization"
-% Almir Mutapcic - Jan 2006
-%
-% Given a symmetric matrix A in R^(n-by-n) with some entries unspecified
-% we find its completion such that A is positive semidefinite and
-% it has a maximum determinant out of all possible completions.
-% This problem can be formulated as a log det (and det_rootn) problem.
-%
-% This is a numerical instance of the specified book exercise.
-
-% problem size
-n = 4;
-
-% create and solve the problem
-cvx_begin sdp
-  % A is a PSD symmetric matrix (n-by-n)
-  variable A(n,n) symmetric;
-  A >= 0;
-
-  % constrained matrix entries.
-  A(1,1) == 3;
-  A(2,2) == 2;
-  A(3,3) == 1;
-  A(4,4) == 5;
-  % Note that because A is symmetric, these off-diagonal
-  % constraints affect the corresponding element on the
-  % opposite side of the diagonal.
-  A(1,2) == .5;
-  A(1,4) == .25;
-  A(2,3) == .75;
-
-  % find the solution to the problem
-  maximize( log_det( A ) )
-  % maximize( det_rootn( A ) )
-cvx_end
-
-% display solution
-disp(['Matrix A with maximum determinant (' num2str(det(A)) ') is:'])
-A
-disp(['Its eigenvalues are:'])
-eigs = eig(A)
-
-##### SOURCE END #####
---></body></html>
+</pre>
+</div>
+</body>
+</html>

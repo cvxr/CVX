@@ -1,68 +1,25 @@
-
-<!DOCTYPE html
-  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
-<html><head>
-      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-   <!--
-This HTML is auto-generated from an M-file.
-To make changes, update the M-file and republish this document.
-      --><title>Box volume maximization</title><meta name="generator" content="MATLAB 7.9"><meta name="date" content="2009-11-12"><meta name="m-file" content="max_volume_box_"><style type="text/css">
-
-body {
-  background-color: white;
-  margin:10px;
-}
-
-h1 {
-  color: #990000; 
-  font-size: x-large;
-}
-
-h2 {
-  color: #990000;
-  font-size: medium;
-}
-
-/* Make the text shrink to fit narrow windows, but not stretch too far in 
-wide windows. */ 
-p,h1,h2,div.content div {
-  max-width: 600px;
-  /* Hack for IE6 */
-  width: auto !important; width: 600px;
-}
-
-pre.codeinput {
-  background: #EEEEEE;
-  padding: 10px;
-}
-@media print {
-  pre.codeinput {word-wrap:break-word; width:100%;}
-} 
-
-span.keyword {color: #0000FF}
-span.comment {color: #228B22}
-span.string {color: #A020F0}
-span.untermstring {color: #B20000}
-span.syscmd {color: #B28C00}
-
-pre.codeoutput {
-  color: #666666;
-  padding: 10px;
-}
-
-pre.error {
-  color: red;
-}
-
-p.footer {
-  text-align: right;
-  font-size: xx-small;
-  font-weight: lighter;
-  font-style: italic;
-  color: gray;
-}
-
-  </style></head><body><div class="content"><h1>Box volume maximization</h1><pre class="codeinput"><span class="comment">% Boyd, Kim, Vandenberghe, and Hassibi, "A Tutorial on Geometric Programming"</span>
+<!DOCTYPE HTML>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Box volume maximization</title>
+<link rel="canonical" href="http://cvxr.com/cvx/examples/gp_tutorial/html/max_volume_box.html">
+<link rel="stylesheet" href="../../examples.css" type="text/css">
+</head>
+<body>
+<div id="header">
+<h1>Box volume maximization</h1>
+Jump to:&nbsp;&nbsp;&nbsp;&nbsp;
+<a href="#source">Source code</a>&nbsp;&nbsp;&nbsp;&nbsp;
+<a href="#output">Text output</a>
+&nbsp;&nbsp;&nbsp;&nbsp;
+<a href="#plots">Plots</a>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="../../index.html">Library index</a>
+</div>
+<div id="content">
+<a id="source"></a>
+<pre class="codeinput">
+<span class="comment">% Boyd, Kim, Vandenberghe, and Hassibi, "A Tutorial on Geometric Programming"</span>
 <span class="comment">% Written for CVX by Almir Mutapcic 02/08/06</span>
 <span class="comment">% (a figure is generated)</span>
 <span class="comment">%</span>
@@ -117,7 +74,10 @@ disp(<span class="string">'Computing optimal box volume for:'</span>)
 figure, clf
 loglog(Afloor,opt_volumes(1,:), Afloor,opt_volumes(2,:), Afloor,opt_volumes(3,:));
 xlabel(<span class="string">'Afloor'</span>); ylabel(<span class="string">'V'</span>);
-</pre><pre class="codeoutput">Computing optimal box volume for:
+</pre>
+<a id="output"></a>
+<pre class="codeoutput">
+Computing optimal box volume for:
   Awall =   100   Afloor =   10.00   max_volume = 77.46
   Awall =   100   Afloor =   16.68   max_volume = 102.11
   Awall =   100   Afloor =   27.83   max_volume = 131.87
@@ -148,66 +108,11 @@ xlabel(<span class="string">'Afloor'</span>); ylabel(<span class="string">'V'</s
   Awall = 10000   Afloor =  359.38   max_volume = 19269.85
   Awall = 10000   Afloor =  599.48   max_volume = 41515.63
   Awall = 10000   Afloor = 1000.00   max_volume = 77459.67
-</pre><img vspace="5" hspace="5" src="max_volume_box__01.png" alt=""> <p class="footer"><br>
-      Published with MATLAB&reg; 7.9<br></p></div><!--
-##### SOURCE BEGIN #####
-%% Box volume maximization
-
-% Boyd, Kim, Vandenberghe, and Hassibi, "A Tutorial on Geometric Programming"
-% Written for CVX by Almir Mutapcic 02/08/06
-% (a figure is generated)
-%
-% Maximizes volume of a box-shaped structure which has constraints
-% on its total wall area, its total floor area, and which has lower
-% and upper bounds on the aspect ratios. This leads to a GP:
-%
-%   maximize   h*w*d
-%       s.t.   2(h*w + h*d) <= Awall, w*d <= Afloor
-%              alpha <= h/w <= beta
-%              gamma <= d/w <= delta
-%
-% where variables are the box height h, width w, and depth d.
-
-% problem constants
-alpha = 0.5; beta = 2; gamma = 0.5; delta = 2;
-
-% varying parameters for an optimal trade-off curve
-N = 10;
-Afloor = logspace(1,3,N);
-Awall  = [100 1000 10000];
-opt_volumes = zeros(length(Awall),N);
-
-disp('Computing optimal box volume for:')
-
-% setup various GP problems with varying parameters
-for k = 1:length(Awall)
-  Awall_k = Awall(k);
-  for n = 1:N
-    % resolve the problem with varying parameters
-    Afloor_n = Afloor(n);
-    cvx_begin gp quiet
-      variables h w d
-      % objective function is the box volume
-      maximize( h*w*d )
-      subject to
-        2*(h*w + h*d) <= Awall_k;
-        w*d <= Afloor_n;
-        h/w >= alpha;
-        h/w <= beta;
-        d/w >= gamma;
-        d/w <= delta;
-    cvx_end
-
-    fprintf(1,'  Awall = %5d   Afloor = %7.2f   max_volume = %3.2f\n', ...
-            Awall(k),Afloor(n),cvx_optval);
-    opt_volumes(k,n) = cvx_optval;
-  end
-end
-
-% plot the tradeoff curve
-figure, clf
-loglog(Afloor,opt_volumes(1,:), Afloor,opt_volumes(2,:), Afloor,opt_volumes(3,:));
-xlabel('Afloor'); ylabel('V');
-
-##### SOURCE END #####
---></body></html>
+</pre>
+<a id="plots"></a>
+<div id="plotoutput">
+<img src="max_volume_box__01.png" alt=""> 
+</div>
+</div>
+</body>
+</html>

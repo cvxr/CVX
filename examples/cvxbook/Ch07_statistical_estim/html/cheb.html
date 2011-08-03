@@ -1,68 +1,25 @@
-
-<!DOCTYPE html
-  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
-<html><head>
-      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-   <!--
-This HTML is auto-generated from an M-file.
-To make changes, update the M-file and republish this document.
-      --><title>Computes Chebyshev lower bounds on probability vectors</title><meta name="generator" content="MATLAB 7.9"><meta name="date" content="2009-11-12"><meta name="m-file" content="cheb_"><style type="text/css">
-
-body {
-  background-color: white;
-  margin:10px;
-}
-
-h1 {
-  color: #990000; 
-  font-size: x-large;
-}
-
-h2 {
-  color: #990000;
-  font-size: medium;
-}
-
-/* Make the text shrink to fit narrow windows, but not stretch too far in 
-wide windows. */ 
-p,h1,h2,div.content div {
-  max-width: 600px;
-  /* Hack for IE6 */
-  width: auto !important; width: 600px;
-}
-
-pre.codeinput {
-  background: #EEEEEE;
-  padding: 10px;
-}
-@media print {
-  pre.codeinput {word-wrap:break-word; width:100%;}
-} 
-
-span.keyword {color: #0000FF}
-span.comment {color: #228B22}
-span.string {color: #A020F0}
-span.untermstring {color: #B20000}
-span.syscmd {color: #B28C00}
-
-pre.codeoutput {
-  color: #666666;
-  padding: 10px;
-}
-
-pre.error {
-  color: red;
-}
-
-p.footer {
-  text-align: right;
-  font-size: xx-small;
-  font-weight: lighter;
-  font-style: italic;
-  color: gray;
-}
-
-  </style></head><body><div class="content"><h1>Computes Chebyshev lower bounds on probability vectors</h1><pre class="codeinput"><span class="keyword">function</span> [cvx_optval,P,q,r,X,lambda] = cheb(A,b,Sigma);
+<!DOCTYPE HTML>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Computes Chebyshev lower bounds on probability vectors</title>
+<link rel="canonical" href="http://cvxr.com/cvx/examples/cvxbook/Ch07_statistical_estim/html/cheb.html">
+<link rel="stylesheet" href="../../../examples.css" type="text/css">
+</head>
+<body>
+<div id="header">
+<h1>Computes Chebyshev lower bounds on probability vectors</h1>
+Jump to:&nbsp;&nbsp;&nbsp;&nbsp;
+<a href="#source">Source code</a>&nbsp;&nbsp;&nbsp;&nbsp;
+Text output
+&nbsp;&nbsp;&nbsp;&nbsp;
+Plots
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="../../../index.html">Library index</a>
+</div>
+<div id="content">
+<a id="source"></a>
+<pre class="codeinput">
+<span class="keyword">function</span> [cvx_optval,P,q,r,X,lambda] = cheb(A,b,Sigma);
 
 <span class="comment">% Calculates a lower bound on the probability that a random vector</span>
 <span class="comment">% x with mean zero and covariance Sigma satisfies A x &lt;= b</span>
@@ -137,86 +94,7 @@ mu = 1-sum(lambda);
       lambda = [lambda; mu];
    <span class="keyword">end</span>;
 <span class="keyword">end</span>;
-</pre><p class="footer"><br>
-      Published with MATLAB&reg; 7.9<br></p></div><!--
-##### SOURCE BEGIN #####
-%% Computes Chebyshev lower bounds on probability vectors
-
-function [cvx_optval,P,q,r,X,lambda] = cheb(A,b,Sigma);
-
-% Calculates a lower bound on the probability that a random vector
-% x with mean zero and covariance Sigma satisfies A x <= b
-%
-% Sigma must be positive definite
-%
-% output arguments:
-% - prob: lower bound on probability
-% - P,q,r: x'*P*x + 2*q'*x + r is a quadratic function
-%   that majorizes the 0-1 indicator function of the complement
-%   of the polyhedron,
-% - X, lambda:  a discrete distribution with mean zero, covariance
-%   Sigma and Prob(X not in C)  >= 1-prob
-
-%
-% maximize  1 - Tr Sigma*P - r
-% s.t.      [ P  q     ]             [ 0      a_i/2 ]
-%           [ q' r - 1 ] >= tau(i) * [ a_i'/2  -b_i ], i=1,...,m
-%           taui >= 0
-%           [ P q  ]
-%           [ q' r ] >= 0
-%
-% variables P in Sn, q in Rn, r in R
-%
-
-[ m, n ] = size( A );
-cvx_begin sdp quiet
-    variable P(n,n) symmetric
-    variables q(n) r tau(m)
-    dual variables Z{m}
-    maximize( 1 - trace( Sigma * P ) - r )
-    subject to
-        for i = 1 : m,
-            qadj = q - 0.5 * tau(i) * A(i,:)';
-            radj = r - 1 + tau(i) * b(i);
-            [ P, qadj ; qadj', radj ] >= 0 : Z{i};
-        end
-        [ P, q ; q', r ] >= 0;
-        tau >= 0;
-cvx_end
-
-if nargout < 4,
-    return
-end
-
-X = [];
-lambda = [];
-for i=1:m
-   Zi = Z{i};
-   if (abs(Zi(3,3)) > 1e-4)
-      lambda = [lambda; Zi(3,3)];
-      X = [X Zi(1:2,3)/Zi(3,3)];
-   end;
-end;
-mu = 1-sum(lambda);
-if (mu>1e-5)
-   w = (-X*lambda)/mu;
-   W = (Sigma - X*diag(lambda)*X')/mu;
-   [v,d] = eig(W-w*w');
-   d = diag(d);
-   s = sum(d>1e-5);
-   if (d(1) > 1e-5)
-      X = [X w+sqrt(s)*sqrt(d(1))*v(:,1) ...
-            w-sqrt(s)*sqrt(d(1))*v(:,1)];
-      lambda = [lambda; mu/(2*s); mu/(2*s)];
-   elseif (d(2) > 1e-5)
-      X = [X w+sqrt(s)*sqrt(d(2))*v(:,2) ...
-            w-sqrt(s)*sqrt(d(2))*v(:,2)];
-      lambda = [lambda; mu/(2*s); mu/(2*s)];
-   else
-      X = [X w];
-      lambda = [lambda; mu];
-   end;
-end;
-
-##### SOURCE END #####
---></body></html>
+</pre>
+</div>
+</body>
+</html>

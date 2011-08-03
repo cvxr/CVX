@@ -1,68 +1,25 @@
-
-<!DOCTYPE html
-  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
-<html><head>
-      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-   <!--
-This HTML is auto-generated from an M-file.
-To make changes, update the M-file and republish this document.
-      --><title>Section 11.8.4: Network rate optimization</title><meta name="generator" content="MATLAB 7.9"><meta name="date" content="2009-11-12"><meta name="m-file" content="log_utility_flow_"><style type="text/css">
-
-body {
-  background-color: white;
-  margin:10px;
-}
-
-h1 {
-  color: #990000; 
-  font-size: x-large;
-}
-
-h2 {
-  color: #990000;
-  font-size: medium;
-}
-
-/* Make the text shrink to fit narrow windows, but not stretch too far in 
-wide windows. */ 
-p,h1,h2,div.content div {
-  max-width: 600px;
-  /* Hack for IE6 */
-  width: auto !important; width: 600px;
-}
-
-pre.codeinput {
-  background: #EEEEEE;
-  padding: 10px;
-}
-@media print {
-  pre.codeinput {word-wrap:break-word; width:100%;}
-} 
-
-span.keyword {color: #0000FF}
-span.comment {color: #228B22}
-span.string {color: #A020F0}
-span.untermstring {color: #B20000}
-span.syscmd {color: #B28C00}
-
-pre.codeoutput {
-  color: #666666;
-  padding: 10px;
-}
-
-pre.error {
-  color: red;
-}
-
-p.footer {
-  text-align: right;
-  font-size: xx-small;
-  font-weight: lighter;
-  font-style: italic;
-  color: gray;
-}
-
-  </style></head><body><div class="content"><h1>Section 11.8.4: Network rate optimization</h1><pre class="codeinput"><span class="comment">% Boyd &amp; Vandenberghe "Convex Optimization"</span>
+<!DOCTYPE HTML>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Section 11.8.4: Network rate optimization</title>
+<link rel="canonical" href="http://cvxr.com/cvx/examples/cvxbook/Ch11_intpt_methods/html/log_utility_flow.html">
+<link rel="stylesheet" href="../../../examples.css" type="text/css">
+</head>
+<body>
+<div id="header">
+<h1>Section 11.8.4: Network rate optimization</h1>
+Jump to:&nbsp;&nbsp;&nbsp;&nbsp;
+<a href="#source">Source code</a>&nbsp;&nbsp;&nbsp;&nbsp;
+<a href="#output">Text output</a>
+&nbsp;&nbsp;&nbsp;&nbsp;
+Plots
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="../../../index.html">Library index</a>
+</div>
+<div id="content">
+<a id="source"></a>
+<pre class="codeinput">
+<span class="comment">% Boyd &amp; Vandenberghe "Convex Optimization"</span>
 <span class="comment">% Argyrios Zymnis - 05/03/08</span>
 <span class="comment">%</span>
 <span class="comment">% We consider a network with n flows and L links. Each flow i,</span>
@@ -107,7 +64,10 @@ cvx_begin
         lambda &gt;= 0
 cvx_end
 dual_obj = cvx_optval;
-</pre><pre class="codeoutput"> 
+</pre>
+<a id="output"></a>
+<pre class="codeoutput">
+ 
 Successive approximation method to be employed.
    For improved efficiency, sedumi is solving the dual problem.
    sedumi will be called several times to refine the solution.
@@ -137,60 +97,11 @@ Act Centering    Conic    Status
 10  3.945e+00  1.547e+00  Solved
 10  6.209e-01  3.349e-02  Solved
 10  1.887e-02  2.970e-05  Solved
-10  1.050e-03  6.003e-08  Solved
+10  1.049e-03  6.036e-08  Solved
 -----------------------------------------------------------------
 Status: Solved
 Optimal value (cvx_optval): -31.5685
-</pre><p class="footer"><br>
-      Published with MATLAB&reg; 7.9<br></p></div><!--
-##### SOURCE BEGIN #####
-%% Section 11.8.4: Network rate optimization
-
-% Boyd & Vandenberghe "Convex Optimization" 
-% Argyrios Zymnis - 05/03/08
-%
-% We consider a network with n flows and L links. Each flow i,
-% moves along a fixed predetermined path (i.e. a subset of the links)
-% and has an associated rate x_i. Each link j has an associated capacity
-% c_j. The total rate of all flows travelling along a link cannot exceed
-% the link capacity. We can describe these link capacity limits using the
-% flow-link incidence matrix A \in \reals^{L \times n}, where
-% A_{ij} = 1, if flow j passes through link i and 0 otherwise.
-% The link capacity constraints can be expressed as A*x <= c
-% In the network rate problem the variables are the flow rates x. The
-% objective is to choose the flow rates to maximize a separate utility
-% function U, given by
-%           U(x) = U_1(x_1)+U_2(x_2)+...+U_n(x_n)
-% The network rate optimization problem is then
-%           maximize    U(x)
-%           subject to  A*x <= c
-% Here we use U_i(x_i) = log x_i for all i
-
-% Input data
-rand('state',1)
-L = 20;
-n = 10;
-k = 7; %average links per flow
-A = double(rand(L,n) <= k/L);
-c = 0.9*rand(L,1)+0.1;
-
-% Solve network rate problem
-cvx_begin
-    variable x(n);
-    maximize(sum(log(x)))
-    subject to
-        A*x <= c
-cvx_end
-primal_obj = cvx_optval;
-
-% Solve dual problem to obtain link prices
-cvx_begin
-    variable lambda(L);
-    minimize(c'*lambda-sum(log(A'*lambda))-n)
-    subject to
-        lambda >= 0
-cvx_end
-dual_obj = cvx_optval;
-
-##### SOURCE END #####
---></body></html>
+</pre>
+</div>
+</body>
+</html>

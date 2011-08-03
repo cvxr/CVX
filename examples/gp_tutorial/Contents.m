@@ -1,4 +1,4 @@
-% Examples from [http://stanford.edu/~boyd/papers/gp_tutorial.html A Tutorial on Geometric Programming]
+% Examples from <a href="http://stanford.edu/~boyd/papers/gp_tutorial.html">A Tutorial on Geometric Programming</a>
 %
 %  max_volume_box.m             - Box volume maximization
 %  simple_dig_ckt_sizing.m      - Digital circuit sizing

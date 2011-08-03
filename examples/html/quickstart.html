@@ -1,68 +1,25 @@
-
-<!DOCTYPE html
-  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
-<html><head>
-      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-   <!--
-This HTML is auto-generated from an M-file.
-To make changes, update the M-file and republish this document.
-      --><title>Examples from the CVX User's guide</title><meta name="generator" content="MATLAB 7.9"><meta name="date" content="2009-11-12"><meta name="m-file" content="quickstart_"><style type="text/css">
-
-body {
-  background-color: white;
-  margin:10px;
-}
-
-h1 {
-  color: #990000; 
-  font-size: x-large;
-}
-
-h2 {
-  color: #990000;
-  font-size: medium;
-}
-
-/* Make the text shrink to fit narrow windows, but not stretch too far in 
-wide windows. */ 
-p,h1,h2,div.content div {
-  max-width: 600px;
-  /* Hack for IE6 */
-  width: auto !important; width: 600px;
-}
-
-pre.codeinput {
-  background: #EEEEEE;
-  padding: 10px;
-}
-@media print {
-  pre.codeinput {word-wrap:break-word; width:100%;}
-} 
-
-span.keyword {color: #0000FF}
-span.comment {color: #228B22}
-span.string {color: #A020F0}
-span.untermstring {color: #B20000}
-span.syscmd {color: #B28C00}
-
-pre.codeoutput {
-  color: #666666;
-  padding: 10px;
-}
-
-pre.error {
-  color: red;
-}
-
-p.footer {
-  text-align: right;
-  font-size: xx-small;
-  font-weight: lighter;
-  font-style: italic;
-  color: gray;
-}
-
-  </style></head><body><div class="content"><h1>Examples from the CVX User's guide</h1><pre class="codeinput">has_quadprog = exist( <span class="string">'quadprog'</span> );
+<!DOCTYPE HTML>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Examples from the CVX Users' guide</title>
+<link rel="canonical" href="http://cvxr.com/cvx/examples/html/quickstart.html">
+<link rel="stylesheet" href="../examples.css" type="text/css">
+</head>
+<body>
+<div id="header">
+<h1>Examples from the CVX Users' guide</h1>
+Jump to:&nbsp;&nbsp;&nbsp;&nbsp;
+<a href="#source">Source code</a>&nbsp;&nbsp;&nbsp;&nbsp;
+<a href="#output">Text output</a>
+&nbsp;&nbsp;&nbsp;&nbsp;
+<a href="#plots">Plots</a>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="../index.html">Library index</a>
+</div>
+<div id="content">
+<a id="source"></a>
+<pre class="codeinput">
+has_quadprog = exist( <span class="string">'quadprog'</span> );
 has_quadprog = has_quadprog == 2 | has_quadprog == 3;
 has_linprog  = exist( <span class="string">'linprog'</span> );
 has_linprog  = has_linprog == 2 | has_linprog == 3;
@@ -353,7 +310,9 @@ disp( <span class="string">'Done. (Check out the graph!)'</span> );
 randn( <span class="string">'state'</span>, rnstate );
 cvx_quiet(s_quiet);
 cvx_pause(s_pause);
-</pre><pre class="codeoutput">
+</pre>
+<a id="output"></a>
+<pre class="codeoutput">
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % SECTION 2.1: LEAST SQUARES %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -419,10 +378,10 @@ cvx_status:  Solved
 
 Verify that l &lt;= x &lt;= u:
    l     = [  0.3850 -0.2789 -0.9829 -0.9287 -3.0518 -0.0485  0.3182 -0.9417 ]
-   x     = [  0.3850  0.6888 -0.1195 -0.8562  0.2923 -0.0485  0.4073 -0.6355 ]
+   x     = [  0.3850  0.6888 -0.1196 -0.8562  0.2923 -0.0485  0.4074 -0.6355 ]
    u     = [  0.7395  0.9403 -0.0290  1.6208  0.7450  2.4881  0.6919 -0.6355 ]
 Residual vector:
-   A*x-b = [  1.8603  0.2157 -0.2113  2.2665 -1.5320 -0.9598 -1.6816  0.2551  1.1079  0.5313  1.2390 -0.7555  0.2175 -0.3833  1.1949 -1.0822 ]
+   A*x-b = [  1.8604  0.2157 -0.2113  2.2664 -1.5320 -0.9598 -1.6815  0.2551  1.1079  0.5313  1.2390 -0.7555  0.2176 -0.3833  1.1950 -1.0823 ]
  
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -525,7 +484,7 @@ cvx_status: Solved
 Optimal vector:
    x     = [ -0.2628  0.8828 -0.0734 -1.0844  0.3249 -0.3330  0.0603  0.3802 ]
 Residual vector:
-   A*x-b = [ -0.3262 -0.0070 -0.9543  0.2447 -0.6418 -0.3426 -0.1870  0.2961  0.6024 -0.0440  0.6238 -0.7398  0.0848  0.9323  0.4799 -0.0762 ]
+   A*x-b = [ -0.3262 -0.0070 -0.9543  0.2447 -0.6418 -0.3426 -0.1870  0.2960  0.6024 -0.0440  0.6238 -0.7399  0.0849  0.9323  0.4799 -0.0762 ]
  
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -549,17 +508,17 @@ echo off
 
 Results:
 --------
-norm(A*x-b): 2.9348
-cvx_optval: 2.9348
+norm(A*x-b): 7.9874
+cvx_optval: 7.9874
 cvx_status: Solved
 
 Optimal vector:
-   x     = [ -0.0232  0.6636 -0.1155 -0.6324  0.1920 -0.0954  0.3512  0.0433 ]
+   x     = [  0.5085  0.4243  0.8321 -0.5836  0.2811  0.9406  0.0218 -0.6629 ]
 Residual vector:
-   A*x-b = [  0.6484  0.3048 -0.4340  0.5556 -1.2713 -0.0701 -0.2901  0.2625  1.0448  0.0194  1.3588 -0.5696  0.2857  0.2457  1.2846 -0.8795 ]
+   A*x-b = [  1.9546 -0.8458 -1.4935  3.9954 -2.5173  0.3568 -3.1377 -2.0091  1.2739  2.7589  2.5399  0.0131  0.8935 -1.4236 -0.4004 -1.4326 ]
 Equality constraints:
-   C*x   = [  0.8674 -0.8013 -0.2636  0.7511 ]
-   d     = [  0.8674 -0.8013 -0.2636  0.7511 ]
+   C*x   = [  1.2841 -0.7301 -1.4727 -1.5944 ]
+   d     = [  1.2841 -0.7301 -1.4727 -1.5944 ]
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % SECTION 2.5: AN OPTIMAL TRADEOFF CURVE %
@@ -586,311 +545,20 @@ Generating tradeoff curve...
 7.8476e-01   1.4082e+00   2.8895e+00
 1.2743e+00   3.7699e-01   3.9509e+00
 2.0691e+00   2.4221e-10   4.4813e+00
-3.3598e+00   1.2204e-09   4.4813e+00
+3.3598e+00   6.0419e-12   4.4813e+00
 5.4556e+00   4.3389e-10   4.4813e+00
 8.8587e+00   1.8998e-10   4.4813e+00
-1.4384e+01   9.7367e-12   4.4813e+00
-2.3357e+01   3.5493e-12   4.4813e+00
-3.7927e+01   5.2744e-10   4.4813e+00
+1.4384e+01   9.7347e-12   4.4813e+00
+2.3357e+01   3.5495e-12   4.4813e+00
+3.7927e+01   5.2746e-10   4.4813e+00
 6.1585e+01   1.8694e-12   4.4813e+00
-1.0000e+02   1.4417e-10   4.4813e+00
+1.0000e+02   1.2074e-10   4.4813e+00
 Done. (Check out the graph!)
-</pre><img vspace="5" hspace="5" src="quickstart__01.png" alt=""> <p class="footer"><br>
-      Published with MATLAB&reg; 7.9<br></p></div><!--
-##### SOURCE BEGIN #####
-%% Examples from the CVX User's guide
-
-has_quadprog = exist( 'quadprog' );
-has_quadprog = has_quadprog == 2 | has_quadprog == 3;
-has_linprog  = exist( 'linprog' );
-has_linprog  = has_linprog == 2 | has_linprog == 3;
-rnstate = randn( 'state' ); randn( 'state', 1 );
-s_quiet = cvx_quiet(true);
-s_pause = cvx_pause(false);
-cvx_clear; echo on
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% SECTION 2.1: LEAST SQUARES %
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-% Input data
-m = 16; n = 8;
-A = randn(m,n);
-b = randn(m,1);
-
-% Matlab version
-x_ls = A \ b;
-
-% cvx version
-cvx_begin
-    variable x(n);
-    minimize( norm(A*x-b) );
-cvx_end
-
-echo off
-
-% Compare
-disp( sprintf( '\nResults:\nREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASH\nnorm(A*x_ls-b): %6.4f\nnorm(A*x-b):    %6.4f\ncvx_optval:     %6.4f\ncvx_status:     %s\n', norm(A*x_ls-b), norm(A*x-b), cvx_optval, cvx_status ) );
-disp( 'Verify that x_ls == x:' );
-disp( [ '   x_ls  = [ ', sprintf( '%7.4f ', x_ls ), ']' ] );
-disp( [ '   x     = [ ', sprintf( '%7.4f ', x ), ']' ] );
-disp( 'Residual vector:' );
-disp( [ '   A*x-b = [ ', sprintf( '%7.4f ', A*x-b ), ']' ] );
-disp( ' ' );
-
-try, input( 'Press Enter/Return for the next example...' ); clc; catch, end
-echo on
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% SECTION 2.2: BOUND-CONSTRAINED LEAST SQUARES %
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-% More input data
-bnds = randn(n,2);
-l = min( bnds, [] ,2 );
-u = max( bnds, [], 2 );
-
-if has_quadprog,
-    % Quadprog version
-    x_qp = quadprog( 2*A'*A, -2*A'*b, [], [], [], [], l, u );
-else,
-    % quadprog not present on this system.
-end
-
-% cvx version
-cvx_begin
-    variable x(n);
-    minimize( norm(A*x-b) );
-    subject to
-        x >= l;
-        x <= u;
-cvx_end
-
-echo off
-
-% Compare
-if has_quadprog,
-    disp( sprintf( '\nResults:\nREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASH\nnorm(A*x_qp-b): %6.4f\nnorm(A*x-b):    %6.4f\ncvx_optval:     %6.4f\ncvx_status:     %s\n', norm(A*x_qp-b), norm(A*x-b), cvx_optval, cvx_status ) );
-    disp( 'Verify that l <= x_qp == x <= u:' );
-    disp( [ '   l     = [ ', sprintf( '%7.4f ', l ), ']' ] );
-    disp( [ '   x_qp  = [ ', sprintf( '%7.4f ', x_qp ), ']' ] );
-    disp( [ '   x     = [ ', sprintf( '%7.4f ', x ), ']' ] );
-    disp( [ '   u     = [ ', sprintf( '%7.4f ', u ), ']' ] );
-else,
-    disp( sprintf( '\nResults:\nREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASH\nnorm(A*x-b): %6.4f\ncvx_optval:  %6.4f\ncvx_status:  %s\n', norm(A*x-b), cvx_optval, cvx_status ) );
-    disp( 'Verify that l <= x <= u:' );
-    disp( [ '   l     = [ ', sprintf( '%7.4f ', l ), ']' ] );
-    disp( [ '   x     = [ ', sprintf( '%7.4f ', x ), ']' ] );
-    disp( [ '   u     = [ ', sprintf( '%7.4f ', u ), ']' ] );
-end
-disp( 'Residual vector:' );
-disp( [ '   A*x-b = [ ', sprintf( '%7.4f ', A*x-b ), ']' ] );
-disp( ' ' );
-
-try, input( 'Press Enter/Return for the next example...' ); clc; catch, end
-echo on
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% SECTION 2.3: OTHER NORMS AND FUNCTIONS: INFINITY NORM %
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-if has_linprog,
-    % linprog version
-    f    = [ zeros(n,1);  1          ];
-    Ane  = [ +A,          -ones(m,1) ; ...
-             -A,          -ones(m,1) ];
-    bne  = [ +b;          -b         ];
-    xt   = linprog(f,Ane,bne);
-    x_lp = xt(1:n,:);
-else,
-    % linprog not present on this system.
-end
-
-% cvx version
-cvx_begin
-    variable x(n);
-    minimize( norm(A*x-b,Inf) );
-cvx_end
-
-echo off
-
-% Compare
-if has_linprog,
-    disp( sprintf( '\nResults:\nREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASH\nnorm(A*x_lp-b,Inf): %6.4f\nnorm(A*x-b,Inf):    %6.4f\ncvx_optval:         %6.4f\ncvx_status:         %s\n', norm(A*x_lp-b,Inf), norm(A*x-b,Inf), cvx_optval, cvx_status ) );
-    disp( 'Verify that x_lp == x:' );
-    disp( [ '   x_lp  = [ ', sprintf( '%7.4f ', x_lp ), ']' ] );
-    disp( [ '   x     = [ ', sprintf( '%7.4f ', x ), ']' ] );
-else,
-    disp( sprintf( '\nResults:\nREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASH\nnorm(A*x-b,Inf): %6.4f\ncvx_optval:      %6.4f\ncvx_status:      %s\n', norm(A*x-b,Inf), cvx_optval, cvx_status ) );
-    disp( 'Optimal vector:' );
-    disp( [ '   x     = [ ', sprintf( '%7.4f ', x ), ']' ] );
-end
-disp( sprintf( 'Residual vector; verify that the peaks match the objective (%6.4f):', cvx_optval ) );
-disp( [ '   A*x-b = [ ', sprintf( '%7.4f ', A*x-b ), ']' ] );
-disp( ' ' );
-
-try, input( 'Press Enter/Return for the next example...' ); clc; catch, end
-echo on
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% SECTION 2.3: OTHER NORMS AND FUNCTIONS: ONE NORM %
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-if has_linprog,
-    % Matlab version
-    f    = [ zeros(n,1); ones(m,1);  ones(m,1)  ];
-    Aeq  = [ A,          -eye(m),    +eye(m)    ];
-    lb   = [ -Inf*ones(n,1);  zeros(m,1); zeros(m,1) ];
-    xzz  = linprog(f,[],[], Aeq,b,lb,[]);
-    x_lp = xzz(1:n,:);
-else,
-    % linprog not present on this system
-end
-
-% cvx version
-cvx_begin
-    variable x(n);
-    minimize( norm(A*x-b,1) );
-cvx_end
-
-echo off
-
-% Compare
-if has_linprog,
-    disp( sprintf( '\nResults:\nREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASH\nnorm(A*x_lp-b,1): %6.4f\nnorm(A*x-b,1): %6.4f\ncvx_optval: %6.4f\ncvx_status: %s\n', norm(A*x_lp-b,1), norm(A*x-b,1), cvx_optval, cvx_status ) );
-    disp( 'Verify that x_lp == x:' );
-    disp( [ '   x_lp  = [ ', sprintf( '%7.4f ', x_lp ), ']' ] );
-    disp( [ '   x     = [ ', sprintf( '%7.4f ', x ), ']' ] );
-else,
-    disp( sprintf( '\nResults:\nREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASH\nnorm(A*x-b,1): %6.4f\ncvx_optval: %6.4f\ncvx_status: %s\n', norm(A*x-b,1), cvx_optval, cvx_status ) );
-    disp( 'Optimal vector:' );
-    disp( [ '   x     = [ ', sprintf( '%7.4f ', x ), ']' ] );
-end
-disp( 'Residual vector; verify the presence of several zero residuals:' );
-disp( [ '   A*x-b = [ ', sprintf( '%7.4f ', A*x-b ), ']' ] );
-disp( ' ' );
-
-try, input( 'Press Enter/Return for the next example...' ); clc; catch, end
-echo on
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% SECTION 2.3: OTHER NORMS AND FUNCTIONS: LARGEST-K NORM %
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-% cvx specification
-k = 5;
-cvx_begin
-    variable x(n);
-    minimize( norm_largest(A*x-b,k) );
-cvx_end
-
-echo off
-
-% Compare
-temp = sort(abs(A*x-b));
-disp( sprintf( '\nResults:\nREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASH\nnorm_largest(A*x-b,k): %6.4f\ncvx_optval: %6.4f\ncvx_status: %s\n', norm_largest(A*x-b,k), cvx_optval, cvx_status ) );
-disp( 'Optimal vector:' );
-disp( [ '   x     = [ ', sprintf( '%7.4f ', x ), ']' ] );
-disp( sprintf( 'Residual vector; verify a tie for %d-th place (%7.4f):', k, temp(end-k+1) ) );
-disp( [ '   A*x-b = [ ', sprintf( '%7.4f ', A*x-b ), ']' ] );
-disp( ' ' );
-
-try, input( 'Press Enter/Return for the next example...' ); clc; catch, end
-echo on
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% SECTION 2.3: OTHER NORMS AND FUNCTIONS: HUBER PENALTY %
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-% cvx specification
-cvx_begin
-    variable x(n);
-    minimize( sum(huber(A*x-b)) );
-cvx_end
-
-echo off
-
-% Compare
-disp( sprintf( '\nResults:\nREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASH\nsum(huber(A*x-b)): %6.4f\ncvx_optval: %6.4f\ncvx_status: %s\n', sum(huber(A*x-b)), cvx_optval, cvx_status ) );
-disp( 'Optimal vector:' );
-disp( [ '   x     = [ ', sprintf( '%7.4f ', x ), ']' ] );
-disp( 'Residual vector:' );
-disp( [ '   A*x-b = [ ', sprintf( '%7.4f ', A*x-b ), ']' ] );
-disp( ' ' );
-
-try, input( 'Press Enter/Return for the next example...' ); clc; catch, end
-echo on
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% SECTION 2.4: OTHER CONSTRAINTS %
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-% More input data
-p = 4;
-C = randn(p,n);
-d = randn(p,1);
-
-% cvx specification
-cvx_begin
-    variable x(n);
-    minimize( norm(A*x-b) );
-    subject to
-        C*x == d;
-        norm(x,Inf) <= 1;
-cvx_end
-
-echo off
-
-% Compare
-disp( sprintf( '\nResults:\nREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASH\nnorm(A*x-b): %6.4f\ncvx_optval: %6.4f\ncvx_status: %s\n', norm(A*x-b), cvx_optval, cvx_status ) );
-disp( 'Optimal vector:' );
-disp( [ '   x     = [ ', sprintf( '%7.4f ', x ), ']' ] );
-disp( 'Residual vector:' );
-disp( [ '   A*x-b = [ ', sprintf( '%7.4f ', A*x-b ), ']' ] );
-disp( 'Equality constraints:' );
-disp( [ '   C*x   = [ ', sprintf( '%7.4f ', C*x ), ']' ] );
-disp( [ '   d     = [ ', sprintf( '%7.4f ', d   ), ']' ] );
-
-try, input( 'Press Enter/Return for the next example...' ); clc; catch, end
-echo on
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% SECTION 2.5: AN OPTIMAL TRADEOFF CURVE %
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-% The basic problem:
-% cvx_begin
-%     variable x(n);
-%     minimize( norm(A*x-b)+gamma(k)*norm(x,1) );
-% cvx_end
-
-echo off
-disp( ' ' );
-disp( 'Generating tradeoff curve...' );
-cvx_pause(false);
-gamma = logspace( -2, 2, 20 );
-l2norm = zeros(size(gamma));
-l1norm = zeros(size(gamma));
-fprintf( 1, '   gamma       norm(x,1)    norm(A*x-b)\n' );
-fprintf( 1, 'REPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASH-\n' );
-for k = 1:length(gamma),
-    fprintf( 1, '%8.4e', gamma(k) );
-    cvx_begin
-        variable x(n);
-        minimize( norm(A*x-b)+gamma(k)*norm(x,1) );
-    cvx_end
-    l1norm(k) = norm(x,1);
-    l2norm(k) = norm(A*x-b);
-    fprintf( 1, '   %8.4e   %8.4e\n', l1norm(k), l2norm(k) );
-end
-plot( l1norm, l2norm );
-xlabel( 'norm(x,1)' );
-ylabel( 'norm(A*x-b)' );
-grid
-disp( 'Done. (Check out the graph!)' );
-randn( 'state', rnstate );
-cvx_quiet(s_quiet);
-cvx_pause(s_pause);
-
-##### SOURCE END #####
---></body></html>
+</pre>
+<a id="plots"></a>
+<div id="plotoutput">
+<img src="quickstart__01.png" alt=""> 
+</div>
+</div>
+</body>
+</html>

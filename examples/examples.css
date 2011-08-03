@@ -1,61 +1,113 @@
-/*
- * CSS style for CVX's example library
- * Heavily stripped and adapted from jemdoc's default
- * and from mktree.css
- */
- 
-body {
+html { 
+	margin: 0; body: 0;
 	background: white;
-	font-family: "Georgia", "Bookman Old Style", serif;
-	margin: 0;
 }
-
-a {
-	color: #224b8d;
-	text-decoration: none;
+body { 
+	margin: 4em 0 0 0;
+	line-height: 1.25; 
+	font-family: "Georgia", "Bookman Old Style", serif; 
+	position: relative;
 }
-
-a:hover {
-	border-bottom: 1px gray dotted;
+div#header { 
+	margin: 0; padding: 0.5em;
+	position: absolute; top:0; left:0; 
+	width: 100%; height: 3em;
+	border-bottom: 1px solid silver;
+	line-height: 1;
+	background: white;
+	overflow: hidden;
+	white-space: nowrap;
 }
-
-p {
-	margin-top: 0;
-	margin-bottom: 0.8em;
+#exnav {
+	display: inline;
+	margin: 0 0 0 1em;
 	padding: 0;
-	line-height: 1.35;
 }
+#exnav li {
+	display: inline;
+	margin: 0 0.5em;
+	list-style-type: none;
+}
+@media screen { 
+	body>div#header { position: fixed; } 
+}
+div#content { 
+	height: 100%; 
+	margin: 0; padding: 0.5em;
+}
+a#source, a#output, a#plots { 
+	margin: -4.5em 0 0 0; 
+	padding: 4.5em 0 0 0; 
+	height: 0; width: 1px;
+	display: block; 
+}
+p, pre { 
+	margin: 0 0 0.75em 0; 
+}
+h1 { 
+	font-size: 150%; 
+	color: #57b;
+	margin-top: 0;
+	margin-bottom: 0.25em;
+	font-weight: bold;
+}
+pre { font-size: 75%; font-family: monaco, monospace; }
+sup, sub { line-height: 0; position: relative; }
+sup { top: 0.25em; }
+sub { bottom: -0.25em; }
+em, cite, i { font-style: italic; }
+strong, b { font-weight: bold; }
 
-#fwtitle {
-	background-color: #527bbd;
-	border-color: #888888;
-	border-style: solid;
-	border-width: 0px 0px 5px 0px;
-}	
+a { color: #026; text-decoration: none; }
+a:hover { color: #369; border-bottom: 1px gray dotted; }
 
-h1 {
+span.keyword      { color: #00f; }
+span.comment      { color: #282; }
+span.string       { color: #92e; }
+span.untermstring { color: #a00; }
+span.syscmd       { color: #a80; }
+pre.codeinput     { overflow: hidden; background: #eee; padding: 0.5em; border: 1px solid silver; }
+pre.codeoutput    { overflow: hidden; color: #444; padding: 0.5em; border: 1px solid silver; }
+pre.error         { color: red; }
+
+ul.mktree li { 
+	list-style: none; 
+}
+ul.mktree li p { 
+	display: inline; 
+}
+ul.mktree,
+ul.mktree ul,
+ul.mktree li { 
 	margin: 0;
-	font-size: 165%;
-	padding: 0.35em;
-	color: #f0f0ff;
-	text-align: right;
-	font-variant: small-caps;
+	padding: 0;
+}
+ul.mktree ul li { 
+	padding-left: 1.5em;
+}
+ul.mktree li .bullet { 
+	padding-left: 1.25em; 
+}
+ul.mktree li.liOpen .bullet { 
+	cursor: pointer;
+	background: url(minus.gif) center left no-repeat; 
+}
+ul.mktree li.liClosed .bullet { 
+	cursor: pointer;
+	background: url(plus.gif) center left no-repeat; 
+}
+ul.mktree li.liBullet .bullet { 
+	cursor: default; 
+	background: url(bullet.gif) center left no-repeat; 
+}
+@media print {
+	font-size: 80%;
+    .jsonly, .jsmenu, .jshide { display: none; }
+}
+@media screen { 
+	.jsonly, .jsmenu         { display: none;  }
+	.jshide                  { display: block; }
+	ul.mktree li.liOpen   ul { display: block; }
+	ul.mktree li.liClosed ul { display: none;  }
 }
 
-#layout-content {
-	padding-top: 0.5em;
-	padding-left: 1em;
-	padding-right: 1em;
-}
-
-div#footer {
-	font-size: small;
-	border-top: 1px solid gray;
-	padding-top: 0.1em;
-	margin-top: 4;
-}
-
-div#footer-text {
-	float: left;
-	padding-bottom: 8px;
-}

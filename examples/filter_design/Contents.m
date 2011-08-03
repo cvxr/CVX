@@ -1,9 +1,6 @@
 % Filter design
-% [http://stanford.edu/~boyd/papers/magdes.html ...
-% FIR Filter Design via Spectral Factorization and Convex Optimization]
-% [http://stanford.edu/class/ee364 EE364] lecture, ...
-% [http://stanford.edu/class/ee364/lectures/filters.pdf ...
-% Filter design and equalization]
+% <a href="http://stanford.edu/~boyd/papers/magdes.html">FIR Filter Design via Spectral Factorization and Convex Optimization</a>
+% <a href="http://stanford.edu/class/ee364">EE364</a> lecture, <a href="http://stanford.edu/class/ee364/lectures/filters.pdf">Filter design and equalization</a>
 %
 %  fir_chebychev_design.m              - Chebychev design of an FIR filter given a desired H(w)
 %  one_over_f_filter.m                 - Design a 1/f spectrum shaping (pink-noise) filter

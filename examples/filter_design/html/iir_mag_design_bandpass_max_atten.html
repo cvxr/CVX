@@ -1,68 +1,25 @@
-
-<!DOCTYPE html
-  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
-<html><head>
-      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-   <!--
-This HTML is auto-generated from an M-file.
-To make changes, update the M-file and republish this document.
-      --><title>Maximize stopband attenuation of a bandpass IIR filter</title><meta name="generator" content="MATLAB 7.9"><meta name="date" content="2009-11-12"><meta name="m-file" content="iir_mag_design_bandpass_max_atten_"><style type="text/css">
-
-body {
-  background-color: white;
-  margin:10px;
-}
-
-h1 {
-  color: #990000; 
-  font-size: x-large;
-}
-
-h2 {
-  color: #990000;
-  font-size: medium;
-}
-
-/* Make the text shrink to fit narrow windows, but not stretch too far in 
-wide windows. */ 
-p,h1,h2,div.content div {
-  max-width: 600px;
-  /* Hack for IE6 */
-  width: auto !important; width: 600px;
-}
-
-pre.codeinput {
-  background: #EEEEEE;
-  padding: 10px;
-}
-@media print {
-  pre.codeinput {word-wrap:break-word; width:100%;}
-} 
-
-span.keyword {color: #0000FF}
-span.comment {color: #228B22}
-span.string {color: #A020F0}
-span.untermstring {color: #B20000}
-span.syscmd {color: #B28C00}
-
-pre.codeoutput {
-  color: #666666;
-  padding: 10px;
-}
-
-pre.error {
-  color: red;
-}
-
-p.footer {
-  text-align: right;
-  font-size: xx-small;
-  font-weight: lighter;
-  font-style: italic;
-  color: gray;
-}
-
-  </style></head><body><div class="content"><h1>Maximize stopband attenuation of a bandpass IIR filter</h1><pre class="codeinput"><span class="comment">% "Linear Programming Design of IIR Digital Filters with Arbitrary</span>
+<!DOCTYPE HTML>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Maximize stopband attenuation of a bandpass IIR filter</title>
+<link rel="canonical" href="http://cvxr.com/cvx/examples/filter_design/html/iir_mag_design_bandpass_max_atten.html">
+<link rel="stylesheet" href="../../examples.css" type="text/css">
+</head>
+<body>
+<div id="header">
+<h1>Maximize stopband attenuation of a bandpass IIR filter</h1>
+Jump to:&nbsp;&nbsp;&nbsp;&nbsp;
+<a href="#source">Source code</a>&nbsp;&nbsp;&nbsp;&nbsp;
+<a href="#output">Text output</a>
+&nbsp;&nbsp;&nbsp;&nbsp;
+<a href="#plots">Plots</a>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="../../index.html">Library index</a>
+</div>
+<div id="content">
+<a id="source"></a>
+<pre class="codeinput">
+<span class="comment">% "Linear Programming Design of IIR Digital Filters with Arbitrary</span>
 <span class="comment">%  Magnitude Functions" by L.R. Rabiner, N.Y. Graham, and H.D. Helms</span>
 <span class="comment">% (figures are generated)</span>
 <span class="comment">%</span>
@@ -215,7 +172,10 @@ subplot(2,1,2)
 plot(w,angle(H))
 axis([0,pi,-pi,pi])
 xlabel(<span class="string">'w'</span>), ylabel(<span class="string">'phase H(w)'</span>)
-</pre><pre class="codeoutput">Problem not feasible for stopband atten = -40.00 dB
+</pre>
+<a id="output"></a>
+<pre class="codeoutput">
+Problem not feasible for stopband atten = -40.00 dB
 Problem is feasible for stopband atten = -20.00 dB
 Problem not feasible for stopband atten = -30.00 dB
 Problem not feasible for stopband atten = -25.00 dB
@@ -248,164 +208,11 @@ a =
     0.2171
     0.2738
 
-</pre><img vspace="5" hspace="5" src="iir_mag_design_bandpass_max_atten__01.png" alt=""> <p class="footer"><br>
-      Published with MATLAB&reg; 7.9<br></p></div><!--
-##### SOURCE BEGIN #####
-%% Maximize stopband attenuation of a bandpass IIR filter
-
-% "Linear Programming Design of IIR Digital Filters with Arbitrary
-%  Magnitude Functions" by L.R. Rabiner, N.Y. Graham, and H.D. Helms
-% (figures are generated)
-%
-% Designs a bandpass IIR filter using spectral factorization method where we:
-% - minimize maximum stopband attenuation
-% - have a constraint on the maximum passband ripple
-%
-%   minimize   max |H(w)|                      for w in the stopband
-%       s.t.   1/delta <= |H(w)| <= delta      for w in the passband
-%
-% where we now have a rational frequency response function:
-%
-%   H(w) = sum_{m=0}^{M-1} b_m exp{-jwm} / sum_{n=1}^{N-1} a_n exp{-jwn}
-%
-% We change variables via spectral factorization method and get:
-%
-%   minimize   max R(w)                        for w in the stopband
-%       s.t.   (1/delta)^2 <= R(w) <= delta^2  for w in the passband
-%              R(w) >= 0                       for all w
-%
-% where R(w) is the squared magnited of the frequency response
-% (and the Fourier transform of the autocorrelation coefficients r).
-% We represent R(w) = N_hat(w)/D_hat(w), where now R(w) is a rational
-% function since we deal with IIR filter (see the reference paper).
-%
-% Variables are coeffients of the numerator, denoted as c, and
-% denominator, denoted as d. delta is the allowed passband ripple.
-% This is a quasiconvex problem and can be solved using bisection.
-%
-% Written for CVX by Almir Mutapcic 02/02/06
-
-%*********************************************************************
-% user's filter specs (for a low-pass filter example)
-%*********************************************************************
-% number of coefficients for the IIR filter (including the zeroth one)
-% (also without loss of generality we can assume that d_0 = 1, which
-%  is the zeroth coefficient of the autocorrelation denominator)
-M = 6; % nominator
-N = 6; % denominator
-
-% maximum passband ripple in dB (+/- from the nominal 0 dB value)
-delta = 1;
-
-% specification of the upper and lower bound functions U(w) and L(w)
-% freq specs
-wstop1 = 0.35*pi;
-wpass1 = 0.4*pi;
-wpass2 = 0.5*pi;
-wstop2 = 0.55*pi;
-
-%*********************************************************************
-% create optimization parameters
-%*********************************************************************
-% rule-of-thumb discretization (from Cheney's Approx. Theory book)
-sample_order = 30;
-m = 15*(sample_order);
-w = linspace(0,pi,m)'; % omega
-
-% A's are matrices used to compute the power spectrum
-Anum = [ones(m,1) 2*cos(kron(w,[1:M-1]))];
-Aden = [ones(m,1) 2*cos(kron(w,[1:N-1]))];
-
-% first stopband 0 <= w <= wstop1
-ind = find((0 <= w) & (w <= wstop1));
-As1_num  = Anum(ind,:);
-As1_den  = Aden(ind,:);
-
-% passband wpass1 <= w <= wpass2
-ind = find(wpass1<=w & w<=wpass2);
-Ap_num  = Anum(ind,:);
-Ap_den  = Aden(ind,:);
-
-% second stopband wstop2 <= w <= pi
-ind = find(w >= wstop2);
-As2_num  = Anum(ind,:);
-As2_den  = Aden(ind,:);
-
-%********************************************************************
-% optimization
-%********************************************************************
-
-% use bisection (on the log of vars) to solve for the min stopband atten
-Us_top = 1e-0; % 0 dB
-Us_bot = 1e-8; % -80 dB (in original variables)
-
-while( 20*log10(Us_top/Us_bot) > 1)
-  % try to find a feasible design for given specs
-  Us_cur = sqrt(Us_top*Us_bot);
-
-  % [b_cur,a_cur] = iir_mag_design_spec_fact(w,L,U,N,M);
-  % formulate and solve the magnitude design problem
-  cvx_begin quiet
-    variable c(M,1)
-    variable d(N-1,1)
-
-    % feasibility problem
-    % passband constraints
-    (Ap_num*c) <= (10^(+delta/20))^2*(Ap_den*[1;d]); % upper constr
-    (Ap_num*c) >= (10^(-delta/20))^2*(Ap_den*[1;d]); % lower constr
-    % stopband constraint
-    (As1_num*c) <= (Us_cur)*(As1_den*[1;d]); % upper constr
-    (As2_num*c) <= (Us_cur)*(As2_den*[1;d]); % upper constr
-    % nonnegative-real constraint
-    Anum*c >= 0;
-    Aden*[1;d] >= 0;
-  cvx_end
-
-  % bisection
-  if strfind(cvx_status,'Solved') % feasible
-    fprintf(1,'Problem is feasible for stopband atten = %3.2f dB\n', ...
-               10*log10(Us_cur));
-    Us_top = Us_cur;
-    b = spectral_fact(c);
-    a = spectral_fact([1;d]);
-  else % not feasible
-    fprintf(1,'Problem not feasible for stopband atten = %3.2f dB\n', ...
-               10*log10(Us_cur));
-    Us_bot = Us_cur;
-  end
-end
-
-% display the max attenuation in the stopband (convert to original vars)
-fprintf(1,'\nOptimum min stopband atten is between %3.2f and %3.2f dB.\n',...
-        10*log10(Us_bot),10*log10(Us_top));
-disp('Optimal IIR filter coefficients are: ')
-disp('Numerator: '), b
-disp('Denominator: '), a
-
-%*********************************************************************
-% plotting routines
-%*********************************************************************
-% frequency response of the designed filter, where j = sqrt(-1)
-w = linspace(0,pi,5*m)'; % omega
-H = ([exp(-j*kron(w,[0:M-1]))]*b)./([exp(-j*kron(w,[0:N-1]))]*a);
-
-% magnitude plot
-figure(1)
-subplot(2,1,1)
-plot(w,20*log10(abs(H)), ...
-     [wpass1 wpass2],[delta delta],'rREPLACE_WITH_DASH_DASH', ...
-     [wpass1 wpass2],[-delta -delta],'rREPLACE_WITH_DASH_DASH', ...
-     [0 wstop1],[10*log10(Us_top) 10*log10(Us_top)],'rREPLACE_WITH_DASH_DASH', ...
-     [wstop2 pi],[10*log10(Us_top) 10*log10(Us_top)],'rREPLACE_WITH_DASH_DASH')
-xlabel('w')
-ylabel('mag H(w) in dB')
-axis([0 pi -50 10]);
-
-% phase plot
-subplot(2,1,2)
-plot(w,angle(H))
-axis([0,pi,-pi,pi])
-xlabel('w'), ylabel('phase H(w)')
-
-##### SOURCE END #####
---></body></html>
+</pre>
+<a id="plots"></a>
+<div id="plotoutput">
+<img src="iir_mag_design_bandpass_max_atten__01.png" alt=""> 
+</div>
+</div>
+</body>
+</html>

@@ -1,68 +1,25 @@
-
-<!DOCTYPE html
-  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
-<html><head>
-      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-   <!--
-This HTML is auto-generated from an M-file.
-To make changes, update the M-file and republish this document.
-      --><title>Minimize stopband ripple of a linear phase lowpass FIR filter</title><meta name="generator" content="MATLAB 7.9"><meta name="date" content="2009-11-12"><meta name="m-file" content="fir_lin_phase_lowpass_min_ripple_"><style type="text/css">
-
-body {
-  background-color: white;
-  margin:10px;
-}
-
-h1 {
-  color: #990000; 
-  font-size: x-large;
-}
-
-h2 {
-  color: #990000;
-  font-size: medium;
-}
-
-/* Make the text shrink to fit narrow windows, but not stretch too far in 
-wide windows. */ 
-p,h1,h2,div.content div {
-  max-width: 600px;
-  /* Hack for IE6 */
-  width: auto !important; width: 600px;
-}
-
-pre.codeinput {
-  background: #EEEEEE;
-  padding: 10px;
-}
-@media print {
-  pre.codeinput {word-wrap:break-word; width:100%;}
-} 
-
-span.keyword {color: #0000FF}
-span.comment {color: #228B22}
-span.string {color: #A020F0}
-span.untermstring {color: #B20000}
-span.syscmd {color: #B28C00}
-
-pre.codeoutput {
-  color: #666666;
-  padding: 10px;
-}
-
-pre.error {
-  color: red;
-}
-
-p.footer {
-  text-align: right;
-  font-size: xx-small;
-  font-weight: lighter;
-  font-style: italic;
-  color: gray;
-}
-
-  </style></head><body><div class="content"><h1>Minimize stopband ripple of a linear phase lowpass FIR filter</h1><pre class="codeinput"><span class="comment">% "Filter design" lecture notes (EE364) by S. Boyd</span>
+<!DOCTYPE HTML>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Minimize stopband ripple of a linear phase lowpass FIR filter</title>
+<link rel="canonical" href="http://cvxr.com/cvx/examples/filter_design/html/fir_lin_phase_lowpass_min_ripple.html">
+<link rel="stylesheet" href="../../examples.css" type="text/css">
+</head>
+<body>
+<div id="header">
+<h1>Minimize stopband ripple of a linear phase lowpass FIR filter</h1>
+Jump to:&nbsp;&nbsp;&nbsp;&nbsp;
+<a href="#source">Source code</a>&nbsp;&nbsp;&nbsp;&nbsp;
+<a href="#output">Text output</a>
+&nbsp;&nbsp;&nbsp;&nbsp;
+<a href="#plots">Plots</a>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="../../index.html">Library index</a>
+</div>
+<div id="content">
+<a id="source"></a>
+<pre class="codeinput">
+<span class="comment">% "Filter design" lecture notes (EE364) by S. Boyd</span>
 <span class="comment">% (figures are generated)</span>
 <span class="comment">%</span>
 <span class="comment">% Designs a linear phase FIR lowpass filter such that it:</span>
@@ -158,148 +115,56 @@ subplot(2,1,2)
 plot(w,angle(H))
 axis([0,pi,-pi,pi])
 xlabel(<span class="string">'w'</span>), ylabel(<span class="string">'phase H(w)'</span>)
-</pre><pre class="codeoutput"> 
-Calling sedumi: 606 variables, 12 equality constraints
-   For improved efficiency, sedumi is solving the dual problem.
+</pre>
+<a id="output"></a>
+<pre class="codeoutput">
+ 
+Calling sedumi: 884 variables, 606 equality constraints
 ------------------------------------------------------------
 SeDuMi 1.21 by AdvOL, 2005-2008 and Jos F. Sturm, 1998-2003.
 Alg = 2: xz-corrector, Adaptive Step-Differentiation, theta = 0.250, beta = 0.500
-eqs m = 12, order n = 570, dim = 644, blocks = 267
-nnz(A) = 3407 + 0, nnz(ADA) = 144, nnz(L) = 78
+eqs m = 606, order n = 838, dim = 923, blocks = 268
+nnz(A) = 872 + 3407, nnz(ADA) = 1286, nnz(L) = 946
+Handling 13 + 1 dense columns.
  it :     b*y       gap    delta  rate   t/tP*  t/tD*   feas cg cg  prec
-  0 :            9.09E+00 0.000
-  1 :  -3.18E+00 2.60E+00 0.000 0.2864 0.9000 0.9000   0.10  1  1  4.4E+01
-  2 :  -1.57E+00 1.21E+00 0.000 0.4644 0.9000 0.9000   4.50  1  1  6.0E+00
-  3 :  -1.09E+00 6.92E-01 0.000 0.5728 0.9000 0.9000   6.37  1  1  1.0E+00
-  4 :  -1.05E+00 2.54E-01 0.000 0.3670 0.9000 0.9000   1.90  1  1  2.8E-01
-  5 :  -1.05E+00 1.08E-01 0.000 0.4268 0.9000 0.9000   1.37  1  1  1.1E-01
-  6 :  -1.05E+00 2.66E-02 0.000 0.2455 0.9000 0.9000   1.16  1  1  2.5E-02
-  7 :  -1.05E+00 9.96E-03 0.000 0.3742 0.9000 0.9000   1.04  1  1  9.2E-03
-  8 :  -1.05E+00 3.73E-03 0.000 0.3741 0.9030 0.9000   1.01  1  1  3.4E-03
-  9 :  -1.05E+00 1.38E-03 0.000 0.3691 0.9023 0.9000   1.00  1  1  1.3E-03
- 10 :  -1.05E+00 4.82E-04 0.000 0.3502 0.9008 0.9000   1.00  1  1  4.4E-04
- 11 :  -1.05E+00 1.38E-04 0.000 0.2873 0.9047 0.9000   1.00  1  1  1.3E-04
- 12 :  -1.05E+00 2.75E-05 0.000 0.1988 0.9125 0.9000   1.00  1  1  2.5E-05
- 13 :  -1.05E+00 5.26E-06 0.000 0.1913 0.9058 0.9000   1.00  1  1  4.9E-06
- 14 :  -1.05E+00 5.72E-07 0.000 0.1087 0.9086 0.9000   1.00  1  1  5.8E-07
- 15 :  -1.05E+00 3.82E-09 0.000 0.0067 0.9990 0.9990   1.00  1  1  4.0E-09
+  0 :            4.03E-02 0.000
+  1 :   5.39E+00 8.72E-03 0.000 0.2163 0.9000 0.9000  -0.35  1  1  2.4E+00
+  2 :   1.81E+00 4.75E-03 0.000 0.5445 0.9000 0.9000   5.12  1  1  3.5E-01
+  3 :   1.18E+00 3.07E-03 0.000 0.6460 0.9000 0.9000   8.37  1  1  6.0E-02
+  4 :   1.09E+00 1.74E-03 0.000 0.5661 0.9000 0.9000   2.27  1  1  2.5E-02
+  5 :   1.06E+00 9.33E-04 0.000 0.5372 0.9000 0.9000   1.58  1  1  1.2E-02
+  6 :   1.06E+00 4.10E-04 0.000 0.4393 0.9000 0.9000   1.35  1  1  4.7E-03
+  7 :   1.05E+00 9.91E-05 0.000 0.2419 0.9000 0.9000   1.17  1  1  1.1E-03
+  8 :   1.05E+00 3.63E-05 0.000 0.3660 0.9000 0.9000   1.04  1  1  3.9E-04
+  9 :   1.05E+00 6.38E-06 0.000 0.1759 0.9000 0.0000   1.01  1  1  2.4E-04
+ 10 :   1.05E+00 1.41E-06 0.000 0.2202 0.9168 0.9000   1.00  1  1  6.4E-05
+ 11 :   1.05E+00 3.93E-07 0.000 0.2799 0.9000 0.8932   1.00  1  1  1.7E-05
+ 12 :   1.05E+00 1.54E-07 0.000 0.3912 0.9042 0.9000   1.00  2  2  6.9E-06
+ 13 :   1.05E+00 4.78E-08 0.000 0.3108 0.9000 0.8455   1.00  2  3  2.1E-06
+ 14 :   1.05E+00 1.27E-08 0.000 0.2662 0.9000 0.8055   1.00  4  4  5.6E-07
+ 15 :   1.05E+00 2.51E-09 0.000 0.1969 0.9000 0.9000   1.00  5  5  1.1E-07
+ 16 :   1.05E+00 1.85E-10 0.000 0.0738 0.9900 0.9900   1.00  7  7  8.1E-09
 
 iter seconds digits       c*x               b*y
- 15      0.1   9.3 -1.0515780059e+00 -1.0515780064e+00
-|Ax-b| =   3.7e-09, [Ay-c]_+ =   4.9E-10, |x|=  1.1e+00, |y|=  1.1e+00
+ 16      0.2   Inf  1.0515780166e+00  1.0515780173e+00
+|Ax-b| =   4.1e-08, [Ay-c]_+ =   3.8E-09, |x|=  1.2e+01, |y|=  1.2e+00
 
 Detailed timing (sec)
    Pre          IPM          Post
-1.000E-02    1.100E-01    0.000E+00    
-Max-norms: ||b||=1, ||c|| = 2,
-Cholesky |add|=0, |skip| = 0, ||L.L|| = 6.84906.
+0.000E+00    2.100E-01    0.000E+00    
+Max-norms: ||b||=1, ||c|| = 1,
+Cholesky |add|=6, |skip| = 2, ||L.L|| = 1.
 ------------------------------------------------------------
 Status: Solved
 Optimal value (cvx_optval): +1.05158
 Problem is Solved
 The optimal minimum passband ripple is 0.437 dB.
 
-</pre><img vspace="5" hspace="5" src="fir_lin_phase_lowpass_min_ripple__01.png" alt=""> <img vspace="5" hspace="5" src="fir_lin_phase_lowpass_min_ripple__02.png" alt=""> <p class="footer"><br>
-      Published with MATLAB&reg; 7.9<br></p></div><!--
-##### SOURCE BEGIN #####
-%% Minimize stopband ripple of a linear phase lowpass FIR filter
-
-% "Filter design" lecture notes (EE364) by S. Boyd
-% (figures are generated)
-%
-% Designs a linear phase FIR lowpass filter such that it:
-% - minimizes the maximum passband ripple
-% - has a constraint on the maximum stopband attenuation
-%
-% This is a convex problem.
-%
-%   minimize   delta
-%       s.t.   1/delta <= H(w) <= delta     for w in the passband
-%              |H(w)| <= atten_level        for w in the stopband
-%
-% where H is the frequency response function and variables are
-% delta and h (the filter impulse response).
-%
-% Written for CVX by Almir Mutapcic 02/02/06
-
-%********************************************************************
-% user's filter specifications
-%********************************************************************
-% filter order is 2n+1 (symmetric around the half-point)
-n = 10;
-
-wpass = 0.12*pi;        % passband cutoff freq (in radians)
-wstop = 0.24*pi;        % stopband start freq (in radians)
-atten_level = -30;      % stopband attenuation level in dB
-
-%********************************************************************
-% create optimization parameters
-%********************************************************************
-N = 30*n+1;                            % freq samples (rule-of-thumb)
-w = linspace(0,pi,N);
-A = [ones(N,1) 2*cos(kron(w',[1:n]))]; % matrix of cosines
-
-% passband 0 <= w <= w_pass
-ind = find((0 <= w) & (w <= wpass));   % passband
-Ap  = A(ind,:);
-
-% transition band is not constrained (w_pass <= w <= w_stop)
-
-% stopband (w_stop <= w)
-ind = find((wstop <= w) & (w <= pi));  % stopband
-Us  = 10^(atten_level/20)*ones(length(ind),1);
-As  = A(ind,:);
-
-%********************************************************************
-% optimization
-%********************************************************************
-% formulate and solve the linear-phase lowpass filter design
-cvx_begin
-  variable delta
-  variable h(n+1,1);
-
-  minimize( delta )
-  subject to
-    % passband bounds
-    Ap*h <= delta;
-    inv_pos(Ap*h) <= delta;
-
-    % stopband bounds
-    abs( As*h ) <= Us;
-cvx_end
-
-% check if problem was successfully solved
-disp(['Problem is ' cvx_status])
-if ~strfind(cvx_status,'Solved')
-  return
-else
-  % construct the full impulse response
-  h = [flipud(h(2:end)); h];
-  fprintf(1,'The optimal minimum passband ripple is %4.3f dB.\n\n',...
-            20*log10(delta));
-end
-
-%********************************************************************
-% plots
-%********************************************************************
-figure(1)
-% FIR impulse response
-plot([0:2*n],h','o',[0:2*n],h','b:')
-xlabel('t'), ylabel('h(t)')
-
-figure(2)
-% frequency response
-H = exp(-j*kron(w',[0:2*n]))*h;
-% magnitude
-subplot(2,1,1)
-plot(w,20*log10(abs(H)),[wstop pi],[atten_level atten_level],'rREPLACE_WITH_DASH_DASH');
-axis([0,pi,-40,10])
-xlabel('w'), ylabel('mag H(w) in dB')
-% phase
-subplot(2,1,2)
-plot(w,angle(H))
-axis([0,pi,-pi,pi])
-xlabel('w'), ylabel('phase H(w)')
-
-##### SOURCE END #####
---></body></html>
+</pre>
+<a id="plots"></a>
+<div id="plotoutput">
+<img src="fir_lin_phase_lowpass_min_ripple__01.png" alt=""> <img src="fir_lin_phase_lowpass_min_ripple__02.png" alt=""> 
+</div>
+</div>
+</body>
+</html>

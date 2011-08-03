@@ -1,68 +1,25 @@
-
-<!DOCTYPE html
-  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
-<html><head>
-      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-   <!--
-This HTML is auto-generated from an M-file.
-To make changes, update the M-file and republish this document.
-      --><title>Builds a norm minimization tradeoff curve</title><meta name="generator" content="MATLAB 7.9"><meta name="date" content="2009-11-12"><meta name="m-file" content="regularized_norm_tradeoff_"><style type="text/css">
-
-body {
-  background-color: white;
-  margin:10px;
-}
-
-h1 {
-  color: #990000; 
-  font-size: x-large;
-}
-
-h2 {
-  color: #990000;
-  font-size: medium;
-}
-
-/* Make the text shrink to fit narrow windows, but not stretch too far in 
-wide windows. */ 
-p,h1,h2,div.content div {
-  max-width: 600px;
-  /* Hack for IE6 */
-  width: auto !important; width: 600px;
-}
-
-pre.codeinput {
-  background: #EEEEEE;
-  padding: 10px;
-}
-@media print {
-  pre.codeinput {word-wrap:break-word; width:100%;}
-} 
-
-span.keyword {color: #0000FF}
-span.comment {color: #228B22}
-span.string {color: #A020F0}
-span.untermstring {color: #B20000}
-span.syscmd {color: #B28C00}
-
-pre.codeoutput {
-  color: #666666;
-  padding: 10px;
-}
-
-pre.error {
-  color: red;
-}
-
-p.footer {
-  text-align: right;
-  font-size: xx-small;
-  font-weight: lighter;
-  font-style: italic;
-  color: gray;
-}
-
-  </style></head><body><div class="content"><h1>Builds a norm minimization tradeoff curve</h1><pre class="codeinput"><span class="comment">% This script solves a family of problems of the form</span>
+<!DOCTYPE HTML>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Builds a norm minimization tradeoff curve</title>
+<link rel="canonical" href="http://cvxr.com/cvx/examples/html/regularized_norm_tradeoff.html">
+<link rel="stylesheet" href="../examples.css" type="text/css">
+</head>
+<body>
+<div id="header">
+<h1>Builds a norm minimization tradeoff curve</h1>
+Jump to:&nbsp;&nbsp;&nbsp;&nbsp;
+<a href="#source">Source code</a>&nbsp;&nbsp;&nbsp;&nbsp;
+<a href="#output">Text output</a>
+&nbsp;&nbsp;&nbsp;&nbsp;
+<a href="#plots">Plots</a>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="../index.html">Library index</a>
+</div>
+<div id="content">
+<a id="source"></a>
+<pre class="codeinput">
+<span class="comment">% This script solves a family of problems of the form</span>
 <span class="comment">%     minimize || A*x-b ||_1 + gamma * || x ||_Inf</span>
 <span class="comment">% for varying values of gamma. For gamma = 0, this is simply an</span>
 <span class="comment">% unconstrained norm minimization; for gamma = Inf, x = 0 and</span>
@@ -94,48 +51,19 @@ figure
 plot( xnrms, nrms );
 xlabel( <span class="string">'|| x ||_{\infty}'</span> );
 ylabel( <span class="string">'|| A * x - b ||_1'</span> );
-</pre><pre class="codeoutput">Gamma: 0.1 0.120679 0.145635 0.175751 0.212095 0.255955 0.308884 0.372759 0.449843 0.542868 
+</pre>
+<a id="output"></a>
+<pre class="codeoutput">
+Gamma: 0.1 0.120679 0.145635 0.175751 0.212095 0.255955 0.308884 0.372759 0.449843 0.542868 
        0.655129 0.790604 0.954095 1.1514 1.3895 1.67683 2.02359 2.44205 2.94705 3.55648 
        4.29193 5.17947 6.25055 7.54312 9.10298 10.9854 13.2571 15.9986 19.307 23.2995 
        28.1177 33.9322 40.9492 49.4171 59.6362 71.9686 86.8511 104.811 126.486 152.642 
        184.207 222.3 268.27 323.746 390.694 471.487 568.987 686.649 828.643 1000 done.
-</pre><img vspace="5" hspace="5" src="regularized_norm_tradeoff__01.png" alt=""> <img vspace="5" hspace="5" src="regularized_norm_tradeoff__02.png" alt=""> <p class="footer"><br>
-      Published with MATLAB&reg; 7.9<br></p></div><!--
-##### SOURCE BEGIN #####
-%% Builds a norm minimization tradeoff curve
-
-% This script solves a family of problems of the form
-%     minimize || A*x-b ||_1 + gamma * || x ||_Inf
-% for varying values of gamma. For gamma = 0, this is simply an
-% unconstrained norm minimization; for gamma = Inf, x = 0 and
-% || A x - b || = || b || are optimal. Varying gamma allows us
-% to genreate a tradeoff curve between these extremes.
-
-n = 10;
-A = randn(2*n,n);
-b = randn(2*n,1);
-gamma = logspace( -1, 3 );
-nrms = zeros( size( gamma ) );
-xnrms = zeros( size( gamma ) );
-fprintf( 1, 'Gamma: ' );
-for k = 1 : length( gamma ),
-   if k > 1 & rem( k, 10 ) == 1, fprintf( 1, '\n       ' ); end
-   fprintf( 1, '%g ', gamma( k ) );
-   cvx_begin quiet
-      variable x(n)
-      minimize( norm( A * x - b, 1 ) + gamma( k ) * norm( x, Inf ) )
-   cvx_end
-   nrms( k ) = norm( A * x - b, 1 );
-   xnrms( k ) = norm( x, Inf );
-end
-fprintf( 1, 'done.\n' );
-semilogx( gamma, nrms );
-xlabel( '\gamma' );
-ylabel( '|| A * x - b ||_1' );
-figure
-plot( xnrms, nrms );
-xlabel( '|| x ||_{\infty}' );
-ylabel( '|| A * x - b ||_1' );
-
-##### SOURCE END #####
---></body></html>
+</pre>
+<a id="plots"></a>
+<div id="plotoutput">
+<img src="regularized_norm_tradeoff__01.png" alt=""> <img src="regularized_norm_tradeoff__02.png" alt=""> 
+</div>
+</div>
+</body>
+</html>

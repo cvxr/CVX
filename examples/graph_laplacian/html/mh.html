@@ -1,68 +1,25 @@
-
-<!DOCTYPE html
-  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
-<html><head>
-      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-   <!--
-This HTML is auto-generated from an M-file.
-To make changes, update the M-file and republish this document.
-      --><title>Computes the Metropolis-Hastings heuristic edge weights</title><meta name="generator" content="MATLAB 7.9"><meta name="date" content="2009-11-12"><meta name="m-file" content="mh_"><style type="text/css">
-
-body {
-  background-color: white;
-  margin:10px;
-}
-
-h1 {
-  color: #990000; 
-  font-size: x-large;
-}
-
-h2 {
-  color: #990000;
-  font-size: medium;
-}
-
-/* Make the text shrink to fit narrow windows, but not stretch too far in 
-wide windows. */ 
-p,h1,h2,div.content div {
-  max-width: 600px;
-  /* Hack for IE6 */
-  width: auto !important; width: 600px;
-}
-
-pre.codeinput {
-  background: #EEEEEE;
-  padding: 10px;
-}
-@media print {
-  pre.codeinput {word-wrap:break-word; width:100%;}
-} 
-
-span.keyword {color: #0000FF}
-span.comment {color: #228B22}
-span.string {color: #A020F0}
-span.untermstring {color: #B20000}
-span.syscmd {color: #B28C00}
-
-pre.codeoutput {
-  color: #666666;
-  padding: 10px;
-}
-
-pre.error {
-  color: red;
-}
-
-p.footer {
-  text-align: right;
-  font-size: xx-small;
-  font-weight: lighter;
-  font-style: italic;
-  color: gray;
-}
-
-  </style></head><body><div class="content"><h1>Computes the Metropolis-Hastings heuristic edge weights</h1><pre class="codeinput"><span class="keyword">function</span> [w,rho] = mh(A)
+<!DOCTYPE HTML>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Computes the Metropolis-Hastings heuristic edge weights</title>
+<link rel="canonical" href="http://cvxr.com/cvx/examples/graph_laplacian/html/mh.html">
+<link rel="stylesheet" href="../../examples.css" type="text/css">
+</head>
+<body>
+<div id="header">
+<h1>Computes the Metropolis-Hastings heuristic edge weights</h1>
+Jump to:&nbsp;&nbsp;&nbsp;&nbsp;
+<a href="#source">Source code</a>&nbsp;&nbsp;&nbsp;&nbsp;
+Text output
+&nbsp;&nbsp;&nbsp;&nbsp;
+Plots
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="../../index.html">Library index</a>
+</div>
+<div id="content">
+<a id="source"></a>
+<pre class="codeinput">
+<span class="keyword">function</span> [w,rho] = mh(A)
 <span class="comment">% [W,RHO] = MH(A) gives a vector of the Metropolis-Hastings edge weights</span>
 <span class="comment">% for a graphb described by the incidence matrix A (NxM). N is the number</span>
 <span class="comment">% of nodes, and M is the number of edges. Each column of A has exactly one</span>
@@ -92,42 +49,7 @@ w = 1./max(mh_degs,[],2);
 <span class="keyword">if</span> nargout &gt; 1,
     rho = norm( eye(n) - A*diag(w)*A' - (1/n)*ones(n) );
 <span class="keyword">end</span>
-</pre><p class="footer"><br>
-      Published with MATLAB&reg; 7.9<br></p></div><!--
-##### SOURCE BEGIN #####
-%% Computes the Metropolis-Hastings heuristic edge weights
-
-function [w,rho] = mh(A)
-% [W,RHO] = MH(A) gives a vector of the Metropolis-Hastings edge weights
-% for a graphb described by the incidence matrix A (NxM). N is the number
-% of nodes, and M is the number of edges. Each column of A has exactly one
-% +1 and one -1. RHO is computed from the weights W as follows:
-%    RHO = max(abs(eig( eye(n,n) - (1/n)*ones(n,n) - A*W*A' ))).
-%
-% The M.-H. weight on an edge is one over the maximum of the degrees of the
-% adjacent nodes.
-%
-% For more details, see the references:
-% "Fast linear iterations for distributed averaging" by L. Xiao and S. Boyd
-% "Fastest mixing Markov chain on a graph" by S. Boyd, P. Diaconis, and L. Xiao
-% "Convex Optimization of Graph Laplacian Eigenvalues" by S. Boyd
-%
-% Almir Mutapcic 08/29/06
-
-% degrees of the nodes
-[n,m] = size(A);
-Lunw = A*A';          % unweighted Laplacian matrix
-degs = diag(Lunw);
-
-% Metropolis-Hastings weights
-mh_degs = abs(A)'*diag(degs);
-w = 1./max(mh_degs,[],2);
-
-% compute the norm
-if nargout > 1,
-    rho = norm( eye(n) - A*diag(w)*A' - (1/n)*ones(n) );
-end
-
-
-##### SOURCE END #####
---></body></html>
+</pre>
+</div>
+</body>
+</html>

@@ -1,68 +1,25 @@
-
-<!DOCTYPE html
-  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
-<html><head>
-      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-   <!--
-This HTML is auto-generated from an M-file.
-To make changes, update the M-file and republish this document.
-      --><title>Exercise 4.27: Matrix fractional minimization using second-order cone programming</title><meta name="generator" content="MATLAB 7.9"><meta name="date" content="2009-11-12"><meta name="m-file" content="ex_4_27_"><style type="text/css">
-
-body {
-  background-color: white;
-  margin:10px;
-}
-
-h1 {
-  color: #990000; 
-  font-size: x-large;
-}
-
-h2 {
-  color: #990000;
-  font-size: medium;
-}
-
-/* Make the text shrink to fit narrow windows, but not stretch too far in 
-wide windows. */ 
-p,h1,h2,div.content div {
-  max-width: 600px;
-  /* Hack for IE6 */
-  width: auto !important; width: 600px;
-}
-
-pre.codeinput {
-  background: #EEEEEE;
-  padding: 10px;
-}
-@media print {
-  pre.codeinput {word-wrap:break-word; width:100%;}
-} 
-
-span.keyword {color: #0000FF}
-span.comment {color: #228B22}
-span.string {color: #A020F0}
-span.untermstring {color: #B20000}
-span.syscmd {color: #B28C00}
-
-pre.codeoutput {
-  color: #666666;
-  padding: 10px;
-}
-
-pre.error {
-  color: red;
-}
-
-p.footer {
-  text-align: right;
-  font-size: xx-small;
-  font-weight: lighter;
-  font-style: italic;
-  color: gray;
-}
-
-  </style></head><body><div class="content"><h1>Exercise 4.27: Matrix fractional minimization using second-order cone programming</h1><pre class="codeinput"><span class="comment">% From Boyd &amp; Vandenberghe, "Convex Optimization"</span>
+<!DOCTYPE HTML>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Exercise 4.27: Matrix fractional minimization using second-order cone programming</title>
+<link rel="canonical" href="http://cvxr.com/cvx/examples/cvxbook/Ch04_cvx_opt_probs/html/ex_4_27.html">
+<link rel="stylesheet" href="../../../examples.css" type="text/css">
+</head>
+<body>
+<div id="header">
+<h1>Exercise 4.27: Matrix fractional minimization using second-order cone programming</h1>
+Jump to:&nbsp;&nbsp;&nbsp;&nbsp;
+<a href="#source">Source code</a>&nbsp;&nbsp;&nbsp;&nbsp;
+<a href="#output">Text output</a>
+&nbsp;&nbsp;&nbsp;&nbsp;
+Plots
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="../../../index.html">Library index</a>
+</div>
+<div id="content">
+<a id="source"></a>
+<pre class="codeinput">
+<span class="comment">% From Boyd &amp; Vandenberghe, "Convex Optimization"</span>
 <span class="comment">% Jo&euml;lle Skaf - 09/26/05</span>
 <span class="comment">%</span>
 <span class="comment">% Shows the equivalence of the following formulations:</span>
@@ -133,7 +90,10 @@ disp(<span class="string">'-----------------------------------------------------
 disp(<span class="string">'The optimal value for each of the 4 formulations is: '</span>);
 [opt1 opt2 opt3 opt4]
 disp(<span class="string">'They should be equal!'</span>)
-</pre><pre class="codeoutput">Computing optimal solution for 1st formulation...
+</pre>
+<a id="output"></a>
+<pre class="codeoutput">
+Computing optimal solution for 1st formulation...
  
 Calling sedumi: 161 variables, 9 equality constraints
    For improved efficiency, sedumi is solving the dual problem.
@@ -158,14 +118,14 @@ nnz(A) = 1225 + 0, nnz(ADA) = 81, nnz(L) = 45
  12 :  -5.18E+00 1.16E-09 0.000 0.0588 0.9901 0.9900   1.00  1  1  1.1E-08
 
 iter seconds digits       c*x               b*y
- 12      0.0   Inf -5.1824773412e+00 -5.1824772176e+00
+ 12      0.1   Inf -5.1824773412e+00 -5.1824772175e+00
 |Ax-b| =   5.4e-09, [Ay-c]_+ =   1.9E-08, |x|=  6.9e+00, |y|=  5.2e+00
 
 Detailed timing (sec)
    Pre          IPM          Post
-1.000E-02    5.000E-02    0.000E+00    
+1.000E-02    5.000E-02    1.000E-02    
 Max-norms: ||b||=1, ||c|| = 2.976981e+00,
-Cholesky |add|=0, |skip| = 0, ||L.L|| = 204.898.
+Cholesky |add|=0, |skip| = 0, ||L.L|| = 3.52372.
 ------------------------------------------------------------
 Status: Solved
 Optimal value (cvx_optval): +5.18248
@@ -194,90 +154,88 @@ nnz(A) = 1225 + 0, nnz(ADA) = 81, nnz(L) = 45
  12 :  -5.18E+00 1.16E-09 0.000 0.0588 0.9901 0.9900   1.00  1  1  1.1E-08
 
 iter seconds digits       c*x               b*y
- 12      0.1   Inf -5.1824773412e+00 -5.1824772176e+00
+ 12      0.1   Inf -5.1824773412e+00 -5.1824772175e+00
 |Ax-b| =   5.4e-09, [Ay-c]_+ =   1.9E-08, |x|=  6.9e+00, |y|=  5.2e+00
 
 Detailed timing (sec)
    Pre          IPM          Post
-1.000E-02    5.000E-02    0.000E+00    
+1.000E-02    6.000E-02    0.000E+00    
 Max-norms: ||b||=1, ||c|| = 2.976981e+00,
-Cholesky |add|=0, |skip| = 0, ||L.L|| = 204.898.
+Cholesky |add|=0, |skip| = 0, ||L.L|| = 3.52372.
 ------------------------------------------------------------
 Status: Solved
 Optimal value (cvx_optval): +5.18248
 Computing optimal solution for 3rd formulation...
  
-Calling sedumi: 74 variables, 20 equality constraints
-   For improved efficiency, sedumi is solving the dual problem.
+Calling sedumi: 75 variables, 54 equality constraints
 ------------------------------------------------------------
 SeDuMi 1.21 by AdvOL, 2005-2008 and Jos F. Sturm, 1998-2003.
 Alg = 2: xz-corrector, Adaptive Step-Differentiation, theta = 0.250, beta = 0.500
-eqs m = 20, order n = 23, dim = 112, blocks = 4
-nnz(A) = 286 + 0, nnz(ADA) = 360, nnz(L) = 190
+eqs m = 54, order n = 24, dim = 113, blocks = 4
+nnz(A) = 321 + 0, nnz(ADA) = 2740, nnz(L) = 1397
  it :     b*y       gap    delta  rate   t/tP*  t/tD*   feas cg cg  prec
-  0 :            1.66E+00 0.000
-  1 :  -1.32E+00 8.85E-01 0.000 0.5315 0.9000 0.9000   0.91  1  1  4.6E+00
-  2 :  -2.73E+00 2.42E-01 0.000 0.2730 0.9000 0.9000   1.35  1  1  9.9E-01
-  3 :  -4.09E+00 6.38E-02 0.000 0.2641 0.9000 0.9000   1.12  1  1  2.4E-01
-  4 :  -4.85E+00 1.73E-02 0.000 0.2718 0.9000 0.9000   0.98  1  1  6.7E-02
-  5 :  -5.11E+00 3.61E-03 0.000 0.2081 0.9000 0.9000   1.01  1  1  1.4E-02
-  6 :  -5.17E+00 5.15E-04 0.000 0.1428 0.9008 0.9000   0.99  1  1  2.4E-03
-  7 :  -5.18E+00 3.16E-05 0.000 0.0613 0.9000 0.8620   1.00  1  1  4.7E-04
-  8 :  -5.18E+00 3.74E-06 0.000 0.1183 0.9451 0.9450   1.00  1  1  5.6E-05
-  9 :  -5.18E+00 6.82E-07 0.000 0.1823 0.9009 0.9000   1.00  1  1  1.0E-05
- 10 :  -5.18E+00 1.34E-07 0.172 0.1968 0.9029 0.9000   1.00  1  1  2.0E-06
- 11 :  -5.18E+00 2.63E-08 0.186 0.1959 0.9049 0.9000   1.00  1  1  4.1E-07
- 12 :  -5.18E+00 5.15E-09 0.171 0.1961 0.9030 0.9000   1.00  1  1  8.0E-08
- 13 :  -5.18E+00 1.01E-09 0.178 0.1961 0.9004 0.9000   1.00  1  1  1.6E-08
- 14 :  -5.18E+00 1.99E-10 0.216 0.1966 0.9000 0.9014   1.00  2  2  3.1E-09
+  0 :            4.11E+00 0.000
+  1 :   1.90E+00 1.88E+00 0.000 0.4561 0.9000 0.9000   0.91  1  1  6.7E+00
+  2 :   2.55E+00 4.95E-01 0.000 0.2638 0.9000 0.9000   1.40  1  1  1.5E+00
+  3 :   4.09E+00 1.29E-01 0.000 0.2612 0.9000 0.9000   1.02  1  1  3.8E-01
+  4 :   4.86E+00 3.41E-02 0.000 0.2635 0.9000 0.9000   0.97  1  1  1.0E-01
+  5 :   5.12E+00 6.90E-03 0.000 0.2024 0.9000 0.9000   1.00  1  1  2.0E-02
+  6 :   5.17E+00 5.29E-04 0.000 0.0766 0.8425 0.9000   0.99  1  1  4.4E-03
+  7 :   5.18E+00 9.99E-05 0.000 0.1891 0.9000 0.9000   1.00  1  1  8.4E-04
+  8 :   5.18E+00 1.89E-05 0.000 0.1891 0.9000 0.9000   1.00  1  1  1.6E-04
+  9 :   5.18E+00 3.75E-06 0.000 0.1982 0.9000 0.9000   1.00  1  1  3.2E-05
+ 10 :   5.18E+00 7.68E-07 0.102 0.2050 0.9000 0.9000   1.00  1  1  6.5E-06
+ 11 :   5.18E+00 1.61E-07 0.177 0.2097 0.9000 0.9000   1.00  1  1  1.4E-06
+ 12 :   5.18E+00 3.41E-08 0.218 0.2116 0.9000 0.9000   1.00  1  1  2.9E-07
+ 13 :   5.18E+00 7.26E-09 0.223 0.2131 0.9000 0.9000   1.00  1  1  6.1E-08
+ 14 :   5.18E+00 1.55E-09 0.226 0.2136 0.9000 0.9000   1.00  1  1  1.3E-08
 
 iter seconds digits       c*x               b*y
- 14      0.1   Inf -5.1824773990e+00 -5.1824773889e+00
-|Ax-b| =   3.7e-09, [Ay-c]_+ =   2.5E-09, |x|=  1.2e+01, |y|=  4.9e+00
+ 14      0.1   Inf  5.1824773735e+00  5.1824773780e+00
+|Ax-b| =   2.4e-08, [Ay-c]_+ =   1.3E-09, |x|=  6.2e+00, |y|=  1.1e+01
 
 Detailed timing (sec)
    Pre          IPM          Post
-0.000E+00    9.000E-02    0.000E+00    
-Max-norms: ||b||=1, ||c|| = 1.488490e+00,
-Cholesky |add|=0, |skip| = 0, ||L.L|| = 43.1756.
+1.000E-02    9.000E-02    0.000E+00    
+Max-norms: ||b||=1.488490e+00, ||c|| = 1,
+Cholesky |add|=0, |skip| = 0, ||L.L|| = 282978.
 ------------------------------------------------------------
 Status: Solved
 Optimal value (cvx_optval): +5.18248
 Computing optimal solution for 4th formulation...
  
-Calling sedumi: 74 variables, 20 equality constraints
-   For improved efficiency, sedumi is solving the dual problem.
+Calling sedumi: 75 variables, 54 equality constraints
 ------------------------------------------------------------
 SeDuMi 1.21 by AdvOL, 2005-2008 and Jos F. Sturm, 1998-2003.
 Alg = 2: xz-corrector, Adaptive Step-Differentiation, theta = 0.250, beta = 0.500
-eqs m = 20, order n = 23, dim = 112, blocks = 4
-nnz(A) = 286 + 0, nnz(ADA) = 360, nnz(L) = 190
+eqs m = 54, order n = 24, dim = 113, blocks = 4
+nnz(A) = 321 + 0, nnz(ADA) = 2740, nnz(L) = 1397
  it :     b*y       gap    delta  rate   t/tP*  t/tD*   feas cg cg  prec
-  0 :            1.66E+00 0.000
-  1 :  -1.32E+00 8.85E-01 0.000 0.5315 0.9000 0.9000   0.91  1  1  4.6E+00
-  2 :  -2.73E+00 2.42E-01 0.000 0.2730 0.9000 0.9000   1.35  1  1  9.9E-01
-  3 :  -4.09E+00 6.38E-02 0.000 0.2641 0.9000 0.9000   1.12  1  1  2.4E-01
-  4 :  -4.85E+00 1.73E-02 0.000 0.2718 0.9000 0.9000   0.98  1  1  6.7E-02
-  5 :  -5.11E+00 3.61E-03 0.000 0.2081 0.9000 0.9000   1.01  1  1  1.4E-02
-  6 :  -5.17E+00 5.15E-04 0.000 0.1428 0.9008 0.9000   0.99  1  1  2.4E-03
-  7 :  -5.18E+00 3.16E-05 0.000 0.0613 0.9000 0.8620   1.00  1  1  4.7E-04
-  8 :  -5.18E+00 3.74E-06 0.000 0.1183 0.9451 0.9450   1.00  1  1  5.6E-05
-  9 :  -5.18E+00 6.82E-07 0.000 0.1823 0.9009 0.9000   1.00  1  1  1.0E-05
- 10 :  -5.18E+00 1.34E-07 0.172 0.1968 0.9029 0.9000   1.00  1  1  2.0E-06
- 11 :  -5.18E+00 2.63E-08 0.186 0.1959 0.9049 0.9000   1.00  1  1  4.1E-07
- 12 :  -5.18E+00 5.15E-09 0.171 0.1961 0.9030 0.9000   1.00  1  1  8.0E-08
- 13 :  -5.18E+00 1.01E-09 0.178 0.1961 0.9004 0.9000   1.00  1  1  1.6E-08
- 14 :  -5.18E+00 1.99E-10 0.216 0.1966 0.9000 0.9014   1.00  2  2  3.1E-09
+  0 :            4.11E+00 0.000
+  1 :   1.90E+00 1.88E+00 0.000 0.4561 0.9000 0.9000   0.91  1  1  6.7E+00
+  2 :   2.55E+00 4.95E-01 0.000 0.2638 0.9000 0.9000   1.40  1  1  1.5E+00
+  3 :   4.09E+00 1.29E-01 0.000 0.2612 0.9000 0.9000   1.02  1  1  3.8E-01
+  4 :   4.86E+00 3.41E-02 0.000 0.2635 0.9000 0.9000   0.97  1  1  1.0E-01
+  5 :   5.12E+00 6.90E-03 0.000 0.2024 0.9000 0.9000   1.00  1  1  2.0E-02
+  6 :   5.17E+00 5.29E-04 0.000 0.0766 0.8425 0.9000   0.99  1  1  4.4E-03
+  7 :   5.18E+00 9.99E-05 0.000 0.1891 0.9000 0.8973   1.00  1  1  8.4E-04
+  8 :   5.18E+00 1.89E-05 0.000 0.1891 0.9000 0.9000   1.00  1  1  1.6E-04
+  9 :   5.18E+00 3.75E-06 0.000 0.1982 0.9000 0.9000   1.00  1  1  3.2E-05
+ 10 :   5.18E+00 7.68E-07 0.102 0.2050 0.9000 0.9000   1.00  1  1  6.5E-06
+ 11 :   5.18E+00 1.61E-07 0.177 0.2097 0.9000 0.9000   1.00  1  1  1.4E-06
+ 12 :   5.18E+00 3.41E-08 0.218 0.2116 0.9000 0.9000   1.00  1  1  2.9E-07
+ 13 :   5.18E+00 7.19E-09 0.222 0.2111 0.9000 0.9000   1.00  1  1  6.1E-08
+ 14 :   5.18E+00 1.49E-09 0.223 0.2076 0.9000 0.9000   1.00  2  2  1.3E-08
 
 iter seconds digits       c*x               b*y
- 14      0.1   Inf -5.1824773990e+00 -5.1824773889e+00
-|Ax-b| =   3.7e-09, [Ay-c]_+ =   2.5E-09, |x|=  1.2e+01, |y|=  4.9e+00
+ 14      0.1   Inf  5.1824773737e+00  5.1824773781e+00
+|Ax-b| =   2.4e-08, [Ay-c]_+ =   1.3E-09, |x|=  6.2e+00, |y|=  1.2e+01
 
 Detailed timing (sec)
    Pre          IPM          Post
-1.000E-02    8.000E-02    0.000E+00    
-Max-norms: ||b||=1, ||c|| = 1.488490e+00,
-Cholesky |add|=0, |skip| = 0, ||L.L|| = 43.1756.
+1.000E-02    9.000E-02    1.000E-02    
+Max-norms: ||b||=1.488490e+00, ||c|| = 1,
+Cholesky |add|=0, |skip| = 0, ||L.L|| = 318388.
 ------------------------------------------------------------
 Status: Solved
 Optimal value (cvx_optval): +5.18248
@@ -289,83 +247,7 @@ ans =
     5.1825    5.1825    5.1825    5.1825
 
 They should be equal!
-</pre><p class="footer"><br>
-      Published with MATLAB&reg; 7.9<br></p></div><!--
-##### SOURCE BEGIN #####
-%% Exercise 4.27: Matrix fractional minimization using second-order cone programming
-
-% From Boyd & Vandenberghe, "Convex Optimization"
-% Joëlle Skaf - 09/26/05
-%
-% Shows the equivalence of the following formulations:
-% 1)        minimize    (Ax + b)'*inv(I + B*diag(x)*B')*(Ax + b)
-%               s.t.    x >= 0
-% 2)        minimize    (Ax + b)'*inv(I + B*Y*B')*(Ax + b)
-%               s.t.    x >= 0
-%                       Y = diag(x)
-% 3)        minimize    v'*v + w'*inv(diag(x))*w
-%               s.t.    v + Bw = Ax + b
-%                       x >= 0
-% 4)        minimize    v'*v + w'*inv(Y)*w
-%               s.t.    Y = diag(x)
-%                       v + Bw = Ax + b
-%                       x >= 0
-
-% Generate input data
-randn('state',0);
-m = 16; n = 8;
-A = randn(m,n);
-b = randn(m,1);
-B = randn(m,n);
-
-% Problem 1: original formulation
-disp('Computing optimal solution for 1st formulation...');
-cvx_begin
-    variable x1(n)
-    minimize( matrix_frac(A*x1 + b , eye(m) + B*diag(x1)*B') )
-    x1 >= 0;
-cvx_end
-opt1 = cvx_optval;
-
-% Problem 2: original formulation (modified)
-disp('Computing optimal solution for 2nd formulation...');
-cvx_begin
-    variable x2(n)
-    variable Y(n,n) diagonal
-    minimize( matrix_frac(A*x2 + b , eye(m) + B*Y*B') )
-    x2 >= 0;
-    Y == diag(x2);
-cvx_end
-opt2 = cvx_optval;
-
-% Problem 3: equivalent formulation (as given in the book)
-disp('Computing optimal solution for 3rd formulation...');
-cvx_begin
-    variables x3(n) w(n) v(m)
-    minimize( square_pos(norm(v)) + matrix_frac(w, diag(x3)) )
-    v + B*w == A*x3 + b;
-    x3 >= 0;
-cvx_end
-opt3 = cvx_optval;
-
-% Problem 4: equivalent formulation (modified)
-disp('Computing optimal solution for 4th formulation...');
-cvx_begin
-    variables x4(n) w(n) v(m)
-    variable Y(n,n) diagonal
-    minimize( square_pos(norm(v)) + matrix_frac(w, Y) )
-    v + B*w == A*x4 + b;
-    x4 >= 0;
-    Y == diag(x4);
-cvx_end
-opt4 = cvx_optval;
-
-% Display the results
-disp('REPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASH');
-disp('The optimal value for each of the 4 formulations is: ');
-[opt1 opt2 opt3 opt4]
-disp('They should be equal!')
-
-
-##### SOURCE END #####
---></body></html>
+</pre>
+</div>
+</body>
+</html>

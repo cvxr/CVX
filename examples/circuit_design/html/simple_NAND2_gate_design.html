@@ -1,68 +1,25 @@
-
-<!DOCTYPE html
-  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
-<html><head>
-      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-   <!--
-This HTML is auto-generated from an M-file.
-To make changes, update the M-file and republish this document.
-      --><title>Two-input NAND gate sizing (GP)</title><meta name="generator" content="MATLAB 7.9"><meta name="date" content="2009-11-12"><meta name="m-file" content="simple_NAND2_gate_design_"><style type="text/css">
-
-body {
-  background-color: white;
-  margin:10px;
-}
-
-h1 {
-  color: #990000; 
-  font-size: x-large;
-}
-
-h2 {
-  color: #990000;
-  font-size: medium;
-}
-
-/* Make the text shrink to fit narrow windows, but not stretch too far in 
-wide windows. */ 
-p,h1,h2,div.content div {
-  max-width: 600px;
-  /* Hack for IE6 */
-  width: auto !important; width: 600px;
-}
-
-pre.codeinput {
-  background: #EEEEEE;
-  padding: 10px;
-}
-@media print {
-  pre.codeinput {word-wrap:break-word; width:100%;}
-} 
-
-span.keyword {color: #0000FF}
-span.comment {color: #228B22}
-span.string {color: #A020F0}
-span.untermstring {color: #B20000}
-span.syscmd {color: #B28C00}
-
-pre.codeoutput {
-  color: #666666;
-  padding: 10px;
-}
-
-pre.error {
-  color: red;
-}
-
-p.footer {
-  text-align: right;
-  font-size: xx-small;
-  font-weight: lighter;
-  font-style: italic;
-  color: gray;
-}
-
-  </style></head><body><div class="content"><h1>Two-input NAND gate sizing (GP)</h1><pre class="codeinput"><span class="comment">% Boyd, Kim, Patil, and Horowitz, "Digital circuit optimization</span>
+<!DOCTYPE HTML>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Two-input NAND gate sizing (GP)</title>
+<link rel="canonical" href="http://cvxr.com/cvx/examples/circuit_design/html/simple_NAND2_gate_design.html">
+<link rel="stylesheet" href="../../examples.css" type="text/css">
+</head>
+<body>
+<div id="header">
+<h1>Two-input NAND gate sizing (GP)</h1>
+Jump to:&nbsp;&nbsp;&nbsp;&nbsp;
+<a href="#source">Source code</a>&nbsp;&nbsp;&nbsp;&nbsp;
+<a href="#output">Text output</a>
+&nbsp;&nbsp;&nbsp;&nbsp;
+<a href="#plots">Plots</a>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="../../index.html">Library index</a>
+</div>
+<div id="content">
+<a id="source"></a>
+<pre class="codeinput">
+<span class="comment">% Boyd, Kim, Patil, and Horowitz, "Digital circuit optimization</span>
 <span class="comment">% via geometric programming"</span>
 <span class="comment">% Written for CVX by Almir Mutapcic 02/08/06</span>
 <span class="comment">% (a figure is generated)</span>
@@ -176,7 +133,10 @@ disp(<span class="string">'Generating the optimal tradeoff curve...'</span>)
 plot(Dopt,Amax);
 xlabel(<span class="string">'Dmin'</span>); ylabel(<span class="string">'Amax'</span>);
 disp(<span class="string">'Optimal tradeoff curve plotted.'</span>)
-</pre><pre class="codeoutput">Generating the optimal tradeoff curve...
+</pre>
+<a id="output"></a>
+<pre class="codeoutput">
+Generating the optimal tradeoff curve...
   Amax =  5.00   delay = 11.56
   Amax =  6.67   delay = 9.23
   Amax =  8.33   delay = 7.84
@@ -203,125 +163,11 @@ disp(<span class="string">'Optimal tradeoff curve plotted.'</span>)
   Amax = 43.33   delay = 3.27
   Amax = 45.00   delay = 3.23
 Optimal tradeoff curve plotted.
-</pre><img vspace="5" hspace="5" src="simple_NAND2_gate_design__01.png" alt=""> <p class="footer"><br>
-      Published with MATLAB&reg; 7.9<br></p></div><!--
-##### SOURCE BEGIN #####
-%% Two-input NAND gate sizing (GP)
-
-% Boyd, Kim, Patil, and Horowitz, "Digital circuit optimization
-% via geometric programming"
-% Written for CVX by Almir Mutapcic 02/08/06
-% (a figure is generated)
-%
-% This is an example taken directly from the paper:
-%
-%   Digital circuit optimization via geometrical programming
-%   by Boyd, Kim, Patil, and Horowitz
-%   Operations Research 53(6): 899-932, 2005.
-%
-% Solves the problem of choosing device widths w_i for the given
-% NAND2 gate in order to achive minimum Elmore delay for different
-% gate transitions, subject to limits on the device widths,
-% gate area, power, and so on. The problem is a GP:
-%
-%   minimize   D = max( D_1, ..., D_k )  for k transitions
-%       s.t.   w_min <= w <= w_max
-%              A <= Amax, etc.
-%
-% where variables are widths w.
-%
-% This code is specific to the NAND2 gate shown in figure 19
-% (page 926) of the paper. All the constraints and the objective
-% are hard-coded for this particular circuit.
-
-%********************************************************************
-% problem data and hard-coded GP specs (evaluate all transitions)
-%********************************************************************
-N = 4;       % number of devices
-Cload = 12;  % load capacitance
-Vdd = 1.5;   % voltage
-
-% device specs
-NMOS = struct('R',0.4831, 'Cdb',0.6, 'Csb',0.6, 'Cgb',1, 'Cgs',1);
-PMOS = struct('R',2*0.4831, 'Cdb',0.6, 'Csb',0.6, 'Cgb',1, 'Cgs',1);
-
-% maximum area and power specification
-Amax = 24;
-wmin = 1;
-
-% varying parameters for the tradeoff curve
-Npoints = 25;
-Amax = linspace(5,45,Npoints);
-Dopt = [];
-
-disp('Generating the optimal tradeoff curve...')
-
-for k = 1:Npoints
-  cvx_begin gp quiet
-    % device width variables
-    variable w(N)
-
-    % device specs
-    device(1:2) = PMOS; device(3:4) = NMOS;
-
-    for num = 1:N
-      device(num).R   = device(num).R/w(num);
-      device(num).Cdb = device(num).Cdb*w(num);
-      device(num).Csb = device(num).Csb*w(num);
-      device(num).Cgb = device(num).Cgb*w(num);
-      device(num).Cgs = device(num).Cgs*w(num);
-    end
-
-    % capacitances
-    C1 = sum([device(1:3).Cdb]) + Cload;
-    C2 = device(3).Csb + device(4).Cdb;
-
-    % input capacitances
-    Cin_A = sum([ device([2 3]).Cgb ]) + sum([ device([2 3]).Cgs ]);
-    Cin_B = sum([ device([1 4]).Cgb ]) + sum([ device([1 4]).Cgs ]);
-
-    % resistances
-    R = [device.R]';
-
-    % area definition
-    area = sum(w);
-
-    % delays and dissipated energies for all six possible transitions
-    % transition 1 is A: 1->1, B: 1->0, Z: 0->1
-    D1 = R(1)*(C1 + C2);
-    E1 = (C1 + C2)*Vdd^2/2;
-    % transition 2 is A: 1->0, B: 1->1, Z: 0->1
-    D2 = R(2)*C1;
-    E2 = C1*Vdd^2/2;
-    % transition 3 is A: 1->0, B: 1->0, Z: 0->1
-    % D3 = C1*R(1)*R(2)/(R(1) + R(2)); % not a posynomial
-    E3 = C1*Vdd^2/2;
-    % transition 4 is A: 1->1, B: 0->1, Z: 1->0
-    D4 = C1*R(3) + R(4)*(C1 + C2);
-    E4 = (C1 + C2)*Vdd^2/2;
-    % transition 5 is A: 0->1, B: 1->1, Z: 1->0
-    D5 = C1*(R(3) + R(4));
-    E5 = (C1 + C2)*Vdd^2/2;
-    % transition 6 is A: 0->1, B: 0->1, Z: 1->0
-    D6 = C1*R(3) + R(4)*(C1 + C2);
-    E6 = (C1 + C2)*Vdd^2/2;
-
-    % objective is the worst-case delay
-    minimize( max( [D1 D2 D4] ) )
-    subject to
-      area <= Amax(k);
-      w >= wmin;
-  cvx_end
-
-  % display and store computed values
-  fprintf(1,'  Amax = %5.2f   delay = %3.2f\n',Amax(k),cvx_optval);
-  Dopt = [Dopt cvx_optval];
-end
-
-% plot the tradeoff curve
-plot(Dopt,Amax);
-xlabel('Dmin'); ylabel('Amax');
-disp('Optimal tradeoff curve plotted.')
-
-##### SOURCE END #####
---></body></html>
+</pre>
+<a id="plots"></a>
+<div id="plotoutput">
+<img src="simple_NAND2_gate_design__01.png" alt=""> 
+</div>
+</div>
+</body>
+</html>

@@ -1,68 +1,25 @@
-
-<!DOCTYPE html
-  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
-<html><head>
-      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-   <!--
-This HTML is auto-generated from an M-file.
-To make changes, update the M-file and republish this document.
-      --><title>Section 7.1.1: Counting problems with Poisson distribution</title><meta name="generator" content="MATLAB 7.9"><meta name="date" content="2009-11-12"><meta name="m-file" content="counting_problem_poisson_"><style type="text/css">
-
-body {
-  background-color: white;
-  margin:10px;
-}
-
-h1 {
-  color: #990000; 
-  font-size: x-large;
-}
-
-h2 {
-  color: #990000;
-  font-size: medium;
-}
-
-/* Make the text shrink to fit narrow windows, but not stretch too far in 
-wide windows. */ 
-p,h1,h2,div.content div {
-  max-width: 600px;
-  /* Hack for IE6 */
-  width: auto !important; width: 600px;
-}
-
-pre.codeinput {
-  background: #EEEEEE;
-  padding: 10px;
-}
-@media print {
-  pre.codeinput {word-wrap:break-word; width:100%;}
-} 
-
-span.keyword {color: #0000FF}
-span.comment {color: #228B22}
-span.string {color: #A020F0}
-span.untermstring {color: #B20000}
-span.syscmd {color: #B28C00}
-
-pre.codeoutput {
-  color: #666666;
-  padding: 10px;
-}
-
-pre.error {
-  color: red;
-}
-
-p.footer {
-  text-align: right;
-  font-size: xx-small;
-  font-weight: lighter;
-  font-style: italic;
-  color: gray;
-}
-
-  </style></head><body><div class="content"><h1>Section 7.1.1: Counting problems with Poisson distribution</h1><pre class="codeinput"><span class="comment">% Boyd &amp; Vandenberghe "Convex Optimization"</span>
+<!DOCTYPE HTML>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Section 7.1.1: Counting problems with Poisson distribution</title>
+<link rel="canonical" href="http://cvxr.com/cvx/examples/cvxbook/Ch07_statistical_estim/html/counting_problem_poisson.html">
+<link rel="stylesheet" href="../../../examples.css" type="text/css">
+</head>
+<body>
+<div id="header">
+<h1>Section 7.1.1: Counting problems with Poisson distribution</h1>
+Jump to:&nbsp;&nbsp;&nbsp;&nbsp;
+<a href="#source">Source code</a>&nbsp;&nbsp;&nbsp;&nbsp;
+<a href="#output">Text output</a>
+&nbsp;&nbsp;&nbsp;&nbsp;
+Plots
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="../../../index.html">Library index</a>
+</div>
+<div id="content">
+<a id="source"></a>
+<pre class="codeinput">
+<span class="comment">% Boyd &amp; Vandenberghe "Convex Optimization"</span>
 <span class="comment">% Jo&Atilde;&laquo;lle Skaf - 04/24/08</span>
 <span class="comment">%</span>
 <span class="comment">% The random variable y is nonnegative and integer valued with a Poisson</span>
@@ -96,71 +53,25 @@ cvx_begin
     variables <span class="string">a(n)</span> <span class="string">b(1)</span>
     maximize <span class="string">sum(y.*log(a'*u+b) - (a'*u+b))</span>
 cvx_end
-</pre><pre class="codeoutput"> 
+</pre>
+<a id="output"></a>
+<pre class="codeoutput">
+ 
 Successive approximation method to be employed.
-   For improved efficiency, sedumi is solving the dual problem.
    sedumi will be called several times to refine the solution.
-   Original size: 276 variables, 103 equality constraints
+   Original size: 287 variables, 184 equality constraints
    92 exponentials add 736 variables, 460 equality constraints
 -----------------------------------------------------------------
           Errors   
 Act Centering    Conic    Status
 -----------------------------------
-92  6.171e-01  3.305e-02  Solved
-92  8.713e-02  6.259e-04  Solved
-92  1.348e-02  1.565e-05  Solved
-92  1.754e-03  5.349e-07  Solved
-92  2.200e-04  2.265e-07  Solved
-92  2.791e-05  2.160e-07S Solved
-92  3.407e-06  2.158e-07S Solved
-92  3.030e-04S 2.188e-08  Solved
-92  8.477e-05  3.812e-09  Solved
-92  1.063e-05  3.362e-09  Solved
-92  1.324e-06  3.389e-09S Solved
-92  3.283e-06S 1.596e-09  Inaccurate/Solved
-92  2.130e-05S 0.000e+00  Solved
+92  1.712e+00  2.597e-01  Solved
+92  9.839e-02  8.061e-04  Solved
+92  6.839e-04  2.285e-08  Solved
 -----------------------------------------------------------------
 Status: Solved
 Optimal value (cvx_optval): +102.57
-</pre><p class="footer"><br>
-      Published with MATLAB&reg; 7.9<br></p></div><!--
-##### SOURCE BEGIN #####
-%% Section 7.1.1: Counting problems with Poisson distribution
-
-% Boyd & Vandenberghe "Convex Optimization" 
-% JoÃ«lle Skaf - 04/24/08 
-%
-% The random variable y is nonnegative and integer valued with a Poisson
-% distribution with mean mu > 0. In a simple statistical model, the mean mu
-% is modeled as an affine function of a vector u: mu = a'*u + b.
-% We are given a number of observations which consist of pairs (u_i,y_i), 
-% i = 1,..., m, where y_i is the observed value of y for which the value of
-% the explanatory variable is u_i. We find a maximum likelihood estimate of
-% the model parameters a and b from these data by solving the problem 
-%           maximize    sum_{i=1}^m (y_i*log(a'*u_i + b) - (a'*u_i + b))
-% where the variables are a and b. 
-
-% Input data
-rand('state',0);
-n = 10; 
-m = 100; 
-atrue = rand(n,1); 
-btrue = rand; 
-
-u = rand(n,m);
-mu = atrue'*u + btrue; 
-
-% Generate random variables y from a Poisson distribution
-% (The distribution is actually truncated at 10*max(mu) for simplicity)
-L  = exp(-mu);
-ns = ceil(max(10*mu));
-y  = sum(cumprod(rand(ns,m))>=L(ones(ns,1),:));
-
-% Maximum likelihood estimate of model parameters 
-cvx_begin 
-    variables a(n) b(1) 
-    maximize sum(y.*log(a'*u+b) - (a'*u+b))
-cvx_end    
-
-##### SOURCE END #####
---></body></html>
+</pre>
+</div>
+</body>
+</html>

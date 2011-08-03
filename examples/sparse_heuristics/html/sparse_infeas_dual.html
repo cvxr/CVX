@@ -1,68 +1,25 @@
-
-<!DOCTYPE html
-  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
-<html><head>
-      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-   <!--
-This HTML is auto-generated from an M-file.
-To make changes, update the M-file and republish this document.
-      --><title>Detecting a small subset of infeasible linear inequalities</title><meta name="generator" content="MATLAB 7.9"><meta name="date" content="2009-11-12"><meta name="m-file" content="sparse_infeas_dual_"><style type="text/css">
-
-body {
-  background-color: white;
-  margin:10px;
-}
-
-h1 {
-  color: #990000; 
-  font-size: x-large;
-}
-
-h2 {
-  color: #990000;
-  font-size: medium;
-}
-
-/* Make the text shrink to fit narrow windows, but not stretch too far in 
-wide windows. */ 
-p,h1,h2,div.content div {
-  max-width: 600px;
-  /* Hack for IE6 */
-  width: auto !important; width: 600px;
-}
-
-pre.codeinput {
-  background: #EEEEEE;
-  padding: 10px;
-}
-@media print {
-  pre.codeinput {word-wrap:break-word; width:100%;}
-} 
-
-span.keyword {color: #0000FF}
-span.comment {color: #228B22}
-span.string {color: #A020F0}
-span.untermstring {color: #B20000}
-span.syscmd {color: #B28C00}
-
-pre.codeoutput {
-  color: #666666;
-  padding: 10px;
-}
-
-pre.error {
-  color: red;
-}
-
-p.footer {
-  text-align: right;
-  font-size: xx-small;
-  font-weight: lighter;
-  font-style: italic;
-  color: gray;
-}
-
-  </style></head><body><div class="content"><h1>Detecting a small subset of infeasible linear inequalities</h1><pre class="codeinput"><span class="comment">% Section 5.8, Boyd &amp; Vandenberghe "Convex Optimization"</span>
+<!DOCTYPE HTML>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Detecting a small subset of infeasible linear inequalities</title>
+<link rel="canonical" href="http://cvxr.com/cvx/examples/sparse_heuristics/html/sparse_infeas_dual.html">
+<link rel="stylesheet" href="../../examples.css" type="text/css">
+</head>
+<body>
+<div id="header">
+<h1>Detecting a small subset of infeasible linear inequalities</h1>
+Jump to:&nbsp;&nbsp;&nbsp;&nbsp;
+<a href="#source">Source code</a>&nbsp;&nbsp;&nbsp;&nbsp;
+<a href="#output">Text output</a>
+&nbsp;&nbsp;&nbsp;&nbsp;
+Plots
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="../../index.html">Library index</a>
+</div>
+<div id="content">
+<a id="source"></a>
+<pre class="codeinput">
+<span class="comment">% Section 5.8, Boyd &amp; Vandenberghe "Convex Optimization"</span>
 <span class="comment">% Written for CVX by Almir Mutapcic - 02/18/06</span>
 <span class="comment">%</span>
 <span class="comment">% We consider a set of linear inequalities A*x &lt;= b which are</span>
@@ -131,7 +88,10 @@ disp(<span class="string">'with row indices:'</span>), infeas_set'
 <span class="comment">%    variable x_infeas(n)</span>
 <span class="comment">%    A(infeas_set,:)*x_infeas &lt;= b(infeas_set);</span>
 <span class="comment">% cvx_end</span>
-</pre><pre class="codeoutput">Starting with an infeasible set of 150 inequalities in 10 variables.
+</pre>
+<a id="output"></a>
+<pre class="codeoutput">
+Starting with an infeasible set of 150 inequalities in 10 variables.
  
 Calling sedumi: 150 variables, 11 equality constraints
 ------------------------------------------------------------
@@ -152,12 +112,12 @@ nnz(A) = 1650 + 0, nnz(ADA) = 121, nnz(L) = 66
   9 :   6.01E-01 4.39E-04 0.000 0.0563 0.9902 0.9900   1.00  1  1  4.2E-04
  10 :   6.01E-01 5.09E-07 0.000 0.0012 0.9990 0.9990   1.00  1  1  
 iter seconds digits       c*x               b*y
- 10      0.0  15.7  6.0131198034e-01  6.0131198034e-01
-|Ax-b| =   1.6e-16, [Ay-c]_+ =   1.3E-16, |x|=  2.8e-01, |y|=  8.1e-01
+ 10      0.0   Inf  6.0131198034e-01  6.0131198034e-01
+|Ax-b| =   1.4e-16, [Ay-c]_+ =   2.7E-16, |x|=  2.8e-01, |y|=  8.1e-01
 
 Detailed timing (sec)
    Pre          IPM          Post
-0.000E+00    3.000E-02    0.000E+00    
+1.000E-02    4.000E-02    0.000E+00    
 Max-norms: ||b||=1, ||c|| = 1,
 Cholesky |add|=0, |skip| = 0, ||L.L|| = 9.91492.
 ------------------------------------------------------------
@@ -173,80 +133,7 @@ ans =
 
      1    22    33    54    59    73    79    94   115   136   149
 
-</pre><p class="footer"><br>
-      Published with MATLAB&reg; 7.9<br></p></div><!--
-##### SOURCE BEGIN #####
-%% Detecting a small subset of infeasible linear inequalities
-
-% Section 5.8, Boyd & Vandenberghe "Convex Optimization"
-% Written for CVX by Almir Mutapcic - 02/18/06
-%
-% We consider a set of linear inequalities A*x <= b which are
-% infeasible. Here A is a matrix in R^(m-by-n) and b belongs
-% to R^m. We apply a l1-norm heuristic to find a small subset
-% of mutually infeasible inequalities from a larger set of
-% infeasible inequalities. The heuristic finds a sparse solution
-% to the alternative inequality system.
-%
-% Original system is A*x <= b and it alternative ineq. system is:
-%
-%   lambda >= 0,   A'*lambda == 0.   b'*lambda < 0
-%
-% where lambda in R^m. We apply the l1-norm heuristic:
-%
-%   minimize   sum( lambda )
-%       s.t.   A'*lambda == 0
-%              b'*lambda == -1
-%              lambda >= 0
-%
-% Positive lambdas gives us a small subset of inequalities from
-% the original set which are mutually inconsistent.
-
-% problem dimensions (m inequalities in n-dimensional space)
-m = 150;
-n = 10;
-
-% fix random number generator so we can repeat the experiment
-seed = 0;
-randn('state',seed);
-
-% construct infeasible inequalities
-A = randn(m,n);
-b = randn(m,1);
-
-fprintf(1, ['Starting with an infeasible set of %d inequalities ' ...
-            'in %d variables.\n'],m,n);
-
-% you can verify that the set is infeasible
-% cvx_begin
-%   variable x(n)
-%   A*x <= b;
-% cvx_end
-
-% solve the l1-norm heuristic problem applied to the alternative system
-cvx_begin
-   variables lambda(m)
-   minimize( sum( lambda ) )
-   subject to
-     A'*lambda == 0;
-     b'*lambda == -1; 
-     lambda >= 0;
-cvx_end
-
-% report the smaller set of mutually inconsistent inequalities
-infeas_set = find( abs(b.*lambda) > sqrt(eps)/n );
-disp(' ');
-fprintf(1,'Found a smaller set of %d mutually inconsistent inequalities.\n',...
-        length(infeas_set));
-disp(' ');
-disp('A smaller set of mutually inconsistent inequalities are the ones');
-disp('with row indices:'), infeas_set'
-
-% check that this set is infeasible
-% cvx_begin
-%    variable x_infeas(n)
-%    A(infeas_set,:)*x_infeas <= b(infeas_set);
-% cvx_end
-
-##### SOURCE END #####
---></body></html>
+</pre>
+</div>
+</body>
+</html>

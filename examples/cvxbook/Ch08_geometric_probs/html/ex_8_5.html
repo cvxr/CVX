@@ -1,68 +1,25 @@
-
-<!DOCTYPE html
-  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
-<html><head>
-      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-   <!--
-This HTML is auto-generated from an M-file.
-To make changes, update the M-file and republish this document.
-      --><title>One free point localization</title><meta name="generator" content="MATLAB 7.9"><meta name="date" content="2009-11-12"><meta name="m-file" content="ex_8_5_"><style type="text/css">
-
-body {
-  background-color: white;
-  margin:10px;
-}
-
-h1 {
-  color: #990000; 
-  font-size: x-large;
-}
-
-h2 {
-  color: #990000;
-  font-size: medium;
-}
-
-/* Make the text shrink to fit narrow windows, but not stretch too far in 
-wide windows. */ 
-p,h1,h2,div.content div {
-  max-width: 600px;
-  /* Hack for IE6 */
-  width: auto !important; width: 600px;
-}
-
-pre.codeinput {
-  background: #EEEEEE;
-  padding: 10px;
-}
-@media print {
-  pre.codeinput {word-wrap:break-word; width:100%;}
-} 
-
-span.keyword {color: #0000FF}
-span.comment {color: #228B22}
-span.string {color: #A020F0}
-span.untermstring {color: #B20000}
-span.syscmd {color: #B28C00}
-
-pre.codeoutput {
-  color: #666666;
-  padding: 10px;
-}
-
-pre.error {
-  color: red;
-}
-
-p.footer {
-  text-align: right;
-  font-size: xx-small;
-  font-weight: lighter;
-  font-style: italic;
-  color: gray;
-}
-
-  </style></head><body><div class="content"><h1>One free point localization</h1><pre class="codeinput"><span class="comment">% Section 8.7.3, Boyd &amp; Vandenberghe "Convex Optimization"</span>
+<!DOCTYPE HTML>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>One free point localization</title>
+<link rel="canonical" href="http://cvxr.com/cvx/examples/cvxbook/Ch08_geometric_probs/html/ex_8_5.html">
+<link rel="stylesheet" href="../../../examples.css" type="text/css">
+</head>
+<body>
+<div id="header">
+<h1>One free point localization</h1>
+Jump to:&nbsp;&nbsp;&nbsp;&nbsp;
+<a href="#source">Source code</a>&nbsp;&nbsp;&nbsp;&nbsp;
+<a href="#output">Text output</a>
+&nbsp;&nbsp;&nbsp;&nbsp;
+Plots
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="../../../index.html">Library index</a>
+</div>
+<div id="content">
+<a id="source"></a>
+<pre class="codeinput">
+<span class="comment">% Section 8.7.3, Boyd &amp; Vandenberghe "Convex Optimization"</span>
 <span class="comment">% Joelle Skaf - 10/24/05</span>
 <span class="comment">%</span>
 <span class="comment">% K fixed points x_1,...,x_K in R^2 are given and the goal is to place</span>
@@ -94,38 +51,39 @@ disp(x);
 disp(<span class="string">'The average location of the fixed points is'</span>);
 disp(sum(P,2)/K);
 disp(<span class="string">'They are the same as expected!'</span>);
-</pre><pre class="codeoutput">Minimizing the sum of the squares the distances to fixed points... 
-Calling sedumi: 77 variables, 35 equality constraints
-   For improved efficiency, sedumi is solving the dual problem.
+</pre>
+<a id="output"></a>
+<pre class="codeoutput">
+Minimizing the sum of the squares the distances to fixed points... 
+Calling sedumi: 88 variables, 42 equality constraints
 ------------------------------------------------------------
 SeDuMi 1.21 by AdvOL, 2005-2008 and Jos F. Sturm, 1998-2003.
 Alg = 2: xz-corrector, Adaptive Step-Differentiation, theta = 0.250, beta = 0.500
-eqs m = 35, order n = 56, dim = 89, blocks = 23
-nnz(A) = 77 + 0, nnz(ADA) = 169, nnz(L) = 102
+eqs m = 42, order n = 67, dim = 100, blocks = 23
+nnz(A) = 95 + 0, nnz(ADA) = 524, nnz(L) = 283
  it :     b*y       gap    delta  rate   t/tP*  t/tD*   feas cg cg  prec
-  0 :            2.57E+00 0.000
-  1 :  -1.55E+00 8.66E-01 0.000 0.3370 0.9000 0.9000   2.56  1  1  2.2E+00
-  2 :  -7.67E+00 3.21E-01 0.000 0.3707 0.9000 0.9000   0.75  1  1  6.2E-01
-  3 :  -1.28E+01 1.00E-01 0.000 0.3130 0.9000 0.9000   0.71  1  1  2.1E-01
-  4 :  -1.54E+01 2.95E-02 0.000 0.2932 0.9000 0.9000   0.84  1  1  6.7E-02
-  5 :  -1.66E+01 2.43E-03 0.000 0.0825 0.9900 0.9900   0.95  1  1  5.7E-03
-  6 :  -1.66E+01 3.46E-05 0.293 0.0142 0.9000 0.0000   1.00  1  1  3.4E-03
-  7 :  -1.66E+01 6.13E-06 0.000 0.1773 0.9151 0.9000   1.00  1  1  6.6E-04
-  8 :  -1.67E+01 4.35E-08 0.161 0.0071 0.9990 0.9990   1.00  1  1  4.4E-06
-  9 :  -1.67E+01 1.09E-08 0.093 0.2512 0.8840 0.9000   1.00  1  1  1.1E-06
- 10 :  -1.67E+01 1.86E-09 0.028 0.1700 0.0000 0.9000   1.00  1  1  2.4E-07
- 11 :  -1.67E+01 1.49E-10 0.000 0.0801 0.9900 0.9511   1.00  1  1  2.0E-08
- 12 :  -1.67E+01 1.17E-11 0.309 0.0787 0.9900 0.9900   1.00  2  2  1.6E-09
+  0 :            8.13E+00 0.000
+  1 :   2.58E+00 2.64E+00 0.000 0.3241 0.9000 0.9000   2.56  1  1  2.2E+00
+  2 :   8.38E+00 8.62E-01 0.000 0.3269 0.9000 0.9000   0.76  1  1  9.5E-01
+  3 :   1.28E+01 2.95E-01 0.000 0.3429 0.9000 0.9000   0.64  1  1  3.8E-01
+  4 :   1.53E+01 9.65E-02 0.000 0.3267 0.9000 0.9000   0.81  1  1  1.4E-01
+  5 :   1.64E+01 1.78E-02 0.000 0.1841 0.9000 0.9000   0.95  1  1  2.5E-02
+  6 :   1.66E+01 2.57E-04 0.000 0.0145 0.0000 0.9000   1.00  1  1  1.5E-02
+  7 :   1.67E+01 1.54E-05 0.000 0.0597 0.9900 0.9582   1.00  1  1  9.2E-04
+  8 :   1.67E+01 5.24E-07 0.000 0.0341 0.9900 0.9438   1.00  1  1  3.7E-05
+  9 :   1.67E+01 1.29E-08 0.000 0.0246 0.9900 0.9900   1.00  1  1  9.1E-07
+ 10 :   1.67E+01 5.64E-10 0.053 0.0438 0.9900 0.9900   1.00  1  1  4.0E-08
+ 11 :   1.67E+01 2.82E-11 0.000 0.0500 0.9900 0.9900   1.00  2  2  2.0E-09
 
 iter seconds digits       c*x               b*y
- 12      0.1   Inf -1.6683118749e+01 -1.6683118746e+01
-|Ax-b| =   6.7e-10, [Ay-c]_+ =   3.1E-09, |x|=  1.7e+01, |y|=  8.3e+00
+ 11      0.1   Inf  1.6683118800e+01  1.6683118802e+01
+|Ax-b| =   1.6e-08, [Ay-c]_+ =   0.0E+00, |x|=  1.1e+01, |y|=  1.3e+01
 
 Detailed timing (sec)
    Pre          IPM          Post
-0.000E+00    7.000E-02    0.000E+00    
-Max-norms: ||b||=1, ||c|| = 3.848770e+00,
-Cholesky |add|=0, |skip| = 0, ||L.L|| = 4.39187.
+1.000E-02    7.000E-02    0.000E+00    
+Max-norms: ||b||=3.848770e+00, ||c|| = 1,
+Cholesky |add|=0, |skip| = 0, ||L.L|| = 3.83951.
 ------------------------------------------------------------
 Status: Solved
 Optimal value (cvx_optval): +16.6831
@@ -140,42 +98,7 @@ The average location of the fixed points is
     0.0785
 
 They are the same as expected!
-</pre><p class="footer"><br>
-      Published with MATLAB&reg; 7.9<br></p></div><!--
-##### SOURCE BEGIN #####
-%% One free point localization
-
-% Section 8.7.3, Boyd & Vandenberghe "Convex Optimization"
-% Joelle Skaf - 10/24/05
-%
-% K fixed points x_1,...,x_K in R^2 are given and the goal is to place
-% one additional point x such that the sum of the squares of the
-% Euclidean distances to fixed points is minimized:
-%           minimize    sum_{i=1}^K  ||x - x_i||^2
-% The optimal point is the average of the given fixed points
-
-% Data generation
-n = 2;
-K = 11;
-randn('state',0);
-P = randn(n,K);
-
-% minimizing the sum of Euclidean distance
-fprintf(1,'Minimizing the sum of the squares the distances to fixed points...');
-
-cvx_begin
-    variable x(2)
-    minimize ( sum( square_pos( norms(x*ones(1,K) - P,2) ) ) )
-cvx_end
-
-fprintf(1,'Done! \n');
-
-% Displaying results
-disp('REPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASH');
-disp('The optimal point location is: ');
-disp(x);
-disp('The average location of the fixed points is');
-disp(sum(P,2)/K);
-disp('They are the same as expected!');
-##### SOURCE END #####
---></body></html>
+</pre>
+</div>
+</body>
+</html>

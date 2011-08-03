@@ -1,68 +1,25 @@
-
-<!DOCTYPE html
-  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
-<html><head>
-      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-   <!--
-This HTML is auto-generated from an M-file.
-To make changes, update the M-file and republish this document.
-      --><title>Figure 8.8: Simplest linear discrimination</title><meta name="generator" content="MATLAB 7.9"><meta name="date" content="2009-11-12"><meta name="m-file" content="linear_discr_"><style type="text/css">
-
-body {
-  background-color: white;
-  margin:10px;
-}
-
-h1 {
-  color: #990000; 
-  font-size: x-large;
-}
-
-h2 {
-  color: #990000;
-  font-size: medium;
-}
-
-/* Make the text shrink to fit narrow windows, but not stretch too far in 
-wide windows. */ 
-p,h1,h2,div.content div {
-  max-width: 600px;
-  /* Hack for IE6 */
-  width: auto !important; width: 600px;
-}
-
-pre.codeinput {
-  background: #EEEEEE;
-  padding: 10px;
-}
-@media print {
-  pre.codeinput {word-wrap:break-word; width:100%;}
-} 
-
-span.keyword {color: #0000FF}
-span.comment {color: #228B22}
-span.string {color: #A020F0}
-span.untermstring {color: #B20000}
-span.syscmd {color: #B28C00}
-
-pre.codeoutput {
-  color: #666666;
-  padding: 10px;
-}
-
-pre.error {
-  color: red;
-}
-
-p.footer {
-  text-align: right;
-  font-size: xx-small;
-  font-weight: lighter;
-  font-style: italic;
-  color: gray;
-}
-
-  </style></head><body><div class="content"><h1>Figure 8.8: Simplest linear discrimination</h1><pre class="codeinput"><span class="comment">% Boyd &amp; Vandenberghe "Convex Optimization"</span>
+<!DOCTYPE HTML>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Figure 8.8: Simplest linear discrimination</title>
+<link rel="canonical" href="http://cvxr.com/cvx/examples/cvxbook/Ch08_geometric_probs/html/linear_discr.html">
+<link rel="stylesheet" href="../../../examples.css" type="text/css">
+</head>
+<body>
+<div id="header">
+<h1>Figure 8.8: Simplest linear discrimination</h1>
+Jump to:&nbsp;&nbsp;&nbsp;&nbsp;
+<a href="#source">Source code</a>&nbsp;&nbsp;&nbsp;&nbsp;
+<a href="#output">Text output</a>
+&nbsp;&nbsp;&nbsp;&nbsp;
+<a href="#plots">Plots</a>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="../../../index.html">Library index</a>
+</div>
+<div id="content">
+<a id="source"></a>
+<pre class="codeinput">
+<span class="comment">% Boyd &amp; Vandenberghe "Convex Optimization"</span>
 <span class="comment">% Joelle Skaf - 10/16/05</span>
 <span class="comment">% (a figure is generated)</span>
 <span class="comment">%</span>
@@ -109,7 +66,10 @@ plot(t,p, <span class="string">'-r'</span>);
 axis <span class="string">equal</span>
 title(<span class="string">'Simple classification using an affine function'</span>);
 <span class="comment">% print -deps lin-discr.eps</span>
-</pre><pre class="codeoutput">Finding a separating hyperplane... 
+</pre>
+<a id="output"></a>
+<pre class="codeoutput">
+Finding a separating hyperplane... 
 Calling sedumi: 16 variables, 3 equality constraints
    For improved efficiency, sedumi is solving the dual problem.
 ------------------------------------------------------------
@@ -129,65 +89,18 @@ iter seconds digits       c*x               b*y
 
 Detailed timing (sec)
    Pre          IPM          Post
-0.000E+00    1.000E-02    1.000E-02    
+1.000E-02    1.000E-02    0.000E+00    
 Max-norms: ||b||=0, ||c|| = 1,
 Cholesky |add|=0, |skip| = 0, ||L.L|| = 1.
 ------------------------------------------------------------
 Status: Solved
 Optimal value (cvx_optval): -0
 Done! 
-</pre><img vspace="5" hspace="5" src="linear_discr__01.png" alt=""> <p class="footer"><br>
-      Published with MATLAB&reg; 7.9<br></p></div><!--
-##### SOURCE BEGIN #####
-%% Figure 8.8: Simplest linear discrimination
-
-% Boyd & Vandenberghe "Convex Optimization"
-% Joelle Skaf - 10/16/05
-% (a figure is generated)
-%
-% The goal is to find a function f(x) = a'*x - b that classifies the points
-% {x_1,...,x_N} and {y_1,...,y_M}. a and b can be obtained by solving a
-% feasibility problem:
-%           minimize    0
-%               s.t.    a'*x_i - b >=  1     for i = 1,...,N
-%                       a'*y_i - b <= -1     for i = 1,...,M
-
-% data generation
-n = 2;
-randn('state',3);
-N = 10; M = 6;
-Y = [1.5+1*randn(1,M); 2*randn(1,M)];
-X = [-1.5+1*randn(1,N); 2*randn(1,N)];
-T = [-1 1; 1 1];
-Y = T*Y;  X = T*X;
-
-% Solution via CVX
-fprintf('Finding a separating hyperplane...');
-
-cvx_begin
-    variables a(n) b(1)
-    X'*a - b >= 1;
-    Y'*a - b <= -1;
-cvx_end
-
-fprintf(1,'Done! \n');
-
-% Displaying results
-linewidth = 0.5;  % for the squares and circles
-t_min = min([X(1,:),Y(1,:)]);
-t_max = max([X(1,:),Y(1,:)]);
-t = linspace(t_min-1,t_max+1,100);
-p = -a(1)*t/a(2) + b/a(2);
-
-graph = plot(X(1,:),X(2,:), 'o', Y(1,:), Y(2,:), 'o');
-set(graph(1),'LineWidth',linewidth);
-set(graph(2),'LineWidth',linewidth);
-set(graph(2),'MarkerFaceColor',[0 0.5 0]);
-hold on;
-plot(t,p, '-r');
-axis equal
-title('Simple classification using an affine function');
-% print -deps lin-discr.eps
-
-##### SOURCE END #####
---></body></html>
+</pre>
+<a id="plots"></a>
+<div id="plotoutput">
+<img src="linear_discr__01.png" alt=""> 
+</div>
+</div>
+</body>
+</html>

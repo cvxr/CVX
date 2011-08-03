@@ -1,68 +1,25 @@
-
-<!DOCTYPE html
-  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
-<html><head>
-      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-   <!--
-This HTML is auto-generated from an M-file.
-To make changes, update the M-file and republish this document.
-      --><title>Figure 6.24: Fitting a convex function to given data</title><meta name="generator" content="MATLAB 7.9"><meta name="date" content="2009-11-12"><meta name="m-file" content="convex_interpolation_"><style type="text/css">
-
-body {
-  background-color: white;
-  margin:10px;
-}
-
-h1 {
-  color: #990000; 
-  font-size: x-large;
-}
-
-h2 {
-  color: #990000;
-  font-size: medium;
-}
-
-/* Make the text shrink to fit narrow windows, but not stretch too far in 
-wide windows. */ 
-p,h1,h2,div.content div {
-  max-width: 600px;
-  /* Hack for IE6 */
-  width: auto !important; width: 600px;
-}
-
-pre.codeinput {
-  background: #EEEEEE;
-  padding: 10px;
-}
-@media print {
-  pre.codeinput {word-wrap:break-word; width:100%;}
-} 
-
-span.keyword {color: #0000FF}
-span.comment {color: #228B22}
-span.string {color: #A020F0}
-span.untermstring {color: #B20000}
-span.syscmd {color: #B28C00}
-
-pre.codeoutput {
-  color: #666666;
-  padding: 10px;
-}
-
-pre.error {
-  color: red;
-}
-
-p.footer {
-  text-align: right;
-  font-size: xx-small;
-  font-weight: lighter;
-  font-style: italic;
-  color: gray;
-}
-
-  </style></head><body><div class="content"><h1>Figure 6.24: Fitting a convex function to given data</h1><pre class="codeinput"><span class="comment">% Section 6.5.5</span>
+<!DOCTYPE HTML>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Figure 6.24: Fitting a convex function to given data</title>
+<link rel="canonical" href="http://cvxr.com/cvx/examples/cvxbook/Ch06_approx_fitting/html/convex_interpolation.html">
+<link rel="stylesheet" href="../../../examples.css" type="text/css">
+</head>
+<body>
+<div id="header">
+<h1>Figure 6.24: Fitting a convex function to given data</h1>
+Jump to:&nbsp;&nbsp;&nbsp;&nbsp;
+<a href="#source">Source code</a>&nbsp;&nbsp;&nbsp;&nbsp;
+<a href="#output">Text output</a>
+&nbsp;&nbsp;&nbsp;&nbsp;
+<a href="#plots">Plots</a>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="../../../index.html">Library index</a>
+</div>
+<div id="content">
+<a id="source"></a>
+<pre class="codeinput">
+<span class="comment">% Section 6.5.5</span>
 <span class="comment">% Boyd &amp; Vandenberghe "Convex Optimization"</span>
 <span class="comment">% Original by Lieven Vandenberghe</span>
 <span class="comment">% Adapted for CVX by Argyris Zymnis - 11/27/2005</span>
@@ -111,112 +68,68 @@ f = max(yhat(:,ones(1,nopts)) + <span class="keyword">...</span>
 plot(u,yns,<span class="string">'o'</span>,t,f,<span class="string">'-'</span>);
 axis <span class="string">off</span>
 <span class="comment">%print -deps interpol_convex_function2.eps</span>
-</pre><pre class="codeoutput"> 
+</pre>
+<a id="output"></a>
+<pre class="codeoutput">
+ 
 Calling sedumi: 2602 variables, 103 equality constraints
    For improved efficiency, sedumi is solving the dual problem.
 ------------------------------------------------------------
 SeDuMi 1.21 by AdvOL, 2005-2008 and Jos F. Sturm, 1998-2003.
 Alg = 2: xz-corrector, Adaptive Step-Differentiation, theta = 0.250, beta = 0.500
-eqs m = 103, order n = 2553, dim = 2604, blocks = 3
-nnz(A) = 7701 + 1, nnz(ADA) = 7856, nnz(L) = 3980
+eqs m = 103, order n = 2553, dim = 2603, blocks = 2
+nnz(A) = 7701 + 1, nnz(ADA) = 7854, nnz(L) = 3979
 Handling 1 + 1 dense columns.
  it :     b*y       gap    delta  rate   t/tP*  t/tD*   feas cg cg  prec
-  0 :            3.00E-01 0.000
-  1 :  -4.35E+00 1.06E-01 0.000 0.3543 0.9000 0.9000   0.64  1  1  3.2E+01
-  2 :  -5.20E+00 3.10E-02 0.000 0.2918 0.9000 0.9000   1.49  1  1  7.2E+00
-  3 :  -5.54E+00 7.73E-03 0.000 0.2488 0.9000 0.9000   1.39  1  1  1.5E+00
-  4 :  -5.54E+00 1.65E-03 0.000 0.2139 0.9000 0.9000   1.18  1  1  2.9E-01
-  5 :  -5.21E+00 5.21E-04 0.000 0.3154 0.9000 0.9000   1.03  1  1  9.2E-02
-  6 :  -4.85E+00 3.41E-04 0.000 0.6548 0.8734 0.9000   0.88  1  1  6.9E-02
-  7 :  -4.52E+00 2.56E-04 0.000 0.7514 0.9000 0.9026   0.85  1  1  5.4E-02
-  8 :  -4.23E+00 2.00E-04 0.000 0.7794 0.9000 0.9048   0.82  1  1  4.3E-02
-  9 :  -4.05E+00 1.66E-04 0.000 0.8315 0.9000 0.5951   0.81  1  1  3.6E-02
- 10 :  -3.85E+00 1.42E-04 0.000 0.8517 0.9000 0.9000   0.75  1  1  3.2E-02
- 11 :  -3.73E+00 1.21E-04 0.000 0.8577 0.9000 0.9000   0.87  1  1  2.7E-02
- 12 :  -3.48E+00 9.74E-05 0.000 0.8021 0.9000 0.9000   0.79  1  1  2.2E-02
- 13 :  -3.34E+00 7.84E-05 0.000 0.8051 0.9000 0.9000   0.91  1  1  1.8E-02
- 14 :  -3.06E+00 5.78E-05 0.000 0.7370 0.9000 0.9000   0.84  1  1  1.4E-02
- 15 :  -2.92E+00 4.17E-05 0.000 0.7211 0.9000 0.9000   0.95  1  1  1.0E-02
- 16 :  -2.67E+00 2.67E-05 0.000 0.6399 0.9000 0.9000   0.90  1  1  6.6E-03
- 17 :  -2.56E+00 1.63E-05 0.000 0.6125 0.9000 0.9000   0.98  1  1  4.0E-03
- 18 :  -2.44E+00 9.40E-06 0.000 0.5760 0.9000 0.9000   0.96  1  1  2.3E-03
- 19 :  -2.37E+00 5.18E-06 0.000 0.5512 0.9000 0.9000   0.95  1  1  1.3E-03
- 20 :  -2.32E+00 2.41E-06 0.000 0.4649 0.9000 0.9000   0.96  1  1  6.2E-04
- 21 :  -2.29E+00 8.75E-07 0.000 0.3629 0.9000 0.9000   0.96  1  1  2.3E-04
- 22 :  -2.28E+00 2.88E-07 0.000 0.3294 0.9000 0.9000   1.00  1  1  7.5E-05
- 23 :  -2.27E+00 2.45E-08 0.000 0.0849 0.9900 0.9900   1.00  1  1  6.4E-06
- 24 :  -2.27E+00 6.63E-09 0.000 0.2710 0.9000 0.9000   1.00  1  3  1.7E-06
- 25 :  -2.27E+00 1.81E-09 0.000 0.2729 0.9000 0.9000   1.00  1  3  4.7E-07
- 26 :  -2.27E+00 4.54E-10 0.000 0.2508 0.9000 0.9000   1.00  1  3  1.2E-07
- 27 :  -2.27E+00 1.18E-10 0.000 0.2591 0.9000 0.9000   1.00  1  4  3.0E-08
- 28 :  -2.27E+00 4.07E-11 0.000 0.3464 0.9000 0.9000   1.00  2  4  1.0E-08
+  0 :            3.36E-01 0.000
+  1 :  -4.19E+00 1.24E-01 0.000 0.3687 0.9000 0.9000   0.79  1  1  3.3E+01
+  2 :  -5.17E+00 3.65E-02 0.000 0.2942 0.9000 0.9000   1.59  1  1  7.1E+00
+  3 :  -5.53E+00 9.31E-03 0.000 0.2553 0.9000 0.9000   1.44  1  1  1.5E+00
+  4 :  -5.52E+00 2.10E-03 0.000 0.2258 0.9000 0.9000   1.19  1  1  3.1E-01
+  5 :  -5.21E+00 6.51E-04 0.000 0.3098 0.9000 0.9000   1.04  1  1  9.4E-02
+  6 :  -4.83E+00 3.68E-04 0.000 0.5650 0.9000 0.9023   0.88  1  1  7.0E-02
+  7 :  -4.52E+00 2.63E-04 0.000 0.7166 0.9000 0.9047   0.84  1  1  5.5E-02
+  8 :  -4.22E+00 2.15E-04 0.000 0.8166 0.9000 0.9248   0.82  1  1  4.6E-02
+  9 :  -3.96E+00 1.90E-04 0.375 0.8809 0.9000 0.9506   0.82  1  1  4.0E-02
+ 10 :  -3.96E+00 1.71E-04 0.332 0.9038 0.9000 0.0000   0.84  1  1  3.7E-02
+ 11 :  -3.81E+00 1.37E-04 0.000 0.7977 0.4318 0.9000   0.82  1  1  3.0E-02
+ 12 :  -3.69E+00 1.18E-04 0.000 0.8659 0.9000 0.3514   0.89  1  1  2.6E-02
+ 13 :  -3.48E+00 9.81E-05 0.000 0.8288 0.9000 0.9000   0.80  1  1  2.2E-02
+ 14 :  -3.35E+00 8.02E-05 0.000 0.8182 0.9000 0.9000   0.90  1  1  1.8E-02
+ 15 :  -3.09E+00 6.09E-05 0.000 0.7596 0.9000 0.9000   0.83  1  1  1.4E-02
+ 16 :  -2.96E+00 4.51E-05 0.000 0.7408 0.9000 0.9000   0.94  1  1  1.1E-02
+ 17 :  -2.71E+00 2.99E-05 0.000 0.6619 0.9000 0.9000   0.88  1  1  7.3E-03
+ 18 :  -2.60E+00 1.90E-05 0.000 0.6361 0.9000 0.9000   0.98  1  1  4.7E-03
+ 19 :  -2.44E+00 1.02E-05 0.000 0.5380 0.9000 0.9000   0.95  1  1  2.6E-03
+ 20 :  -2.37E+00 5.14E-06 0.000 0.5023 0.9000 0.9000   1.00  1  1  1.3E-03
+ 21 :  -2.31E+00 1.87E-06 0.000 0.3639 0.9000 0.9000   0.99  1  1  4.6E-04
+ 22 :  -2.29E+00 6.32E-07 0.000 0.3379 0.9000 0.9000   1.00  1  1  1.6E-04
+ 23 :  -2.28E+00 1.22E-07 0.000 0.1930 0.9000 0.9000   1.00  1  1  3.0E-05
+ 24 :  -2.27E+00 9.67E-09 0.000 0.0793 0.9900 0.9900   1.00  1  1  2.4E-06
+ 25 :  -2.27E+00 3.40E-09 0.000 0.3515 0.9000 0.9000   1.00  1  1  8.4E-07
+ 26 :  -2.27E+00 1.05E-09 0.000 0.3080 0.9000 0.9000   1.00  1  1  2.6E-07
+ 27 :  -2.27E+00 3.86E-10 0.000 0.3682 0.9000 0.9000   1.00  1  1  9.5E-08
+ 28 :  -2.27E+00 1.63E-10 0.000 0.4216 0.9000 0.9000   1.00  1  1  4.0E-08
+ 29 :  -2.27E+00 6.14E-11 0.000 0.3778 0.9000 0.9000   1.00  1  1  1.5E-08
+ 30 :  -2.27E+00 2.47E-11 0.000 0.4030 0.9000 0.9000   1.00  2  2  6.1E-09
 
 iter seconds digits       c*x               b*y
- 28      0.4   Inf -2.2742666979e+00 -2.2742666969e+00
-|Ax-b| =   4.2e-08, [Ay-c]_+ =   3.1E-10, |x|=  3.1e+00, |y|=  7.7e+01
+ 30      0.5   Inf -2.2742663238e+00 -2.2742663233e+00
+|Ax-b| =   2.5e-08, [Ay-c]_+ =   0.0E+00, |x|=  2.5e+00, |y|=  7.1e+01
 
 Detailed timing (sec)
    Pre          IPM          Post
-2.000E-02    3.800E-01    0.000E+00    
-Max-norms: ||b||=1, ||c|| = 7.026093e+00,
-Cholesky |add|=1, |skip| = 1, ||L.L|| = 24.9244.
+1.000E-02    4.800E-01    0.000E+00    
+Max-norms: ||b||=1, ||c|| = 7.902859e+00,
+Cholesky |add|=0, |skip| = 1, ||L.L|| = 24.9453.
 ------------------------------------------------------------
 Status: Solved
 Optimal value (cvx_optval): +2.27427
-</pre><img vspace="5" hspace="5" src="convex_interpolation__01.png" alt=""> <p class="footer"><br>
-      Published with MATLAB&reg; 7.9<br></p></div><!--
-##### SOURCE BEGIN #####
-%% Figure 6.24: Fitting a convex function to given data
-
-% Section 6.5.5
-% Boyd & Vandenberghe "Convex Optimization"
-% Original by Lieven Vandenberghe
-% Adapted for CVX by Argyris Zymnis - 11/27/2005
-%
-% Here we find the convex function f that best fits
-% some given data in the least squares sense.
-% To do this we solve
-%     minimize    ||yns - yhat||_2
-%     subject to  yhat(j) >= yhat(i) + g(i)*(u(j) - u(i)), for all i,j
-
-clear
-
-% Noise level in percent and random seed.
-rand('state',29);
-noiseint=.05;
-
-% Generate the data set
-u = [0:0.04:2]';
-m=length(u);
-y = 5*(u-1).^4 + .6*(u-1).^2 + 0.5*u;
-v1=u>=.2;
-v2=u<=.6;
-v3=v1.*v2;
-dipvec=((v3.*u-.4*ones(1,size(v3,2))).^(2)).*v3;
-y=y+40*(dipvec-((.2))^2*v3);
-
-% add perturbation and plots the input data
-randf=noiseint*(rand(m,1)-.5);
-yns=y+norm(y)*(randf);
-figure
-plot(u,yns,'o');
-
-% min. ||yns-yhat||_2
-% s.t. yhat(j) >= yhat(i) + g(i)*(u(j) - u(i)), for all i,j
-cvx_begin
-    variables yhat(m) g(m)
-    minimize(norm(yns-yhat))
-    subject to
-        yhat*ones(1,m) >= ones(m,1)*yhat' + (ones(m,1)*g').*(u*ones(1,m)-ones(m,1)*u');
-cvx_end
-
-nopts =1000;
-t = linspace(0,2,nopts);
-f = max(yhat(:,ones(1,nopts)) + ...
-      g(:,ones(1,nopts)).*(t(ones(m,1),:)-u(:,ones(1,nopts))));
-plot(u,yns,'o',t,f,'-');
-axis off
-%print -deps interpol_convex_function2.eps
-
-##### SOURCE END #####
---></body></html>
+</pre>
+<a id="plots"></a>
+<div id="plotoutput">
+<img src="convex_interpolation__01.png" alt=""> 
+</div>
+</div>
+</body>
+</html>

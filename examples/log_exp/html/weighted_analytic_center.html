@@ -1,68 +1,25 @@
-
-<!DOCTYPE html
-  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
-<html><head>
-      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-   <!--
-This HTML is auto-generated from an M-file.
-To make changes, update the M-file and republish this document.
-      --><title>Weighted analytic center of a set of linear inequalities</title><meta name="generator" content="MATLAB 7.9"><meta name="date" content="2009-11-12"><meta name="m-file" content="weighted_analytic_center_"><style type="text/css">
-
-body {
-  background-color: white;
-  margin:10px;
-}
-
-h1 {
-  color: #990000; 
-  font-size: x-large;
-}
-
-h2 {
-  color: #990000;
-  font-size: medium;
-}
-
-/* Make the text shrink to fit narrow windows, but not stretch too far in 
-wide windows. */ 
-p,h1,h2,div.content div {
-  max-width: 600px;
-  /* Hack for IE6 */
-  width: auto !important; width: 600px;
-}
-
-pre.codeinput {
-  background: #EEEEEE;
-  padding: 10px;
-}
-@media print {
-  pre.codeinput {word-wrap:break-word; width:100%;}
-} 
-
-span.keyword {color: #0000FF}
-span.comment {color: #228B22}
-span.string {color: #A020F0}
-span.untermstring {color: #B20000}
-span.syscmd {color: #B28C00}
-
-pre.codeoutput {
-  color: #666666;
-  padding: 10px;
-}
-
-pre.error {
-  color: red;
-}
-
-p.footer {
-  text-align: right;
-  font-size: xx-small;
-  font-weight: lighter;
-  font-style: italic;
-  color: gray;
-}
-
-  </style></head><body><div class="content"><h1>Weighted analytic center of a set of linear inequalities</h1><pre class="codeinput"><span class="comment">% Jo&Atilde;&laquo;lle Skaf - 04/29/08</span>
+<!DOCTYPE HTML>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Weighted analytic center of a set of linear inequalities</title>
+<link rel="canonical" href="http://cvxr.com/cvx/examples/log_exp/html/weighted_analytic_center.html">
+<link rel="stylesheet" href="../../examples.css" type="text/css">
+</head>
+<body>
+<div id="header">
+<h1>Weighted analytic center of a set of linear inequalities</h1>
+Jump to:&nbsp;&nbsp;&nbsp;&nbsp;
+<a href="#source">Source code</a>&nbsp;&nbsp;&nbsp;&nbsp;
+<a href="#output">Text output</a>
+&nbsp;&nbsp;&nbsp;&nbsp;
+Plots
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="../../index.html">Library index</a>
+</div>
+<div id="content">
+<a id="source"></a>
+<pre class="codeinput">
+<span class="comment">% Jo&Atilde;&laquo;lle Skaf - 04/29/08</span>
 <span class="comment">%</span>
 <span class="comment">% The weighted analytic center of a set of linear inequalities:</span>
 <span class="comment">%           a_i^Tx &lt;= b_i   i=1,...,m,</span>
@@ -88,23 +45,30 @@ cvx_end
 
 disp(<span class="string">'The weighted analytic center of the set of linear inequalities is: '</span>);
 disp(x);
-</pre><pre class="codeoutput"> 
+</pre>
+<a id="output"></a>
+<pre class="codeoutput">
+ 
 Successive approximation method to be employed.
-   For improved efficiency, sedumi is solving the dual problem.
    sedumi will be called several times to refine the solution.
-   Original size: 150 variables, 60 equality constraints
+   Original size: 160 variables, 100 equality constraints
    50 exponentials add 400 variables, 250 equality constraints
 -----------------------------------------------------------------
           Errors   
 Act Centering    Conic    Status
 -----------------------------------
-50  3.534e+00  1.215e+00  Solved
-50  3.015e-01  7.641e-03  Solved
-50  1.751e-02  2.422e-05  Solved
-50  2.259e-03  6.714e-07  Solved
-50  2.831e-04  4.010e-07  Solved
-50  3.706e-04S 1.109e-08  Solved
-50  6.259e-05  0.000e+00  Solved
+50  2.189e+00  4.986e-01  Solved
+50  3.066e-01  7.912e-03  Solved
+50  3.395e-02  9.573e-05  Solved
+50  4.354e-03  1.941e-06  Solved
+50  5.436e-04  3.709e-07  Solved
+50  6.799e-05  3.545e-07S Solved
+50  9.957e-04S 5.480e-08  Solved
+50  5.871e-04  1.272e-08  Inaccurate/Solved
+50  3.144e-04  3.588e-09  Solved
+50  6.908e-05  4.237e-09S Solved
+50  7.732e-05S 5.715e-10  Inaccurate/Solved
+50  3.893e-05  0.000e+00  Solved
 -----------------------------------------------------------------
 Status: Solved
 Optimal value (cvx_optval): +5.99254
@@ -117,39 +81,10 @@ The weighted analytic center of the set of linear inequalities is:
     1.1956
     1.3927
    -0.2815
-    0.2863
+    0.2862
     0.3779
 
-</pre><p class="footer"><br>
-      Published with MATLAB&reg; 7.9<br></p></div><!--
-##### SOURCE BEGIN #####
-%% Weighted analytic center of a set of linear inequalities
-
-% JoÃ«lle Skaf - 04/29/08 
-%
-% The weighted analytic center of a set of linear inequalities:
-%           a_i^Tx <= b_i   i=1,...,m,
-% is the solution of the unconstrained minimization problem 
-%           minimize    -sum_{i=1}^m w_i*log(b_i-a_i^Tx),
-% where w_i>0
-
-% Input data 
-randn('state', 0);
-rand('state', 0);
-n = 10;
-m = 50; 
-tmp = randn(n,1);
-A = randn(m,n); 
-b = A*tmp + 2*rand(m,1); 
-w = rand(m,1);  
-
-% Analytic center 
-cvx_begin
-    variable x(n)
-    minimize -sum(w.*log(b-A*x))
-cvx_end
-
-disp('The weighted analytic center of the set of linear inequalities is: ');
-disp(x);
-##### SOURCE END #####
---></body></html>
+</pre>
+</div>
+</body>
+</html>

@@ -1,68 +1,25 @@
-
-<!DOCTYPE html
-  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
-<html><head>
-      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-   <!--
-This HTML is auto-generated from an M-file.
-To make changes, update the M-file and republish this document.
-      --><title>Minimal phase spectral factorization</title><meta name="generator" content="MATLAB 7.9"><meta name="date" content="2009-11-12"><meta name="m-file" content="min_phase_spectral_fact_"><style type="text/css">
-
-body {
-  background-color: white;
-  margin:10px;
-}
-
-h1 {
-  color: #990000; 
-  font-size: x-large;
-}
-
-h2 {
-  color: #990000;
-  font-size: medium;
-}
-
-/* Make the text shrink to fit narrow windows, but not stretch too far in 
-wide windows. */ 
-p,h1,h2,div.content div {
-  max-width: 600px;
-  /* Hack for IE6 */
-  width: auto !important; width: 600px;
-}
-
-pre.codeinput {
-  background: #EEEEEE;
-  padding: 10px;
-}
-@media print {
-  pre.codeinput {word-wrap:break-word; width:100%;}
-} 
-
-span.keyword {color: #0000FF}
-span.comment {color: #228B22}
-span.string {color: #A020F0}
-span.untermstring {color: #B20000}
-span.syscmd {color: #B28C00}
-
-pre.codeoutput {
-  color: #666666;
-  padding: 10px;
-}
-
-pre.error {
-  color: red;
-}
-
-p.footer {
-  text-align: right;
-  font-size: xx-small;
-  font-weight: lighter;
-  font-style: italic;
-  color: gray;
-}
-
-  </style></head><body><div class="content"><h1>Minimal phase spectral factorization</h1><pre class="codeinput"><span class="comment">% A PSD matrix is found which minimizes a weighted trace while obtaining</span>
+<!DOCTYPE HTML>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Minimal phase spectral factorization</title>
+<link rel="canonical" href="http://cvxr.com/cvx/examples/html/min_phase_spectral_fact.html">
+<link rel="stylesheet" href="../examples.css" type="text/css">
+</head>
+<body>
+<div id="header">
+<h1>Minimal phase spectral factorization</h1>
+Jump to:&nbsp;&nbsp;&nbsp;&nbsp;
+<a href="#source">Source code</a>&nbsp;&nbsp;&nbsp;&nbsp;
+<a href="#output">Text output</a>
+&nbsp;&nbsp;&nbsp;&nbsp;
+Plots
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="../index.html">Library index</a>
+</div>
+<div id="content">
+<a id="source"></a>
+<pre class="codeinput">
+<span class="comment">% A PSD matrix is found which minimizes a weighted trace while obtaining</span>
 <span class="comment">% fixed sums along the diagonals. Notice the use of a FOR loop to access</span>
 <span class="comment">% the diagonals of X. A later version of CVX will eliminate the need for</span>
 <span class="comment">% this by allowing the use of the SPDIAGS function in side models.</span>
@@ -96,32 +53,33 @@ disp( <span class="string">'min( eig( X ) ) (should be nonnegative):'</span> );
 disp( min( eig( X ) ) )
 disp( <span class="string">'The optimal weighted trace:'</span> );
 disp( ( n - 1 : -1 : 0 ) * diag( X ) );
-</pre><pre class="codeoutput"> 
+</pre>
+<a id="output"></a>
+<pre class="codeoutput">
+ 
 Calling sedumi: 6 variables, 3 equality constraints
-   For improved efficiency, sedumi is solving the dual problem.
 ------------------------------------------------------------
 SeDuMi 1.21 by AdvOL, 2005-2008 and Jos F. Sturm, 1998-2003.
 Alg = 2: xz-corrector, Adaptive Step-Differentiation, theta = 0.250, beta = 0.500
 eqs m = 3, order n = 4, dim = 10, blocks = 2
 nnz(A) = 6 + 0, nnz(ADA) = 9, nnz(L) = 6
  it :     b*y       gap    delta  rate   t/tP*  t/tD*   feas cg cg  prec
-  0 :            7.04E+00 0.000
-  1 :   1.25E+00 1.56E+00 0.000 0.2213 0.9000 0.9000   0.99  1  1  1.1E+00
-  2 :   1.82E+00 7.85E-02 0.000 0.0504 0.9900 0.9900   1.23  1  1  5.1E-02
-  3 :   1.88E+00 2.33E-04 0.000 0.0030 0.9990 0.9990   0.99  1  1  1.5E-04
-  4 :   1.88E+00 4.91E-05 0.000 0.2110 0.9000 0.9000   1.00  1  1  3.1E-05
-  5 :   1.88E+00 2.25E-06 0.090 0.0459 0.9900 0.9900   1.00  1  1  1.4E-06
-  6 :   1.88E+00 1.18E-07 0.002 0.0522 0.9900 0.9901   1.00  1  1  7.1E-08
-  7 :   1.88E+00 9.90E-09 0.311 0.0841 0.9900 0.9900   1.00  1  1  5.9E-09
+  0 :            1.78E+00 0.000
+  1 :  -3.54E+00 4.11E-01 0.000 0.2312 0.9000 0.9000   1.39  1  1  1.4E+00
+  2 :  -3.76E+00 3.39E-02 0.000 0.0824 0.9900 0.9900   1.31  1  1  1.0E-01
+  3 :  -3.88E+00 1.18E-05 0.000 0.0003 0.9999 0.9999   0.99  1  1  3.6E-05
+  4 :  -3.88E+00 5.45E-07 0.000 0.0463 0.9900 0.9900   1.00  1  1  1.7E-06
+  5 :  -3.88E+00 2.48E-08 0.000 0.0455 0.9900 0.9900   1.00  1  1  7.6E-08
+  6 :  -3.88E+00 2.00E-09 0.327 0.0806 0.9900 0.9900   1.00  2  2  6.2E-09
 
 iter seconds digits       c*x               b*y
-  7      0.0   8.5  1.8772674419e+00  1.8772674359e+00
-|Ax-b| =   1.8e-09, [Ay-c]_+ =   2.9E-09, |x|=  2.4e+00, |y|=  1.9e+00
+  6      0.0   Inf -3.8772674401e+00 -3.8772674352e+00
+|Ax-b| =   5.4e-09, [Ay-c]_+ =   2.9E-09, |x|=  2.0e+00, |y|=  2.2e+00
 
 Detailed timing (sec)
    Pre          IPM          Post
 1.000E-02    3.000E-02    1.000E-02    
-Max-norms: ||b||=1, ||c|| = 2,
+Max-norms: ||b||=2, ||c|| = 2,
 Cholesky |add|=0, |skip| = 0, ||L.L|| = 1.
 ------------------------------------------------------------
 Status: Solved
@@ -135,50 +93,12 @@ The diagonal sums:
     2.0000    0.2000   -0.3000
 
 min( eig( X ) ) (should be nonnegative):
-  -2.9368e-09
+  -4.6792e-09
 
 The optimal weighted trace:
     0.1227
 
-</pre><p class="footer"><br>
-      Published with MATLAB&reg; 7.9<br></p></div><!--
-##### SOURCE BEGIN #####
-%% Minimal phase spectral factorization
-
-% A PSD matrix is found which minimizes a weighted trace while obtaining
-% fixed sums along the diagonals. Notice the use of a FOR loop to access
-% the diagonals of X. A later version of CVX will eliminate the need for
-% this by allowing the use of the SPDIAGS function in side models.
-% Nevertheless, this example provides an illustration of the use of
-% standard Matlab control statements to build models.
-%
-% Adapted from an example provided in the SeDuMi documentation.
-
-% Generate data
-b = [2; 0.2; -0.3];
-n = length( b );
-
-% Create and solve model
-cvx_begin sdp
-    variable X( n, n ) symmetric
-    dual variable y{n}
-    minimize( ( n - 1 : -1 : 0 ) * diag( X ) );
-    for k = 1 : n,
-        sum( diag( X, k - 1 ) ) == b( k ) : y{k};
-    end
-    X >= 0;
-cvx_end
-y = [ y{:} ]';
-
-% Display resuls
-disp( 'The optimal point, X:' );
-disp( X )
-disp( 'The diagonal sums:' );
-disp( sum( spdiags( X, 0:n-1 ), 1 ) );
-disp( 'min( eig( X ) ) (should be nonnegative):' );
-disp( min( eig( X ) ) )
-disp( 'The optimal weighted trace:' );
-disp( ( n - 1 : -1 : 0 ) * diag( X ) );
-
-##### SOURCE END #####
---></body></html>
+</pre>
+</div>
+</body>
+</html>

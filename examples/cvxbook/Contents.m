@@ -1,4 +1,4 @@
-% Figures, examples, and exercises from the book [http://stanford.edu/~boyd/cvxbook Convex Optimization]
+% Figures, examples, and exercises from the book <a href="http://stanford.edu/~boyd/cvxbook">Convex Optimization</a>
 %
 %  Ch04_cvx_opt_probs/     - Chapter 4: Convex optimization problems
 %  Ch05_duality/           - Chapter 5: Duality
