@@ -262,7 +262,12 @@ if fidc >= 0,
     % Directory title---skip for the top level
     
     if depth,
-        fprintf( fidc, '%s<li><b>%s</b><ul>\n', dots(1:end-1), title );
+        title = regexprep(title,'</?b>','');
+        title = regexprep(title,' target="_blank"','');
+        title2 = regexprep(title,'<a ([^>]*>)','</b><a target="_blank" $1<b>');
+        title2 = regexprep(title2,'</a>','</b></a><b>');
+        title2 = regexprep(['<b>',title2,'</b>'],'<b></b>','');
+        fprintf( fidc, '%s<li>%s<ul>\n', dots(1:end-1), title2 );
     end
     
     if tdoc(2) >= tdoc(1) || ~isempty( fcomments ),
@@ -279,7 +284,7 @@ if fidc >= 0,
             end
         end
         for k = 1 : length(fcomments),
-            fprintf( fidc, '%s<li>Reference: %s</li>\n', dots, fcomments{k} );
+            fprintf( fidc, '%s<li>Reference: %s</li>\n', dots, regexprep(fcomments{k},'<a href=','<a target="_blank" href='));
         end
     end
 
