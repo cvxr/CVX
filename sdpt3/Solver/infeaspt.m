@@ -18,8 +18,6 @@
    if (options == 1); scalefac = []; end;
    if (options == 2) & (nargin < 6); scalefac = 1000; end;
    if (scalefac <= 0); error('scalefac must a positive number'); end;
-   state = rand('state'); 
-   rand('state',0);
 %%
    if ~iscell(At); At = {At}; end;
    if ~iscell(C);  C = {C}; end;
@@ -81,8 +79,8 @@
                const  = 10; %%--- old: const = 1; 
                constX = max([const,sqrt(ni),ni*(b2./normAni)]); 
                constZ = max([const,sqrt(ni),normAni,normCni]);
-               X0{p}(pos,pos) = constX*spdiags(1+1e-10*rand(ni,1),0,ni,ni);
-               Z0{p}(pos,pos) = constZ*spdiags(1+1e-10*rand(ni,1),0,ni,ni);
+               X0{p}(pos,pos) = constX*spdiags(1+1e-10*randmat(ni,1,0,'u'),0,ni,ni);
+               Z0{p}(pos,pos) = constZ*spdiags(1+1e-10*randmat(ni,1,0,'u'),0,ni,ni);
             end
          elseif strcmp(pblk{1},'q');
             s = 1+[0, cumsum(blktmp)];
@@ -93,8 +91,8 @@
             idenqZ = zeros(sum(blktmp),1);
             idenqX(s(1:len)) = max([1,b2./normA])*sqrt(blktmp') ;
             idenqZ(s(1:len)) = max([sqrt(blktmp); max([normA,normC])*ones(1,len)])';
-            idenqX(s(1:len)) = idenqX(s(1:len)).*(1+1e-10*rand(len,1)); 
-            idenqZ(s(1:len)) = idenqZ(s(1:len)).*(1+1e-10*rand(len,1)); 
+            idenqX(s(1:len)) = idenqX(s(1:len)).*(1+1e-10*randmat(len,1,0,'u')); 
+            idenqZ(s(1:len)) = idenqZ(s(1:len)).*(1+1e-10*randmat(len,1,0,'u')); 
             X0{p} = idenqX;
             Z0{p} = idenqZ;
          elseif strcmp(pblk{1},'l');
@@ -103,8 +101,8 @@
             const = 10; %%--- old: const =1; 
             constX = max([const,sqrt(n),sqrt(n)*b2./normA]); 
             constZ = max([const,sqrt(n),normA,normC]);
-            X0{p} = constX*(1+1e-10*rand(n,1));
-            Z0{p} = constZ*(1+1e-10*rand(n,1));
+            X0{p} = constX*(1+1e-10*randmat(n,1,0,'u'));
+            Z0{p} = constZ*(1+1e-10*randmat(n,1,0,'u'));
          elseif strcmp(pblk{1},'u');
             X0{p} = sparse(n,1);
             Z0{p} = sparse(n,1);
@@ -114,18 +112,18 @@
       elseif (options == 2);
          if strcmp(pblk{1},'s');
             n = sum(blktmp); 
-            X0{p} = scalefac*spdiags(1+1e-10*rand(n,1),0,n,n); 
-            Z0{p} = scalefac*spdiags(1+1e-10*rand(n,1),0,n,n); 
+            X0{p} = scalefac*spdiags(1+1e-10*randmat(n,1,0,'u'),0,n,n); 
+            Z0{p} = scalefac*spdiags(1+1e-10*randmat(n,1,0,'u'),0,n,n); 
          elseif strcmp(pblk{1},'q');
             s = 1+[0, cumsum(blktmp)];
             len = length(blktmp);
             idenq = zeros(sum(blktmp),1);
-            idenq(s(1:len)) = 1+1e-10*rand(len,1);
+            idenq(s(1:len)) = 1+1e-10*randmat(len,1,0,'u');
             X0{p} = scalefac*idenq;
             Z0{p} = scalefac*idenq;
          elseif strcmp(pblk{1},'l');
-            X0{p} = scalefac*(1+1e-10*rand(n,1));
-            Z0{p} = scalefac*(1+1e-10*rand(n,1));
+            X0{p} = scalefac*(1+1e-10*randmat(n,1,0,'u'));
+            Z0{p} = scalefac*(1+1e-10*randmat(n,1,0,'u'));
          elseif strcmp(pblk{1},'u');
             X0{p} = sparse(n,1);
             Z0{p} = sparse(n,1);
@@ -134,5 +132,4 @@
          end
       end
    end
-   rand('state',state); 
 %%********************************************************************

@@ -24,13 +24,16 @@
    zz = zeros(1,n); 
    r2 = sqrt(2); 
    blk{1,1} = 'r'; blk{1,2} = [3,3,3];
+   blk{2,1} = 'l'; blk{2,2} = [2]; 
    At{1,1} = -[B(1,:),0,0,0; B(2,:),0,0,0; zz,r2,0,0; ...
                B(3,:),0,0,0; B(4,:),0,0,0; zz,0,r2,0; ...
 	       zz, 1,0,0; zz, 0,1,0; zz, 0,0,r2]; 
+   At{2,1} = -[B(1,:),0,0,0; B(3,:),0,0,0]; 
    C{1,1} = [d(1:2); 0; d(3:4); 0; 0;0;0]; 
+   C{2,1} = [d(1); d(3)]; 
    b = [zeros(n,1); 0;0;1]; 
-   blk{2,1} = 'l'; blk{2,2} = n; 
-   At{2,1} = [eye(n), zeros(n,3)]; C{2,1} = 10*ones(n,1);
+   blk{3,1} = 'l'; blk{3,2} = n; 
+   At{3,1} = [eye(n), zeros(n,3)]; C{3,1} = 10*ones(n,1);
    if (solve)
       [bblk,AAt,CC,bb,T] = convertRcone(blk,At,C,b);
       [obj,X,y,Z] = sqlp(bblk,AAt,CC,bb);

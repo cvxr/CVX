@@ -91,7 +91,7 @@
 
    function Mx = precond(A,L,x)
 
-   m = length(L.perm); m2 = length(x)-m;
+   m = L.matdim; m2 = length(x)-m;
    Mx = zeros(length(x),1); 
 
    for iter = 1

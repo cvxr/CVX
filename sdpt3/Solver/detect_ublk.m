@@ -16,9 +16,7 @@
              detect_ublk(blk,At,C,parbarrier,X,Z,printlevel); 
    
    if (nargin < 7); printlevel = 1; end
- 
-   randnstate = randn('state'); 
-   randn('state',0);   
+  
    blk2 = blk; At2 = At; C2 = C; 
    if (nargin >= 6)
       parbarrier2 = parbarrier; 
@@ -36,7 +34,7 @@
       pblk = blk(p,:);
       m = size(At{p},2);        
       if strcmp(pblk{1},'l')
-         r = randn(1,m);
+         r = randmat(1,m,0,'n');
          stime = cputime;
          Ap = At{p}'; Cp = C{p};
 	 ApTr = (r*Ap)';
@@ -84,5 +82,4 @@
          end
       end
    end
-   randn('state',randnstate); 
 %%*******************************************************************

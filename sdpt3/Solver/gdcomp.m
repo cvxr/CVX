@@ -31,6 +31,20 @@
   if ~isfield(OPTIONS,'printlevel'); OPTIONS.printlevel = 3; end
   if ~iscell(C); tmp = C; clear C; C{1} = tmp; end
 %%
+%% convert ublk to lblk
+%%
+  exist_ublk = 0; 
+  for p = 1:size(blk,1)
+     pblk = blk(p,:); 
+     if strcmp(pblk{1},'u'); 
+       exist_ublk = 1; 
+       fprintf('\n converting ublk into the difference of two non-negative vectors'); 
+       blk{p,1} = 'l'; blk{p,2} = 2*sum(blk{p,2}); 
+       At{p} = [At{p}; -At{p}];
+       C{p} = [C{p}; -C{p}]; 
+     end
+  end
+%%
   m = length(b); 
   blk2 = blk;
   At2 = cell(size(blk,1),1); 
@@ -119,8 +133,10 @@
       if strcmp(OPTIONS.solver,'sqlp')
          [X0,y0,Z0] = infeaspt(blk2,At2,C2,b2,2,100);    
          [obj,X,y,Z,info] = sqlp(blk2,At2,C2,b2,OPTIONS,X0,y0,Z0); 
-      else
+      elseif strcmp(OPTIONS.solver,'HSDsqlp'); 
          [obj,X,y,Z,info] = HSDsqlp(blk2,At2,C2,b2,OPTIONS); 
+      else
+         [obj,X,y,Z,info] = sdpt3(blk2,At2,C2,b2,OPTIONS); 
       end
       tt = alp*abs(y(m+1)); theta = beta*abs(y(m+2)); 
       yfeas = D*y(1:m)/theta; 

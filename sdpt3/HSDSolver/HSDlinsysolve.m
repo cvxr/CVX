@@ -16,7 +16,6 @@
    
     global solve_ok msg
     global nnzmat nnzmatold matfct_options matfct_options_old use_LU
-    global Lsymb 
 
     spdensity  = par.spdensity;
     printlevel = par.printlevel;
@@ -38,7 +37,7 @@
     if (par.depconstr) | (min(diagschur) < min([1e-20*max(diagschur), 1e-4])) 
        lambda = 0.1*min(1e-14,const*norm(par.rp)/(1+norm(par.diagAAt.*par.dy2)));
        mexschurfun(schur,lambda*par.diagAAt);  
-       if (printlevel); fprintf('#'); end
+       %%if (printlevel); fprintf('*'); end
     end
     if (max(diagschur)/min(diagschur) > 1e14) & (par.blkdim(2) == 0) ...
        & (iter > 10)
@@ -48,7 +47,7 @@
        if (len > 0 & len < 5) & (norm(rhs(idx)) < tol) 
           pertdiagschur(idx) = 1*ones(length(idx),1); 
           mexschurfun(schur,pertdiagschur); 
-          if (printlevel); fprintf('$'); end
+          if (printlevel); fprintf('#'); end
        end
     end
 %%
@@ -94,6 +93,7 @@
           matfct_options = 'spchol'; 
        end
        if (printlevel > 2); fprintf(' %s',matfct_options); end 
+       L.matdim = length(schur); 
        if strcmp(matfct_options,'chol')
           if issparse(schur); schur = full(schur); end;
           if (iter<=5); %%--- to fix strange anonmaly in Matlab
@@ -102,7 +102,7 @@
           L.matfct_options = 'chol';    
           [L.R,indef] = chol(schur); 
           L.perm = [1:m];
-      elseif strcmp(matfct_options,'spchol')
+       elseif strcmp(matfct_options,'spchol')
           if ~issparse(schur); schur = sparse(schur); end;
           L.matfct_options = 'spchol'; 
           [L.R,indef,L.perm] = chol(schur,'vector'); 
@@ -121,10 +121,10 @@
              tol = 1e-16;
              condest = max(abs(diag(L.Mu)))/min(abs(diag(L.Mu))); 
              idx = find(abs(diag(L.Mu)) < tol);
-             if ~isempty(idx) | (condest > 1e30*sqrt(norm(par.diagAAt))); %% default=1e25 
+             if ~isempty(idx) | (condest > 1e50*sqrt(norm(par.diagAAt))); %% old: 1e30 
                 solvesys = 0; solve_ok = -4; 
                 use_LU = 1; 
-                msg = 'SMW too ill-conditioned, switch to LDL factor'; 
+                msg = 'SMW too ill-conditioned, switch to LU factor'; 
                 if (printlevel); fprintf('\n  %s, %2.1e.',msg,condest); end
              end         
           end
@@ -139,12 +139,12 @@
           if (m < 6000 & strcmp(matfct_options,'chol')) | ...
              (m < 1e5 & strcmp(matfct_options,'spchol')) 
              use_LU = 1;
-             if (printlevel); fprintf('\n  switch to LDL factor'); end
+             if (printlevel); fprintf('\n  switch to LU factor'); end
           end
        end
     end
 %%
-%% symmetric indefinite LDL factorization
+%% LU factorization
 %%
     if (use_LU)
        nnzmat = mexnnz(coeff.mat11)+mexnnz(coeff.mat12); 
@@ -156,21 +156,32 @@
           raugmat = coeff.mat11; 
        end
        if (nnzmat > spdensity*m^2) | (m+ncolU < 500) 
-          matfct_options = 'ldl'; 
+          matfct_options = 'lu'; 
        else
-          matfct_options = 'spldl';
-       end
+          matfct_options = 'splu'; 
+       end      
        if (printlevel > 2); fprintf(' %s ',matfct_options); end 
-       if strcmp(matfct_options,'ldl') 
+       L.matdim = length(raugmat); 
+       if strcmp(matfct_options,'lu') 
+          if issparse(raugmat); raugmat = full(raugmat); end
+          L.matfct_options = 'lu'; 
+          [L.L,L.U,L.p] = lu(raugmat,'vector');  
+       elseif strcmp(matfct_options,'splu') 
+          if ~issparse(raugmat); raugmat = sparse(raugmat); end  
+          L.matfct_options = 'splu';  
+          [L.L,L.U,L.p,L.q,L.s] = lu(raugmat,'vector'); 
+          L.s = full(diag(L.s)); 
+       elseif strcmp(matfct_options,'ldl') 
           if issparse(raugmat); raugmat = full(raugmat); end
           L.matfct_options = 'ldl'; 
-          [L.L,L.D] = ldl(raugmat); 
-          L.perm = [1:length(raugmat)]';        
+          [L.L,L.D,L.p] = ldl(raugmat,'vector');   
+          L.D = sparse(L.D);
        elseif strcmp(matfct_options,'spldl') 
           if ~issparse(raugmat); raugmat = sparse(raugmat); end  
-          L.matfct_options = 'spldl';  
-          [L.L,L.D,L.perm] = ldl(raugmat,'vector');
-          L.Lt = L.L';
+          L.matfct_options = 'spldl'; 
+          [L.L,L.D,L.p,L.s] = ldl(raugmat,'vector');
+          L.s  = full(diag(L.s));           
+          L.Lt = L.L'; 
        end
        [xx,resnrm,solve_ok] = HSDbicgstab(coeff,rhs,L,[],[],printlevel);
        if (solve_ok<=0) & (printlevel)

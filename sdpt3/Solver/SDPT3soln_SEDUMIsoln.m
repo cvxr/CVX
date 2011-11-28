@@ -2,7 +2,7 @@
 %% SDPT3soln_SEDUMIsoln: convert SQLP solution in SDPT3 format to 
 %%                       SeDuMi format
 %%
-%% [xx,yy,zz = SDPT3soln_SEDUMIsoln(blk,X,y,Z); 
+%% [xx,yy,zz] = SDPT3soln_SEDUMIsoln(blk,X,y,Z,perm); 
 %%
 %% usage: load SEDUMI_data_file (containing say, A,b,c,K)
 %%        [blk,At,C,b,perm] = read_sedumi(A,b,c,K); 

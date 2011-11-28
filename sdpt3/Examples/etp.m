@@ -28,8 +28,9 @@
 
    function [blk,Avec,C,b,X0,y0,Z0,objval,d] = etp(B,feas,solve);
 
-   if nargin < 2; feas = 0; end;
-   if nargin < 3; solve = 0; end; 
+   if (nargin < 2); feas = 0; end
+   if (nargin < 3); solve = 0; end 
+   if isempty(feas); feas = 0; end
    if (~isreal(B))
       error('only real B allowed');
    elseif (norm(B-B','fro') > 1e-13);

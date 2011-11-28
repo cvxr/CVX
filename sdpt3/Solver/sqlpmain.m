@@ -14,9 +14,7 @@
    global solve_ok  use_LU  exist_analytic_term numpertdiagschur  
    global schurfun  schurfun_par 
 %%
-   randstate = rand('state');  randnstate = randn('state');
-   rand('state',0);   randn('state',0);
-%%
+   matlabversion = par.matlabversion;
    vers          = par.vers;
    predcorr      = par.predcorr;
    gam           = par.gam; 
@@ -69,8 +67,8 @@
          if (par.startpoint == 1)
             X{p} = const* max([1,b2./normAtmp]) *ones(n,1); 
             Z{p} = const* max([1,normAtmp/sqrt(n),normCtmp/sqrt(n)]) *ones(n,1);
-            X{p} = X{p}.*(1+1e-10*rand(n,1)); 
-            Z{p} = Z{p}.*(1+1e-10*rand(n,1)); 
+            X{p} = X{p}.*(1+1e-10*randmat(n,1,0,'u')); 
+            Z{p} = Z{p}.*(1+1e-10*randmat(n,1,0,'u')); 
 	 else
             const = max(abs(X{p})) + 100; 
             X{p} = [X{p}+const; const*ones(n/2,1)]; 
@@ -135,7 +133,9 @@
       if ~isempty(idx); 
          if strcmp(pblk{1},'l') 
             nn = nn + length(idx); 
-         elseif strcmp(pblk{1},'s') | strcmp(pblk{1},'q')   
+         elseif strcmp(pblk{1},'q') 
+            nn = nn + sum(pblk{2}(idx)); 
+         elseif strcmp(pblk{1},'s')   
             nn = nn + sum(pblk{2}(idx)); 
          end
       end
@@ -229,6 +229,8 @@
    runhist.pinfeas = prim_infeas;
    runhist.dinfeas = dual_infeas;
    runhist.infeas  = infeas;  
+   runhist.pstep   = 0; 
+   runhist.dstep   = 0; 
    runhist.step    = 0; 
    runhist.normX   = normX; 
    runhist.cputime = etime(clock,tstart); 
@@ -254,11 +256,11 @@
          fprintf('     %1.0f      %4.3f',predcorr,gam);
          fprintf('   %1.0f        %1.0f    %1.0f\n',expon,scale_data); 
          fprintf('\nit pstep dstep pinfeas dinfeas  gap')
-         fprintf('      mean(obj)   cputime\n');
+         fprintf('      prim-obj      dual-obj    cputime\n');
          fprintf('------------------------------------------------');
          fprintf('-------------------\n');
          fprintf('%2.0f|%4.3f|%4.3f|%2.1e|%2.1e|',0,0,0,prim_infeas,dual_infeas);
-         fprintf('%2.1e|%- 7.6e| %s:%s:%s|',gap,mean(obj),hh,mm,ss);
+         fprintf('%2.1e|%- 7.6e %- 7.6e| %s:%s:%s|',gap,obj(1),obj(2),hh,mm,ss);
       end
    end
 %%
@@ -649,6 +651,8 @@
       runhist.pinfeas(iter+1) = prim_infeas;
       runhist.dinfeas(iter+1) = dual_infeas;
       runhist.infeas(iter+1)  = infeas;
+      runhist.pstep(iter+1)   = pstep; 
+      runhist.dstep(iter+1)   = dstep; 
       runhist.step(iter+1)    = min(pstep,dstep); 
       runhist.normX(iter+1)   = normX; 
       runhist.cputime(iter+1) = etime(clock,tstart); 
@@ -658,7 +662,7 @@
       if (printlevel>=3)
          fprintf('\n%2.0f|%4.3f|%4.3f',iter,pstep,dstep);
          fprintf('|%2.1e|%2.1e|%2.1e|',prim_infeas,dual_infeas,gap);
-         fprintf('%- 7.6e| %s:%s:%s|',mean(obj),hh,mm,ss);
+         fprintf('%- 7.6e %- 7.6e| %s:%s:%s|',obj(1),obj(2),hh,mm,ss);
       end
 %%--------------------------------------------------
 %% check convergence
@@ -812,6 +816,4 @@
    info.msg2     = msg2;
    info.msg3     = msg3;
    sqlpsummary(info,ttime,infeas_org,printlevel);
-   rand('state',randstate);
-   randn('state',randnstate);
 %%*****************************************************************************

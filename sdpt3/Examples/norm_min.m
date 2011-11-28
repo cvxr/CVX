@@ -1,24 +1,26 @@
 %%*********************************************************************
 %% norm_min: matrix 2-norm minimization problem 
 %%
-%% (primal) minimize || B_0 + x_1*B_1 + ... + x_m*B_m ||_2
+%% (primal) minimize || B0 + x1*B1 + ... + xm*Bm ||_2
 %%
-%% (dual)   maximize    - Tr B_0*Q
-%%          subject to  Tr B_i*Q = 0
+%% (dual)   maximize    - Tr B0*Q
+%%          subject to  Tr Bk*Q = 0, k=1,...,m
 %%                      sum of singular values of Q is less than one.
 %% 
-%% The matrices B_i are of size p x q.
+%% The matrices Bk are of size p x q.
 %%
 %% The problem is equivalent to the following SDP:
 %% 
 %%    minimize    t 
-%%                [ t*I     B(x) ] 
-%%    subject to  [              ]  >= 0 
-%%                [ B(x)^T  t*I  ]  
+%%                         [0,   Bk] 
+%%    s.t.  sum_{k=1}^m xk*[       ] 
+%%                         [Bk^*, 0] 
+%%                               [0,     i*Bk]          [0,   B0]
+%%         + sum_{k=m+1}^{2m} xk*[           ] -t*I <= -[       ] 
+%%                               [(i*Bk)^*, 0]          [B0^*, 0]
 %%
-%% with B(x) = B_0 + x_1*B_1 + ... + x_m*B_m.
-%%
-%% Adapted from Vandenberghe and Boyd, SIAM Review 96.        
+%% Adapted from Vandenberghe and Boyd, SIAM Review 96. 
+%% see also igmres.m 
 %%-------------------------------------------------------------------- 
 %%
 %%  [blk,Avec,C,b,X0,y0,Z0,objval,x] = norm_min(B,feas,solve); 
@@ -38,7 +40,8 @@
    function [blk,Avec,C,b,X0,y0,Z0,objval,x] = norm_min(B,feas,solve);   
 
    if (nargin < 3); solve = 0; end; 
-   if (nargin < 2); feas = 0; end; 
+   if (nargin < 2); feas = 0; end;
+   if isempty(feas); feas = 0; end
 %%
 %% dimensions 
 %%
@@ -53,7 +56,7 @@
    end
    cmp = 1-isrealB; 
 %%
-%% A_i = [0 B_i; B_i' 0],  i=1,...,m+1;  A_{m+1} = I
+%% A{k} = [0 Bk; Bk' 0],  i=1,...,m+1;  A{m+1} = I
 %%     
    if (~cmp) 
        n = p+q;    
@@ -84,7 +87,11 @@
 %%
 %%
    if (feas == 1); 
-      X0{1} = eye(n)/n;
+      if (~cmp)
+         X0{1} = eye(n)/n;
+      else
+         X0{1} = eye(2*n)/(2*n);
+      end
       y0 = 1.1*ops(C,'norm')*[zeros(length(b)-1,1); 1];
       Z0 = ops(C,'-',Atyfun(blk,Avec,[],[],y0));
    elseif (feas == 0)

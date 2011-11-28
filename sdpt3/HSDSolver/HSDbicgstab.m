@@ -102,7 +102,7 @@
 
    function Mx = precond(A,L,x)
 
-   m = length(L.perm); m2 = length(x)-m;
+   m = L.matdim; m2 = length(x)-m;
    if (m2 > 0)
       x1 = full(x(1:m)); 
    else

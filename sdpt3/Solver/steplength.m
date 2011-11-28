@@ -37,11 +37,7 @@
              end
 	     tmp = Prod2(pblk,dX{p},invXchol{p},0); 
              M = Prod2(pblk,invXchol{p}',tmp,1); 
-             if (exist('mexblkeig')==3)
-                d = mexblkeig(pblk,-M); 
-             else
-                d = blkeig(pblk,-M); 
-             end
+             d = blkeig(pblk,-M); 
           end
           tmp = max(d) + 1e-15*max(abs(d)); 
           if (tmp > 0);  
@@ -109,10 +105,7 @@
    end
    n = length(dX); 
    if (nargin < 5); 
-      state = randn('state'); 
-      randn('state',0); 
-      v = randn(n,1); 
-      randn('state',state); 
+      v = randmat(n,1,0,'n'); 
    end
    if (nargin < 4); tol = 1e-3; end
    if (nargin < 3); maxit = 30; end

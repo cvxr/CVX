@@ -66,8 +66,8 @@
       end
    end
    if (printlevel >=2)
-      fprintf(' Total CPU time (secs)  = %3.1f  \n',totaltime);
-      fprintf(' CPU time per iteration = %3.1f  \n',totaltime/iter);
+      fprintf(' Total CPU time (secs)  = %3.2f  \n',totaltime);
+      fprintf(' CPU time per iteration = %3.2f  \n',totaltime/iter);
       fprintf(' termination code       = %2.0f\n',termcode);
       fprintf(' DIMACS: %.1e  %.1e  %.1e  %.1e  %.1e  %.1e\n',dimacs); 
       fprintf('------------------------------------------------');

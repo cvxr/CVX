@@ -20,22 +20,16 @@
      elseif strcmp(L.matfct_options,'spchol')
         x(L.perm,k) = mextriangsp(L.Rt,mextriangsp(L.R,b(L.perm,k),2),1);
      elseif strcmp(L.matfct_options,'ldl')
-	x(L.perm,k) = ((L.D\ (L.L \ b(L.perm,k)))' / L.L)';
+	x(L.p,k) = ((L.D\ (L.L \ b(L.p,k)))' / L.L)';
      elseif strcmp(L.matfct_options,'spldl')
-	x(L.perm,k) = L.Lt\ (L.D\ (L.L \ b(L.perm,k)));
+        btmp = b(:,k).*L.s;
+        xtmp(L.p,1) = L.Lt\ (L.D\ (L.L \ btmp(L.p)));
+	x(:,k) = xtmp.*L.s; 
      elseif strcmp(L.matfct_options,'lu')
-        x(:,k) = L.u \ (L.l \ b(L.perm,k));
-     elseif strcmp(L.matfct_options,'splu')    
-	if (L.symmatrix)
-           %% coefficient matrix is symmetric
-	   %% A = P'*L*U*Q' --> A = Q*U'*L'*P 
-   	   btmp = b(L.perm,k);
-           xtmp = mextriangsp(L.l,mextriangsp(L.u,btmp(L.q),2),1);
-           x(L.perm,k) = xtmp(L.p); 
-	else
-	   btmp = b(L.perm,k); 
-           x(L.perm,k) = L.q*( L.u \ (L.l \ (L.p*btmp)));
-        end
+        x(:,k) = L.U \ (L.L \ b(L.p,k));
+     elseif strcmp(L.matfct_options,'splu') 
+	btmp = b(:,k)./L.s; 
+        x(L.q,k) = L.U \ (L.L \ (btmp(L.p)));
      end
   end
 %%*************************************************************************

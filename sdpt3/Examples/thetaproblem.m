@@ -27,8 +27,9 @@
 
  function [blk,Avec,C,b,X0,y0,Z0,objval,X] = thetaproblem(G,feas,solve);
 
-    if nargin < 2; feas  = 0; end; 
-    if nargin < 3; solve = 0; end; 
+    if (nargin < 2); feas  = 0; end 
+    if (nargin < 3); solve = 0; end 
+    if isempty(feas); feas = 0; end
     if ~isreal(G); error('only real G allowed');  end; 
 
     n = length(G); 

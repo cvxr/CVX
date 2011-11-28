@@ -49,12 +49,14 @@
 %%
    warning off; 
 
+   matlabversion = sscanf(version,'%f');
    if strcmp(computer,'PCWIN64') | strcmp(computer,'GLNXA64')
       par.computer = 64; 
    else
       par.computer = 32; 
    end
-   par.matlabversion = [1,0.01]*sscanf(version'%d.%d@');
+   model = 0; %% automatically decide between sqlp.m and HSDsqlp.m
+   par.matlabversion = matlabversion(1); 
    par.vers        = 0; 
    par.predcorr    = 1; 
    par.gam         = 0; 
@@ -84,6 +86,10 @@
    parbarrier_0 = parbarrier;   
 %%
    if exist('OPTIONS')
+      if isfield(OPTIONS,'model')  
+         model = OPTIONS.model; 
+         if all(model-[0,1,2]); error(' model must be 0, 1 or 2'); end
+      end
       if isfield(OPTIONS,'vers');        par.vers     = OPTIONS.vers; end
       if isfield(OPTIONS,'predcorr');    par.predcorr = OPTIONS.predcorr; end 
       if isfield(OPTIONS,'gam');         par.gam      = OPTIONS.gam; end
@@ -114,7 +120,7 @@
          if ~isempty(par.schurfun); par.scale_data = 0; end
       end
       if isfield(OPTIONS,'schurfun_par'); par.schurfun_par = OPTIONS.schurfun_par; end
-      if isempty(par.schurfun);     par.schurfun = cell(size(blk,1),1); end
+      if isempty(par.schurfun);     par.schurfun     = cell(size(blk,1),1); end
       if isempty(par.schurfun_par); par.schurfun_par = cell(size(blk,1),1); end
    end
    if (size(blk,2) > 2); par.smallblkdim = 0; end
@@ -207,9 +213,19 @@
 %%-----------------------------------------
 %% detect unrestricted blocks in linear blocks
 %%-----------------------------------------
-%%
-   [blk2,At2,C2,ublkinfo,parbarrier2,X02,Z02] = ...
-    detect_ublk(blk,At,C,parbarrier,X0,Z0,par.printlevel);
+%%   
+   user_supplied_schurfun = 0; 
+   for p = 1:size(blk,1)
+      if ~isempty(par.schurfun{p}); user_supplied_schurfun = 1; end
+   end
+   if (user_supplied_schurfun == 0)
+      [blk2,At2,C2,ublkinfo,parbarrier2,X02,Z02] = ...
+      detect_ublk(blk,At,C,parbarrier,X0,Z0,par.printlevel);
+   else
+      blk2 = blk; At2 = At; C2 = C; 
+      parbarrier2 = parbarrier; X02 = X0; Z02 = Z0; 
+      ublkinfo = cell(size(blk2,1),1); 
+   end
    ublksize = blkdim(4); 
    for p = 1:size(ublkinfo,1)
       ublksize = ublksize + length(ublkinfo{p}); 
@@ -219,11 +235,20 @@
 %% detect diagonal blocks in semidefinite blocks
 %%-----------------------------------------
 %%
-   [blk3,At3,C3,diagblkinfo,diagblkchange,parbarrier3,X03,Z03] = ...
-    detect_lblk(blk2,At2,C2,b,parbarrier2,X02,Z02,par.printlevel); 
+   if (user_supplied_schurfun==0)
+      [blk3,At3,C3,diagblkinfo,diagblkchange,parbarrier3,X03,Z03] = ...
+      detect_lblk(blk2,At2,C2,b,parbarrier2,X02,Z02,par.printlevel); 
+   else
+      blk3 = blk2; At3 = At2; C3 = C2; 
+      parbarrier3 = parbarrier2; X03 = X02; Z03 = Z02; 
+      diagblkchange = 0;  
+      diagblkinfo = cell(size(blk3,1),1); 
+   end
 %%
 %%-----------------------------------------
 %% main solver
+%% model = 1: use sqlp
+%%       = 2: use HSDsqlp
 %%-----------------------------------------
 %%
    if (par.vers == 0); 
@@ -231,7 +256,17 @@
    end
    par.blkdim   = blkdim;
    par.ublksize = ublksize;
-   if (~exist_analytic_term) & (ublksize > 0 | blkdim(1) > 0)
+   if (exist_analytic_term); 
+      model = 1; 
+   else
+      if (model == 0)
+         if (ublksize > 0); model = 2; else; model = 1; end
+      end
+   end
+   if (model==1)
+      [obj,X3,y,Z3,info,runhist] = ...
+      sqlpmain(blk3,At3,C3,b,par,parbarrier3,X03,y0,Z03);
+   elseif (model==2)
       if (nargin <= 5) | (isempty(X0) | isempty(y0) | isempty(Z0)); 
          if (max([ops(At3,'norm'),ops(C3,'norm'),norm(b)]) > 1e2)
             [X03,y03,Z03] = infeaspt(blk3,At3,C3,b,1);
@@ -241,10 +276,8 @@
       end
       [obj,X3,y,Z3,info,runhist] = ...
       HSDsqlpmain(blk3,At3,C3,b,par,X03,y0,Z03);  
-   else
-      [obj,X3,y,Z3,info,runhist] = ...
-      sqlpmain(blk3,At3,C3,b,par,parbarrier3,X03,y0,Z03);
    end
+   info.model = model; 
 %%
 %%-----------------------------------------
 %% recover semidefinite blocks from linear blocks

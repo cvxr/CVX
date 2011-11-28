@@ -28,6 +28,7 @@
  
      if (nargin < 4); solve = 0; end; 
      if (nargin < 3); feas = 1;  end; 
+     if isempty(feas); feas = 1; end; 
 
      if ~isreal(B); error('B must be real'); end;
 

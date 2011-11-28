@@ -62,6 +62,13 @@
 %%
    warning off; 
 
+   matlabversion = sscanf(version,'%f');
+   if strcmp(computer,'PCWIN64') | strcmp(computer,'GLNXA64')
+      par.computer = 64; 
+   else
+      par.computer = 32; 
+   end
+   par.matlabversion = matlabversion(1); 
    par.vers        = 0; 
    par.predcorr    = 1; 
    par.gam         = 0; 
@@ -198,8 +205,18 @@
 %% detect unrestricted blocks in linear blocks
 %%-----------------------------------------
 %%
-   [blk2,At2,C2,ublkinfo,parbarrier2,X02,Z02] = ...
-    detect_ublk(blk,At,C,parbarrier,X0,Z0,par.printlevel);
+   user_supplied_schurfun = 0; 
+   for p = 1:size(blk,1)
+      if ~isempty(par.schurfun{p}); user_supplied_schurfun = 1; end
+   end
+   if (user_supplied_schurfun == 0)
+      [blk2,At2,C2,ublkinfo,parbarrier2,X02,Z02] = ...
+      detect_ublk(blk,At,C,parbarrier,X0,Z0,par.printlevel);
+   else
+      blk2 = blk; At2 = At; C2 = C; 
+      parbarrier2 = parbarrier; X02 = X0; Z02 = Z0; 
+      ublkinfo = cell(size(blk2,1),1); 
+   end
    ublksize = blkdim(4); 
    for p = 1:size(ublkinfo,1)
       ublksize = ublksize + length(ublkinfo{p}); 
@@ -209,8 +226,15 @@
 %% detect diagonal blocks in semidefinite blocks
 %%-----------------------------------------
 %%
-   [blk3,At3,C3,diagblkinfo,diagblkchange,parbarrier3,X03,Z03] = ...
-    detect_lblk(blk2,At2,C2,b,parbarrier2,X02,Z02,par.printlevel); 
+   if (user_supplied_schurfun==0)
+      [blk3,At3,C3,diagblkinfo,diagblkchange,parbarrier3,X03,Z03] = ...
+      detect_lblk(blk2,At2,C2,b,parbarrier2,X02,Z02,par.printlevel); 
+   else
+      blk3 = blk2; At3 = At2; C3 = C2; 
+      parbarrier3 = parbarrier2; X03 = X02; Z03 = Z02; 
+      diagblkchange = 0;  
+      diagblkinfo = cell(size(blk3,1),1); 
+   end
 %%
 %%-----------------------------------------
 %% main solver

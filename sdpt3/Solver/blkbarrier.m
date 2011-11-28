@@ -11,7 +11,7 @@
    for p = 1:size(blk,1)
       pblk = blk(p,:);
       vp = v{p};
-      idx = find(vp > 0);   
+      idx = find(vp > 0);
       if ~isempty(idx) 
          vpsub = vp(idx); 
          if size(vpsub,1) < size(vpsub,2); vpsub = vpsub'; end

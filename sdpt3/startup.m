@@ -11,18 +11,21 @@
    warning off;
    
    SDPT3Home = pwd;
-   eval(['addpath ',strcat(SDPT3Home,'/')]);
-   eval(['addpath ',strcat(SDPT3Home,'/Solver')]);
-   eval(['addpath ',strcat(SDPT3Home,'/Solver/Mexfun')]);
-   eval(['addpath ',strcat(SDPT3Home,'/HSDSolver')]);
-   eval(['addpath ',strcat(SDPT3Home,'/Examples')]);
+   addpath(genpath(SDPT3Home)); 
+%%
+%% obsolete:
+%% eval(['addpath ',strcat(SDPT3Home,'/')]);
+%% eval(['addpath ',strcat(SDPT3Home,'/Solver')]);
+%% eval(['addpath ',strcat(SDPT3Home,'/Solver/Mexfun')]);
+%% eval(['addpath ',strcat(SDPT3Home,'/HSDSolver')]);
+%% eval(['addpath ',strcat(SDPT3Home,'/Examples')]);
 %%
 %% obsolete: eval(['addpath ',strcat(SDPT3Home,'/Linsysolver/spchol')]);
 %%
 %% specify default parameters for sqlp.m,
 %% they are specified in the structure called OPTIONS. 
 %%
-   OPTIONS = sqlparameters;  
+%% OPTIONS = sqlparameters;  
 %%*************************************************************************
 
 

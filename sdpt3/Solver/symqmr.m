@@ -106,7 +106,7 @@
 
    function Mx = precond(A,L,x)
 
-   m = length(L.perm); m2 = length(x)-m;
+   m = L.matdim; m2 = length(x)-m;
    Mx = zeros(length(x),1); 
 
    for iter = 1:1
@@ -127,7 +127,7 @@
    end
 %%*************************************************************************
 %% matvec: matrix-vector multiply.
-%% matrix = [A.mat11 A.mat12; A.mat12' A.mat22]
+%% matrix = [A.mat11, A.mat12; A.mat12', A.mat22]
 %%*************************************************************************
 
    function Ax = matvec(A,x);

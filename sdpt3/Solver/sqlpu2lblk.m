@@ -9,7 +9,6 @@
 
    function [blk,At,C,X,Z,ublk2lblk,ublkidx] = sqlpu2lblk(blk,At,C,X,Z,par,convertlen); 
 
-   cachesize = 128; 
 %%
    ublk2lblk = zeros(size(blk,1),1);  
    ublkidx = cell(size(blk,1),2); 
@@ -21,7 +20,8 @@
          if (pblk{2} > convertlen); return; end
          AAt = At{p}*At{p}';
          mexschurfun(AAt,1e-15*max(1,diag(AAt)));      
-         [L.R,indef,L.perm] = chol(AAt,'vector');
+         indef = 0;   
+         [L.R,indef,L.perm] = chol(AAt,'vector'); 
          L.d = full(diag(L.R)).^2; 
          if (~indef) & (max(L.d)/min(L.d) < 1e6) 
             ublk2lblk(p) = 0; 

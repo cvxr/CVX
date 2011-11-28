@@ -20,9 +20,14 @@
       homrp       = param.homrp;
       homRd       = param.homRd;
       prim_infeas_bad = param.prim_infeas_bad; 
-      prim_infeas_min = min(param.prim_infeas_min, max(prim_infeas,1e-10)); 
       dual_infeas_bad = param.dual_infeas_bad; 
-      dual_infeas_min = min(param.dual_infeas_min, max(dual_infeas,1e-10)); 
+      if (iter > 15)
+         prim_infeas_min = min(param.prim_infeas_min, max(prim_infeas,1e-10));        
+         dual_infeas_min = min(param.dual_infeas_min, max(dual_infeas,1e-10)); 
+      else
+         prim_infeas_min = inf; 
+         dual_infeas_min = inf; 
+      end
       printlevel  = param.printlevel;
       stoplevel   = param.stoplevel; 
       ublksize    = param.ublksize; 
@@ -38,13 +43,16 @@
          breakyes = 1; 
       end
       err = max(infeas,relgap);
+      idx = [max(2,iter-9): iter+1]; 
+      pratio = (1-runhist.pinfeas(idx)./runhist.pinfeas(idx-1))./runhist.pstep(idx); 
+      dratio = (1-runhist.dinfeas(idx)./runhist.dinfeas(idx-1))./runhist.dstep(idx); 
       if (param.homRd < 0.1*sqrt(err*max(param.inftol,1e-13))) ...
-         & (iter > 30 | termcode==3)
+         & (iter > 30 | termcode==3) & (mean(abs(dratio-1)) > 0.5) 
          termcode = 1;
          breakyes = 1;
       end
       if (param.homrp < 0.1*sqrt(err*max(param.inftol,1e-13))) ...
-         & (iter > 30 | termcode==3)
+         & (iter > 30 | termcode==3) & (mean(abs(pratio-1)) > 0.5) 
          termcode = 2;
          breakyes = 1;
       end

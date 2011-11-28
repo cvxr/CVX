@@ -24,7 +24,7 @@
               checkdepconstr(blk,At,b,y,rmdepconstr);
    
    global existlowrank printlevel
-   global Lsymb nnzmatold existspcholsymb
+   global nnzmatold 
 %%  
 %% compute AAt
 %%

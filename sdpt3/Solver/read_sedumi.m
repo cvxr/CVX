@@ -137,15 +137,31 @@
              pblk{1,1} = 's'; pblk{1,2} = n;
              blk(idxblk,:) = pblk; 
              Atmp = At(rowidx+blknnz(deblkidx(p))+[1:n*n],:); 
-             h = [1:n]'; e = ones(n,1); 
-             tmp = triu(h*e' + e*((h-1).*h/2)'); 
-             tmp = tmp(:); 
+             %%
+             %% column-wise positions of upper triangular part
+             %% 
+             tmp = triu(ones(n)); tmp = tmp(:);  
+             idxtriu = find(tmp);  
+             %%
+             %% row-wise positions of lower triangular part
+             %% 
+             tmp = tril(reshape([1:n*n],n,n)); tmp = tmp(:); 
+             idxtmp = find(tmp); 
+             [dummy,idxsub] = sort(rem(tmp(idxtmp),n));
+             idxtril = [idxtmp(idxsub(n+1:end));idxtmp(idxsub(1:n))];
+             %%
              tmp2 = sqrt(2)*triu(ones(n),1) + speye(n,n); 
              tmp2 = tmp2(:); 
-             symidx = find(tmp(:));  
              dd = tmp2(find(tmp2)); 
              n2 = n*(n+1)/2; 
-             Avec{idxblk,1} = spdiags(dd,0,n2,n2)*Atmp(symidx,:);
+             Atmptriu = Atmp(idxtriu,:);
+             Atmptril = Atmp(idxtril,:);
+             if (norm(Atmptriu-Atmptril,'fro') > 1e-13)
+                fprintf('\n warning: constraint matrices not symmetric.'); 
+                fprintf('\n          matrices are symmetrized.\n'); 
+                Atmptriu = 0.5*(Atmptriu+Atmptril); 
+             end
+             Avec{idxblk,1} = spdiags(dd,0,n2,n2)*Atmptriu; 
              Ctmp = c(rowidx+blknnz(deblkidx(p))+[1:n*n]);
              Ctmp = mexmat(pblk,Ctmp,1);
              C{idxblk,1} = 0.5*(Ctmp+Ctmp');
@@ -160,25 +176,42 @@
          nn2 = sum(spblksize.*(spblksize+1)/2); 
          pos = zeros(nn,1); 
          dd  = zeros(nn2,1); 
-         symidx = zeros(nn2,1); 
+         idxtriu = zeros(nn2,1);
+         idxtril = zeros(nn2,1); 
          for p = 1:length(spblkidx)
             n = blksize(spblkidx(p)); 
             n2 = n*(n+1)/2; 
             pos(cnt+[1:n*n]) = rowidx+blknnz(spblkidx(p))+[1:n*n];
-            h = [1:n]'; e = ones(n,1); 
-            tmp  = triu(h*e' + e*((h-1).*h/2)'); 
-            tmp  = tmp(:); 
+            %%
+            %% column-wise positions of upper triangular part
+            %% 
+            tmp  = triu(ones(n)); tmp = tmp(:);  
+            idxtriu(cnt2+[1:n2]) = cnt+find(tmp); 
+            %%
+            %% row-wise positions of lower triangular part
+            %% 
+            tmp = tril(reshape([1:n*n],n,n)); tmp = tmp(:); 
+            idxtmp = find(tmp); 
+            [dummy,idxsub] = sort(rem(tmp(idxtmp),n));
+            idxtril(cnt2+[1:n2]) = cnt+[idxtmp(idxsub(n+1:end));idxtmp(idxsub(1:n))];
+            %%
             tmp2 = sqrt(2)*triu(ones(n),1) + speye(n,n); 
             tmp2 = tmp2(:); 
-            symidx(cnt2+[1:n2]) = cnt+find(tmp(:)); 
-            dd(cnt2+[1:n2])     = tmp2(find(tmp2)); 
+            dd(cnt2+[1:n2]) = tmp2(find(tmp2)); 
 	    cnt  = cnt + n*n;   
 	    cnt2 = cnt2 + n2; 
          end 
          idxblk = idxblk + 1; 
          blk{idxblk,1} = 's';  blk{idxblk,2} = blksize(spblkidx); 
          Atmp = At(pos,:); 
-	 Avec{idxblk,1} = spdiags(dd,0,length(dd),length(dd))*Atmp(symidx,:); 
+         Atmptriu = Atmp(idxtriu,:); 
+         Atmptril = Atmp(idxtril,:);
+         if (norm(Atmptriu-Atmptril,'fro') > 1e-13)
+            fprintf('\n warning: constraint matrices not symmetric.'); 
+            fprintf('\n          matrices are symmetrized.\n'); 
+            Atmptriu = 0.5*(Atmptriu+Atmptril); 
+         end
+         Avec{idxblk,1} = spdiags(dd,0,length(dd),length(dd))*Atmptriu; 
          Ctmp = c(pos); 
          Ctmp = mexmat(blk(idxblk,:),Ctmp,1); 
          C{idxblk,1} = 0.5*(Ctmp+Ctmp');  

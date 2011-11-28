@@ -58,6 +58,7 @@
    randstate = rand('state');  randnstate = randn('state');
    rand('state',0);  randn('state',0);
 %%
+   matlabversion = par.matlabversion;
    vers          = par.vers;
    predcorr      = par.predcorr;
    gam           = par.gam; 
@@ -87,13 +88,26 @@
 %%-----------------------------------------
 %%
    ublkidx = zeros(size(blk,1),1); 
-   Cpert = zeros(size(blk,1),1); Cnew = C; 
+   Cpert = zeros(size(blk,1),1); 
+   Cnew = C; 
    perturb_C = 1;
    for p = 1:size(blk,1) 
       pblk = blk(p,:); 
       n = sum(pblk{2}); 
-      tmp = max(1,norm(C{p},'fro'))/sqrt(n); 
-      if strcmp(pblk{1},'u')
+      tmp = max(1,norm(C{p},'fro'))/sqrt(n);  
+      if strcmp(pblk{1},'s') 
+         if (perturb_C); Cpert(p) = 1e-3*tmp; end
+         Cnew{p} = C{p} + Cpert(p)*speye(n); 
+      elseif strcmp(pblk{1},'q')
+         if (perturb_C); Cpert(p) = 0*tmp; end; %% old: 1e-3
+         s = 1+[0, cumsum(pblk{2})];
+         tmp2 = zeros(n,1); len = length(pblk{2}); 
+         tmp2(s(1:len)) = ones(len,1);
+         Cnew{p} = C{p} + Cpert(p)*tmp2;
+      elseif strcmp(pblk{1},'l')
+         if (perturb_C); Cpert(p) = 1e-4*tmp; end; %% old: 1e-3
+         Cnew{p} = C{p} + Cpert(p)*ones(n,1); 
+      elseif strcmp(pblk{1},'u')
          msg = sprintf('convert ublk to linear blk'); 
          if (printlevel); fprintf('\n *** %s',msg); end
          ublkidx(p) = 1; 
@@ -105,12 +119,6 @@
          Cnew{p} = C{p} + Cpert(p)*ones(n,1); 
          X{p}  = 1+rand(n,1); %% do not add a factor of n
          Z{p}  = 1+rand(n,1); %%
-      elseif strcmp(pblk{1},'s') 
-         if (perturb_C); Cpert(p) = 1e-3*tmp; end
-         Cnew{p} = C{p} + Cpert(p)*speye(n); 
-      else
-         if (perturb_C); Cpert(p) = 1e-3*tmp; end
-         Cnew{p} = C{p} + Cpert(p)*ones(n,1); 
       end
    end
 %%
@@ -252,7 +260,8 @@
 %%---------------------------------------------------------------
 %%
    EE = ops(blk,'identity');
-   normE = ops(EE,'norm'); Zpertold = 1; 
+   normE = ops(EE,'norm'); 
+   Zpertold = 1; 
    [Xchol,indef(1)] = blkcholfun(blk,X); 
    [Zchol,indef(2)] = blkcholfun(blk,Z); 
    if any(indef)
@@ -528,7 +537,8 @@
    	    termcode = -3; 
             breakyes = 1;  
          elseif any(pinfeas_bad)
-            if (stoplevel) & (max(pstep,dstep)<=1) & (kap < 1e-3)
+            if (stoplevel) & (max(pstep,dstep)<=1) & (kap < 1e-3) ...
+    	       & (prim_infeasnew > dual_infeas); 
                msg = 'stop: primal infeas has deteriorated too much'; 
                if (printlevel); fprintf('\n  %s, %2.1e',msg,prim_infeasnew); 
 	          fprintf(' %2.1d,%2.1d,%2.1d',...
@@ -631,6 +641,7 @@
       param.normZ       = ops(Z,'norm')/tau; 
       if (~breakyes)
          [param,breakyes,use_olditer,msg] = HSDsqlpcheckconvg(param,runhist);
+         termcode = param.termcode;  %% important
          if (use_olditer)
             X = ops(X,'-',dX,pstep);  
             y = y - dstep*dy;   
@@ -659,7 +670,7 @@
          %%fprintf('#')
       else
          update_best(iter+1) = 0; 
-      end   
+      end
       errbest = max(relgap_best,infeas_best); 
       if (errbest < 1e-4 & norm(update_best(max(1,iter-1):iter+1)) == 0)
          msg = 'lack of progess in infeas'; 
@@ -667,12 +678,13 @@
          termcode = -9; 
          breakyes = 1; 
       end  
-      if (errbest < 1e-3 & max([relgap,infeas]) > 1.2*errbest & theta < 1e-10) 
+      if (errbest < 1e-3 & max([relgap,infeas]) > 1.2*errbest & theta < 1e-10) ...
+         & (kap < 1e-6)
          msg = 'lack of progress in infeas'; 
          if (printlevel); fprintf('\n  %s',msg); end
          termcode = -9; 
          breakyes = 1; 
-      end          
+      end    
       if (breakyes > 0.5); break; end
    end
 %%---------------------------------------------------------------

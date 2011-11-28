@@ -2,9 +2,24 @@
 %% Run this script in Matlab command window 
 %%
 
-   function Installmex 
+   function Installmex(recompile)
+
+   if (nargin==0); recompile = 0; end
+
    curdir = pwd;  
    fprintf(' current directory is:  %s\n',curdir);    
+%%
+%% generate mex files in Mexfun
+%% 
+   if strcmp(computer,'PCWIN64') | strcmp(computer,'GLNXA64')
+      computer_model = 64; 
+   else
+      computer_model = 32; 
+   end
+   matlabversion = sscanf(version,'%f');
+   matlabversion = matlabversion(1);
+   tmp = version('-release'); 
+   matlabrelease = str2num(tmp(1:4));
    fsp = filesep;
 %%
 %%
@@ -29,17 +44,24 @@
    fname{13} = 'mexMatvec';
    fname{14} = 'mextriang';
    fname{15} = 'mextriangsp';
-   
-   if exist('OCTAVE_VERSION'),
-      mexcmd = 'mex ';
+%%
+   if (matlabversion < 7.3) & (matlabrelease <= 2008)
+      mexcmd = 'mex  -O  '; 
    else
       mexcmd = 'mex  -O -largeArrayDims  '; 
    end
+   ext = mexext; 
    for k = 1:length(fname)
-       cmd = [mexcmd,fname{k},'.c'];
-       disp( cmd );
-       eval( cmd );
+      existmex = exist([fname{k},'.',ext]); 
+      if (existmex ~= 3) | (recompile)
+         cmd([mexcmd,fname{k},'.c']);  
+      end
    end 
    cd .. 
    cd ..
-
+%%***********************************************
+   function cmd(s) 
+   
+   fprintf(' %s\n',s); 
+   eval(s); 
+%%***********************************************
