@@ -5,7 +5,7 @@ p = index( prob );
 pr = cvx___.problems(p);
 nobj = numel(pr.objective);
 if nobj > 1 && ~pr.separable,
-    error( 'Non-separable multiobjective problems are not supported.' );
+    error( 'Your objective function is not a scalar.' );
 end
 quiet = cvx___.problems(p).quiet;
 obj   = cvx___.problems(p).objective;
@@ -198,117 +198,123 @@ elseif n ~= 0 && ~infeas && ( any( b ) || any( c ) ),
         orow = ones(arow,1);
         amult = ones(1,nc);
         epow_i = 1 / epow;
-        
-        eprec = prec(2) / 10;
+
+        oprec = prec;
         best_x = NaN * ones(n,1);
         best_y = NaN * ones(m,1);
         best_prec = Inf;
-        if ~quiet,
-            disp( '          Errors   ' );
-            disp( 'Act Centering    Conic    Status' );
-            disp( '-----------------------------------' );
+        if ~quiet, 
+            disp( ' Cones  |             Errors              |' );
+            disp( 'Mov/Act | Centering  Exp cone   Poly cone | Status' );
+            disp( '--------+---------------------------------+---------' );
         end
         failed = 0;
-        stagnant = 0;
         attempts = 0;
         last_err = Inf;
         last_cer = Inf;
         last_solved = 0;
-        e_stag = false;
-        c_stag = false;
         max_eiters = 25;
         for iter = 1 : max_eiters,
-            
             % Insert the current centerpoints into the constraints
             x0e = x0 * epow_i;
-            Anew(endxs) = - exp( -x0e ); 
+            ex0e = exp( -x0e );
+            Anew(endxs) = - ex0e;
             Anew(fndxs) = 1 - x0e; 
+            Anew2 = Anew * diag(sparse(vec(amult(orow,:))));
             
             % Solve the approximation
-            Anew2 = Anew * diag(sparse(vec(amult(orow,:))));
             [ x, y, status, tprec, iters2, z ] = feval( sfunc, [ At, Anew2 ], [ b ; bnew ], c, cones, true, prec );
             iters = iters + iters2;
-            
-            % The dual point should be feasible at all times---but that
-            % doesn't mean it will be in finite precision arithmetic.
-            % Dual cone:   -u.*exp(v/u-1)<=w
-            % Dual approx: -exp(-x0).*u.*(1-(v./u-1+x0)/(p-1)).^(1-p)<=w
-            y_valid = false;
-            if any(isnan(y)),
-                acY = false(nc,1);
-                erY = 0;
-                ceY = 0;
+            x_valid = ~any(isnan(x));
+            y_valid = ~any(isnan(y));
+           
+            % The approximate primal cone is a strict subset of the exact
+            % primal cone. A point that is feasible for the approximate 
+            % model is guaranteed to be feasible for the exact model only
+            % if x/y == x0. Furthermore, the larger |x/y-x0| is, the weaker
+            % the approximation. So, our goal in these iterations is to
+            % minimize |x/y - x0|. The hope is that we can reduce this gap
+            % to the point that the deviation from exact feasibility is
+            % within our desired numerical tolerance.
+            % Exact:  y .* exp( x ./ y ) <= z
+            % Approx: exp(x0) .* y .* max(0,1+(x./y-x0)/p).^p <= z
+            if x_valid,
+                xxx = x( xndxs, : );
+                yyy = max( realmin, x( yndxs, : ) );
+                zzz = max( realmin, x( zndxs, : ) );
+                xxy = xxx ./ yyy - x0;
+                zzy = zzz ./ yyy;
+                xxz = log( zzy ) - x0;
+                xxc = epow * ( max( 0, zzy .^ epow_i .* ex0e ) - 1 );
+                tlX = max( 0, xxy - xxc );
+                erX = max( 0, xxy - xxz );
+                cxX = 0.5 * ( xxz + xxy );
+                acX = erX ~= 0;
             else
-                y_valid = true;
+                tlX = 0;
+                erX = 0;
+                err = 0;
+            end
+            
+            % The exact dual cone is a strict subset of the approximate
+            % dual cone. Therefore any point that is dual feasible in the
+            % approximate model is also dual feasible in the exact model.
+            % The further x/y is from x0, the farther away such a point
+            % will be from the boundary of the exact dual cone.
+            % Exact:  -u.*exp(v/u-1)<=w
+            % Approx: -exp(-x0).*u.*(1-(v./u-1+x0)/(p-1)).^(1-p)<=w
+            if y_valid,
                 z = z + Anew2 * y(m+1:end);
                 uuu = min( -realmin, z( xndxs, : ) );
                 vvv = z( yndxs, : );
                 www = max( +realmin, z( zndxs, : ) );
-                nyR = max( x0 + 1 - epow, 1 - vvv ./ uuu );
-                nyL = - log( - www ./ uuu );
-                wdY = nyL - nyR;
-                erY = max( 0, wdY );
-                cxY = 0.5 * ( nyR + nyL );
-                ceY = max( 0, abs( x0 - cxY ) - 0.5 * abs( wdY ) );
-            end
-            
-            % In exact arithmetic, the primal point is feasible only if x0
-            % is close enough to the true solution. In finite precision
-            % arithemtic, even this may not be enough.
-            % Primal cone: y.*exp(x/y)<=z
-            % Dual cone: exp(x0).*y.*pow_pos(1+(x/y-x0)/p,p)<=z
-            x_valid = false;
-            if any(isnan(x)),
-                acX = false(nc,1);
-                erX = 0;
-                ceX = 0;
+                wwu = - www ./ uuu;
+                xxu = 1 - vvv ./ uuu - x0;
+                xxw = - log( wwu ) - x0;
+                xxd = ((exp(x0).*wwu).^(1/(1-epow))-1)*(epow-1);
+                tlY = max( 0, xxd - xxu );
+                cxY = 0.5 * ( xxu + xxw );
+                acY = xxu - xxd < 1e-3;
             else
-                x_valid = true;
-                xxx = x( xndxs, : );
-                yyy = max( realmin, x( yndxs, : ) );
-                zzz = max( realmin, x( zndxs, : ) );
-                nxL = max( x0 - epow, xxx ./ yyy );
-                nxR = log( zzz ./ yyy );
-                wdX = nxL - nxR;
-                erX = max( 0, wdX );
-                cxX = 0.5 * ( nxL + nxR );
-                ceX = max( 0, abs( x0 - cxX ) - 0.5 * abs( wdX ) );
+                tlY = 0;
             end
             
-            % If either the primal or the dual constraints are clearly
-            % inactive we should ignore that cone altogether
-            if x_valid && y_valid,
-                kkt_error = ...
-                    abs( xxx .* uuu + yyy .* vvv + zzz .* www ) ./ ...
-                    sqrt( xxx.^2 + yyy.^2 + zzz.^2 ) ./ ...
-                    sqrt( uuu.^2 + vvv.^2 + www.^2 );
-                active = kkt_error <= 1e-5;
-            elseif x_valid,
-                active = erX ~= 0;
-            elseif y_valid,
-                active = erY ~= 0;
-            end
             if x_valid,
-                ceX = ceX .* active;
-                erX = erX .* active;
+                active = acX;
+                if y_valid,
+                    cxX = 0.5 * ( cxX + cxY );
+                    tlX = max( tlX, tlY );
+                    kkt = ( xxx .* uuu + yyy .* vvv + zzz .* www ) ./ ...
+                        sqrt( xxx .^ 2 + yyy .^2 + zzz .^ 2 ) ./ ...
+                        sqrt( uuu .^ 2 + vvv .^2 + www .^ 2 );
+                    active = acX & acY & ( kkt < 1e-5 );
+                    if any( ( acX & acY ) ~= active )
+                        keyboard
+                    end
+                    erX = erX .* active;
+                end
+                tlX = tlX .* active;
+                cxX = cxX .* active;
+                err = max( erX );
+                tol = max( tlX );
+                cer = max( abs( cxX ) );
+                nmov = nnz( erX > tlX + 0.25 * tol );
+                nact = nnz( active );
+            else
+                active = 0; nmov = 0; nact = 0; 
+                err = 0; tol = 0; cer = 0;
             end
-            if y_valid,
-                ceY = ceY .* active;
-                erY = erY .* active;
-            end
+            solved = x_valid * 2 + y_valid;
+            found = nmov == 0 && solved;
             
             % Check for stagnation
-            err = max( erX * x_valid + erY * ~x_valid );
-            cer = max( ceY * y_valid + ceX * ~y_valid );
-            solved = x_valid * 2 + y_valid;
-            c_stag = last_solved == solved && cer >= 0.9 * last_cer;
-            e_stag = last_solved == solved && err >= 0.9 * last_err;
-            
-            % Print status
+            stagc = ' '; stage = ' ';
+            if ~found && last_solved == solved && last_act == nact,
+                if cer >= 0.9 * last_cer, stagc = 's'; end
+                if err >= 0.9 * last_err, stage = 's'; end
+            end
             if ~quiet,
-                if c_stag, stagc = 'S'; else stagc = ' '; end
-                if e_stag, stage = 'S'; else stage = ' '; end
-                fprintf( 1, '%-3d %9.3e%c %9.3e%c %s\n', nnz(active), cer, stagc, err, stage, status );
+                fprintf( 1, '%3d/%3d | %9.3e%c %9.3e%c %9.3e | %s\n', nmov, nact, cer, stagc, err, stage, tol, status );
             end
             
             % Solution found or no more iterations
@@ -317,62 +323,47 @@ elseif n ~= 0 && ~infeas && ( any( b ) || any( c ) ),
             % in imperfect arithmetic, it may not be. So, we're using that
             % error as a threshold to decide when the *primal* point is
             % sufficiently accurate, too.
-            if ~x_valid || ~y_valid,
-                found = err <= eprec;
-            else
-                found = all( erX <= max( erY, eprec ) );
-            end
-            if found || iter == max_eiters,
-                if ~found,
-                    if status(1) == 'F',
-                        tprec = Inf;
-                    else
-                        tprec = prec(3);
-                    end
-                end
+            if found,
                 if tprec < best_prec,
                     best_x = x;
                     best_y = y;
-                    best_prec = prec;
+                    best_prec = tprec;
+                end
+                if best_prec <= prec(1) || attempts == 2,
+                    break;
                 end
                 attempts = attempts + 1;
-                if tprec <= prec(1) || attempts == 2 || ~found,
-                    break; 
-                end
-            elseif attempts,
-                break;
             end
-            
-            % Several invalid points in a row?
             if status(1) == 'F',
-                failed = failed + 1;
-                if failed == 3, break; end
+                failed = failed + 0.5 * ( 1 + ~x_valid );
+                if failed >= 3, break; end
+                if ~x_valid,
+                    prec(3) = prec(3) * 10;
+                    continue;
+                end
             else
+                prec(3) = oprec(3);
                 failed = 0;
             end
             
             % Stagnation?
-            if c_stag || e_stag,
+            if stagc == 's' || stage == 's',
                 if all( amult == 1e5 ), break; end
                 amult = min( amult * 10, 1e5 ); 
-            else
-                boost = erY | ( ~ceX & erX );
-                amult(boost) = min( amult(boost) * 10, 1e5 );
+            elseif ~failed,
+                boost = ~cxX & erX;
+                if any( boost ),
+                    amult(boost) = min( amult(boost) * 10, 1e5 );
+                end
             end
             
             % Shift centerpoint
             last_solved = x_valid * 2 + y_valid;
             last_cer = cer;
             last_err = err;
+            last_act = nact;
             if last_solved,
-                nx0 = x0;
-                if y_valid,
-                    nx0(active) = cxY(active);
-                else
-                    nx0(active) = cxX(active);
-                end
-                x0 = min( max( nx0, x0 - epow ), x0 + epow );
-                x0 = min( max( -maxw, x0 ), maxw );
+                x0 = max( min( x0 + max( min( epow, cxX ), -epow ), maxw ), -maxw );
             end
             
         end
