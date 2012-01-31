@@ -10,11 +10,15 @@ if ~isa( prob, 'cvxprob' ),
 end
 global cvx___
 p = index( prob );
+y_orig = y;
 
 %
 % Check arguments
 %
 
+if isa( x, 'cvxcnst' ), 
+    x = rhs( x ); 
+end
 cx = isnumeric( x ) | isa( x, 'cvx' );
 cy = isnumeric( y ) | isa( y, 'cvx' );
 if ~cx,
@@ -38,7 +42,7 @@ if ~cx || ~cy,
             newcnstr( prob, x{k}, y{k}, op );
         end
         if nargout,
-            outp = cvxcnst( prob );
+            outp = cvxcnst( prob, y_orig );
         end
         return
     end
@@ -258,7 +262,7 @@ end
 %
 
 if nargout,
-    outp = cvxcnst( prob );
+    outp = cvxcnst( prob, y_orig );
 end
 
 % Copyright 2010 Michael C. Grant and Stephen P. Boyd.
