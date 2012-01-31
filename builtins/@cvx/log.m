@@ -1,13 +1,15 @@
 function y = log( x )
 
-% LOG    Natural logarithm.
-%   LOG(X) is the natural logarithm of the elements of X.
-%   Complex results are produced if X is not positive.
+%   Disciplined convex programming information:
+%       LOG(X) is concave and nondecreasing in X. When used in CVX
+%       expressions, X must be concave.
 %
 %   Disciplined geometric programming information:
-%       LOG(X) currently supports only constants, monomials, and
-%       posynomials. Support for affine and/or concave expressions
-%       will come in a later revision.
+%       LOG(X) is typically not used in geometric programs. Technically it
+%       possible to do so in certain advanced cases, because monomials and
+%       posynomials are treated by CVX as log-affine and log-convex
+%       constructs, respectively. However, such usage is undocumented and
+%       will not be officially supported.
 
 global cvx___
 error(nargchk(1,1,nargin));
@@ -19,8 +21,9 @@ cvx_expert_check( 'log', x );
 
 persistent remap
 if isempty( remap ),
+    remap_0 = cvx_remap( 'nonpositive' );
     remap_1 = cvx_remap( 'positive' );
-    remap_2 = cvx_remap( 'real-affine', 'concave' ) & ~remap_1;
+    remap_2 = cvx_remap( 'real-affine', 'concave' ) & ~remap_1 & ~remap_0;
     remap_3 = cvx_remap( 'monomial' );
     remap_4 = cvx_remap( 'posynomial' );
     remap   = remap_1 + 2 * remap_2 + 3 * remap_3 + 4 * remap_4;
@@ -60,7 +63,7 @@ for k = 1 : nv,
             % Invalid
             error( 'Disciplined convex programming error:\n    Illegal operation: log( {%s} ).', cvx_class( xt, true, true, true ) );
         case 1,
-            % Constant
+            % Positive constant
             yt = cvx( log( cvx_constant( xt ) ) );
         case 2,
             % Affine, convex (invalid)

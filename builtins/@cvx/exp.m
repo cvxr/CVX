@@ -5,6 +5,11 @@ function y = exp( x )
 %       expressions, X must be real. Typically, X must also be affine
 %       or convex; X can also be concave, but this produces a log-concave
 %       result with very limited usefulness.
+%
+%   Disciplined geometric programming information:
+%       EXP(X) is typically not used in geometric programs. However,
+%       EXP(X), where X is a monomial or posynomial, can be included in 
+%       geometric programs wherever a posynomial would be appropriate.
 
 global cvx___
 error(nargchk(1,1,nargin));
@@ -75,9 +80,11 @@ for k = 1 : nv,
                 cvx___.logarithm( n2, 1 ) = n1( : );
                 cvx___.vexity( n2 ) = 1;
                 n2 = n2( cvx___.vexity( n1 ) < 0 );
-                cvx___.vexity( n2 ) = NaN;
-                cvx___.nan_used = true;
-                cvx___.canslack( n2 ) = +1;
+                if ~isempty( n2 ),
+                    cvx___.vexity( n2 ) = NaN;
+                    cvx___.nan_used = true;
+                    cvx___.canslack( n2 ) = +1;
+                end
                 exps = cvx___.exponential( rx, 1 );
             end
             nb = size( xt.basis_, 2 );

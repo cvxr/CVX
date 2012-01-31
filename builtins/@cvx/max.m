@@ -222,7 +222,7 @@ else
             case 0,
                 error( 'Disciplined convex programming error:\n   Invalid computation: max( {%s} )', cvx_class( xt, false, true ) );
             case 1,
-                cvx_optval = max( cvx_constant( xt ), [], dim );
+                cvx_optval = max( cvx_constant( xt ), [], 1 );
             case 2,
                 cvx_begin gp
                     epigraph variable zt( 1, nv )

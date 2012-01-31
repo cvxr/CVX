@@ -221,7 +221,7 @@ else
             case 0,
                 error( 'Disciplined convex programming error:\n   Invalid computation: min( {%s} )', cvx_class( xt, false, true ) );
             case 1,
-                cvx_optval = min( cvx_constant( xt ), [], dim );
+                cvx_optval = min( cvx_constant( xt ), [], 1 );
             case 2,
                 cvx_begin gp
                     hypograph variable zt( 1, nv )
