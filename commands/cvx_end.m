@@ -100,11 +100,12 @@ elseif pstr.complete && nnz( pstr.t_variable ) == 1,
         end
     end
     assignin( 'caller', 'cvx_optpnt',  pstr.variables );
-    assignin( 'caller', 'cvx_optdpt',  pstr.duals );
+    % Removed because it seems buggy and I cannot support it.
+    % assignin( 'caller', 'cvx_optdpt',  pstr.duals );
     assignin( 'caller', 'cvx_status',  pstr.status );
     assignin( 'caller', 'cvx_optval',  pstr.result );
-    assignin( 'caller', 'cvx_slvitr',   pstr.iters );
-    assignin( 'caller', 'cvx_slvtol',     pstr.tol );
+    assignin( 'caller', 'cvx_slvitr',  pstr.iters );
+    assignin( 'caller', 'cvx_slvtol',  pstr.tol );
     
     %
     % Compute the numerical values and clear out
