@@ -129,10 +129,10 @@ if isempty( cvx___ ),
                 end
                 if smap(k) >= 0,
                     opath( ndxs(1) : ndxs(1) + length(temp2) - 1 ) = [];
+                    needupd = true;
                 end
-                needupd = true;
             end
-            if smap(k),
+            if smap(k) > 0,
                 if isempty( base ),
                     npath = [ npath, temp2 ];
                 elseif isempty( spaths ),
