@@ -254,6 +254,7 @@ end
 % ----------------------------------------
 [A,b,c,K,prep,origcoeff] = pretransfo(A,b,c,K,pars);
 [N,m]=size(A);
+if 0,
 if issparse(A)
     if sprank([A;b'])>sprank(A)
         info.pinf=1;
@@ -276,6 +277,7 @@ else
     elseif rank(A)<m
         error('The coefficient matrix is not full row rank.')
     end
+end
 end
 if prep.cpx.dim>0
     origcoeff=[];      % No error measures for complex problems.

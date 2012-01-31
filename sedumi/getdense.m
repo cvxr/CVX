@@ -82,7 +82,7 @@ end
 % ------------------------------------------------------------
 dense.cols = find(colnz > pars.denf * spquant);     %dense LP, Q-blk, Q-cols
 dense.q = find(colnz(i1:i2-1) > pars.denf * spquant);        %dense Q-blks
-dense.l = length(find(dense.cols < i1));            %#dense LP cols.
+dense.l = length(find(dense.cols < i1));            %dense LP cols.
 % ----------------------------------------
 % The number of dense columns should be small relative to
 % the number of constraints - otherwise we better do 1 full Chol.
