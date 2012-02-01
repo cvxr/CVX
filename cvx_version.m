@@ -1,5 +1,5 @@
 function [ cvx_ver2, cvx_bld ] = cvx_version
-cvx_ver = 1.21;
+cvx_ver = 1.22;
 cvx_bld = ':::BUILD:::';
 cvx_bdate = ':::BDATE:::';
 cvx_dbld = ':::DBUILD:::';
