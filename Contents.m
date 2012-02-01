@@ -13,7 +13,3 @@
 %   sets             - CVX set definitions: nonnegative, semidefinite, etc.
 %   structures       - Matrix structure definitions and utilities.
 %   cvx_usrguide.pdf - The CVX Users Guide. (PDF file)
-
-% Copyright 2010 Michael C. Grant and Stephen P. Boyd. 
-% See the file COPYING.txt for full copyright information.
-% The command 'cvx_where' will show where this file is located.

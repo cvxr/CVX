@@ -64,7 +64,3 @@
 %   trace_inv         - Trace of the inverse of a PSD matrix.
 %   trace_sqrtm       - Trace of the square root of a PSD matrix.
 %   vec               - Vectorize.
-
-% Copyright 2010 Michael C. Grant and Stephen P. Boyd. 
-% See the file COPYING.txt for full copyright information.
-% The command 'cvx_where' will show where this file is located.

@@ -237,6 +237,6 @@ if isempty( cvx___.problems ) && cvx___.profile,
     profile off;
 end
 
-% Copyright 2010 Michael C. Grant and Stephen P. Boyd.
+% Copyright 2012 Michael C. Grant and Stephen P. Boyd.
 % See the file COPYING.txt for full copyright information.
 % The command 'cvx_where' will show where this file is located.
