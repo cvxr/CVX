@@ -288,9 +288,6 @@ elseif n ~= 0 && ~infeas && ( any( b ) || any( c ) ),
                         sqrt( xxx .^ 2 + yyy .^2 + zzz .^ 2 ) ./ ...
                         sqrt( uuu .^ 2 + vvv .^2 + www .^ 2 );
                     active = acX & acY & ( kkt < 1e-5 );
-                    if any( ( acX & acY ) ~= active )
-                        keyboard
-                    end
                     erX = erX .* active;
                 end
                 tlX = tlX .* active;
