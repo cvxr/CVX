@@ -52,20 +52,16 @@ G = [1.0  0.1  0.2  0.1  0.0
 <span class="comment">% variables are power levels</span>
 cvx_begin <span class="string">gp</span>
   variable <span class="string">P(n)</span>
-
   <span class="comment">% objective function is the total transmitter power</span>
   minimize( sum(P) )
   subject <span class="string">to</span>
-
     <span class="comment">% formulate the inverse SINR at each receiver using vectorize features</span>
     Gdiag = diag(G);          <span class="comment">% the main diagonal of G matrix</span>
     Gtilde = G - diag(Gdiag); <span class="comment">% G matrix without the main diagonal</span>
     <span class="comment">% inverse SINR</span>
     inverseSINR = (sigma + Gtilde*P)./(Gdiag.*P);
-
     <span class="comment">% constraints are power limits and minimum SINR level</span>
-    P &gt;= Pmin;
-    P &lt;= Pmax;
+    Pmin &lt;= P &lt;= Pmax;
     inverseSINR &lt;= (1/SINR_min);
 cvx_end
 
@@ -81,17 +77,15 @@ Successive approximation method to be employed.
    Original size: 98 variables, 36 equality constraints
    26 exponentials add 208 variables, 130 equality constraints
 -----------------------------------------------------------------
-          Errors   
-Act Centering    Conic    Status
------------------------------------
-21  3.053e+00  3.243e-01  Unbounded
-26  2.697e+00  6.777e-01  Solved
-26  2.999e-01  7.560e-03  Solved
-26  3.139e-03  1.080e-06  Solved
-26  3.373e-07  1.904e-07  Solved
-26  0.000e+00  1.904e-07S Solved
-26  2.816e-07S 3.376e-08  Solved
-26  1.240e-07  0.000e+00  Solved
+ Cones  |             Errors              |
+Mov/Act | Centering  Exp cone   Poly cone | Status
+--------+---------------------------------+---------
+ 21/ 21 | 3.182e+00  3.069e-01  0.000e+00 | Unbounded
+ 25/ 25 | 3.207e+00  6.778e-01  2.356e-07 | Solved
+ 26/ 26 | 5.268e-01  1.997e-02  4.381e-08 | Solved
+ 20/ 26 | 2.964e-02  6.215e-05  4.628e-08 | Solved
+  5/ 26 | 2.139e-03  3.770e-07  4.631e-08 | Solved
+  0/ 26 | 1.527e-04  4.709e-08  4.630e-08 | Solved
 -----------------------------------------------------------------
 Status: Solved
 Optimal value (cvx_optval): +17.0014

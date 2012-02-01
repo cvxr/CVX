@@ -53,26 +53,26 @@ disp(x);
 </pre>
 <a id="output"></a>
 <pre class="codeoutput">
+CVX Warning:
+   Models involving "log" or other functions in the log, exp, and entropy
+   family are solved using an experimental successive approximation method.
+   The method requires multiple calls to the solver, so it can be slow; and
+   in certain cases it fails to converge. See Appendix D of the the user's
+   guide for more information about this method, and for instructions on how
+   to suppress this warning in the future.
  
 Successive approximation method to be employed.
    sedumi will be called several times to refine the solution.
    Original size: 160 variables, 105 equality constraints
    50 exponentials add 400 variables, 250 equality constraints
 -----------------------------------------------------------------
-          Errors   
-Act Centering    Conic    Status
------------------------------------
-50  1.993e+00  3.573e-01  Solved
-50  1.695e-01  2.385e-03  Solved
-50  2.288e-02  4.309e-05  Solved
-50  2.767e-03  7.323e-07  Solved
-50  3.441e-04  1.133e-07  Solved
-50  4.297e-05  1.161e-07S Solved
-50  1.450e-04S 4.295e-08  Solved
-50  9.725e-05  2.536e-09  Solved
-50  1.218e-05  1.756e-09  Solved
-50  1.511e-06  1.762e-09S Solved
-50  1.380e-05S 9.065e-10  Solved
+ Cones  |             Errors              |
+Mov/Act | Centering  Exp cone   Poly cone | Status
+--------+---------------------------------+---------
+ 50/ 50 | 2.303e+00  3.573e-01  5.090e-08 | Solved
+ 49/ 50 | 1.788e-01  2.265e-03  2.233e-07 | Solved
+ 30/ 50 | 1.486e-02  1.622e-05  2.066e-07 | Solved
+  0/ 50 | 8.671e-04  2.138e-07  2.038e-07 | Solved
 -----------------------------------------------------------------
 Status: Solved
 Optimal value (cvx_optval): -64.8504
@@ -85,7 +85,7 @@ The analytic center of the set of linear inequalities and equalities is:
     1.3142
     1.2303
    -0.0511
-    0.4031
+    0.4030
     0.1248
 
 </pre>

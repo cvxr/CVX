@@ -125,10 +125,9 @@ output_gates = [FI{primary_outputs}];
 N = 25;
 Pmax = linspace(10,20,N);
 min_delay = zeros(N,1);
-
 disp(<span class="string">'Generating the optimal tradeoff curve...'</span>)
-
 <span class="keyword">for</span> n = 1:N
+  fprintf(<span class="string">'Pmax = %6.2f: '</span>,Pmax(n));
   cvx_begin <span class="string">gp</span> <span class="string">quiet</span>
     <span class="comment">% optimization variables</span>
     variable <span class="string">x(m)</span>                 <span class="comment">% scale factor</span>
@@ -183,13 +182,7 @@ disp(<span class="string">'Generating the optimal tradeoff curve...'</span>)
         <span class="keyword">end</span>
       <span class="keyword">end</span>
   cvx_end
-
-  <span class="keyword">if</span> ~strfind(cvx_status,<span class="string">'Solved'</span>)
-    error(<span class="string">'Problem could not be solved.'</span>)
-  <span class="keyword">end</span>
-
-  <span class="comment">% display and store computed values</span>
-  fprintf(1,<span class="string">'  Pmax = %6.2f   delay = %3.2f\n'</span>,Pmax(n),cvx_optval);
+  fprintf( <span class="string">'delay = %3.2f\n'</span>, cvx_optval );
   min_delay(n) = cvx_optval;
 <span class="keyword">end</span>
 
@@ -203,31 +196,31 @@ disp(<span class="string">'Optimal tradeoff curve plotted.'</span>)
 <a id="output"></a>
 <pre class="codeoutput">
 Generating the optimal tradeoff curve...
-  Pmax =  10.00   delay = 14.20
-  Pmax =  10.42   delay = 12.33
-  Pmax =  10.83   delay = 11.51
-  Pmax =  11.25   delay = 11.02
-  Pmax =  11.67   delay = 10.72
-  Pmax =  12.08   delay = 10.48
-  Pmax =  12.50   delay = 10.27
-  Pmax =  12.92   delay = 10.08
-  Pmax =  13.33   delay = 9.92
-  Pmax =  13.75   delay = 9.78
-  Pmax =  14.17   delay = 9.66
-  Pmax =  14.58   delay = 9.54
-  Pmax =  15.00   delay = 9.44
-  Pmax =  15.42   delay = 9.35
-  Pmax =  15.83   delay = 9.26
-  Pmax =  16.25   delay = 9.18
-  Pmax =  16.67   delay = 9.15
-  Pmax =  17.08   delay = 9.15
-  Pmax =  17.50   delay = 9.15
-  Pmax =  17.92   delay = 9.15
-  Pmax =  18.33   delay = 9.15
-  Pmax =  18.75   delay = 9.15
-  Pmax =  19.17   delay = 9.15
-  Pmax =  19.58   delay = 9.15
-  Pmax =  20.00   delay = 9.15
+Pmax =  10.00: delay = 14.20
+Pmax =  10.42: delay = 12.33
+Pmax =  10.83: delay = 11.51
+Pmax =  11.25: delay = 11.02
+Pmax =  11.67: delay = 10.72
+Pmax =  12.08: delay = 10.48
+Pmax =  12.50: delay = 10.27
+Pmax =  12.92: delay = 10.08
+Pmax =  13.33: delay = 9.92
+Pmax =  13.75: delay = 9.78
+Pmax =  14.17: delay = 9.66
+Pmax =  14.58: delay = 9.54
+Pmax =  15.00: delay = 9.44
+Pmax =  15.42: delay = 9.35
+Pmax =  15.83: delay = 9.26
+Pmax =  16.25: delay = 9.18
+Pmax =  16.67: delay = 9.15
+Pmax =  17.08: delay = 9.15
+Pmax =  17.50: delay = 9.15
+Pmax =  17.92: delay = 9.15
+Pmax =  18.33: delay = 9.15
+Pmax =  18.75: delay = 9.15
+Pmax =  19.17: delay = 9.15
+Pmax =  19.58: delay = 9.15
+Pmax =  20.00: delay = 9.15
 Optimal tradeoff curve plotted.
 </pre>
 <a id="plots"></a>

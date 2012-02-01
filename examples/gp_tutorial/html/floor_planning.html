@@ -30,7 +30,7 @@ Jump to:&nbsp;&nbsp;&nbsp;&nbsp;
 <span class="comment">% width w_i and height h_i. They need to satisfy area and aspect</span>
 <span class="comment">% ration constraints. The GP is formulated as:</span>
 <span class="comment">%</span>
-<span class="comment">%   minimize   max(wa + wb, wc + wd)*(max(ha,hb) + max(hc,hd))</span>
+<span class="comment">%   minimize   max(wa+wb,wc+wd)*(max(ha,hb)+max(hc,hd))</span>
 <span class="comment">%       s.t.   wa*ha == area_a, wb*hb == area_b, ...</span>
 <span class="comment">%              1/alpha_max &lt;= ha/wa &lt;= alpha_max, ...</span>
 <span class="comment">%</span>
@@ -47,24 +47,24 @@ N = 20;
 alpha = linspace(1.01,4,N);
 
 fprintf(1,<span class="string">'Solving for the optimal tradeoff curve...\n'</span>);
-min_area = [];
+min_area = zeros(N,1);
 <span class="keyword">for</span> n = 1:N
   <span class="comment">% GP variables</span>
+  fprintf( <span class="string">'alpha = %.2f ... '</span>, alpha(n) );
   cvx_begin <span class="string">gp</span> <span class="string">quiet</span>
     variables <span class="string">wa</span> <span class="string">wb</span> <span class="string">wc</span> <span class="string">wd</span> <span class="string">ha</span> <span class="string">hb</span> <span class="string">hc</span> <span class="string">hd</span>
-
     <span class="comment">% objective function is the area of the bounding box</span>
-    minimize( max(wa + wb, wc + wd)*(max(ha,hb) + max(hc,hd)) )
+    minimize( max(wa+wb,wc+wd)*(max(ha,hb)+max(hc,hd)) )
     subject <span class="string">to</span>
       <span class="comment">% constraints (now impose the non-changing constraints)</span>
       ha*wa == a; hb*wb == b; hc*wc == c; hd*wd == d;
-      1/alpha(n) &lt;= ha/wa; ha/wa &lt;= alpha(n);
-      1/alpha(n) &lt;= hb/wb; hb/wb &lt;= alpha(n);
-      1/alpha(n) &lt;= hc/wc; hc/wc &lt;= alpha(n);
-      1/alpha(n) &lt;= hd/wd; hd/wd &lt;= alpha(n);
+      1/alpha(n) &lt;= ha/wa &lt;= alpha(n);
+      1/alpha(n) &lt;= hb/wb &lt;= alpha(n);
+      1/alpha(n) &lt;= hc/wc &lt;= alpha(n);
+      1/alpha(n) &lt;= hd/wd &lt;= alpha(n);
   cvx_end
-
-  min_area(n,1) = cvx_optval;
+  fprintf( <span class="string">'area = %.2f\n'</span>, cvx_optval );
+  min_area(n) = cvx_optval;
 <span class="keyword">end</span>
 
 figure, clf
@@ -76,6 +76,26 @@ disp(<span class="string">'Optimal tradeoff curve is plotted.'</span>)
 <a id="output"></a>
 <pre class="codeoutput">
 Solving for the optimal tradeoff curve...
+alpha = 1.01 ... area = 3.72
+alpha = 1.17 ... area = 3.53
+alpha = 1.32 ... area = 3.38
+alpha = 1.48 ... area = 3.26
+alpha = 1.64 ... area = 3.16
+alpha = 1.80 ... area = 3.07
+alpha = 1.95 ... area = 2.99
+alpha = 2.11 ... area = 2.93
+alpha = 2.27 ... area = 2.87
+alpha = 2.43 ... area = 2.82
+alpha = 2.58 ... area = 2.77
+alpha = 2.74 ... area = 2.73
+alpha = 2.90 ... area = 2.70
+alpha = 3.06 ... area = 2.70
+alpha = 3.21 ... area = 2.70
+alpha = 3.37 ... area = 2.70
+alpha = 3.53 ... area = 2.70
+alpha = 3.69 ... area = 2.70
+alpha = 3.84 ... area = 2.70
+alpha = 4.00 ... area = 2.70
 Optimal tradeoff curve is plotted.
 </pre>
 <a id="plots"></a>

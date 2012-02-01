@@ -142,8 +142,7 @@ cvx_begin <span class="string">gp</span>
 
     <span class="comment">% collect all the constraints</span>
     circuit_delay &lt;= Dmax;
-    x &gt;= x_min;
-    x &lt;= x_max;
+    x_min &lt;= x &lt;= x_max;
 cvx_end
 
 <span class="comment">% message about extra capacitance and result display</span>
@@ -169,15 +168,15 @@ Successive approximation method to be employed.
    Original size: 154 variables, 69 equality constraints
    38 exponentials add 304 variables, 190 equality constraints
 -----------------------------------------------------------------
-          Errors   
-Act Centering    Conic    Status
------------------------------------
-16  2.990e+00  5.216e-01  Unbounded
-38  4.315e+00  1.887e+00  Solved
-38  7.284e-01  4.656e-02  Solved
-38  3.382e-02  9.036e-05  Solved
-38  3.377e-03  7.761e-07  Solved
-38  4.130e-04  0.000e+00  Solved
+ Cones  |             Errors              |
+Mov/Act | Centering  Exp cone   Poly cone | Status
+--------+---------------------------------+---------
+ 16/ 16 | 3.268e+00  5.243e-01  0.000e+00 | Unbounded
+ 38/ 38 | 5.508e+00  1.887e+00  8.406e-08 | Solved
+ 38/ 38 | 1.071e+00  8.345e-02  2.688e-07 | Solved
+ 34/ 37 | 3.872e-02  1.054e-04  2.143e-07 | Solved
+  9/ 18 | 3.822e-03  1.030e-06  2.180e-07 | Solved
+  0/  0 | 0.000e+00  0.000e+00  0.000e+00 | Solved
 -----------------------------------------------------------------
 Status: Solved
 Optimal value (cvx_optval): +32.2495
@@ -188,14 +187,14 @@ Optimal scale factors are:
 
 x =
 
-    3.0460
-    2.6552
-    4.3319
-   12.4389
+    3.0463
+    2.6555
+    4.3325
+   12.4397
     1.0000
-    1.3187
-    2.2362
-    5.2225
+    1.3184
+    2.2358
+    5.2215
 
 </pre>
 <a id="plots"></a>

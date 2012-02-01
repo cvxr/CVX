@@ -14,6 +14,7 @@
 % over X and Y for a fixed number of iterations.
 
 % Generate data matrix A
+rstate = rand('state');
 m = 10; n = 10; k = 5;
 A = rand(m,k)*rand(k,n);
 
@@ -24,14 +25,14 @@ Y = rand(m,k);
 MAX_ITERS = 30;
 residual = zeros(1,MAX_ITERS);
 for iter = 1:MAX_ITERS
-    cvx_begin quiet
+    cvx_begin
         if mod(iter,2) == 1
             variable X(k,n)
+            X >= 0; 
         else
             variable Y(m,k)
+            Y >= 0;
         end
-        X >= 0; 
-        Y >= 0;
         minimize(norm(A - Y*X,'fro'));
     cvx_end
     fprintf(1,'Iteration %d, residual norm %g\n',iter,cvx_optval);

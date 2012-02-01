@@ -39,36 +39,34 @@ pwj = 1+g1-g2;
 
 v_array = [];
 for k = 1:length(beta_min_GE)
-  cvx_begin gp quiet
-    % optimization variables
-    variables v(M) y(M) w(M)
+    fprintf( 'beta_min_GE = %g: ', beta_min_GE(k) );
+    cvx_begin gp quiet
+        % optimization variables
+        variables v(M) y(M) w(M)
 
-    % objective function is the base transmit time
-    tau_B = C*w(1);
+        % objective function is the base transmit time
+        tau_B = C*w(1);
 
-    minimize( tau_B )
-    subject to
-      % fixed problem constraints
-      v >= Nmin;
-      v <= Nmax;
+        minimize( tau_B )
+        subject to
+        % fixed problem constraints
+        Nmin <= v <= Nmax;
 
-      for i=1:M-1
-        if( mod(i,100) == 0 ), fprintf(1,'progress counter: %d\n',i), end;
-        y(i+1) + v(i)^pwj <= y(i);
-        w(i+1) + y(i)*v(i)^pwi <= w(i);
-      end
+        for i=1:M-1
+            y(i+1) + v(i)^pwj <= y(i);
+            w(i+1) + y(i)*v(i)^pwi <= w(i);
+        end
 
-      % equalities
-      y(M) == v(M)^pwj;
-      w(M) == y(M)*v(M)^pwi;
+        % equalities
+        y(M) == v(M)^pwj;
+        w(M) == y(M)*v(M)^pwi;
 
-      % changing constraint
-      disp(['Solving for beta_min_GE = ', num2str(beta_min_GE(k))])
-      (WB*beta_min_GE(k)/(M*Nref^(g1-g2)*Dn0))*y(1) <= 1;
-  cvx_end
-
-  % keep the optimal solution
-  v_array = [v_array v];
+        % changing constraint
+        (WB*beta_min_GE(k)/(M*Nref^(g1-g2)*Dn0))*y(1) <= 1;
+    cvx_end
+    fprintf( '%s\n', cvx_status );
+    % keep the optimal solution
+    v_array = [v_array v];
 end
 
 % plot the basic optimal doping profile

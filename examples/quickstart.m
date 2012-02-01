@@ -62,8 +62,7 @@ cvx_begin
     variable x(n);
     minimize( norm(A*x-b) );
     subject to
-        x >= l;
-        x <= u;
+        l <= x <= u;
 cvx_end
 
 echo off

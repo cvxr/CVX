@@ -59,36 +59,34 @@ pwj = 1+g1-g2;
 
 v_array = [];
 <span class="keyword">for</span> k = 1:length(beta_min_GE)
-  cvx_begin <span class="string">gp</span> <span class="string">quiet</span>
-    <span class="comment">% optimization variables</span>
-    variables <span class="string">v(M)</span> <span class="string">y(M)</span> <span class="string">w(M)</span>
+    fprintf( <span class="string">'beta_min_GE = %g: '</span>, beta_min_GE(k) );
+    cvx_begin <span class="string">gp</span> <span class="string">quiet</span>
+        <span class="comment">% optimization variables</span>
+        variables <span class="string">v(M)</span> <span class="string">y(M)</span> <span class="string">w(M)</span>
 
-    <span class="comment">% objective function is the base transmit time</span>
-    tau_B = C*w(1);
+        <span class="comment">% objective function is the base transmit time</span>
+        tau_B = C*w(1);
 
-    minimize( tau_B )
-    subject <span class="string">to</span>
-      <span class="comment">% fixed problem constraints</span>
-      v &gt;= Nmin;
-      v &lt;= Nmax;
+        minimize( tau_B )
+        subject <span class="string">to</span>
+        <span class="comment">% fixed problem constraints</span>
+        Nmin &lt;= v &lt;= Nmax;
 
-      <span class="keyword">for</span> i=1:M-1
-        <span class="keyword">if</span>( mod(i,100) == 0 ), fprintf(1,<span class="string">'progress counter: %d\n'</span>,i), <span class="keyword">end</span>;
-        y(i+1) + v(i)^pwj &lt;= y(i);
-        w(i+1) + y(i)*v(i)^pwi &lt;= w(i);
-      <span class="keyword">end</span>
+        <span class="keyword">for</span> i=1:M-1
+            y(i+1) + v(i)^pwj &lt;= y(i);
+            w(i+1) + y(i)*v(i)^pwi &lt;= w(i);
+        <span class="keyword">end</span>
 
-      <span class="comment">% equalities</span>
-      y(M) == v(M)^pwj;
-      w(M) == y(M)*v(M)^pwi;
+        <span class="comment">% equalities</span>
+        y(M) == v(M)^pwj;
+        w(M) == y(M)*v(M)^pwi;
 
-      <span class="comment">% changing constraint</span>
-      disp([<span class="string">'Solving for beta_min_GE = '</span>, num2str(beta_min_GE(k))])
-      (WB*beta_min_GE(k)/(M*Nref^(g1-g2)*Dn0))*y(1) &lt;= 1;
-  cvx_end
-
-  <span class="comment">% keep the optimal solution</span>
-  v_array = [v_array v];
+        <span class="comment">% changing constraint</span>
+        (WB*beta_min_GE(k)/(M*Nref^(g1-g2)*Dn0))*y(1) &lt;= 1;
+    cvx_end
+    fprintf( <span class="string">'%s\n'</span>, cvx_status );
+    <span class="comment">% keep the optimal solution</span>
+    v_array = [v_array v];
 <span class="keyword">end</span>
 
 <span class="comment">% plot the basic optimal doping profile</span>
@@ -106,14 +104,14 @@ hold <span class="string">off</span>;
 </pre>
 <a id="output"></a>
 <pre class="codeoutput">
-Solving for beta_min_GE = 1e-11
-Solving for beta_min_GE = 1.4e-11
-Solving for beta_min_GE = 1.8e-11
-Solving for beta_min_GE = 2.2e-11
-Solving for beta_min_GE = 2.6e-11
-Solving for beta_min_GE = 3e-11
-Solving for beta_min_GE = 3.4e-11
-Solving for beta_min_GE = 3.43e-11
+beta_min_GE = 1e-11: Solved
+beta_min_GE = 1.4e-11: Solved
+beta_min_GE = 1.8e-11: Solved
+beta_min_GE = 2.2e-11: Solved
+beta_min_GE = 2.6e-11: Solved
+beta_min_GE = 3e-11: Solved
+beta_min_GE = 3.4e-11: Solved
+beta_min_GE = 3.43e-11: Solved
 </pre>
 <a id="plots"></a>
 <div id="plotoutput">

@@ -44,6 +44,7 @@ disp('Generating the optimal tradeoff curve...')
 % varying phase noise parameter for the tradeoff curve
 powers = [];
 for PNSpec=0.7e-12:0.2e-12:1e-11
+  fprintf('  PNSpec = %5.2f dBc/Hz: ', 10*log10(PNSpec) );
   cvx_begin gp quiet
     % optimization variables
     variable D;        % diameter of loop inductor
@@ -135,10 +136,7 @@ for PNSpec=0.7e-12:0.2e-12:1e-11
       Vbias+Vgs+IBias/2*R/2 <= Vdd;  % bias constraint spec
       I == IBias;
   cvx_end
-
-  % display and store computed values
-  fprintf(1,'  PNSpec = %5.2f (dBc/Hz)   min_power = %3.2f (mW)\n', ...
-          10*log10(PNSpec),cvx_optval/1e-3);
+  fprintf('min_power = %3.2f mW\n', cvx_optval/1e-3);
   powers = [powers cvx_optval];
 end
 

@@ -81,63 +81,60 @@ leafs = [];
 <span class="comment">%********************************************************************</span>
 
 disp(<span class="string">'Generating the tradeoff curve...'</span>)
-
 Darray = []; widths = [];
 <span class="keyword">for</span> Amax = [10.05 10.5 11 12:2:20 22.5 25:5:60]
-  cvx_begin <span class="string">gp</span> <span class="string">quiet</span>
-    <span class="comment">% optimization variables</span>
-    variable <span class="string">w(N-1)</span>     <span class="comment">% wire width</span>
-    variable <span class="string">T(N)</span>       <span class="comment">% arrival time (Elmore delay to node i)</span>
+    fprintf( <span class="string">'Amax = %5.2f: '</span>, Amax );
+    cvx_begin <span class="string">gp</span> <span class="string">quiet</span>
+        <span class="comment">% optimization variables</span>
+        variable <span class="string">w(N-1)</span>     <span class="comment">% wire width</span>
+        variable <span class="string">T(N)</span>       <span class="comment">% arrival time (Elmore delay to node i)</span>
 
-    <span class="comment">% objective is the critical Elmore delay</span>
-    minimize( max( T(leafs) ) )
-    subject <span class="string">to</span>
+        <span class="comment">% objective is the critical Elmore delay</span>
+        minimize( max( T(leafs) ) )
+        subject <span class="string">to</span>
 
-      <span class="comment">% wire segment resistance is inversely proportional to widths</span>
-      R = alpha.*l./w;
-      R = [Rsource; R];
+          <span class="comment">% wire segment resistance is inversely proportional to widths</span>
+          R = alpha.*l./w;
+          R = [Rsource; R];
 
-      <span class="comment">% wire segment capacitance is an affine function of widths</span>
-      C_bar = beta.*l.*w + gamma.*l;
-      C_bar = [0; C_bar];
+          <span class="comment">% wire segment capacitance is an affine function of widths</span>
+          C_bar = beta.*l.*w + gamma.*l;
+          C_bar = [0; C_bar];
 
-      <span class="comment">% compute common capacitances for each node (C_tilde in GP tutorial)</span>
-      C_tilde = cvx( zeros(N,1) );
-      <span class="keyword">for</span> node = [1:N]
-        C_tilde(node,1) = Cload(node);
-        <span class="keyword">for</span> k = parent(node)
-          <span class="keyword">if</span> k &gt; 0; C_tilde(node,1) = C_tilde(node,1) + C_bar(k); <span class="keyword">end</span>;
+          <span class="comment">% compute common capacitances for each node (C_tilde in GP tutorial)</span>
+          C_tilde = cvx( zeros(N,1) );
+          <span class="keyword">for</span> node = [1:N]
+            C_tilde(node,1) = Cload(node);
+            <span class="keyword">for</span> k = parent(node)
+              <span class="keyword">if</span> k &gt; 0; C_tilde(node,1) = C_tilde(node,1) + C_bar(k); <span class="keyword">end</span>;
+            <span class="keyword">end</span>
+            <span class="keyword">for</span> k = children{node}
+              C_tilde(node,1) = C_tilde(node,1) + C_bar(k);
+            <span class="keyword">end</span>
+          <span class="keyword">end</span>
+
+          <span class="comment">% now compute total downstream capacitances</span>
+          C_total = C_tilde;
+          <span class="keyword">for</span> node = N:-1:1
+            <span class="keyword">for</span> k = children{node}
+              C_total(node,1) = C_total(node,1) + C_total(k,1);
+            <span class="keyword">end</span>
+          <span class="keyword">end</span>
+
+        <span class="comment">% generate Elmore delay constraints</span>
+        R(1)*C_total(1) &lt;= T(1,1);
+        <span class="keyword">for</span> node = 2:N
+          R(node)*C_total(node) + T(parent(node),1) &lt;= T(node,1);
         <span class="keyword">end</span>
-        <span class="keyword">for</span> k = children{node}
-          C_tilde(node,1) = C_tilde(node,1) + C_bar(k);
-        <span class="keyword">end</span>
-      <span class="keyword">end</span>
 
-      <span class="comment">% now compute total downstream capacitances</span>
-      C_total = C_tilde;
-      <span class="keyword">for</span> node = N:-1:1
-        <span class="keyword">for</span> k = children{node}
-          C_total(node,1) = C_total(node,1) + C_total(k,1);
-        <span class="keyword">end</span>
-      <span class="keyword">end</span>
-
-    <span class="comment">% generate Elmore delay constraints</span>
-    R(1)*C_total(1) &lt;= T(1,1);
-    <span class="keyword">for</span> node = 2:N
-      R(node)*C_total(node) + T(parent(node),1) &lt;= T(node,1);
-    <span class="keyword">end</span>
-
-    <span class="comment">% collect all the constraints</span>
-    area = sum(w.*l);
-    area &lt;= Amax;
-    w &gt;= Wmin;
-    w &lt;= Wmax;
-  cvx_end
-
-  <span class="comment">% display and store computed values</span>
-  fprintf(1,<span class="string">'  Amax = %5.2f   delay = %3.2f\n'</span>,Amax,cvx_optval);
-  Darray = [Darray cvx_optval];
-  widths = [widths w];
+        <span class="comment">% collect all the constraints</span>
+        sum(w.*l) &lt;= Amax;
+        Wmin &lt;= w &lt;= Wmax;
+    cvx_end
+    <span class="comment">% display and store computed values</span>
+    fprintf(<span class="string">'delay = %3.2f\n'</span>,cvx_optval);
+    Darray = [Darray cvx_optval];
+    widths = [widths w];
 <span class="keyword">end</span>
 
 <span class="comment">% indices of four taper designs on the tradeoff curve</span>
@@ -168,23 +165,23 @@ plot_four_tapers(w1,w2,w3,w4);
 <a id="output"></a>
 <pre class="codeoutput">
 Generating the tradeoff curve...
-  Amax = 10.05   delay = 255.72
-  Amax = 10.50   delay = 241.04
-  Amax = 11.00   delay = 228.67
-  Amax = 12.00   delay = 209.98
-  Amax = 14.00   delay = 184.90
-  Amax = 16.00   delay = 168.19
-  Amax = 18.00   delay = 156.01
-  Amax = 20.00   delay = 146.74
-  Amax = 22.50   delay = 137.78
-  Amax = 25.00   delay = 130.82
-  Amax = 30.00   delay = 120.77
-  Amax = 35.00   delay = 113.95
-  Amax = 40.00   delay = 109.06
-  Amax = 45.00   delay = 105.43
-  Amax = 50.00   delay = 102.96
-  Amax = 55.00   delay = 101.76
-  Amax = 60.00   delay = 101.60
+Amax = 10.05: delay = 255.72
+Amax = 10.50: delay = 241.04
+Amax = 11.00: delay = 228.67
+Amax = 12.00: delay = 209.98
+Amax = 14.00: delay = 184.90
+Amax = 16.00: delay = 168.19
+Amax = 18.00: delay = 156.01
+Amax = 20.00: delay = 146.74
+Amax = 22.50: delay = 137.78
+Amax = 25.00: delay = 130.82
+Amax = 30.00: delay = 120.77
+Amax = 35.00: delay = 113.95
+Amax = 40.00: delay = 109.06
+Amax = 45.00: delay = 105.43
+Amax = 50.00: delay = 102.96
+Amax = 55.00: delay = 101.76
+Amax = 60.00: delay = 101.60
 Optimal tradeoff curve plotted.
 </pre>
 <a id="plots"></a>

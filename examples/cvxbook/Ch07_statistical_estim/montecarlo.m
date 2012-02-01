@@ -1,13 +1,11 @@
 function prob = montecarlo(A,b,Sigma,notrials);
 
-% estimates probability than random vector x in R2
-% with mean zero and covariance Sigma satisfies Ax <= b
+% Probability estimate using Monte Carlo methods
 %
-% Sigma must be postive definite
-%
-% based on 100*notrials trials
+% Estimates the probability that a random vector x in R2
+% with mean zero and covariance Sigma satisfies Ax <= b,
+% based on 100 * notrials trials. Sigma must be PSD.
 
-randn('state',0);
 m = size(A,1);
 
 R = chol(Sigma);   % Y = R^{-T}X has covariance I

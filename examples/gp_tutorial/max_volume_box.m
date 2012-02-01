@@ -28,9 +28,11 @@ disp('Computing optimal box volume for:')
 % setup various GP problems with varying parameters
 for k = 1:length(Awall)
   Awall_k = Awall(k);
+  fprintf( 'Awall = %d:\n', Awall(k) );
   for n = 1:N
     % resolve the problem with varying parameters
     Afloor_n = Afloor(n);
+    fprintf( '    Afloor = %7.2f: ', Afloor(n) );
     cvx_begin gp quiet
       variables h w d
       % objective function is the box volume
@@ -38,14 +40,10 @@ for k = 1:length(Awall)
       subject to
         2*(h*w + h*d) <= Awall_k;
         w*d <= Afloor_n;
-        h/w >= alpha;
-        h/w <= beta;
-        d/w >= gamma;
-        d/w <= delta;
+        alpha <= h/w <= beta;
+        gamma <= d/w <= delta;
     cvx_end
-
-    fprintf(1,'  Awall = %5d   Afloor = %7.2f   max_volume = %3.2f\n', ...
-            Awall(k),Afloor(n),cvx_optval);
+    fprintf( 'max_volume = %3.2f\n', cvx_optval );
     opt_volumes(k,n) = cvx_optval;
   end
 end

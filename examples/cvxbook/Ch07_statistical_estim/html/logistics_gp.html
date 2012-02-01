@@ -93,18 +93,15 @@ Successive approximation method to be employed.
    Original size: 656 variables, 401 equality constraints
    200 exponentials add 1600 variables, 1000 equality constraints
 -----------------------------------------------------------------
-          Errors   
-Act Centering    Conic    Status
------------------------------------
-200 4.023e+00  2.242e+00  Solved
-200 2.642e-01  5.841e-03  Solved
-200 5.006e-02  2.039e-04  Solved
-200 6.790e-03  3.506e-06  Solved
-200 8.516e-04  2.930e-09  Solved
-200 1.065e-04  1.818e-09  Solved
-200 1.329e-05  1.824e-09S Solved
-200 1.632e-06  1.824e-09S Solved
-200 1.728e-04S 3.667e-10  Solved
+ Cones  |             Errors              |
+Mov/Act | Centering  Exp cone   Poly cone | Status
+--------+---------------------------------+---------
+200/200 | 5.361e+00  2.242e+00  1.198e-09 | Solved
+200/200 | 4.227e-01  1.259e-02  1.428e-09 | Solved
+200/200 | 4.361e-02  1.353e-04  1.858e-09 | Solved
+117/164 | 1.943e-03  1.780e-07  1.938e-09 | Solved
+  1/112 | 8.779e-04  1.938e-09  1.938e-09 | Solved
+  0/111 | 1.143e-06  1.939e-09  1.937e-09 | Solved
 -----------------------------------------------------------------
 Status: Solved
 Optimal value (cvx_optval): +2.10331e+14

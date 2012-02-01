@@ -10,5 +10,5 @@
 %  detector2.m                - Example 7.4: Binary hypothesis testing
 %  cheb.m                     - Computes Chebyshev lower bounds on probability vectors
 %  cher.m                     - Computes Chernoff upper bounds on probability
-%  montecarlo.m               - estimates probability than random vector x in R2
+%  montecarlo.m               - Probability estimate using Monte Carlo methods
 help Contents

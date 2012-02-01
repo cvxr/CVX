@@ -64,6 +64,7 @@ disp(<span class="string">'Generating the optimal tradeoff curve...'</span>)
 <span class="comment">% varying phase noise parameter for the tradeoff curve</span>
 powers = [];
 <span class="keyword">for</span> PNSpec=0.7e-12:0.2e-12:1e-11
+  fprintf(<span class="string">'  PNSpec = %5.2f dBc/Hz: '</span>, 10*log10(PNSpec) );
   cvx_begin <span class="string">gp</span> <span class="string">quiet</span>
     <span class="comment">% optimization variables</span>
     variable <span class="string">D</span>;        <span class="comment">% diameter of loop inductor</span>
@@ -155,10 +156,7 @@ powers = [];
       Vbias+Vgs+IBias/2*R/2 &lt;= Vdd;  <span class="comment">% bias constraint spec</span>
       I == IBias;
   cvx_end
-
-  <span class="comment">% display and store computed values</span>
-  fprintf(1,<span class="string">'  PNSpec = %5.2f (dBc/Hz)   min_power = %3.2f (mW)\n'</span>, <span class="keyword">...</span>
-          10*log10(PNSpec),cvx_optval/1e-3);
+  fprintf(<span class="string">'min_power = %3.2f mW\n'</span>, cvx_optval/1e-3);
   powers = [powers cvx_optval];
 <span class="keyword">end</span>
 
@@ -172,53 +170,53 @@ disp(<span class="string">'Optimal tradeoff curve plotted.'</span>)
 <a id="output"></a>
 <pre class="codeoutput">
 Generating the optimal tradeoff curve...
-  PNSpec = -121.55 (dBc/Hz)   min_power = 19.00 (mW)
-  PNSpec = -120.46 (dBc/Hz)   min_power = 11.41 (mW)
-  PNSpec = -119.59 (dBc/Hz)   min_power = 8.35 (mW)
-  PNSpec = -118.86 (dBc/Hz)   min_power = 6.44 (mW)
-  PNSpec = -118.24 (dBc/Hz)   min_power = 5.64 (mW)
-  PNSpec = -117.70 (dBc/Hz)   min_power = 5.30 (mW)
-  PNSpec = -117.21 (dBc/Hz)   min_power = 5.02 (mW)
-  PNSpec = -116.78 (dBc/Hz)   min_power = 4.77 (mW)
-  PNSpec = -116.38 (dBc/Hz)   min_power = 4.56 (mW)
-  PNSpec = -116.02 (dBc/Hz)   min_power = 4.38 (mW)
-  PNSpec = -115.69 (dBc/Hz)   min_power = 4.21 (mW)
-  PNSpec = -115.38 (dBc/Hz)   min_power = 4.07 (mW)
-  PNSpec = -115.09 (dBc/Hz)   min_power = 3.93 (mW)
-  PNSpec = -114.81 (dBc/Hz)   min_power = 3.81 (mW)
-  PNSpec = -114.56 (dBc/Hz)   min_power = 32.42 (mW)
-  PNSpec = -114.32 (dBc/Hz)   min_power = 3.60 (mW)
-  PNSpec = -114.09 (dBc/Hz)   min_power = 3.51 (mW)
-  PNSpec = -113.87 (dBc/Hz)   min_power = 3.42 (mW)
-  PNSpec = -113.67 (dBc/Hz)   min_power = 3.34 (mW)
-  PNSpec = -113.47 (dBc/Hz)   min_power = 3.27 (mW)
-  PNSpec = -113.28 (dBc/Hz)   min_power = 3.20 (mW)
-  PNSpec = -113.10 (dBc/Hz)   min_power = 3.13 (mW)
-  PNSpec = -112.92 (dBc/Hz)   min_power = 3.07 (mW)
-  PNSpec = -112.76 (dBc/Hz)   min_power = 3.01 (mW)
-  PNSpec = -112.60 (dBc/Hz)   min_power = 2.96 (mW)
-  PNSpec = -112.44 (dBc/Hz)   min_power = 2.91 (mW)
-  PNSpec = -112.29 (dBc/Hz)   min_power = 2.86 (mW)
-  PNSpec = -112.15 (dBc/Hz)   min_power = 2.81 (mW)
-  PNSpec = -112.01 (dBc/Hz)   min_power = 2.77 (mW)
-  PNSpec = -111.87 (dBc/Hz)   min_power = 2.72 (mW)
-  PNSpec = -111.74 (dBc/Hz)   min_power = 2.68 (mW)
-  PNSpec = -111.61 (dBc/Hz)   min_power = 2.64 (mW)
-  PNSpec = -111.49 (dBc/Hz)   min_power = 2.61 (mW)
-  PNSpec = -111.37 (dBc/Hz)   min_power = 2.57 (mW)
-  PNSpec = -111.25 (dBc/Hz)   min_power = 2.54 (mW)
-  PNSpec = -111.14 (dBc/Hz)   min_power = 2.50 (mW)
-  PNSpec = -111.02 (dBc/Hz)   min_power = 2.47 (mW)
-  PNSpec = -110.92 (dBc/Hz)   min_power = 2.44 (mW)
-  PNSpec = -110.81 (dBc/Hz)   min_power = 2.41 (mW)
-  PNSpec = -110.71 (dBc/Hz)   min_power = 2.38 (mW)
-  PNSpec = -110.60 (dBc/Hz)   min_power = 2.36 (mW)
-  PNSpec = -110.51 (dBc/Hz)   min_power = 2.33 (mW)
-  PNSpec = -110.41 (dBc/Hz)   min_power = 2.31 (mW)
-  PNSpec = -110.32 (dBc/Hz)   min_power = 2.28 (mW)
-  PNSpec = -110.22 (dBc/Hz)   min_power = 2.26 (mW)
-  PNSpec = -110.13 (dBc/Hz)   min_power = 2.23 (mW)
-  PNSpec = -110.04 (dBc/Hz)   min_power = 2.21 (mW)
+  PNSpec = -121.55 dBc/Hz: min_power = 19.00 mW
+  PNSpec = -120.46 dBc/Hz: min_power = 11.41 mW
+  PNSpec = -119.59 dBc/Hz: min_power = 8.35 mW
+  PNSpec = -118.86 dBc/Hz: min_power = 6.44 mW
+  PNSpec = -118.24 dBc/Hz: min_power = 5.64 mW
+  PNSpec = -117.70 dBc/Hz: min_power = 5.30 mW
+  PNSpec = -117.21 dBc/Hz: min_power = 5.02 mW
+  PNSpec = -116.78 dBc/Hz: min_power = 4.77 mW
+  PNSpec = -116.38 dBc/Hz: min_power = 4.56 mW
+  PNSpec = -116.02 dBc/Hz: min_power = 4.38 mW
+  PNSpec = -115.69 dBc/Hz: min_power = 4.21 mW
+  PNSpec = -115.38 dBc/Hz: min_power = 4.07 mW
+  PNSpec = -115.09 dBc/Hz: min_power = 3.93 mW
+  PNSpec = -114.81 dBc/Hz: min_power = 3.81 mW
+  PNSpec = -114.56 dBc/Hz: min_power = 3.70 mW
+  PNSpec = -114.32 dBc/Hz: min_power = 3.60 mW
+  PNSpec = -114.09 dBc/Hz: min_power = 3.51 mW
+  PNSpec = -113.87 dBc/Hz: min_power = 3.42 mW
+  PNSpec = -113.67 dBc/Hz: min_power = 3.34 mW
+  PNSpec = -113.47 dBc/Hz: min_power = 3.27 mW
+  PNSpec = -113.28 dBc/Hz: min_power = 3.20 mW
+  PNSpec = -113.10 dBc/Hz: min_power = 3.13 mW
+  PNSpec = -112.92 dBc/Hz: min_power = 3.07 mW
+  PNSpec = -112.76 dBc/Hz: min_power = 3.01 mW
+  PNSpec = -112.60 dBc/Hz: min_power = 2.96 mW
+  PNSpec = -112.44 dBc/Hz: min_power = 2.91 mW
+  PNSpec = -112.29 dBc/Hz: min_power = 2.86 mW
+  PNSpec = -112.15 dBc/Hz: min_power = 2.81 mW
+  PNSpec = -112.01 dBc/Hz: min_power = 2.77 mW
+  PNSpec = -111.87 dBc/Hz: min_power = 2.72 mW
+  PNSpec = -111.74 dBc/Hz: min_power = 2.68 mW
+  PNSpec = -111.61 dBc/Hz: min_power = 2.64 mW
+  PNSpec = -111.49 dBc/Hz: min_power = 2.61 mW
+  PNSpec = -111.37 dBc/Hz: min_power = 2.57 mW
+  PNSpec = -111.25 dBc/Hz: min_power = 2.54 mW
+  PNSpec = -111.14 dBc/Hz: min_power = 2.50 mW
+  PNSpec = -111.02 dBc/Hz: min_power = 2.47 mW
+  PNSpec = -110.92 dBc/Hz: min_power = 2.44 mW
+  PNSpec = -110.81 dBc/Hz: min_power = 2.41 mW
+  PNSpec = -110.71 dBc/Hz: min_power = 2.38 mW
+  PNSpec = -110.60 dBc/Hz: min_power = 2.36 mW
+  PNSpec = -110.51 dBc/Hz: min_power = 2.33 mW
+  PNSpec = -110.41 dBc/Hz: min_power = 2.31 mW
+  PNSpec = -110.32 dBc/Hz: min_power = 2.28 mW
+  PNSpec = -110.22 dBc/Hz: min_power = 2.26 mW
+  PNSpec = -110.13 dBc/Hz: min_power = 2.23 mW
+  PNSpec = -110.04 dBc/Hz: min_power = 2.21 mW
 Optimal tradeoff curve plotted.
 </pre>
 <a id="plots"></a>

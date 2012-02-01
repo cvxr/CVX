@@ -44,6 +44,7 @@ fprintf( 1, <span class="string">'Gamma: '</span> );
    xnrms( k ) = norm( x, Inf );
 <span class="keyword">end</span>
 fprintf( 1, <span class="string">'done.\n'</span> );
+figure
 semilogx( gamma, nrms );
 xlabel( <span class="string">'\gamma'</span> );
 ylabel( <span class="string">'|| A * x - b ||_1'</span> );

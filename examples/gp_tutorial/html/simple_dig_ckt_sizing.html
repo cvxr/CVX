@@ -63,58 +63,57 @@ min_delay = zeros(length(Amax),N);
 disp(<span class="string">'Generating the optimal tradeoff curve...'</span>)
 
 <span class="keyword">for</span> k = 1:length(Amax)
-  <span class="keyword">for</span> n = 1:N
-    cvx_begin <span class="string">gp</span> <span class="string">quiet</span>
-      <span class="comment">% optimization variables</span>
-      variable <span class="string">x(m)</span>           <span class="comment">% scale factors</span>
+    fprintf( <span class="string">'Amax = %d:\n'</span>, Amax(k) );
+    <span class="keyword">for</span> n = 1:N
+        fprintf( <span class="string">'    Pmax = %6.2f: '</span>, Pmax(n) );
+        cvx_begin <span class="string">gp</span> <span class="string">quiet</span>
+          <span class="comment">% optimization variables</span>
+          variable <span class="string">x(m)</span>           <span class="comment">% scale factors</span>
 
-      <span class="comment">% input capacitance is an affine function of sizes</span>
-      cin = alpha + beta.*x;
+          <span class="comment">% input capacitance is an affine function of sizes</span>
+          cin = alpha + beta.*x;
 
-      <span class="comment">% load capacitance of a gate is the sum of its fan-out c_in's</span>
-      clear <span class="string">cload</span>; <span class="comment">% start with a fresh variable</span>
-      cload(1) = cin(4);
-      cload(2) = cin(4) + cin(5);
-      cload(3) = cin(5) + cin(7);
-      cload(4) = cin(6) + cin(7);
-      cload(5) = cin(7);
-      <span class="comment">% output gates have their load capacitances</span>
-      cload(6) = Cout6;
-      cload(7) = Cout7;
+          <span class="comment">% load capacitance of a gate is the sum of its fan-out c_in's</span>
+          clear <span class="string">cload</span>; <span class="comment">% start with a fresh variable</span>
+          cload(1) = cin(4);
+          cload(2) = cin(4) + cin(5);
+          cload(3) = cin(5) + cin(7);
+          cload(4) = cin(6) + cin(7);
+          cload(5) = cin(7);
+          <span class="comment">% output gates have their load capacitances</span>
+          cload(6) = Cout6;
+          cload(7) = Cout7;
 
-      <span class="comment">% gate delay is the product of its driving res. R = gamma./x and cload</span>
-      d = (cload').*gamma./x;
+          <span class="comment">% gate delay is the product of its driving res. R = gamma./x and cload</span>
+          d = (cload').*gamma./x;
 
-      power = (f.*e)'*x;         <span class="comment">% total power</span>
-      area = a'*x;               <span class="comment">% total area</span>
+          power = (f.*e)'*x;         <span class="comment">% total power</span>
+          area = a'*x;               <span class="comment">% total area</span>
 
-      <span class="comment">% evaluate delay over all paths in the given circuit (there are 7 paths)</span>
-      path_delays = [ <span class="keyword">...</span>
-        d(1) + d(4) + d(6); <span class="comment">% delay of path 1</span>
-        d(1) + d(4) + d(7); <span class="comment">% delay of path 2, etc...</span>
-        d(2) + d(4) + d(6);
-        d(2) + d(4) + d(7);
-        d(2) + d(5) + d(7);
-        d(3) + d(5) + d(6);
-        d(3) + d(7) ];
+          <span class="comment">% evaluate delay over all paths in the given circuit (there are 7 paths)</span>
+          path_delays = [ <span class="keyword">...</span>
+            d(1) + d(4) + d(6); <span class="comment">% delay of path 1</span>
+            d(1) + d(4) + d(7); <span class="comment">% delay of path 2, etc...</span>
+            d(2) + d(4) + d(6);
+            d(2) + d(4) + d(7);
+            d(2) + d(5) + d(7);
+            d(3) + d(5) + d(6);
+            d(3) + d(7) ];
 
-      <span class="comment">% overall circuit delay</span>
-      circuit_delay = ( max(path_delays) );
+          <span class="comment">% overall circuit delay</span>
+          circuit_delay = ( max(path_delays) );
 
-      <span class="comment">% objective is the worst-case delay</span>
-      minimize( circuit_delay )
-      subject <span class="string">to</span>
-        <span class="comment">% construct the constraints</span>
-        x &gt;= 1;             <span class="comment">% all sizes greater than 1 (normalized)</span>
-        power &lt;= Pmax(n);   <span class="comment">% power constraint</span>
-        area &lt;= Amax(k);    <span class="comment">% area constraint</span>
-    cvx_end
-
-    <span class="comment">% display and store computed values</span>
-    fprintf(1,<span class="string">'  Amax = %3d   Pmax = %6.2f   delay = %3.2f\n'</span>, <span class="keyword">...</span>
-            Amax(k),Pmax(n),cvx_optval);
-    min_delay(k,n) = cvx_optval;
-  <span class="keyword">end</span>
+          <span class="comment">% objective is the worst-case delay</span>
+          minimize( circuit_delay )
+          subject <span class="string">to</span>
+            <span class="comment">% construct the constraints</span>
+            x &gt;= 1;             <span class="comment">% all sizes greater than 1 (normalized)</span>
+            power &lt;= Pmax(n);   <span class="comment">% power constraint</span>
+            area &lt;= Amax(k);    <span class="comment">% area constraint</span>
+        cvx_end
+        fprintf( <span class="string">'delay = %3.2f\n'</span>, cvx_optval );
+        min_delay(k,n) = cvx_optval;
+    <span class="keyword">end</span>
 <span class="keyword">end</span>
 
 <span class="comment">% plot the tradeoff curve</span>
@@ -125,81 +124,84 @@ disp(<span class="string">'Optimal tradeoff curve plotted.'</span>)
 <a id="output"></a>
 <pre class="codeoutput">
 Generating the optimal tradeoff curve...
-  Amax =  25   Pmax =  10.00   delay = 12.21
-  Amax =  25   Pmax =  13.75   delay = 9.81
-  Amax =  25   Pmax =  17.50   delay = 8.51
-  Amax =  25   Pmax =  21.25   delay = 7.63
-  Amax =  25   Pmax =  25.00   delay = 6.98
-  Amax =  25   Pmax =  28.75   delay = 6.80
-  Amax =  25   Pmax =  32.50   delay = 6.80
-  Amax =  25   Pmax =  36.25   delay = 6.80
-  Amax =  25   Pmax =  40.00   delay = 6.80
-  Amax =  25   Pmax =  43.75   delay = 6.80
-  Amax =  25   Pmax =  47.50   delay = 6.80
-  Amax =  25   Pmax =  51.25   delay = 6.80
-  Amax =  25   Pmax =  55.00   delay = 6.80
-  Amax =  25   Pmax =  58.75   delay = 6.80
-  Amax =  25   Pmax =  62.50   delay = 6.80
-  Amax =  25   Pmax =  66.25   delay = 6.80
-  Amax =  25   Pmax =  70.00   delay = 6.80
-  Amax =  25   Pmax =  73.75   delay = 6.80
-  Amax =  25   Pmax =  77.50   delay = 6.80
-  Amax =  25   Pmax =  81.25   delay = 6.80
-  Amax =  25   Pmax =  85.00   delay = 6.80
-  Amax =  25   Pmax =  88.75   delay = 6.80
-  Amax =  25   Pmax =  92.50   delay = 6.80
-  Amax =  25   Pmax =  96.25   delay = 6.80
-  Amax =  25   Pmax = 100.00   delay = 6.80
-  Amax =  50   Pmax =  10.00   delay = 12.21
-  Amax =  50   Pmax =  13.75   delay = 9.81
-  Amax =  50   Pmax =  17.50   delay = 8.51
-  Amax =  50   Pmax =  21.25   delay = 7.63
-  Amax =  50   Pmax =  25.00   delay = 6.98
-  Amax =  50   Pmax =  28.75   delay = 6.48
-  Amax =  50   Pmax =  32.50   delay = 6.08
-  Amax =  50   Pmax =  36.25   delay = 5.75
-  Amax =  50   Pmax =  40.00   delay = 5.48
-  Amax =  50   Pmax =  43.75   delay = 5.24
-  Amax =  50   Pmax =  47.50   delay = 5.03
-  Amax =  50   Pmax =  51.25   delay = 4.85
-  Amax =  50   Pmax =  55.00   delay = 4.71
-  Amax =  50   Pmax =  58.75   delay = 4.71
-  Amax =  50   Pmax =  62.50   delay = 4.71
-  Amax =  50   Pmax =  66.25   delay = 4.71
-  Amax =  50   Pmax =  70.00   delay = 4.71
-  Amax =  50   Pmax =  73.75   delay = 4.71
-  Amax =  50   Pmax =  77.50   delay = 4.71
-  Amax =  50   Pmax =  81.25   delay = 4.71
-  Amax =  50   Pmax =  85.00   delay = 4.71
-  Amax =  50   Pmax =  88.75   delay = 4.71
-  Amax =  50   Pmax =  92.50   delay = 4.71
-  Amax =  50   Pmax =  96.25   delay = 4.71
-  Amax =  50   Pmax = 100.00   delay = 4.71
-  Amax = 100   Pmax =  10.00   delay = 12.21
-  Amax = 100   Pmax =  13.75   delay = 9.81
-  Amax = 100   Pmax =  17.50   delay = 8.51
-  Amax = 100   Pmax =  21.25   delay = 7.63
-  Amax = 100   Pmax =  25.00   delay = 6.98
-  Amax = 100   Pmax =  28.75   delay = 6.48
-  Amax = 100   Pmax =  32.50   delay = 6.08
-  Amax = 100   Pmax =  36.25   delay = 5.75
-  Amax = 100   Pmax =  40.00   delay = 5.48
-  Amax = 100   Pmax =  43.75   delay = 5.24
-  Amax = 100   Pmax =  47.50   delay = 5.03
-  Amax = 100   Pmax =  51.25   delay = 4.85
-  Amax = 100   Pmax =  55.00   delay = 4.69
-  Amax = 100   Pmax =  58.75   delay = 4.55
-  Amax = 100   Pmax =  62.50   delay = 4.42
-  Amax = 100   Pmax =  66.25   delay = 4.30
-  Amax = 100   Pmax =  70.00   delay = 4.19
-  Amax = 100   Pmax =  73.75   delay = 4.09
-  Amax = 100   Pmax =  77.50   delay = 4.00
-  Amax = 100   Pmax =  81.25   delay = 3.92
-  Amax = 100   Pmax =  85.00   delay = 3.84
-  Amax = 100   Pmax =  88.75   delay = 3.77
-  Amax = 100   Pmax =  92.50   delay = 3.70
-  Amax = 100   Pmax =  96.25   delay = 3.63
-  Amax = 100   Pmax = 100.00   delay = 3.57
+Amax = 25:
+    Pmax =  10.00: delay = 12.21
+    Pmax =  13.75: delay = 9.81
+    Pmax =  17.50: delay = 8.51
+    Pmax =  21.25: delay = 7.63
+    Pmax =  25.00: delay = 6.98
+    Pmax =  28.75: delay = 6.80
+    Pmax =  32.50: delay = 6.80
+    Pmax =  36.25: delay = 6.80
+    Pmax =  40.00: delay = 6.80
+    Pmax =  43.75: delay = 6.80
+    Pmax =  47.50: delay = 6.80
+    Pmax =  51.25: delay = 6.80
+    Pmax =  55.00: delay = 6.80
+    Pmax =  58.75: delay = 6.80
+    Pmax =  62.50: delay = 6.80
+    Pmax =  66.25: delay = 6.80
+    Pmax =  70.00: delay = 6.80
+    Pmax =  73.75: delay = 6.80
+    Pmax =  77.50: delay = 6.80
+    Pmax =  81.25: delay = 6.80
+    Pmax =  85.00: delay = 6.80
+    Pmax =  88.75: delay = 6.80
+    Pmax =  92.50: delay = 6.80
+    Pmax =  96.25: delay = 6.80
+    Pmax = 100.00: delay = 6.80
+Amax = 50:
+    Pmax =  10.00: delay = 12.21
+    Pmax =  13.75: delay = 9.81
+    Pmax =  17.50: delay = 8.51
+    Pmax =  21.25: delay = 7.63
+    Pmax =  25.00: delay = 6.98
+    Pmax =  28.75: delay = 6.48
+    Pmax =  32.50: delay = 6.08
+    Pmax =  36.25: delay = 5.75
+    Pmax =  40.00: delay = 5.48
+    Pmax =  43.75: delay = 5.24
+    Pmax =  47.50: delay = 5.03
+    Pmax =  51.25: delay = 4.85
+    Pmax =  55.00: delay = 4.71
+    Pmax =  58.75: delay = 4.71
+    Pmax =  62.50: delay = 4.71
+    Pmax =  66.25: delay = 4.71
+    Pmax =  70.00: delay = 4.71
+    Pmax =  73.75: delay = 4.71
+    Pmax =  77.50: delay = 4.71
+    Pmax =  81.25: delay = 4.71
+    Pmax =  85.00: delay = 4.71
+    Pmax =  88.75: delay = 4.71
+    Pmax =  92.50: delay = 4.71
+    Pmax =  96.25: delay = 4.71
+    Pmax = 100.00: delay = 4.71
+Amax = 100:
+    Pmax =  10.00: delay = 12.21
+    Pmax =  13.75: delay = 9.81
+    Pmax =  17.50: delay = 8.51
+    Pmax =  21.25: delay = 7.63
+    Pmax =  25.00: delay = 6.98
+    Pmax =  28.75: delay = 6.48
+    Pmax =  32.50: delay = 6.08
+    Pmax =  36.25: delay = 5.75
+    Pmax =  40.00: delay = 5.48
+    Pmax =  43.75: delay = 5.24
+    Pmax =  47.50: delay = 5.03
+    Pmax =  51.25: delay = 4.85
+    Pmax =  55.00: delay = 4.69
+    Pmax =  58.75: delay = 4.55
+    Pmax =  62.50: delay = 4.42
+    Pmax =  66.25: delay = 4.30
+    Pmax =  70.00: delay = 4.19
+    Pmax =  73.75: delay = 4.09
+    Pmax =  77.50: delay = 4.00
+    Pmax =  81.25: delay = 3.92
+    Pmax =  85.00: delay = 3.84
+    Pmax =  88.75: delay = 3.77
+    Pmax =  92.50: delay = 3.70
+    Pmax =  96.25: delay = 3.63
+    Pmax = 100.00: delay = 3.57
 Optimal tradeoff curve plotted.
 </pre>
 <a id="plots"></a>

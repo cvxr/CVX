@@ -105,10 +105,9 @@ output_gates = [FI{primary_outputs}];
 N = 25;
 Pmax = linspace(10,20,N);
 min_delay = zeros(N,1);
-
 disp('Generating the optimal tradeoff curve...')
-
 for n = 1:N
+  fprintf('Pmax = %6.2f: ',Pmax(n));
   cvx_begin gp quiet
     % optimization variables
     variable x(m)                 % scale factor
@@ -163,13 +162,7 @@ for n = 1:N
         end
       end
   cvx_end
-
-  if ~strfind(cvx_status,'Solved')
-    error('Problem could not be solved.')
-  end
-
-  % display and store computed values
-  fprintf(1,'  Pmax = %6.2f   delay = %3.2f\n',Pmax(n),cvx_optval);
+  fprintf( 'delay = %3.2f\n', cvx_optval );
   min_delay(n) = cvx_optval;
 end
 

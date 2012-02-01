@@ -53,9 +53,9 @@ cvx_begin gp
     end
 
     % constraint set
-    wmin <= w; w <= wmax;
-    hmin <= h; h <= hmax;
-    Smin <= h./w; h./w <= Smax;
+    wmin <= w    <= wmax;
+    hmin <= h    <= hmax;
+    Smin <= h./w <= Smax;
     6*F*[1:N]'./(w.*(h.^2)) <= sigma_max;
     y(1) <= ymax;
 cvx_end

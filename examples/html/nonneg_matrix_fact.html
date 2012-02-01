@@ -34,6 +34,7 @@ Jump to:&nbsp;&nbsp;&nbsp;&nbsp;
 <span class="comment">% over X and Y for a fixed number of iterations.</span>
 
 <span class="comment">% Generate data matrix A</span>
+rstate = rand(<span class="string">'state'</span>);
 m = 10; n = 10; k = 5;
 A = rand(m,k)*rand(k,n);
 
@@ -44,14 +45,14 @@ Y = rand(m,k);
 MAX_ITERS = 30;
 residual = zeros(1,MAX_ITERS);
 <span class="keyword">for</span> iter = 1:MAX_ITERS
-    cvx_begin <span class="string">quiet</span>
+    cvx_begin
         <span class="keyword">if</span> mod(iter,2) == 1
             variable <span class="string">X(k,n)</span>
+            X &gt;= 0;
         <span class="keyword">else</span>
             variable <span class="string">Y(m,k)</span>
+            Y &gt;= 0;
         <span class="keyword">end</span>
-        X &gt;= 0;
-        Y &gt;= 0;
         minimize(norm(A - Y*X,<span class="string">'fro'</span>));
     cvx_end
     fprintf(1,<span class="string">'Iteration %d, residual norm %g\n'</span>,iter,cvx_optval);
@@ -76,80 +77,1179 @@ fprintf( <span class="string">'Residual after %d iterations: %g\n'</span>, iter,
 </pre>
 <a id="output"></a>
 <pre class="codeoutput">
-Iteration 1, residual norm 1.46776
-Iteration 2, residual norm 0.534056
-Iteration 3, residual norm 0.263532
-Iteration 4, residual norm 0.151849
-Iteration 5, residual norm 0.116205
-Iteration 6, residual norm 0.0973057
-Iteration 7, residual norm 0.0836926
-Iteration 8, residual norm 0.0739765
-Iteration 9, residual norm 0.0661998
-Iteration 10, residual norm 0.0597644
-Iteration 11, residual norm 0.0542738
-Iteration 12, residual norm 0.049433
-Iteration 13, residual norm 0.0450773
-Iteration 14, residual norm 0.0410303
-Iteration 15, residual norm 0.0373576
-Iteration 16, residual norm 0.0339309
-Iteration 17, residual norm 0.0308287
-Iteration 18, residual norm 0.0279476
-Iteration 19, residual norm 0.0253477
-Iteration 20, residual norm 0.0229492
-Iteration 21, residual norm 0.0207903
-Iteration 22, residual norm 0.018812
-Iteration 23, residual norm 0.0170312
-Iteration 24, residual norm 0.0154036
-Iteration 25, residual norm 0.0139396
-Iteration 26, residual norm 0.012606
-Iteration 27, residual norm 0.0114068
-Iteration 28, residual norm 0.0103173
-Iteration 29, residual norm 0.00933833
-Iteration 30, residual norm 0.0084509
+ 
+Calling sedumi: 151 variables, 51 equality constraints
+   For improved efficiency, sedumi is solving the dual problem.
+------------------------------------------------------------
+SeDuMi 1.21 by AdvOL, 2005-2008 and Jos F. Sturm, 1998-2003.
+Alg = 2: xz-corrector, Adaptive Step-Differentiation, theta = 0.250, beta = 0.500
+eqs m = 51, order n = 53, dim = 152, blocks = 2
+nnz(A) = 550 + 1, nnz(ADA) = 250, nnz(L) = 151
+Handling 1 + 1 dense columns.
+ it :     b*y       gap    delta  rate   t/tP*  t/tD*   feas cg cg  prec
+  0 :            3.74E-01 0.000
+  1 :  -2.75E+00 2.70E-01 0.000 0.7218 0.9000 0.9000   3.54  1  1  2.2E+00
+  2 :  -3.18E+00 1.08E-01 0.000 0.3995 0.9000 0.9000   3.83  1  1  3.4E-01
+  3 :  -3.41E+00 2.55E-02 0.000 0.2361 0.9000 0.9000   1.61  1  1  6.2E-02
+  4 :  -3.43E+00 8.23E-03 0.000 0.3229 0.9000 0.9000   1.18  1  1  1.9E-02
+  5 :  -3.42E+00 3.03E-03 0.000 0.3677 0.9000 0.9000   1.07  1  1  6.7E-03
+  6 :  -3.42E+00 9.22E-04 0.000 0.3045 0.9000 0.9000   1.03  1  1  2.0E-03
+  7 :  -3.42E+00 2.09E-04 0.000 0.2263 0.0000 0.9000   1.01  1  1  1.2E-03
+  8 :  -3.42E+00 6.03E-05 0.000 0.2890 0.9000 0.9155   1.01  1  1  3.4E-04
+  9 :  -3.42E+00 5.20E-06 0.000 0.0863 0.6803 0.9000   1.00  1  1  1.0E-04
+ 10 :  -3.42E+00 3.36E-07 0.000 0.0646 0.9900 0.9900   1.00  1  1  6.7E-06
+ 11 :  -3.42E+00 8.94E-09 0.000 0.0266 0.9900 0.9850   1.00  1  1  1.9E-07
+ 12 :  -3.42E+00 9.29E-10 0.000 0.1039 0.9060 0.9000   1.00  1  1  2.1E-08
+ 13 :  -3.42E+00 2.50E-10 0.103 0.2686 0.7374 0.9000   1.00  1  1  5.6E-09
+
+iter seconds digits       c*x               b*y
+ 13      0.1   Inf -3.4206050476e+00 -3.4206050447e+00
+|Ax-b| =   4.0e-08, [Ay-c]_+ =   0.0E+00, |x|=  1.4e+00, |y|=  5.0e+00
+
+Detailed timing (sec)
+   Pre          IPM          Post
+1.000E-02    7.000E-02    0.000E+00    
+Max-norms: ||b||=1, ||c|| = 2.360448e+00,
+Cholesky |add|=0, |skip| = 1, ||L.L|| = 1.
+------------------------------------------------------------
+Status: Solved
+Optimal value (cvx_optval): +3.42061
+Iteration 1, residual norm 3.42061
+ 
+Calling sedumi: 151 variables, 51 equality constraints
+   For improved efficiency, sedumi is solving the dual problem.
+------------------------------------------------------------
+SeDuMi 1.21 by AdvOL, 2005-2008 and Jos F. Sturm, 1998-2003.
+Alg = 2: xz-corrector, Adaptive Step-Differentiation, theta = 0.250, beta = 0.500
+eqs m = 51, order n = 53, dim = 152, blocks = 2
+nnz(A) = 550 + 1, nnz(ADA) = 250, nnz(L) = 151
+Handling 1 + 1 dense columns.
+ it :     b*y       gap    delta  rate   t/tP*  t/tD*   feas cg cg  prec
+  0 :            3.74E-01 0.000
+  1 :   5.61E-02 2.27E-01 0.000 0.6069 0.9000 0.9000   5.23  1  1  1.0E+00
+  2 :  -6.49E-01 5.81E-02 0.000 0.2557 0.9000 0.9000   2.12  1  1  1.7E-01
+  3 :  -5.10E-01 1.75E-02 0.000 0.3012 0.9000 0.9000   1.20  1  1  4.7E-02
+  4 :  -4.65E-01 5.59E-03 0.000 0.3193 0.9000 0.9000   1.13  1  1  1.4E-02
+  5 :  -4.55E-01 1.89E-03 0.000 0.3375 0.9000 0.9000   1.07  1  1  4.7E-03
+  6 :  -4.50E-01 5.37E-04 0.000 0.2849 0.9000 0.9000   1.03  1  1  1.5E-03
+  7 :  -4.49E-01 4.63E-05 0.000 0.0861 0.9000 0.9085   1.01  1  1  2.7E-04
+  8 :  -4.48E-01 9.33E-07 0.000 0.0202 0.9336 0.9900   1.00  1  1  1.7E-05
+  9 :  -4.48E-01 7.13E-08 0.438 0.0764 0.9900 0.9900   1.00  1  1  1.3E-06
+ 10 :  -4.48E-01 2.73E-09 0.000 0.0382 0.9737 0.9900   1.00  1  1  4.7E-08
+ 11 :  -4.48E-01 1.95E-10 0.472 0.0715 0.9900 0.9900   1.00  1  1  3.4E-09
+
+iter seconds digits       c*x               b*y
+ 11      0.1   Inf -4.4806595221e-01 -4.4806595094e-01
+|Ax-b| =   1.5e-08, [Ay-c]_+ =   1.6E-09, |x|=  1.4e+00, |y|=  4.9e+00
+
+Detailed timing (sec)
+   Pre          IPM          Post
+1.000E-02    6.000E-02    0.000E+00    
+Max-norms: ||b||=1, ||c|| = 2.360448e+00,
+Cholesky |add|=0, |skip| = 1, ||L.L|| = 2.1531.
+------------------------------------------------------------
+Status: Solved
+Optimal value (cvx_optval): +0.448066
+Iteration 2, residual norm 0.448066
+ 
+Calling sedumi: 151 variables, 51 equality constraints
+   For improved efficiency, sedumi is solving the dual problem.
+------------------------------------------------------------
+SeDuMi 1.21 by AdvOL, 2005-2008 and Jos F. Sturm, 1998-2003.
+Alg = 2: xz-corrector, Adaptive Step-Differentiation, theta = 0.250, beta = 0.500
+eqs m = 51, order n = 53, dim = 152, blocks = 2
+nnz(A) = 550 + 1, nnz(ADA) = 250, nnz(L) = 151
+Handling 1 + 1 dense columns.
+ it :     b*y       gap    delta  rate   t/tP*  t/tD*   feas cg cg  prec
+  0 :            3.74E-01 0.000
+  1 :   1.71E-02 2.11E-01 0.000 0.5621 0.9000 0.9000   5.35  1  1  8.8E-01
+  2 :  -1.78E-01 6.84E-02 0.000 0.3250 0.9000 0.9000   2.14  1  1  1.8E-01
+  3 :  -2.08E-01 1.99E-02 0.000 0.2911 0.9000 0.9000   1.48  1  1  4.3E-02
+  4 :  -2.23E-01 5.39E-03 0.000 0.2707 0.9000 0.9000   1.20  1  1  1.1E-02
+  5 :  -2.26E-01 1.33E-03 0.000 0.2462 0.9000 0.9000   1.08  1  1  3.5E-03
+  6 :  -2.26E-01 2.95E-04 0.000 0.2226 0.9000 0.9000   1.03  1  1  8.6E-04
+  7 :  -2.26E-01 5.79E-05 0.000 0.1960 0.8986 0.9000   1.01  1  1  1.5E-04
+  8 :  -2.26E-01 1.08E-05 0.000 0.1869 0.8678 0.9000   1.00  1  1  2.9E-05
+  9 :  -2.26E-01 1.14E-06 0.000 0.1052 0.9450 0.9451   1.00  1  1  3.1E-06
+ 10 :  -2.26E-01 1.81E-07 0.143 0.1586 0.9000 0.9044   1.00  1  1  5.4E-07
+ 11 :  -2.26E-01 2.67E-08 0.253 0.1481 0.9000 0.9099   1.00  1  1  9.8E-08
+ 12 :  -2.26E-01 4.16E-09 0.194 0.1556 0.9000 0.9080   1.00  1  1  1.7E-08
+ 13 :  -2.26E-01 6.58E-10 0.159 0.1581 0.9000 0.9021   1.00  1  1  2.8E-09
+
+iter seconds digits       c*x               b*y
+ 13      0.1   8.0 -2.2594586505e-01 -2.2594586721e-01
+|Ax-b| =   7.2e-09, [Ay-c]_+ =   4.6E-10, |x|=  1.4e+00, |y|=  3.6e+00
+
+Detailed timing (sec)
+   Pre          IPM          Post
+0.000E+00    9.000E-02    0.000E+00    
+Max-norms: ||b||=1, ||c|| = 2.360448e+00,
+Cholesky |add|=0, |skip| = 1, ||L.L|| = 1.08001.
+------------------------------------------------------------
+Status: Solved
+Optimal value (cvx_optval): +0.225946
+Iteration 3, residual norm 0.225946
+ 
+Calling sedumi: 151 variables, 51 equality constraints
+   For improved efficiency, sedumi is solving the dual problem.
+------------------------------------------------------------
+SeDuMi 1.21 by AdvOL, 2005-2008 and Jos F. Sturm, 1998-2003.
+Alg = 2: xz-corrector, Adaptive Step-Differentiation, theta = 0.250, beta = 0.500
+eqs m = 51, order n = 53, dim = 152, blocks = 2
+nnz(A) = 550 + 1, nnz(ADA) = 250, nnz(L) = 151
+Handling 1 + 1 dense columns.
+ it :     b*y       gap    delta  rate   t/tP*  t/tD*   feas cg cg  prec
+  0 :            3.74E-01 0.000
+  1 :   6.71E-02 2.25E-01 0.000 0.6009 0.9000 0.9000   5.27  1  1  1.0E+00
+  2 :  -4.20E-01 6.53E-02 0.000 0.2902 0.9000 0.9000   2.10  1  1  1.9E-01
+  3 :  -2.12E-01 2.23E-02 0.000 0.3418 0.9000 0.9000   1.23  1  1  6.0E-02
+  4 :  -1.53E-01 6.66E-03 0.000 0.2985 0.9000 0.9000   1.13  1  1  1.7E-02
+  5 :  -1.44E-01 2.34E-03 0.000 0.3518 0.9000 0.9000   1.05  1  1  5.9E-03
+  6 :  -1.39E-01 1.87E-04 0.000 0.0796 0.0000 0.9000   1.02  1  1  3.5E-03
+  7 :  -1.41E-01 4.48E-05 0.000 0.2398 0.9000 0.9109   1.01  1  1  9.2E-04
+  8 :  -1.37E-01 2.39E-06 0.000 0.0533 0.9864 0.9900   1.00  1  1  4.9E-05
+  9 :  -1.37E-01 2.19E-07 0.267 0.0916 0.9900 0.9900   1.00  1  1  4.5E-06
+ 10 :  -1.37E-01 6.77E-08 0.000 0.3096 0.9000 0.9371   1.00  1  1  1.5E-06
+ 11 :  -1.37E-01 4.21E-09 0.194 0.0622 0.9902 0.9900   1.00  1  1  9.4E-08
+ 12 :  -1.37E-01 6.11E-10 0.000 0.1452 0.9088 0.9000   1.00  1  1  1.4E-08
+
+iter seconds digits       c*x               b*y
+ 12      0.1   Inf -1.3710121956e-01 -1.3710119365e-01
+|Ax-b| =   9.1e-08, [Ay-c]_+ =   3.3E-10, |x|=  1.4e+00, |y|=  5.0e+00
+
+Detailed timing (sec)
+   Pre          IPM          Post
+0.000E+00    7.000E-02    0.000E+00    
+Max-norms: ||b||=1, ||c|| = 2.360448e+00,
+Cholesky |add|=0, |skip| = 1, ||L.L|| = 2.01709.
+------------------------------------------------------------
+Status: Solved
+Optimal value (cvx_optval): +0.137101
+Iteration 4, residual norm 0.137101
+ 
+Calling sedumi: 151 variables, 51 equality constraints
+   For improved efficiency, sedumi is solving the dual problem.
+------------------------------------------------------------
+SeDuMi 1.21 by AdvOL, 2005-2008 and Jos F. Sturm, 1998-2003.
+Alg = 2: xz-corrector, Adaptive Step-Differentiation, theta = 0.250, beta = 0.500
+eqs m = 51, order n = 53, dim = 152, blocks = 2
+nnz(A) = 550 + 1, nnz(ADA) = 250, nnz(L) = 151
+Handling 1 + 1 dense columns.
+ it :     b*y       gap    delta  rate   t/tP*  t/tD*   feas cg cg  prec
+  0 :            3.74E-01 0.000
+  1 :   5.12E-02 2.11E-01 0.000 0.5629 0.9000 0.9000   5.37  1  1  8.7E-01
+  2 :  -2.20E-02 6.17E-02 0.000 0.2928 0.9000 0.9000   2.12  1  1  1.6E-01
+  3 :  -8.25E-02 2.25E-02 0.000 0.3637 0.9000 0.9000   1.43  1  1  5.0E-02
+  4 :  -9.07E-02 5.88E-03 0.000 0.2620 0.9000 0.9000   1.20  1  1  1.2E-02
+  5 :  -9.61E-02 4.55E-04 0.380 0.0774 0.9900 0.9900   1.09  1  1  2.1E-03
+  6 :  -9.61E-02 1.78E-04 0.000 0.3907 0.9000 0.9000   1.02  1  1  8.4E-04
+  7 :  -9.60E-02 3.84E-05 0.000 0.2158 0.8148 0.9000   1.01  1  1  1.8E-04
+  8 :  -9.60E-02 7.98E-06 0.000 0.2079 0.9019 0.9000   1.00  1  1  3.5E-05
+  9 :  -9.60E-02 1.62E-06 0.029 0.2032 0.9012 0.9000   1.00  1  1  7.2E-06
+ 10 :  -9.60E-02 3.23E-07 0.125 0.1989 0.9009 0.9000   1.00  1  1  1.4E-06
+ 11 :  -9.60E-02 6.50E-08 0.178 0.2014 0.9009 0.9000   1.00  1  1  2.8E-07
+ 12 :  -9.60E-02 1.32E-08 0.207 0.2030 0.9005 0.9000   1.00  1  1  5.8E-08
+ 13 :  -9.60E-02 2.70E-09 0.229 0.2047 0.9000 0.9001   1.00  1  1  1.2E-08
+
+iter seconds digits       c*x               b*y
+ 13      0.1   7.3 -9.6013840647e-02 -9.6013845288e-02
+|Ax-b| =   1.1e-08, [Ay-c]_+ =   3.7E-09, |x|=  1.5e+00, |y|=  3.6e+00
+
+Detailed timing (sec)
+   Pre          IPM          Post
+1.000E-02    8.000E-02    0.000E+00    
+Max-norms: ||b||=1, ||c|| = 2.360448e+00,
+Cholesky |add|=0, |skip| = 1, ||L.L|| = 1.
+------------------------------------------------------------
+Status: Solved
+Optimal value (cvx_optval): +0.0960138
+Iteration 5, residual norm 0.0960138
+ 
+Calling sedumi: 151 variables, 51 equality constraints
+   For improved efficiency, sedumi is solving the dual problem.
+------------------------------------------------------------
+SeDuMi 1.21 by AdvOL, 2005-2008 and Jos F. Sturm, 1998-2003.
+Alg = 2: xz-corrector, Adaptive Step-Differentiation, theta = 0.250, beta = 0.500
+eqs m = 51, order n = 53, dim = 152, blocks = 2
+nnz(A) = 550 + 1, nnz(ADA) = 250, nnz(L) = 151
+Handling 1 + 1 dense columns.
+ it :     b*y       gap    delta  rate   t/tP*  t/tD*   feas cg cg  prec
+  0 :            3.74E-01 0.000
+  1 :   7.24E-02 2.25E-01 0.000 0.6011 0.9000 0.9000   5.28  1  1  1.0E+00
+  2 :  -3.70E-01 6.53E-02 0.000 0.2901 0.9000 0.9000   2.09  1  1  1.9E-01
+  3 :  -1.53E-01 2.19E-02 0.000 0.3351 0.9000 0.9000   1.23  1  1  5.9E-02
+  4 :  -8.59E-02 6.70E-03 0.000 0.3061 0.9000 0.9000   1.12  1  1  1.7E-02
+  5 :  -7.78E-02 2.07E-03 0.000 0.3095 0.9000 0.9000   1.05  1  1  5.3E-03
+  6 :  -7.31E-02 1.54E-04 0.000 0.0745 0.0000 0.9000   1.02  1  1  3.0E-03
+  7 :  -7.40E-02 3.10E-05 0.000 0.2005 0.9000 0.9067   1.01  1  1  6.4E-04
+  8 :  -7.19E-02 1.28E-06 0.000 0.0415 0.9901 0.9900   1.00  1  1  2.6E-05
+  9 :  -7.19E-02 4.90E-08 0.000 0.0382 0.9900 0.9904   1.00  1  1  1.1E-06
+ 10 :  -7.19E-02 1.62E-08 0.261 0.3310 0.9000 0.9252   1.00  1  1  3.5E-07
+ 11 :  -7.19E-02 8.74E-10 0.289 0.0539 0.9900 0.7357   1.00  1  1  2.2E-08
+ 12 :  -7.19E-02 1.73E-11 0.000 0.0198 0.9827 0.9900   1.00  1  1  4.3E-10
+
+iter seconds digits       c*x               b*y
+ 12      0.1   Inf -7.1869162683e-02 -7.1869162321e-02
+|Ax-b| =   2.7e-09, [Ay-c]_+ =   0.0E+00, |x|=  1.4e+00, |y|=  5.0e+00
+
+Detailed timing (sec)
+   Pre          IPM          Post
+1.000E-02    7.000E-02    0.000E+00    
+Max-norms: ||b||=1, ||c|| = 2.360448e+00,
+Cholesky |add|=0, |skip| = 1, ||L.L|| = 1.9701.
+------------------------------------------------------------
+Status: Solved
+Optimal value (cvx_optval): +0.0718692
+Iteration 6, residual norm 0.0718692
+ 
+Calling sedumi: 151 variables, 51 equality constraints
+   For improved efficiency, sedumi is solving the dual problem.
+------------------------------------------------------------
+SeDuMi 1.21 by AdvOL, 2005-2008 and Jos F. Sturm, 1998-2003.
+Alg = 2: xz-corrector, Adaptive Step-Differentiation, theta = 0.250, beta = 0.500
+eqs m = 51, order n = 53, dim = 152, blocks = 2
+nnz(A) = 550 + 1, nnz(ADA) = 250, nnz(L) = 151
+Handling 1 + 1 dense columns.
+ it :     b*y       gap    delta  rate   t/tP*  t/tD*   feas cg cg  prec
+  0 :            3.74E-01 0.000
+  1 :   6.05E-02 2.13E-01 0.000 0.5689 0.9000 0.9000   5.38  1  1  8.9E-01
+  2 :   9.92E-03 6.28E-02 0.000 0.2948 0.9000 0.9000   2.13  1  1  1.6E-01
+  3 :  -4.25E-02 2.11E-02 0.000 0.3359 0.9000 0.9000   1.42  1  1  4.7E-02
+  4 :  -5.35E-02 4.85E-03 0.000 0.2298 0.9000 0.9000   1.20  1  1  9.9E-03
+  5 :  -5.79E-02 4.60E-04 0.249 0.0948 0.9900 0.9900   1.07  1  1  2.1E-03
+  6 :  -5.82E-02 1.77E-04 0.000 0.3844 0.9000 0.9000   1.02  1  1  9.0E-04
+  7 :  -5.81E-02 4.58E-05 0.000 0.2590 0.7998 0.9000   1.01  1  1  2.6E-04
+  8 :  -5.81E-02 1.11E-05 0.000 0.2433 0.9000 0.9008   1.00  1  1  6.6E-05
+  9 :  -5.82E-02 2.71E-06 0.000 0.2433 0.9000 0.9050   1.00  1  1  1.9E-05
+ 10 :  -5.82E-02 6.09E-07 0.000 0.2249 0.9000 0.9095   1.00  1  1  5.2E-06
+ 11 :  -5.82E-02 1.11E-07 0.000 0.1815 0.9000 0.9098   1.00  1  1  1.1E-06
+ 12 :  -5.82E-02 1.63E-08 0.063 0.1477 0.9000 0.9048   1.00  1  1  1.8E-07
+ 13 :  -5.82E-02 1.58E-09 0.380 0.0966 0.9450 0.9488   1.00  1  1  2.0E-08
+ 14 :  -5.82E-02 1.54E-10 0.381 0.0977 0.9450 0.9489   1.00  1  1  2.1E-09
+
+iter seconds digits       c*x               b*y
+ 14      0.1   7.9 -5.8151848773e-02 -5.8151849456e-02
+|Ax-b| =   2.6e-09, [Ay-c]_+ =   1.4E-11, |x|=  1.5e+00, |y|=  3.6e+00
+
+Detailed timing (sec)
+   Pre          IPM          Post
+0.000E+00    8.000E-02    0.000E+00    
+Max-norms: ||b||=1, ||c|| = 2.360448e+00,
+Cholesky |add|=0, |skip| = 1, ||L.L|| = 1.01059.
+------------------------------------------------------------
+Status: Solved
+Optimal value (cvx_optval): +0.0581518
+Iteration 7, residual norm 0.0581518
+ 
+Calling sedumi: 151 variables, 51 equality constraints
+   For improved efficiency, sedumi is solving the dual problem.
+------------------------------------------------------------
+SeDuMi 1.21 by AdvOL, 2005-2008 and Jos F. Sturm, 1998-2003.
+Alg = 2: xz-corrector, Adaptive Step-Differentiation, theta = 0.250, beta = 0.500
+eqs m = 51, order n = 53, dim = 152, blocks = 2
+nnz(A) = 550 + 1, nnz(ADA) = 250, nnz(L) = 151
+Handling 1 + 1 dense columns.
+ it :     b*y       gap    delta  rate   t/tP*  t/tD*   feas cg cg  prec
+  0 :            3.74E-01 0.000
+  1 :   7.35E-02 2.25E-01 0.000 0.6012 0.9000 0.9000   5.29  1  1  1.0E+00
+  2 :  -3.45E-01 6.70E-02 0.000 0.2977 0.9000 0.9000   2.08  1  1  2.0E-01
+  3 :  -1.28E-01 2.22E-02 0.000 0.3311 0.9000 0.9000   1.24  1  1  6.0E-02
+  4 :  -6.14E-02 6.96E-03 0.000 0.3138 0.9000 0.9000   1.12  1  1  1.8E-02
+  5 :  -5.44E-02 1.93E-03 0.000 0.2770 0.9000 0.9000   1.05  1  1  4.9E-03
+  6 :  -5.07E-02 5.21E-04 0.000 0.2702 0.9000 0.9000   1.02  1  1  1.4E-03
+  7 :  -5.00E-02 8.14E-05 0.000 0.1561 0.9000 0.9052   1.01  1  1  6.2E-04
+  8 :  -4.99E-02 8.53E-06 0.000 0.1049 0.9000 0.9104   1.00  1  1  1.2E-04
+  9 :  -4.98E-02 3.84E-07 0.268 0.0450 0.8910 0.9900   1.00  1  1  8.0E-06
+ 10 :  -4.98E-02 6.16E-08 0.000 0.1606 0.9000 0.9141   1.00  1  1  1.5E-06
+ 11 :  -4.98E-02 1.00E-08 0.172 0.1624 0.9000 0.9058   1.00  1  1  2.4E-07
+ 12 :  -4.98E-02 1.93E-09 0.296 0.1931 0.9000 0.9151   1.00  1  1  4.9E-08
+ 13 :  -4.98E-02 3.44E-10 0.229 0.1779 0.9000 0.9125   1.00  1  1  8.6E-09
+
+iter seconds digits       c*x               b*y
+ 13      0.1   Inf -4.9805568568e-02 -4.9805550094e-02
+|Ax-b| =   6.1e-08, [Ay-c]_+ =   0.0E+00, |x|=  1.4e+00, |y|=  4.9e+00
+
+Detailed timing (sec)
+   Pre          IPM          Post
+1.000E-02    7.000E-02    0.000E+00    
+Max-norms: ||b||=1, ||c|| = 2.360448e+00,
+Cholesky |add|=0, |skip| = 1, ||L.L|| = 1.94796.
+------------------------------------------------------------
+Status: Solved
+Optimal value (cvx_optval): +0.0498056
+Iteration 8, residual norm 0.0498056
+ 
+Calling sedumi: 151 variables, 51 equality constraints
+   For improved efficiency, sedumi is solving the dual problem.
+------------------------------------------------------------
+SeDuMi 1.21 by AdvOL, 2005-2008 and Jos F. Sturm, 1998-2003.
+Alg = 2: xz-corrector, Adaptive Step-Differentiation, theta = 0.250, beta = 0.500
+eqs m = 51, order n = 53, dim = 152, blocks = 2
+nnz(A) = 550 + 1, nnz(ADA) = 250, nnz(L) = 151
+Handling 1 + 1 dense columns.
+ it :     b*y       gap    delta  rate   t/tP*  t/tD*   feas cg cg  prec
+  0 :            3.74E-01 0.000
+  1 :   6.33E-02 2.14E-01 0.000 0.5723 0.9000 0.9000   5.39  1  1  9.0E-01
+  2 :   2.03E-02 6.38E-02 0.000 0.2979 0.9000 0.9000   2.14  1  1  1.7E-01
+  3 :  -2.87E-02 1.48E-02 0.000 0.2326 0.9000 0.9000   1.43  1  1  3.2E-02
+  4 :  -3.97E-02 3.27E-03 0.000 0.2200 0.9000 0.9000   1.17  1  1  6.6E-03
+  5 :  -4.24E-02 7.35E-04 0.000 0.2250 0.9000 0.9000   1.06  1  1  1.5E-03
+  6 :  -4.31E-02 1.70E-04 0.000 0.2318 0.9000 0.9000   1.02  1  1  7.4E-04
+  7 :  -4.33E-02 3.08E-05 0.000 0.1808 0.9000 0.9076   1.01  1  1  2.7E-04
+  8 :  -4.33E-02 6.05E-06 0.000 0.1963 0.9000 0.9089   1.00  1  1  7.0E-05
+  9 :  -4.33E-02 1.38E-06 0.000 0.2288 0.9000 0.9131   1.00  1  1  1.9E-05
+ 10 :  -4.33E-02 3.35E-07 0.000 0.2419 0.9000 0.9148   1.00  1  1  4.9E-06
+ 11 :  -4.33E-02 7.40E-08 0.000 0.2212 0.9000 0.9104   1.00  1  1  1.1E-06
+ 12 :  -4.33E-02 6.57E-09 0.492 0.0888 0.9901 0.9900   1.00  1  1  9.2E-08
+ 13 :  -4.33E-02 1.42E-09 0.000 0.2163 0.9076 0.9000   1.00  1  1  1.5E-08
+
+iter seconds digits       c*x               b*y
+ 13      0.1   7.1 -4.3347200036e-02 -4.3347203921e-02
+|Ax-b| =   8.0e-09, [Ay-c]_+ =   2.0E-10, |x|=  1.5e+00, |y|=  3.6e+00
+
+Detailed timing (sec)
+   Pre          IPM          Post
+0.000E+00    8.000E-02    0.000E+00    
+Max-norms: ||b||=1, ||c|| = 2.360448e+00,
+Cholesky |add|=0, |skip| = 1, ||L.L|| = 1.
+------------------------------------------------------------
+Status: Solved
+Optimal value (cvx_optval): +0.0433472
+Iteration 9, residual norm 0.0433472
+ 
+Calling sedumi: 151 variables, 51 equality constraints
+   For improved efficiency, sedumi is solving the dual problem.
+------------------------------------------------------------
+SeDuMi 1.21 by AdvOL, 2005-2008 and Jos F. Sturm, 1998-2003.
+Alg = 2: xz-corrector, Adaptive Step-Differentiation, theta = 0.250, beta = 0.500
+eqs m = 51, order n = 53, dim = 152, blocks = 2
+nnz(A) = 550 + 1, nnz(ADA) = 250, nnz(L) = 151
+Handling 1 + 1 dense columns.
+ it :     b*y       gap    delta  rate   t/tP*  t/tD*   feas cg cg  prec
+  0 :            3.74E-01 0.000
+  1 :   7.35E-02 2.25E-01 0.000 0.6013 0.9000 0.9000   5.30  1  1  1.0E+00
+  2 :  -3.31E-01 6.79E-02 0.000 0.3016 0.9000 0.9000   2.08  1  1  2.0E-01
+  3 :  -1.14E-01 2.25E-02 0.000 0.3306 0.9000 0.9000   1.24  1  1  6.1E-02
+  4 :  -4.85E-02 7.14E-03 0.000 0.3179 0.9000 0.9000   1.12  1  1  1.9E-02
+  5 :  -4.19E-02 1.88E-03 0.000 0.2636 0.9000 0.9000   1.05  1  1  4.8E-03
+  6 :  -3.90E-02 5.24E-04 0.000 0.2786 0.9000 0.9000   1.02  1  1  1.6E-03
+  7 :  -3.85E-02 6.78E-05 0.000 0.1293 0.9000 0.9078   1.01  1  1  8.1E-04
+  8 :  -3.84E-02 7.14E-06 0.000 0.1054 0.9000 0.9095   1.00  1  1  1.4E-04
+  9 :  -3.84E-02 4.97E-07 0.378 0.0695 0.9900 0.9900   1.00  1  1  9.2E-06
+ 10 :  -3.84E-02 3.65E-09 0.000 0.0074 0.9900 0.9903   1.00  1  1  9.0E-08
+ 11 :  -3.84E-02 1.25E-10 0.321 0.0342 0.9677 0.9900   1.00  1  1  3.1E-09
+
+iter seconds digits       c*x               b*y
+ 11      0.1   Inf -3.8351836743e-02 -3.8351836060e-02
+|Ax-b| =   2.0e-08, [Ay-c]_+ =   3.2E-11, |x|=  1.4e+00, |y|=  4.9e+00
+
+Detailed timing (sec)
+   Pre          IPM          Post
+1.000E-02    6.000E-02    0.000E+00    
+Max-norms: ||b||=1, ||c|| = 2.360448e+00,
+Cholesky |add|=0, |skip| = 1, ||L.L|| = 1.93754.
+------------------------------------------------------------
+Status: Solved
+Optimal value (cvx_optval): +0.0383518
+Iteration 10, residual norm 0.0383518
+ 
+Calling sedumi: 151 variables, 51 equality constraints
+   For improved efficiency, sedumi is solving the dual problem.
+------------------------------------------------------------
+SeDuMi 1.21 by AdvOL, 2005-2008 and Jos F. Sturm, 1998-2003.
+Alg = 2: xz-corrector, Adaptive Step-Differentiation, theta = 0.250, beta = 0.500
+eqs m = 51, order n = 53, dim = 152, blocks = 2
+nnz(A) = 550 + 1, nnz(ADA) = 250, nnz(L) = 151
+Handling 1 + 1 dense columns.
+ it :     b*y       gap    delta  rate   t/tP*  t/tD*   feas cg cg  prec
+  0 :            3.74E-01 0.000
+  1 :   6.50E-02 2.15E-01 0.000 0.5744 0.9000 0.9000   5.40  1  1  9.0E-01
+  2 :   2.59E-02 6.46E-02 0.000 0.3005 0.9000 0.9000   2.14  1  1  1.7E-01
+  3 :  -1.69E-02 1.27E-02 0.000 0.1970 0.9000 0.9000   1.43  1  1  2.7E-02
+  4 :  -3.01E-02 3.28E-03 0.000 0.2572 0.9000 0.9000   1.16  1  1  6.6E-03
+  5 :  -3.30E-02 7.70E-04 0.000 0.2349 0.9000 0.9000   1.06  1  1  1.5E-03
+  6 :  -3.39E-02 1.71E-04 0.000 0.2223 0.9000 0.9000   1.02  1  1  5.7E-04
+  7 :  -3.41E-02 2.60E-05 0.000 0.1522 0.9000 0.9050   1.01  1  1  2.2E-04
+  8 :  -3.41E-02 2.88E-06 0.016 0.1105 0.9450 0.9459   1.00  1  1  2.8E-05
+  9 :  -3.41E-02 1.24E-07 0.404 0.0433 0.9901 0.9900   1.00  1  1  1.4E-06
+ 10 :  -3.41E-02 2.47E-08 0.000 0.1986 0.9000 0.9022   1.00  1  1  3.1E-07
+ 11 :  -3.41E-02 1.86E-09 0.424 0.0754 0.9900 0.9900   1.00  1  1  2.4E-08
+ 12 :  -3.41E-02 4.47E-10 0.343 0.2401 0.9000 0.9140   1.00  1  1  7.0E-09
+
+iter seconds digits       c*x               b*y
+ 12      0.1   7.4 -3.4135896358e-02 -3.4135897787e-02
+|Ax-b| =   3.4e-09, [Ay-c]_+ =   2.5E-10, |x|=  1.5e+00, |y|=  3.6e+00
+
+Detailed timing (sec)
+   Pre          IPM          Post
+1.000E-02    6.000E-02    0.000E+00    
+Max-norms: ||b||=1, ||c|| = 2.360448e+00,
+Cholesky |add|=0, |skip| = 1, ||L.L|| = 1.
+------------------------------------------------------------
+Status: Solved
+Optimal value (cvx_optval): +0.0341359
+Iteration 11, residual norm 0.0341359
+ 
+Calling sedumi: 151 variables, 51 equality constraints
+   For improved efficiency, sedumi is solving the dual problem.
+------------------------------------------------------------
+SeDuMi 1.21 by AdvOL, 2005-2008 and Jos F. Sturm, 1998-2003.
+Alg = 2: xz-corrector, Adaptive Step-Differentiation, theta = 0.250, beta = 0.500
+eqs m = 51, order n = 53, dim = 152, blocks = 2
+nnz(A) = 550 + 1, nnz(ADA) = 250, nnz(L) = 151
+Handling 1 + 1 dense columns.
+ it :     b*y       gap    delta  rate   t/tP*  t/tD*   feas cg cg  prec
+  0 :            3.74E-01 0.000
+  1 :   7.31E-02 2.25E-01 0.000 0.6014 0.9000 0.9000   5.30  1  1  1.0E+00
+  2 :  -3.22E-01 6.85E-02 0.000 0.3043 0.9000 0.9000   2.08  1  1  2.0E-01
+  3 :  -1.04E-01 2.26E-02 0.000 0.3304 0.9000 0.9000   1.24  1  1  6.2E-02
+  4 :  -3.97E-02 7.22E-03 0.000 0.3187 0.9000 0.9000   1.12  1  1  1.9E-02
+  5 :  -3.32E-02 1.80E-03 0.000 0.2490 0.9000 0.9000   1.06  1  1  4.6E-03
+  6 :  -3.10E-02 5.07E-04 0.000 0.2820 0.9000 0.9000   1.02  1  1  2.1E-03
+  7 :  -3.08E-02 7.14E-05 0.000 0.1409 0.9000 0.9088   1.01  1  1  1.2E-03
+  8 :  -3.07E-02 8.02E-06 0.000 0.1124 0.9000 0.9130   1.00  1  1  2.2E-04
+  9 :  -3.07E-02 3.73E-07 0.000 0.0465 0.9000 0.9141   1.00  1  1  8.8E-06
+ 10 :  -3.07E-02 1.29E-08 0.295 0.0345 0.9900 0.9885   1.00  1  1  3.3E-07
+ 11 :  -3.07E-02 2.30E-09 0.113 0.1784 0.9000 0.4012   1.00  1  1  6.3E-08
+ 12 :  -3.07E-02 5.72E-11 0.000 0.0249 0.9900 0.9900   1.00  1  1  1.6E-09
+
+iter seconds digits       c*x               b*y
+ 12      0.1   Inf -3.0650643241e-02 -3.0650642739e-02
+|Ax-b| =   1.1e-08, [Ay-c]_+ =   0.0E+00, |x|=  1.4e+00, |y|=  4.9e+00
+
+Detailed timing (sec)
+   Pre          IPM          Post
+1.000E-02    7.000E-02    0.000E+00    
+Max-norms: ||b||=1, ||c|| = 2.360448e+00,
+Cholesky |add|=0, |skip| = 1, ||L.L|| = 1.92925.
+------------------------------------------------------------
+Status: Solved
+Optimal value (cvx_optval): +0.0306506
+Iteration 12, residual norm 0.0306506
+ 
+Calling sedumi: 151 variables, 51 equality constraints
+   For improved efficiency, sedumi is solving the dual problem.
+------------------------------------------------------------
+SeDuMi 1.21 by AdvOL, 2005-2008 and Jos F. Sturm, 1998-2003.
+Alg = 2: xz-corrector, Adaptive Step-Differentiation, theta = 0.250, beta = 0.500
+eqs m = 51, order n = 53, dim = 152, blocks = 2
+nnz(A) = 550 + 1, nnz(ADA) = 250, nnz(L) = 151
+Handling 1 + 1 dense columns.
+ it :     b*y       gap    delta  rate   t/tP*  t/tD*   feas cg cg  prec
+  0 :            3.74E-01 0.000
+  1 :   6.63E-02 2.16E-01 0.000 0.5759 0.9000 0.9000   5.40  1  1  9.0E-01
+  2 :   2.96E-02 6.53E-02 0.000 0.3030 0.9000 0.9000   2.14  1  1  1.7E-01
+  3 :  -6.98E-03 1.42E-02 0.000 0.2176 0.9000 0.9000   1.43  1  1  3.1E-02
+  4 :  -2.27E-02 3.79E-03 0.000 0.2664 0.9000 0.9000   1.17  1  1  7.6E-03
+  5 :  -2.64E-02 8.24E-04 0.000 0.2176 0.9000 0.9000   1.06  1  1  1.6E-03
+  6 :  -2.73E-02 1.82E-04 0.000 0.2205 0.9000 0.9000   1.02  1  1  3.5E-04
+  7 :  -2.76E-02 1.45E-05 0.476 0.0799 0.9900 0.9900   1.01  1  1  8.7E-05
+  8 :  -2.76E-02 1.12E-06 0.349 0.0771 0.9906 0.9900   1.00  1  1  2.0E-06
+  9 :  -2.76E-02 2.38E-07 0.215 0.2129 0.9000 0.9110   1.00  1  1  1.3E-06
+ 10 :  -2.76E-02 5.42E-08 0.177 0.2273 0.9000 0.9083   1.00  1  1  5.1E-07
+ 11 :  -2.76E-02 1.17E-08 0.094 0.2155 0.9000 0.9028   1.00  1  1  1.3E-07
+ 12 :  -2.76E-02 2.24E-09 0.067 0.1917 0.9025 0.9000   1.00  1  1  2.4E-08
+ 13 :  -2.76E-02 4.31E-10 0.137 0.1923 0.9046 0.9000   1.00  1  1  4.1E-09
+
+iter seconds digits       c*x               b*y
+ 13      0.1   7.7 -2.7613366413e-02 -2.7613367034e-02
+|Ax-b| =   1.8e-09, [Ay-c]_+ =   5.6E-10, |x|=  1.5e+00, |y|=  3.6e+00
+
+Detailed timing (sec)
+   Pre          IPM          Post
+0.000E+00    9.000E-02    1.000E-02    
+Max-norms: ||b||=1, ||c|| = 2.360448e+00,
+Cholesky |add|=0, |skip| = 1, ||L.L|| = 1.
+------------------------------------------------------------
+Status: Solved
+Optimal value (cvx_optval): +0.0276134
+Iteration 13, residual norm 0.0276134
+ 
+Calling sedumi: 151 variables, 51 equality constraints
+   For improved efficiency, sedumi is solving the dual problem.
+------------------------------------------------------------
+SeDuMi 1.21 by AdvOL, 2005-2008 and Jos F. Sturm, 1998-2003.
+Alg = 2: xz-corrector, Adaptive Step-Differentiation, theta = 0.250, beta = 0.500
+eqs m = 51, order n = 53, dim = 152, blocks = 2
+nnz(A) = 550 + 1, nnz(ADA) = 250, nnz(L) = 151
+Handling 1 + 1 dense columns.
+ it :     b*y       gap    delta  rate   t/tP*  t/tD*   feas cg cg  prec
+  0 :            3.74E-01 0.000
+  1 :   7.26E-02 2.25E-01 0.000 0.6015 0.9000 0.9000   5.30  1  1  1.0E+00
+  2 :  -3.17E-01 6.90E-02 0.000 0.3062 0.9000 0.9000   2.08  1  1  2.1E-01
+  3 :  -9.70E-02 2.28E-02 0.000 0.3303 0.9000 0.9000   1.25  1  1  6.2E-02
+  4 :  -3.33E-02 7.24E-03 0.000 0.3179 0.9000 0.9000   1.12  1  1  1.9E-02
+  5 :  -2.65E-02 1.64E-03 0.000 0.2260 0.9000 0.9000   1.06  1  1  4.5E-03
+  6 :  -2.51E-02 4.50E-04 0.000 0.2748 0.9000 0.9000   1.02  1  1  3.0E-03
+  7 :  -2.51E-02 6.81E-05 0.000 0.1514 0.9000 0.9100   1.01  1  1  1.5E-03
+  8 :  -2.51E-02 9.83E-06 0.000 0.1444 0.9000 0.9163   1.01  1  1  3.7E-04
+  9 :  -2.50E-02 1.20E-06 0.000 0.1219 0.9000 0.9167   1.00  1  1  5.0E-05
+ 10 :  -2.50E-02 8.13E-08 0.000 0.0679 0.9000 0.9207   1.00  1  1  2.2E-06
+ 11 :  -2.50E-02 7.31E-09 0.223 0.0899 0.9900 0.8680   1.00  1  1  2.0E-07
+ 12 :  -2.50E-02 2.85E-10 0.085 0.0389 0.9613 0.9900   1.00  1  1  7.7E-09
+
+iter seconds digits       c*x               b*y
+ 12      0.1   Inf -2.5015523269e-02 -2.5015521652e-02
+|Ax-b| =   5.5e-08, [Ay-c]_+ =   0.0E+00, |x|=  1.4e+00, |y|=  4.9e+00
+
+Detailed timing (sec)
+   Pre          IPM          Post
+1.000E-02    6.000E-02    1.000E-02    
+Max-norms: ||b||=1, ||c|| = 2.360448e+00,
+Cholesky |add|=0, |skip| = 1, ||L.L|| = 1.92165.
+------------------------------------------------------------
+Status: Solved
+Optimal value (cvx_optval): +0.0250155
+Iteration 14, residual norm 0.0250155
+ 
+Calling sedumi: 151 variables, 51 equality constraints
+   For improved efficiency, sedumi is solving the dual problem.
+------------------------------------------------------------
+SeDuMi 1.21 by AdvOL, 2005-2008 and Jos F. Sturm, 1998-2003.
+Alg = 2: xz-corrector, Adaptive Step-Differentiation, theta = 0.250, beta = 0.500
+eqs m = 51, order n = 53, dim = 152, blocks = 2
+nnz(A) = 550 + 1, nnz(ADA) = 250, nnz(L) = 151
+Handling 1 + 1 dense columns.
+ it :     b*y       gap    delta  rate   t/tP*  t/tD*   feas cg cg  prec
+  0 :            3.74E-01 0.000
+  1 :   6.75E-02 2.16E-01 0.000 0.5769 0.9000 0.9000   5.41  1  1  9.1E-01
+  2 :   3.22E-02 6.59E-02 0.000 0.3052 0.9000 0.9000   2.14  1  1  1.7E-01
+  3 :  -5.81E-04 1.49E-02 0.000 0.2256 0.9000 0.9000   1.44  1  1  3.2E-02
+  4 :  -1.72E-02 4.03E-03 0.000 0.2706 0.9000 0.9000   1.17  1  1  8.1E-03
+  5 :  -2.14E-02 8.33E-04 0.000 0.2069 0.9000 0.9000   1.06  1  1  1.6E-03
+  6 :  -2.24E-02 1.78E-04 0.000 0.2140 0.9000 0.9000   1.02  1  1  3.5E-04
+  7 :  -2.27E-02 2.74E-05 0.000 0.1539 0.9000 0.9017   1.01  1  1  1.0E-04
+  8 :  -2.27E-02 4.80E-06 0.101 0.1748 0.9000 0.9023   1.00  1  1  3.0E-05
+  9 :  -2.27E-02 8.49E-07 0.062 0.1770 0.9040 0.9000   1.00  1  1  4.5E-06
+ 10 :  -2.27E-02 1.75E-07 0.179 0.2064 0.9071 0.9000   1.00  1  1  4.5E-07
+ 11 :  -2.27E-02 3.98E-08 0.113 0.2271 0.9116 0.9000   1.00  1  1  7.1E-08
+ 12 :  -2.27E-02 8.36E-09 0.000 0.2101 0.9054 0.9000   1.00  1  1  1.5E-08
+ 13 :  -2.27E-02 1.53E-09 0.000 0.1832 0.9000 0.9045   1.00  1  1  8.8E-09
+
+iter seconds digits       c*x               b*y
+ 13      0.1   7.4 -2.2688341674e-02 -2.2688342628e-02
+|Ax-b| =   4.0e-09, [Ay-c]_+ =   2.3E-09, |x|=  1.5e+00, |y|=  3.6e+00
+
+Detailed timing (sec)
+   Pre          IPM          Post
+1.000E-02    7.000E-02    0.000E+00    
+Max-norms: ||b||=1, ||c|| = 2.360448e+00,
+Cholesky |add|=0, |skip| = 1, ||L.L|| = 1.
+------------------------------------------------------------
+Status: Solved
+Optimal value (cvx_optval): +0.0226883
+Iteration 15, residual norm 0.0226883
+ 
+Calling sedumi: 151 variables, 51 equality constraints
+   For improved efficiency, sedumi is solving the dual problem.
+------------------------------------------------------------
+SeDuMi 1.21 by AdvOL, 2005-2008 and Jos F. Sturm, 1998-2003.
+Alg = 2: xz-corrector, Adaptive Step-Differentiation, theta = 0.250, beta = 0.500
+eqs m = 51, order n = 53, dim = 152, blocks = 2
+nnz(A) = 550 + 1, nnz(ADA) = 250, nnz(L) = 151
+Handling 1 + 1 dense columns.
+ it :     b*y       gap    delta  rate   t/tP*  t/tD*   feas cg cg  prec
+  0 :            3.74E-01 0.000
+  1 :   7.21E-02 2.25E-01 0.000 0.6016 0.9000 0.9000   5.30  1  1  1.0E+00
+  2 :  -3.13E-01 6.93E-02 0.000 0.3075 0.9000 0.9000   2.08  1  1  2.1E-01
+  3 :  -9.19E-02 2.29E-02 0.000 0.3304 0.9000 0.9000   1.25  1  1  6.2E-02
+  4 :  -2.86E-02 7.24E-03 0.000 0.3163 0.9000 0.9000   1.12  1  1  1.9E-02
+  5 :  -2.13E-02 1.48E-03 0.000 0.2046 0.9000 0.9000   1.06  1  1  7.2E-03
+  6 :  -2.06E-02 3.81E-04 0.000 0.2573 0.9000 0.9000   1.03  1  1  3.8E-03
+  7 :  -2.06E-02 6.87E-05 0.000 0.1802 0.9000 0.9073   1.01  1  1  1.6E-03
+  8 :  -2.06E-02 1.14E-05 0.000 0.1665 0.9000 0.9100   1.01  1  1  4.3E-04
+  9 :  -2.06E-02 2.07E-06 0.000 0.1812 0.7581 0.9000   1.00  1  1  9.2E-05
+ 10 :  -2.06E-02 4.10E-08 0.078 0.0198 0.9900 0.9902   1.00  1  1  2.0E-06
+ 11 :  -2.06E-02 2.25E-09 0.157 0.0548 0.9000 0.9096   1.00  1  1  4.9E-08
+ 12 :  -2.06E-02 9.63E-11 0.490 0.0428 0.9900 0.9900   1.00  1  1  2.1E-09
+
+iter seconds digits       c*x               b*y
+ 12      0.1   Inf -2.0601422430e-02 -2.0601421950e-02
+|Ax-b| =   1.3e-08, [Ay-c]_+ =   0.0E+00, |x|=  1.4e+00, |y|=  4.9e+00
+
+Detailed timing (sec)
+   Pre          IPM          Post
+0.000E+00    7.000E-02    0.000E+00    
+Max-norms: ||b||=1, ||c|| = 2.360448e+00,
+Cholesky |add|=0, |skip| = 1, ||L.L|| = 1.91594.
+------------------------------------------------------------
+Status: Solved
+Optimal value (cvx_optval): +0.0206014
+Iteration 16, residual norm 0.0206014
+ 
+Calling sedumi: 151 variables, 51 equality constraints
+   For improved efficiency, sedumi is solving the dual problem.
+------------------------------------------------------------
+SeDuMi 1.21 by AdvOL, 2005-2008 and Jos F. Sturm, 1998-2003.
+Alg = 2: xz-corrector, Adaptive Step-Differentiation, theta = 0.250, beta = 0.500
+eqs m = 51, order n = 53, dim = 152, blocks = 2
+nnz(A) = 550 + 1, nnz(ADA) = 250, nnz(L) = 151
+Handling 1 + 1 dense columns.
+ it :     b*y       gap    delta  rate   t/tP*  t/tD*   feas cg cg  prec
+  0 :            3.74E-01 0.000
+  1 :   6.85E-02 2.16E-01 0.000 0.5777 0.9000 0.9000   5.41  1  1  9.1E-01
+  2 :   3.43E-02 6.65E-02 0.000 0.3072 0.9000 0.9000   2.15  1  1  1.8E-01
+  3 :   3.74E-03 1.51E-02 0.000 0.2267 0.9000 0.9000   1.44  1  1  3.3E-02
+  4 :  -1.30E-02 4.04E-03 0.000 0.2680 0.9000 0.9000   1.17  1  1  8.2E-03
+  5 :  -1.74E-02 8.07E-04 0.000 0.1999 0.9000 0.9000   1.06  1  1  1.6E-03
+  6 :  -1.84E-02 1.70E-04 0.000 0.2111 0.9000 0.9000   1.02  1  1  3.3E-04
+  7 :  -1.86E-02 2.99E-05 0.000 0.1757 0.9000 0.9000   1.01  1  1  6.4E-05
+  8 :  -1.87E-02 6.00E-06 0.167 0.2004 0.9001 0.9000   1.00  1  1  2.0E-05
+  9 :  -1.87E-02 1.26E-06 0.211 0.2098 0.9031 0.9000   1.00  1  1  3.4E-06
+ 10 :  -1.87E-02 2.68E-07 0.175 0.2132 0.9056 0.9000   1.00  1  1  4.9E-07
+ 11 :  -1.87E-02 5.56E-08 0.129 0.2074 0.9045 0.9000   1.00  1  1  1.0E-07
+ 12 :  -1.87E-02 1.10E-08 0.118 0.1978 0.9011 0.9000   1.00  1  1  2.3E-08
+ 13 :  -1.87E-02 2.19E-09 0.169 0.1992 0.9000 0.9017   1.00  1  1  1.1E-08
+
+iter seconds digits       c*x               b*y
+ 13      0.1   7.4 -1.8687617411e-02 -1.8687618262e-02
+|Ax-b| =   8.0e-09, [Ay-c]_+ =   3.2E-09, |x|=  1.5e+00, |y|=  3.6e+00
+
+Detailed timing (sec)
+   Pre          IPM          Post
+2.000E-02    7.000E-02    0.000E+00    
+Max-norms: ||b||=1, ||c|| = 2.360448e+00,
+Cholesky |add|=0, |skip| = 1, ||L.L|| = 1.
+------------------------------------------------------------
+Status: Solved
+Optimal value (cvx_optval): +0.0186876
+Iteration 17, residual norm 0.0186876
+ 
+Calling sedumi: 151 variables, 51 equality constraints
+   For improved efficiency, sedumi is solving the dual problem.
+------------------------------------------------------------
+SeDuMi 1.21 by AdvOL, 2005-2008 and Jos F. Sturm, 1998-2003.
+Alg = 2: xz-corrector, Adaptive Step-Differentiation, theta = 0.250, beta = 0.500
+eqs m = 51, order n = 53, dim = 152, blocks = 2
+nnz(A) = 550 + 1, nnz(ADA) = 250, nnz(L) = 151
+Handling 1 + 1 dense columns.
+ it :     b*y       gap    delta  rate   t/tP*  t/tD*   feas cg cg  prec
+  0 :            3.74E-01 0.000
+  1 :   7.18E-02 2.25E-01 0.000 0.6017 0.9000 0.9000   5.30  1  1  1.0E+00
+  2 :  -3.11E-01 6.95E-02 0.000 0.3085 0.9000 0.9000   2.08  1  1  2.1E-01
+  3 :  -8.79E-02 2.30E-02 0.000 0.3307 0.9000 0.9000   1.25  1  1  6.3E-02
+  4 :  -2.50E-02 7.23E-03 0.000 0.3144 0.9000 0.9000   1.12  1  1  1.9E-02
+  5 :  -1.71E-02 1.49E-03 0.000 0.2059 0.9000 0.9000   1.06  1  1  7.5E-03
+  6 :  -1.70E-02 3.82E-04 0.000 0.2566 0.9000 0.9000   1.03  1  1  4.2E-03
+  7 :  -1.70E-02 7.69E-05 0.000 0.2013 0.4239 0.9000   1.01  1  1  2.4E-03
+  8 :  -1.71E-02 1.25E-05 0.000 0.1625 0.9000 0.9092   1.01  1  1  6.5E-04
+  9 :  -1.70E-02 3.61E-07 0.000 0.0289 0.9900 0.9901   1.00  1  1  1.9E-05
+ 10 :  -1.70E-02 5.41E-09 0.385 0.0150 0.9900 0.9901   1.00  1  1  1.3E-07
+ 11 :  -1.70E-02 2.99E-10 0.000 0.0553 0.8958 0.9900   1.00  1  1  7.1E-09
+
+iter seconds digits       c*x               b*y
+ 11      0.1   Inf -1.6964016229e-02 -1.6964013798e-02
+|Ax-b| =   4.4e-08, [Ay-c]_+ =   9.2E-10, |x|=  1.4e+00, |y|=  4.9e+00
+
+Detailed timing (sec)
+   Pre          IPM          Post
+0.000E+00    6.000E-02    1.000E-02    
+Max-norms: ||b||=1, ||c|| = 2.360448e+00,
+Cholesky |add|=0, |skip| = 1, ||L.L|| = 1.9112.
+------------------------------------------------------------
+Status: Solved
+Optimal value (cvx_optval): +0.016964
+Iteration 18, residual norm 0.016964
+ 
+Calling sedumi: 151 variables, 51 equality constraints
+   For improved efficiency, sedumi is solving the dual problem.
+------------------------------------------------------------
+SeDuMi 1.21 by AdvOL, 2005-2008 and Jos F. Sturm, 1998-2003.
+Alg = 2: xz-corrector, Adaptive Step-Differentiation, theta = 0.250, beta = 0.500
+eqs m = 51, order n = 53, dim = 152, blocks = 2
+nnz(A) = 550 + 1, nnz(ADA) = 250, nnz(L) = 151
+Handling 1 + 1 dense columns.
+ it :     b*y       gap    delta  rate   t/tP*  t/tD*   feas cg cg  prec
+  0 :            3.74E-01 0.000
+  1 :   6.94E-02 2.17E-01 0.000 0.5784 0.9000 0.9000   5.41  1  1  9.1E-01
+  2 :   3.59E-02 6.69E-02 0.000 0.3090 0.9000 0.9000   2.15  1  1  1.8E-01
+  3 :   6.66E-03 1.50E-02 0.000 0.2244 0.9000 0.9000   1.44  1  1  3.3E-02
+  4 :  -9.85E-03 3.76E-03 0.000 0.2507 0.9000 0.9000   1.17  1  1  7.6E-03
+  5 :  -1.41E-02 7.66E-04 0.000 0.2034 0.9000 0.9000   1.05  1  1  1.5E-03
+  6 :  -1.51E-02 1.60E-04 0.000 0.2084 0.9000 0.9000   1.02  1  1  3.1E-04
+  7 :  -1.53E-02 3.09E-05 0.000 0.1939 0.9023 0.9000   1.01  1  1  5.9E-05
+  8 :  -1.54E-02 6.32E-06 0.078 0.2044 0.9022 0.9000   1.00  1  1  1.3E-05
+  9 :  -1.54E-02 1.25E-06 0.092 0.1981 0.9017 0.9000   1.00  1  1  4.7E-06
+ 10 :  -1.54E-02 2.43E-07 0.131 0.1944 0.9002 0.9000   1.00  1  1  1.4E-06
+ 11 :  -1.54E-02 4.83E-08 0.194 0.1986 0.9000 0.9009   1.00  1  1  4.0E-07
+ 12 :  -1.54E-02 9.99E-09 0.252 0.2067 0.9000 0.9018   1.00  1  1  1.1E-07
+ 13 :  -1.54E-02 2.06E-09 0.250 0.2064 0.9000 0.9022   1.00  1  1  2.8E-08
+ 14 :  -1.54E-02 4.19E-10 0.240 0.2033 0.9000 0.9015   1.00  1  1  6.4E-09
+
+iter seconds digits       c*x               b*y
+ 14      0.1   7.4 -1.5392805700e-02 -1.5392806284e-02
+|Ax-b| =   2.1e-09, [Ay-c]_+ =   4.7E-10, |x|=  1.6e+00, |y|=  3.6e+00
+
+Detailed timing (sec)
+   Pre          IPM          Post
+1.000E-02    8.000E-02    0.000E+00    
+Max-norms: ||b||=1, ||c|| = 2.360448e+00,
+Cholesky |add|=0, |skip| = 1, ||L.L|| = 1.
+------------------------------------------------------------
+Status: Solved
+Optimal value (cvx_optval): +0.0153928
+Iteration 19, residual norm 0.0153928
+ 
+Calling sedumi: 151 variables, 51 equality constraints
+   For improved efficiency, sedumi is solving the dual problem.
+------------------------------------------------------------
+SeDuMi 1.21 by AdvOL, 2005-2008 and Jos F. Sturm, 1998-2003.
+Alg = 2: xz-corrector, Adaptive Step-Differentiation, theta = 0.250, beta = 0.500
+eqs m = 51, order n = 53, dim = 152, blocks = 2
+nnz(A) = 550 + 1, nnz(ADA) = 250, nnz(L) = 151
+Handling 1 + 1 dense columns.
+ it :     b*y       gap    delta  rate   t/tP*  t/tD*   feas cg cg  prec
+  0 :            3.74E-01 0.000
+  1 :   7.15E-02 2.25E-01 0.000 0.6018 0.9000 0.9000   5.31  1  1  1.0E+00
+  2 :  -3.08E-01 6.97E-02 0.000 0.3093 0.9000 0.9000   2.08  1  1  2.1E-01
+  3 :  -8.49E-02 2.31E-02 0.000 0.3310 0.9000 0.9000   1.25  1  1  6.3E-02
+  4 :  -2.22E-02 7.21E-03 0.000 0.3126 0.9000 0.9000   1.12  1  1  1.9E-02
+  5 :  -1.37E-02 1.47E-03 0.000 0.2035 0.9000 0.9000   1.06  1  1  8.7E-03
+  6 :  -1.41E-02 3.68E-04 0.000 0.2510 0.9000 0.9000   1.03  1  1  5.0E-03
+  7 :  -1.40E-02 6.77E-05 0.000 0.1839 0.4806 0.9000   1.01  1  1  2.3E-03
+  8 :  -1.40E-02 3.03E-06 0.000 0.0447 0.9900 0.9905   1.00  1  1  2.4E-04
+  9 :  -1.40E-02 3.85E-08 0.000 0.0127 0.9537 0.9900   1.00  1  1  9.4E-07
+ 10 :  -1.40E-02 6.48E-09 0.050 0.1683 0.9000 0.9017   1.00  1  1  1.6E-07
+ 11 :  -1.40E-02 1.06E-09 0.069 0.1629 0.8872 0.9000   1.00  1  1  2.6E-08
+ 12 :  -1.40E-02 2.19E-10 0.188 0.2078 0.9000 0.9000   1.00  1  1  5.4E-09
+
+iter seconds digits       c*x               b*y
+ 12      0.1   Inf -1.3979503180e-02 -1.3979502226e-02
+|Ax-b| =   3.4e-08, [Ay-c]_+ =   2.9E-10, |x|=  1.4e+00, |y|=  4.9e+00
+
+Detailed timing (sec)
+   Pre          IPM          Post
+0.000E+00    7.000E-02    0.000E+00    
+Max-norms: ||b||=1, ||c|| = 2.360448e+00,
+Cholesky |add|=0, |skip| = 1, ||L.L|| = 1.90793.
+------------------------------------------------------------
+Status: Solved
+Optimal value (cvx_optval): +0.0139795
+Iteration 20, residual norm 0.0139795
+ 
+Calling sedumi: 151 variables, 51 equality constraints
+   For improved efficiency, sedumi is solving the dual problem.
+------------------------------------------------------------
+SeDuMi 1.21 by AdvOL, 2005-2008 and Jos F. Sturm, 1998-2003.
+Alg = 2: xz-corrector, Adaptive Step-Differentiation, theta = 0.250, beta = 0.500
+eqs m = 51, order n = 53, dim = 152, blocks = 2
+nnz(A) = 550 + 1, nnz(ADA) = 250, nnz(L) = 151
+Handling 1 + 1 dense columns.
+ it :     b*y       gap    delta  rate   t/tP*  t/tD*   feas cg cg  prec
+  0 :            3.74E-01 0.000
+  1 :   7.02E-02 2.17E-01 0.000 0.5790 0.9000 0.9000   5.42  1  1  9.1E-01
+  2 :   3.72E-02 6.73E-02 0.000 0.3105 0.9000 0.9000   2.15  1  1  1.8E-01
+  3 :   8.60E-03 1.49E-02 0.000 0.2210 0.9000 0.9000   1.44  1  1  3.2E-02
+  4 :  -7.67E-03 3.13E-03 0.000 0.2107 0.9000 0.9000   1.17  1  1  6.3E-03
+  5 :  -1.15E-02 6.58E-04 0.000 0.2099 0.9000 0.9000   1.04  1  1  1.3E-03
+  6 :  -1.25E-02 1.27E-04 0.000 0.1936 0.9063 0.9000   1.02  1  1  2.3E-04
+  7 :  -1.26E-02 2.97E-05 0.042 0.2328 0.9083 0.9000   1.00  1  1  4.9E-05
+  8 :  -1.27E-02 7.59E-06 0.000 0.2558 0.9107 0.9000   1.00  1  1  1.2E-05
+  9 :  -1.27E-02 1.39E-06 0.000 0.1833 0.9000 0.9042   1.00  1  1  1.2E-05
+ 10 :  -1.27E-02 1.99E-07 0.000 0.1432 0.9000 0.5298   1.00  1  1  8.7E-07
+ 11 :  -1.27E-02 3.52E-08 0.000 0.1766 0.9000 0.9000   1.00  1  1  1.5E-07
+ 12 :  -1.27E-02 7.90E-09 0.029 0.2247 0.9000 0.9000   1.00  1  1  3.4E-08
+ 13 :  -1.27E-02 1.41E-09 0.000 0.1781 0.9000 0.9000   1.00  1  1  6.1E-09
+
+iter seconds digits       c*x               b*y
+ 13      0.1   Inf -1.2697803722e-02 -1.2697799427e-02
+|Ax-b| =   3.7e-09, [Ay-c]_+ =   6.5E-09, |x|=  1.6e+00, |y|=  3.6e+00
+
+Detailed timing (sec)
+   Pre          IPM          Post
+0.000E+00    8.000E-02    0.000E+00    
+Max-norms: ||b||=1, ||c|| = 2.360448e+00,
+Cholesky |add|=0, |skip| = 1, ||L.L|| = 1.
+------------------------------------------------------------
+Status: Solved
+Optimal value (cvx_optval): +0.0126978
+Iteration 21, residual norm 0.0126978
+ 
+Calling sedumi: 151 variables, 51 equality constraints
+   For improved efficiency, sedumi is solving the dual problem.
+------------------------------------------------------------
+SeDuMi 1.21 by AdvOL, 2005-2008 and Jos F. Sturm, 1998-2003.
+Alg = 2: xz-corrector, Adaptive Step-Differentiation, theta = 0.250, beta = 0.500
+eqs m = 51, order n = 53, dim = 152, blocks = 2
+nnz(A) = 550 + 1, nnz(ADA) = 250, nnz(L) = 151
+Handling 1 + 1 dense columns.
+ it :     b*y       gap    delta  rate   t/tP*  t/tD*   feas cg cg  prec
+  0 :            3.74E-01 0.000
+  1 :   7.13E-02 2.25E-01 0.000 0.6019 0.9000 0.9000   5.31  1  1  1.0E+00
+  2 :  -3.07E-01 6.99E-02 0.000 0.3099 0.9000 0.9000   2.08  1  1  2.1E-01
+  3 :  -8.26E-02 2.31E-02 0.000 0.3313 0.9000 0.9000   1.25  1  1  6.3E-02
+  4 :  -2.00E-02 7.20E-03 0.000 0.3110 0.9000 0.9000   1.12  1  1  1.9E-02
+  5 :  -1.11E-02 1.52E-03 0.000 0.2106 0.9000 0.9000   1.06  1  1  7.6E-03
+  6 :  -1.17E-02 3.64E-04 0.000 0.2399 0.9000 0.9000   1.03  1  1  5.5E-03
+  7 :  -1.16E-02 5.63E-05 0.000 0.1548 0.4533 0.9000   1.01  1  1  2.1E-03
+  8 :  -1.16E-02 1.94E-06 0.000 0.0344 0.9900 0.9905   1.00  1  1  1.8E-04
+  9 :  -1.15E-02 3.09E-08 0.141 0.0160 0.9585 0.9900   1.00  1  1  7.8E-07
+ 10 :  -1.15E-02 3.47E-09 0.242 0.1124 0.9450 0.9474   1.00  1  1  8.8E-08
+ 11 :  -1.15E-02 2.88E-10 0.184 0.0828 0.9465 0.9450   1.00  1  1  7.3E-09
+
+iter seconds digits       c*x               b*y
+ 11      0.1   Inf -1.1544677812e-02 -1.1544674812e-02
+|Ax-b| =   4.9e-08, [Ay-c]_+ =   0.0E+00, |x|=  1.4e+00, |y|=  4.9e+00
+
+Detailed timing (sec)
+   Pre          IPM          Post
+1.000E-02    6.000E-02    0.000E+00    
+Max-norms: ||b||=1, ||c|| = 2.360448e+00,
+Cholesky |add|=0, |skip| = 1, ||L.L|| = 1.9048.
+------------------------------------------------------------
+Status: Solved
+Optimal value (cvx_optval): +0.0115447
+Iteration 22, residual norm 0.0115447
+ 
+Calling sedumi: 151 variables, 51 equality constraints
+   For improved efficiency, sedumi is solving the dual problem.
+------------------------------------------------------------
+SeDuMi 1.21 by AdvOL, 2005-2008 and Jos F. Sturm, 1998-2003.
+Alg = 2: xz-corrector, Adaptive Step-Differentiation, theta = 0.250, beta = 0.500
+eqs m = 51, order n = 53, dim = 152, blocks = 2
+nnz(A) = 550 + 1, nnz(ADA) = 250, nnz(L) = 151
+Handling 1 + 1 dense columns.
+ it :     b*y       gap    delta  rate   t/tP*  t/tD*   feas cg cg  prec
+  0 :            3.74E-01 0.000
+  1 :   7.09E-02 2.17E-01 0.000 0.5794 0.9000 0.9000   5.42  1  1  9.1E-01
+  2 :   3.83E-02 6.77E-02 0.000 0.3118 0.9000 0.9000   2.15  1  1  1.8E-01
+  3 :   9.90E-03 1.47E-02 0.000 0.2178 0.9000 0.9000   1.45  1  1  3.2E-02
+  4 :  -5.22E-03 3.09E-03 0.000 0.2097 0.9000 0.9000   1.17  1  1  6.2E-03
+  5 :  -9.07E-03 8.27E-04 0.000 0.2674 0.9000 0.9000   1.03  1  1  1.6E-03
+  6 :  -1.04E-02 7.51E-05 0.442 0.0909 0.9740 0.9900   1.02  1  1  1.3E-04
+  7 :  -1.05E-02 1.81E-05 0.119 0.2410 0.9000 0.9019   1.00  1  1  5.4E-05
+  8 :  -1.05E-02 3.49E-06 0.000 0.1928 0.9000 0.9048   1.00  1  1  5.6E-05
+  9 :  -1.05E-02 6.13E-07 0.081 0.1757 0.9000 0.9042   1.00  1  1  1.5E-05
+ 10 :  -1.05E-02 1.17E-07 0.250 0.1915 0.9000 0.9044   1.00  1  1  3.5E-06
+ 11 :  -1.05E-02 2.22E-08 0.246 0.1894 0.9000 0.9050   1.00  1  1  7.9E-07
+ 12 :  -1.05E-02 4.00E-09 0.231 0.1797 0.9000 0.9021   1.00  1  1  1.5E-07
+ 13 :  -1.05E-02 7.03E-10 0.240 0.1760 0.9007 0.9000   1.00  1  1  2.6E-08
+ 14 :  -1.05E-02 1.23E-10 0.244 0.1742 0.9029 0.9000   1.00  1  1  4.3E-09
+
+iter seconds digits       c*x               b*y
+ 14      0.1   7.6 -1.0501636113e-02 -1.0501636399e-02
+|Ax-b| =   6.5e-10, [Ay-c]_+ =   8.2E-11, |x|=  1.6e+00, |y|=  3.6e+00
+
+Detailed timing (sec)
+   Pre          IPM          Post
+0.000E+00    9.000E-02    0.000E+00    
+Max-norms: ||b||=1, ||c|| = 2.360448e+00,
+Cholesky |add|=0, |skip| = 1, ||L.L|| = 1.
+------------------------------------------------------------
+Status: Solved
+Optimal value (cvx_optval): +0.0105016
+Iteration 23, residual norm 0.0105016
+ 
+Calling sedumi: 151 variables, 51 equality constraints
+   For improved efficiency, sedumi is solving the dual problem.
+------------------------------------------------------------
+SeDuMi 1.21 by AdvOL, 2005-2008 and Jos F. Sturm, 1998-2003.
+Alg = 2: xz-corrector, Adaptive Step-Differentiation, theta = 0.250, beta = 0.500
+eqs m = 51, order n = 53, dim = 152, blocks = 2
+nnz(A) = 550 + 1, nnz(ADA) = 250, nnz(L) = 151
+Handling 1 + 1 dense columns.
+ it :     b*y       gap    delta  rate   t/tP*  t/tD*   feas cg cg  prec
+  0 :            3.74E-01 0.000
+  1 :   7.11E-02 2.25E-01 0.000 0.6020 0.9000 0.9000   5.31  1  1  1.0E+00
+  2 :  -3.05E-01 7.00E-02 0.000 0.3104 0.9000 0.9000   2.08  1  1  2.1E-01
+  3 :  -8.08E-02 2.32E-02 0.000 0.3315 0.9000 0.9000   1.25  1  1  6.3E-02
+  4 :  -1.83E-02 7.18E-03 0.000 0.3096 0.9000 0.9000   1.12  1  1  1.9E-02
+  5 :  -9.04E-03 1.60E-03 0.000 0.2231 0.9000 0.9000   1.06  1  1  4.1E-03
+  6 :  -9.78E-03 3.64E-04 0.000 0.2271 0.9000 0.9000   1.03  1  1  6.0E-03
+  7 :  -9.59E-03 2.57E-05 0.217 0.0707 0.6754 0.9900   1.01  1  1  1.1E-03
+  8 :  -9.59E-03 3.64E-06 0.000 0.1415 0.9000 0.9199   1.00  1  1  3.0E-04
+  9 :  -9.56E-03 1.39E-07 0.463 0.0382 0.9900 0.9901   1.00  1  1  5.8E-06
+ 10 :  -9.56E-03 2.76E-08 0.158 0.1983 0.7014 0.9000   1.00  1  1  7.1E-07
+ 11 :  -9.56E-03 4.63E-09 0.021 0.1678 0.9000 0.9035   1.00  1  1  1.2E-07
+ 12 :  -9.56E-03 8.96E-10 0.217 0.1937 0.9000 0.9058   1.00  1  1  2.3E-08
+ 13 :  -9.56E-03 2.04E-10 0.330 0.2280 0.9000 0.9107   1.00  1  1  5.3E-09
+
+iter seconds digits       c*x               b*y
+ 13      0.1   Inf -9.5619409413e-03 -9.5619353033e-03
+|Ax-b| =   3.7e-08, [Ay-c]_+ =   0.0E+00, |x|=  1.4e+00, |y|=  4.9e+00
+
+Detailed timing (sec)
+   Pre          IPM          Post
+1.000E-02    9.000E-02    0.000E+00    
+Max-norms: ||b||=1, ||c|| = 2.360448e+00,
+Cholesky |add|=0, |skip| = 1, ||L.L|| = 1.90335.
+------------------------------------------------------------
+Status: Solved
+Optimal value (cvx_optval): +0.00956194
+Iteration 24, residual norm 0.00956194
+ 
+Calling sedumi: 151 variables, 51 equality constraints
+   For improved efficiency, sedumi is solving the dual problem.
+------------------------------------------------------------
+SeDuMi 1.21 by AdvOL, 2005-2008 and Jos F. Sturm, 1998-2003.
+Alg = 2: xz-corrector, Adaptive Step-Differentiation, theta = 0.250, beta = 0.500
+eqs m = 51, order n = 53, dim = 152, blocks = 2
+nnz(A) = 550 + 1, nnz(ADA) = 250, nnz(L) = 151
+Handling 1 + 1 dense columns.
+ it :     b*y       gap    delta  rate   t/tP*  t/tD*   feas cg cg  prec
+  0 :            3.74E-01 0.000
+  1 :   7.15E-02 2.17E-01 0.000 0.5798 0.9000 0.9000   5.42  1  1  9.1E-01
+  2 :   3.92E-02 6.79E-02 0.000 0.3130 0.9000 0.9000   2.15  1  1  1.8E-01
+  3 :   1.08E-02 1.46E-02 0.000 0.2153 0.9000 0.9000   1.45  1  1  3.2E-02
+  4 :  -3.30E-03 3.01E-03 0.000 0.2060 0.9000 0.9000   1.17  1  1  6.0E-03
+  5 :  -7.00E-03 9.47E-04 0.000 0.3141 0.9000 0.9000   1.03  1  1  1.9E-03
+  6 :  -8.58E-03 6.95E-05 0.325 0.0734 0.9794 0.9900   1.02  1  1  1.2E-04
+  7 :  -8.68E-03 1.77E-05 0.128 0.2552 0.9034 0.9000   1.01  1  1  3.0E-05
+  8 :  -8.70E-03 3.96E-06 0.000 0.2233 0.9016 0.9000   1.00  1  1  1.9E-05
+  9 :  -8.71E-03 7.06E-07 0.000 0.1783 0.9000 0.9032   1.00  1  1  1.2E-05
+ 10 :  -8.71E-03 1.26E-07 0.101 0.1779 0.9000 0.9023   1.00  1  1  2.9E-06
+ 11 :  -8.71E-03 2.49E-08 0.257 0.1985 0.9000 0.9041   1.00  1  1  7.3E-07
+ 12 :  -8.71E-03 4.95E-09 0.253 0.1986 0.9000 0.9050   1.00  1  1  1.8E-07
+ 13 :  -8.71E-03 9.19E-10 0.238 0.1856 0.9000 0.9025   1.00  1  1  3.5E-08
+ 14 :  -8.71E-03 1.64E-10 0.241 0.1779 0.9002 0.9000   1.00  1  1  6.2E-09
+
+iter seconds digits       c*x               b*y
+ 14      0.1   7.4 -8.7126081972e-03 -8.7126085458e-03
+|Ax-b| =   5.4e-10, [Ay-c]_+ =   1.0E-10, |x|=  1.6e+00, |y|=  3.6e+00
+
+Detailed timing (sec)
+   Pre          IPM          Post
+1.000E-02    8.000E-02    0.000E+00    
+Max-norms: ||b||=1, ||c|| = 2.360448e+00,
+Cholesky |add|=0, |skip| = 1, ||L.L|| = 1.
+------------------------------------------------------------
+Status: Solved
+Optimal value (cvx_optval): +0.00871261
+Iteration 25, residual norm 0.00871261
+ 
+Calling sedumi: 151 variables, 51 equality constraints
+   For improved efficiency, sedumi is solving the dual problem.
+------------------------------------------------------------
+SeDuMi 1.21 by AdvOL, 2005-2008 and Jos F. Sturm, 1998-2003.
+Alg = 2: xz-corrector, Adaptive Step-Differentiation, theta = 0.250, beta = 0.500
+eqs m = 51, order n = 53, dim = 152, blocks = 2
+nnz(A) = 550 + 1, nnz(ADA) = 250, nnz(L) = 151
+Handling 1 + 1 dense columns.
+ it :     b*y       gap    delta  rate   t/tP*  t/tD*   feas cg cg  prec
+  0 :            3.74E-01 0.000
+  1 :   7.09E-02 2.25E-01 0.000 0.6021 0.9000 0.9000   5.31  1  1  1.0E+00
+  2 :  -3.04E-01 7.01E-02 0.000 0.3108 0.9000 0.9000   2.08  1  1  2.1E-01
+  3 :  -7.95E-02 2.32E-02 0.000 0.3318 0.9000 0.9000   1.25  1  1  6.3E-02
+  4 :  -1.71E-02 7.17E-03 0.000 0.3084 0.9000 0.9000   1.13  1  1  1.9E-02
+  5 :  -7.41E-03 1.67E-03 0.000 0.2325 0.9000 0.9000   1.06  1  1  4.2E-03
+  6 :  -8.22E-03 3.57E-04 0.000 0.2145 0.9000 0.9000   1.04  1  1  6.9E-03
+  7 :  -7.98E-03 2.09E-05 0.226 0.0586 0.6224 0.9900   1.01  1  1  7.7E-04
+  8 :  -7.98E-03 2.84E-06 0.000 0.1355 0.9000 0.9186   1.00  1  1  1.9E-04
+  9 :  -7.95E-03 1.06E-07 0.432 0.0372 0.9900 0.9901   1.00  1  1  2.3E-06
+ 10 :  -7.95E-03 2.41E-08 0.139 0.2281 0.7546 0.9000   1.00  1  1  6.2E-07
+ 11 :  -7.95E-03 4.17E-09 0.016 0.1730 0.9000 0.9020   1.00  1  1  1.1E-07
+ 12 :  -7.95E-03 8.10E-10 0.184 0.1943 0.9000 0.9054   1.00  1  1  2.1E-08
+ 13 :  -7.95E-03 1.82E-10 0.315 0.2253 0.9000 0.9085   1.00  1  1  4.7E-09
+
+iter seconds digits       c*x               b*y
+ 13      0.1   Inf -7.9462769764e-03 -7.9462722643e-03
+|Ax-b| =   3.3e-08, [Ay-c]_+ =   0.0E+00, |x|=  1.4e+00, |y|=  4.9e+00
+
+Detailed timing (sec)
+   Pre          IPM          Post
+0.000E+00    8.000E-02    0.000E+00    
+Max-norms: ||b||=1, ||c|| = 2.360448e+00,
+Cholesky |add|=0, |skip| = 1, ||L.L|| = 1.90186.
+------------------------------------------------------------
+Status: Solved
+Optimal value (cvx_optval): +0.00794627
+Iteration 26, residual norm 0.00794627
+ 
+Calling sedumi: 151 variables, 51 equality constraints
+   For improved efficiency, sedumi is solving the dual problem.
+------------------------------------------------------------
+SeDuMi 1.21 by AdvOL, 2005-2008 and Jos F. Sturm, 1998-2003.
+Alg = 2: xz-corrector, Adaptive Step-Differentiation, theta = 0.250, beta = 0.500
+eqs m = 51, order n = 53, dim = 152, blocks = 2
+nnz(A) = 550 + 1, nnz(ADA) = 250, nnz(L) = 151
+Handling 1 + 1 dense columns.
+ it :     b*y       gap    delta  rate   t/tP*  t/tD*   feas cg cg  prec
+  0 :            3.74E-01 0.000
+  1 :   7.21E-02 2.17E-01 0.000 0.5801 0.9000 0.9000   5.42  1  1  9.1E-01
+  2 :   3.99E-02 6.82E-02 0.000 0.3139 0.9000 0.9000   2.15  1  1  1.8E-01
+  3 :   1.14E-02 1.46E-02 0.000 0.2136 0.9000 0.9000   1.45  1  1  3.1E-02
+  4 :  -1.89E-03 2.91E-03 0.000 0.1997 0.9000 0.9000   1.17  1  1  5.8E-03
+  5 :  -5.35E-03 9.97E-04 0.000 0.3427 0.9000 0.9000   1.02  1  1  2.0E-03
+  6 :  -7.14E-03 6.33E-05 0.093 0.0635 0.9735 0.9900   1.02  1  1  1.1E-04
+  7 :  -7.22E-03 1.60E-05 0.000 0.2527 0.9007 0.9000   1.01  1  1  9.2E-05
+  8 :  -7.25E-03 3.55E-06 0.000 0.2218 0.9000 0.9003   1.00  1  1  4.7E-05
+  9 :  -7.25E-03 6.78E-07 0.007 0.1910 0.9000 0.9012   1.00  1  1  1.3E-05
+ 10 :  -7.25E-03 1.28E-07 0.169 0.1882 0.9000 0.9010   1.00  1  1  3.0E-06
+ 11 :  -7.25E-03 2.45E-08 0.226 0.1916 0.9000 0.9006   1.00  1  1  6.3E-07
+ 12 :  -7.25E-03 4.61E-09 0.247 0.1884 0.9008 0.9000   1.00  1  1  1.2E-07
+ 13 :  -7.25E-03 8.44E-10 0.246 0.1831 0.9021 0.9000   1.00  1  1  1.9E-08
+ 14 :  -7.25E-03 1.53E-10 0.231 0.1811 0.9023 0.9000   1.00  1  1  2.8E-09
+
+iter seconds digits       c*x               b*y
+ 14      0.1   7.8 -7.2533995096e-03 -7.2533996309e-03
+|Ax-b| =   4.8e-10, [Ay-c]_+ =   2.5E-10, |x|=  1.6e+00, |y|=  3.6e+00
+
+Detailed timing (sec)
+   Pre          IPM          Post
+0.000E+00    1.000E-01    0.000E+00    
+Max-norms: ||b||=1, ||c|| = 2.360448e+00,
+Cholesky |add|=0, |skip| = 1, ||L.L|| = 1.
+------------------------------------------------------------
+Status: Solved
+Optimal value (cvx_optval): +0.0072534
+Iteration 27, residual norm 0.0072534
+ 
+Calling sedumi: 151 variables, 51 equality constraints
+   For improved efficiency, sedumi is solving the dual problem.
+------------------------------------------------------------
+SeDuMi 1.21 by AdvOL, 2005-2008 and Jos F. Sturm, 1998-2003.
+Alg = 2: xz-corrector, Adaptive Step-Differentiation, theta = 0.250, beta = 0.500
+eqs m = 51, order n = 53, dim = 152, blocks = 2
+nnz(A) = 550 + 1, nnz(ADA) = 250, nnz(L) = 151
+Handling 1 + 1 dense columns.
+ it :     b*y       gap    delta  rate   t/tP*  t/tD*   feas cg cg  prec
+  0 :            3.74E-01 0.000
+  1 :   7.08E-02 2.25E-01 0.000 0.6022 0.9000 0.9000   5.31  1  1  1.0E+00
+  2 :  -3.03E-01 7.01E-02 0.000 0.3110 0.9000 0.9000   2.08  1  1  2.1E-01
+  3 :  -7.85E-02 2.33E-02 0.000 0.3320 0.9000 0.9000   1.25  1  1  6.3E-02
+  4 :  -1.61E-02 7.16E-03 0.000 0.3074 0.9000 0.9000   1.13  1  1  1.9E-02
+  5 :  -6.12E-03 1.71E-03 0.000 0.2392 0.9000 0.9000   1.06  1  1  4.3E-03
+  6 :  -6.95E-03 3.43E-04 0.000 0.2004 0.9000 0.9000   1.04  1  1  8.3E-03
+  7 :  -6.66E-03 1.76E-05 0.247 0.0513 0.5586 0.9900   1.01  1  1  3.7E-04
+  8 :  -6.66E-03 2.31E-06 0.000 0.1317 0.9000 0.9171   1.00  1  1  6.4E-05
+  9 :  -6.63E-03 1.59E-07 0.411 0.0688 0.9900 0.9900   1.00  1  1  3.1E-06
+ 10 :  -6.63E-03 3.43E-08 0.159 0.2155 0.7151 0.9000   1.00  1  1  8.9E-07
+ 11 :  -6.63E-03 3.69E-09 0.183 0.1073 0.9450 0.9463   1.00  1  1  9.6E-08
+ 12 :  -6.63E-03 7.07E-10 0.202 0.1918 0.9000 0.9077   1.00  1  1  1.8E-08
+ 13 :  -6.63E-03 1.64E-10 0.349 0.2314 0.9000 0.9118   1.00  1  1  4.2E-09
+
+iter seconds digits       c*x               b*y
+ 13      0.1   Inf -6.6271446296e-03 -6.6271383826e-03
+|Ax-b| =   2.9e-08, [Ay-c]_+ =   0.0E+00, |x|=  1.4e+00, |y|=  4.9e+00
+
+Detailed timing (sec)
+   Pre          IPM          Post
+0.000E+00    8.000E-02    0.000E+00    
+Max-norms: ||b||=1, ||c|| = 2.360448e+00,
+Cholesky |add|=0, |skip| = 1, ||L.L|| = 1.90077.
+------------------------------------------------------------
+Status: Solved
+Optimal value (cvx_optval): +0.00662714
+Iteration 28, residual norm 0.00662714
+ 
+Calling sedumi: 151 variables, 51 equality constraints
+   For improved efficiency, sedumi is solving the dual problem.
+------------------------------------------------------------
+SeDuMi 1.21 by AdvOL, 2005-2008 and Jos F. Sturm, 1998-2003.
+Alg = 2: xz-corrector, Adaptive Step-Differentiation, theta = 0.250, beta = 0.500
+eqs m = 51, order n = 53, dim = 152, blocks = 2
+nnz(A) = 550 + 1, nnz(ADA) = 250, nnz(L) = 151
+Handling 1 + 1 dense columns.
+ it :     b*y       gap    delta  rate   t/tP*  t/tD*   feas cg cg  prec
+  0 :            3.74E-01 0.000
+  1 :   7.26E-02 2.17E-01 0.000 0.5803 0.9000 0.9000   5.42  1  1  9.1E-01
+  2 :   4.05E-02 6.84E-02 0.000 0.3147 0.9000 0.9000   2.15  1  1  1.8E-01
+  3 :   1.18E-02 1.45E-02 0.000 0.2125 0.9000 0.9000   1.45  1  1  3.1E-02
+  4 :  -8.81E-04 2.79E-03 0.000 0.1916 0.9000 0.9000   1.18  1  1  5.5E-03
+  5 :  -4.12E-03 9.70E-04 0.000 0.3483 0.9000 0.9000   1.02  1  1  1.9E-03
+  6 :  -5.97E-03 5.50E-05 0.000 0.0567 0.9801 0.9900   1.02  1  1  9.0E-05
+  7 :  -6.04E-03 1.47E-05 0.004 0.2676 0.9000 0.9057   1.01  1  1  2.4E-04
+  8 :  -6.06E-03 3.37E-06 0.000 0.2288 0.9000 0.9037   1.00  1  1  1.0E-04
+  9 :  -6.06E-03 5.84E-07 0.000 0.1733 0.9000 0.9001   1.00  1  1  2.0E-05
+ 10 :  -6.06E-03 9.07E-08 0.000 0.1552 0.9022 0.9000   1.00  1  1  2.9E-06
+ 11 :  -6.06E-03 1.37E-08 0.113 0.1516 0.9052 0.9000   1.00  1  1  2.7E-07
+ 12 :  -6.06E-03 1.99E-09 0.165 0.1447 0.9089 0.9000   1.00  1  1  6.0E-09
+
+iter seconds digits       c*x               b*y
+ 12      0.1   Inf -6.0604095495e-03 -6.0604083794e-03
+|Ax-b| =   6.7e-09, [Ay-c]_+ =   5.8E-09, |x|=  1.6e+00, |y|=  3.6e+00
+
+Detailed timing (sec)
+   Pre          IPM          Post
+1.000E-02    6.000E-02    1.000E-02    
+Max-norms: ||b||=1, ||c|| = 2.360448e+00,
+Cholesky |add|=0, |skip| = 1, ||L.L|| = 1.
+------------------------------------------------------------
+Status: Solved
+Optimal value (cvx_optval): +0.00606041
+Iteration 29, residual norm 0.00606041
+ 
+Calling sedumi: 151 variables, 51 equality constraints
+   For improved efficiency, sedumi is solving the dual problem.
+------------------------------------------------------------
+SeDuMi 1.21 by AdvOL, 2005-2008 and Jos F. Sturm, 1998-2003.
+Alg = 2: xz-corrector, Adaptive Step-Differentiation, theta = 0.250, beta = 0.500
+eqs m = 51, order n = 53, dim = 152, blocks = 2
+nnz(A) = 550 + 1, nnz(ADA) = 250, nnz(L) = 151
+Handling 1 + 1 dense columns.
+ it :     b*y       gap    delta  rate   t/tP*  t/tD*   feas cg cg  prec
+  0 :            3.74E-01 0.000
+  1 :   7.07E-02 2.26E-01 0.000 0.6022 0.9000 0.9000   5.31  1  1  1.0E+00
+  2 :  -3.03E-01 7.02E-02 0.000 0.3112 0.9000 0.9000   2.08  1  1  2.1E-01
+  3 :  -7.78E-02 2.33E-02 0.000 0.3322 0.9000 0.9000   1.25  1  1  6.4E-02
+  4 :  -1.54E-02 7.15E-03 0.000 0.3066 0.9000 0.9000   1.13  1  1  1.9E-02
+  5 :  -5.10E-03 1.74E-03 0.000 0.2439 0.9000 0.9000   1.06  1  1  4.4E-03
+  6 :  -5.91E-03 3.17E-04 0.000 0.1819 0.9000 0.9000   1.04  1  1  1.0E-02
+  7 :  -5.58E-03 1.51E-05 0.270 0.0475 0.4888 0.9900   1.01  1  1  2.2E-04
+  8 :  -5.58E-03 1.95E-06 0.000 0.1293 0.9000 0.9156   1.00  1  1  4.4E-05
+  9 :  -5.55E-03 3.03E-07 0.000 0.1555 0.9000 0.9093   1.00  1  1  8.0E-06
+ 10 :  -5.55E-03 3.48E-08 0.325 0.1150 0.9450 0.9459   1.00  1  1  9.2E-07
+ 11 :  -5.55E-03 7.40E-09 0.311 0.2125 0.9000 0.9088   1.00  1  1  1.9E-07
+ 12 :  -5.55E-03 1.47E-09 0.269 0.1980 0.9000 0.9068   1.00  1  1  3.8E-08
+ 13 :  -5.55E-03 2.61E-10 0.000 0.1778 0.9000 0.6256   1.00  1  1  7.0E-09
+
+iter seconds digits       c*x               b*y
+ 13      0.1   Inf -5.5474670964e-03 -5.5474655447e-03
+|Ax-b| =   4.8e-08, [Ay-c]_+ =   0.0E+00, |x|=  1.4e+00, |y|=  4.9e+00
+
+Detailed timing (sec)
+   Pre          IPM          Post
+1.000E-02    7.000E-02    1.000E-02    
+Max-norms: ||b||=1, ||c|| = 2.360448e+00,
+Cholesky |add|=0, |skip| = 1, ||L.L|| = 1.90009.
+------------------------------------------------------------
+Status: Solved
+Optimal value (cvx_optval): +0.00554747
+Iteration 30, residual norm 0.00554747
 Original matrix:
-    2.2563    0.5742    1.9552    2.0167    1.6622    1.8336    1.1726    1.6169    1.5895    1.3219
-    2.1345    0.5942    1.9220    1.4600    1.5658    1.4873    1.0393    1.5530    1.1212    1.2752
-    1.3828    0.2969    1.3196    0.8366    1.0966    1.2279    0.6546    1.1351    1.0823    0.7146
-    1.0830    0.2779    1.0070    0.7604    0.9150    0.8051    0.4289    0.7389    0.6431    0.5998
-    1.5539    0.3463    1.3780    1.4041    1.1521    1.4095    0.7233    1.1275    1.3193    0.8171
-    2.0399    0.5739    1.7705    1.6603    1.6830    1.4740    1.2381    1.5058    1.0998    1.3554
-    1.9380    0.5465    1.6435    1.8086    1.4500    1.4037    0.9868    1.2778    1.1301    1.2031
-    1.4371    0.3751    1.2595    1.1267    1.0218    1.1316    0.8185    1.1102    0.9372    0.8696
-    2.2248    0.6158    1.8695    2.0995    1.5016    1.6687    1.1432    1.5086    1.4033    1.3449
-    1.7027    0.4351    1.4939    1.4292    1.3743    1.3729    0.9773    1.2776    1.1400    1.0501
+    0.3592    0.8312    0.8065    0.9996    0.5081    1.3236    0.8398    1.2189    0.6605    1.0759
+    0.4201    0.6033    0.5158    0.9656    0.6029    1.1994    1.0734    1.2186    0.3909    0.7756
+    0.4017    1.3395    0.8938    1.6807    1.0275    2.1509    1.5564    2.0325    0.9134    1.8006
+    0.4893    1.0137    0.7657    1.4035    0.7798    1.5208    1.3870    2.0219    0.7193    1.4301
+    0.4655    0.6601    0.4999    1.2935    0.8624    1.5954    1.4953    1.3942    0.3916    0.8624
+    0.2848    0.7062    0.3622    1.2739    0.8833    1.5680    1.4027    1.2944    0.4016    0.9674
+    0.5641    1.2552    0.8794    1.9054    1.2033    2.3604    1.9676    2.2161    0.8212    1.6840
+    0.4592    0.8008    0.8972    1.1923    0.6308    1.6067    1.0947    1.2161    0.6544    1.0043
+    0.4199    0.8984    0.6402    1.1014    0.7246    1.5146    1.1439    1.4494    0.5609    1.1297
+    0.6042    0.7117    0.9137    1.4382    0.7149    1.5961    1.4474    1.5962    0.6271    0.9826
 
 Left factor Y:
-    0.3422    1.0254    0.6858    1.2445    0.7799
-    1.2528    0.2789    0.5452    0.0000    1.2317
-    0.8395    1.1513    0.0013    0.0072    0.4240
-    0.7872    0.0958    0.0000    0.6270    0.8142
-    0.0012    1.1298    0.1059    1.3109    0.5801
-    1.3277    0.4334    1.2454    0.1367    0.3497
-    0.4364    0.1467    0.7492    1.3103    0.9883
-    0.4485    0.7449    0.5890    0.0000    0.3187
-    0.0000    0.5118    0.8074    1.3253    1.0700
-    0.7585    0.8164    0.7551    0.4862    0.2718
+    0.4286    1.1793    0.0000    0.6660    0.0137
+    0.6350    0.0788    0.4830    0.4518    0.5320
+    0.0171    1.2370    0.3798    1.0579    0.5409
+    0.5301    0.5462    1.1912    1.8075    0.2256
+    0.5708    0.0000    0.7478    0.0251    0.8437
+    0.0000    0.2052    0.6874    0.0101    0.8187
+    0.4129    0.7281    0.8462    0.7716    0.8623
+    0.6630    1.2418    0.0000    0.0634    0.1579
+    0.4666    0.3116    0.0544    0.6028    0.7242
+    1.0270    0.9299    1.1089    0.6148    0.0000
 
 Right factor X:
-    0.2174    0.0383    0.2657    0.0000    0.4367    0.1782    0.0974    0.1896    0.0975    0.1371
-    0.6858    0.1249    0.6385    0.4821    0.4582    0.7069    0.3600    0.6046    0.6888    0.3271
-    0.8860    0.2959    0.6697    0.9498    0.5689    0.5573    0.6576    0.6132    0.3847    0.6753
-    0.0953    0.0067    0.0703    0.2891    0.2290    0.1461    0.0231   -0.0000    0.1666    0.0551
-    0.9649    0.2843    0.8497    0.6559    0.4718    0.6201    0.3720    0.6566    0.4854    0.5230
+    0.3474    0.0576    0.3912    0.2032    0.0403    0.2932    0.2695    0.3074    0.1095   -0.0000
+    0.1504    0.5049    0.4657    0.7229    0.3881    0.9549    0.5974    0.6500    0.4118    0.6707
+    0.0730   -0.0000    0.0000    0.4630    0.2634    0.3237    0.5510    0.3551    0.0156    0.0965
+    0.0441    0.3000    0.1276    0.0705    0.0339    0.0783    0.0073    0.4588    0.1847    0.4093
+    0.2496    0.7340    0.3252    0.9848    0.7597    1.4029    1.1011    1.1151    0.3717    0.9252
 
 Residual A - Y * X:
-    0.0001    0.0000    0.0001   -0.0002   -0.0001    0.0001    0.0002   -0.0005    0.0001    0.0001
-   -0.0007   -0.0001   -0.0007   -0.0002   -0.0004   -0.0007   -0.0000    0.0038   -0.0008   -0.0001
-   -0.0002   -0.0000   -0.0002    0.0002    0.0001   -0.0002   -0.0003    0.0007   -0.0001   -0.0001
-    0.0009    0.0002    0.0009   -0.0011   -0.0004    0.0007    0.0003   -0.0029    0.0007    0.0003
-    0.0004    0.0001    0.0004   -0.0005   -0.0002    0.0004    0.0007   -0.0016    0.0003    0.0003
-    0.0003    0.0001    0.0002   -0.0004   -0.0001    0.0003    0.0005   -0.0011    0.0002    0.0003
-    0.0005    0.0001    0.0004   -0.0006   -0.0002    0.0005    0.0009   -0.0019    0.0003    0.0004
-   -0.0007   -0.0001   -0.0006   -0.0009   -0.0008   -0.0007    0.0007    0.0043   -0.0010    0.0000
-   -0.0003   -0.0001   -0.0003    0.0009   -0.0005   -0.0003   -0.0007    0.0014   -0.0001   -0.0004
-    0.0003    0.0001    0.0003   -0.0004   -0.0001    0.0003    0.0005   -0.0013    0.0002    0.0003
+    0.0002    0.0012    0.0001   -0.0005    0.0001    0.0004   -0.0002   -0.0003   -0.0002   -0.0004
+   -0.0003    0.0009   -0.0000    0.0003    0.0000   -0.0002   -0.0000    0.0002    0.0002   -0.0009
+    0.0003   -0.0005    0.0001   -0.0001   -0.0001   -0.0001    0.0002   -0.0003   -0.0003    0.0008
+    0.0000   -0.0003   -0.0000   -0.0001    0.0000    0.0001   -0.0001    0.0000    0.0000    0.0002
+    0.0008    0.0004   -0.0010   -0.0014    0.0006    0.0003    0.0002    0.0009   -0.0009   -0.0006
+   -0.0011   -0.0014   -0.0009    0.0003    0.0002    0.0002   -0.0003   -0.0006    0.0002    0.0019
+    0.0001   -0.0005   -0.0000   -0.0001    0.0000    0.0001   -0.0000   -0.0000   -0.0000    0.0004
+   -0.0001    0.0008    0.0000   -0.0001    0.0000    0.0001   -0.0001   -0.0000    0.0000   -0.0006
+   -0.0004    0.0018    0.0001    0.0005   -0.0001   -0.0005    0.0002   -0.0000    0.0000   -0.0013
+   -0.0005   -0.0013    0.0004    0.0006   -0.0003   -0.0001   -0.0004    0.0002    0.0008    0.0002
 
-Residual after 30 iterations: 0.0084509
+Residual after 30 iterations: 0.00554747
 </pre>
 <a id="plots"></a>
 <div id="plotoutput">

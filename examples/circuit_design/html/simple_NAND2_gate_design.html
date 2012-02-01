@@ -66,67 +66,65 @@ Amax = linspace(5,45,Npoints);
 Dopt = [];
 
 disp(<span class="string">'Generating the optimal tradeoff curve...'</span>)
-
 <span class="keyword">for</span> k = 1:Npoints
-  cvx_begin <span class="string">gp</span> <span class="string">quiet</span>
-    <span class="comment">% device width variables</span>
-    variable <span class="string">w(N)</span>
+    cvx_begin <span class="string">gp</span> <span class="string">quiet</span>
+        <span class="comment">% device width variables</span>
+        variable <span class="string">w(N)</span>
 
-    <span class="comment">% device specs</span>
-    device(1:2) = PMOS; device(3:4) = NMOS;
+        <span class="comment">% device specs</span>
+        device(1:2) = PMOS; device(3:4) = NMOS;
 
-    <span class="keyword">for</span> num = 1:N
-      device(num).R   = device(num).R/w(num);
-      device(num).Cdb = device(num).Cdb*w(num);
-      device(num).Csb = device(num).Csb*w(num);
-      device(num).Cgb = device(num).Cgb*w(num);
-      device(num).Cgs = device(num).Cgs*w(num);
-    <span class="keyword">end</span>
+        <span class="keyword">for</span> num = 1:N
+            device(num).R   = device(num).R/w(num);
+            device(num).Cdb = device(num).Cdb*w(num);
+            device(num).Csb = device(num).Csb*w(num);
+            device(num).Cgb = device(num).Cgb*w(num);
+            device(num).Cgs = device(num).Cgs*w(num);
+        <span class="keyword">end</span>
 
-    <span class="comment">% capacitances</span>
-    C1 = sum([device(1:3).Cdb]) + Cload;
-    C2 = device(3).Csb + device(4).Cdb;
+        <span class="comment">% capacitances</span>
+        C1 = sum([device(1:3).Cdb]) + Cload;
+        C2 = device(3).Csb + device(4).Cdb;
 
-    <span class="comment">% input capacitances</span>
-    Cin_A = sum([ device([2 3]).Cgb ]) + sum([ device([2 3]).Cgs ]);
-    Cin_B = sum([ device([1 4]).Cgb ]) + sum([ device([1 4]).Cgs ]);
+        <span class="comment">% input capacitances</span>
+        Cin_A = sum([ device([2 3]).Cgb ]) + sum([ device([2 3]).Cgs ]);
+        Cin_B = sum([ device([1 4]).Cgb ]) + sum([ device([1 4]).Cgs ]);
 
-    <span class="comment">% resistances</span>
-    R = [device.R]';
+        <span class="comment">% resistances</span>
+        R = [device.R]';
 
-    <span class="comment">% area definition</span>
-    area = sum(w);
+        <span class="comment">% area definition</span>
+        area = sum(w);
 
-    <span class="comment">% delays and dissipated energies for all six possible transitions</span>
-    <span class="comment">% transition 1 is A: 1-&gt;1, B: 1-&gt;0, Z: 0-&gt;1</span>
-    D1 = R(1)*(C1 + C2);
-    E1 = (C1 + C2)*Vdd^2/2;
-    <span class="comment">% transition 2 is A: 1-&gt;0, B: 1-&gt;1, Z: 0-&gt;1</span>
-    D2 = R(2)*C1;
-    E2 = C1*Vdd^2/2;
-    <span class="comment">% transition 3 is A: 1-&gt;0, B: 1-&gt;0, Z: 0-&gt;1</span>
-    <span class="comment">% D3 = C1*R(1)*R(2)/(R(1) + R(2)); % not a posynomial</span>
-    E3 = C1*Vdd^2/2;
-    <span class="comment">% transition 4 is A: 1-&gt;1, B: 0-&gt;1, Z: 1-&gt;0</span>
-    D4 = C1*R(3) + R(4)*(C1 + C2);
-    E4 = (C1 + C2)*Vdd^2/2;
-    <span class="comment">% transition 5 is A: 0-&gt;1, B: 1-&gt;1, Z: 1-&gt;0</span>
-    D5 = C1*(R(3) + R(4));
-    E5 = (C1 + C2)*Vdd^2/2;
-    <span class="comment">% transition 6 is A: 0-&gt;1, B: 0-&gt;1, Z: 1-&gt;0</span>
-    D6 = C1*R(3) + R(4)*(C1 + C2);
-    E6 = (C1 + C2)*Vdd^2/2;
+        <span class="comment">% delays and dissipated energies for all six possible transitions</span>
+        <span class="comment">% transition 1 is A: 1-&gt;1, B: 1-&gt;0, Z: 0-&gt;1</span>
+        D1 = R(1)*(C1 + C2);
+        E1 = (C1 + C2)*Vdd^2/2;
+        <span class="comment">% transition 2 is A: 1-&gt;0, B: 1-&gt;1, Z: 0-&gt;1</span>
+        D2 = R(2)*C1;
+        E2 = C1*Vdd^2/2;
+        <span class="comment">% transition 3 is A: 1-&gt;0, B: 1-&gt;0, Z: 0-&gt;1</span>
+        <span class="comment">% D3 = C1*R(1)*R(2)/(R(1) + R(2)); % not a posynomial</span>
+        E3 = C1*Vdd^2/2;
+        <span class="comment">% transition 4 is A: 1-&gt;1, B: 0-&gt;1, Z: 1-&gt;0</span>
+        D4 = C1*R(3) + R(4)*(C1 + C2);
+        E4 = (C1 + C2)*Vdd^2/2;
+        <span class="comment">% transition 5 is A: 0-&gt;1, B: 1-&gt;1, Z: 1-&gt;0</span>
+        D5 = C1*(R(3) + R(4));
+        E5 = (C1 + C2)*Vdd^2/2;
+        <span class="comment">% transition 6 is A: 0-&gt;1, B: 0-&gt;1, Z: 1-&gt;0</span>
+        D6 = C1*R(3) + R(4)*(C1 + C2);
+        E6 = (C1 + C2)*Vdd^2/2;
 
-    <span class="comment">% objective is the worst-case delay</span>
-    minimize( max( [D1 D2 D4] ) )
-    subject <span class="string">to</span>
-      area &lt;= Amax(k);
-      w &gt;= wmin;
-  cvx_end
-
-  <span class="comment">% display and store computed values</span>
-  fprintf(1,<span class="string">'  Amax = %5.2f   delay = %3.2f\n'</span>,Amax(k),cvx_optval);
-  Dopt = [Dopt cvx_optval];
+        <span class="comment">% objective is the worst-case delay</span>
+        minimize( max( [D1 D2 D4] ) )
+        subject <span class="string">to</span>
+            area &lt;= Amax(k);
+            w &gt;= wmin;
+    cvx_end
+    <span class="comment">% display and store computed values</span>
+    fprintf(1,<span class="string">'  Amax = %5.2f   delay = %3.2f\n'</span>,Amax(k),cvx_optval);
+    Dopt = [Dopt cvx_optval];
 <span class="keyword">end</span>
 
 <span class="comment">% plot the tradeoff curve</span>

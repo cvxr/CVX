@@ -10,7 +10,7 @@
 % width w_i and height h_i. They need to satisfy area and aspect
 % ration constraints. The GP is formulated as:
 %
-%   minimize   max(wa + wb, wc + wd)*(max(ha,hb) + max(hc,hd))
+%   minimize   max(wa+wb,wc+wd)*(max(ha,hb)+max(hc,hd))
 %       s.t.   wa*ha == area_a, wb*hb == area_b, ...
 %              1/alpha_max <= ha/wa <= alpha_max, ...
 %
@@ -27,24 +27,24 @@ N = 20;
 alpha = linspace(1.01,4,N);
 
 fprintf(1,'Solving for the optimal tradeoff curve...\n');
-min_area = [];
+min_area = zeros(N,1);
 for n = 1:N
   % GP variables
+  fprintf( 'alpha = %.2f ... ', alpha(n) );
   cvx_begin gp quiet
     variables wa wb wc wd ha hb hc hd
-
     % objective function is the area of the bounding box
-    minimize( max(wa + wb, wc + wd)*(max(ha,hb) + max(hc,hd)) )
+    minimize( max(wa+wb,wc+wd)*(max(ha,hb)+max(hc,hd)) )
     subject to
       % constraints (now impose the non-changing constraints)
       ha*wa == a; hb*wb == b; hc*wc == c; hd*wd == d;
-      1/alpha(n) <= ha/wa; ha/wa <= alpha(n);
-      1/alpha(n) <= hb/wb; hb/wb <= alpha(n);
-      1/alpha(n) <= hc/wc; hc/wc <= alpha(n);
-      1/alpha(n) <= hd/wd; hd/wd <= alpha(n);
+      1/alpha(n) <= ha/wa <= alpha(n);
+      1/alpha(n) <= hb/wb <= alpha(n);
+      1/alpha(n) <= hc/wc <= alpha(n);
+      1/alpha(n) <= hd/wd <= alpha(n);
   cvx_end
-
-  min_area(n,1) = cvx_optval;
+  fprintf( 'area = %.2f\n', cvx_optval );
+  min_area(n) = cvx_optval;
 end
 
 figure, clf

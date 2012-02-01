@@ -25,6 +25,7 @@ for k = 1 : length( gamma ),
    xnrms( k ) = norm( x, Inf );
 end
 fprintf( 1, 'done.\n' );
+figure
 semilogx( gamma, nrms );
 xlabel( '\gamma' );
 ylabel( '|| A * x - b ||_1' );

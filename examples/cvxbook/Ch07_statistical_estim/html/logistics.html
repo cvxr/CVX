@@ -89,25 +89,18 @@ Successive approximation method to be employed.
    Original size: 600 variables, 202 equality constraints
    200 exponentials add 1600 variables, 1000 equality constraints
 -----------------------------------------------------------------
-          Errors   
-Act Centering    Conic    Status
------------------------------------
-200 4.877e+00  2.484e+00  Inaccurate/Solved
-200 1.920e-01  3.057e-03  Inaccurate/Solved
-200 2.874e-02  8.541e-05  Inaccurate/Solved
-200 3.377e-03  1.793e-05  Inaccurate/Solved
-200 4.017e-04  5.619e-05S Inaccurate/Solved
-200 3.520e-05  1.755e-05  Inaccurate/Solved
-200 5.401e-06  1.737e-05S Inaccurate/Solved
-200 0.000e+00  1.054e-05  Inaccurate/Solved
-200 0.000e+00S 1.048e-05S Inaccurate/Solved
-200 1.712e-04S 2.234e-06  Inaccurate/Solved
-200 1.919e-05  2.189e-06S Inaccurate/Solved
-200 1.719e-06  1.716e-06  Inaccurate/Solved
-200 5.325e-07  1.706e-06S Inaccurate/Solved
+ Cones  |             Errors              |
+Mov/Act | Centering  Exp cone   Poly cone | Status
+--------+---------------------------------+---------
+200/200 | 6.389e+00  2.483e+00  1.010e-04 | Inaccurate/Solved
+200/200 | 4.837e-01  1.682e-02  6.484e-05 | Inaccurate/Solved
+123/200 | 5.962e-02  2.827e-04  4.536e-05 | Inaccurate/Solved
+  0/197 | 2.398e-03  9.557e-05  9.516e-05 | Inaccurate/Solved
+  0/196 | 2.491e-04  4.552e-05  4.547e-05 | Inaccurate/Solved
+  0/179 | 4.138e-04  6.719e-05  6.710e-05 | Inaccurate/Solved
 -----------------------------------------------------------------
-Status: Failed
-Optimal value (cvx_optval): NaN
+Status: Inaccurate/Solved
+Optimal value (cvx_optval): -32.9797
 </pre>
 <a id="plots"></a>
 <div id="plotoutput">

@@ -72,9 +72,9 @@ cvx_begin <span class="string">gp</span>
   minimize( w'*h )
   subject <span class="string">to</span>
     <span class="comment">% constraint set</span>
-    wmin &lt;= w; w &lt;= wmax;
-    hmin &lt;= h; h &lt;= hmax;
-    Smin &lt;= h./w; h./w &lt;= Smax;
+    wmin &lt;= w    &lt;= wmax;
+    hmin &lt;= h    &lt;= hmax;
+    Smin &lt;= h./w &lt;= Smax;
     6*F*[1:N]'./(w.*(h.^2)) &lt;= sigma_max;
     y(1) &lt;= ymax;
 cvx_end
@@ -104,18 +104,14 @@ Successive approximation method to be employed.
    Original size: 127 variables, 88 equality constraints
    23 exponentials add 184 variables, 115 equality constraints
 -----------------------------------------------------------------
-          Errors   
-Act Centering    Conic    Status
------------------------------------
-8   2.466e+00  6.560e-01  Solved
-8   3.058e-01  7.867e-03  Solved
-8   4.174e-02  1.432e-04  Solved
-8   5.285e-03  2.348e-06  Solved
-8   6.617e-04  6.366e-08  Solved
-8   8.270e-05  2.345e-08  Solved
-8   1.038e-05  2.239e-08S Solved
-8   1.336e-06  2.233e-08S Solved
-8   4.303e-05S 1.429e-09  Solved
+ Cones  |             Errors              |
+Mov/Act | Centering  Exp cone   Poly cone | Status
+--------+---------------------------------+---------
+  8/  8 | 2.949e+00  6.560e-01  7.202e-08 | Solved
+  8/  8 | 2.417e-01  4.179e-03  1.569e-07 | Solved
+  8/  8 | 1.641e-02  1.922e-05  1.253e-08 | Solved
+  8/  8 | 1.033e-03  8.954e-08  1.041e-08 | Solved
+  0/  8 | 6.465e-05  1.084e-08  1.031e-08 | Solved
 -----------------------------------------------------------------
 Status: Solved
 Optimal value (cvx_optval): +40.9668

@@ -2,13 +2,13 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>estimates probability than random vector x in R2</title>
+<title>Probability estimate using Monte Carlo methods</title>
 <link rel="canonical" href="http://cvxr.com/cvx/examples/cvxbook/Ch07_statistical_estim/html/montecarlo.html">
 <link rel="stylesheet" href="../../../examples.css" type="text/css">
 </head>
 <body>
 <div id="header">
-<h1>estimates probability than random vector x in R2</h1>
+<h1>Probability estimate using Monte Carlo methods</h1>
 Jump to:&nbsp;&nbsp;&nbsp;&nbsp;
 <a href="#source">Source code</a>&nbsp;&nbsp;&nbsp;&nbsp;
 Text output
@@ -21,13 +21,10 @@ Plots
 <pre class="codeinput">
 <span class="keyword">function</span> prob = montecarlo(A,b,Sigma,notrials);
 
-<span class="comment">% with mean zero and covariance Sigma satisfies Ax &lt;= b</span>
-<span class="comment">%</span>
-<span class="comment">% Sigma must be postive definite</span>
-<span class="comment">%</span>
-<span class="comment">% based on 100*notrials trials</span>
+<span class="comment">% Estimates the probability that a random vector x in R2</span>
+<span class="comment">% with mean zero and covariance Sigma satisfies Ax &lt;= b,</span>
+<span class="comment">% based on 100 * notrials trials. Sigma must be PSD.</span>
 
-randn(<span class="string">'state'</span>,0);
 m = size(A,1);
 
 R = chol(Sigma);   <span class="comment">% Y = R^{-T}X has covariance I</span>

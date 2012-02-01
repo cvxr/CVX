@@ -122,8 +122,7 @@ cvx_begin gp
 
     % collect all the constraints
     circuit_delay <= Dmax;
-    x >= x_min;
-    x <= x_max;
+    x_min <= x <= x_max;
 cvx_end
 
 % message about extra capacitance and result display
