@@ -60,38 +60,35 @@ omega_pi   = +2*pi*d/lambda;
 
 % build matrix A that relates R(omega) and r, ie, R = A*r
 omega = linspace(-pi,pi,m)';
-A = exp( -j*kron( omega, [-(n-1):n-1] ) );
+A = exp( -j*omega(:)*[1-n:n-1] );
 
 % passband constraint matrix
-indp = find( omega >= omega_zero & omega <= omega_pass );
-Ap   = A(indp,:);
+Ap = A(omega >= omega_zero & omega <= omega_pass,:);
 
 % stopband constraint matrix
-inds = find( omega >= omega_stop & omega <= omega_pi );
-As   = A(inds,:);
+As = A(omega >= omega_stop & omega <= omega_pi,:);
 
 %********************************************************************
 % formulate and solve the magnitude design problem
 %********************************************************************
 cvx_begin
   variable r(2*n-1,1) complex
-
-  minimize( max( abs( As*r ) ) )
+  % minimize stopband attenuation
+  minimize( max( real( As*r ) ) )
   subject to
-    % passband constraints
-    real( Ap*r ) >= (10^(-ripple/20))^2;
-    real( Ap*r ) <= (10^(+ripple/20))^2;
-    % nonnegative-real constraint for all frequencies (a bit redundant)
+    % passband ripple constraints
+    (10^(-ripple/20))^2 <= real( Ap*r ) <= (10^(+ripple/20))^2;
+    % nonnegative-real constraint for all frequencies
+    % a bit redundant: the passband frequencies are already constrained
     real( A*r ) >= 0;
-    % auto-correlation constraints
-    r(n) == conj(r(n));
+    % auto-correlation symmetry constraints
+    imag(r(n)) == 0;
     r(n-1:-1:1) == conj(r(n+1:end));
 cvx_end
 
 % check if problem was successfully solved
-disp(['Problem is ' cvx_status])
 if ~strfind(cvx_status,'Solved')
-  return
+    return
 end
 
 % find antenna weights by computing the spectral factorization

@@ -118,8 +118,7 @@ for i = 1 : npts  + xnpts,
             G == reshape( GG * [ 1 ; x ], n, n );
             C == reshape( CC * [ 1 ; x ], n, n );
             delay * G - C >= 0;
-            x >= 0;
-            x <= wmax;
+            0 <= x <= wmax;
     cvx_end
 
     if i <= npts,

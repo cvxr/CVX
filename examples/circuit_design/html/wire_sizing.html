@@ -110,8 +110,7 @@ sizes   = zeros(m,xnpts);
         G == reshape( GG * [ 1 ; x ], n, n );
         C == reshape( CC * [ 1 ; x ], n, n );
         delay * G - C &gt;= 0;
-        x &gt;= 0;
-        x &lt;= wmax;
+        0 &lt;= x &lt;= wmax;
     cvx_end
 
     <span class="keyword">if</span> i &lt;= npts,

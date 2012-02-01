@@ -42,7 +42,7 @@ X21 = repmat(xpos(2,:),n,1);
 X22 = repmat(xpos(2,:)',1,n);
 LL  = abs(X11-X12) + abs(X21-X22);
 L   = tril(LL);
-L   = L(find(L>0));
+L   = L(L>0);
 
 %
 % Construct the capacitance and conductance matrices
@@ -105,8 +105,7 @@ for i = 1 : npts  + xnpts,
         for k = 1 : n,
             delay * G - C + sparse(k,k,delay,n,n) >= 0;
         end
-        x >= 0;
-        x <= wmax;
+        0 <= x <= wmax;
     cvx_end
 
     if i <= npts,

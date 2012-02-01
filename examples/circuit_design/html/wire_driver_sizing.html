@@ -120,14 +120,13 @@ xareas  = zeros( 1, xnpts );
         C == reshape( CC * [ 1 ; w(:) ; d(:) ], n, n, 2 );
         <span class="comment">% This is actually two LMIs, one for each circuit</span>
         (delay/2) * G - C &gt;= 0;
-        w(:) &gt;= 0;
-        w(:) &lt;= wmax;
+        0 &lt;= w(:) &lt;= wmax;
         d(:) &gt;= 0;
     cvx_end
 
     <span class="keyword">if</span> i &lt;= npts,
         areas(i) = cvx_optval;
-    <span class="keyword">else</span>,
+    <span class="keyword">else</span>
         xareas(xi) = cvx_optval;
 
         <span class="comment">%</span>

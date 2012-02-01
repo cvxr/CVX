@@ -105,8 +105,7 @@ for j = 1 : npts + xnpts,
             G == reshape( GG * [ 1 ; w(:) ], N, N );
             C == reshape( CC * [ 1 ; w(:) ; t(:) ], N, N );
             delay * G - C >= 0;
-            w( : ) >= wmin;
-            w( : ) <= wmax;
+            wmin <= w(:) <= wmax;
             t( : ) <= 1 / smin;
             s( : ) <= smax;
             inv_pos( t(:,1) ) <= s(1) - w(:,1) - 0.5 * w(:,2);
