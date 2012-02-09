@@ -242,18 +242,22 @@ elseif n ~= 0 && ~infeas && ( any( b ) || any( c ) ),
                 xxx = x( xndxs, : );
                 yyy = max( realmin, x( yndxs, : ) );
                 zzz = max( realmin, x( zndxs, : ) );
+                nmX = sqrt( xxx .^ 2 + yyy .^ 2 + zzz .^ 2 );
                 xxy = xxx ./ yyy - x0;
                 zzy = zzz ./ yyy;
                 xxz = log( zzy ) - x0;
                 xxc = epow * ( max( 0, zzy .^ epow_i .* ex0e ) - 1 );
                 tlX = max( 0, xxy - xxc );
                 erX = max( 0, xxy - xxz );
-                cxX = 0.5 * ( xxz + xxy );
                 acX = erX ~= 0;
-            else
-                tlX = 0;
-                erX = 0;
-                err = 0;
+                cxX = xxy + 0.5 * ( xxz - xxy ) .* acX;
+                ttt = yyy == realmin;
+                if any( ttt ),
+                    xxy( ttt ) = -2 * ( sign( xxx( ttt ) ) * realmax );
+                    cxX( ttt ) = max( 1 - epow, min( xxy( ttt ), epow - 1 ) );
+                    tlX( ttt ) = 0;
+                    erX( ttt ) = 0;
+                end
             end
             
             % The exact dual cone is a strict subset of the approximate
@@ -268,41 +272,55 @@ elseif n ~= 0 && ~infeas && ( any( b ) || any( c ) ),
                 uuu = min( -realmin, z( xndxs, : ) );
                 vvv = z( yndxs, : );
                 www = max( +realmin, z( zndxs, : ) );
+                nmY = sqrt( uuu .^ 2 + vvv .^ 2 + www .^ 2 );
                 wwu = - www ./ uuu;
                 xxu = 1 - vvv ./ uuu - x0;
                 xxw = - log( wwu ) - x0;
                 xxd = ((exp(x0).*wwu).^(1/(1-epow))-1)*(epow-1);
                 tlY = max( 0, xxd - xxu );
-                cxY = 0.5 * ( xxu + xxw );
-                acY = xxu - xxd < 1e-3;
-            else
-                tlY = 0;
+                erY = max( 0, xxw - xxu );
+                acY = erY ~= 0;
+                cxY = xxu + 0.5 * ( xxw - xxu ) .* acY;
+                ttt = uuu == -realmin;
+                if any( ttt ),
+                    cxY( ttt ) = max( 1 - epow, min( xxu( ttt ), epow - 1 ) );
+                    tlY( ttt ) = 0;
+                    erY( ttt ) = 0;
+                end
             end
             
-            if x_valid,
-                active = acX;
-                if y_valid,
-                    cxX = 0.5 * ( cxX + cxY );
-                    tlX = max( tlX, tlY );
-                    kkt = ( xxx .* uuu + yyy .* vvv + zzz .* www ) ./ ...
-                        sqrt( xxx .^ 2 + yyy .^2 + zzz .^ 2 ) ./ ...
-                        sqrt( uuu .^ 2 + vvv .^2 + www .^ 2 );
-                    active = acX & acY & ( kkt < 1e-5 );
-                    erX = erX .* active;
-                end
-                tlX = tlX .* active;
-                cxX = cxX .* active;
-                err = max( erX );
-                tol = max( tlX );
-                cer = max( abs( cxX ) );
-                nmov = nnz( erX > tlX + 0.25 * tol );
-                nact = nnz( active );
+            if x_valid && y_valid,
+                cxX = ( nmX .* cxX + nmY .* cxY ) ./ ( nmX + nmY );
+                kkt = ( xxx .* uuu + yyy .* vvv + zzz .* www ) ./ ( nmX .* nmY ) < 1e-4;
+                kkX = ( nmX > 1e-3 * nmY ) | kkt;
+                kkY = ( nmY > 1e-3 * nmX ) | kkt;
+                erX = erX .* kkX;
+                tlX = tlX .* kkX;
+                acX = acX .* kkX;
+                acY = acY .* kkY;
+                cer  = min( epow, max( max( abs( cxX .* acX ) ), max( abs( cxY .* acY ) ) ) );
+            elseif x_valid,
+                cxX = cxX .* acX;
+                tlX = tlX .* acX;
+                cer  = min( epow, max( max( abs( cxX .* acX ) ) ) );
+            elseif y_valid,
+                cxX = cxY .* acY;
+                tlY = tlY .* acY;
+                erX = erY;
+                cer  = min( epow, max( max( abs( cxY .* acY ) ) ) );
+            end
+            if x_valid || y_valid,
+                err  = max( erX );
+                tol  = max( tlX );
+                nmov = nnz( erX > max( prec(2), 1.5 * tlX ) );
+                nact = nnz( erX );
             else
-                active = 0; nmov = 0; nact = 0; 
                 err = 0; tol = 0; cer = 0;
+                nmov = 0; nact = 0;
             end
             solved = x_valid * 2 + y_valid;
             found = nmov == 0 && solved;
+                
             
             % Check for stagnation
             stagc = ' '; stage = ' ';
