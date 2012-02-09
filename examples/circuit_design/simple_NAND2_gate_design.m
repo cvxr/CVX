@@ -46,7 +46,8 @@ Amax = linspace(5,45,Npoints);
 Dopt = [];
 
 disp('Generating the optimal tradeoff curve...')
-for k = 1:Npoints
+for k = 1:Npoints   
+    fprintf(1,'  Amax = %5.2f:', Amax(k));
     cvx_begin gp quiet
         % device width variables
         variable w(N)
@@ -103,7 +104,7 @@ for k = 1:Npoints
             w >= wmin;
     cvx_end
     % display and store computed values
-    fprintf(1,'  Amax = %5.2f   delay = %3.2f\n',Amax(k),cvx_optval);
+    fprintf(1,' delay = %3.2f\n',cvx_optval);
     Dopt = [Dopt cvx_optval];
 end
 

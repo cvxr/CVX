@@ -498,6 +498,7 @@ elseif force || hdate <= ndate,
         fclose( fidr );
     end
     evalin( 'base', 'clear' );
+    cvx_clear;
     cvx_quiet( false );
     cvx_precision default;
     success = true;

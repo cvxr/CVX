@@ -67,6 +67,7 @@ Dopt = [];
 
 disp(<span class="string">'Generating the optimal tradeoff curve...'</span>)
 <span class="keyword">for</span> k = 1:Npoints
+    fprintf(1,<span class="string">'  Amax = %5.2f:'</span>, Amax(k));
     cvx_begin <span class="string">gp</span> <span class="string">quiet</span>
         <span class="comment">% device width variables</span>
         variable <span class="string">w(N)</span>
@@ -123,7 +124,7 @@ disp(<span class="string">'Generating the optimal tradeoff curve...'</span>)
             w &gt;= wmin;
     cvx_end
     <span class="comment">% display and store computed values</span>
-    fprintf(1,<span class="string">'  Amax = %5.2f   delay = %3.2f\n'</span>,Amax(k),cvx_optval);
+    fprintf(1,<span class="string">' delay = %3.2f\n'</span>,cvx_optval);
     Dopt = [Dopt cvx_optval];
 <span class="keyword">end</span>
 
@@ -135,31 +136,31 @@ disp(<span class="string">'Optimal tradeoff curve plotted.'</span>)
 <a id="output"></a>
 <pre class="codeoutput">
 Generating the optimal tradeoff curve...
-  Amax =  5.00   delay = 11.56
-  Amax =  6.67   delay = 9.23
-  Amax =  8.33   delay = 7.84
-  Amax = 10.00   delay = 6.90
-  Amax = 11.67   delay = 6.23
-  Amax = 13.33   delay = 5.73
-  Amax = 15.00   delay = 5.34
-  Amax = 16.67   delay = 5.03
-  Amax = 18.33   delay = 4.77
-  Amax = 20.00   delay = 4.55
-  Amax = 21.67   delay = 4.37
-  Amax = 23.33   delay = 4.22
-  Amax = 25.00   delay = 4.08
-  Amax = 26.67   delay = 3.96
-  Amax = 28.33   delay = 3.86
-  Amax = 30.00   delay = 3.76
-  Amax = 31.67   delay = 3.68
-  Amax = 33.33   delay = 3.60
-  Amax = 35.00   delay = 3.54
-  Amax = 36.67   delay = 3.47
-  Amax = 38.33   delay = 3.42
-  Amax = 40.00   delay = 3.36
-  Amax = 41.67   delay = 3.32
-  Amax = 43.33   delay = 3.27
-  Amax = 45.00   delay = 3.23
+  Amax =  5.00: delay = 11.56
+  Amax =  6.67: delay = 9.23
+  Amax =  8.33: delay = 7.84
+  Amax = 10.00: delay = 6.90
+  Amax = 11.67: delay = 6.23
+  Amax = 13.33: delay = 5.73
+  Amax = 15.00: delay = 5.34
+  Amax = 16.67: delay = 5.03
+  Amax = 18.33: delay = 4.77
+  Amax = 20.00: delay = 4.55
+  Amax = 21.67: delay = 4.37
+  Amax = 23.33: delay = 4.22
+  Amax = 25.00: delay = 4.08
+  Amax = 26.67: delay = 3.96
+  Amax = 28.33: delay = 3.86
+  Amax = 30.00: delay = 3.76
+  Amax = 31.67: delay = 3.68
+  Amax = 33.33: delay = 3.60
+  Amax = 35.00: delay = 3.54
+  Amax = 36.67: delay = 3.47
+  Amax = 38.33: delay = 3.42
+  Amax = 40.00: delay = 3.36
+  Amax = 41.67: delay = 3.32
+  Amax = 43.33: delay = 3.27
+  Amax = 45.00: delay = 3.23
 Optimal tradeoff curve plotted.
 </pre>
 <a id="plots"></a>
