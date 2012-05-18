@@ -92,11 +92,19 @@ if quiet,
 end
 add_row = isempty( At );
 if add_row,
-    At = sparse( K.l, 1, 1, n_out, 1 );
+    K.f = K.f + 1;
+    At = sparse( 1, 1, 1, n_out + 1, 1 );
     b = 1;
+    c = [ 0 ; c ];
 end
-
 [ xx, yy, info ] = sedumi( At, b, c, K, pars );
+if add_row,
+    xx = xx(2:end);
+    yy = zeros(0,1);
+    At = zeros(n_out,0);
+    b  = zeros(0,1);
+    c  = c(2:end);
+end
 if ~isfield( info, 'r0' ) && info.pinf,
     info.r0 = 0;
     info.iter = 0;
