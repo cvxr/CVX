@@ -87,6 +87,7 @@ for pass = 1 : 2,
         % all but one so that the solver can still see this happen.
         %
         
+        if 0,
         rows = ( rcnt == ( cc ~= 0 ) ) & ( ~rsv | nng );
         nnzr = nnz( rows );
         if nnzr > 0,
@@ -112,6 +113,7 @@ for pass = 1 : 2,
                 ndxs = ndxs( rowX, : );
                 Q    =    Q( :, rowX );
             end
+        end
         end
         
         %
