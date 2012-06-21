@@ -138,20 +138,20 @@ else
     posy = +px * +py;
     vpos = +gx * +gy;
     if nnz( raff ) ~= 0,
-        raff = raff + cnst;
+        raff = true;
         cnst = false;
     elseif nnz( laff ) ~= 0,
-        laff = laff + cnst;
+        laff = true;
         cnst = false;
     else
-        cnst = nnz( cnst ) ~= 0;
+        laff = false;
+        raff = false;
+        cnst = true;
     end
     othr = +( vx > 1 | vx < 0 ) * +( vy > 1 | vy < 0 ) - quad - posy - vpos;
     if nnz( othr ) ~= 0,
         error( 'Disciplined convex programming error:\n    Cannot perform the operation {%s}*{%s}', cvx_class( x ), cvx_class( y ) );
     end
-    laff = nnz( laff ) ~= 0;
-    raff = nnz( raff ) ~= 0;
     quad = nnz( quad ) ~= 0;
     posy = nnz( posy ) ~= 0;
     
@@ -196,7 +196,8 @@ if laff,
     nA = size( yA, 1 );
     t1 = reshape( 1 : prod( sy ), sy )';
     t2 = reshape( 1 : prod( sz ), [ sz(2), sz(1) ] )';
-    z2 = cvx_reshape( yA, [ nA * sy( 2 ), sy( 1 ) ], [], t1 );
+    z2 = yA; if raff, z2( 1, : ) = 0; end
+    z2 = cvx_reshape( z2, [ nA * sy( 2 ), sy( 1 ) ], [], t1 );
     if issparse( z2 ),
         tt = any( z2, 2 );
         if cvx_use_sparse( size( z2 ), nnz( tt ) * sy( 1 ), isreal( z2 ) & isreal( xC ) ),
