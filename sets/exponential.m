@@ -44,10 +44,12 @@ cvx_begin_set
     [ ty, dummy ] = find( cvx_basis( y ) ); %#ok
     [ tz, dummy ] = find( cvx_basis( z ) ); %#ok
     newnonl( cvx_problem, 'exponential', [ tx(:)' ; ty(:)' ; tz(:)' ] );
+    cvx___.canslack( tx ) = false;
+    cvx___.canslack( ty ) = false;
 cvx_end_set
 
 cvx_optpnt = cvxtuple( struct( 'x', x, 'y', y, 'z', z ) );
 
-% Copyright 2012 Michael C. Grant and Stephen P. Boyd.
+% Copyright 2012 CVX Research, Inc.
 % See the file COPYING.txt for full copyright information.
 % The command 'cvx_where' will show where this file is located.

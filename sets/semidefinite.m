@@ -76,9 +76,18 @@ cvx_begin_set
        nv = prod( sz( 3 : end ) );
        tx = reshape( tx, numel( tx ) / nv, nv );
        newnonl( cvx_problem, s, tx );
+       if sz(1) > 1,
+           if iscplx,
+               ndxs = cumsum( [ 1, 2*sz(1)-1 : -2 : 3 ] );
+           else
+               ndxs = cumsum( [ 1, sz(1) : -1 : 2 ] );
+           end
+           tx( ndxs, : ) = [];
+           cvx___.canslack( tx ) = false;
+       end
    end
 cvx_end_set
 
-% Copyright 2012 Michael C. Grant and Stephen P. Boyd.
+% Copyright 2012 CVX Research, Inc.
 % See the file COPYING.txt for full copyright information.
 % The command 'cvx_where' will show where this file is located.

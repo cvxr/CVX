@@ -93,6 +93,7 @@ cvx_begin_set
     if nv > 0,
         [ tx, dummy ] = find( cvx_basis( x ) ); %#ok
         newnonl( cvx_problem, 'lorentz', [ reshape( tx, nv, ny ) ; reshape( ty, 1, ny ) ] );
+        cvx___.canslack( tx ) = false;
     else
         newnonl( cvx_problem, 'nonnegative', ty );
     end
@@ -117,6 +118,6 @@ x = reshape( x, sx );
 y = reshape( y, sy );
 cvx_optpnt = cvxtuple( struct( 'x', x, 'y', y ) );
 
-% Copyright 2012 Michael C. Grant and Stephen P. Boyd.
+% Copyright 2012 CVX Research, Inc.
 % See the file COPYING.txt for full copyright information.
 % The command 'cvx_where' will show where this file is located.
