@@ -6,7 +6,7 @@ function [ cvx_optval, success ] = quad_form( x, Q, v, w )
 % Check sizes and types
 %
 
-error( nargchk( 2, 4, nargin ) );
+error( nargchk( 2, 4, nargin ) ); %#ok
 tol = 10 * eps;
 if nargin < 4,
     w = 0;
@@ -141,7 +141,6 @@ else
         %
 
         vbar = 0;
-        valid = false;
         if cvx_use_sparse( Q ),
             Q = sparse( Q );
             prm = symamd( Q );
@@ -157,7 +156,7 @@ else
             [ R, p ] = chol( Q );
             valid = p == 0;
             if ~valid,
-                R = [ R , R' \ Q(1:p-1,p:end) ];
+                R = [ R , R' \ Q(1:p-1,p:end) ]; %#ok
             end
         end
         if ~valid,
@@ -185,7 +184,7 @@ else
             tt = D > Derr;
             V = V( :, tt );
             D = D( tt );
-            R = diag(sparse(D)) * V';
+            R = sqrt(diag(sparse(D))) * V';
             if nnz(v),
                 vbar = D .\ ( V' * v );
             end
@@ -201,7 +200,7 @@ else
             v = v - R' * vbar;
             vbar = 0.5 * sg * vbar;
         end
-        wbar = w - sg * vbar' * vbar;
+        wbar = w - sg * ( vbar' * vbar );
         cvx_optval = cvx_optval + sg * alpha * sum_square_abs( ( R * x + vbar ) / sqrt(alpha) ) + real( v' * x ) + wbar;
         break;
         
@@ -213,6 +212,6 @@ else
 
 end
 
-% Copyright 2012 Michael C. Grant and Stephen P. Boyd.
+% Copyright 2012 CVX Research, Inc.
 % See the file COPYING.txt for full copyright information.
 % The command 'cvx_where' will show where this file is located.
