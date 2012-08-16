@@ -89,8 +89,10 @@ else
     % Constant matrix Q, affine x
     %
 
-    if sv < sx, v = v(ones(sx,1),1); end
-    cvx_optval = 0;
+    if sv < sx, 
+        v = v(ones(sx,1),1); 
+    end
+    cvx_optval = w;
     while true,
         
         %
@@ -112,7 +114,7 @@ else
             end
             dQ = dQ( tt );
             if nnz( v ),
-                cvx_optval = real( v( ~tt, : )' * cvx_subsref( x, ~tt, ':' ) );
+                cvx_optval = cvx_optval + real( v( ~tt, : )' * cvx_subsref( x, ~tt, ':' ) );
             end
             v = v( tt, : );
             x = cvx_subsref( x, tt, ':' );
@@ -140,7 +142,6 @@ else
         % and if it is accurate to a tight tolerance, we'll use it.
         %
 
-        vbar = 0;
         if cvx_use_sparse( Q ),
             Q = sparse( Q );
             prm = symamd( Q );
@@ -162,9 +163,6 @@ else
         if ~valid,
             valid = normest( Q - R' * R ) < tol * normest( Q );
         end
-        if valid && nnz(v),
-            vbar = R' \ v;
-        end
         
         %
         % If the Cholesky fails, use an eigenvalue decompositon.
@@ -176,18 +174,18 @@ else
                 V = sparse( V ); 
             end
             D = diag( D );
-            Derr = tol * max( D );
-            if min( D ) < - Derr, 
+            if any( D(2:end) < D(1:end-1) ),
+                [D,ndxs] = sort(D);
+                V = V(:,ndxs);
+            end
+            if D(1) < -tol * D(end),
                 success = false;
-                break; 
+                break;
             end
-            tt = D > Derr;
-            V = V( :, tt );
-            D = D( tt );
-            R = sqrt(diag(sparse(D))) * V';
-            if nnz(v),
-                vbar = D .\ ( V' * v );
-            end
+            nzero = nnz(cumsum(D)<tol*trQ);
+            V = V(:,nzero+1:end);
+            D = sqrt(D(nzero+1:end));
+            R = diag(sparse(D)) * V';
         end
         
         %
@@ -196,12 +194,7 @@ else
         %
        
         alpha = trQ / size(R,1);
-        if nnz(v),
-            v = v - R' * vbar;
-            vbar = 0.5 * sg * vbar;
-        end
-        wbar = w - sg * ( vbar' * vbar );
-        cvx_optval = cvx_optval + sg * alpha * sum_square_abs( ( R * x + vbar ) / sqrt(alpha) ) + real( v' * x ) + wbar;
+        cvx_optval = cvx_optval + sg * alpha * sum_square_abs( ( R * x ) / sqrt(alpha) ) + real( v' * x );
         break;
         
     end
