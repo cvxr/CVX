@@ -44,7 +44,9 @@
 
   function [obj,X,y,Z,info,runhist] = ...
             HSDsqlp(blk,At,C,b,OPTIONS,X0,y0,Z0,kap0,tau0,theta0);
-%%
+        
+  if (nargin < 5); OPTIONS = []; end    
+  
     isemptyAtb = 0; 
     if isempty(At) & isempty(b);
        %% Add redundant constraint: <-I,X> <= 0
