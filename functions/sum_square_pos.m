@@ -16,13 +16,13 @@ function y = sum_square_pos( x, dim )
 %       used in CVX expressions, X must be convex (or affine). DIM must
 %       always be constant.
 
-error( nargchk( 1, 2, nargin ) );
+error( nargchk( 1, 2, nargin ) ); %#ok
 if nargin == 2,
     y = sum( square_pos( x ), dim );
 else
     y = sum( square_pos( x ) );
 end
 
-% Copyright 2012 Michael C. Grant and Stephen P. Boyd.
+% Copyright 2012 CVX Research, Inc.
 % See the file COPYING.txt for full copyright information.
 % The command 'cvx_where' will show where this file is located.

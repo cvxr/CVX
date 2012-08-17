@@ -1,17 +1,27 @@
 function solve( prob )
 
 global cvx___
-p = index( prob );
-pr = cvx___.problems(p);
-nobj = numel(pr.objective);
+p     = index( prob );
+pr    = cvx___.problems( p );
+quiet = pr.quiet;
+obj   = pr.objective;
+gobj  = pr.geometric;
+prec  = pr.precision;
+solv  = pr.solver;
+ndual = ~isempty( pr.duals );
+shim  = cvx___.solvers.list( solv.index );
+nobj  = numel( obj );
 if nobj > 1 && ~pr.separable,
-    error( 'Your objective function is not a scalar.' );
+    error( 'CVX:NonScalarObjective', 'Your objective function is not a scalar.' );
 end
-quiet = cvx___.problems(p).quiet;
-obj   = cvx___.problems(p).objective;
-gobj  = cvx___.problems(p).geometric;
-clear pr
-[ At, cones, sgn, Q, P, dualized ] = eliminate( prob, true );
+[ At, cones, sgn, Q, P, dualized ] = eliminate( prob, true, shim.dualize );
+
+if ndual && any( strncmp( {cones.type}, 'i_', 2 ) ),
+    idual_error = true;
+    ndual = false;
+else
+    idual_error = false;
+end
 
 c = At( :, 1 );
 At( :, 1 ) = [];
@@ -29,9 +39,25 @@ for k = 1 : length( cones ),
     cones(k).indices = cones(k).indices - 1;
 end
 
+zero_c = false ; % nnz( c ) == 0;
+if zero_c,
+    c = [ c ; 1 ]; %#ok
+    At(end+1,:) = b * sqrt(mean(sum(At.^2))) / norm(b);
+    cones(end+1) = struct( 'type', 'nonnegative', 'indices', n+1 );
+    n = n + 1;
+end
+
 %
 % Ferret out the degenerate and overdetermined problems
 %
+
+x     = NaN * ones(n,1);
+y     = NaN * ones(m,1);
+oval  = NaN;
+pval  = NaN;
+dval  = NaN;
+tprec = Inf;
+estruc = [];
 
 iters = 0;
 tt = ( b' ~= 0 ) & ~any( At, 1 );
@@ -42,9 +68,6 @@ if m > n && n > 0,
     % Overdetermined problem
     %
     
-    x      = NaN * ones( n, 1 );
-    y      = NaN * ones( m, 1 );
-    oval   = NaN;
     if dualized,
         status = 'Underdetermined';
         estr = sprintf( 'Underdetermined inequality constraints detected.\n   CVX cannot solve this problem; but it is likely unbounded.' );
@@ -57,8 +80,6 @@ if m > n && n > 0,
     else
         warning( [ 'CVX:', status ], estr );
     end
-    pval = NaN;
-    dval = NaN;
 
 elseif n ~= 0 && ~infeas && ( any( b ) || any( c ) ),
         
@@ -66,33 +87,28 @@ elseif n ~= 0 && ~infeas && ( any( b ) || any( c ) ),
     % Call solver
     %
     
-    prob = cvx___.problems( p );
-    prec = prob.precision;
     if isempty( cones ),
         texp = [];
     else
         texp = find( strcmp( { cones.type }, 'exponential' ) );
     end
-    need_iter = ~isempty( texp );
-    solv = prob.solver;
-    lsolv = lower(solv);
-    sfunc  = [ 'cvx_solve_', lsolv ];
-    cvx_setspath( solv );
+    need_iter = ~isempty( texp ) && shim.dualize;
+    cvx_setspath;
     if ~quiet,
         disp( ' ' );
         spacer = '-';
         if need_iter,
             disp( 'Successive approximation method to be employed.' );
         else
-            fprintf( 1, 'Calling %s: %d variables, %d equality constraints\n', solv, n, m );
+            fprintf( 'Calling %s: %d variables, %d equality constraints\n', shim.name, n, m );
             spacer = spacer(:,ones(1,60));
         end
         if dualized,
-            fprintf( 1, '   For improved efficiency, %s is solving the dual problem.\n', solv );
+            fprintf( '   For improved efficiency, %s is solving the dual problem.\n', shim.name );
         end
         if need_iter,
-            fprintf( 1, '   %s will be called several times to refine the solution.\n', solv );
-            fprintf( 1, '   Original size: %d variables, %d equality constraints\n', n, m );
+            fprintf( '   %s will be called several times to refine the solution.\n', shim.name );
+            fprintf( '   Original size: %d variables, %d equality constraints\n', n, m );
             spacer = spacer(:,ones(1,65));
         else
             disp( spacer );
@@ -159,7 +175,7 @@ elseif n ~= 0 && ~infeas && ( any( b ) || any( c ) ),
         n_ndxs  = [ ndxs ; reshape( n + 1 : new_n, nQA-3, nc  ) ];
         n_ndxs  = n_ndxs(QAr,:);
         if ~quiet,
-            fprintf( 1, '   %d exponentials add %d variables, %d equality constraints\n', nc, new_n - n, new_m - m );
+            fprintf( '   %d exponentials add %d variables, %d equality constraints\n', nc, new_n - n, new_m - m );
             disp( spacer );
         end
 
@@ -218,12 +234,12 @@ elseif n ~= 0 && ~infeas && ( any( b ) || any( c ) ),
             % Insert the current centerpoints into the constraints
             x0e = x0 * epow_i;
             ex0e = exp( -x0e );
-            Anew(endxs) = - ex0e;
-            Anew(fndxs) = 1 - x0e; 
+            Anew(endxs) = - ex0e; %#ok
+            Anew(fndxs) = 1 - x0e; %#ok
             Anew2 = Anew * diag(sparse(vec(amult(orow,:))));
             
             % Solve the approximation
-            [ x, y, status, tprec, iters2, z ] = feval( sfunc, [ At, Anew2 ], [ b ; bnew ], c, cones, true, prec );
+            [ x, status, tprec, iters2, y, z ] = shim.solve( [ At, Anew2 ], [ b ; bnew ], c, cones, true, prec, solv.settings );
             iters = iters + iters2;
             x_valid = ~any(isnan(x));
             y_valid = ~any(isnan(y));
@@ -298,16 +314,16 @@ elseif n ~= 0 && ~infeas && ( any( b ) || any( c ) ),
                 tlX = tlX .* kkX;
                 acX = acX .* kkX;
                 acY = acY .* kkY;
-                cer  = min( epow, max( max( abs( cxX .* acX ) ), max( abs( cxY .* acY ) ) ) );
+                cer = min( epow, max( max( abs( cxX .* acX ) ), max( abs( cxY .* acY ) ) ) );
             elseif x_valid,
                 cxX = cxX .* acX;
                 tlX = tlX .* acX;
                 cer  = min( epow, max( max( abs( cxX .* acX ) ) ) );
             elseif y_valid,
                 cxX = cxY .* acY;
-                tlY = tlY .* acY;
+                tlX = tlY .* acY;
                 erX = erY;
-                cer  = min( epow, max( max( abs( cxY .* acY ) ) ) );
+                cer = min( epow, max( max( abs( cxY .* acY ) ) ) );
             end
             if x_valid || y_valid,
                 err  = max( erX );
@@ -329,7 +345,7 @@ elseif n ~= 0 && ~infeas && ( any( b ) || any( c ) ),
                 if err >= 0.9 * last_err, stage = 's'; end
             end
             if ~quiet,
-                fprintf( 1, '%3d/%3d | %9.3e%c %9.3e%c %9.3e | %s\n', nmov, nact, cer, stagc, err, stage, tol, status );
+                fprintf( '%3d/%3d | %9.3e%c %9.3e%c %9.3e | %s\n', nmov, nact, cer, stagc, err, stage, tol, status );
             end
             
             % Solution found or no more iterations
@@ -397,30 +413,62 @@ elseif n ~= 0 && ~infeas && ( any( b ) || any( c ) ),
         x = best_x(1:n,:);
         y = best_y(1:m,:);
         c = c(1:n,:);
+    elseif ndual || dualized,
+        try
+            [ x, status, tprec, iters, y ] = shim.solve( At, b, c, cones, quiet, prec, solv.settings );
+        catch estruc
+            status = 'Error';
+        end
     else
-        [ x, y, status, tprec, iters ] = feval( sfunc, At, b, c, cones, quiet, prec );
+        try
+            [ x, status, tprec, iters ] = shim.solve( At, b, c, cones, quiet, prec, solv.settings );
+        catch estruc
+            status = 'Error';
+        end
     end
-    if cvx___.profile, profile resume; end
+    if cvx___.profile, 
+        profile resume; 
+    end
     if ~cvx___.path.hold, 
-        cvx_setspath(''); 
+        cvx_clearspath; 
     end
-    switch status,
-    case { 'Solved', 'Inaccurate/Solved' },
-        oval = sgn * ( c' * x + d' );
-        pval = 1;
-        dval = 1;
-    case { 'Infeasible', 'Inaccurate/Infeasible' },
-        oval = sgn * Inf;
-        pval = NaN;
-        dval = 0;
-    case { 'Unbounded', 'Inaccurate/Unbounded' },
-        oval = -sgn * Inf;
-        pval = 0;
-        dval = NaN;
-    otherwise,
-        oval = NaN;
-        if isnan( x ), pval = NaN; else pval = 1; end
-        if isnan( y ), dval = NaN; else dval = 1; end
+    if zero_c,
+        q = x(end); %#ok
+        x(end) = [];
+        switch status,
+        case { 'Solved', 'Inaccurate/Solved' },
+            if q > prec(3),
+                status = strrep( status, 'Solved', 'Infeasible' );
+                oval = sgn * Inf;
+                y = y / abs( b' * y );
+                x(:) = NaN;
+                dval = 0;
+            else
+                oval = 0;
+                pval = 1;
+                dval = 1;
+            end
+        otherwise,
+            if ~isequal( status, 'Error' ), 
+                status = Failed; 
+            end
+        end
+    else
+        switch status,
+        case { 'Solved', 'Inaccurate/Solved' },
+            oval = sgn * ( c' * x + d' );
+            pval = 1;
+            dval = 1;
+        case { 'Infeasible', 'Inaccurate/Infeasible' },
+            oval = sgn * Inf;
+            dval = 0;
+        case { 'Unbounded', 'Inaccurate/Unbounded' },
+            oval = -sgn * Inf;
+            pval = 0;
+        otherwise,
+            if ~isnan( x ), pval = 1; end
+            if ~isnan( y ), dval = 1; end
+        end
     end
     if ~quiet,
         disp( spacer );
@@ -437,11 +485,9 @@ elseif infeas,
     end
     status = 'Infeasible';
     tprec = 0;
-    x = NaN * ones( n, 1 );
     b( ~tt ) = 0;
     y = - b / ( b' * b );
     oval = sgn * Inf;
-    pval = NaN;
     dval = 0;
     
 else
@@ -529,12 +575,26 @@ oval = full(oval);
 cvx___.problems( p ).result = oval;
 if ~quiet,
     if length( oval ) == 1,
-        fprintf( 1, 'Optimal value (cvx_optval): %+g\n', oval );
+        fprintf( 'Optimal value (cvx_optval): %+g\n', oval );
     else
-        fprintf( 1, 'Optimal value (cvx_optval): (multiobjective)\n' );
+        fprintf( 'Optimal value (cvx_optval): (multiobjective)\n' );
     end
 end
 
-% Copyright 2012 Michael C. Grant and Stephen P. Boyd.
+if isempty( estruc ) && idual_error,
+    warning( 'CVX:IntegerDual', ...
+[ 'Dual variables are not supported for problems involving integer variables.\n', ...
+  'All dual variables were set to the value NaN.' ] );
+end
+
+if ~quiet,
+    disp( ' '  );
+end
+
+if ~isempty( estruc ),
+    rethrow( estruc )
+end
+
+% Copyright 2012 CVX Research, Inc.
 % See the file COPYING.txt for full copyright information.
 % The command 'cvx_where' will show where this file is located.

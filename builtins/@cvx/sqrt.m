@@ -8,7 +8,7 @@ function cvx_optval = sqrt( x )
 %      SQRT(X) is log-log-affine and nondecreasing in X. Therefore, when
 %      used in DGPs, X may be log-affine, log-convex, or log-concave.
 
-error( nargchk( 1, 1, nargin ) );
+error( nargchk( 1, 1, nargin ) ); %#ok
 
 %
 % Determine the expression types
@@ -88,6 +88,6 @@ for k = 1 : nv,
 
 end
 
-% Copyright 2012 Michael C. Grant and Stephen P. Boyd.
+% Copyright 2012 CVX Research, Inc.
 % See the file COPYING.txt for full copyright information.
 % The command 'cvx_where' will show where this file is located.

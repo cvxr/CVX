@@ -24,12 +24,12 @@ elseif nargout > 1,
         s( no ) = prod( s( no : end ) );
     end
     for k = 1 : no,
-        varargout{k} = s(k);
+        varargout{k} = s(k); %#ok
     end
 else
     varargout{1} = s;
 end
 
-% Copyright 2012 Michael C. Grant and Stephen P. Boyd.
+% Copyright 2012 CVX Research, Inc.
 % See the file COPYING.txt for full copyright information.
 % The command 'cvx_where' will show where this file is located.

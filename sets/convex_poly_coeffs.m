@@ -28,7 +28,7 @@ function cvx_optpnt = convex_poly_coeffs( deg, mm ) %#ok
 %       CONVEX_POLY_COEFFS is a cvx set specification. See the user guide
 %       for details on how to use sets.
 
-error( nargchk( 1, 2, nargin ) );
+error( nargchk( 1, 2, nargin ) ); %#ok
 
 %
 % Check argument
@@ -46,7 +46,7 @@ end
 if nargin < 2 || isempty( mm ),
     mm = [ -Inf, +Inf ];
 else
-    if ~isa( mm, 'double' ) || ~isreal( mm ) || ndims( mm ) > 2 || numel( mm ) ~= 2 && size( mm, 2 ) ~= 2,
+    if ~isa( mm, 'double' ) || ~isreal( mm ) || ndims( mm ) > 2 || numel( mm ) ~= 2 && size( mm, 2 ) ~= 2, %#ok
         error( 'Second argument must be a range [ xmin xmax ] or a matrix of them.' );
     end
     mm = reshape( mm, 0.5 * numel( mm ), 2 );
@@ -61,13 +61,13 @@ end
 % Construct set
 %
 
-cvx_begin_set
+cvx_begin set
     variable coeffs(deg+1);
     if deg >= 2,
         ((deg:-1:2).*(deg-1:-1:1))'.*coeffs(1:end-2,:) == nonneg_poly_coeffs(deg-2,mm); %#ok
     end
-cvx_end_set
+cvx_end
 
-% Copyright 2012 Michael C. Grant and Stephen P. Boyd. 
+% Copyright 2012 CVX Research, Inc. 
 % See the file COPYING.txt for full copyright information.
 % The command 'cvx_where' will show where this file is located.

@@ -17,10 +17,10 @@ function z = kl_div( x, y )
 %       constrain both X and Y to be nonnegative, hence there is no need to
 %       add additional constraints X >= 0 or Y >= 0 to enforce this.
 
-error(nargchk(2,2,nargin));
+error(nargchk(2,2,nargin)); %#ok
 cvx_expert_check( 'kl_div', x, y );
 z = rel_entr( x, y ) - x + y;
 
-% Copyright 2012 Michael C. Grant and Stephen P. Boyd.
+% Copyright 2012 CVX Research, Inc.
 % See the file COPYING.txt for full copyright information.
 % The command 'cvx_where' will show where this file is located.

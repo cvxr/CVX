@@ -20,6 +20,6 @@ elseif ~isa( evalin( 'caller', 'cvx_problem', '[]' ), 'cvxprob' ),
     error( 'SUBJECT TO can only be used within a CVX model.' );
 end
 
-% Copyright 2012 Michael C. Grant and Stephen P. Boyd. 
+% Copyright 2012 CVX Research, Inc. 
 % See the file COPYING.txt for full copyright information.
 % The command 'cvx_where' will show where this file is located.

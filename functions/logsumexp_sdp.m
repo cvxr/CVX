@@ -143,7 +143,7 @@ for k = 1 : nlevs,
     nnx = ceil( 0.5 * nnx );
 end
 cplx = ( 0.5 .* ( degs + 2 ) .* ( degs + 3 ) + [ 4, 2, 2 ] ) .* [ npairs, 2 * npairs, nx ];
-[ cmin, dndx ] = min( cplx );
+[ cmin, dndx ] = min( cplx ); %#ok
 use_lse2 = dndx == 1;
 if use_lse2,
     xoff = xmax_lse2(degs(1));
@@ -222,6 +222,6 @@ if ~isempty( perm ),
     cvx_optval = ipermute( cvx_optval, perm );
 end
 
-% Copyright 2012 Michael C. Grant and Stephen P. Boyd. 
+% Copyright 2012 CVX Research, Inc. 
 % See the file COPYING.txt for full copyright information.
 % The command 'cvx_where' will show where this file is located.

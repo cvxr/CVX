@@ -6,7 +6,7 @@ function y = norms( x, p, dim )
 % Check second argument
 %
 
-error( nargchk( 1, 3, nargin ) );
+error( nargchk( 1, 3, nargin ) ); %#ok
 if nargin < 2 || isempty( p ),
     p = 2;
 elseif ~isnumeric( p ) || numel( p ) ~= 1 || ~isreal( p ),
@@ -95,11 +95,11 @@ switch p,
                 if isreal(x), cmode = 'abs'; else cmode = 'cabs'; end
                 { cat( nd+1, z, cvx_expand_dim( y, dim, nx ) ), cvx_accept_convex(x) } ...
                     == geo_mean_cone( sw, nd+1, [1/p,1-1/p], cmode ); %#ok
-                sum( z, dim ) == y;
+                sum( z, dim ) == y; %#ok
             cvx_end
         end
 end
 
-% Copyright 2012 Michael C. Grant and Stephen P. Boyd.
+% Copyright 2012 CVX Research, Inc.
 % See the file COPYING.txt for full copyright information.
 % The command 'cvx_where' will show where this file is located.

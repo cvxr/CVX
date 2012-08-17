@@ -1,5 +1,5 @@
 function [ xR, x ] = cvx_bcompress( x, mode, num_sorted )
-error( nargchk( 1, 3, nargin ) );
+error( nargchk( 1, 3, nargin ) ); %#ok
 if nargin < 3 || isempty( num_sorted ),
     num_sorted = 0;
 end
@@ -19,7 +19,7 @@ end
 % make sure we we're at it, 
 %
 
-[ m, n ] = size( x );
+[ m, n ] = size( x ); %#ok
 iscplx = ~isreal( x );
 if iscplx,
     x = cvx_c2r( x, 2, 8 * eps );
@@ -39,6 +39,6 @@ if iscplx,
     xR = cvx_r2c( xR, 2 );
 end
 
-% Copyright 2012 Michael C. Grant and Stephen P. Boyd.
+% Copyright 2012 CVX Research, Inc.
 % See the file COPYING.txt for full copyright information.
 % The command 'cvx_where' will show where this file is located.

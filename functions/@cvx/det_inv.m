@@ -2,9 +2,9 @@ function cvx_optval = det_inv( X, p )
 
 %DET_INV   Internal cvx version.
 
-error( nargchk( 1, 2, nargin ) );
+error( nargchk( 1, 2, nargin ) ); %#ok
 n = size( X, 1 );
-if ndims( X ) > 2,
+if ndims( X ) > 2, %#ok
     error( 'N-D arrays are not supported.' );
 elseif size( X, 2 ) ~= n,
     error( 'Matrix must be square.' );
@@ -32,7 +32,7 @@ elseif isreal( X ),
         epigraph variable y
         variable Z(n,n) lower_triangular
         D = diag( Z );
-        [ diag( D ), Z' ; Z, X ] == semidefinite(2*n);
+        [ diag( D ), Z' ; Z, X ] == semidefinite(2*n); %#ok
         geo_mean( [ D ; y ], [], w ) >= 1; %#ok
     cvx_end
 
@@ -42,12 +42,12 @@ else
         epigraph variable y
         variable Z(n,n) lower_triangular complex
         D = diag( Z );
-        [ diag( D ), Z' ; Z, X ] == hermitian_semidefinite(2*n);
+        [ diag( D ), Z' ; Z, X ] == hermitian_semidefinite(2*n); %#ok
         geo_mean( [ real( D ) ; y ], [], w ) >= 1; %#ok
     cvx_end
 
 end
 
-% Copyright 2012 Michael C. Grant and Stephen P. Boyd.
+% Copyright 2012 CVX Research, Inc.
 % See the file COPYING.txt for full copyright information.
 % The command 'cvx_where' will show where this file is located.

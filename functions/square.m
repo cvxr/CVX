@@ -9,9 +9,9 @@ function y = square( x )
 %       is complex, then SQUARE(X) is neither convex nor concave. Thus when
 %       when use in CVX expressions, X must be real and affine.
 
-error( nargchk( 1, 1, nargin ) );
+error( nargchk( 1, 1, nargin ) ); %#ok
 y = x .* x;
 
-% Copyright 2012 Michael C. Grant and Stephen P. Boyd. 
+% Copyright 2012 CVX Research, Inc. 
 % See the file COPYING.txt for full copyright information.
 % The command 'cvx_where' will show where this file is located.

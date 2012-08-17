@@ -32,7 +32,7 @@ function cvx_optpnt = simplex( sx, dim ) %#ok
 % Check size vector
 %
 
-error( nargchk( 1, 2, nargin ) );
+error( nargchk( 1, 2, nargin ) ); %#ok
 [ temp, sx ] = cvx_check_dimlist( sx, false );
 if ~temp,
     error( 'First argument must be a dimension vector.' );
@@ -57,12 +57,12 @@ end
 % Construct set
 %
 
-cvx_begin_set
+cvx_begin set
    variables x( sx )
-   sum( x, dim ) == 1;
+   sum( x, dim ) == 1; %#ok
    x >= 0; %#ok
-cvx_end_set
+cvx_end
 
-% Copyright 2012 Michael C. Grant and Stephen P. Boyd. 
+% Copyright 2012 CVX Research, Inc. 
 % See the file COPYING.txt for full copyright information.
 % The command 'cvx_where' will show where this file is located.

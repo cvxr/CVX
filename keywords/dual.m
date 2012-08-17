@@ -54,16 +54,16 @@ end
 
 prob = evalin( 'caller', 'cvx_problem' );
 if strcmp( varargin{1}, 'variable' ),
-    error( nargchk( 2, 2, nargin ) );
+    error( nargchk( 2, 2, nargin ) ); %#ok
     varargin(1) = [];
 elseif strcmp( varargin{1}, 'variables' ),
-    error( nargchk( 2, Inf, nargin ) );
+    error( nargchk( 2, Inf, nargin ) ); %#ok
     varargin(1) = [];
 end
 
 nargs = length( varargin );
 if nargout > 0,
-    error( nargoutchk( nargs, nargs, nargout ) );
+    error( nargoutchk( nargs, nargs, nargout ) ); %#ok
 end
 
 for k = 1 : nargs,
@@ -92,11 +92,11 @@ for k = 1 : nargs,
     end
     temp = newdual( prob, x.name, x.size );
     if nargout > 0,
-        varargout{k} = temp;
+        varargout{k} = temp; %#ok
     end
     assignin( 'caller', x.name, temp );
 end
 
-% Copyright 2012 Michael C. Grant and Stephen P. Boyd.
+% Copyright 2012 CVX Research, Inc.
 % See the file COPYING.txt for full copyright information.
 % The command 'cvx_where' will show where this file is located.

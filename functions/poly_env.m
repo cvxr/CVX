@@ -107,13 +107,13 @@ cvx_begin sdp separable
     epigraph variable y(sx);
     variable P(deg2,deg2,sx) hankel;
     P >= 0; %#ok
-    1 == P(1,1,:);
-    x == reshape( P(2,1,:), sx );
+    1 == P(1,1,:); %#ok
+    x == reshape( P(2,1,:), sx ); %#ok
     y == reshape( p(end:-1:1) * [ reshape( P(1,:,:), deg2, nv ) ; reshape( P(2:end,end,:), deg2-1, nv ) ], sx ); %#ok
 cvx_end
 
 y = cvx_optval * psign;
 
-% Copyright 2012 Michael C. Grant and Stephen P. Boyd. 
+% Copyright 2012 CVX Research, Inc. 
 % See the file COPYING.txt for full copyright information.
 % The command 'cvx_where' will show where this file is located.

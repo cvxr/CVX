@@ -20,13 +20,13 @@ function cvx_optval = log_det( X )
 %       LOG_DET is concave and nonmonotonic; therefore, when used in
 %       CVX specifications, its argument must be affine.
 
-error( nargchk( 1, 1, nargin ) );
+error( nargchk( 1, 1, nargin ) ); %#ok
 cvx_expert_check( 'log_det', X );
-if ndims( X ) > 2 || size( X, 1 ) ~= size( X, 2 ),
+if ndims( X ) > 2 || size( X, 1 ) ~= size( X, 2 ), %#ok
     error( 'Argument must be a square matrix.' );
 end
 cvx_optval = size(X,1)*log(det_rootn(X));
 
-% Copyright 2012 Michael C. Grant and Stephen P. Boyd. 
+% Copyright 2012 CVX Research, Inc. 
 % See the file COPYING.txt for full copyright information.
 % The command 'cvx_where' will show where this file is located.

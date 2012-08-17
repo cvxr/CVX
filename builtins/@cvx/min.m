@@ -7,7 +7,7 @@ function z = min( x, y, dim )
 %       geometric programs, both arguments must be log-concave/affine.
 
 persistent remap remap_1 remap_2 remap_3
-error( nargchk( 1, 3, nargin ) );
+error( nargchk( 1, 3, nargin ) ); %#ok
 if nargin == 2,
 
     %
@@ -193,7 +193,6 @@ else
         ta  = permute( ta, perm );
         sx  = sx(perm);
         sy  = sy(perm);
-        dim = 1;
     else
         perm = [];
     end
@@ -255,6 +254,6 @@ else
 
 end
 
-% Copyright 2012 Michael C. Grant and Stephen P. Boyd.
+% Copyright 2012 CVX Research, Inc.
 % See the file COPYING.txt for full copyright information.
 % The command 'cvx_where' will show where this file is located.

@@ -1,11 +1,11 @@
 function cvx_pop( depth, clearmode )
-global cvx___
-if nargin < 2, clearmode = 'clear'; end
 
 %
 % Determine the index of the problem to be cleaned up
 %
 
+global cvx___
+if nargin < 2, clearmode = 'clear'; end
 cvx_global
 p = 0;
 if ~isempty( cvx___.problems ),
@@ -113,16 +113,8 @@ if ~isequal( clearmode, 'extract' ),
     if ~isequal( clearmode, 'reset' ),
         evalin( 'caller', 'clear cvx___' );
         s1 = evalin( 'caller', 'who' );
-        if cvx___.hcellfun,
-            s2 = sprintf( '%s, ', s1{:} );
-            s2 = evalin( 'caller', sprintf( 'cellfun( @cvx_id, { %s } )', s2(1:end-2) ) );
-        else
-            nvars = numel(  s1  );
-            s2 = zeros( 1, nvars );
-            for k = 1 : nvars,
-                s2(k) = cvx_id( evalin( 'caller', s1{k} ) );
-            end
-        end
+        s2 = sprintf( '%s, ', s1{:} );
+        s2 = evalin( 'caller', sprintf( 'cellfun( @cvx_id, { %s } )', s2(1:end-2) ) );
         tt = s2 >= pid;
         s1 = s1( tt );
         s2 = s2( tt );
@@ -163,6 +155,6 @@ if ~isequal( clearmode, 'extract' ),
     
 end
 
-% Copyright 2012 Michael C. Grant and Stephen P. Boyd.
+% Copyright 2012 CVX Research, Inc.
 % See the file COPYING.txt for full copyright information.
 % The command 'cvx_where' will show where this file is located.

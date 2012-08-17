@@ -57,6 +57,6 @@ cvx___.problems( p ).objective = x;
 cvx___.problems( p ).direction = dir;
 cvx___.problems( p ).geometric = vx;
 
-% Copyright 2012 Michael C. Grant and Stephen P. Boyd.
+% Copyright 2012 CVX Research, Inc.
 % See the file COPYING.txt for full copyright information.
 % The command 'cvx_where' will show where this file is located.

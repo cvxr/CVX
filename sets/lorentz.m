@@ -35,7 +35,7 @@ function cvx_optpnt = lorentz( sx, dim, iscplx )
 %       LORENTZ is a cvx set specification. See the user guide for
 %       details on how to use sets.
 
-error( nargchk( 1, 3, nargin ) );
+error( nargchk( 1, 3, nargin ) ); %#ok
 
 %
 % Check size vector
@@ -87,7 +87,7 @@ if nv == 0,
 elseif iscplx,
     nv = nv * 2;
 end
-cvx_begin_set
+cvx_begin set
     variables x( nv, ny ) y( 1, ny )
     [ ty, dummy ] = find( cvx_basis( y ) ); %#ok
     if nv > 0,
@@ -97,7 +97,7 @@ cvx_begin_set
     else
         newnonl( cvx_problem, 'nonnegative', ty );
     end
-cvx_end_set
+cvx_end
 
 %
 % Permute and reshape as needed

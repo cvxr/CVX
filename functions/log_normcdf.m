@@ -1,4 +1,4 @@
-function y = log_normcdf( x, approx )
+function y = log_normcdf( x, approx ) %#ok
 
 %LOG_NORMCDF   Logarithm of the cumulative normal distribution.
 %   Y = LOG_NORMCDF(X) is the logarithm of the CDF of the normal
@@ -23,7 +23,7 @@ function y = log_normcdf( x, approx )
 %       LOG_NORMCDF is concave and nondecreasing in X. Therefore, when used
 %       in CVX specifications, X must be concave.
 
-error(nargchk(1,2,nargin));
+error(nargchk(1,2,nargin)); %#ok
 if ~isreal( x ),
     error( 'Argument must be real.' );
 end

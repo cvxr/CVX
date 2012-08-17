@@ -2,8 +2,8 @@ function cvx_optval = norm_nuc( X ) %#ok
 
 %NORM_NUC   Internal cvx version.
 
-error( nargchk( 1, 1, nargin ) );
-if ndims( X ) > 2,
+error( nargchk( 1, 1, nargin ) ); %#ok
+if ndims( X ) > 2, %#ok
     error( 'norm_nuc is not defined for N-D arrays.' );
 elseif ~cvx_isaffine( X ),
     error( 'Input must be affine.' );
@@ -21,6 +21,6 @@ cvx_begin sdp
     [W1,X;X',W2] >= 0; %#ok
 cvx_end
 
-% Copyright 2012 Michael C. Grant and Stephen P. Boyd. 
+% Copyright 2012 CVX Research, Inc. 
 % See the file COPYING.txt for full copyright information.
 % The command 'cvx_where' will show where this file is located.

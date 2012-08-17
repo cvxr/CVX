@@ -12,7 +12,7 @@ function y = exp( x )
 %       geometric programs wherever a posynomial would be appropriate.
 
 global cvx___
-error(nargchk(1,1,nargin));
+error(nargchk(1,1,nargin)); %#ok
 cvx_expert_check( 'log', x );
             
 %
@@ -109,6 +109,6 @@ for k = 1 : nv,
 
 end
 
-% Copyright 2012 Michael C. Grant and Stephen P. Boyd.
+% Copyright 2012 CVX Research, Inc.
 % See the file COPYING.txt for full copyright information.
 % The command 'cvx_where' will show where this file is located.

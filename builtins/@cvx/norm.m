@@ -19,13 +19,13 @@ end
 % Check arguments
 %
 
-error( nargchk( 1, 2, nargin ) );
+error( nargchk( 1, 2, nargin ) ); %#ok
 if nargin < 2,
     p = 2;
 elseif ~isequal( p, 'fro' ) && ( ~isnumeric( p ) || ~isreal( p ) || p < 1 ),
     error( 'Second argument must be a real number between 1 and Inf, or ''fro''.' );
 end
-if ndims( x ) > 2,
+if ndims( x ) > 2, %#ok
     error( 'norm is not defined for N-D arrays.' );
 end
 
@@ -71,7 +71,7 @@ if m == 1 || n == 1 || isequal( p, 'fro' ),
                 if p == 2,
                     cvx_begin
                         epigraph variable z
-                        { x, z } == lorentz( n, [], ~isreal( x ) );
+                        { x, z } == lorentz( n, [], ~isreal( x ) ); %#ok
                     cvx_end
                 else
                     if isreal( x ),
@@ -82,8 +82,8 @@ if m == 1 || n == 1 || isequal( p, 'fro' ),
                     cvx_begin
                         epigraph variable z
                         variable y( n )
-                        { [ y, z*ones(n,1) ], x } == geo_mean_cone( [n,2], 2, [1/p,1-1/p], cmode );
-                        sum( y ) == z;
+                        { [ y, z*ones(n,1) ], x } == geo_mean_cone( [n,2], 2, [1/p,1-1/p], cmode ); %#ok
+                        sum( y ) == z; %#ok
                     cvx_end
                 end
             end
@@ -111,6 +111,6 @@ else
     
 end
 
-% Copyright 2012 Michael C. Grant and Stephen P. Boyd.
+% Copyright 2012 CVX Research, Inc.
 % See the file COPYING.txt for full copyright information.
 % The command 'cvx_where' will show where this file is located.

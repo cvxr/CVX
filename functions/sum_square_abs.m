@@ -11,7 +11,7 @@ function y = sum_square_abs( x, dim )
 %       SUM_SQUARE_ABS(X,...) is convex and nonmonotonic in X. Thus, when
 %       used in CVX expressions, X must be affine. DIM must be constant.
 
-error( nargchk( 1, 2, nargin ) );
+error( nargchk( 1, 2, nargin ) ); %#ok
 y = conj( x ) .* x;
 if nargin == 2,
     y = sum( y, dim );
@@ -19,6 +19,6 @@ else
     y = sum( y );
 end
 
-% Copyright 2012 Michael C. Grant and Stephen P. Boyd.
+% Copyright 2012 CVX Research, Inc.
 % See the file COPYING.txt for full copyright information.
 % The command 'cvx_where' will show where this file is located.

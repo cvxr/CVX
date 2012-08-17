@@ -1,5 +1,5 @@
 function y = geo_mean( x, dim, w )
-error( nargchk( 1, 3, nargin ) );
+error( nargchk( 1, 3, nargin ) ); %#ok
 
 %GEO_MEAN   Internal cvx version.
 
@@ -114,7 +114,7 @@ for k = 1 : nk,
         case 2,
             cvx_begin
                 hypograph variable yt(sz);
-                { cvx_accept_concave(xt), yt } == geo_mean_cone( size(xt), dim,  w, 'func' );
+                { cvx_accept_concave(xt), yt } == geo_mean_cone( size(xt), dim,  w, 'func' ); %#ok
             cvx_end
         case 3,
             if nx == 1,
@@ -145,6 +145,6 @@ if ~isempty( perm ),
     y = ipermute( y, perm );
 end
 
-% Copyright 2012 Michael C. Grant and Stephen P. Boyd.
+% Copyright 2012 CVX Research, Inc.
 % See the file COPYING.txt for full copyright information.
 % The command 'cvx_where' will show where this file is located.

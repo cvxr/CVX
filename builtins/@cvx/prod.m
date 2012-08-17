@@ -14,7 +14,7 @@ function y = prod( x, dim )
 %      because the top row contains the product of log-convex and 
 %      log-concave terms, in violation of the DGP ruleset.
 
-error( nargchk( 1, 2, nargin ) );
+error( nargchk( 1, 2, nargin ) ); %#ok
 
 %
 % Basic argument check
@@ -138,6 +138,6 @@ if ~isempty( perm ),
     y = ipermute( y, perm );
 end
 
-% Copyright 2012 Michael C. Grant and Stephen P. Boyd.
+% Copyright 2012 CVX Research, Inc.
 % See the file COPYING.txt for full copyright information.
 % The command 'cvx_where' will show where this file is located.

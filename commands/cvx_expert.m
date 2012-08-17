@@ -15,6 +15,7 @@ function cvx_expert( flag )
 %   CVX_EXPERT, with no arguments, returns the current flag value.
 
 global cvx___
+cvx_global
 error( nargchk( 1, 1, nargin ) );
 if nargin == 1,
     if isnumeric(flag) || islogical(flag),
@@ -32,10 +33,9 @@ if nargin == 1,
         error( 'Argument must be a numeric scalar or a string.' );
     end
 end
-cvx_global
 cvx___.expert = ns;
 
-% Copyright 2012 Michael C. Grant and Stephen P. Boyd.
+% Copyright 2012 CVX Research, Inc.
 % See the file COPYING.txt for full copyright information.
 % The command 'cvx_where' will show where this file is located.
 

@@ -2,7 +2,7 @@ function y = log_sum_exp( x, dim )
 
 %LOG_SUM_EXP   CVX internal version.
 
-error( nargchk( 1, 2, nargin ) );
+error( nargchk( 1, 2, nargin ) ); %#ok
 cvx_expert_check( 'log_sum_exp', x );
 
 sx = size( x );
@@ -93,8 +93,8 @@ for k = 1 : nv,
             cvx_begin
                 variable w( sx )
                 epigraph variable z( sz )
-                { cvx_accept_convex( x ) - cvx_expand_dim( z, dim, nx ), 1, w } == exponential( sx );
-                sum( w, dim ) == 1;
+                { cvx_accept_convex( x ) - cvx_expand_dim( z, dim, nx ), 1, w } == exponential( sx ); %#ok
+                sum( w, dim ) == 1; %#ok
             cvx_end
         case 2,
             % Constant
@@ -118,6 +118,6 @@ end
 % Reshape again, just in case
 y = reshape( y, sy );
 
-% Copyright 2012 Michael C. Grant and Stephen P. Boyd. 
+% Copyright 2012 CVX Research, Inc. 
 % See the file COPYING.txt for full copyright information.
 % The command 'cvx_where' will show where this file is located.

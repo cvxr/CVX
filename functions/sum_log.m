@@ -18,7 +18,7 @@ function y = sum_log( x, dim )
 %       SUM_LOG(X) is convex and nondecreasing in X. Therefore, when used
 %       in CVX expressions, X must be concave. X must be real.
 
-error( nargchk( 1, 2, nargin ) );
+error( nargchk( 1, 2, nargin ) ); %#ok
 if ~isreal( x ),
     error( 'Argument must be real.' );
 elseif nargin == 2,
@@ -27,6 +27,6 @@ else
     y = sum( log( max( x, 0 ) ) );
 end
 
-% Copyright 2012 Michael C. Grant and Stephen P. Boyd.
+% Copyright 2012 CVX Research, Inc.
 % See the file COPYING.txt for full copyright information.
 % The command 'cvx_where' will show where this file is located.

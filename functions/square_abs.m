@@ -10,9 +10,9 @@ function y = square_abs( x )
 %       SQUARE_ABS(X) is convex and nonmonotonic in X. Thus when used in 
 %       CVX expressions, X must be affine.
 
-error( nargchk( 1, 1, nargin ) );
+error( nargchk( 1, 1, nargin ) ); %#ok
 y = conj( x ) .* x;
 
-% Copyright 2012 Michael C. Grant and Stephen P. Boyd. 
+% Copyright 2012 CVX Research, Inc. 
 % See the file COPYING.txt for full copyright information.
 % The command 'cvx_where' will show where this file is located.

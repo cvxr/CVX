@@ -39,7 +39,7 @@ for k = 1 : nargin - 1,
         elseif length( sx ) ~= length( sz ) || nnz( sx - sz ) > 1,
             error( 'All dimensions but the one being concatenated (%d) must be equal.', dim );
         else
-            sz( dim ) = sz( dim ) + sx( dim );
+            sz( dim ) = sz( dim ) + sx( dim ); %#ok
         end
         if ~isreal( bx ), 
             isr = false; 
@@ -88,7 +88,7 @@ for k = 1 : nargs,
             x = full(x); 
         end
     end
-    x( end + 1 : nz, end ) = 0;
+    x( end + 1 : nz, end ) = 0; %#ok
     if rsiz > 1,
         x = reshape( x, numel(x) / rsiz, rsiz );
     end
@@ -107,6 +107,6 @@ yb = reshape( yb, nz, psz );
 
 y = cvx( sz, yb );
 
-% Copyright 2012 Michael C. Grant and Stephen P. Boyd.
+% Copyright 2012 CVX Research, Inc.
 % See the file COPYING.txt for full copyright information.
 % The command 'cvx_where' will show where this file is located.

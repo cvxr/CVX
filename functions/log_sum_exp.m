@@ -18,7 +18,7 @@ function y = log_sum_exp( x, dim )
 %       LOG_SUM_EXP(X) is convex and nondecreasing in X; therefore, X
 %       must be convex (or affine).
 
-error( nargchk( 1, 2, nargin ) );
+error( nargchk( 1, 2, nargin ) ); %#ok
 if ~isreal( x ),
     error( 'Argument must be real.' );
 end
@@ -30,6 +30,6 @@ else
 end
 y = log( y );
 
-% Copyright 2012 Michael C. Grant and Stephen P. Boyd. 
+% Copyright 2012 CVX Research, Inc. 
 % See the file COPYING.txt for full copyright information.
 % The command 'cvx_where' will show where this file is located.

@@ -7,7 +7,7 @@ function y = pos( x )
 %        POS(X) is convex and nondecreasing in X. Thus when used in CVX
 %        expressions, X must be convex (or affine).
 
-error( nargchk( 1, 1, nargin ) );
+error( nargchk( 1, 1, nargin ) ); %#ok
 if ~isreal( x ),
 
 	error( 'Argument must be real.' );
@@ -18,6 +18,6 @@ else
 
 end
 
-% Copyright 2012 Michael C. Grant and Stephen P. Boyd. 
+% Copyright 2012 CVX Research, Inc. 
 % See the file COPYING.txt for full copyright information.
 % The command 'cvx_where' will show where this file is located.

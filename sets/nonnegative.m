@@ -16,21 +16,21 @@ function cvx_optpnt = nonnegative( sx ) %#ok
 %       NONNEGATIVE is a cvx set specification. See the user guide for
 %       details on how to use sets.
 
-error( nargchk( 1, 1, nargin ) );
+error( nargchk( 1, 1, nargin ) ); %#ok
 
 [ temp, sx ] = cvx_check_dimlist( sx, true );
 if ~temp,
     error( 'Argument must be a non-empty dimension vector.' );
 end
     
-cvx_begin_set
+cvx_begin set
     variables x( sx )
     if all( sx ~= 0 ),
         [ tx, dummy ] = find( cvx_basis( x ) ); %#ok
         newnonl( cvx_problem, 'nonnegative', tx(:) );
     end
-cvx_end_set
+cvx_end
 
-% Copyright 2012 Michael C. Grant and Stephen P. Boyd. 
+% Copyright 2012 CVX Research, Inc. 
 % See the file COPYING.txt for full copyright information.
 % The command 'cvx_where' will show where this file is located.

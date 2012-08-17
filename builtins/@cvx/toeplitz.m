@@ -10,7 +10,7 @@ function t = toeplitz( c, r )
 % Check arguments
 %
 
-error( nargchk( 1, 2, nargin ) );
+error( nargchk( 1, 2, nargin ) ); %#ok
 if nargin < 2,
     c    = vec( c );
     m    = length( c );
@@ -39,6 +39,6 @@ ridx = p : -1 : 1;
 t    = cidx( :, ones( p, 1 ) ) + ridx( ones( m, 1 ) , : );
 t    = reshape( cvx_subsref( x, t ), size( t ) );
 
-% Copyright 2012 Michael C. Grant and Stephen P. Boyd.
+% Copyright 2012 CVX Research, Inc.
 % See the file COPYING.txt for full copyright information.
 % The command 'cvx_where' will show where this file is located.

@@ -24,7 +24,7 @@ function y = geo_mean( x, dim, w )
 % Check arguments
 %
 
-error( nargchk( 1, 3, nargin ) );
+error( nargchk( 1, 3, nargin ) ); %#ok
 if ~isreal( x ), 
     error( 'First argument must be real.' ); 
 elseif nargin < 2,
@@ -68,6 +68,6 @@ else
     y( xmin == 0 ) = 0;
 end
 
-% Copyright 2012 Michael C. Grant and Stephen P. Boyd. 
+% Copyright 2012 CVX Research, Inc. 
 % See the file COPYING.txt for full copyright information.
 % The command 'cvx_where' will show where this file is located.

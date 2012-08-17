@@ -30,6 +30,7 @@ function sout = cvx_quiet( flag )
 %   CVX_QUIET, with no arguments, returns the current flag value.
 
 global cvx___
+cvx_global
 if nargin == 1,
     if isnumeric(flag) || islogical(flag),
         ns = double(flag) ~= 0;
@@ -46,7 +47,6 @@ if nargin == 1,
         error( 'Argument must be a numeric scalar or a string.' );
     end
 end
-cvx_global
 if isempty( cvx___.problems ),
     s = cvx___.quiet;
     if nargin > 0,
@@ -66,7 +66,7 @@ if nargin == 0 || nargout > 0,
     sout = s;
 end
 
-% Copyright 2012 Michael C. Grant and Stephen P. Boyd.
+% Copyright 2012 CVX Research, Inc.
 % See the file COPYING.txt for full copyright information.
 % The command 'cvx_where' will show where this file is located.
 

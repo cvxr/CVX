@@ -1,46 +1,47 @@
-function cvx_setspath( nsolv )
-global cvx___
+function cvx_setspath
 
-%CVX_SETPATH   Sets the cvx solver path.
-%   CVX_SETPATH adds the internal cvx solver directories to Matlab's path
+%CVX_SETSPATH   Sets the cvx solver path.
+%   CVX_SETSPATH adds the internal cvx solver directories to Matlab's path
 %   so that the CVX system can find the functions that they contain. There 
 %   is no reason to call this function during normal use of CVX; it is done
 %   automatically as needed. However, if you are debugging CVX, calling
 %   this function can help to insure that breakpoints stay valid.
 
-cvx_global
-nsolv = lower(nsolv);
-osolv = cvx___.path.sactive;
-if ~strcmp( nsolv, osolv ),
+global cvx___
+osolv = cvx___.solvers.active;
+if isempty( cvx___.problems ),
+    nsolv = cvx___.solvers.selected;
+else
+    nsolv = cvx___.problems(end).solver.index;
+end
+if osolv ~= nsolv,
+    opath = [];
+    npath = [];
     needupd = false;
-    cpath = matlabpath;
-    if ~isempty( osolv ),
-        tstr = cvx___.path.solvers.(osolv);
+    if osolv,
+        tstr = cvx___.solvers.list(osolv).path;
         if ~isempty( tstr ),
-            temp = strfind( cpath, tstr );
-            if ~isempty(temp),
-                cpath(temp(1):temp(1)+length(tstr)-1) = [];
-                needupd = true;
-            end
+            opath = matlabpath;
+            npath = strrep(opath,tstr,'');
+            needupd = true;
         end
+        cvx___.solvers.active = 0;
     end
-    if ~isempty( nsolv ),
-        if ~isempty( nsolv ),
-            tstr = cvx___.path.solvers.(nsolv);
-            if ~isempty( tstr ),
-                cpath = [ tstr, cpath ];
-                needupd = true;
-            end
+    if nsolv,
+        tstr = cvx___.solvers.list(nsolv).path;
+        if ~isempty( tstr ),
+            if isempty(opath), opath = matlabpath; end
+            if isempty(npath), npath = opath; end
+            npath = [ tstr, npath ];
+            needupd = true;
         end
+        cvx___.solvers.active = nsolv;
     end
     if needupd,
-        s = warning('off');
-        matlabpath(cpath);
-        warning(s);
+        matlabpath(npath);
     end
-    cvx___.path.sactive = nsolv;
 end
 
-% Copyright 2012 Michael C. Grant and Stephen P. Boyd.
+% Copyright 2012 CVX Research, Inc.
 % See the file COPYING.txt for full copyright information.
 % The command 'cvx_where' will show where this file is located.

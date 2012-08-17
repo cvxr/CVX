@@ -11,8 +11,8 @@ function z = lambda_sum_largest( Y, k )
 %         LAMBDA_SUM_LARGEST is convex and nonmonotonic (at least with 
 %         respect to elementwise comparison), so its argument must be affine.
 
-error( nargchk( 2, 2, nargin ) );
-if ndims( Y ) > 2 || size( Y, 1 ) ~= size( Y, 2 ),
+error( nargchk( 2, 2, nargin ) ); %#ok
+if ndims( Y ) > 2 || size( Y, 1 ) ~= size( Y, 2 ), %#ok
     error( 'First input must be a square matrix.' );
 elseif ~isnumeric( k ) || numel( k ) ~= 1 || ~isreal( k ),
     error( 'Second input must be a real scalar.' );
@@ -25,6 +25,6 @@ else
     z = sum_largest( eig( full( Y ) ), k );
 end
 
-% Copyright 2012 Michael C. Grant and Stephen P. Boyd.
+% Copyright 2012 CVX Research, Inc.
 % See the file COPYING.txt for full copyright information.
 % The command 'cvx_where' will show where this file is located.

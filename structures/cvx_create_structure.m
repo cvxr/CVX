@@ -1,6 +1,6 @@
 function S = cvx_create_structure( sz, varargin )
 %CVX_CREATE_STRUCTURE Construct a basis for a matrix structure.
-error( nargchk( 1, Inf, nargin ) );
+error( nargchk( 1, Inf, nargin ) ); %#ok
 
 [ temp, sz ] = cvx_check_dimlist( sz, false );
 if ~temp,
@@ -19,7 +19,7 @@ for k = 1 : nstrs,
     if isstruct( argt ),
         try
             args = argt.args;
-        catch
+        catch %#ok
             args = {};
         end
         argt = argt.name;
@@ -33,12 +33,12 @@ for k = 1 : nstrs,
         else
             S = feval( name, sz( 1 ), sz( 2 ), args );
         end
-    catch
+    catch errmsg
         temp = exist( name, 'file' );
         if temp ~= 2 && temp ~= 3,
             error( 'Undefined matrix structure type: %s', argt );
         else
-            error( lasterror );
+            rethrow( errmsg );
         end
     end
     strs{ k } = S;
@@ -87,6 +87,6 @@ if length( sz ) > 2,
     S = cvx_replicate_structure( S, sz( 3 : end ) );
 end
 
-% Copyright 2012 Michael C. Grant and Stephen P. Boyd.
+% Copyright 2012 CVX Research, Inc.
 % See the file COPYING.txt for full copyright information.
 % The command 'cvx_where' will show where this file is located.

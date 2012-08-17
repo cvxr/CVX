@@ -15,6 +15,7 @@ elseif index( prob ) ~= length( cvx___.problems ),
 end
 p = index( prob );
 pstr = cvx___.problems( p );
+estruc = [];
 
 if isempty( pstr.objective ) && isempty( pstr.variables ) && isempty( pstr.duals ) && nnz( pstr.t_variable ) == 1,
 
@@ -74,7 +75,11 @@ elseif pstr.complete && nnz( pstr.t_variable ) == 1,
     % Compress and solve
     %
 
-    solve( prob );
+    try
+        solve( prob );
+    catch
+        estruc = lasterror;
+    end
     pstr = cvx___.problems( p );
 
     %
@@ -99,8 +104,9 @@ elseif pstr.complete && nnz( pstr.t_variable ) == 1,
             pstr.result = pstr.result * ones(size(pstr.objective));
         end
     end
-    assignin( 'caller', 'cvx_optpnt',  pstr.variables );
-    % Removed because it seems buggy and I cannot support it.
+    % Removed these for simplicity. cvx_optdpt in particular was buggy,
+    % and I can't support it. In fact they are for internal use anyway.
+    % assignin( 'caller', 'cvx_optpnt',  pstr.variables );
     % assignin( 'caller', 'cvx_optdpt',  pstr.duals );
     assignin( 'caller', 'cvx_status',  pstr.status );
     assignin( 'caller', 'cvx_optval',  pstr.result );
@@ -237,6 +243,10 @@ if isempty( cvx___.problems ) && cvx___.profile,
     profile off;
 end
 
-% Copyright 2012 Michael C. Grant and Stephen P. Boyd.
+if ~isempty( estruc ),
+    rethrow( estruc );
+end
+
+% Copyright 2012 CVX Research, Inc.
 % See the file COPYING.txt for full copyright information.
 % The command 'cvx_where' will show where this file is located.

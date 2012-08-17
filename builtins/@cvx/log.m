@@ -12,7 +12,7 @@ function y = log( x )
 %       will not be officially supported.
 
 global cvx___
-error(nargchk(1,1,nargin));
+error(nargchk(1,1,nargin)); %#ok
 cvx_expert_check( 'log', x );
 
 %
@@ -99,7 +99,7 @@ for k = 1 : nv,
                     tt  = rc == rk;
                     xtt = xt( :, tt );
                 end
-                [ rx, cx, vx ] = find( xtt );
+                [ rx, cx, vx ] = find( xtt ); %#ok
                 rx = rx( : ); vx = vx( : );
                 nq = length( vx );
                 vx = log( vx );
@@ -130,6 +130,6 @@ for k = 1 : nv,
 
 end
 
-% Copyright 2012 Michael C. Grant and Stephen P. Boyd.
+% Copyright 2012 CVX Research, Inc.
 % See the file COPYING.txt for full copyright information.
 % The command 'cvx_where' will show where this file is located.

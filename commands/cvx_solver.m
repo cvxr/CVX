@@ -1,61 +1,91 @@
-function sout = cvx_solver( flag )
+function [ sout, slist ] = cvx_solver( sname )
 
 %CVX_SOLVER    CVX solver selection.
-%   CVX_SOLVER SDPT3  selects SDPT3  as the solver CVX uses to solve models.
-%   CVX_SOLVER SeDuMi selects SeDuMi as the solver CVX uses to solve models.
-%   The solver string is case-insensitive; e.g., 'sdpt3' is fine.
+%   CVX_SOLVER <solver_name> or CVX_SOLVER('<solver_name>')
+%   selects the named solver the CVX uses to solve models. The solver name
+%   is case-insensitive; so, for example, both 'SeDuMi' and 'sedumi' will
+%   select the same solver.
 %
-%   The default solver is SeDuMi. For most models, this will be the best
-%   choice. Nevertheless, for your problems you may find that SDPT3 is
-%   more accurate or reliable, hence the need for this command.
+%   When CVX is first installed, the solver SDPT3 is selected as the
+%   default. For most problems, this will be a good choice; nevertheless,
+%   no solver is perfect, so if you encounter issues you may wish to
+%   experiment with other solvers.
 %
-%   If CVX_SOLVER is called within a model---that is, between the statements
-%   CVX_BEGIN and CVX_END---then the new solver selection applies only to that
-%   particular model. In this mode, the change takes place for *both*
-%   successive approximation models and normal models.
+%   There are two ways to use the CVX_SOLVER command. If you use it within
+%   a model---that is, between the statements CVX_BEGIN and CVX_END---then
+%   the new solver selection will apply only to that particular model. For
+%   instance, if the default solver is SDPT3, then the following structure
+%   will solve a single model using SeDuMi instead:
+%       cvx_begin
+%           cvx_solver sedumi
+%           variables ...
+%           ...
+%       cvx_end
+%   On the other hand, if CVX_SOLVER is called *outside* of a model, then
+%   the change will apply for all subsequent models, or until you call 
+%   CVX_SOLVER once again.
 %
-%   If called outside of a model, then the change applies to
-%   all subsequent models; that is, it modifies the default solver.
+%   [ SOLVER, SOLVER_LIST ] = CVX_SOLVER returns the name of the current
+%   solver, and a cell array containing the names of all available choices.
 %
-%   On exit, CVX_SOLVER returns the *previous* solver. This can be used to 
-%   restore that solver selection at a later time, in a manner similar to 
-%   CVX_PRECISION.
-%
-%   CVX_SOLVER, with no arguments, returns the current solver.
+%   Calling CVX_SOLVER with no input or output arguments produces a listing
+%   of the solvers that CVX currently recognized, and an indication of the
+%   current solver selection and/or the default.
 
 global cvx___
 cvx_global
-if nargin > 0,
-    if isempty( flag ),
-        flag = 'sedumi';
-    elseif ~ischar( flag ) || size( flag, 1 ) ~= 1,
+if nargin,
+    if isempty( sname ),
+        sname = 'default';
+    elseif ~ischar( sname ) || size( sname, 1 ) ~= 1,
         error( 'Argument must be a string.' );
-    elseif ~isfield( cvx___.path.solvers, lower( flag )  ),
-        error( 'Unknown, unusable, or missing solver: %s', flag );
     end
-end
-if isempty( cvx___.problems ),
-    s = cvx___.solver;
-    if nargin > 0,
-        cvx___.solver = flag;
+    try
+        snumber = cvx___.solvers.map.(lower(sname));
+    catch %#ok
+        error( 'Unknown, unusable, or missing solver: %s', sname );
     end
-else
-    s = cvx___.problems(end).solver;
-    if nargin > 0,
-        if ~strcmpi( s, flag ) && ~isa( evalin( 'caller', 'cvx_problem', '[]' ), 'cvxprob' ),
-            warning( 'CVX:Solver', 'The global CVX solver selection cannot be changed while a model is being constructed.' );
+    if ~isempty( cvx___.solvers.list(snumber).error ),
+        error( 'Solver unusable due to prior errors: %s', sname );
+    end
+    if isempty( cvx___.problems ),
+        cvx___.solvers.selected = snumber;
+        if cvx___.solvers.active,
+            cvx_setspath( snumber );
+        end
+    elseif ~isa( evalin( 'caller', 'cvx_problem', '[]' ), 'cvxprob' ),
+        error( 'The global CVX solver selection cannot be changed while a model is being constructed.' );
+    else
+        cvx___.problems(end).solver.index = snumber;
+    end
+elseif nargout == 0,
+    statvec = [ 0, cvx___.solvers.map.default, cvx___.solvers.active ];
+    statstr = { 'selected', 'default', 'active' };
+    if ~isempty( cvx___.problems ),
+        statvec(1) = cvx___.problems(end).solver.index;
+    else
+        statvec(1) = cvx___.solvers.selected;
+    end
+    fprintf( '\n' );
+    fprintf( 'Available solvers:\n' );
+    fprintf( '------------------\n' );
+    for k = 1 : length(cvx___.solvers.names),
+        fprintf( ' %s', cvx___.solvers.names{k} );
+        nstat = statstr(k==statvec);
+        if ~isempty(nstat),
+            nstat = sprintf( '%s,', nstat{:} );
+            fprintf( ' (%s)\n', nstat(1:end-1) );
         else
-            cvx___.problems(end).solver = flag;
+            fprintf( '\n' );
         end
     end
+    fprintf( '\n' );
 end
-if nargin > 0 && cvx___.path.hold,
-    cvx_setspath( flag );
-end
-if nargin == 0 || nargout > 0,
-    sout = s;
+if nargout > 0,
+    sout = cvx___.solvers.list(cvx___.solvers.selected).name;
+    slist = cvx___.solvers.names;
 end
 
-% Copyright 2012 Michael C. Grant and Stephen P. Boyd.
+% Copyright 2012 CVX Research, Inc.
 % See the file COPYING.txt for full copyright information.
 % The command 'cvx_where' will show where this file is located.

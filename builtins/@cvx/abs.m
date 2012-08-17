@@ -64,14 +64,14 @@ for k = 1 : nv,
             st = size( xt );
             cvx_begin
                 epigraph variable w( st )
-                { xt, w } == lorentz( st, 0 );
+                { xt, w } == lorentz( st, 0 ); %#ok
             cvx_end
         case 3,
             % Complex affine
             st = size( xt );
             cvx_begin
                 epigraph variable w( st )
-                { xt, w } == complex_lorentz( st, 0 );
+                { xt, w } == complex_lorentz( st, 0 ); %#ok
             cvx_end
         case 4,
             % log-affine, log-convex
@@ -92,6 +92,6 @@ for k = 1 : nv,
 
 end
 
-% Copyright 2012 Michael C. Grant and Stephen P. Boyd.
+% Copyright 2012 CVX Research, Inc.
 % See the file COPYING.txt for full copyright information.
 % The command 'cvx_where' will show where this file is located.

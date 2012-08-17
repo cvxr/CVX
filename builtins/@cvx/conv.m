@@ -14,7 +14,7 @@ function z = conv(x,y)
 %   CONV(X,Y) where X and Y are both log-convex satisfies the DGP rulest,
 %   but this version does not support that scenario.
 
-error(nargchk(2,2,nargin));
+error(nargchk(2,2,nargin)); %#ok
 sx = size(x);
 sy = size(y);
 if sum(sx~=1)>1 || sum(sy~=1)>1,
@@ -59,6 +59,6 @@ else
     
 end
 
-% Copyright 2012 Michael C. Grant and Stephen P. Boyd.
+% Copyright 2012 CVX Research, Inc.
 % See the file COPYING.txt for full copyright information.
 % The command 'cvx_where' will show where this file is located.

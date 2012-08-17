@@ -34,13 +34,13 @@ function cvx_optpnt = rotated_complex_lorentz( sx, dim )
 %       ROTATED_COMPLEX_LORENTZ is a cvx set specification. See the user 
 %       guide for details on how to use sets.
 
-error( nargchk( 1, 2, nargin ) );
+error( nargchk( 1, 2, nargin ) ); %#ok
 if nargin == 1,
     cvx_optpnt = rotated_lorentz( sx, [], true );
 else
     cvx_optpnt = rotated_lorentz( sx, dim, true );
 end
 
-% Copyright 2012 Michael C. Grant and Stephen P. Boyd.
+% Copyright 2012 CVX Research, Inc.
 % See the file COPYING.txt for full copyright information.
 % The command 'cvx_where' will show where this file is located.

@@ -1,8 +1,8 @@
 function p = cvx_create_problem( varargin )
-global cvx___
 
-error( nargchk( 0, 2, nargin ) );
+global cvx___
 cvx_global
+error( nargchk( 0, 2, nargin ) ); %#ok
 cvx_problem = evalin( 'caller', 'cvx_problem', '[]' );
 if isa( cvx_problem, 'cvxprob' ) && cvx___.problems( index( cvx_problem ) ).depth == length( dbstack ) - 2,
     error( 'A cvx problem already exists in this scope.\n(To clear it and start a new one, use the command ''cvx_clear''.)', 1 ); %#ok
@@ -43,6 +43,6 @@ if nargin > 0,
 end
 assignin( 'caller', 'cvx_problem', cvx_problem );
 
-% Copyright 2012 Michael C. Grant and Stephen P. Boyd.
+% Copyright 2012 CVX Research, Inc.
 % See the file COPYING.txt for full copyright information.
 % The command 'cvx_where' will show where this file is located.

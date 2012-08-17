@@ -132,7 +132,7 @@ else
             yC( ay ) = 0;
         end
     end
-    cnst = +cx * +cy;
+    cnst = +cx * +cy; %#ok
     laff = +cx * +( vy > 1 );
     raff = +( vx > 1 ) * cy;
     posy = +px * +py;
@@ -307,6 +307,6 @@ if any( isnan( v( : ) ) ),
     error( temp, 1 ); 
 end
 
-% Copyright 2012 Michael C. Grant and Stephen P. Boyd.
+% Copyright 2012 CVX Research, Inc.
 % See the file COPYING.txt for full copyright information.
 % The command 'cvx_where' will show where this file is located.

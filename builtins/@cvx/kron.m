@@ -1,5 +1,4 @@
 function z = kron( x, y )
-error( nargchk( 2, 2, nargin ) );
 
 %Disciplined convex/geometric programming information for KRON:
 %   KRON(X,Y) computes scalar products between every element of X and
@@ -11,6 +10,7 @@ error( nargchk( 2, 2, nargin ) );
 % using non-Kronecker products
 %
 
+error( nargchk( 2, 2, nargin ) ); %#ok
 sx = size( x );
 sy = size( y );
 if length( sx ) > 2 || length( sy ) > 2,
@@ -44,6 +44,6 @@ else
     z  = sparse( iz, jz, z, sz(1), sz(2) );
 end
 
-% Copyright 2012 Michael C. Grant and Stephen P. Boyd.
+% Copyright 2012 CVX Research, Inc.
 % See the file COPYING.txt for full copyright information.
 % The command 'cvx_where' will show where this file is located.

@@ -2,7 +2,7 @@ function y = log_normcdf( x )
 
 %LOG_NORMCDF   Internal CVX version.
 
-error(nargchk(1,1,nargin));
+error(nargchk(1,1,nargin)); %#ok
 if ~isreal( x ),
     error( 'Argument must be real.' );
 end

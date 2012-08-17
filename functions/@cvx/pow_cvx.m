@@ -41,7 +41,7 @@ end
 % Argument check
 %
 
-error(nargchk(3,3,nargin));
+error(nargchk(3,3,nargin)); %#ok
 p = cvx_constant( p );
 if nnz( isinf( p ) | isnan( p ) ),
     error( 'Second argument must be Inf or NaN.' );
@@ -89,7 +89,7 @@ v = remap( v(:)' + size(remap,1) * ( cvx_classify( x ) - 1 ) );
 if ~ps,
     t = remap_uniq( v + 1 );
     if any( t ),
-        [ pk, pi, pj ] = unique( p( t ) );
+        [ pk, pi, pj ] = unique( p( t ) ); %#ok
         vt = v( t );
         v( t ) = vt + ( reshape( pj, size(vt) ) - 1 ) / length( pk );
     end
@@ -154,7 +154,7 @@ for k = 1 : nv,
             % pow_p( concave, p < 0 )
             cvx_begin
                 epigraph variable yt(sz)
-                { cat( nd, cvx_accept_concave(xt), yt ), 1 } == geo_mean_cone( sw, nd, [-pt,1], 'func' );
+                { cat( nd, cvx_accept_concave(xt), yt ), 1 } == geo_mean_cone( sw, nd, [-pt,1], 'func' ); %#ok
             cvx_end
         case 4,
             % power( valid, 0 )
@@ -169,7 +169,7 @@ for k = 1 : nv,
             % pow_p( concave, 0 < p < 1 )
             cvx_begin
                 hypograph variable yt(sz)
-                { cat( nd, cvx_accept_concave(xt), ones(sz) ), yt } == geo_mean_cone( sw, nd, [pt,1-pt], 'func' );
+                { cat( nd, cvx_accept_concave(xt), ones(sz) ), yt } == geo_mean_cone( sw, nd, [pt,1-pt], 'func' ); %#ok
             cvx_end
         case 7,
             % power( valid, 1 )
@@ -192,20 +192,20 @@ for k = 1 : nv,
             % pow_pos( convex, p > 1 )
             cvx_begin
                 epigraph variable yt(sz)
-                { cat( nd, yt, ones(sz) ), cvx_accept_convex(xt) } == geo_mean_cone( sw, nd, [1/pt,1-1/pt], cmode ); 
+                { cat( nd, yt, ones(sz) ), cvx_accept_convex(xt) } == geo_mean_cone( sw, nd, [1/pt,1-1/pt], cmode );  %#ok
             cvx_end
         case 12,
             % pow_abs( affine, p > 1 )
             % power( affine, p even )
             cvx_begin
                 epigraph variable yt(sz)
-                { cat( nd, yt, ones(sz) ), cvx_accept_convex(xt) } == geo_mean_cone( sw, nd, [1/pt,1-1/pt], 'abs' ); 
+                { cat( nd, yt, ones(sz) ), cvx_accept_convex(xt) } == geo_mean_cone( sw, nd, [1/pt,1-1/pt], 'abs' ); %#ok 
             cvx_end
         case 13,
             % pow_abs( complex affine, p > 1 )
             cvx_begin
                 epigraph variable yt(sz)
-                { cat( nd, yt, ones(sz) ), cvx_accept_convex(xt) } == geo_mean_cone( sw, nd, [1/pt,1-1/pt], 'cabs' ); 
+                { cat( nd, yt, ones(sz) ), cvx_accept_convex(xt) } == geo_mean_cone( sw, nd, [1/pt,1-1/pt], 'cabs' );  %#ok
             cvx_end
     end
     
@@ -223,7 +223,7 @@ for k = 1 : nv,
     
 end
 
-% Copyright 2012 Michael C. Grant and Stephen P. Boyd.
+% Copyright 2012 CVX Research, Inc.
 % See the file COPYING.txt for full copyright information.
 % The command 'cvx_where' will show where this file is located.
 

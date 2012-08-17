@@ -1,6 +1,7 @@
 function z = cvxprob( varargin )
 
 global cvx___
+cvx_global
 if ~iscellstr( varargin ),
     error( 'Arguments must be strings.' );
 end
@@ -11,16 +12,12 @@ end
 % start over when constructing a model
 %
 
-cvx_global
 st = dbstack;
 depth = length( st ) - 2;
 if length(st) <= 2,
     name = '';
 else
     name = st(3).name;
-    if cvx___.mversion < 7,
-        name = name(max(find(name==filesep))+1:end-2);
-    end
 end
 if ~isempty( cvx___.problems ),
     ndx = find( [ cvx___.problems.depth ] >= depth );
@@ -39,15 +36,20 @@ end
 
 if ~isempty( cvx___.problems ),
     nprec  = cvx___.problems( end ).precision;
-    ngprec = cvx___.problems( end ).gptol;
+    npflag = cvx___.problems( end ).precflag;
     nrprec = cvx___.problems( end ).rat_growth;
     nsolv  = cvx___.problems( end ).solver;
     nquiet = cvx___.problems( end ).quiet;
 else
     nprec  = cvx___.precision;
-    ngprec = cvx___.gptol;
+    npflag = cvx___.precflag;
     nrprec = cvx___.rat_growth;
-    nsolv  = cvx___.solver;
+    selected = cvx___.solvers.selected;
+    if isfield( cvx___.solvers.list, 'settings'  ),
+        nsolv  = struct( 'index', selected, 'settings', cvx___.solvers.list(selected).settings );
+    else
+        nsolv = struct( 'index', selected, 'settings', [] );
+    end
     nquiet = cvx___.quiet;
 end
 
@@ -64,8 +66,8 @@ temp = struct( ...
     'separable',     false,  ...
     'locked',        false,  ...
     'precision',     nprec,  ...
+    'precflag',      npflag, ...
     'solver',        nsolv,  ...
-    'gptol',         ngprec, ...
     'quiet',         nquiet, ... 
     'cputime',       cputime, ...
     'rat_growth',    nrprec, ...
@@ -81,6 +83,8 @@ temp = struct( ...
     'objective',     [],         ...
     'status',        'unsolved', ...
     'result',        [],         ...
+    'iters',         Inf,        ...
+    'tol',           Inf,        ...
     'depth',         depth, ...
     'self',          z );
 temp.t_variable( 1 ) = true;
@@ -131,6 +135,6 @@ else
     cvx___.problems( end + 1 ) = temp;
 end
 
-% Copyright 2012 Michael C. Grant and Stephen P. Boyd.
+% Copyright 2012 CVX Research, Inc.
 % See the file COPYING.txt for full copyright information.
 % The command 'cvx_where' will show where this file is located.

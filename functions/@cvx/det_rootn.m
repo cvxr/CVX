@@ -2,9 +2,9 @@ function cvx_optval = det_rootn( X )
 
 %DET_ROOTN   Internal cvx version.
 
-error( nargchk( 1, 1, nargin ) );
+error( nargchk( 1, 1, nargin ) ); %#ok
 n = size( X, 1 );
-if ndims( X ) > 2,
+if ndims( X ) > 2, %#ok
 
     error( 'N-D arrays are not supported.' );
 
@@ -27,7 +27,7 @@ elseif isreal( X ),
         D = diag( Z );
         maximize( geo_mean( D ) );
         subject to
-            [ diag( D ), Z' ; Z, X ] == semidefinite(2*n);
+            [ diag( D ), Z' ; Z, X ] == semidefinite(2*n); %#ok
     cvx_end
 
 else
@@ -37,11 +37,11 @@ else
         D = diag( Z );
         maximize( geo_mean( real( D ) ) );
         subject to
-            [ diag( D ), Z' ; Z, X ] == hermitian_semidefinite(2*n);
+            [ diag( D ), Z' ; Z, X ] == hermitian_semidefinite(2*n); %#ok
     cvx_end
 
 end
 
-% Copyright 2012 Michael C. Grant and Stephen P. Boyd.
+% Copyright 2012 CVX Research, Inc.
 % See the file COPYING.txt for full copyright information.
 % The command 'cvx_where' will show where this file is located.

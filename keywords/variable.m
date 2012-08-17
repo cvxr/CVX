@@ -91,6 +91,9 @@ islin = false;
 isgeo = false;
 isepi = false;
 ishypo = false;
+isnneg = false;
+n_itypes = 0;
+itype = '';
 modifiers = '';
 for k = 1 : length( varargin ),
     strs = varargin{k};
@@ -116,6 +119,20 @@ for k = 1 : length( varargin ),
             ishypo = true;
             filt( k ) = false;
             continue;
+        case 'integer',
+            n_itypes = n_itypes + 1;
+            itype = 'i_integer';
+            filt( k ) = false;
+            continue;
+        case 'binary',
+            n_itypes = n_itypes + 1;
+            itype = 'i_binary';
+            filt( k ) = false;
+            continue;
+        case 'nonnegative',
+            isnneg = true;
+            filt( k ) = false;
+            continue;
     end
     valid = true;
     xt = find( strs == '(' );
@@ -136,14 +153,14 @@ for k = 1 : length( varargin ),
         valid = isvarname( nm ) & exist( [ 'cvx_s_', nm ], 'file' ) == 2;
     end
     if valid,
-        modifiers = [ modifiers, ' ', strs ];
+        modifiers = [ modifiers, ' ', strs ]; %#ok
     elseif isvarname( nm ),
         error( [ 'Invalid matrix structure modifier: %s\n', ...
                'Trying to declare multiple variables? Use the VARIABLES keyword instead.' ], strs );
     else
         error( 'Invalid matrix structure modifier: %s', strs );
     end
-    modifiers = [ modifiers, ' ', strs ];
+    modifiers = [ modifiers, ' ', strs ]; %#ok
 end
 if ~isempty( varargin ),
     str = cvx_create_structure( x.size, varargin{filt} );
@@ -159,7 +176,16 @@ end
 if isepi && ishypo,
     error( 'EPIGRAPH and HYPOGRAPH keywords cannot be used simultaneously.' );
 end
-geo = isgeo | ( ~islin & cvx___.problems( p ).gp );
+if n_itypes,
+    if isgeo,
+        error( 'Integer variables cannot be use be GEOMETRIC.' );
+    elseif ~islin && cvx___.problems( p ).gp,
+        error( 'Integer variables cannot be used in geometric programs.' );
+    elseif n_itypes > 1,
+        error( 'At most one integer keyword may be specified.' );
+    end
+end
+geo = isgeo || ( ~islin && cvx___.problems( p ).gp );
 v = newvar( prob, x.name, x.size, str, geo );
 if isepi || ishypo,
     if geo, vv = log( v ); else vv = v; end
@@ -168,12 +194,25 @@ if isepi || ishypo,
     cvx___.problems( p ).direction = dir;
     cvx___.problems( p ).geometric = geo;
 end
+if itype,
+    [ tx, dummy ] = find( cvx_basis( v ) ); %#ok
+    newnonl( prob, itype, tx(:)' );
+    cvx___.canslack( tx ) = false;
+end
+if isnneg && ~geo,
+    if ~n_itypes,
+        [ tx, dummy ] = find( cvx_basis( v ) );  %#ok
+        newnonl( prob, 'nonnegative', tx(:)' );
+    elseif ~isequal( itype, 'i_binary' ),
+        newcnstr( prob, v, 0, '>=' );
+    end
+end
 if nargout > 0,
     varargout{1} = v;
 else
     assignin( 'caller', x.name, v );
 end
 
-% Copyright 2012 Michael C. Grant and Stephen P. Boyd.
+% Copyright 2012 CVX Research, Inc.
 % See the file COPYING.txt for full copyright information.
 % The command 'cvx_where' will show where this file is located.

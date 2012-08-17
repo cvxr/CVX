@@ -31,21 +31,21 @@ function y = quad_form( x, Q, v, w )
 %       signs of x will govern whether the elements of Q, v, and w may
 %       be convex, concave, or affine.
 
-error( nargchk( 2, 4, nargin ) );
+error( nargchk( 2, 4, nargin ) ); %#ok
 sx = size( x );
 if length( sx ) ~= 2 || all( sx ~= 1 ),
     error( 'The first argument must be a vector.' );
 else
     sx = prod( sx );
 end
-if ndims( Q ) > 2 || size( Q, 1 ) ~= size( Q, 2 ),
+if ndims( Q ) > 2 || size( Q, 1 ) ~= size( Q, 2 ), %#ok
     error( 'The second argument must be a scalar or a square matrix.' );
 elseif all( size( Q, 1 ) ~= [ 1, sx ] ),
     error( 'The size of Q is incompatible with the size of x.' );
 end
 if nargin < 3,
     v = 0;
-elseif ndims( v ) > 2 || all( size( v ) ~= 1 ),
+elseif ndims( v ) > 2 || all( size( v ) ~= 1 ), %#ok
     error( 'The third argument must be a vector.' );
 elseif all( numel( v ) ~= [ 1, sx ] ),
     error( 'The size of v is incompatible with the size of x.' );
@@ -63,6 +63,6 @@ else
     y = real( x' * ( Q * x + v ) + w );
 end
 
-% Copyright 2012 Michael C. Grant and Stephen P. Boyd. 
+% Copyright 2012 CVX Research, Inc. 
 % See the file COPYING.txt for full copyright information.
 % The command 'cvx_where' will show where this file is located.

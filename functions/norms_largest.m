@@ -13,7 +13,7 @@ function cvx_optval = norms_largest( x, k, dim )
 %   Disciplined convex programming information:
 %       NORMS_LARGEST is convex and non-monotonic, so its input must be affine.
 
-error( nargchk( 2, 3, nargin ) );
+error( nargchk( 2, 3, nargin ) ); %#ok
 sx = size( x );
 
 %
@@ -40,6 +40,6 @@ end
 
 cvx_optval = sum_largest( abs( x ), k, dim );
 
-% Copyright 2012 Michael C. Grant and Stephen P. Boyd. 
+% Copyright 2012 CVX Research, Inc. 
 % See the file COPYING.txt for full copyright information.
 % The command 'cvx_where' will show where this file is located.

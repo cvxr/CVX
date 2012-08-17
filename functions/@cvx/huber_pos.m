@@ -6,7 +6,7 @@ function cvx_optval = huber_pos( x, M, t ) %#ok
 % Check arguments
 %
 
-error( nargchk( 1, 3, nargin ) );
+error( nargchk( 1, 3, nargin ) ); %#ok
 if ~cvx_isconvex( x ),
     error( 'Disciplined convex programming error:\n    HUBER_POS is convex and nondecreasing in X, so X must be convex.', 1 ); %#ok
 end
@@ -43,6 +43,6 @@ cvx_begin separable
     v >= 0; %#ok
 cvx_end
 
-% Copyright 2012 Michael C. Grant and Stephen P. Boyd.
+% Copyright 2012 CVX Research, Inc.
 % See the file COPYING.txt for full copyright information.
 % The command 'cvx_where' will show where this file is located.

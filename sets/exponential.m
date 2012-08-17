@@ -18,7 +18,7 @@ function cvx_optpnt = exponential( sx )
 %   satisfy EXP_P(X,Y) <= Z. If SX is empty, then SX=[1,1] is assumed.
 
 cvx_expert_check( 'exponential' );
-error( nargchk( 0, 1, nargin ) );
+error( nargchk( 0, 1, nargin ) ); %#ok
 
 %
 % Check size vector
@@ -38,7 +38,7 @@ end
 % Build the cone
 %
 
-cvx_begin_set
+cvx_begin set
     variables x( sx ) y( sx ) z( sx )
     [ tx, dummy ] = find( cvx_basis( x ) ); %#ok
     [ ty, dummy ] = find( cvx_basis( y ) ); %#ok
@@ -46,7 +46,7 @@ cvx_begin_set
     newnonl( cvx_problem, 'exponential', [ tx(:)' ; ty(:)' ; tz(:)' ] );
     cvx___.canslack( tx ) = false;
     cvx___.canslack( ty ) = false;
-cvx_end_set
+cvx_end
 
 cvx_optpnt = cvxtuple( struct( 'x', x, 'y', y, 'z', z ) );
 

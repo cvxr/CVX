@@ -11,6 +11,7 @@ function sout = cvx_power_warning( flag )
 %   is 10, which is not likely to be exceeded for typical choices of P.
 
 global cvx___
+cvx_global
 if nargin > 0,
     if isempty( flag ),
         ns = 10;
@@ -20,7 +21,6 @@ if nargin > 0,
         ns = flag;
     end
 end
-cvx_global
 if isempty( cvx___.problems ),
     s = cvx___.rat_growth;
     if nargin > 0,
@@ -40,6 +40,6 @@ if nargin == 0 || nargout > 0,
     sout = s;
 end
 
-% Copyright 2012 Michael C. Grant and Stephen P. Boyd.
+% Copyright 2012 CVX Research, Inc.
 % See the file COPYING.txt for full copyright information.
 % The command 'cvx_where' will show where this file is located.
