@@ -1,5 +1,6 @@
-function [ dbCA, cones, dir, Q, P, dualized ] = eliminate( prob, destructive )
-if nargin  < 2 || nargout < 8, destructive = false; end
+function [ dbCA, cones, dir, Q, P, dualized ] = eliminate( prob, destructive, can_dual )
+if nargin < 3, can_dual = nargout >= 6; end
+if nargin < 2, destructive = false; end
 
 % For the problem
 %
@@ -49,6 +50,8 @@ for pass = 1 : 2,
             rsv = rsv + temp;
             if isequal( cones(k).type, 'nonnegative' ),
                 nng = nng + temp;
+            elseif can_dual && strncmp( cones(k).type, 'i_', 2 ),
+                can_dual = false;
             end
         end
         n_rsv = nnz( rsv ) - 1;
@@ -87,7 +90,6 @@ for pass = 1 : 2,
         % all but one so that the solver can still see this happen.
         %
         
-        if 0,
         rows = ( rcnt == ( cc ~= 0 ) ) & ( ~rsv | nng );
         nnzr = nnz( rows );
         if nnzr > 0,
@@ -113,7 +115,6 @@ for pass = 1 : 2,
                 ndxs = ndxs( rowX, : );
                 Q    =    Q( :, rowX );
             end
-        end
         end
         
         %
@@ -189,7 +190,7 @@ for pass = 1 : 2,
         
     end
     
-    if pass == 2 || isempty(cones),
+    if pass == 2 || isempty(cones) || ~can_dual,
         break;
     end
     
@@ -281,6 +282,6 @@ if any(tt),
     cones(tt~=0) = [];
 end
 
-% Copyright 2012 Michael C. Grant and Stephen P. Boyd.
+% Copyright 2012 CVX Research, Inc.
 % See the file COPYING.txt for full copyright information.
 % The command 'cvx_where' will show where this file is located.
