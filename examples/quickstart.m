@@ -23,8 +23,8 @@ x_ls = A \ b;
 
 % cvx version
 cvx_begin
-    variable x(n);
-    minimize( norm(A*x-b) );
+    variable x(n)
+    minimize( norm(A*x-b) )
 cvx_end
 
 echo off
@@ -38,7 +38,7 @@ disp( 'Residual vector:' );
 disp( [ '   A*x-b = [ ', sprintf( '%7.4f ', A*x-b ), ']' ] );
 disp( ' ' );
 
-try, input( 'Press Enter/Return for the next example...' ); clc; catch, end
+try input( 'Press Enter/Return for the next example...' ); clc; catch, end
 echo on
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -53,16 +53,16 @@ u = max( bnds, [], 2 );
 if has_quadprog,
     % Quadprog version
     x_qp = quadprog( 2*A'*A, -2*A'*b, [], [], [], [], l, u );
-else,
+else
     % quadprog not present on this system.
 end
 
 % cvx version
 cvx_begin
-    variable x(n);
-    minimize( norm(A*x-b) );
+    variable x(n)
+    minimize( norm(A*x-b) )
     subject to
-        l <= x <= u;
+        l <= x <= u
 cvx_end
 
 echo off
@@ -75,7 +75,7 @@ if has_quadprog,
     disp( [ '   x_qp  = [ ', sprintf( '%7.4f ', x_qp ), ']' ] );
     disp( [ '   x     = [ ', sprintf( '%7.4f ', x ), ']' ] );
     disp( [ '   u     = [ ', sprintf( '%7.4f ', u ), ']' ] );
-else,
+else
     disp( sprintf( '\nResults:\n--------\nnorm(A*x-b): %6.4f\ncvx_optval:  %6.4f\ncvx_status:  %s\n', norm(A*x-b), cvx_optval, cvx_status ) );
     disp( 'Verify that l <= x <= u:' );
     disp( [ '   l     = [ ', sprintf( '%7.4f ', l ), ']' ] );
@@ -86,7 +86,7 @@ disp( 'Residual vector:' );
 disp( [ '   A*x-b = [ ', sprintf( '%7.4f ', A*x-b ), ']' ] );
 disp( ' ' );
 
-try, input( 'Press Enter/Return for the next example...' ); clc; catch, end
+try input( 'Press Enter/Return for the next example...' ); clc; catch, end
 echo on
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -101,14 +101,14 @@ if has_linprog,
     bne  = [ +b;          -b         ];
     xt   = linprog(f,Ane,bne);
     x_lp = xt(1:n,:);
-else,
+else
     % linprog not present on this system.
 end
 
 % cvx version
 cvx_begin
-    variable x(n);
-    minimize( norm(A*x-b,Inf) );
+    variable x(n)
+    minimize( norm(A*x-b,Inf) )
 cvx_end
 
 echo off
@@ -119,7 +119,7 @@ if has_linprog,
     disp( 'Verify that x_lp == x:' );
     disp( [ '   x_lp  = [ ', sprintf( '%7.4f ', x_lp ), ']' ] );
     disp( [ '   x     = [ ', sprintf( '%7.4f ', x ), ']' ] );
-else,
+else
     disp( sprintf( '\nResults:\n--------\nnorm(A*x-b,Inf): %6.4f\ncvx_optval:      %6.4f\ncvx_status:      %s\n', norm(A*x-b,Inf), cvx_optval, cvx_status ) );
     disp( 'Optimal vector:' );
     disp( [ '   x     = [ ', sprintf( '%7.4f ', x ), ']' ] );
@@ -128,7 +128,7 @@ disp( sprintf( 'Residual vector; verify that the peaks match the objective (%6.4
 disp( [ '   A*x-b = [ ', sprintf( '%7.4f ', A*x-b ), ']' ] );
 disp( ' ' );
 
-try, input( 'Press Enter/Return for the next example...' ); clc; catch, end
+try input( 'Press Enter/Return for the next example...' ); clc; catch, end
 echo on
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -141,15 +141,15 @@ if has_linprog,
     Aeq  = [ A,          -eye(m),    +eye(m)    ];
     lb   = [ -Inf*ones(n,1);  zeros(m,1); zeros(m,1) ];
     xzz  = linprog(f,[],[], Aeq,b,lb,[]);
-    x_lp = xzz(1:n,:);
-else,
+    x_lp = xzz(1:n,:) - xzz(n+1:end,:);
+else
     % linprog not present on this system
 end
 
 % cvx version
 cvx_begin
-    variable x(n);
-    minimize( norm(A*x-b,1) );
+    variable x(n)
+    minimize( norm(A*x-b,1) )
 cvx_end
 
 echo off
@@ -160,7 +160,7 @@ if has_linprog,
     disp( 'Verify that x_lp == x:' );
     disp( [ '   x_lp  = [ ', sprintf( '%7.4f ', x_lp ), ']' ] );
     disp( [ '   x     = [ ', sprintf( '%7.4f ', x ), ']' ] );
-else,
+else
     disp( sprintf( '\nResults:\n--------\nnorm(A*x-b,1): %6.4f\ncvx_optval: %6.4f\ncvx_status: %s\n', norm(A*x-b,1), cvx_optval, cvx_status ) );
     disp( 'Optimal vector:' );
     disp( [ '   x     = [ ', sprintf( '%7.4f ', x ), ']' ] );
@@ -169,7 +169,7 @@ disp( 'Residual vector; verify the presence of several zero residuals:' );
 disp( [ '   A*x-b = [ ', sprintf( '%7.4f ', A*x-b ), ']' ] );
 disp( ' ' );
 
-try, input( 'Press Enter/Return for the next example...' ); clc; catch, end
+try input( 'Press Enter/Return for the next example...' ); clc; catch, end
 echo on
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -179,8 +179,8 @@ echo on
 % cvx specification
 k = 5;
 cvx_begin
-    variable x(n);
-    minimize( norm_largest(A*x-b,k) );
+    variable x(n)
+    minimize( norm_largest(A*x-b,k) )
 cvx_end
 
 echo off
@@ -194,7 +194,7 @@ disp( sprintf( 'Residual vector; verify a tie for %d-th place (%7.4f):', k, temp
 disp( [ '   A*x-b = [ ', sprintf( '%7.4f ', A*x-b ), ']' ] );
 disp( ' ' );
 
-try, input( 'Press Enter/Return for the next example...' ); clc; catch, end
+try input( 'Press Enter/Return for the next example...' ); clc; catch, end
 echo on
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -203,8 +203,8 @@ echo on
 
 % cvx specification
 cvx_begin
-    variable x(n);
-    minimize( sum(huber(A*x-b)) );
+    variable x(n)
+    minimize( sum(huber(A*x-b)) )
 cvx_end
 
 echo off
@@ -217,7 +217,7 @@ disp( 'Residual vector:' );
 disp( [ '   A*x-b = [ ', sprintf( '%7.4f ', A*x-b ), ']' ] );
 disp( ' ' );
 
-try, input( 'Press Enter/Return for the next example...' ); clc; catch, end
+try input( 'Press Enter/Return for the next example...' ); clc; catch, end
 echo on
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -232,10 +232,10 @@ d = randn(p,1);
 % cvx specification
 cvx_begin
     variable x(n);
-    minimize( norm(A*x-b) );
+    minimize( norm(A*x-b) )
     subject to
-        C*x == d;
-        norm(x,Inf) <= 1;
+        C*x == d
+        norm(x,Inf) <= 1
 cvx_end
 
 echo off
@@ -250,7 +250,7 @@ disp( 'Equality constraints:' );
 disp( [ '   C*x   = [ ', sprintf( '%7.4f ', C*x ), ']' ] );
 disp( [ '   d     = [ ', sprintf( '%7.4f ', d   ), ']' ] );
 
-try, input( 'Press Enter/Return for the next example...' ); clc; catch, end
+try input( 'Press Enter/Return for the next example...' ); clc; catch, end
 echo on
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -259,8 +259,8 @@ echo on
 
 % The basic problem:
 % cvx_begin
-%     variable x(n);
-%     minimize( norm(A*x-b)+gamma(k)*norm(x,1) );
+%     variable x(n)
+%     minimize( norm(A*x-b)+gamma(k)*norm(x,1) )
 % cvx_end
 
 echo off
@@ -275,8 +275,8 @@ fprintf( 1, '---------------------------------------\n' );
 for k = 1:length(gamma),
     fprintf( 1, '%8.4e', gamma(k) );
     cvx_begin
-        variable x(n);
-        minimize( norm(A*x-b)+gamma(k)*norm(x,1) );
+        variable x(n)
+        minimize( norm(A*x-b)+gamma(k)*norm(x,1) )
     cvx_end
     l1norm(k) = norm(x,1);
     l2norm(k) = norm(A*x-b);
