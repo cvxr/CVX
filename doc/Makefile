@@ -41,6 +41,10 @@ help:
 clean:
 	-rm -rf $(BUILDDIR)/*
 
+upload: html latexpdf
+	@cp _build/latex/CVX.pdf _build/html/
+	@rsync -avz _build/html/ cvxr.com:/home/wordpress/cvxr/cvx/doc/ --delete
+
 html:
 	$(SPHINXBUILD) -b html $(ALLSPHINXOPTS) $(BUILDDIR)/html
 	@echo
