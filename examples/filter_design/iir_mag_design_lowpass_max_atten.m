@@ -79,7 +79,7 @@ Us_bot = 1e-6; % -60 dB (in original variables)
 while( 20*log10(Us_top/Us_bot) > 1)
   % try to find a feasible design for given specs
   Us_cur = sqrt(Us_top*Us_bot);
-
+  
   % formulate and solve the magnitude design problem
   cvx_begin quiet
     variable c(M,1)

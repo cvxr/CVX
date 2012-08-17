@@ -29,7 +29,7 @@ max_order = 20;
 wpass = 0.12*pi;        % passband cutoff freq (in radians)
 wstop = 0.24*pi;        % stopband start freq (in radians)
 delta = 1;              % max (+/-) passband ripple in dB
-atten_level = -30;      % stopband attenuation level in dB
+atten = -30;      % stopband attenuation level in dB
 
 %********************************************************************
 % create optimization parameters
@@ -43,54 +43,66 @@ w = linspace(0,pi,m);
 
 n_bot = 1;
 n_top = max_order;
+n = Inf;
 
 disp('Rememeber that we are only considering filters with linear phase, i.e.,')
 disp('filters that are symmetric around their midpoint and have order 2*n+1.')
 disp(' ')
 
 while( n_top - n_bot > 1)
-  % try to find a feasible design for given specs
-  n_cur = ceil( (n_top + n_bot)/2 );
-
-  % create optimization matrices (this is cosine matrix)
-  A = [ones(m,1) 2*cos(kron(w',[1:n_cur]))];
-
-  % passband 0 <= w <= w_pass
-  ind = find((0 <= w) & (w <= wpass));    % passband
-  Ap  = A(ind,:);
-
-  % transition band is not constrained (w_pass <= w <= w_stop)
-
-  % stopband (w_stop <= w)
-  ind = find((wstop <= w) & (w <= pi));   % stopband
-  As  = A(ind,:);
-
-  % formulate and solve the feasibility linear-phase lp filter design
-  cvx_begin quiet
-    variable h_cur(n_cur+1,1);
-    % feasibility problem
-    % passband bounds
-    Ap*h_cur <= 10^(delta/20);
-    Ap*h_cur >= 10^(-delta/20);
-    % stopband bounds
-    abs( As*h_cur ) <= 10^(atten_level/20);
-  cvx_end
-
-  % bisection
-  if strfind(cvx_status,'Solved') % feasible
-    fprintf(1,'Problem is feasible for n = %d taps\n',n_cur);
-    n_top = n_cur;
-    % construct the full impulse response
-    h = [flipud(h_cur(2:end)); h_cur];
-  else % not feasible
-    fprintf(1,'Problem not feasible for n = %d taps\n',n_cur);
-    n_bot = n_cur;
-  end
+    % try to find a feasible design for given specs
+    n_cur = ceil( (n_top + n_bot)/2 );
+    
+    % create optimization matrices (this is cosine matrix)
+    A = [ones(m,1) 2*cos(kron(w',[1:n_cur]))];
+    
+    % passband 0 <= w <= w_pass
+    ind = find((0 <= w) & (w <= wpass));    % passband
+    Ap  = A(ind,:);
+    
+    % transition band is not constrained (w_pass <= w <= w_stop)
+    
+    % stopband (w_stop <= w)
+    ind = find((wstop <= w) & (w <= pi));   % stopband
+    As  = A(ind,:);
+    
+    ptop = 10^(delta/20);
+    
+    % This is the feasibility problem:
+    % cvx_begin
+    %      variable h_cur(n_cur+1,1);
+    %      10^(-delta/20) <= Ap * h_cur <=  10^(+delta/20);
+    %      abs( As * h_cur ) <= +10^(+atten/20);
+    % cvx_end
+    % Unfortunately, the solvers often struggle with this formulation. For
+    % this model, there is a logical optimization problem: minimize the
+    % stopband attenuation. If the minimum attenuation is below the target,
+    % then we know the original problem is feasible.
+    cvx_begin quiet
+         variable h_cur(n_cur+1,1);
+         minimize( max( abs( As * h_cur ) ) );
+         10^(-delta/20) <= Ap * h_cur <=  10^(+delta/20);
+    cvx_end
+    
+    % bisection
+    if isnan( cvx_optval ),
+        fprintf( 1, 'Solver failed for n = %d taps, assuming infeasible\n', n_cur );
+        n_bot = n_cur;
+    elseif cvx_optval <= 10^(atten/20),
+        fprintf(1,'Problem is feasible for n = %d taps\n',n_cur);
+        n_top = n_cur;
+        if n > n_cur, 
+            n = n_cur;
+            h = h_cur; 
+        end
+    else
+        fprintf(1,'Problem not feasible for n = %d taps\n',n_cur);
+        n_bot = n_cur;
+    end
 end
 
-n = n_top;
-fprintf(1,'\nOptimum number of filter taps for given specs is 2n+1 = %d.\n',...
-           2*n+1);
+h = [ h(end:-1:2); h ];
+fprintf(1,'\nOptimum number of filter taps for given specs is 2n+1 = %d.\n', length(h));
 
 %********************************************************************
 % plots
@@ -106,9 +118,9 @@ H = exp(-j*kron(w',[0:2*n]))*h;
 % magnitude
 subplot(2,1,1)
 plot(w,20*log10(abs(H)),...
-     [wstop pi],[atten_level atten_level],'r--',...
-     [0 wpass],[delta delta],'r--',...
-     [0 wpass],[-delta -delta],'r--');
+    [wstop pi],[atten atten],'r--',...
+    [0 wpass],[delta delta],'r--',...
+    [0 wpass],[-delta -delta],'r--');
 axis([0,pi,-50,10])
 xlabel('w'), ylabel('mag H(w) in dB')
 % phase
