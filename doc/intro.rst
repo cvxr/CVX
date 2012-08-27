@@ -190,8 +190,8 @@ CVX *will* solve many medium and large scale problems, provided they
 have exploitable structure (such as sparsity), and you avoid ``for``
 loops, which can be slow in Matlab, and functions like ``log`` and ``exp`` that
 require successive approximation. If you encounter difficulties in
-solving large problem instances, consider posting your model to 
-`CVX Exchange <http://exchange.cvxr.com>`_; the CVX community
+solving large problem instances, consider posting your model to the
+`CVX Forum <http://ask.cvxr.com>`_; the CVX community
 may be able to suggest an equivalent formulation that CVX 
 can process more efficiently.
 
@@ -208,12 +208,14 @@ can process more efficiently.
 Licensing
 ---------
 
-Prior versions of CVX have been entirely free to use in all applications, both academic
-and commercial. All previous functionality remains free in this new version.
+CVX is entirely free for use in both academic and commercial settings when paired with
+a free solver---including the versions of SeDuMi and SDPT3 that are included with the 
+package. Work is underway to connect CVX to GLPK, a free mixed-integer solver.
 
-We have chosen to include some of the *new* functionality under a *CVX Professional*
-product tier---specifically, interfaces to commercial solvers----which we intend to 
-license to commercial users for a fee. Here are the specifics:
+With version 2.0, we have added the ability to connect CVX to *commercial* solvers as well. 
+This new functionality is released under a *CVX Professional* product tier
+which we intend to license to commercial users for a fee, and offer to academic users
+at no charge. Here are the specifics:
 
 * *All users* are free to use the standard features of CVX at no charge. 
   This includes the ability to construct and solve any of the models 
@@ -223,15 +225,19 @@ license to commercial users for a fee. Here are the specifics:
   for an availability schedule and pricing details.
 * *Academic users* may utilize the CVX Professional capability *at no charge*.
 
- * Users with a valid academic license for Gurobi 5.0 or later may use it with CVX *without obtaining a CVX Professional license*. This is because CVX is able to detect the presence of an academic Gurobi license.
- * In order to use MOSEK, a CVX Professional license is required. We intend to provide such licenses at no charge, but we have not yet completed the licensing infrastructure. We will make a separate announcement when academic licenses are available.
+  * Users with a valid academic license for Gurobi 5.0 or later may use it with CVX 
+    *without obtaining a CVX Professional license*. This is because CVX is able to detect
+    the presence of an academic Gurobi license.
+  * In order to use MOSEK, a CVX Professional license is required. We intend to provide
+    such licenses at no charge, but we have not yet completed the licensing infrastructure. 
+    We will make a separate announcement when academic licenses are available.
 
 The bulk of CVX remains open source under a slightly modified version of the GPL Version
-2 license. If the closed source CVX Professional version of the code is removed, the
-package will remain fully functional using the free solvers SeDuMi and SDPT3. Users
-may freely modify, augment, and redistribute this free version of CVX in accordance with the 
-GPL Version 2 license, as long as all modifications are themselves released under
-the same license. This includes adding support for new solvers released under a free
-software license such as the GPL. For more details, please see the file ``COPYING.txt``
-in the top level of the CVX distribution.
+2 license. A small number of files that support the CVX Professional functionality remain
+closed source. If those files are removed, the modified package remains *fully functional*
+using the free solvers, SeDuMi and SDPT3. Users
+may freely modify, augment, and redistribute this free version of CVX, as long as all
+modifications are themselves released under the same license. This includes adding support
+for new solvers released under a free software license such as the GPL. 
+For more details, please see the file ``COPYING.txt`` in the top level of the CVX distribution.
 
