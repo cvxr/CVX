@@ -44,7 +44,7 @@ errmsg = [];
 try
    [ varargout{1:nargout} ] = sfunc( inputs{:} );
 catch errmsg
-    varargout{1:nargout} = deal( [] );
+   [ varargout{1:nargout} ] = deal( [] );
 end
 if ~isempty( dumpfile ),
     diary( 'off' );

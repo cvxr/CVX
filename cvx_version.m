@@ -187,12 +187,11 @@ files  = {};
 nfiles = dir( mpath );
 ndir   = '';
 dndx   = 0;
-pat    = '^\.|~$|^cvx_license.mat$|^examples$|^doc$';
-pat2   = '^\.|~$';
+pat    = '^\.|~$';
 while true,
     isdir  = [ nfiles.isdir ];
     nfiles = { nfiles.name };
-    tt     = cellfun( @isempty, regexp( nfiles, pat ) ); pat = pat2;
+    tt     = cellfun( @isempty, regexp( nfiles, pat ) );
     isdir  = isdir(tt);
     nfiles = nfiles(tt);
     ndirs  = nfiles(isdir);
