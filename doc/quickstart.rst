@@ -120,7 +120,7 @@ variables are created; for instance,
 
 All of these quantities---``x``, ``cvx_optval``, and ``cvx_status``,
 *etc.*---may now be freely used in other Matlab statements, just like
-any other numeric or string values.[1]_
+any other numeric or string values. [1]_
 
 There is not much room for error in specifying a simple least-squares
 problem, but if you make one, you will get an error or warning message.
@@ -162,7 +162,7 @@ dimension as :math:`x`. The vector inequality
 :math:`u \preceq v` means componentwise, i.e., :math:`u_i \leq v_i` for
 all :math:`i`. We can no longer use the simple backslash notation to
 solve this problem, but it can be transformed into a quadratic program
-(QP) which can be solved without difficulty with a standard QP solver.[2]_
+(QP) which can be solved without difficulty with a standard QP solver. [2]_
 
 Let us provide some numeric values for ``l`` and ``u``:
 
@@ -401,7 +401,7 @@ the other hand, outside of a CVX specification, if ``x`` has an
 appropriate numeric value---for example immediately after the
 ``cvx_end`` command---that same expression would return a vector of
 ``1``\ s and ``0``\ s, corresponding to the truth or falsity of each
-equality.[3]_ Likewise, within a CVX specification, the statement
+equality. [3]_ Likewise, within a CVX specification, the statement
 ``norm(x,Inf)<=1`` adds a nonlinear constraint to the specification;
 outside of it, it returns a ``1`` or a ``0`` depending on the numeric
 value of ``x`` (specifically, whether its :math:`\ell_\infty`-norm is

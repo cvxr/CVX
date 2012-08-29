@@ -26,5 +26,6 @@ CVX Users' Guide
    funcref
    support
    advanced
+   licensing
    citing
    credits

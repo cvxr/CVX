@@ -239,5 +239,5 @@ using the free solvers, SeDuMi and SDPT3. Users
 may freely modify, augment, and redistribute this free version of CVX, as long as all
 modifications are themselves released under the same license. This includes adding support
 for new solvers released under a free software license such as the GPL. 
-For more details, please see the file ``COPYING.txt`` in the top level of the CVX distribution.
+For more details, please see the full :ref:`Licensing <licensing2>` section.
 
