@@ -8,14 +8,14 @@ The user base for CVX has grown to such an extent that email-based
 support is no longer tenable. Therefore, we have created several avenues
 for obtaining support.
 
-For help on how to *use* CVX, this document is your first line of support.
+For help on how to *use* CVX, this users' guide is your first line of support.
 Please make sure that you have attempted to find an answer to your question
 here before you pursue other avenues. We have placed this document
 online and made it searchable in order to help you find the answers to 
 the questions you may have.
 
-The CVX user community
------------------------
+The CVX Forum
+-------------
 
 If your answers cannot be found here, consider posting your question
 to the `CVX Forum <http://ask.cvxr.com>`_. This is a community forum
@@ -50,43 +50,73 @@ Please note that we do not own all of Matlab's toolboxes. We cannot debug a mode
 employs functions from a toolbox we do not own.
 
 What *is* a bug?
-~~~~~~~~~~~~~~~~
+-----------------
 
 Certain issues are unambiguously bugs, and you should feel free to report them 
 immediately. In particular, CVX often attempts to catch unexpected errors in key
 places---including ``cvx_setup``, ``cvx_end``, etc. It will report those errors and
-instruct you to report them to us.
-
-If your model produces a MATLAB error that CVX did not itself generate, and you cannot
-readily tie it to a syntax error in your model, please report that as well.
+instruct you to report them to us. If your model produces a MATLAB error that CVX 
+did not itself generate, and you cannot readily tie it to a syntax error in your 
+model, please report that as well.
 
 That said, because disciplined convex programming is a new concept for many, we often 
-receive support requests for problems that are in fact *not* bugs. 
+receive support requests for problems with their models that are not, in fact, bugs.
+A particularly common class of support requests are reports of models being rejected
+due to ``Disciplined`` ``convex`` ``programming`` ``error`` messages. For instance,
+the following code
 
-A particularly common
-class of support requests are due to
-``Disciplined convex programming error`` messages. This message indicates that the model fails
-to adhere to the rules in the :ref:`DCP rulesert <dcp>`. In nearly all cases,
-the underlying issue is in one of two categories:
+::
 
-1. The problem is *not convex* (and not an :ref:`MIDCP <what-is-midcp>`). In this case,
-   no amount of manipulation of the expressions will cause CVX to solve the problem. 
-   In some rare cases, it
-   is possible to transform a problem that is non-convex into one that is convex (for
+	variable x(10)
+	norm(x) == 1
+	
+will produce this error in CVX:
+
+::
+
+	Error using cvxprob/newcnstr (line 181)
+	Disciplined convex programming error:
+	  Invalid constraint: {convex} == {real constant}
+   	
+Disciplined convex programming errors indicate that the model fails
+to adhere to the rules in the :ref:`DCP ruleset <dcp>`. In nearly all cases,
+this is *not* a bug, and should not be reported as such. Rather,
+the underlying issue falls into one of two categories:
+
+1. The model is *not convex* (mixed-integer or otherwise). A model with the
+   nonlinear equation above would fall squarely in this category. CVX simply
+   cannot solve such problems. In some cases,
+   it is possible to transform a problem that is non-convex into one that is convex (for
    example, :ref:`geometric programs <gp-mode>`). This has not been the case for any
    problem submitted by our users---so far.
    
-2. The problem *is* convex (or an MIDCP), but requires the use of functions that do not
-   exist in the CVX library. We have attempted to supply all of the commonly used 
+2. The model *is* convex, but it is still written in a manner that violates the rules.
+   For instance, given the same vector ``x`` above, the constraint
+
+   ::
+
+      sqrt( sum( square( x ) ) ) <= 1
+	 	
+   is convex, but it violates the ruleset---so it is rejected. However, the 
+   mathematically equivalent form
+   
+   ::
+
+      norm( x ) <= 1   
+		
+   is entirely acceptable.
+   If your error is of this type, you will need to find a way to express your 
+   problem in a DCP-compliant manner. We have attempted to supply all of the commonly used 
    functions that the underlying solvers can support; so if you cannot easily rewrite 
    your problem using the functions supplied, it may not be possible. If you think this
    is a possibility, you may wish to see if the wizards on the
    `CVX Forum <http://ask.cvxr.com>`_ have suggestions for you.
    
-In rare cases, users have discovered that certain models were rejected 
+In rare cases, users have discovered that certain models were rejected with
+``Disciplined`` ``convex`` ``programming`` ``error`` messages
 even though they satisfied the :ref:`DCP ruleset <dcp>`.
 We have not received a bug report of this type in quite a long time, however, so we
-suspect our users have helped us iron out any of these issues.
+suspect our users have helped us iron out these issues.
 
 CVX Professional support
 -------------------------
