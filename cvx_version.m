@@ -144,13 +144,13 @@ if fid > 0,
                 disp( '    These files may alter the behavior of CVX in unsupported ways.' );
             end
         else
-            fprintf( '\n    All files found.\n' );
+            fprintf( '\n    No missing files.\n' );
         end
     else
-        fprintf( '\n    All files found.\n' );
+        fprintf( '\n    No missing files.\n' );
     end
 elseif 1,
-    fid = fopen( [ mpath, fs, 'MANIFEST' ], 'w' ); %#ok
+    fid = fopen( [ mpath, fs, 'MANIFEST' ], 'w' );
     if fid,
         newman = get_manifest( mpath, fs );
         fprintf( fid, '%s\n', newman{:} );
@@ -164,21 +164,21 @@ end
 % License file %
 %%%%%%%%%%%%%%%%
 
-try
-    if nargin < 1 || isempty( license_file ),
-        cvx___.license = cvx_license;
-    elseif isequal( license_file, '*clear*' ),
-        fprintf( 'Clearing license information.\n' );
-        cvx___.license = [];
-    else
+exception = '';
+cvx___.license = [];
+if exist( 'cvx_license', 'file' ),
+    try
+        if nargin < 1, license_file = ''; end
         cvx___.license = cvx_license( license_file );
+    catch exception
     end
-catch %#ok
-    cvx___.license = [];
 end
 disp( line );
 if nargout == 0,
     fprintf( '\n' );
+end
+if ~isempty( exception ),
+    rethrow( exception )
 end
 
 function newman = get_manifest( mpath, fs )
@@ -187,11 +187,12 @@ files  = {};
 nfiles = dir( mpath );
 ndir   = '';
 dndx   = 0;
-pat    = '^\.|~$';
+pat2   = '^\.|~$|';
+pat    = '^\.|~$|^cvx_license.mat$|^doc$|^examples$';
 while true,
     isdir  = [ nfiles.isdir ];
     nfiles = { nfiles.name };
-    tt     = cellfun( @isempty, regexp( nfiles, pat ) );
+    tt     = cellfun( @isempty, regexp( nfiles, pat ) ); pat = pat2;
     isdir  = isdir(tt);
     nfiles = nfiles(tt);
     ndirs  = nfiles(isdir);

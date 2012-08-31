@@ -9,20 +9,9 @@ global cvx___
 cvx___ = [];
 nret = false;
 oldpath = '';
+line = '---------------------------------------------------------------------------'; 
 
 try 
-
-    %%%%%%%%%%%%%%%%%
-    % License file? %
-    %%%%%%%%%%%%%%%%%
-    
-    if nargin < 1 || isempty( license_file ),
-        license_file = ''; 
-    elseif ~ischar( license_file ) || size( license_file, 1 ) ~= 1,
-        throw(MException('CVX:Expected','License filename must be a string.'));
-    elseif ~strcmpi( license_file, '*clear*' ) && ~exist( license_file, 'file' )
-        throw(MException('CVX:Expected',sprintf('License file %s does not exist.',license_file)));
-    end
 
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     % Get version and portability information %
@@ -30,7 +19,8 @@ try
 
     expected = MException( 'CVX:Expected', '' );
     unexpected = MException( 'CVX:Unexpected', '' );
-    line = '---------------------------------------------------------------------------'; 
+    if nargin < 1, license_file = []; end
+    problem = false;
     [ nver, isoctave, fs, ps, mpath, problem ] = cvx_version( license_file ); %#ok
     if problem, throw(expected); end
     
@@ -220,6 +210,18 @@ try
     cvx_end
     fprintf( 'done!\n' ); nret = false;
     
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    % Quick instructions on changing the solver %
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    
+    global cvx___
+    if length( cvx___.solvers.list ) > 1,
+        fprintf( '%s\n', line );
+        fprintf( 'To change the default solver, type "cvx_solver <solver_name>".\n')
+        fprintf( 'To save this change for future sessions, type "cvx_save_prefs".\n' );
+        fprintf( 'Please consult the users'' guide for more information.\n' );
+    end
+    
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     % Instruct the user to save the path %
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -292,7 +294,7 @@ catch errmsg
     unexpected = false;
     if nret, fprintf( '\n' ); end
     switch errmsg.identifier,
-        case 'CVX:Expected',
+        case { 'CVX:Expected', 'CVX:Licensing' },
             if ~isempty( errmsg.message ),
                 cvx_error( errmsg, 67, 'ERROR: ', '    ' );
             end

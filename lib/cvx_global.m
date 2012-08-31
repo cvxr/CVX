@@ -21,16 +21,21 @@ if nargin < 1,
         error( 'CVX:Preferences', 'Could not load saved CVX preferences; cannot continue. Please run CVX_SETUP.' );
     end
 end
-
 if ~isempty( prefs.license ),
     if ~usejava('jvm'),
         warning( 'CVX:Licensing', cvx_error( ...
             'The CVX licensing system requires the Java VM. The professional features of CVX are disabled.', ...
             [66,75], false, '', true ) );
         prefs.license = [];
+    elseif ~exist( 'cvx_license', 'file' ), 
+        warning( 'CVX:Licensing', cvx_error( ...
+            'The CVX licensing system cannot be found. The professional features of CVX are disabled.', ...
+            [66,75], false, '', true ) );
+        prefs.license = [];
     else
         try
-            if ~cvx_license( prefs.license ),
+            prefs.license = cvx_license( prefs.license );
+            if prefs.license.days_left < 0,
                 [ dummy, errmsg ] = cvx_license(''); %#ok
                 errmsg = sprintf( '%s\n', errmsg{2:end} );
                 warning( 'CVX:Licensing', 'A problem was found with the current CVX license:\n%sThe professional features of CVX are disabled.\nPlease correct the issues and re-run CVX_SETUP.', errmsg );

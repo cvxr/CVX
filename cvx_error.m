@@ -5,33 +5,41 @@ function lines = cvx_error( errmsg, widths, useline, prefix, chop )
 %    home directory so that it's available during a fresh installation.
 
 if isa( errmsg, 'MException' ),
-    errmsg = getReport( errmsg, 'extended', 'hyperlinks', 'off' );
+    if strncmp( errmsg.identifier, 'CVX:', 4 ),
+        format = 'basic';
+    else
+        format = 'extended';
+    end
+    errmsg = getReport( errmsg, format, 'hyperlinks', 'off' );
+    errmsg = regexprep( errmsg,'</?a[^>]*>', '' );
 end
 lines = {};
-errmsg = strtrim( errmsg );
-while ~isempty( errmsg ),
-    width = widths(1);
-    emax = length(errmsg);
-    chunk = errmsg(1:min(width+1,emax));
-    sndx = find( chunk == 10, 1, 'first' );
-    if isempty( sndx ),
-        if emax <= width,
-            sndx = emax + 1;
-        else
-            sndx = find( chunk == 32, 1, 'last' );
-            if isempty( sndx ),
-                sndx = find( errmsg == 32, 1, 'first' );
+rndx = [ 0, regexp( errmsg, '\n' ), length(errmsg) + 1 ];
+for k = 1 : length(rndx) - 1,
+    line = errmsg( rndx(k)+1 : rndx(k+1) - 1 );
+    if ~isempty( line ),
+        width    = widths( min( k, length(widths) ) );
+        emax     = length( line );
+        n_indent = 0;
+        if emax > width,
+            f_indent = sum( regexp( line, '[^ ]', 'once' ) - 1 );
+            sndxs = find( line == ' ' );
+        end
+        while true,
+            if emax + n_indent <= width || isempty( sndxs ),
+                lines{end+1} = [ 32 * ones(1,n_indent), line ];
+                break;
             end
-            if isempty( sndx ),
-                sndx = emax + 1;
-            end
+            sndx = sndxs( sndxs <= width - n_indent + 1 );
+            if isempty( sndx ), sndx = sndxs(1); end
+            chunk = line(1:sndx(end)-1);
+            lines{end+1} = [ 32*ones(1,n_indent), chunk ]; %#ok
+            line(1:sndx(end)) = [];
+            sndxs = sndxs(length(sndx)+1:end) - sndx(end);
+            emax = emax - sndx(end);
+            n_indent = f_indent + 4;
         end
     end
-    if sndx > 1,
-        lines{1,end+1} = errmsg(1:sndx-1); %#ok
-        if length(widths)>1, widths(1) = []; end
-    end
-    errmsg(1:min(sndx,emax)) = [];
 end
 if nargin >= 3 && ( ischar(useline) || useline ),
     line = '-';
@@ -50,6 +58,6 @@ if nargin >= 5 && chop,
     lines(end) = [];
 end
 if nargout == 0,
-    fprintf( lines );
+    fprintf( '%s', lines );
     clear lines
 end
