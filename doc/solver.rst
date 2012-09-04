@@ -30,7 +30,11 @@ that CVX itself supports, while  Gurobi, MOSEK, and GLPK are more limited. On th
 these latter solvers all support integer constraints, while SeDuMi and SDPT3 do not.
 
 SeDuMi and SDPT3 are included with the CVX distribution, so you do not need to download
-an additional solver to start using CVX.
+an additional solver to start using CVX. MOSEK ApS and CVX Research have reached a
+preliminary agreement to include MOSEK with the distribution as well, so with a valid
+CVX Professional license (including a free academic license), it will be possible to
+begin using MOSEK immediately upon installation. We will make an announcement and update
+this documentation once the contract and implementation details have been completed.
 	
 If you are having difficulty with one solver, please try another. No one solver performs
 better than the others on *every* model CVX can generate---including commercial solvers.

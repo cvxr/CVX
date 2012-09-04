@@ -254,3 +254,4 @@ $(document).ready(function (){
   $(window).resize(layout_header)
            .bind('cloud-sidebar-toggled', layout_header);
 });
+

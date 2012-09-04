@@ -4,8 +4,8 @@
 Support
 =======
 
-The user base for CVX has grown to such an extent that email-based
-support is no longer tenable. Therefore, we have created several avenues
+The user base for CVX has grown to such an extent that full email-based
+support is no longer feasible. Therefore, we have created several avenues
 for obtaining support.
 
 For help on how to *use* CVX, this users' guide is your first line of support.

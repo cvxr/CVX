@@ -215,7 +215,10 @@ package. Work is underway to connect CVX to GLPK, a free mixed-integer solver.
 With version 2.0, we have added the ability to connect CVX to *commercial* solvers as well. 
 This new functionality is released under a *CVX Professional* product tier
 which we intend to license to commercial users for a fee, and offer to academic users
-at no charge. Here are the specifics:
+at no charge. During the beta period, a time-limited CVX Professional license is included
+with the package and is automatically installed during setup, so anyone with a valid 
+license for Gurobi or MOSEK can immediately begin to use it with CVX. Once the beta
+period expires, the licensing structure shall be as follows:
 
 * *All users* are free to use the standard features of CVX at no charge. 
   This includes the ability to construct and solve any of the models 
@@ -229,8 +232,14 @@ at no charge. Here are the specifics:
     *without obtaining a CVX Professional license*. This is because CVX is able to detect
     the presence of an academic Gurobi license.
   * In order to use MOSEK, a CVX Professional license is required. We intend to provide
-    such licenses at no charge, but we have not yet completed the licensing infrastructure. 
-    We will make a separate announcement when academic licenses are available.
+    such licenses at no charge, but we have not yet completed the licensing architecture.
+    We will make an announcement once this has been completed.
+    
+MOSEK ApS and CVX Research, Inc. have reached a preliminary agreement to
+*bundle* MOSEK with CVX. This bundling arrangement will allow CVX Research to issue 
+licenses for a combined CVX/MOSEK package, including free licenses for academic users.
+We will make a further announcement once the contract has been finalized and final 
+implementation details have been completed.
 
 The bulk of CVX remains open source under a slightly modified version of the GPL Version
 2 license. A small number of files that support the CVX Professional functionality remain

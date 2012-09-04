@@ -8,7 +8,7 @@ Advanced topics
 
 	In this section we describe a number of the more advanced capabilities
 	of CVX. We recommend that you *skip* this section at first, until
-	you are comfortable with the basic capabilities described above.s
+	you are comfortable with the basic capabilities described above.
 
 .. _indexed-dual:
 
