@@ -7,13 +7,6 @@
 ============
 Installation
 ============
-
-.. raw:: html
-
-	<blockquote><b>IMPORTANT:</b> This users guide refers to version CVX version 2.0 beta, which has not 
-	yet been released. It will be available by August 31, 2012. The new features discussed 
-	herein are not yet available in the version currently posted on the CVX web site. These
-	notices will be removed when the site has been updated.</blockquote>
 	
 Supported platforms
 -------------------
@@ -94,9 +87,10 @@ this would be the modified command:
        cd ~/MATLAB/cvx
        cvx_setup ~/licenses/cvx_license.mat
        
-If you have previously run ``cvx_setup`` without a license, simply run it again with the
-filename. Once the license has been accepted and installed, you are free to move your
-license file anywhere you wish for safekeeping---CVX saves a copy in its preferences.
+If you have previously run ``cvx_setup`` without a license, or you need to replace your
+current license with a new one, simply run ``cvx_setup`` again with the filename.
+Once the license has been accepted and installed, you are free to move your license 
+file anywhere you wish for safekeeping---CVX saves a copy in its preferences.
 
 .. index::
 	single: SeDuMi
