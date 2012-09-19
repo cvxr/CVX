@@ -25,6 +25,9 @@ function prevpath = cvx_startup( quiet )
 %    Please run CVX_SETUP first when installing CVX, and *then* add the
 %    CVX_STARTUP line if instructed to do so.
 
+if nargin < 1 || isempty( quiet ), 
+    quiet = false; 
+end
 if ~quiet,
     fprintf( 'Setting CVX paths...' );
 end
