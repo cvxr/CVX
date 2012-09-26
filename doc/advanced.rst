@@ -10,6 +10,90 @@ Advanced topics
 	of CVX. We recommend that you *skip* this section at first, until
 	you are comfortable with the basic capabilities described above.
 
+.. _quad-forms:
+
+Eliminating quadratic forms
+---------------------------
+
+One particular reformulation that we *strongly* encourage is to eliminate quadratic
+forms---that is, functions like ``sum_square``, ``sum(square(.))`` or ``quad_form``---whenever
+it is possible to construct equivalent models using ``norm`` instead.
+Our experience tells us that quadratic forms often pose a numerical challenge for
+the underlying solvers that CVX uses.
+
+We acknowledge that this advice goes against conventional wisdom: quadratic forms 
+are the prototypical smooth convex function, while norms are nonsmooth and therefore 
+unwieldy. But with the *conic* solvers that CVX uses, this wisdom is *exactly backwards*. 
+It is the *norm* that is best suited for conic formulation and solution. Quadratic forms
+are handled by *converting* them to a conic form---using norms, in fact! This conversion 
+process poses some interesting scaling challenges. It is better if the modeler can eliminate
+the need to perform this conversion.
+
+For a simple example of such a change, consider the objective
+
+::
+
+  minimize( sum_square( A * x - b ) )
+  
+In exact arithmetic, this is precisely equivalent to
+	
+::
+
+  minimize( square_pos( norm( A * x - b ) ) )
+  
+But equivalence is also preserved if we eliminate the square altogether:  
+
+::
+
+  minimize( norm( A * x - b ) )
+
+The optimal value of ``x`` is identical in all three cases, but this last version is
+likely to produce more accurate results. Of course, if you *need* the value of the
+squared norm, you can always recover it by squaring the norm after the fact.
+
+Conversions using ``quad_form`` can sometimes be a bit more difficult. For instance, consider
+
+::
+
+	quad_form( A * x - b, Q ) <= 1
+	
+where ``Q`` is a positive definite matrix. The equivalent ``norm`` version is
+
+::
+
+	norm( Qsqrt * ( A * x - b ) ) <= 1
+
+where ``Qsqrt`` is an appropriate matrix square root of ``Q``. One option is to compute
+the symmetric square root ``Qsqrt = sqrtm(Q)``, but this computation destroys sparsity.
+If ``Q`` is sparse, it is likely worth the effort to compute a sparse Cholesky-based
+square root:
+
+::
+
+			[ Qsqrt, p, S  ] = chol( Q );
+			Qsqrt = Qsqrt * S;
+			
+Sometimes an effective reformulation requires a practical understanding of what it
+means for problems to be equivalent. For instance, suppose we wanted to add an
+:math:`\ell_1` regularization term to the objective above, weighted by some fixed, 
+positive ``lambda``:
+
+::
+
+  	minimize( sum_square( A * x - b ) + lambda * norm( x, 1 ) )
+  	
+In this case, we typically do not care about the *specific* values of ``lambda``; rather
+we are varying it over a range to study the tradeoff between the residual of ``A*x-b``
+and the 1-norm of ``x``. The same tradeoff can be studied by examining this modified model:
+
+::
+
+  	minimize( norm( A * x - b ) + lambda2 * norm( x, 1 ) )
+
+This is not precisely the same model; setting ``lambda`` and ``lambda2`` to the same value
+will not yield identical values of ``x``. But both models *do* trace the same tradeoff
+curve---only the second form is likely to produce more accurate results.
+
 .. _indexed-dual:
 
 Indexed dual variables

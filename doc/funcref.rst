@@ -180,7 +180,6 @@ numeric arguments.
 
 ``berhu(x,M)``
     The reversed Huber function (hence, Berhu), defined as
-
 	.. math:: 
 
 		f_{\text{berhu}}(x,M) \triangleq \begin{cases} |x| & |x| \leq M \\ (|x|^2+M^2)/2M & |x| \geq M \end{cases}
@@ -226,7 +225,6 @@ numeric arguments.
 
 ``huber(x,M)``
     The Huber function, defined as
-
 	.. math:: 
 
 		f_{\text{huber}}(x,M) \triangleq \begin{cases} |x|^2 & |x| \leq M \\ 2M|x|-M^2 & |x| \geq M \end{cases}
@@ -235,7 +233,6 @@ numeric arguments.
 
 ``huber_circ(x,M)``
     The circularly symmetric Huber function, defined as
-
 	.. math:: 
 
 		f_{\text{huber\_circ}}(x,M) \triangleq \begin{cases} \|x\|_2^2 & \|x\|_2 \leq M \\ 2M\|x\|_2-M^2 & \|x\|_2 \geq M \end{cases}
@@ -373,6 +370,12 @@ numeric arguments.
     in :math:`x` for :math:`P` constant and positive semidefinite;
     concave in :math:`x` for :math:`P` constant and negative
     semidefinite.
+    
+.. note::
+	Quadratic functions such as ``quad_form``, ``sum_square`` can often be replaced
+	by the ``norm`` function without sacrificing equivalence. For numerical reasons,
+	this alternate formulation is *preferred*. Please see :ref:`quad-forms` for
+	more information.
 
 ``quad_over_lin(x,y)``
     :math:`x^Tx/y` for :math:`x \in \mathbf{R}^n`, :math:`y >0`; for

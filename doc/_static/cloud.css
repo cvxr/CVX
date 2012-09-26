@@ -494,6 +494,9 @@ div.body h2, div.body p.rubric, div.section.emphasized > h3 {
 div.body h3 { 
 	border: none;
 }
+h2 + div.section {
+	margin-top: 1.25em;
+}
 div.body p.rubric,
 div.section.emphasized > h3
 {

@@ -38,12 +38,21 @@ Installation instructions
 
 .. index:: cvx_setup
 
+.. note ::
+
+	If you wish to use CVX with Gurobi or MOSEK, they must be installed and accessible
+	from MATLAB *before* running ``cvx_setup``. See :ref:`below <extsolv>` for more details.
+
 1. Retrieve the latest version of CVX from `the web site <http://cvxr.com/cvx/download>`_.
    You can download the package as either a ``.zip`` file or a ``.tar.gz`` file.
-
+   
 2. Unpack the file anywhere you like; a directory called ``cvx`` will be
-   created. There is one important exception: *do not* place CVX in Matlab's
-   own ``toolbox`` directory.
+   created. There are two important exceptions: 
+   
+   - *Do not* place CVX in Matlab's own ``toolbox`` directory.
+   - *Do not* unpack a new version of CVX on top of an old one. We recommend moving the
+     old version out of the way, but do not delete it until you are sure the new 
+     version is working as you expect.
 
 3. Start Matlab.
 
@@ -73,7 +82,7 @@ Installation instructions
    to type ``cvx_setup`` every time you re-start Matlab.
 
 .. index:: License; installing
-   
+
 Installing a CVX Professional license
 --------------------------------------
 
@@ -92,6 +101,10 @@ current license with a new one, simply run ``cvx_setup`` again with the filename
 Once the license has been accepted and installed, you are free to move your license 
 file anywhere you wish for safekeeping---CVX saves a copy in its preferences.
 
+In order to use Gurobi or MOSEK with CVX, you must first install them according to
+their respective developer's instructions. In particular, make sure that the MATLAB
+interface 
+
 .. index::
 	single: SeDuMi
 	single: Solvers; SeDuMi
@@ -99,6 +112,21 @@ file anywhere you wish for safekeeping---CVX saves a copy in its preferences.
 	single: Solvers; SDPT3
 	single: Solvers; included
 	single: Solvers
+	
+.. _extsolv:
+
+Using CVX with Gurobi or MOSEK
+-------------------------------
+
+When ``cvx_setup`` is run, it configures CVX according to the solvers that it locates
+at that time. Therefore, if you first install CVX Standard, and later install Gurobi
+or MOSEK, you must *re-run* ``cvx_setup`` in order for CVX to detect the new solver.
+
+When installing these solvers, please make sure that their MATLAB interfaces are 
+operating properly before re-running ``cvx_setup``. Please consult the installation
+instructions provided by the solver developer for details. If MATLAB cannot find the
+``gurobi`` or ``mosekopt`` commands when ``cvx_setup`` is run, it will not configure
+CVX to use those solvers.
 
 About the included solvers
 ---------------------------
@@ -110,6 +138,6 @@ and
 in the directories :file:`cvx/sedumi` and :file:`cvx/sdpt3`, respectively. We have
 designed CVX to use its own copy of these solvers, because we can better support the 
 specific version that we have chosen. Indeed, CVX has generated quite a few bug reports
-for these solvers! However, you are free to keep your alternate copy in your
+for these solvers! However, you are free to keep an alternate copy in your
 MATLAB path. When you are not constructing a CVX model, MATLAB will rely on your
 copy of the solver instead.

@@ -7,8 +7,22 @@
  * collapsing the sidebar, etc.
  *
  * :copyright: Copyright 2011 by Assurance Technologies
+ *             (Modified by Michael C. Grant, CVX Research, Inc.)
  * :license: BSD
  */
+
+/*
+ * MathJax fix
+ * This reduces the height of each MathJax display element to a multiple of 20px for the purposes of vertical rhythm preservation. I should honestly change the hard-coded 20 to retrieve the local line_height. Oh well.
+ */
+
+MathJax.Hub.Register.MessageHook("End Process",function(message){
+        $("div.MathJax_Display").each(function(){
+                var trueHeight = $(this).height();
+                var remainder = trueHeight%20;
+                $(this).css({height:(trueHeight-remainder)+'px',position:'relative',top:-(remainder/2)+'px'});
+       });
+});
 
 /* ==========================================================================
  * highlighter #2
