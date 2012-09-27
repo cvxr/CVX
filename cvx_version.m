@@ -39,10 +39,10 @@ if nargout <= 5 && nargout, return; end
 
 % Version and build
 cvx_ver   = '2.0 (beta)';
-cvx_bld   = ':::BUILD:::';
-cvx_bdate = ':::BDATE:::';
-cvx_ddate = ':::DDATE:::';
-cvx_dbld  = ':::DBUILD:::';
+cvx_bld   = '867';
+cvx_bdate = '2012-09-19 17:26:01';
+cvx_ddate = '2012-09-26 17:01:56';
+cvx_dbld  = '868';
 line = '---------------------------------------------------------------------------';
 fprintf( '\n' );
 disp( line );
@@ -96,7 +96,7 @@ if fid > 0,
     manifest = manifest{1};
     fclose( fid );
     newman = get_manifest( mpath, fs );
-    if ~isequal( manifest(:), newman(:) ),
+    if ~isequal( manifest, newman ),
         missing = setdiff( manifest, newman );
         additional = setdiff( newman, manifest );
         if ~isempty( missing ) || ~isempty( additional ),
@@ -197,21 +197,22 @@ while true,
     nfiles = nfiles(tt);
     ndirs  = nfiles(isdir);
     if ~isempty(ndirs),
-        dirs = horzcat( dirs, strcat(strcat(ndir,sort(ndirs)),fs) ); %#ok
+        dirs = horzcat( dirs, strcat(strcat(ndir,ndirs), fs ) ); %#ok
     end
     nfiles = nfiles(~isdir);
     if ~isempty(nfiles),
-        files = horzcat( files, strcat(ndir,sort(nfiles)) ); %#ok
+        files = horzcat( files, strcat(ndir,nfiles) ); %#ok
     end
     if length( dirs ) == dndx, break; end
     dndx = dndx + 1;
     ndir = dirs{dndx};
     nfiles = dir( [ mpath, fs, ndir ] );
 end
-newman = horzcat( dirs, files );
+newman = horzcat( sort(dirs), sort(files) );
 if ~isequal( fs, '/' ),
     newman = strrep( newman, fs, '/' );
 end
+newman = newman(:);
 
 % Copyright 2012 CVX Research, Inc.
 % See the file COPYING.txt for full copyright information.
