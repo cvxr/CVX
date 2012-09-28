@@ -23,6 +23,8 @@ function collapseTree( treeId ) {
 var convertTrees = function() {
     if ( !document.createElement ) 
         return;
+    if ( window.location == window.parent.location )
+		document.getElementsByTagName('body')[0].className = "no_iframe";       
 	function scanList( arr ) {
 		var retval = false;
 		for ( var i = 0 ; i < arr.length ; ++i ) {
@@ -62,9 +64,9 @@ var convertTrees = function() {
     for ( var i = 0 ; i < els.length ; ++i ) els[i].style.display = "block";
     var els = document.getElementsByClassName( jsHideC );
     for ( var i = 0 ; i < els.length ; ++i ) els[i].style.display = "none";
-    var els = document.getElementsByClassName( jsIFrameC );
-    var ival = ( window.location != window.parent.location ) ? "none" : "inline";
-    for ( var i = 0 ; i < els.length ; ++i ) els[i].style.display = ival;
+    // var els = document.getElementsByClassName( jsIFrameC );
+    // var ival = ( window.location != window.parent.location ) ? "none" : "inline";
+    // for ( var i = 0 ; i < els.length ; ++i ) els[i].style.display = ival;
     scanList( document.getElementsByClassName( treeC ) );
 	var cookie = document.cookie;
 	cookie = cookie.match( '(^|;)mktree=([+-]*)(;|$)' );

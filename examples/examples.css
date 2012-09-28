@@ -1,18 +1,21 @@
 html { 
-	margin: 0; body: 0;
-	background: white;
+	margin: 0; margin: 0;
+	background: transparent;
 }
 body { 
 	margin: 4em 0 0 0;
-	line-height: 1.25; 
-	font-family: "Georgia", "Bookman Old Style", serif; 
+	line-height: 1.375em; 
+	font-family: "Book Antiqua", Palatino, "Palatino Linotype", "Palatino LT STD", Georgia, serif;
 	position: relative;
 }
 div#header { 
+        font-family: Optima, Segoe, "Segoe UI", Candara, Calibri, Arial, sans-serif;
 	margin: 0; padding: 0.5em;
 	position: absolute; top:0; left:0; 
 	width: 100%; height: 3em;
 	border-bottom: 1px solid silver;
+        -moz-border-radius-topleft: 1em;
+        border-top-left-radius: 1em;
 	line-height: 1;
 	background: white;
 	overflow: hidden;
@@ -29,11 +32,11 @@ div#header {
 	list-style-type: none;
 }
 @media screen { 
-	body>div#header { position: fixed; } 
+	body > div#header { position: fixed; } 
 }
 div#content { 
 	height: 100%; 
-	margin: 0; padding: 0.5em;
+	margin: 0; padding: 1em;
 }
 a#source, a#output, a#plots { 
 	margin: -4.5em 0 0 0; 
@@ -42,24 +45,28 @@ a#source, a#output, a#plots {
 	display: block; 
 }
 p, pre { 
-	margin: 0 0 0.75em 0; 
+	margin: 0 0 1em 0; 
 }
 h1 { 
-	font-size: 150%; 
-	color: #57b;
+	font-size: 1.5em;
+	color: #1c5193;
 	margin-top: 0;
 	margin-bottom: 0.25em;
 	font-weight: bold;
 }
-pre { font-size: 75%; font-family: monaco, monospace; }
+pre { 
+	font-size: 75%; 
+	line-height: 1.375em; 
+	font-family: Consolas, "Andale Mono WT", "Andale Mono", "Lucida Console", "Lucida Sans Typewriter", "DejaVu Sans Mono", "Bitstream Vera Sans Mono", "Liberation Mono", "Nimbus Mono L", Monaco, "Courier New", Courier, monospace;
+}
 sup, sub { line-height: 0; position: relative; }
 sup { top: 0.25em; }
 sub { bottom: -0.25em; }
 em, cite, i { font-style: italic; }
 strong, b { font-weight: bold; }
 
-a { color: #026; text-decoration: none; }
-a:hover { color: #369; border-bottom: 1px gray dotted; }
+a { color: #1c5193; text-decoration: none; }
+a:hover { color: #000; text-decoration: underline; }
 
 span.keyword      { color: #00f; }
 span.comment      { color: #282; }
@@ -109,5 +116,15 @@ ul.mktree li.liBullet .bullet {
 	.jshide                  { display: block; }
 	ul.mktree li.liOpen   ul { display: block; }
 	ul.mktree li.liClosed ul { display: none;  }
+}
+.jsframe {
+	display: none;
+}
+body.no_iframe .jsframe {
+    display: inline;
+}
+body.no_iframe > div#header {
+    -moz-border-radius-topleft: 0;
+    border-top-left-radius: 0;
 }
 
