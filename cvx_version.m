@@ -208,7 +208,9 @@ while true,
     ndir = dirs{dndx};
     nfiles = dir( [ mpath, fs, ndir ] );
 end
-newman = horzcat( sort(dirs), sort(files) );
+[tmp,ndxs1] = sort(upper(dirs)); %#ok
+[tmp,ndxs2] = sort(upper(files)); %#ok
+newman = horzcat( dirs(ndxs1), files(ndxs2) );
 if ~isequal( fs, '/' ),
     newman = strrep( newman, fs, '/' );
 end
