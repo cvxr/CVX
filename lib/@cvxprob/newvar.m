@@ -141,25 +141,22 @@ else
     % Allocate the raw variable data
     %
 
-    geo  = any( geo( : ) );
-    odim = length( cvx___.reserved );
-    ndim = odim + 1 : odim + ( geo + 1 ) * dof;
-    cvx___.reserved(    ndim, 1 ) = 0;
-    cvx___.vexity(      ndim, 1 ) = 0;
-    cvx___.canslack(    ndim, 1 ) = true;
-    cvx___.readonly(    ndim, 1 ) = p;
-    cvx___.geometric(   ndim, 1 ) = 0;
-    cvx___.logarithm(   ndim, 1 ) = 0;
-    cvx___.exponential( ndim, 1 ) = 0;
+    geo = any( geo( : ) );
+    ndim = length( cvx___.reserved );
+    ndim = ndim + 1 : ndim + dof;
+    nmel = ( 1 + geo ) * dof;
+    cvx___.reserved( end + nmel, 1 ) = 0;
+    cvx___.vexity( end + dof, 1 ) = 0;
+    cvx___.canslack( end + 1 : end + nmel, 1 ) = true;
+    cvx___.readonly( end + 1 : end + nmel, 1 ) = p;
+    cvx___.logarithm( end + dof, 1 ) = 0;
     if geo,
-        ndim2 = ndim( 1 : dof );
-        ndim  = ndim( dof + 1 : end );
-        cvx___.vexity(      ndim,  1 ) = +1;
-        cvx___.canslack(    ndim,  1 ) = true;
-        cvx___.geometric(   ndim,  1 ) = +1;
-        cvx___.exponential( ndim2, 1 ) = ndim( : );
-        cvx___.logarithm(   ndim,  1 ) = ndim2( : );
+        cvx___.vexity( end + 1 : end + dof, 1 ) = 1;
+        cvx___.logarithm( end + 1 : end + dof, 1 ) = ndim';
+        ndim = ndim(end) + 1 : ndim(end) + dof;
+        cvx___.exponential( end + 1 : end + dof, 1 ) = ndim';
     end
+    cvx___.exponential( end + dof, 1 ) = 0;
     cvx___.x = [];
     cvx___.y = [];
 

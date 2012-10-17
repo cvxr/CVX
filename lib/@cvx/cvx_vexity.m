@@ -11,18 +11,18 @@ b  = x.basis_;
 n  = length( p );
 nb = size( b, 1 );
 if nb < n,
-    p = p( 1 : nb, : );
+    p = p( 1 : nb, 1 );
 elseif n < nb,
-    p( n+1:nb, : ) = 0;
+    p( nb, 1 ) = 0;
 end
-b = b( p ~= 0, : );
-if isempty( b ),
+if ~any( p ),
     v = cvx_zeros( x.size_ );
     if x.slow_,
         v( isnan( x.basis_( 1, : ) ) ) = NaN;
     end
     return
 end
+b = b( p ~= 0, : );
 p = nonzeros(p).';
 if cvx___.nan_used,
     b = sparse( b );

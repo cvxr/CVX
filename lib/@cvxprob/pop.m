@@ -35,7 +35,6 @@ end
 if ~isequal( clearmode, 'none' ) && ~isequal( clearmode, 'value' ),
     if nf <= 2,
         cvx___.reserved    = 0;
-        cvx___.geometric   = sparse( 1, 1 );
         cvx___.logarithm   = sparse( 1, 1 );
         cvx___.exponential = sparse( 1, 1 );
         cvx___.vexity      = 0;
@@ -45,7 +44,6 @@ if ~isequal( clearmode, 'none' ) && ~isequal( clearmode, 'value' ),
     elseif length( cvx___.reserved ) >= nf,
         temp = nf : length( cvx___.reserved );
         cvx___.reserved(    temp, : ) = [];
-        cvx___.geometric(   temp, : ) = [];
         cvx___.logarithm(   temp, : ) = [];
         cvx___.exponential( temp, : ) = [];
         cvx___.vexity(      temp, : ) = [];

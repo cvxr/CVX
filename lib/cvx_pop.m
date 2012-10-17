@@ -56,7 +56,6 @@ if ~isequal( clearmode, 'none' ),
         cvx___.readonly    = 0;
         cvx___.cones       = struct( 'type', {}, 'indices', {} );
         if ~isequal( clearmode, 'extract' ),
-            cvx___.geometric   = sparse( 1, 1 );
             cvx___.exponential = sparse( 1, 1 );
             cvx___.logarithm   = sparse( 1, 1 );
         end
@@ -75,7 +74,6 @@ if ~isequal( clearmode, 'none' ),
             cvx___.cones = cvx___.cones( 1, tt );
         end
         if ~isequal( clearmode, 'extract' ),
-            cvx___.geometric(  temp, : ) = [];
             cvx___.exponential( temp, : ) = [];
             cvx___.logarithm(  temp, : ) = [];
         end

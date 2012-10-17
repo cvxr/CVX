@@ -36,9 +36,9 @@ tt = p.t_variable;
 ni = nnz( tt ) - 1;
 ndup = sum( rsv ) - nnz( rsv );
 neqns = neqns + ndup;
-nv = nt - fv + ni - nnz( cvx___.geometric( qv ) ) + ndup;
+nv = nt - fv + ni + ndup;
 tt( qv ) = true;
-gfound = nnz( cvx___.logarithm( tt ) & ~cvx___.geometric( tt ) );
+gfound = nnz( cvx___.logarithm( tt ) );
 cfound = false;
 for k = 1 : length( cvx___.cones ),
     if any( any( tt( cvx___.cones( k ).indices ) ) ),
@@ -50,6 +50,13 @@ end
 if all( [ numel( p.objective ), nv, nvars, nduls, neqns, nineqs, cfound, gfound ] == 0 ),
     disp( [ prefix, nm, 'cvx problem object' ] );
 else
+    if ( p.gp ),
+        ptype =' geometric ';
+    elseif ( p.sdp ),
+        ptype = ' semidefinite ';
+    else
+        ptype = ' ';
+    end
     if isempty( p.objective ),
         tp = 'feasibility';
     else
@@ -64,7 +71,7 @@ else
             tp = [ sz(1:end-1), '-objective ', tp ];
         end
     end
-    disp( [ prefix, nm, 'cvx ', tp, ' problem' ] );
+    disp( [ prefix, nm, 'cvx', ptype, tp, ' problem' ] );
     if nvars > 0,
         disp( [ prefix, 'variables: ' ] );
         [ vnam, vsiz ] = dispvar( p.variables, '' );
@@ -97,8 +104,8 @@ else
     if cfound || gfound,
         disp( [ prefix, 'nonlinearities:' ] );
         if gfound > 0,
-            if gfound > 1, plural = 'ies'; else plural = 'y'; end
-            fprintf( 1, '%s   %d exponential nonlinearit%s\n', prefix, gfound, plural );
+            if gfound > 1, plural = 's'; else plural = ''; end
+            fprintf( 1, '%s   %d exponential pair%s\n', prefix, gfound, plural );
         end
         if cfound,
             for k = 1 : length( cvx___.cones ),
@@ -134,12 +141,13 @@ switch class( v ),
         end
     case 'cell',
         names = {}; sizes = {};
-        for k = 1 : length( v ),
-            [ name2, size2 ] = dispvar( v{k}, sprintf( '%s{%d}', name, k ) );
-            names( end + 1 : end + length( name2 ) ) = name2;
-            sizes( end + 1 : end + length( size2 ) ) = size2;
-            if k == 1, name( 1 : end ) = ' '; end
-        end
+        [ names, sizes ] = dispvar( v{1}, sprintf( '%s{1:%d}', name, length(v) ) );
+        % for k = 1 : length( v ),
+        %     [ name2, size2 ] = dispvar( v{k}, sprintf( '%s{%d}', name, k ) );
+        %     names( end + 1 : end + length( name2 ) ) = name2;
+        %     sizes( end + 1 : end + length( size2 ) ) = size2;
+        %     if k == 1, name( 1 : end ) = ' '; end
+        % end
     case 'double',
         names = { name };
         sizes = { '(constant)' };

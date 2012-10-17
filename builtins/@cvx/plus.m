@@ -105,14 +105,14 @@ else
         nz = prod( sz );
         by = by( :, ones( 1, nz ) );
     end
-    nx = size( bx, 1 );
+    [ nx, nv ] = size( bx );
     ny = size( by, 1 );
     if nx < ny,
-        if issparse( by ) && ~issparse( bx ), bx = sparse( bx ); end
-        bx( ny, : ) = 0;
+        if issparse( by ), bx = sparse( bx ); end
+        bx = [ bx ; sparse( ny - nx, nv ) ];
     elseif ny < nx,
-        if issparse( bx ) && ~issparse( by ), by = sparse( by ); end
-        by( nx, : ) = 0;
+        if issparse( bx ), by = sparse( by ); end
+        by = [ by ; sparse( nx - ny, nv ) ];
     end
     bz = bx + by;
 end

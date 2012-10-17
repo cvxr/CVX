@@ -52,7 +52,7 @@ switch length( s ),
             end
         end
 end
-if nnz( isnan( b ) | isinf( b ) ),
+if ~all( isfinite( nonzeros( b ) ) ),
     slow = true;
     tt = any( isnan( b ), 1 ) | sum( isinf( b ), 1 ) > isinf( b( 1, : ) );
     b( :, tt ) = 0;
