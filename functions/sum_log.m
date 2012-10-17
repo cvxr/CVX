@@ -15,7 +15,7 @@ function y = sum_log( x, dim )
 %   should be more efficient, because it involves only one logarithm.
 %
 %   Disciplined convex programming information:
-%       SUM_LOG(X) is convex and nondecreasing in X. Therefore, when used
+%       SUM_LOG(X) is concave and nondecreasing in X. Therefore, when used
 %       in CVX expressions, X must be concave. X must be real.
 
 error( nargchk( 1, 2, nargin ) ); %#ok
