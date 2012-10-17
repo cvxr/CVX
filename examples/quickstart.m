@@ -141,7 +141,7 @@ if has_linprog,
     Aeq  = [ A,          -eye(m),    +eye(m)    ];
     lb   = [ -Inf*ones(n,1);  zeros(m,1); zeros(m,1) ];
     xzz  = linprog(f,[],[], Aeq,b,lb,[]);
-    x_lp = xzz(1:n,:) - xzz(n+1:end,:);
+    x_lp = xzz(1:n,:) - xzz(n+1:2*n,:);
 else
     % linprog not present on this system
 end
