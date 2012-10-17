@@ -293,6 +293,10 @@ numeric arguments.
     is a fairly crude SDP-representable approximation, with modest
     accuracy over the interval :math:`[-4,4]`; we intend to replace it
     with a much better approximation at some point.
+    
+† ``log_prod(x)``
+	:math:`\log\prod_i x_i` if when :math:`x` is positive; :math:`-\infty` otherwise. 
+	Concave and nonincreasing. Equivalent to ``sum_log(x)``.
 
 † ``log_sum_exp(x)``
     the logarithm of the sum of the elementwise exponentials of ``x``.
@@ -364,6 +368,10 @@ numeric arguments.
 			p \geq 1 & f_p(x) \triangleq \begin{cases} x^p & x \geq 0 \\ +\infty & x < 0 \end{cases} & \text{convex, nonmonotonic}
 		\end{array}
 
+``prod_inv(x)``
+	:math:`\prod_i x_i^{-1}` when :math:`x` is positive; :math:`+\infty` otherwise. Convex
+	and nonincreasing.
+
 ``quad_form(x,P)``
     :math:`x^TPx` for real :math:`x` and symmetric :math:`P`, and
     :math:`x^HPx` for complex :math:`x` and Hermitian :math:`P`. Convex
@@ -408,6 +416,10 @@ numeric arguments.
 ``sum_largest(x,k)``
     sum of the largest :math:`k` values, for real vector :math:`x`. Convex and increasing.
 
+† ``sum_log(x)``
+    :math:`\sum_i\log(x_i)` when :math:`x` is positive; :math:`-\infty` otherwise.
+    Concave and nondecreasing.
+    
 ``sum_smallest(x,k)``
     sum of the smallest :math:`k` values, *i.e.*, equivalent to ``-sum_largest(-x,k)``. Concave and decreasing.
 
