@@ -60,6 +60,15 @@ if usejava('jvm'),
     java_version = char(java.lang.System.getProperty('java.version'));
     fprintf('    OS: %s %s version %s\n', os_name, os_arch, os_version );
     fprintf('    Java version %s\n', java_version );
+    try
+        ndxs = strfind( java_version, '.' );
+        java_version = str2double( java_version(1:ndxs(2)-1) );
+        if java_version < 1.6,
+            fprintf('       WARNING: full support for CVX Professional licenses\n' );
+            fprintf('       requres Java version 1.6.0 or later. Please upgrade.\n' );
+        end
+    catch %#ok
+    end
 end
 if isoctave,
     fprintf( '    GNU Octave %s on %s\n', version, computer );
