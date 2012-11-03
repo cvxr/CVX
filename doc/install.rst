@@ -103,7 +103,8 @@ file anywhere you wish for safekeeping---CVX saves a copy in its preferences.
 
 In order to use Gurobi or MOSEK with CVX, you must first install them according to
 their respective developer's instructions. In particular, make sure that the MATLAB
-interface 
+interface is fully operational in each case. For instance, the commands ``mosekopt``
+and/or ``gurobi`` should run successfully from the MATLAB command line.
 
 .. index::
 	single: SeDuMi
