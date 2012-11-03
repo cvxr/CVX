@@ -39,10 +39,10 @@ if nargout <= 5 && nargout, return; end
 
 % Version and build
 cvx_ver   = '2.0 (beta)';
-cvx_bld   = '867';
-cvx_bdate = '2012-09-19 17:26:01';
-cvx_ddate = '2012-09-26 17:01:56';
-cvx_dbld  = '868';
+cvx_bld = '881';
+cvx_bdate = '2012-11-03 11:50:07';
+cvx_ddate = '2012-11-03 11:46:24';
+cvx_dbld = '880';
 line = '---------------------------------------------------------------------------';
 fprintf( '\n' );
 disp( line );
@@ -57,7 +57,9 @@ if usejava('jvm'),
     os_name = char(java.lang.System.getProperty('os.name'));
     os_arch = char(java.lang.System.getProperty('os.arch'));
     os_version = char(java.lang.System.getProperty('os.version'));
-    fprintf('    OS: %s %s ver. %s\n', os_name, os_arch, os_version );
+    java_version = char(java.lang.System.getProperty('java.version'));
+    fprintf('    OS: %s %s version %s\n', os_name, os_arch, os_version );
+    fprintf('    Java version %s\n', java_version );
 end
 if isoctave,
     fprintf( '    GNU Octave %s on %s\n', version, computer );
