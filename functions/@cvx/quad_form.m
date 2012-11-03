@@ -145,7 +145,8 @@ else
         if cvx_use_sparse( Q ),
             Q = sparse( Q );
             prm = symamd( Q );
-            R = cholinc( Q( prm, prm ), 'inf' );
+            warning('off','MATLAB:cholinc:ArgInfToBeRemoved');
+            R = cholinc( Q( prm, prm ), 'inf' ); %#ok
             R( :, prm ) = R;
             tt = any( isinf( R ), 2 );
             valid = ~any( tt );

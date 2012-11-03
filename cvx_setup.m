@@ -20,7 +20,6 @@ try
     expected = MException( 'CVX:Expected', '' );
     unexpected = MException( 'CVX:Unexpected', '' );
     if nargin < 1, license_file = []; end
-    problem = false;
     [ nver, isoctave, fs, ps, mpath, problem ] = cvx_version( license_file ); %#ok
     if problem, throw(expected); end
     
@@ -214,7 +213,6 @@ try
     % Quick instructions on changing the solver %
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     
-    global cvx___
     if length( cvx___.solvers.list ) > 1,
         fprintf( '%s\n', line );
         fprintf( 'To change the default solver, type "cvx_solver <solver_name>".\n')

@@ -109,9 +109,8 @@ if ~isequal( clearmode, 'extract' ),
     %
 
     if ~isequal( clearmode, 'reset' ),
-        evalin( 'caller', 'clear cvx___' );
         s1 = evalin( 'caller', 'who' );
-        s2 = sprintf( '%s, ', s1{:} );
+        s2 = sprintf( '%s, ', s1{~strcmp(s1,'cvx___')} );
         s2 = evalin( 'caller', sprintf( 'cellfun( @cvx_id, { %s } )', s2(1:end-2) ) );
         tt = s2 >= pid;
         s1 = s1( tt );

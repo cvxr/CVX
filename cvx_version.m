@@ -149,7 +149,7 @@ if fid > 0,
     else
         fprintf( '\n    No missing files.\n' );
     end
-elseif 1,
+elseif 0,
     fid = fopen( [ mpath, fs, 'MANIFEST' ], 'w' );
     if fid,
         newman = get_manifest( mpath, fs );
