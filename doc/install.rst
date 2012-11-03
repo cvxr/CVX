@@ -22,6 +22,7 @@ CVX is supported on the following platforms:
 
 * Microsoft Windows, Linux, and Mac OSX
 * MATLAB versions 7.5 (R2007b) or later
+* Java 1.6 or later required for full CVX Professional support
 * 32-bit and 64-bit platforms
 
 As of version 2.0, support for versions of Matlab more than five years old---specifically,
