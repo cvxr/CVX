@@ -10,8 +10,12 @@ if isa( errmsg, 'MException' ),
     else
         format = 'extended';
     end
-    errmsg = getReport( errmsg, format, 'hyperlinks', 'off' );
-    errmsg = regexprep( errmsg,'</?a[^>]*>', '' );
+    try
+        errmsg = getReport( errmsg, format, 'hyperlinks', 'off' );
+        errmsg = regexprep( errmsg,'</?a[^>]*>', '' );
+    catch
+        errmsg = sprintf( '%s\n    Line %d: %s\n', errmsg.message, errmsg.stack(1).line, errmsg.stack(1).file );
+    end
 end
 lines = {};
 rndx = [ 0, regexp( errmsg, '\n' ), length(errmsg) + 1 ];
