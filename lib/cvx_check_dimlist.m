@@ -14,18 +14,22 @@ end
 if isa( x, 'cell' ),
     nel = numel( x );
     xnew = zeros( 1, nel );
+    fnan = false;
     y = false;
     for k = 1 : nel,
-        if ~isnumeric( x{k} ) || length( x{k} ) ~= 1, return; end
-        xnew( k ) = x{k};
+        if isempty( x{k} ),
+            if fnan, return; end
+            xnew( k ) = NaN;
+            fnan = true;
+        elseif isnumeric( x{k} ) && length( x{k} ) == 1,
+            xnew( k ) = x{k};
+        else
+            return;
+        end
     end
     x = xnew;
 end
-if isnumeric( x ) && ndims( x ) <= 2 && ~all( size( x ) > 1 ) && isreal( x ) && ~any( isnan( x ) | isinf( x ) ) && all( x >= xmin ) && all( floor( x ) == x ),
-    y = true;
-else
-    y = false;
-end
+y = isnumeric( x ) && length( x ) == numel( x ) && isreal( x ) && nnz( isnan( x ) ) <= 1 && ~any( x < xmin ) && nnz( x ~= floor( x ) ) == nnz( isnan( x ) );
 if y && nargout > 1,
     x = [ x( : )', 1, 1 ];
     x = x( 1 : max( [ 2, find( x > 1 ) ] ) );

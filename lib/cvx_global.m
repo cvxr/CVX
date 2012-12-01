@@ -137,7 +137,7 @@ if nrej,
     end
     if ~isempty( reject ),
         reject = sprintf( '%s', reject{:} );
-        warning( 'CVX:SolverErrors', 'The following errors were issued when initializing the solvers:\n%sPlease check your installation and re-run CVX_SETUP.\nThese solvers are unavailable for this session.%s', reject, needmap );
+        warning( 'CVX:SolverErrors', 'The following errors were issued when initializing the solvers:\n%sPlease check your installation and re-run CVX_SETUP.\nThese solvers are unavailable for this session.%s', reject );
     end
     if nrej == length(solvers ),
         clear global cvx___
