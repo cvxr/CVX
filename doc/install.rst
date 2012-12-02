@@ -18,21 +18,24 @@ Supported platforms
 	single: Linux
 	single: Mac
 
-CVX is supported on the following platforms:
+CVX is supported on 32-bit and 64-bit versions of Linux, Mac OSX, and Windows, 
+running MATLAB versions 7.5 (R2007b) and later. There are some important platform-specific
+cautions, however:
 
-* Microsoft Windows, Linux, and Mac OSX
-* MATLAB versions 7.5 (R2007b) or later
-* Java 1.6 or later required for full CVX Professional support
-* 32-bit and 64-bit platforms
+- Gurobi support requires Matlab 7.7 (R2008b) or later.
 
-As of version 2.0, support for versions of Matlab more than five years old---specifically,
-Matlab 7.4 (R2007a) or older---has been discontinued. If you need to use CVX with these 
-older versions of Matlab, please use CVX 1.22 or earlier, which will remain available
-indefinitely on the CVX Research web site.
+- 32-bit Linux: the Gurobi solver is not available for this platform, as Gurobi is phasing
+  out support for 32-bit Linux altogether.
 
-It is theoretically possible to use CVX on other platforms, but we are
-unable to provide support of any kind. In particular, you will have to compile 
-the MEX files for both CVX and the solvers.
+- Older versions of Mac OS X (e.g. 10.5) ship with Java 1.5. The standard version of
+  CVX works properly on this platform, but CVX Professional support requires Java 1.6.
+  To restore this support, upgrade your operating system or Java installation.
+  
+As of version 2.0, support for versions of Matlab more than five years 
+old---specifically, Matlab 7.4 (R2007a) or older---has been discontinued. If you need
+to use CVX with these older versions of Matlab, please use CVX 1.22 or earlier, which
+will remain available indefinitely on the CVX Research web site. However, this version
+is no longer supported, and will not receive bug fixes or improvements.
 
 Installation instructions
 -------------------------
@@ -143,3 +146,5 @@ specific version that we have chosen. Indeed, CVX has generated quite a few bug 
 for these solvers! However, you are free to keep an alternate copy in your
 MATLAB path. When you are not constructing a CVX model, MATLAB will rely on your
 copy of the solver instead.
+
+

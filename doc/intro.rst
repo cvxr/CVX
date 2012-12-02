@@ -210,12 +210,12 @@ This new functionality is released under a *CVX Professional* product tier
 which we intend to license to commercial users for a fee, and offer to academic users
 at no charge. The licensing structure is as follows:
 
-* *All users* are free to use the standard features of CVX at no charge. 
+* *All users* are free to use the standard features of CVX *at no charge*.
   This includes the ability to construct and solve any of the models 
-  supported by the free solvers SeDuMi, SDPT3, and GLPK.
+  supported by the free solvers SeDuMi and SDPT3.
 * *Commercial users* who wish to solve CVX models using Gurobi or MOSEK will
   need to purchase a CVX Professional license. Please send an email to
-  `CVX Research <mailto:sales@cvxr.com>` for inquiries.
+  `CVX Research <mailto:sales@cvxr.com>`_ for inquiries.
   for an availability schedule and pricing details.
 * *Academic users* may utilize the CVX Professional capability *at no charge*.
   To obtain an academic license, please visit the
