@@ -26,17 +26,18 @@ if ~isempty( dumpfile ),
     end
     fprintf( 'Saving output to: %s\n', dumpfile );
     fprintf( '------------------------------------------------------------\n');
-    otp_names = varargin(end-nargout-1:end-2);
     inp_names = cell(1,length(inputs));
     for k = 1 : length(inp_names),
         inp_names{1,k} = inputname(k+1);
     end
-    fid = fopen( dumpfile, 'w+' );
-    if fid == 0,
-        error( 'CVX:Dumpfile', 'Cannot open file %s for writing\n', fid );
+    dstruct = cell2struct( inputs, inp_names, 2 ); %#ok
+    save( dumpfile, '-struct', 'dstruct' );
+    diaryfile = [ dumpfile, '.txt' ];
+    fid = fopen( diaryfile, 'w+' );
+    if fid ~= 0,
+        fclose( fid );
+        diary( diaryfile );
     end
-    fclose( fid );
-    diary( dumpfile );
 elseif custom_on,
     fprintf( '------------------------------------------------------------\n');
 end
@@ -47,13 +48,19 @@ catch errmsg
    [ varargout{1:nargout} ] = deal( [] );
 end
 if ~isempty( dumpfile ),
-    diary( 'off' );
-    fid = fopen( dumpfile, 'r' );
     if fid ~= 0,
-        output = fread( fid, Inf, '*char' )';
-    else
+        diary( 'off' );
+        fid = fopen( diaryfile, 'r' );
+        if fid ~= 0,
+            output = fread( fid, Inf, '*char' )';
+            fclose( fid );
+            delete( diaryfile );
+        end
+    end
+    if fid == 0,
         output = '<Could not save>';
     end
+    otp_names = varargin(end-nargout-1:end-2);
     dstruct = cell2struct( [ inputs, varargout, output ], [ inp_names, otp_names, 'output' ], 2 ); %#ok
     save( dumpfile, '-struct', 'dstruct' );
 end

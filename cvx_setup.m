@@ -59,7 +59,7 @@ try
     prefs.path = cpath;
     prefs.license = cvx___.license;
     prefs.solvers = struct( 'selected', 0, 'active', 0, 'list', [], 'names', {{}}, 'map', struct( 'default', 0 ) );
-    prefs.solvers.list = struct( 'name', {}, 'error', {}, 'warning', {}, 'dualize', {}, 'path', {}, 'check', {}, 'solve', {}, 'settings', {}, 'spath', {}, 'sname', {} );
+    prefs.solvers.list = struct( 'name', {}, 'error', {}, 'warning', {}, 'dualize', {}, 'path', {}, 'check', {}, 'solve', {}, 'settings', {}, 'spath', {}, 'sname', {}, 'params', {} );
     
     %%%%%%%%%%%%%%%%%%%%%%
     % Search for solvers %
@@ -71,7 +71,7 @@ try
     solvers = { solvers(~[solvers.isdir]).name };
     solvers = solvers( ~cellfun( @isempty, regexp( solvers, '\.(m|p)$' ) ) );
     solvers = unique( cellfun( @(x)x(1:end-2), solvers, 'UniformOutput', false ) );
-    solvers = struct( 'name', '', 'error', '', 'warning', '', 'dualize', '', 'path', '', 'check', [], 'solve', [], 'settings', [], 'sname', solvers, 'spath', shimpath );
+    solvers = struct( 'name', '', 'error', '', 'warning', '', 'dualize', '', 'path', '', 'check', [], 'solve', [], 'settings', [], 'sname', solvers, 'spath', shimpath, 'params', [] );
     solver2 = which( 'cvx_solver_shim', '-all' );
     for k = 1 : length(solver2),
         tsolv = solver2{k};
@@ -309,6 +309,9 @@ catch errmsg
     if unexpected,
         fprintf( 'Please report this error to support, and include entire output of\n' );
         fprintf( 'CVX_SETUP in your support request.\n' );
+    else
+        fprintf( 'The installation of CVX was not completed. Please correct the error\n' );
+        fprintf( 'and re-run CVX_SETUP.\n' );
     end
 
 end
