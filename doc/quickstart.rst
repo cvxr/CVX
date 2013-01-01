@@ -197,7 +197,7 @@ Two new lines of CVX code have been added to the CVX specification:
 
 -  The ``subject to`` statement does nothing---CVX provides this
    statement simply to make specifications more readable. As with
-   indentation, it is entirely optional.
+   indentation, it is optional.
 -  The line ``l <= x <= u`` represents the :math:`2n` inequality
    constraints.
 

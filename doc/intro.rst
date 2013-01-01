@@ -201,9 +201,9 @@ can process more efficiently.
 Licensing
 ---------
 
-CVX is entirely free for use in both academic and commercial settings when paired with
+CVX is free for use in both academic and commercial settings when paired with
 a free solver---including the versions of SeDuMi and SDPT3 that are included with the 
-package. Work is underway to connect CVX to GLPK, a free mixed-integer solver.
+package.
 
 With version 2.0, we have added the ability to connect CVX to *commercial* solvers as well. 
 This new functionality is released under a *CVX Professional* product tier

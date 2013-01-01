@@ -112,7 +112,7 @@ the underlying issue falls into one of two categories:
 
       norm( x ) <= 1   
 		
-   is entirely acceptable.
+   is acceptable.
    If your error is of this type, you will need to find a way to express your 
    problem in a DCP-compliant manner. We have attempted to supply all of the commonly used 
    functions that the underlying solvers can support; so if you cannot easily rewrite 
