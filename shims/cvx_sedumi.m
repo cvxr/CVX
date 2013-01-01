@@ -8,18 +8,60 @@ if ~isempty( shim.solve ),
     return
 end
 if isempty( shim.name ),
-    [ ver, isoctave, fs, ps ] = cvx_version; %#ok
-    temp = strfind( shim.spath, fs );
-    shim.name    = 'SeDuMi';
+    fname = 'sedumi.m';
+    [ fs, ps, int_path ] = cvx_version;
+    int_path(end+1) = fs;
+    int_plen = length( int_path );
+    shim.name = 'SeDuMi';
     shim.dualize = true;
-    shim.path    = [ shim.spath(1:temp(end-1)), 'sedumi', ps ];
-end
-if isempty( shim.error ),
+    flen = length(fname);
+    fpaths = { [ int_path, 'sedumi', fs, fname ] };
+    fpaths = [ fpaths ; which( fname, '-all' ) ];
+    old_dir = pwd;
+    oshim = shim;
+    shim = [];
+    for k = 1 : length(fpaths),
+        fpath = fpaths{k};
+        if ~exist( fpath, 'file' ) || any( strcmp( fpath, fpaths(1:k-1) ) ),
+            continue
+        end
+        new_dir = fpath(1:end-flen-1);
+        cd( new_dir );
+        tshim = oshim;
+        tshim.fullpath = fpath;
+        tshim.version = 'unknown';
+        is_internal = strncmp( new_dir, int_path, int_plen );
+        if is_internal,
+            tshim.location = [ '{cvx}', new_dir(int_plen:end) ];
+        else
+            tshim.location = new_dir;
+        end
+        try
+            fid = fopen(fname);
+            otp = fread(fid,Inf,'uint8=>char')';
+            fclose(fid);
+        catch errmsg
+            tshim.error = sprintf( 'Unexpected error:\n%s\n', errmsg.message );
+        end
+        if isempty( tshim.error ),
+            otp = regexp( otp, 'SeDuMi \d+\.\d+', 'match' );
+            if ~isempty(otp), tshim.version = otp{1}(8:end); end
+            tshim.check = @check;
+            tshim.solve = @solve;
+            if k ~= 2,
+                tshim.path = [ new_dir, ps ];
+            end
+        end
+        shim = [ shim, tshim ]; %#ok
+    end
+    cd( old_dir );
+    if isempty( shim ),
+        shim = oshim;
+        shim.error = 'Could not find a SeDuMi installation.';
+    end
+else
     shim.check = @check;
     shim.solve = @solve;
-else
-    shim.check = [];
-    shim.solve = [];
 end
     
 function found_bad = check( nonls ) %#ok

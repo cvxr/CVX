@@ -18,7 +18,7 @@ function a = gt( x, y )
 %Feasible interior-point solvers tend to return points which satisfy
 %strict inequality, but not all solvers do.
 
-warning( 'CVX:StrictInequalities', cvx_error( 'The use of strict inequalities in CVX is strongly discouraged, because solvers treat them as non-strict inequalities. Please consider using '>=' instead.', [66,75], false, '' ) );
+warning( 'CVX:StrictInequalities', cvx_error( 'The use of strict inequalities in CVX is strongly discouraged, because solvers treat them as non-strict inequalities. Please consider using ">=" instead.', [66,75], false, '' ) );
 b = newcnstr( evalin( 'caller', 'cvx_problem', '[]' ), x, y, '>' );
 if nargout, a = b; end
 

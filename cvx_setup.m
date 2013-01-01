@@ -20,7 +20,7 @@ try
     expected = MException( 'CVX:Expected', '' );
     unexpected = MException( 'CVX:Unexpected', '' );
     if nargin < 1, license_file = []; end
-    [ nver, isoctave, fs, ps, mpath, problem ] = cvx_version( license_file ); %#ok
+    [ fs, ps, mpath, mext, nver, isoctave, problem ] = cvx_version( license_file ); %#ok
     if problem, throw(expected); end
     
     %%%%%%%%%%%%%%%%%%%%%%%%
@@ -28,7 +28,7 @@ try
     %%%%%%%%%%%%%%%%%%%%%%%%
 
     oldpath = cvx_startup( false );
-    cpath = struct( 'string', '', 'active', false, 'solver', 0, 'hold', false );
+    cpath = struct( 'string', '', 'active', false, 'hold', false );
     subs = strcat( [ mpath, fs ], { 'keywords', 'sets' } );
     cpath.string = sprintf( [ '%s', ps ], subs{:} );
 
@@ -59,7 +59,7 @@ try
     prefs.path = cpath;
     prefs.license = cvx___.license;
     prefs.solvers = struct( 'selected', 0, 'active', 0, 'list', [], 'names', {{}}, 'map', struct( 'default', 0 ) );
-    prefs.solvers.list = struct( 'name', {}, 'error', {}, 'warning', {}, 'dualize', {}, 'path', {}, 'check', {}, 'solve', {}, 'settings', {}, 'spath', {}, 'sname', {}, 'params', {} );
+    prefs.solvers.list = struct( 'name', {}, 'version', {}, 'location', {}, 'fullpath', {}, 'error', {}, 'warning', {}, 'dualize', {}, 'path', {}, 'check', {}, 'solve', {}, 'settings', {}, 'spath', {}, 'sname', {}, 'params', {} );
     
     %%%%%%%%%%%%%%%%%%%%%%
     % Search for solvers %
@@ -71,7 +71,7 @@ try
     solvers = { solvers(~[solvers.isdir]).name };
     solvers = solvers( ~cellfun( @isempty, regexp( solvers, '\.(m|p)$' ) ) );
     solvers = unique( cellfun( @(x)x(1:end-2), solvers, 'UniformOutput', false ) );
-    solvers = struct( 'name', '', 'error', '', 'warning', '', 'dualize', '', 'path', '', 'check', [], 'solve', [], 'settings', [], 'sname', solvers, 'spath', shimpath, 'params', [] );
+    solvers = struct( 'name', '', 'version', '', 'location', '', 'fullpath', '', 'error', '', 'warning', '', 'dualize', '', 'path', '', 'check', [], 'solve', [], 'settings', [], 'sname', solvers, 'spath', shimpath );
     solver2 = which( 'cvx_solver_shim', '-all' );
     for k = 1 : length(solver2),
         tsolv = solver2{k};
@@ -80,13 +80,25 @@ try
         solvers(end).sname = tsolv(ndxs+1:end);
     end
     cur_d = pwd;
-    nsolv = length(solvers);
-    nrej = 0; nwarn = 0;
-    for k = 1 : length(solvers),
+    nsolvers = [];
+    nshims = length(solvers);
+    for k = 1 : nshims,
         tsolv = solvers(k);
         try
             cd(tsolv.spath);
             tsolv = feval( tsolv.sname, tsolv );
+            nsolv = length(tsolv);
+            if nsolv > 1,
+               sndx = 0;
+                for e = 0 : 1,
+                    for j = 1 : nsolv,
+                        if e ~= isempty( tsolv(j).error ),
+                            sndx = sndx + 1;
+                            if sndx > 1, tsolv(j).name = sprintf( '%s_%d', tsolv(j).name, sndx ); end
+                        end
+                    end
+                end
+            end
         catch errmsg
             errmsg = cvx_error( errmsg, 63, false, '  ' );
             if isempty( tsolv.name ),
@@ -94,10 +106,9 @@ try
             end
             tsolv.error = sprintf( 'unexpected error:\n%s', errmsg );
         end
-        nrej = nrej + ~isempty(tsolv.error);
-        nwarn = nwarn + ~isempty(tsolv.warning);
-        solvers(k) = tsolv;
+        nsolvers = [ nsolvers, tsolv ]; %#ok
     end
+    solvers = nsolvers;
     cd( cur_d );
     
     %%%%%%%%%%%%%%%%%%%%%%%%%
@@ -105,17 +116,21 @@ try
     %%%%%%%%%%%%%%%%%%%%%%%%%
     
     plurals = { 's', '', 's' };
+    nsolv = length(solvers);
+    nrej = sum(~cellfun(@isempty,{solvers.error}));
     nwarn = sum(~cellfun(@isempty,{solvers.warning}));
-    fprintf( '%d shim%s found.\n', nsolv, plurals{min(nsolv+1,3)} ); nret = false;
-    if nsolv,
-        fprintf( '%d solver%s initialized:\n', nsolv-nrej, plurals{min(nsolv-nrej+1,3)} );
+    fprintf( '%d shim%s found.\n', nshims, plurals{min(nshims+1,3)} ); nret = false;
+    lens = [ 0, 0 ];
+    for k = 1 : nsolv,
+        lens = max( lens, [ length(solvers(k).name), length(solvers(k).version) ] );
+    end
+    fmt = sprintf( ' %%s  %%-%ds   %%-%ds    %%s\\n', lens(1), lens(2) );
+    if nsolv > nrej,
+        fprintf( '%d solver%s initialized (* = default):\n', nsolv-nrej, plurals{min(nsolv-nrej+1,3)} );
+        stats =  { ' ', '*' };
         for k = 1 : nsolv,
             if isempty( solvers(k).error ),
-                if strcmpi( solvers(k).name, selected ),
-                    fprintf( '    %s (default)\n', solvers(k).name );
-                else
-                    fprintf( '    %s\n', solvers(k).name );
-                end
+                fprintf( fmt, stats{1+strcmpi(solvers(k).name,selected)}, solvers(k).name, solvers(k).version, solvers(k).location );
             end
         end
     end
@@ -123,7 +138,8 @@ try
         fprintf( '%d solver%s skipped:\n', nrej, plurals{min(nrej+1,3)} );
         for k = 1 : nsolv,
             if ~isempty( solvers(k).error ),
-                cvx_error( [ solvers(k).name, ': ', solvers(k).error ], 67, false, '    ' );
+                fprintf( fmt, ' ', solvers(k).name, solvers(k).version, solvers(k).location ); %#ok
+                cvx_error( solvers(k).error, 63, false, '        ' );
             end
         end
     end
@@ -131,7 +147,8 @@ try
         fprintf( '%d solver%s issued warnings:\n', nwarn, plurals{min(nwarn+1,3)} );
         for k = 1 : nsolv,
             if ~isempty( solvers(k).warning ) && isempty( solvers(k).error ),
-                cvx_error( [ solvers(k).name, ': ', solvers(k).warning ], 67, false, '    ' );
+                fprintf( fmt, ' ', solvers(k).name, solvers(k).version, solvers(k).location ); %#ok
+                cvx_error( solvers(k).warning, 63, false, '        ' );
             end
         end
     end

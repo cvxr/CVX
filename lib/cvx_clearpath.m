@@ -11,7 +11,9 @@ cvx_global
 if nargin == 0,
     cvx___.path.hold = false;
 end
-if ~cvx___.path.hold,
+if cvx___.path.hold,
+    cvx_setspath;
+else
     cvx_clearspath;
     if ~isempty( cvx___.path.string ),
         matlabpath(strrep(matlabpath,cvx___.path.string,''));

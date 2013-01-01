@@ -1,4 +1,4 @@
-function [ nver, isoctave, fs, ps, mpath, problem ] = cvx_version( license_file )
+function [ fs, ps, mpath, mext, nver, isoctave, problem ] = cvx_version( license_file )
 
 % CVX_VERSION   Returns version and environment information for CVX.
 %
@@ -8,8 +8,31 @@ function [ nver, isoctave, fs, ps, mpath, problem ] = cvx_version( license_file 
 %    This function is also used internally to return useful variables that
 %    allows CVX to adjust its settings to the current environment.
 
-% Numeric version
 global cvx___
+
+% File and path separators
+if strncmp( computer, 'PC', 2 ), 
+    fs = '\'; 
+    ps = ';'; 
+else
+    fs = '/'; 
+    ps = ':';
+end
+    
+% Install location
+mpath = mfilename('fullpath');
+temp = strfind( mpath, fs );
+mpath = mpath( 1 : temp(end) - 1 );
+
+% MEX extension
+
+mext = mexext;
+
+if nargout <= 5 && nargout, 
+    return; 
+end
+
+% Numeric version
 nver = version;
 nver(nver=='.') = ' ';
 nver = sscanf(nver,'%d');
@@ -18,24 +41,9 @@ nver = nver(1) + 0.01 * ( nver(2) + 0.01 * nver(3) );
 % Matlab / Octave flag
 isoctave = exist( 'OCTAVE_VERSION', 'var' );
 
-% File and path separators
-if ispc, 
-    fs = '\'; 
-    ps = ';'; 
-else
-    fs = '/'; 
-    ps = ':';
-end
-if nargout <= 4 && nargout, 
+if nargout <= 6 && nargout, 
     return; 
 end
-    
-% Install location
-mpath = mfilename('fullpath');
-temp = strfind( mpath, fs );
-mpath = mpath( 1 : temp(end) - 1 );
-
-if nargout <= 5 && nargout, return; end
 
 % Version and build
 cvx_ver   = '2.0 (beta)';
@@ -89,10 +97,8 @@ elseif nver < 7.05,
 else
     problem = false;
 end
-if nargout == 0,
-    clear nver
-end
 if problem,
+    if ~nargout, clear fs; end
     return
 end
 
@@ -175,9 +181,9 @@ end
 % License file %
 %%%%%%%%%%%%%%%%
 
-exception = '';
 cvx___.license = [];
-if exist( 'cvx_license', 'file' ),
+exception = '';
+if usejava('jvm') && exist( 'cvx_license.p', 'file' ),
     try
         if nargin < 1, license_file = ''; end
         cvx___.license = cvx_license( license_file );
@@ -186,6 +192,7 @@ if exist( 'cvx_license', 'file' ),
 end
 disp( line );
 if nargout == 0,
+    clear fs
     fprintf( '\n' );
 end
 if ~isempty( exception ),

@@ -5,7 +5,7 @@
 %    warning message that occurs if CVX_BEGIN detects a model in progress.
 
 cvx_pop;
-cvx_clearpath( 1 );
+% cvx_clearpath( 1 );
 
 % Copyright 2012 CVX Research, Inc.
 % See the file COPYING.txt for full copyright information.

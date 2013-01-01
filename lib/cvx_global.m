@@ -109,7 +109,13 @@ for k = 1 : length(solvers),
     if ~isempty(tsolv.error),
         nrej = nrej + 1;
     end
-    solvers(k) = tsolv;
+    try
+        solvers(k) = tsolv;
+    catch %#ok
+        for ff = fieldnames(tsolv)',
+            solvers(k).(ff{1}) = tsolv.(ff{1});
+        end
+    end
 end
 cvx___.solvers.list = solvers;
 cd( cur_d );
@@ -121,15 +127,23 @@ cd( cur_d );
 if nrej,
     reject = {};
     reject_lic = {};
+    reject_java = {};
+    ndefault = 0;
     for k = 1 : nsolv,
-        if ~isempty( solvers(k).error ),
-            if isequal( solvers(k).error, 'A CVX Professional license is required.' ),
-                reject_lic{end+1} = solvers(k).name; %#ok
-            else
-                errmsg = [ solvers(k).name, ': ', solvers(k).error ];
-                reject{end+1} = cvx_error( errmsg, 67, false, '    ' ); %#ok
-            end
+        if isempty( solvers(k).error ),
+            if ~ndefault, ndefault = k; end
+        elseif isequal( solvers(k).error, 'Java support is required.' );
+            reject_java{end+1} = solvers.name; %#ok
+        elseif isequal( solvers(k).error, 'A CVX Professional license is required.' ),
+            reject_lic{end+1} = solvers(k).name; %#ok
+        else
+            errmsg = [ solvers(k).name, ': ', solvers(k).error ];
+            reject{end+1} = cvx_error( errmsg, 67, false, '    ' ); %#ok
         end
+    end
+    if ~isempty( reject_java ),
+        reject_lic = sprintf( '%s ', reject_java{:} );
+        warning( 'CVX:SolverErrors', 'The following solvers were disabled due to the disabling of Java: %s', reject_java );
     end
     if ~isempty( reject_lic ),
         reject_lic = sprintf( '%s ', reject_lic{:} );
@@ -139,18 +153,13 @@ if nrej,
         reject = sprintf( '%s', reject{:} );
         warning( 'CVX:SolverErrors', 'The following errors were issued when initializing the solvers:\n%sPlease check your installation and re-run CVX_SETUP.\nThese solvers are unavailable for this session.%s', reject );
     end
-    if nrej == length(solvers ),
+    if nrej == length( solvers ),
         clear global cvx___
-        error( 'CVX:SolverErrors', 'All solvers were disabled due to errors or license issues.\nPlease re-run CVX_SETUP and, if necessary, contact CVX Research for support.' );
+        error( 'CVX:SolverErrors', 'All solvers were disabled due to various errors.\nPlease re-run CVX_SETUP and, if necessary, contact CVX Research for support.' );
     elseif ~isempty(solvers(cvx___.solvers.map.default).error),
-        for k = 1 : nsolv,
-            if isempty(solvers(k).error),
-                cvx___.solvers.map.default = k;
-                cvx___.solvers.selected = k;
-                break
-            end
-        end
-        warning( 'CVX:SolverErrors', 'The default solver has temporarily been changed to %s.', solvers(k).name );
+        cvx___.solvers.map.default = ndefault;
+        cvx___.solvers.selected = ndefault;
+        warning( 'CVX:SolverErrors', 'The default solver has temporarily been changed to %s.', solvers(ndefault).name );
     end
 end
 

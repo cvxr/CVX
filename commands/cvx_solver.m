@@ -50,34 +50,56 @@ if nargin,
     end
     if isempty( cvx___.problems ),
         cvx___.solvers.selected = snumber;
-        if cvx___.solvers.active,
-            cvx_setspath( snumber );
-        end
     elseif ~isa( evalin( 'caller', 'cvx_problem', '[]' ), 'cvxprob' ),
         error( 'The global CVX solver selection cannot be changed while a model is being constructed.' );
     else
         cvx___.problems(end).solver.index = snumber;
     end
+    if cvx___.solvers.active,
+        cvx_setspath;
+    end
 elseif nargout == 0,
-    statvec = [ 0, cvx___.solvers.map.default, cvx___.solvers.active ];
+    solvers = cvx___.solvers;
+    statvec = [ 0, solvers.map.default, solvers.active ];
     statstr = { 'selected', 'default', 'active' };
     if ~isempty( cvx___.problems ),
         statvec(1) = cvx___.problems(end).solver.index;
     else
-        statvec(1) = cvx___.solvers.selected;
+        statvec(1) = solvers.selected;
     end
     fprintf( '\n' );
-    fprintf( 'Available solvers:\n' );
-    fprintf( '------------------\n' );
-    for k = 1 : length(cvx___.solvers.names),
-        fprintf( ' %s', cvx___.solvers.names{k} );
-        nstat = statstr(k==statvec);
-        if ~isempty(nstat),
-            nstat = sprintf( '%s,', nstat{:} );
-            fprintf( ' (%s)\n', nstat(1:end-1) );
+    dash = '-';
+    solvers = solvers.list;
+    nsolv = length( solvers );
+    lens = [4,6,7,8];
+    for k = 1 : nsolv,
+        if isempty( solvers(k).error ),
+            nstat = statstr(k==statvec);
+            if ~isempty(nstat),
+                nstat = sprintf( '%s,', nstat{:} );
+                nstat = nstat(1:end-1);
+            end
         else
-            fprintf( '\n' );
+            nstat = 'disabled';
         end
+        lens = max( lens, [ length(solvers(k).name), length(nstat), length(solvers(k).version), length(solvers(k).location) ] );
+    end
+    fmt = sprintf( '   %%-%ds   %%-%ds   %%-%ds   %%s\\n', lens(1), lens(2), lens(3) );
+    fprintf( fmt, 'Name', 'Status', 'Version', 'Location' ); %#ok
+    fprintf( '%s\n', dash(ones(1,sum(lens)+15)) );
+    for k = 1 : nsolv,
+        if isempty( solvers(k).error ),
+            nstat = statstr(k==statvec);
+            if ~isempty(nstat),
+                nstat = sprintf( '%s,', nstat{:} );
+                nstat = nstat(1:end-1);
+            else
+                nstat = '';
+            end
+        else
+            nstat = 'disabled';
+        end
+        fprintf( fmt, solvers(k).name, nstat, solvers(k).version, solvers(k).location );
     end
     fprintf( '\n' );
 end

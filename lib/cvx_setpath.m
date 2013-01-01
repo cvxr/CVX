@@ -16,10 +16,12 @@ if ~cvx___.path.active,
     warning(s);
     cvx___.path.active = true;
 end
-if nargin == 0 || cvx___.path.hold,
+if nargin == 0,
     cvx___.path.hold = true;
 end
-cvx_setspath;
+if cvx___.path.hold,
+    cvx_setspath;
+end
 
 % Copyright 2012 CVX Research, Inc.
 % See the file COPYING.txt for full copyright information.
