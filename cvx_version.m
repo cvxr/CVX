@@ -176,6 +176,14 @@ elseif 0,
 else    
     fprintf( 'Manifest missing; cannot verify file structure.\n' ) ;
 end
+if ~exist( [ 'lib/cvx_eliminate_mex.', mext ], 'file' ) || ...
+   ~exist( [ 'lib/cvx_bcompress_mex.', mext ], 'file' ),
+    fprintf( 'ERROR: one or more MEX files for this platform are missing.\n' );
+    fprintf( 'These files end in the suffix ".%s". CVX will not operate\n', mext );
+    fprintf( 'without these files. Please visit\n' );
+    fprintf( '    http://cvxr.com/cvx/download\n' );
+    fprintf( 'And download a distribution targeted for your platform.\n' );
+end
 
 %%%%%%%%%%%%%%%%
 % License file %
