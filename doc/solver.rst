@@ -17,12 +17,12 @@ a fifth solver is currently under development:
 ============================================================= ==== ==== ====== ===== ====  ========= ============
 `SeDuMi <http://sedumi.ie.lehigh.edu>`_                        Y    Y    Y       Y    E     N         N
 `SDPT3 <http://www.math.nus.edu.sg/~mattohkc/sdpt3.html>`_     Y    Y    Y       Y    E     N         N
-`Gurobi <http://gurobi.com>`_                                  Y    Y    Y       N    N     Y         C
-`MOSEK <http://mosek.com>`_                                    Y    Y    Y       N    E     Y         A/C
+`Gurobi <http://gurobi.com>`_                                  Y    Y    Y       N    N     Y         Y
+`MOSEK <http://mosek.com>`_                                    Y    Y    Y       Y*   E     Y         Y
 `GLPK  <http://www.gnu.org/software/glpk>`_ (in development)   Y    N    N       Y    N     Y         N 
 ============================================================= ==== ==== ====== ===== ====  ========= ============
 
-(key: Y = Yes, N = No, E = Experimental, A = Academic users need a license, C = Commercial users need a license)
+(key: Y = Yes, N = No, E = Experimental, * = Mosek 7 or later is required.)
 
 Each solver has different capabilities and different levels of performance. For instance,
 SeDuMi [Stu99]_ and SDPT3 [TTT03]_ support all of the continuous (non-integer) models 
@@ -30,11 +30,9 @@ that CVX itself supports, while  Gurobi, MOSEK, and GLPK are more limited. On th
 these latter solvers all support integer constraints, while SeDuMi and SDPT3 do not.
 
 SeDuMi and SDPT3 are included with the CVX distribution, so you do not need to download
-an additional solver to start using CVX. MOSEK ApS and CVX Research have reached a
-preliminary agreement to include MOSEK with the distribution as well, so with a valid
-CVX Professional license (including a free academic license), it will be possible to
-begin using MOSEK immediately upon installation. We will make an announcement and update
-this documentation once the contract and implementation details have been completed.
+an additional solver to start using CVX. We have reached agreements with both Gurobi
+Optimization and MOSEK ApS to bundle their solvers with CVX. We will make an announcement
+and update this documentation once the bundling implementation has been completed.
 	
 If you are having difficulty with one solver, please try another. No one solver performs
 better than the others on *every* model CVX can generate---including commercial solvers.
