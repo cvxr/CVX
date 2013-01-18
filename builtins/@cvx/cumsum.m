@@ -32,10 +32,10 @@ else
 
     b = x.basis_;
     sb = size( b );
-    need_perm = any( s( 1 : dim - 1 ) > 1 );
+    need_perm = any( s( dim + 1 : end ) > 1 );
     if need_perm,
         ndxs = reshape( 1 : prod( s ), s );
-        ndxs = permute( ndxs, [ dim, 1 : dim - 1, dim + 1 : length( s ) ] );
+        ndxs = permute( ndxs, [ 1 : dim - 1, dim + 1 : length( s ), dim ] );
         b = b( :, ndxs );
     end
     b = reshape( b, prod( sb ) / s( dim ), s( dim ) );
