@@ -96,7 +96,7 @@ elseif pstr.complete && nnz( pstr.t_variable ) == 1,
     % Copy the variable data to the workspace
     %
 
-    if numel( pstr.objective ) > 1,
+    if numel( pstr.objective ) > 1 && ~isempty(pstr.result),
         if strfind( pstr.status, 'Solved' ),
             pstr.result = value( pstr.objective );
             if pstr.geometric, pstr.result = exp( pstr.result ); end
