@@ -270,29 +270,33 @@ try
         fprintf( '%s\n', line );
         fprintf('NOTE: the MATLAB path has been changed to point to the CVX distribution. To\n' );
         fprintf('use CVX without having to re-run CVX_SETUP every time MATLAB starts, you\n' );
-        fprintf('will need to save this path permanently. This script attempted to do this\n' ); 
-        fprintf('for you, but failed---likely due to UNIX permissions restrictions.\n' );
+        fprintf('will need to save this path permanently. This script attempted to do this\n' );
+        if fs == '/',
+            fprintf('for you, but failed---likely due to UNIX permissions restrictions.\n' );
+            nextword = 'To solve the problem';
+        else
+            fprintf('for you, but failed, due to the Windows User Access Control (UAC) settings.\n');
+            fprintf('<a href="http://www.mathworks.com/support/solutions/en/data/1-9574H9/index.html?solution=1-9574H9">Click here</a> for a MATLAB document that discusses the issue.\n\n');
+            fprintf('To solve this problem, please take the following steps:\n');
+            fprintf('    1) Exit MATLAB.\n');
+            fprintf('    2) Right click on the MATLAB icon, and select "Run as administrator."\n' );
+            fprintf('    3) Re-run "cvx_setup".\n\n');
+            nextword = 'Alternatively, if you do not have administrator access';
+        end
         if exist( user_file, 'file' ),
-            fprintf( 'To solve the problem, edit the file\n    %s\nand add the following line to the end of the file:\n', user_file ); 
-            fprintf( '    run %s%scvx_startup.m\n', mpath, fs );
-        elseif exist( user_path, 'dir' ),
-            fprintf( 'To solve the problem, create a new file\n    %s\ncontinaing the following line:\n', user_file );
+            fprintf( '%s, edit the file\n    %s\nand add the following line to the end of the file:\n', nextword, user_file ); 
             fprintf( '    run %s%scvx_startup.m\n', mpath, fs );
         elseif ~isempty( user_path ),
-            need_upr = false;
-            fprintf( 'To solve the problem, perform the following steps:\n' );
-            fprintf( '    1) Create a new directory %s:\n           !mkdir -p %s\n', user_path, user_path );
-            fprintf( '    2) Create a new startup.m file in that directory:\n           edit %s\n', user_file );
-            fprintf( '    3) Add the following line to that file, and save:\n           run %s%scvx_startup.m\n', mpath, fs );
-            fprintf( '    4) Execute the commands:\n           userpath reset; startup\n' );
+            fprintf( '%s, create a new file\n    %s\ncontaining the following line:\n', nextword, user_file );
+            fprintf( '    run %s%scvx_startup.m\n', mpath, fs );
         else
-            fprintf( 'To solve the problem, create a startup.m file containing the line:\n' );
+            fprintf( '%s, create a startup.m file containing the line:\n', nextword );
             fprintf( '    run %s%scvx_startup.m\n', mpath, fs );
             fprintf( 'Consult the MATLAB documentation for the proper location for that file.\n' );
             need_disclaim = false;
         end
         if need_upr,
-            fprintf( 'Finally, execute the following MATLAB commands:\n    userpath reset; startup\n' );
+            fprintf( 'Then execute the following MATLAB commands:\n    userpath reset; startup\n' );
         end
         if need_disclaim,
             fprintf( 'Please consult the MATLAB documentation for more information about the\n' );
