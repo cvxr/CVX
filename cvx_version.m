@@ -28,7 +28,7 @@ mpath = mpath( 1 : temp(end) - 1 );
 
 mext = mexext;
 
-if nargout <= 5 && nargout, 
+if nargout <= 4 && nargout, 
     return; 
 end
 

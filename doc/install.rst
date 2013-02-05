@@ -31,11 +31,12 @@ cautions, however:
   CVX works properly on this platform, but CVX Professional support requires Java 1.6.
   To restore this support, upgrade your operating system or Java installation.
   
-As of version 2.0, support for versions of Matlab more than five years 
-old---specifically, Matlab 7.4 (R2007a) or older---has been discontinued. If you need
-to use CVX with these older versions of Matlab, please use CVX 1.22 or earlier, which
-will remain available indefinitely on the CVX Research web site. However, this version
-is no longer supported, and will not receive bug fixes or improvements.
+As of version 2.0, support for versions 7.4 (R2007a) or older has been discontinued.
+If you need to use CVX with these older versions of Matlab, please use CVX 1.22 or 
+earlier, which will remain available indefinitely on the CVX Research web site. However,
+this version is no longer supported, and will not receive bug fixes or improvements. 
+We strongly encourage you to update your Matlab installation to the latest version
+possible.
 
 Installation instructions
 -------------------------
