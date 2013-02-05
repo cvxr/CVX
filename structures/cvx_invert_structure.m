@@ -13,13 +13,6 @@ if ~isreal( x ),
     
 elseif compact,
     
-    xi = x'/(x*x');
-    [ii,jj,vv] = find(xi);
-    [vn,vd] = rat(vv);
-    xi = sparse(ii,jj,vn./vd,size(x,2),size(x,1));
-    
-else
-    
     [LL,UU] = lu(x);
     [jj,ii] = find(UU');
     dd = [true;diff(ii)~=0];
@@ -27,6 +20,13 @@ else
     [i2,j2,vv] = find( inv(UU(:,jj)) / LL );
     [vn,vd] = rat(vv);
     xi = sparse(jj(i2),j2,vn./vd,size(x,2),size(x,1));
+    
+else
+    
+    xi = x'/(x*x');
+    [ii,jj,vv] = find(xi);
+    [vn,vd] = rat(vv);
+    xi = sparse(ii,jj,vn./vd,size(x,2),size(x,1));
     
 end
 
