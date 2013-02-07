@@ -13,10 +13,17 @@ end
 % Initialize the global data structure %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+try_save = false;
 if nargin < 1,
-    try 
-        if strncmp( computer, 'PC', 2 ), fs = '\'; else fs = '/'; end
-        prefs = load( [ prefdir, fs, 'cvx_prefs.mat' ] );
+    try
+        if strncmp( computer, 'PC', 2 ), fs = '\'; fsre = '\\'; else fs = '/'; fsre = '/'; end
+        pfile = [ regexprep( prefdir, [ fsre, 'R\d\d\d\d\w$' ], '' ), fs, 'cvx_prefs.mat' ];
+        if exist( pfile, 'file' ),
+            prefs = load( pfile );
+        else
+            prefs = load( [ prefdir, fs, 'cvx_prefs.mat' ] );
+            try_save = true;
+        end
     catch %#ok
         error( 'CVX:Preferences', 'Could not load saved CVX preferences; cannot continue. Please run CVX_SETUP.' );
     end
@@ -27,11 +34,13 @@ if ~isempty( prefs.license ),
             'The CVX licensing system requires the Java VM. The professional features of CVX are disabled.', ...
             [66,75], false, '', true ) );
         prefs.license = [];
+        try_save = false;
     elseif ~exist( 'cvx_license', 'file' ), 
         warning( 'CVX:Licensing', cvx_error( ...
             'The CVX licensing system cannot be found. The professional features of CVX are disabled.', ...
             [66,75], false, '', true ) );
         prefs.license = [];
+        try_save = false;
     else
         try
             prefs.license = cvx_license( prefs.license );
@@ -40,11 +49,13 @@ if ~isempty( prefs.license ),
                 errmsg = sprintf( '%s\n', errmsg{2:end} );
                 warning( 'CVX:Licensing', 'A problem was found with the current CVX license:\n%sThe professional features of CVX are disabled.\nPlease correct the issues and re-run CVX_SETUP.', errmsg );
                 prefs.license = [];
+                try_save = false;
             end
         catch errmsg
             prefs.license = [];
             errmsg = cvx_error( errmsg, 67, false, '    ' );
             warning( 'CVX:Licensing', 'The CVX licensing system encountered an unexpected error:\n%sThe professional features of CVX are disabled.\nPlease correct the issue or contact CVX Research support.', errmsg );
+            try_save = false;
         end
     end
 end
@@ -84,6 +95,12 @@ cvx___.linforms   = temp;
 cvx___.linrepls   = temp;
 cvx___.uniforms   = temp;
 cvx___.unirepls   = temp;
+if try_save,
+    try
+        cvx_save_prefs( true );
+    catch %#ok
+    end
+end
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Run each shim to connect/reconnect the solvers %
@@ -124,43 +141,42 @@ cd( cur_d );
 % If any solvers have errors, force the user to re-run cvx_setup. %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-if nrej,
-    reject = {};
-    reject_lic = {};
-    reject_java = {};
-    ndefault = 0;
-    for k = 1 : nsolv,
-        if isempty( solvers(k).error ),
-            if ~ndefault, ndefault = k; end
-        elseif isequal( solvers(k).error, 'Java support is required.' );
-            reject_java{end+1} = solvers.name; %#ok
-        elseif isequal( solvers(k).error, 'A CVX Professional license is required.' ),
-            reject_lic{end+1} = solvers(k).name; %#ok
-        else
-            errmsg = [ solvers(k).name, ': ', solvers(k).error ];
-            reject{end+1} = cvx_error( errmsg, 67, false, '    ' ); %#ok
-        end
+if ~nrej, return; end
+reject = {};
+reject_lic = {};
+reject_java = {};
+ndefault = 0;
+for k = 1 : nsolv,
+    if isempty( solvers(k).error ),
+        if ~ndefault, ndefault = k; end
+    elseif isequal( solvers(k).error, 'Java support is required.' );
+        reject_java{end+1} = solvers.name; %#ok
+    elseif isequal( solvers(k).error, 'A CVX Professional license is required.' ),
+        reject_lic{end+1} = solvers(k).name; %#ok
+    else
+        errmsg = [ solvers(k).name, ': ', solvers(k).error ];
+        reject{end+1} = cvx_error( errmsg, 67, false, '    ' ); %#ok
     end
-    if ~isempty( reject_java ),
-        reject_lic = sprintf( '%s ', reject_java{:} );
-        warning( 'CVX:SolverErrors', 'The following solvers were disabled due to the disabling of Java: %s', reject_java );
-    end
-    if ~isempty( reject_lic ),
-        reject_lic = sprintf( '%s ', reject_lic{:} );
-        warning( 'CVX:SolverErrors', 'The following solvers are are disabled due to licensing issues: %s', reject_lic );
-    end
-    if ~isempty( reject ),
-        reject = sprintf( '%s', reject{:} );
-        warning( 'CVX:SolverErrors', 'The following errors were issued when initializing the solvers:\n%sPlease check your installation and re-run CVX_SETUP.\nThese solvers are unavailable for this session.%s', reject );
-    end
-    if nrej == length( solvers ),
-        clear global cvx___
-        error( 'CVX:SolverErrors', 'All solvers were disabled due to various errors.\nPlease re-run CVX_SETUP and, if necessary, contact CVX Research for support.' );
-    elseif ~isempty(solvers(cvx___.solvers.map.default).error),
-        cvx___.solvers.map.default = ndefault;
-        cvx___.solvers.selected = ndefault;
-        warning( 'CVX:SolverErrors', 'The default solver has temporarily been changed to %s.', solvers(ndefault).name );
-    end
+end
+if ~isempty( reject_java ),
+    reject_lic = sprintf( '%s ', reject_java{:} );
+    warning( 'CVX:SolverErrors', 'The following solvers were disabled due to the disabling of Java: %s', reject_java );
+end
+if ~isempty( reject_lic ),
+    reject_lic = sprintf( '%s ', reject_lic{:} );
+    warning( 'CVX:SolverErrors', 'The following solvers are are disabled due to licensing issues: %s', reject_lic );
+end
+if ~isempty( reject ),
+    reject = sprintf( '%s', reject{:} );
+    warning( 'CVX:SolverErrors', 'The following errors were issued when initializing the solvers:\n%sPlease check your installation and re-run CVX_SETUP.\nThese solvers are unavailable for this session.%s', reject );
+end
+if nrej == length( solvers ),
+    clear global cvx___
+    error( 'CVX:SolverErrors', 'All solvers were disabled due to various errors.\nPlease re-run CVX_SETUP and, if necessary, contact CVX Research for support.' );
+elseif ~isempty(solvers(cvx___.solvers.map.default).error),
+    cvx___.solvers.map.default = ndefault;
+    cvx___.solvers.selected = ndefault;
+    warning( 'CVX:SolverErrors', 'The default solver has temporarily been changed to %s.', solvers(ndefault).name );
 end
 
 % Copyright 2012 CVX Research, Inc.

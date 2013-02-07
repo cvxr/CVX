@@ -21,6 +21,7 @@ try
     unexpected = MException( 'CVX:Unexpected', '' );
     if nargin < 1, license_file = []; end
     [ fs, ps, mpath, mext, nver, isoctave, problem ] = cvx_version( license_file ); %#ok
+    if fs == '/', fsre = '/'; else fsre = '\\'; end
     if problem, throw(expected); end
     
     %%%%%%%%%%%%%%%%%%%%%%%%
@@ -37,13 +38,22 @@ try
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
     fprintf( 'Saved preferences...' ); nret = true;
-    pfile = [ prefdir, fs, 'cvx_prefs.mat' ];
-    oprefs = [];
+    pfile = [ regexprep( prefdir, [ fsre, 'R\d\d\d\d\w$' ], '' ), fs, 'cvx_prefs.mat' ];
     if exist( pfile, 'file' ),
         oprefs = load( pfile );
-        fprintf( 'found.\n' ); nret = false;
+        fprintf( 'found.\n' ); 
+        nret = false;
     else
-        fprintf( 'not found; defaults created.\n' ); nret = false;
+        pfile = [ prefdir, fs, 'cvx_prefs.mat' ];
+        if exist( pfile, 'file' ),
+            oprefs = load( pfile );
+            fprintf( 'found.\n' ); 
+            nret = false;
+        else
+            oprefs = [];
+            fprintf( 'not found; defaults created.\n' ); 
+            nret = false;
+        end
     end
     prefs = struct( 'expert', false, 'precision', [eps^0.5,eps^0.5,eps^0.25], ...
                     'precflag', 'default', 'rat_growth', 10, ...
@@ -59,7 +69,6 @@ try
     prefs.path = cpath;
     prefs.license = cvx___.license;
     prefs.solvers = struct( 'selected', 0, 'active', 0, 'list', [], 'names', {{}}, 'map', struct( 'default', 0 ) );
-    prefs.solvers.list = struct( 'name', {}, 'version', {}, 'location', {}, 'fullpath', {}, 'error', {}, 'warning', {}, 'dualize', {}, 'path', {}, 'check', {}, 'solve', {}, 'settings', {}, 'spath', {}, 'sname', {}, 'params', {} );
     
     %%%%%%%%%%%%%%%%%%%%%%
     % Search for solvers %
@@ -71,7 +80,7 @@ try
     solvers = { solvers(~[solvers.isdir]).name };
     solvers = solvers( ~cellfun( @isempty, regexp( solvers, '\.(m|p)$' ) ) );
     solvers = unique( cellfun( @(x)x(1:end-2), solvers, 'UniformOutput', false ) );
-    solvers = struct( 'name', '', 'version', '', 'location', '', 'fullpath', '', 'error', '', 'warning', '', 'dualize', '', 'path', '', 'check', [], 'solve', [], 'settings', [], 'sname', solvers, 'spath', shimpath );
+    solvers = struct( 'name', '', 'version', '', 'location', '', 'fullpath', '', 'error', '', 'warning', '', 'dualize', '', 'path', '', 'check', [], 'solve', [], 'settings', [], 'sname', solvers, 'spath', shimpath, 'params', [] );
     solver2 = which( 'cvx_solver_shim', '-all' );
     for k = 1 : length(solver2),
         tsolv = solver2{k};

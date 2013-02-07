@@ -14,7 +14,9 @@ osolv = cvx___.solvers;
 try
     [ cvx___.solvers.list.check, cvx___.solvers.list.solve ] = deal([]);
     cvx___.solvers.active = 0;
-    save([prefdir,filesep,'cvx_prefs.mat' ],'-struct',...
+    if strncmp( computer, 'PC', 2 ), fs = '\'; fsre = '\\'; else fs = '/'; fsre = '/'; end
+    pfile = [ regexprep( prefdir(1), [ fsre, 'R\d\d\d\d\w$' ], '' ), fs, 'cvx_prefs.mat' ];
+    save(pfile,'-struct',...
         'cvx___','expert','precision','precflag',...
         'rat_growth','path','license','solvers');
     cvx___.solvers = osolv;
