@@ -110,6 +110,7 @@ elseif pstr.complete && nnz( pstr.t_variable ) == 1,
     % assignin( 'caller', 'cvx_optdpt',  pstr.duals );
     assignin( 'caller', 'cvx_status',  pstr.status );
     assignin( 'caller', 'cvx_optval',  pstr.result );
+    assignin( 'caller', 'cvx_optbnd',  pstr.bound );
     assignin( 'caller', 'cvx_slvitr',  pstr.iters );
     assignin( 'caller', 'cvx_slvtol',  pstr.tol );
     

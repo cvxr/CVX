@@ -54,6 +54,7 @@ end
 x     = NaN * ones(n,1);
 y     = NaN * ones(m,1);
 oval  = NaN;
+bval  = NaN;
 pval  = NaN;
 dval  = NaN;
 tprec = Inf;
@@ -440,11 +441,13 @@ elseif n ~= 0 && ~infeas && ( any( b ) || any( c ) ),
             if q > prec(3),
                 status = strrep( status, 'Solved', 'Infeasible' );
                 oval = sgn * Inf;
+                bval = oval;
                 y = y / abs( b' * y );
                 x(:) = NaN;
                 dval = 0;
             else
                 oval = 0;
+                bval = 0;
                 pval = 1;
                 dval = 1;
             end
@@ -455,17 +458,27 @@ elseif n ~= 0 && ~infeas && ( any( b ) || any( c ) ),
         end
     else
         switch status,
-        case { 'Solved', 'Inaccurate/Solved' },
+        case { 'Solved', 'Inaccurate/Solved', 'Suboptimal' },
             oval = sgn * ( c' * x + d' );
+            if ndual || dualized,
+                bval = sgn * ( b' * y + d' );
+            elseif length(tprec) > 1,
+                bval = sgn * tprec(2) + d';
+            else
+                bval = sgn * -Inf;
+            end
             pval = 1;
             dval = 1;
         case { 'Infeasible', 'Inaccurate/Infeasible' },
             oval = sgn * Inf;
+            bval = oval;
             dval = 0;
         case { 'Unbounded', 'Inaccurate/Unbounded' },
             oval = -sgn * Inf;
+            bval = oval;
             pval = 0;
         otherwise,
+            bval = NaN;
             if ~isnan( x ), pval = 1; end
             if ~isnan( y ), dval = 1; end
         end
@@ -488,6 +501,7 @@ elseif infeas,
     b( ~tt ) = 0;
     y = - b / ( b' * b );
     oval = sgn * Inf;
+    bval = oval;
     dval = 0;
     
 else
@@ -503,7 +517,8 @@ else
     tprec = 0;
     x = zeros( n, 1 );
     y = zeros( m, 1 );
-    oval  = sgn * d;
+    oval = sgn * d;
+    bval = oval;
     pval = 1;
     dval = 1;
     
@@ -536,7 +551,7 @@ end
 
 cvx___.problems( p ).status = status;
 cvx___.problems( p ).iters = iters;
-cvx___.problems( p ).tol = tprec;
+cvx___.problems( p ).tol = tprec(1);
 
 %
 % Push the results into the master CVX workspace
@@ -570,9 +585,12 @@ if ~isempty( obj ),
         oval = cvx_value( obj );
     end
     oval(gobj) = exp(oval(gobj));
+    bval(gobj) = exp(bval(gobj));
 end
 oval = full(oval);
+bval = full(bval);
 cvx___.problems( p ).result = oval;
+cvx___.problems( p ).bound = bval;
 if ~quiet,
     if length( oval ) == 1,
         fprintf( 'Optimal value (cvx_optval): %+g\n', oval );
