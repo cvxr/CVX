@@ -610,7 +610,11 @@ if ~quiet,
 end
 
 if ~isempty( estruc ),
-    rethrow( estruc )
+    if strncmp( estruc.identifier, 'CVX:', 4 ),
+        throw( MException( estruc.identifier, estruc.message ) );
+    else
+        rethrow( estruc );
+    end
 end
 
 % Copyright 2012 CVX Research, Inc.

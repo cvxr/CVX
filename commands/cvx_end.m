@@ -77,8 +77,7 @@ elseif pstr.complete && nnz( pstr.t_variable ) == 1,
 
     try
         solve( prob );
-    catch
-        estruc = lasterror;
+    catch estruc
     end
     pstr = cvx___.problems( p );
 
@@ -245,7 +244,11 @@ if isempty( cvx___.problems ) && cvx___.profile,
 end
 
 if ~isempty( estruc ),
-    rethrow( estruc );
+    if strncmp( estruc.identifier, 'CVX:', 4 ),
+        throw( MException( estruc.identifier, estruc.message ) );
+    else
+        rethrow( estruc );
+    end
 end
 
 % Copyright 2012 CVX Research, Inc.

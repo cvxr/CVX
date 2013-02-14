@@ -126,7 +126,7 @@ if fid > 0,
                     mdir = missing_d{1};
                     ss = strncmp( missing_d, mdir, length(mdir) );
                     tt = strncmp( missing_f, mdir, length(mdir) );
-                    fprintf( '        %s%s%s + %d files, %d directories\n', mpath, fs, mdir, nnz(tt), nnz(ss) );
+                    fprintf( '        %s%s%s + %d files, %d subdirectories\n', mpath, fs, mdir, nnz(tt), nnz(ss) - 1 );
                     missing_d(ss) = [];
                     missing_f(tt) = [];
                 end
@@ -136,7 +136,7 @@ if fid > 0,
                 if length(missing_f) > 10,
                     fprintf( '        (and %d more files)\n', length(missing_f) - 10 );
                 end
-                disp( '    These missing may prevent CVX from operating properly.'  );
+                disp( '    These omissions may prevent CVX from operating properly.'  );
             end
             if ~isempty( additional ),
                 if isempty( missing ), fprintf( '\n' ); end
@@ -148,7 +148,7 @@ if fid > 0,
                     mdir = additional_d{1};
                     ss = strncmp( additional_d, mdir, length(mdir) );
                     tt = strncmp( additional_f, mdir, length(mdir) );
-                    fprintf( '        %s%s%s + %d files, %d directories\n', mpath, fs, mdir, nnz(tt), nnz(ss) );
+                    fprintf( '        %s%s%s + %d files, %d subdirectories\n', mpath, fs, mdir, nnz(tt), nnz(ss) - 1 );
                     additional_d(ss) = [];
                     additional_f(tt) = [];
                 end
