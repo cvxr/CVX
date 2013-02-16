@@ -9,13 +9,15 @@ function xi = cvx_cleanup_structure( xi )
 %    result this routine should not be used for general RREF computations
 %    without modifying it to remove some of the cleanup code.
 
+TOL_ZERO = 16 * eps;
+TOL_RAT  = sqrt(eps);
+
 % Reduce using an LU factorization
 [LL,xi,PP] = lu(xi); %#ok
 [m,n] = size(xi); %#ok
 
 % Remove the entries that are close to zero
-tol = 16 * eps;
-xi  = xi .* ( abs(xi) > tol * norm(xi,'inf') );
+xi  = xi .* ( abs(xi) > TOL_ZERO * norm(xi,'inf') );
 
 % Find the locations of the leading element in each row. To do this we first
 % find the first element in each row. Transposing xi insures that the
@@ -46,7 +48,7 @@ Q  = xi(ii,jj)\xi(ii,j2);
 
 % Reduce roundoff error by converting the values to ratios of integers.
 [i3,j3,vv] = find(Q);
-[vn,vd] = rat(vv,tol);
+[vn,vd] = rat(vv,TOL_RAT);
 xi = sparse([(1:rr)';i3],[jj;j2(j3)],[ones(rr,1);vn./vd],rr,n);
 
 % Copyright 2012 CVX Research, Inc.
