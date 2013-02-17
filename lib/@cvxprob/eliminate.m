@@ -198,17 +198,16 @@ for pass = 1 : 2,
     % Check to see if dualization will result in smaller problem
     %
     
-    n_ineq = nnz(ineqs);
     ineqs(:) = 0;
     [ rows, cols ] = cvx_eliminate_mex( dbCA, 1, rsv, ineqs );
+    n_save = min( nnz(rows), nnz(cols) );
+    n_ineq = nnz( rsv & rcnt == ( cc ~= 0 ) + 1 ) - ( rcnt(1) == ( cc(1) ~= 0 ) + 1 );
     [n1,m1] = size(dbCA);
-    m_pri  = m1 - nnz(rows) - 1;
-    n_pri  = n1 - nnz(cols) - 1;
-    n_pri  = n_pri + ( n_rsv ~= n_pri );
-    n_eq   = m1 - 1 - n_ineq;
-    m_dua  = n1 - n_ineq - 1;
-    n_dua  = nnz(rsv) + n_eq + ( n_eq ~= 0 );
-    if ( ( m_pri > n_pri ) || ( m_pri * n_pri > m_dua * n_dua ) ) && ( m_dua <= n_dua ),
+    m_pri = m1 - n_save - 1;
+    n_pri = n1 - n_save - 1;
+    m_dua = n1 - n_ineq - 1;
+    n_dua = nnz( rsv ) + m1 - n_ineq - 1;
+    if ( ( m_pri > n_pri ) || ( m_pri * m_pri * n_pri > m_dua * m_dua * n_dua ) ) && ( m_dua <= n_dua ),
         ndxs = full(sparse(ndxs,1,1:n1));
         PP = cell(2,length(cones));
         n_cur = m1;

@@ -26,7 +26,7 @@ for k = 1 : nstrs,
     else
         args = {};
     end
-    name = [ 'cvx_s_', argt ];
+    name = [ 'cvx_s_', lower(argt) ];
     try
         if iscell( args ),
             S = feval( name, sz( 1 ), sz( 2 ), args{:} );
@@ -68,15 +68,10 @@ if length( strs ) ~= 1,
             end
             A = A(:,[1:n/2;n/2+1:n]);
         end
+        ostrs{k} = A;
         strs{k} = cvx_orthog_structure(A);
     end
-    NS = cvx_cleanup_structure( vertcat(strs{:}) );
-    rr = size(NS,1);
-    if rr == n,
-        S = sparse(0,n);
-    else
-        S = cvx_orthog_structure(NS);
-    end
+    S = cvx_orthog_structure( vertcat(strs{:}), true );
     if ~rstr,
         S = S( :, 1 : 2: end ) + sqrt(-1) * S( :, 2 : 2 : end );
     end
