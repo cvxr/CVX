@@ -54,7 +54,6 @@ for pass = 1 : 2,
                 can_dual = false;
             end
         end
-        n_rsv = nnz( rsv ) - 1;
         rsv   = full( rsv );
         nng   = full( nng );
         ndxs  = ( 1 : nn )';
@@ -68,13 +67,13 @@ for pass = 1 : 2,
     % structure to them, so that we can make the best decision as to
     % whether or not to convert the problem to dual standard form. Exempted
     % from this are columns with trivial xi = xj constraints, where xi is free.
-    if pass == 1,
-        trivs = sum( dbCA(rsv==0,:) ~= 0, 1 ) == 1 & sum( dbCA(rsv~=0,:) ~= 0, 1 ) - ( dbCA( 1, : ) ~= 0 ) == 1;
-        ineqs = full(any(dbCA(rsv~=0&rcnt==1,:),1)) & full(~trivs);
-        ineqs = +ineqs;
-    elseif dualized,
+    % if pass == 1,
+    %    trivs = sum( dbCA(rsv==0,:) ~= 0, 1 ) == 1 & sum( dbCA(rsv~=0,:) ~= 0, 1 ) - ( dbCA( 1, : ) ~= 0 ) == 1;
+    %    ineqs = full(any(dbCA(rsv~=0&rcnt==1,:),1)) & full(~trivs);
+    %    ineqs = +ineqs;
+    %elseif dualized,
         ineqs = zeros(1,size(dbCA,2));
-    end
+    %end
     ineqs(1) = 1;
     
     while true,
@@ -197,11 +196,10 @@ for pass = 1 : 2,
     %
     % Check to see if dualization will result in smaller problem
     %
-    
-    ineqs(:) = 0;
-    [ rows, cols ] = cvx_eliminate_mex( dbCA, 1, rsv, ineqs );
-    n_save = min( nnz(rows), nnz(cols) );
-    n_ineq = nnz( rsv & rcnt == ( cc ~= 0 ) + 1 ) - ( rcnt(1) == ( cc(1) ~= 0 ) + 1 );
+    ineqs(1) = 0; rsv(1) = 0;
+    n_save = nnz(sum(dbCA(:,ineqs~=0)~=0,1)==1+(dbCA(1,ineqs~=0)~=0));
+    n_ineq = nnz(any(dbCA(rsv&rcnt==(cc~=0)+1,:)));
+    rsv(1) = 1; ineqs(1) = 1;
     [n1,m1] = size(dbCA);
     m_pri = m1 - n_save - 1;
     n_pri = n1 - n_save - 1;

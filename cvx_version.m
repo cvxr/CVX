@@ -191,7 +191,7 @@ end
 
 cvx___.license = [];
 exception = '';
-if usejava('jvm') && exist( 'cvx_license.p', 'file' ),
+if usejava('jvm') && exist( 'cvx_license', 'file' ),
     try
         if nargin < 1, license_file = ''; end
         cvx___.license = cvx_license( license_file );
