@@ -118,32 +118,34 @@ hold <span class="string">off</span>
 <pre class="codeoutput">
  
 Successive approximation method to be employed.
-   sedumi will be called several times to refine the solution.
+   SDPT3 will be called several times to refine the solution.
    Original size: 308 variables, 109 equality constraints
    100 exponentials add 800 variables, 500 equality constraints
 -----------------------------------------------------------------
  Cones  |             Errors              |
 Mov/Act | Centering  Exp cone   Poly cone | Status
 --------+---------------------------------+---------
-100/100 | 6.674e+00  2.690e+00  4.170e-07 | Solved
-100/100 | 7.774e-01  4.372e-02  1.388e-08 | Solved
-100/100 | 6.970e-02  3.487e-04  1.996e-07 | Solved
- 99/100 | 4.497e-03  1.579e-06  4.691e-08 | Solved
-  0/100 | 2.818e-04  9.617e-08  8.173e-08 | Solved
+100/100 | 7.368e+00  2.690e+00  0.000e+00 | Solved
+100/100 | 1.280e+00  1.428e-01  0.000e+00 | Solved
+100/100 | 2.345e-01  4.365e-03  0.000e+00 | Solved
+ 99/ 99 | 2.735e-02  5.851e-05  0.000e+00 | Solved
+ 96/ 98 | 2.851e-03  5.894e-07  0.000e+00 | Solved
+  0/  0 | 0.000e+00  0.000e+00  0.000e+00 | Solved
 -----------------------------------------------------------------
 Status: Solved
 Optimal value (cvx_optval): +4.38629
-0 &lt;= Prob(x&lt;=-1) &lt;= 0.329406
-0 &lt;= Prob(x&lt;=-0.979798) &lt;= 0.344777
-0 &lt;= Prob(x&lt;=-0.959596) &lt;= 0.360771
-0 &lt;= Prob(x&lt;=-0.939394) &lt;= 0.377365
-0 &lt;= Prob(x&lt;=-0.919192) &lt;= 0.394532
-0 &lt;= Prob(x&lt;=-0.89899) &lt;= 0.4
-0 &lt;= Prob(x&lt;=-0.878788) &lt;= 0.4
-0 &lt;= Prob(x&lt;=-0.858586) &lt;= 0.4
-0 &lt;= Prob(x&lt;=-0.838384) &lt;= 0.4
-0 &lt;= Prob(x&lt;=-0.818182) &lt;= 0.4
-0 &lt;= Prob(x&lt;=-0.79798) &lt;= 0.4
+ 
+2.26172e-11 &lt;= Prob(x&lt;=-1) &lt;= 0.329406
+2.88711e-11 &lt;= Prob(x&lt;=-0.979798) &lt;= 0.344777
+2.25055e-10 &lt;= Prob(x&lt;=-0.959596) &lt;= 0.360771
+1.63251e-10 &lt;= Prob(x&lt;=-0.939394) &lt;= 0.377365
+9.05182e-12 &lt;= Prob(x&lt;=-0.919192) &lt;= 0.394532
+4.78857e-11 &lt;= Prob(x&lt;=-0.89899) &lt;= 0.4
+2.63853e-11 &lt;= Prob(x&lt;=-0.878788) &lt;= 0.4
+6.29577e-11 &lt;= Prob(x&lt;=-0.858586) &lt;= 0.4
+5.85923e-10 &lt;= Prob(x&lt;=-0.838384) &lt;= 0.4
+4.11196e-11 &lt;= Prob(x&lt;=-0.818182) &lt;= 0.4
+2.53228e-10 &lt;= Prob(x&lt;=-0.79798) &lt;= 0.4
 0.0116304 &lt;= Prob(x&lt;=-0.777778) &lt;= 0.4
 0.0331953 &lt;= Prob(x&lt;=-0.757576) &lt;= 0.4
 0.0519157 &lt;= Prob(x&lt;=-0.737374) &lt;= 0.4

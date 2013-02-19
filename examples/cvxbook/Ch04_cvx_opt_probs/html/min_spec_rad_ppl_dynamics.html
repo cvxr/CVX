@@ -106,20 +106,23 @@ eigA = eig(A)
 <pre class="codeoutput">
  
 Successive approximation method to be employed.
-   sedumi will be called several times to refine the solution.
-   Original size: 21 variables, 11 equality constraints
+   For improved efficiency, SDPT3 is solving the dual problem.
+   SDPT3 will be called several times to refine the solution.
+   Original size: 20 variables, 11 equality constraints
    4 exponentials add 32 variables, 20 equality constraints
 -----------------------------------------------------------------
  Cones  |             Errors              |
 Mov/Act | Centering  Exp cone   Poly cone | Status
 --------+---------------------------------+---------
-  4/  4 | 3.608e+00  9.922e-01  2.166e-07 | Solved
-  4/  4 | 1.314e-01  1.230e-03  5.761e-07 | Solved
-  3/  3 | 8.388e-03  4.893e-06  3.197e-07 | Solved
-  0/  2 | 5.249e-04  2.081e-08  4.268e-08 | Solved
+  4/  4 | 5.480e+00  1.644e+00  0.000e+00 | Solved
+  4/  4 | 9.168e-01  6.708e-02  0.000e+00 | Solved
+  4/  4 | 2.790e-02  5.468e-05  0.000e+00 | Solved
+  4/  4 | 2.193e-03  3.379e-07  0.000e+00 | Solved
+  0/  2 | 1.882e-04  2.295e-09  0.000e+00 | Solved
 -----------------------------------------------------------------
 Status: Solved
 Optimal value (cvx_optval): +0.804067
+ 
  
 The fastest decay rate of the bacteria population is 0.80.
  

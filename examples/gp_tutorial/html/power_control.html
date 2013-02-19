@@ -72,23 +72,22 @@ disp(<span class="string">'Optimal power levels are: '</span>), P
 <pre class="codeoutput">
  
 Successive approximation method to be employed.
-   For improved efficiency, sedumi is solving the dual problem.
-   sedumi will be called several times to refine the solution.
-   Original size: 98 variables, 36 equality constraints
+   SDPT3 will be called several times to refine the solution.
+   Original size: 99 variables, 63 equality constraints
    26 exponentials add 208 variables, 130 equality constraints
 -----------------------------------------------------------------
  Cones  |             Errors              |
 Mov/Act | Centering  Exp cone   Poly cone | Status
 --------+---------------------------------+---------
- 21/ 21 | 3.182e+00  3.069e-01  0.000e+00 | Unbounded
- 25/ 25 | 3.207e+00  6.778e-01  2.356e-07 | Solved
- 26/ 26 | 5.268e-01  1.997e-02  4.381e-08 | Solved
- 20/ 26 | 2.964e-02  6.215e-05  4.628e-08 | Solved
-  5/ 26 | 2.139e-03  3.770e-07  4.631e-08 | Solved
-  0/ 26 | 1.527e-04  4.709e-08  4.630e-08 | Solved
+ 26/ 26 | 2.249e+00  3.586e-01  0.000e+00 | Solved
+ 26/ 26 | 4.538e-01  1.436e-02  0.000e+00 | Solved
+ 25/ 26 | 2.987e-02  6.195e-05  0.000e+00 | Solved
+  6/ 17 | 1.547e-03  1.651e-07  0.000e+00 | Solved
+  0/  0 | 7.256e-05  0.000e+00  0.000e+00 | Solved
 -----------------------------------------------------------------
 Status: Solved
 Optimal value (cvx_optval): +17.0014
+ 
 
 The minimum total transmitter power is 17.00.
 Optimal power levels are: 

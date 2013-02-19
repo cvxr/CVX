@@ -92,23 +92,25 @@ disp(<span class="string">'Optimal doping profile is plotted.'</span>)
 <pre class="codeoutput">
  
 Successive approximation method to be employed.
-   For improved efficiency, sedumi is solving the dual problem.
-   sedumi will be called several times to refine the solution.
+   For improved efficiency, SDPT3 is solving the dual problem.
+   SDPT3 will be called several times to refine the solution.
    Original size: 785 variables, 343 equality constraints
    196 exponentials add 1568 variables, 980 equality constraints
 -----------------------------------------------------------------
  Cones  |             Errors              |
 Mov/Act | Centering  Exp cone   Poly cone | Status
 --------+---------------------------------+---------
-196/196 | 5.752e+00  2.045e+00  5.884e-07 | Solved
-194/194 | 3.395e+00  8.756e-01  2.249e-06 | Solved
-171/192 | 4.056e-01  1.160e-02  4.145e-06 | Solved
- 46/ 60 | 3.782e-01  1.025e-02  1.776e-06 | Solved
-  1/  1 | 2.711e-02  3.039e-05  0.000e+00 | Solved
+196/196 | 6.261e+00  2.045e+00  0.000e+00 | Solved
+195/196 | 3.102e+00  1.096e+00  0.000e+00 | Solved
+190/192 | 7.602e-01  4.952e-02  0.000e+00 | Solved
+ 97/160 | 8.235e-02  5.447e-04  0.000e+00 | Solved
+ 26/ 68 | 6.361e-03  3.211e-06  0.000e+00 | Solved
+  1/  7 | 5.910e-04  2.224e-08  0.000e+00 | Solved
   0/  0 | 0.000e+00  0.000e+00  0.000e+00 | Solved
 -----------------------------------------------------------------
 Status: Solved
 Optimal value (cvx_optval): +1.57873e-12
+ 
 Optimal doping profile is plotted.
 </pre>
 <a id="plots"></a>

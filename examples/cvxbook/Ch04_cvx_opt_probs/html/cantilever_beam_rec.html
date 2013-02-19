@@ -100,32 +100,35 @@ Building recursive relations for index: 2
 Building recursive relations for index: 1
  
 Successive approximation method to be employed.
-   sedumi will be called several times to refine the solution.
-   Original size: 127 variables, 88 equality constraints
+   For improved efficiency, SeDuMi is solving the dual problem.
+   SeDuMi will be called several times to refine the solution.
+   Original size: 126 variables, 39 equality constraints
    23 exponentials add 184 variables, 115 equality constraints
 -----------------------------------------------------------------
  Cones  |             Errors              |
 Mov/Act | Centering  Exp cone   Poly cone | Status
 --------+---------------------------------+---------
-  8/  8 | 2.949e+00  6.560e-01  7.202e-08 | Solved
-  8/  8 | 2.417e-01  4.179e-03  1.569e-07 | Solved
-  8/  8 | 1.641e-02  1.922e-05  1.253e-08 | Solved
-  8/  8 | 1.033e-03  8.954e-08  1.041e-08 | Solved
-  0/  8 | 6.465e-05  1.084e-08  1.031e-08 | Solved
+ 23/ 23 | 6.487e+00  2.207e+00  0.000e+00 | Solved
+ 23/ 23 | 1.520e+00  1.942e-01  2.724e-07 | Solved
+ 23/ 23 | 1.644e-01  2.074e-03  5.029e-08 | Solved
+ 22/ 23 | 8.370e-03  5.600e-06  4.432e-08 | Solved
+  9/ 23 | 5.035e-04  5.092e-08  4.441e-08 | Solved
+  0/ 23 | 1.039e-04  4.409e-08  4.400e-08 | Solved
 -----------------------------------------------------------------
 Status: Solved
-Optimal value (cvx_optval): +40.9668
+Optimal value (cvx_optval): +42.3965
+ 
 The optimal widths and heights are: 
 
 w =
 
     0.6214
     0.7830
-    0.8963
-    0.9865
-    1.0627
-    1.1292
-    1.1888
+    0.9060
+    1.0124
+    1.1004
+    1.1762
+    1.2000
     1.3333
 
 
@@ -133,14 +136,14 @@ h =
 
     3.1072
     3.9149
-    4.4814
-    4.9324
-    5.3133
-    5.6462
-    5.9439
+    4.5299
+    5.0621
+    5.5019
+    5.8810
+    6.0000
     6.0000
 
-The optimal minimum volume of the beam is 40.9668.
+The optimal minimum volume of the beam is 42.3965.
 </pre>
 <a id="plots"></a>
 <div id="plotoutput">

@@ -36,6 +36,7 @@ Jump to:&nbsp;&nbsp;&nbsp;&nbsp;
 <span class="comment">% parameter to be chosen or tuned.</span>
 
 <span class="comment">% Input data</span>
+rand(<span class="string">'state'</span>,0);
 randn(<span class="string">'state'</span>,0);
 n = 10;
 N = 100;
@@ -67,20 +68,21 @@ title(<span class="string">'Inverse of estimated covariance matrix'</span>)
 <pre class="codeoutput">
  
 Successive approximation method to be employed.
-   sedumi will be called several times to refine the solution.
+   SDPT3 will be called several times to refine the solution.
    Original size: 503 variables, 280 equality constraints
    1 exponentials add 8 variables, 5 equality constraints
 -----------------------------------------------------------------
  Cones  |             Errors              |
 Mov/Act | Centering  Exp cone   Poly cone | Status
 --------+---------------------------------+---------
-  1/  1 | 2.119e+00  3.337e-01  1.615e-08 | Solved
-  1/  1 | 5.024e-03  1.815e-06  1.883e-08 | Solved
-  1/  1 | 3.580e-04  2.791e-08  1.887e-08 | Solved
-  0/  1 | 2.558e-05  1.891e-08  1.886e-08 | Solved
+  1/  1 | 1.843e+00  3.337e-01  0.000e+00 | Solved
+  1/  1 | 2.766e-01  6.363e-03  0.000e+00 | Solved
+  1/  1 | 4.484e-03  1.630e-06  0.000e+00 | Solved
+  0/  0 | 1.487e-05  0.000e+00  0.000e+00 | Solved
 -----------------------------------------------------------------
 Status: Solved
 Optimal value (cvx_optval): -31.2401
+ 
 </pre>
 <a id="plots"></a>
 <div id="plotoutput">

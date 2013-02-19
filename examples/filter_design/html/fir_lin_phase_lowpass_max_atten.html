@@ -44,7 +44,7 @@ n = 10;
 
 wpass = 0.12*pi;        <span class="comment">% passband cutoff freq (in radians)</span>
 wstop = 0.24*pi;        <span class="comment">% stopband start freq (in radians)</span>
-max_pass_ripple = 1;    <span class="comment">% (delta) max allowed passband ripple in dB</span>
+ripple = 1;    <span class="comment">% (delta) max allowed passband ripple in dB</span>
                         <span class="comment">% ideal passband gain is 0 dB</span>
 
 <span class="comment">%********************************************************************</span>
@@ -56,8 +56,6 @@ A = [ones(N,1) 2*cos(kron(w',[1:n]))]; <span class="comment">% matrix of cosines
 
 <span class="comment">% passband 0 &lt;= w &lt;= w_pass</span>
 ind = find((0 &lt;= w) &amp; (w &lt;= wpass));    <span class="comment">% passband</span>
-Lp  = 10^(-max_pass_ripple/20)*ones(length(ind),1);
-Up  = 10^(max_pass_ripple/20)*ones(length(ind),1);
 Ap  = A(ind,:);
 
 <span class="comment">% transition band is not constrained (w_pass &lt;= w &lt;= w_stop)</span>
@@ -72,12 +70,9 @@ As  = A(ind,:);
 <span class="comment">% formulate and solve the linear-phase lowpass filter design</span>
 cvx_begin
   variable <span class="string">h(n+1,1)</span>;
-
-  minimize( max( abs( As*h ) ) )
+  minimize(norm(As*h,Inf))
   subject <span class="string">to</span>
-    <span class="comment">% passband bounds</span>
-    Lp &lt;= Ap*h;
-    Ap*h &lt;= Up;
+    10^(-ripple/20) &lt;= Ap*h &lt;= 10^(ripple/20);
 cvx_end
 
 <span class="comment">% check if problem was successfully solved</span>
@@ -96,8 +91,9 @@ disp([<span class="string">'Problem is '</span> cvx_status])
 <span class="comment">%********************************************************************</span>
 figure(1)
 <span class="comment">% FIR impulse response</span>
-plot([0:2*n],h',<span class="string">'o'</span>,[0:2*n],h',<span class="string">'b:'</span>)
+plot(-n:n,h',<span class="string">'o'</span>,[-n:n;-n:n],[zeros(1,2*n+1);h'],<span class="string">'b:'</span>,[-n-1,n+1],[0,0],<span class="string">'k-'</span>);
 xlabel(<span class="string">'t'</span>), ylabel(<span class="string">'h(t)'</span>)
+set(gca,<span class="string">'XLim'</span>,[-n-1,n+1])
 
 figure(2)
 <span class="comment">% frequency response</span>
@@ -105,8 +101,8 @@ H = exp(-j*kron(w',[0:2*n]))*h;
 <span class="comment">% magnitude</span>
 subplot(2,1,1)
 plot(w,20*log10(abs(H)),<span class="keyword">...</span>
-     [0 wpass],[max_pass_ripple max_pass_ripple],<span class="string">'r--'</span>,<span class="keyword">...</span>
-     [0 wpass],[-max_pass_ripple -max_pass_ripple],<span class="string">'r--'</span>);
+     [0 wpass],[ripple ripple],<span class="string">'r--'</span>,<span class="keyword">...</span>
+     [0 wpass],[-ripple -ripple],<span class="string">'r--'</span>);
 axis([0,pi,-50,10])
 xlabel(<span class="string">'w'</span>), ylabel(<span class="string">'mag H(w) in dB'</span>)
 <span class="comment">% phase</span>
@@ -118,39 +114,57 @@ xlabel(<span class="string">'w'</span>), ylabel(<span class="string">'phase H(w)
 <a id="output"></a>
 <pre class="codeoutput">
  
-Calling sedumi: 756 variables, 240 equality constraints
-   For improved efficiency, sedumi is solving the dual problem.
+Calling SDPT3: 756 variables, 240 equality constraints
+   For improved efficiency, SDPT3 is solving the dual problem.
 ------------------------------------------------------------
-SeDuMi 1.21 by AdvOL, 2005-2008 and Jos F. Sturm, 1998-2003.
-Alg = 2: xz-corrector, Adaptive Step-Differentiation, theta = 0.250, beta = 0.500
-eqs m = 240, order n = 757, dim = 757, blocks = 1
-nnz(A) = 6948 + 0, nnz(ADA) = 5844, nnz(L) = 3042
- it :     b*y       gap    delta  rate   t/tP*  t/tD*   feas cg cg  prec
-  0 :            2.72E+02 0.000
-  1 :  -2.64E-01 1.54E+02 0.000 0.5670 0.9000 0.9000   8.59  1  1  7.7E+01
-  2 :  -1.41E-01 6.07E+01 0.000 0.3934 0.9000 0.9000   5.26  1  1  9.9E+00
-  3 :  -4.93E-02 3.86E+01 0.000 0.6360 0.9000 0.9000   3.88  1  1  2.9E+00
-  4 :  -3.46E-02 2.87E+01 0.000 0.7427 0.9000 0.9000   2.55  1  1  1.7E+00
-  5 :  -2.32E-02 1.56E+01 0.000 0.5430 0.9000 0.9000   1.97  1  1  7.5E-01
-  6 :  -2.01E-02 7.84E+00 0.000 0.5038 0.9000 0.9000   1.37  1  1  3.5E-01
-  7 :  -1.79E-02 2.57E+00 0.000 0.3285 0.9000 0.9000   1.17  1  1  1.1E-01
-  8 :  -1.75E-02 8.33E-01 0.000 0.3235 0.9000 0.9000   1.04  1  1  3.5E-02
-  9 :  -1.75E-02 1.83E-01 0.000 0.2192 0.9080 0.9000   1.01  1  1  8.1E-03
- 10 :  -1.75E-02 3.45E-02 0.000 0.1892 0.9055 0.9000   1.00  1  1  1.6E-03
- 11 :  -1.75E-02 4.21E-03 0.000 0.1219 0.9088 0.9000   1.00  1  1  2.0E-04
- 12 :  -1.75E-02 2.19E-05 0.000 0.0052 0.9990 0.9990   1.00  1  1  
-iter seconds digits       c*x               b*y
- 12      0.1  15.4 -1.7476196636e-02 -1.7476196636e-02
-|Ax-b| =   3.2e-16, [Ay-c]_+ =   5.0E-17, |x|=  6.1e-01, |y|=  3.2e-01
 
-Detailed timing (sec)
-   Pre          IPM          Post
-1.000E-02    5.000E-02    0.000E+00    
-Max-norms: ||b||=1, ||c|| = 1.122018e+00,
-Cholesky |add|=0, |skip| = 0, ||L.L|| = 1.33849.
+ num. of constraints = 240
+ dim. of socp   var  = 456,   num. of socp blk  = 228
+ dim. of linear var  = 300
+*******************************************************************
+   SDPT3: Infeasible path-following algorithms
+*******************************************************************
+ version  predcorr  gam  expon  scale_data
+    NT      1      0.000   1        0    
+it pstep dstep pinfeas dinfeas  gap      prim-obj      dual-obj    cputime
+-------------------------------------------------------------------
+ 0|0.000|0.000|3.0e+02|4.8e+01|1.9e+05| 2.877848e+02  0.000000e+00| 0:0:00| chol  1  1 
+ 1|0.987|1.000|3.9e+00|3.0e-01|2.5e+03| 2.800460e+02 -4.028429e+01| 0:0:00| chol  1  1 
+ 2|0.999|1.000|2.3e-03|3.0e-02|1.0e+02| 6.165609e+01 -3.228073e+01| 0:0:00| chol  1  1 
+ 3|0.988|0.971|1.1e-04|4.2e-03|2.3e+00| 1.230066e+00 -1.017814e+00| 0:0:00| chol  1  1 
+ 4|0.898|0.953|1.1e-05|5.1e-04|4.8e-01| 1.536249e-01 -3.268418e-01| 0:0:00| chol  1  1 
+ 5|0.961|0.852|4.3e-07|1.0e-04|8.5e-02| 1.559695e-02 -6.980559e-02| 0:0:00| chol  1  1 
+ 6|0.972|0.606|1.2e-08|4.2e-05|4.4e-02|-1.776171e-03 -4.543010e-02| 0:0:00| chol  1  1 
+ 7|0.733|0.682|3.2e-09|1.4e-05|2.7e-02|-5.697790e-03 -3.258358e-02| 0:0:00| chol  1  1 
+ 8|0.895|0.989|3.5e-10|1.8e-07|8.8e-03|-1.164473e-02 -2.047779e-02| 0:0:00| chol  1  1 
+ 9|0.691|1.000|1.1e-10|3.1e-09|3.9e-03|-1.450191e-02 -1.841515e-02| 0:0:00| chol  1  1 
+10|0.996|0.938|4.0e-13|4.9e-10|7.3e-04|-1.686999e-02 -1.759775e-02| 0:0:00| chol  1  1 
+11|0.883|0.817|5.6e-14|1.2e-10|1.7e-04|-1.733179e-02 -1.749801e-02| 0:0:00| chol  1  1 
+12|0.831|0.901|9.0e-15|1.5e-11|3.9e-05|-1.744009e-02 -1.747935e-02| 0:0:00| chol  1  1 
+13|0.948|0.879|1.6e-14|2.8e-12|3.6e-06|-1.747300e-02 -1.747660e-02| 0:0:00| chol  1  1 
+14|0.981|0.981|2.1e-14|1.1e-12|1.5e-07|-1.747606e-02 -1.747621e-02| 0:0:00| chol  1  1 
+15|0.992|0.991|6.4e-13|1.0e-12|2.5e-09|-1.747619e-02 -1.747620e-02| 0:0:00|
+  stop: max(relative gap, infeasibilities) &lt; 1.49e-08
+-------------------------------------------------------------------
+ number of iterations   = 15
+ primal objective value = -1.74761943e-02
+ dual   objective value = -1.74761968e-02
+ gap := trace(XZ)       = 2.52e-09
+ relative gap           = 2.43e-09
+ actual relative gap    = 2.43e-09
+ rel. primal infeas     = 6.40e-13
+ rel. dual   infeas     = 1.01e-12
+ norm(X), norm(y), norm(Z) = 7.4e-01, 3.2e-01, 1.3e+00
+ norm(A), norm(b), norm(C) = 8.6e+01, 2.0e+00, 9.6e+00
+ Total CPU time (secs)  = 0.25  
+ CPU time per iteration = 0.02  
+ termination code       =  0
+ DIMACS: 6.4e-13  0.0e+00  4.6e-12  0.0e+00  2.4e-09  2.4e-09
+-------------------------------------------------------------------
 ------------------------------------------------------------
 Status: Solved
 Optimal value (cvx_optval): +0.0174762
+ 
 Problem is Solved
 The minimum attenuation in the stopband is -35.15 dB.
 

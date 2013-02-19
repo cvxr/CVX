@@ -83,105 +83,158 @@ disp(<span class="string">'respectively as follows (per column): '</span>);
 <pre class="codeoutput">
 Computing the solution of the robust least-squares problem...
  
-Calling sedumi: 136 variables, 64 equality constraints
+Calling SDPT3: 168 variables, 80 equality constraints
 ------------------------------------------------------------
-SeDuMi 1.21 by AdvOL, 2005-2008 and Jos F. Sturm, 1998-2003.
-Alg = 2: xz-corrector, Adaptive Step-Differentiation, theta = 0.250, beta = 0.500
-Split 8 free variables
-eqs m = 64, order n = 129, dim = 161, blocks = 17
-nnz(A) = 416 + 0, nnz(ADA) = 432, nnz(L) = 248
- it :     b*y       gap    delta  rate   t/tP*  t/tD*   feas cg cg  prec
-  0 :            3.52E+01 0.000
-  1 :   1.55E+00 1.00E+01 0.000 0.2843 0.9000 0.9000   3.63  1  1  1.3E+00
-  2 :   4.23E+00 2.61E+00 0.000 0.2609 0.9000 0.9000   1.46  1  1  4.1E-01
-  3 :   4.26E+00 5.75E-01 0.000 0.2203 0.9000 0.9000   1.16  1  1  1.2E-01
-  4 :   4.23E+00 1.54E-01 0.000 0.2684 0.9000 0.9000   1.05  1  1  3.6E-02
-  5 :   4.22E+00 3.78E-02 0.000 0.2447 0.9000 0.9000   1.02  1  1  9.3E-03
-  6 :   4.21E+00 1.58E-03 0.389 0.0419 0.9900 0.6987   1.00  1  1  6.8E-04
-  7 :   4.21E+00 3.57E-06 0.397 0.0023 0.9990 0.9990   1.00  1  1  2.7E-06
-  8 :   4.21E+00 1.15E-06 0.206 0.3222 0.9000 0.9000   1.00  1  1  8.7E-07
-  9 :   4.21E+00 1.96E-07 0.000 0.1700 0.9080 0.9000   1.00  2  1  2.4E-07
- 10 :   4.21E+00 2.40E-10 0.000 0.0012 0.8470 0.9000   1.00  2  2  4.0E-08
- 11 :   4.21E+00 1.73E-11 0.000 0.0724 0.9529 0.9900   1.00  2  2  2.9E-09
 
-iter seconds digits       c*x               b*y
- 11      0.1   Inf  4.2097054126e+00  4.2097054210e+00
-|Ax-b| =   3.0e-10, [Ay-c]_+ =   6.7E-09, |x|=  9.4e+00, |y|=  6.0e+00
-
-Detailed timing (sec)
-   Pre          IPM          Post
-2.000E-02    6.000E-02    0.000E+00    
-Max-norms: ||b||=2, ||c|| = 4,
-Cholesky |add|=0, |skip| = 0, ||L.L|| = 1.43169.
+ num. of constraints = 80
+ dim. of sdp    var  = 32,   num. of sdp  blk  = 16
+ dim. of socp   var  = 32,   num. of socp blk  = 16
+ dim. of linear var  = 64
+ dim. of free   var  = 24 *** convert ublk to lblk
+*******************************************************************
+   SDPT3: Infeasible path-following algorithms
+*******************************************************************
+ version  predcorr  gam  expon  scale_data
+   HKM      1      0.000   1        0    
+it pstep dstep pinfeas dinfeas  gap      prim-obj      dual-obj    cputime
+-------------------------------------------------------------------
+ 0|0.000|0.000|4.2e+01|5.2e+01|3.5e+05| 5.851405e-09  0.000000e+00| 0:0:00| chol  1  1 
+ 1|0.360|0.769|2.7e+01|1.2e+01|3.9e+04| 4.473318e+02 -7.905928e+02| 0:0:00| chol  1  1 
+ 2|1.000|0.928|1.5e-05|9.0e-01|4.7e+03| 1.899951e+03 -8.242295e+02| 0:0:00| chol  1  1 
+ 3|1.000|0.908|5.2e-06|9.0e-02|7.3e+02| 5.047691e+02 -1.675182e+02| 0:0:00| chol  1  1 
+ 4|0.853|0.639|1.2e-06|3.3e-02|2.4e+02| 1.027259e+02 -1.179279e+02| 0:0:00| chol  1  1 
+ 5|1.000|0.659|1.2e-07|1.1e-02|9.4e+01| 4.105725e+01 -5.028672e+01| 0:0:00| chol  1  1 
+ 6|0.907|0.338|8.8e-08|7.5e-03|6.1e+01| 2.537981e+01 -3.352707e+01| 0:0:00| chol  1  1 
+ 7|1.000|0.455|3.6e-08|4.1e-03|3.0e+01| 1.164002e+01 -1.750574e+01| 0:0:00| chol  1  1 
+ 8|0.980|0.788|1.7e-08|8.6e-04|5.7e+00| 5.277375e+00 -3.643333e-01| 0:0:00| chol  1  1 
+ 9|1.000|0.290|1.7e-09|6.1e-04|3.8e+00| 4.602353e+00  9.063127e-01| 0:0:00| chol  1  1 
+10|1.000|0.808|1.7e-09|1.2e-04|6.8e-01| 4.247054e+00  3.567457e+00| 0:0:00| chol  1  1 
+11|1.000|0.549|1.0e-10|5.3e-05|3.0e-01| 4.216729e+00  3.917884e+00| 0:0:00| chol  1  1 
+12|0.994|0.945|3.0e-11|2.9e-06|1.6e-02| 4.209843e+00  4.193738e+00| 0:0:00| chol  1  1 
+13|0.981|0.983|4.7e-12|4.8e-05|6.4e-04| 4.209708e+00  4.209439e+00| 0:0:00| chol  1  1 
+14|0.957|0.979|2.1e-13|1.9e-06|1.9e-05| 4.209705e+00  4.209700e+00| 0:0:00| chol  1  1 
+15|1.000|0.967|4.1e-15|5.7e-08|7.9e-07| 4.209705e+00  4.209705e+00| 0:0:00| chol  1  1 
+16|1.000|0.987|1.8e-14|2.3e-09|2.7e-08| 4.209705e+00  4.209705e+00| 0:0:00|
+  stop: max(relative gap, infeasibilities) &lt; 1.49e-08
+-------------------------------------------------------------------
+ number of iterations   = 16
+ primal objective value =  4.20970522e+00
+ dual   objective value =  4.20970521e+00
+ gap := trace(XZ)       = 2.75e-08
+ relative gap           = 2.91e-09
+ actual relative gap    = 1.14e-09
+ rel. primal infeas     = 1.76e-14
+ rel. dual   infeas     = 2.33e-09
+ norm(X), norm(y), norm(Z) = 9.0e+00, 7.2e+00, 1.6e+01
+ norm(A), norm(b), norm(C) = 2.6e+01, 1.1e+01, 6.7e+00
+ Total CPU time (secs)  = 0.38  
+ CPU time per iteration = 0.02  
+ termination code       =  0
+ DIMACS: 6.2e-14  0.0e+00  7.7e-09  0.0e+00  1.1e-09  2.9e-09
+-------------------------------------------------------------------
 ------------------------------------------------------------
 Status: Solved
 Optimal value (cvx_optval): +4.20971
+ 
 Computing the solution of the least-squares problem with variable weights...
  
-Calling sedumi: 304 variables, 40 equality constraints
-   For improved efficiency, sedumi is solving the dual problem.
+Calling SDPT3: 312 variables, 272 equality constraints
 ------------------------------------------------------------
-SeDuMi 1.21 by AdvOL, 2005-2008 and Jos F. Sturm, 1998-2003.
-Alg = 2: xz-corrector, Adaptive Step-Differentiation, theta = 0.250, beta = 0.500
-eqs m = 40, order n = 49, dim = 305, blocks = 17
-nnz(A) = 192 + 0, nnz(ADA) = 640, nnz(L) = 340
- it :     b*y       gap    delta  rate   t/tP*  t/tD*   feas cg cg  prec
-  0 :            4.38E-01 0.000
-  1 :  -8.64E+00 1.00E-01 0.000 0.2287 0.9000 0.9000   2.39  1  1  6.8E-01
-  2 :  -2.01E+01 3.89E-03 0.000 0.0388 0.9900 0.9900   1.18  1  1  2.4E-02
-  3 :  -2.02E+01 2.92E-06 0.000 0.0008 0.9999 0.9999   1.01  1  1  1.8E-05
-  4 :  -2.02E+01 5.86E-07 0.042 0.2011 0.9000 0.9000   1.00  1  1  3.7E-06
-  5 :  -2.02E+01 1.12E-07 0.000 0.1905 0.9000 0.9000   1.00  1  1  7.0E-07
-  6 :  -2.02E+01 1.91E-09 0.000 0.0171 0.8869 0.9000   1.00  1  1  1.2E-07
-  7 :  -2.02E+01 2.07E-10 0.163 0.1084 0.9461 0.9450   1.00  2  2  1.3E-08
 
-iter seconds digits       c*x               b*y
-  7      0.1   Inf -2.0209705011e+01 -2.0209704929e+01
-|Ax-b| =   3.3e-08, [Ay-c]_+ =   8.0E-09, |x|=  1.7e+01, |y|=  2.9e+00
-
-Detailed timing (sec)
-   Pre          IPM          Post
-1.000E-02    5.000E-02    0.000E+00    
-Max-norms: ||b||=3, ||c|| = 1.488490e+00,
-Cholesky |add|=0, |skip| = 0, ||L.L|| = 1.6581.
-------------------------------------------------------------
-Status: Solved
-Optimal value (cvx_optval): +4.2097
-Computing the solution of the quadratic program...
- 
-Calling sedumi: 136 variables, 80 equality constraints
-------------------------------------------------------------
-SeDuMi 1.21 by AdvOL, 2005-2008 and Jos F. Sturm, 1998-2003.
-Alg = 2: xz-corrector, Adaptive Step-Differentiation, theta = 0.250, beta = 0.500
-Split 8 free variables
-eqs m = 80, order n = 129, dim = 161, blocks = 17
-nnz(A) = 688 + 0, nnz(ADA) = 1360, nnz(L) = 720
- it :     b*y       gap    delta  rate   t/tP*  t/tD*   feas cg cg  prec
-  0 :            3.47E+01 0.000
-  1 :   5.14E+00 9.84E+00 0.000 0.2839 0.9000 0.9000   3.58  1  1  9.4E-01
-  2 :   5.06E+00 1.99E+00 0.000 0.2021 0.9000 0.9000   1.45  1  1  2.7E-01
-  3 :   4.35E+00 4.82E-01 0.000 0.2423 0.9000 0.9000   1.16  1  1  9.0E-02
-  4 :   4.23E+00 1.34E-01 0.000 0.2779 0.9000 0.9000   1.05  1  1  2.8E-02
-  5 :   4.21E+00 3.49E-02 0.000 0.2606 0.9000 0.9000   1.02  1  1  7.9E-03
-  6 :   4.21E+00 4.11E-03 0.167 0.1177 0.9000 0.0000   1.01  1  1  1.9E-03
-  7 :   4.21E+00 1.13E-04 0.000 0.0276 0.9906 0.9900   1.00  1  1  1.3E-04
-  8 :   4.21E+00 2.09E-06 0.000 0.0184 0.9900 0.9900   1.00  1  1  2.3E-06
-  9 :   4.21E+00 5.44E-09 0.161 0.0026 0.9000 0.0000   1.00  2  1  9.6E-07
- 10 :   4.21E+00 2.67E-10 0.187 0.0491 0.7780 0.9900   1.00  2  2  5.4E-08
- 11 :   4.21E+00 3.33E-11 0.143 0.1248 0.9446 0.9450   1.00  2  2  6.8E-09
-
-iter seconds digits       c*x               b*y
- 11      0.1   Inf  4.2097055852e+00  4.2097056119e+00
-|Ax-b| =   8.9e-10, [Ay-c]_+ =   1.4E-08, |x|=  1.0e+01, |y|=  4.4e+00
-
-Detailed timing (sec)
-   Pre          IPM          Post
-1.000E-02    7.000E-02    0.000E+00    
-Max-norms: ||b||=2, ||c|| = 4,
-Cholesky |add|=0, |skip| = 0, ||L.L|| = 1.42968.
+ num. of constraints = 272
+ dim. of socp   var  = 288,   num. of socp blk  = 16
+ dim. of linear var  = 16
+ dim. of free   var  =  8 *** convert ublk to lblk
+*******************************************************************
+   SDPT3: Infeasible path-following algorithms
+*******************************************************************
+ version  predcorr  gam  expon  scale_data
+    NT      1      0.000   1        0    
+it pstep dstep pinfeas dinfeas  gap      prim-obj      dual-obj    cputime
+-------------------------------------------------------------------
+ 0|0.000|0.000|3.6e+00|5.6e+00|1.7e+04| 4.223108e+02  0.000000e+00| 0:0:00| chol  1  1 
+ 1|1.000|0.977|1.0e-06|1.6e-01|5.2e+02| 4.263389e+02  4.837842e+01| 0:0:00| chol  1  1 
+ 2|0.917|1.000|2.7e-06|2.8e-03|3.9e+01| 9.206458e+01  5.377137e+01| 0:0:00| chol  1  1 
+ 3|0.967|0.900|3.1e-05|5.4e-04|3.0e+00| 6.956736e+01  6.656910e+01| 0:0:00| chol  1  1 
+ 4|0.967|0.966|3.0e-06|4.6e-05|1.0e-01| 6.825937e+01  6.815955e+01| 0:0:00| chol  1  1 
+ 5|0.978|0.906|8.7e-08|7.5e-06|6.1e-03| 6.821149e+01  6.820573e+01| 0:0:00| chol  1  1 
+ 6|0.938|0.855|1.3e-08|1.8e-06|7.9e-04| 6.820991e+01  6.820919e+01| 0:0:00| chol  1  1 
+ 7|0.767|0.718|4.9e-09|3.3e-07|2.2e-04| 6.820976e+01  6.820956e+01| 0:0:00| chol  1  1 
+ 8|0.550|0.693|3.1e-09|9.8e-08|8.1e-05| 6.820974e+01  6.820966e+01| 0:0:00| chol  1  1 
+ 9|0.669|0.595|1.9e-09|3.9e-08|3.4e-05| 6.820972e+01  6.820969e+01| 0:0:00| chol  2  2 
+10|0.869|0.646|8.1e-10|1.5e-08|1.1e-05| 6.820971e+01  6.820970e+01| 0:0:00| chol  1  2 
+11|0.983|0.774|2.4e-10|4.0e-09|2.2e-06| 6.820971e+01  6.820970e+01| 0:0:00| chol  2  2 
+12|0.959|0.908|5.9e-11|6.6e-10|2.1e-07| 6.820971e+01  6.820971e+01| 0:0:00|
+  stop: max(relative gap, infeasibilities) &lt; 1.49e-08
+-------------------------------------------------------------------
+ number of iterations   = 12
+ primal objective value =  6.82097053e+01
+ dual   objective value =  6.82097051e+01
+ gap := trace(XZ)       = 2.10e-07
+ relative gap           = 1.53e-09
+ actual relative gap    = 1.34e-09
+ rel. primal infeas     = 5.88e-11
+ rel. dual   infeas     = 6.58e-10
+ norm(X), norm(y), norm(Z) = 3.9e+00, 1.6e+01, 1.7e+01
+ norm(A), norm(b), norm(C) = 2.3e+01, 6.4e+00, 2.4e+01
+ Total CPU time (secs)  = 0.26  
+ CPU time per iteration = 0.02  
+ termination code       =  0
+ DIMACS: 1.5e-10  0.0e+00  2.7e-09  0.0e+00  1.3e-09  1.5e-09
+-------------------------------------------------------------------
 ------------------------------------------------------------
 Status: Solved
 Optimal value (cvx_optval): +4.20971
+ 
+Computing the solution of the quadratic program...
+ 
+Calling SDPT3: 128 variables, 56 equality constraints
+   For improved efficiency, SDPT3 is solving the dual problem.
+------------------------------------------------------------
+
+ num. of constraints = 56
+ dim. of sdp    var  = 32,   num. of sdp  blk  = 16
+ dim. of linear var  = 80
+*******************************************************************
+   SDPT3: Infeasible path-following algorithms
+*******************************************************************
+ version  predcorr  gam  expon  scale_data
+   HKM      1      0.000   1        0    
+it pstep dstep pinfeas dinfeas  gap      prim-obj      dual-obj    cputime
+-------------------------------------------------------------------
+ 0|0.000|0.000|1.4e+01|9.3e+00|1.8e+04| 7.324334e+02  0.000000e+00| 0:0:00| chol  1  1 
+ 1|1.000|1.000|3.9e-06|9.4e-02|1.3e+03| 5.898749e+02 -6.551406e+02| 0:0:00| chol  1  1 
+ 2|0.986|0.923|2.8e-07|1.6e-02|6.6e+01| 2.708421e+01 -3.712863e+01| 0:0:00| chol  1  1 
+ 3|1.000|0.829|6.4e-08|3.5e-03|2.2e+01| 6.612363e+00 -1.492046e+01| 0:0:00| chol  1  1 
+ 4|1.000|1.000|1.2e-08|9.4e-05|9.5e+00| 8.063808e-01 -8.733407e+00| 0:0:00| chol  1  1 
+ 5|0.905|0.908|1.6e-09|1.7e-05|1.1e+00|-3.569766e+00 -4.710522e+00| 0:0:00| chol  1  1 
+ 6|1.000|1.000|3.3e-10|9.4e-07|5.2e-01|-3.918831e+00 -4.437390e+00| 0:0:00| chol  1  1 
+ 7|0.947|0.946|1.3e-10|1.4e-07|3.2e-02|-4.191363e+00 -4.223574e+00| 0:0:00| chol  1  1 
+ 8|0.982|0.986|5.6e-11|1.1e-08|7.9e-04|-4.209226e+00 -4.210015e+00| 0:0:00| chol  1  1 
+ 9|0.988|0.988|3.2e-11|1.4e-10|9.4e-06|-4.209699e+00 -4.209709e+00| 0:0:00| chol  1  1 
+10|0.995|1.000|1.6e-13|6.5e-12|1.4e-07|-4.209705e+00 -4.209705e+00| 0:0:00| chol  1  1 
+11|0.999|1.000|2.1e-11|1.0e-12|2.4e-09|-4.209705e+00 -4.209705e+00| 0:0:00|
+  stop: max(relative gap, infeasibilities) &lt; 1.49e-08
+-------------------------------------------------------------------
+ number of iterations   = 11
+ primal objective value = -4.20970521e+00
+ dual   objective value = -4.20970521e+00
+ gap := trace(XZ)       = 2.36e-09
+ relative gap           = 2.50e-10
+ actual relative gap    = 2.50e-10
+ rel. primal infeas     = 2.09e-11
+ rel. dual   infeas     = 1.00e-12
+ norm(X), norm(y), norm(Z) = 1.4e+01, 2.9e+00, 9.4e+00
+ norm(A), norm(b), norm(C) = 2.0e+01, 1.7e+01, 1.1e+01
+ Total CPU time (secs)  = 0.17  
+ CPU time per iteration = 0.02  
+ termination code       =  0
+ DIMACS: 7.3e-11  0.0e+00  3.8e-12  0.0e+00  2.5e-10  2.5e-10
+-------------------------------------------------------------------
+------------------------------------------------------------
+Status: Solved
+Optimal value (cvx_optval): +4.20971
+ 
 ------------------------------------------------------------------------
 The optimal solutions for problem formulations 1, 2 and 3 are given
 respectively as follows (per column): 
@@ -194,8 +247,8 @@ ans =
     0.1326    0.1326    0.1326
     0.5500    0.5500    0.5500
     0.3526    0.3526    0.3526
-   -0.6561   -0.6562   -0.6561
-    0.8309    0.8310    0.8309
+   -0.6562   -0.6562   -0.6562
+    0.8309    0.8309    0.8309
 
 </pre>
 </div>

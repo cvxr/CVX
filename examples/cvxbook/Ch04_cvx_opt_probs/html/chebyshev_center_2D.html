@@ -64,31 +64,49 @@ axis <span class="string">equal</span>
 <a id="output"></a>
 <pre class="codeoutput">
  
-Calling sedumi: 4 variables, 3 equality constraints
-   For improved efficiency, sedumi is solving the dual problem.
+Calling SDPT3: 4 variables, 3 equality constraints
+   For improved efficiency, SDPT3 is solving the dual problem.
 ------------------------------------------------------------
-SeDuMi 1.21 by AdvOL, 2005-2008 and Jos F. Sturm, 1998-2003.
-Alg = 2: xz-corrector, Adaptive Step-Differentiation, theta = 0.250, beta = 0.500
-eqs m = 3, order n = 5, dim = 5, blocks = 1
-nnz(A) = 12 + 0, nnz(ADA) = 9, nnz(L) = 6
- it :     b*y       gap    delta  rate   t/tP*  t/tD*   feas cg cg  prec
-  0 :            4.47E+01 0.000
-  1 :  -6.25E-02 1.08E+01 0.000 0.2426 0.9000 0.9000   1.41  1  1  4.0E+00
-  2 :   4.05E-01 2.36E+00 0.000 0.2180 0.9000 0.9000   2.92  1  1  3.7E-01
-  3 :   4.46E-01 6.75E-02 0.000 0.0286 0.9900 0.9900   1.38  1  1  8.6E-03
-  4 :   4.47E-01 2.06E-06 0.070 0.0000 1.0000 1.0000   1.01  1  1  
-iter seconds digits       c*x               b*y
-  4      0.0   Inf  4.4721359550e-01  4.4721359550e-01
-|Ax-b| =   5.4e-17, [Ay-c]_+ =   2.2E-16, |x|=  2.4e-01, |y|=  4.5e-01
 
-Detailed timing (sec)
-   Pre          IPM          Post
-0.000E+00    3.000E-02    0.000E+00    
-Max-norms: ||b||=1, ||c|| = 1,
-Cholesky |add|=0, |skip| = 0, ||L.L|| = 1.
+ num. of constraints =  3
+ dim. of linear var  =  4
+ number of nearly dependent constraints = 1
+ To remove these constraints, re-run sqlp.m with OPTIONS.rmdepconstr = 1.
+*******************************************************************
+   SDPT3: Infeasible path-following algorithms
+*******************************************************************
+ version  predcorr  gam  expon  scale_data
+    NT      1      0.000   1        0    
+it pstep dstep pinfeas dinfeas  gap      prim-obj      dual-obj    cputime
+-------------------------------------------------------------------
+ 0|0.000|0.000|4.5e+01|6.0e+00|4.0e+02| 4.000000e+01  0.000000e+00| 0:0:00| chol  1  1 
+ 1|0.997|1.000|1.3e-01|6.7e-02|5.4e+00| 5.578925e-01 -3.869844e+00| 0:0:00| chol  1  1 
+ 2|1.000|1.000|7.0e-08|6.7e-03|1.9e-01| 4.472135e-01  2.566950e-01| 0:0:00| chol  1  1 
+ 3|1.000|0.989|2.7e-08|7.3e-04|2.1e-03| 4.472136e-01  4.455792e-01| 0:0:00| chol  1  1 
+ 4|1.000|0.989|7.4e-09|7.4e-05|2.3e-05| 4.472136e-01  4.472399e-01| 0:0:00| chol  1  1 
+ 5|1.000|0.989|1.5e-09|8.1e-07|2.6e-07| 4.472136e-01  4.472139e-01| 0:0:00| chol  1  1 
+ 6|1.000|0.998|2.0e-11|1.7e-09|3.5e-09| 4.472136e-01  4.472136e-01| 0:0:00|
+  stop: max(relative gap, infeasibilities) &lt; 1.49e-08
+-------------------------------------------------------------------
+ number of iterations   =  6
+ primal objective value =  4.47213596e-01
+ dual   objective value =  4.47213593e-01
+ gap := trace(XZ)       = 3.48e-09
+ relative gap           = 1.84e-09
+ actual relative gap    = 1.24e-09
+ rel. primal infeas     = 1.95e-11
+ rel. dual   infeas     = 1.72e-09
+ norm(X), norm(y), norm(Z) = 2.4e-01, 4.5e-01, 1.8e-08
+ norm(A), norm(b), norm(C) = 7.3e+00, 2.0e+00, 3.0e+00
+ Total CPU time (secs)  = 0.05  
+ CPU time per iteration = 0.01  
+ termination code       =  0
+ DIMACS: 2.0e-11  0.0e+00  2.6e-09  0.0e+00  1.2e-09  1.8e-09
+-------------------------------------------------------------------
 ------------------------------------------------------------
 Status: Solved
 Optimal value (cvx_optval): +0.447214
+ 
 </pre>
 <a id="plots"></a>
 <div id="plotoutput">

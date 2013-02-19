@@ -1,5 +1,5 @@
 % Entropy maximization 
-% JoÃ«lle Skaf - 04/24/08
+% Joëlle Skaf - 04/24/08
 %
 % Consider the linear inequality constrained entroy maximization problem 
 %           maximize    -sum_{i=1}^n x_i*log(x_i) 

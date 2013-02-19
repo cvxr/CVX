@@ -127,62 +127,81 @@ legend(<span class="string">'log heuristic'</span>,<span class="string">'l1-norm
 <a id="output"></a>
 <pre class="codeoutput">
 Finding a sparse feasible point using l1-norm heuristic ... 
-Calling sedumi: 200 variables, 100 equality constraints
-   For improved efficiency, sedumi is solving the dual problem.
+Calling SDPT3: 200 variables, 100 equality constraints
 ------------------------------------------------------------
-SeDuMi 1.21 by AdvOL, 2005-2008 and Jos F. Sturm, 1998-2003.
-Alg = 2: xz-corrector, Adaptive Step-Differentiation, theta = 0.250, beta = 0.500
-eqs m = 100, order n = 201, dim = 201, blocks = 1
-nnz(A) = 5200 + 0, nnz(ADA) = 2650, nnz(L) = 1375
- it :     b*y       gap    delta  rate   t/tP*  t/tD*   feas cg cg  prec
-  0 :            8.50E-01 0.000
-  1 :   3.98E+01 3.79E-01 0.000 0.4456 0.9000 0.9000   6.27  1  1  6.6E+00
-  2 :  -5.85E+00 1.47E-01 0.000 0.3882 0.9000 0.9000   1.78  1  1  1.9E+00
-  3 :  -2.47E+01 6.78E-02 0.000 0.4609 0.9000 0.9000   1.49  1  1  7.5E-01
-  4 :  -3.26E+01 2.55E-02 0.000 0.3769 0.9000 0.9000   1.32  1  1  2.5E-01
-  5 :  -3.46E+01 1.01E-02 0.000 0.3936 0.9000 0.9000   1.13  1  1  9.5E-02
-  6 :  -3.55E+01 3.53E-03 0.000 0.3513 0.9000 0.9000   1.05  1  1  3.3E-02
-  7 :  -3.58E+01 1.30E-03 0.000 0.3695 0.9000 0.9000   1.02  1  1  1.2E-02
-  8 :  -3.59E+01 2.58E-05 0.000 0.0198 0.9258 0.9000   1.01  1  1  1.9E-03
-  9 :  -3.59E+01 6.19E-06 0.000 0.2397 0.9000 0.0000   1.00  1  1  8.5E-04
- 10 :  -3.59E+01 1.39E-06 0.000 0.2251 0.9000 0.8569   1.00  1  1  2.0E-04
- 11 :  -3.59E+01 1.50E-07 0.000 0.1077 0.9138 0.9000   1.00  1  1  2.9E-05
- 12 :  -3.59E+01 2.89E-08 0.000 0.1924 0.9180 0.9000   1.00  1  1  6.1E-06
- 13 :  -3.59E+01 3.29E-09 0.000 0.1139 0.9000 0.9112   1.00  1  1  6.8E-07
- 14 :  -3.59E+01 4.33E-12 0.000 0.0013 0.9990 0.9990   1.00  1  1  
-iter seconds digits       c*x               b*y
- 14      0.1   Inf -3.5940776942e+01 -3.5940776942e+01
-|Ax-b| =   2.7e-15, [Ay-c]_+ =   8.9E-15, |x|=  7.1e+00, |y|=  1.0e+01
 
-Detailed timing (sec)
-   Pre          IPM          Post
-1.000E-02    6.000E-02    0.000E+00    
-Max-norms: ||b||=1, ||c|| = 2.494989e+01,
-Cholesky |add|=0, |skip| = 0, ||L.L|| = 1.58293.
+ num. of constraints = 100
+ dim. of socp   var  = 100,   num. of socp blk  = 50
+ dim. of linear var  = 100
+*******************************************************************
+   SDPT3: Infeasible path-following algorithms
+*******************************************************************
+ version  predcorr  gam  expon  scale_data
+    NT      1      0.000   1        0    
+it pstep dstep pinfeas dinfeas  gap      prim-obj      dual-obj    cputime
+-------------------------------------------------------------------
+ 0|0.000|0.000|1.5e+01|1.5e+01|1.3e+05| 2.306427e+02  0.000000e+00| 0:0:00| chol  1  1 
+ 1|0.607|0.203|5.7e+00|1.2e+01|9.6e+04| 2.372055e+03 -7.798589e+01| 0:0:00| chol  1  1 
+ 2|0.527|0.755|2.7e+00|3.0e+00|4.4e+04| 2.913698e+03 -4.649185e+02| 0:0:00| chol  1  1 
+ 3|0.783|1.000|5.9e-01|2.7e-02|1.1e+04| 2.265689e+03 -7.312838e+02| 0:0:00| chol  1  1 
+ 4|0.933|1.000|3.9e-02|8.1e-03|1.2e+03| 1.752965e+02 -6.105356e+02| 0:0:00| chol  1  1 
+ 5|1.000|0.960|7.9e-07|8.9e-03|2.8e+02| 1.050573e+02 -1.760406e+02| 0:0:00| chol  1  1 
+ 6|0.842|0.872|3.2e-07|1.2e-03|5.3e+01| 5.663446e+01  3.546144e+00| 0:0:00| chol  1  1 
+ 7|0.590|0.753|1.4e-07|3.1e-04|3.3e+01| 4.833162e+01  1.570252e+01| 0:0:00| chol  1  1 
+ 8|0.864|0.581|2.2e-08|1.3e-04|1.9e+01| 4.206510e+01  2.318715e+01| 0:0:00| chol  1  1 
+ 9|1.000|0.553|1.2e-09|5.8e-05|1.1e+01| 3.937001e+01  2.867040e+01| 0:0:00| chol  1  1 
+10|1.000|0.851|4.1e-14|8.6e-06|3.9e+00| 3.750190e+01  3.356489e+01| 0:0:00| chol  1  1 
+11|0.857|0.651|2.7e-14|3.0e-06|2.2e+00| 3.675586e+01  3.455323e+01| 0:0:00| chol  1  1 
+12|0.885|1.000|2.9e-14|8.2e-11|1.1e+00| 3.647209e+01  3.541597e+01| 0:0:00| chol  1  1 
+13|1.000|0.971|5.8e-14|1.1e-11|2.2e-01| 3.604244e+01  3.581861e+01| 0:0:00| chol  1  1 
+14|1.000|0.667|2.8e-12|5.3e-12|9.5e-02| 3.597437e+01  3.587946e+01| 0:0:00| chol  1  1 
+15|0.965|0.928|6.8e-13|1.5e-12|1.7e-02| 3.594769e+01  3.593091e+01| 0:0:00| chol  1  1 
+16|0.873|1.000|7.3e-13|1.0e-12|5.3e-03| 3.594352e+01  3.593821e+01| 0:0:00| chol  1  2 
+17|0.920|0.980|1.7e-12|1.0e-12|5.9e-04| 3.594114e+01  3.594055e+01| 0:0:00| chol  2  2 
+18|1.000|0.977|8.6e-12|1.0e-12|5.9e-05| 3.594080e+01  3.594074e+01| 0:0:00| chol  2  1 
+19|0.996|0.998|3.4e-11|1.5e-12|9.1e-07| 3.594078e+01  3.594078e+01| 0:0:00|
+  stop: max(relative gap, infeasibilities) &lt; 1.49e-08
+-------------------------------------------------------------------
+ number of iterations   = 19
+ primal objective value =  3.59407774e+01
+ dual   objective value =  3.59407765e+01
+ gap := trace(XZ)       = 9.08e-07
+ relative gap           = 1.25e-08
+ actual relative gap    = 1.24e-08
+ rel. primal infeas     = 3.40e-11
+ rel. dual   infeas     = 1.50e-12
+ norm(X), norm(y), norm(Z) = 1.7e+01, 1.6e+00, 9.9e+00
+ norm(A), norm(b), norm(C) = 7.3e+01, 8.9e+01, 8.1e+00
+ Total CPU time (secs)  = 0.28  
+ CPU time per iteration = 0.01  
+ termination code       =  0
+ DIMACS: 1.2e-10  0.0e+00  6.1e-12  0.0e+00  1.2e-08  1.2e-08
+-------------------------------------------------------------------
 ------------------------------------------------------------
 Status: Solved
 Optimal value (cvx_optval): +35.9408
+ 
 
-Found a feasible x in R^50 that has 44 nonzeros using the l1-norm heuristic.
+Found a feasible x in R^50 that has 46 nonzeros using the l1-norm heuristic.
 
 Log-based heuristic:
-   found a solution with 44 nonzeros...
-   found a solution with 44 nonzeros...
-   found a solution with 43 nonzeros...
-   found a solution with 43 nonzeros...
-   found a solution with 41 nonzeros...
-   found a solution with 40 nonzeros...
-   found a solution with 39 nonzeros...
-   found a solution with 39 nonzeros...
+   found a solution with 46 nonzeros...
    found a solution with 37 nonzeros...
-   found a solution with 37 nonzeros...
-   found a solution with 37 nonzeros...
-   found a solution with 37 nonzeros...
-   found a solution with 37 nonzeros...
-   found a solution with 37 nonzeros...
-   found a solution with 37 nonzeros...
+   found a solution with 35 nonzeros...
+   found a solution with 35 nonzeros...
+   found a solution with 35 nonzeros...
+   found a solution with 35 nonzeros...
+   found a solution with 35 nonzeros...
+   found a solution with 35 nonzeros...
+   found a solution with 35 nonzeros...
+   found a solution with 35 nonzeros...
+   found a solution with 35 nonzeros...
+   found a solution with 35 nonzeros...
+   found a solution with 35 nonzeros...
+   found a solution with 35 nonzeros...
+   found a solution with 35 nonzeros...
 
-Found a feasible x in R^50 that has 37 nonzeros using the log heuristic.
+Found a feasible x in R^50 that has 35 nonzeros using the log heuristic.
 </pre>
 <a id="plots"></a>
 <div id="plotoutput">

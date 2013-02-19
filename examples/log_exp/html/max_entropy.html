@@ -19,7 +19,7 @@ Plots
 <div id="content">
 <a id="source"></a>
 <pre class="codeinput">
-<span class="comment">% Jo&Atilde;&laquo;lle Skaf - 04/24/08</span>
+<span class="comment">% Jo&euml;lle Skaf - 04/24/08</span>
 <span class="comment">%</span>
 <span class="comment">% Consider the linear inequality constrained entroy maximization problem</span>
 <span class="comment">%           maximize    -sum_{i=1}^n x_i*log(x_i)</span>
@@ -56,38 +56,40 @@ disp(x);
 <pre class="codeoutput">
  
 Successive approximation method to be employed.
-   sedumi will be called several times to refine the solution.
+   SDPT3 will be called several times to refine the solution.
    Original size: 65 variables, 35 equality constraints
    20 exponentials add 160 variables, 100 equality constraints
 -----------------------------------------------------------------
  Cones  |             Errors              |
 Mov/Act | Centering  Exp cone   Poly cone | Status
 --------+---------------------------------+---------
- 20/ 20 | 1.695e+00  1.965e-01  3.726e-07 | Solved
- 20/ 20 | 7.851e-02  4.407e-04  1.906e-07 | Solved
- 16/ 20 | 2.624e-03  6.801e-07  1.779e-07 | Solved
-  0/ 20 | 3.861e-04  1.997e-07  1.811e-07 | Solved
+ 20/ 20 | 1.734e+00  1.965e-01  0.000e+00 | Solved
+ 19/ 20 | 1.190e-01  1.021e-03  0.000e+00 | Solved
+ 18/ 20 | 4.647e-03  1.546e-06  0.000e+00 | Solved
+  1/ 12 | 5.714e-04  2.291e-08  0.000e+00 | Solved
+  0/  0 | 0.000e+00  0.000e+00  0.000e+00 | Solved
 -----------------------------------------------------------------
 Status: Solved
 Optimal value (cvx_optval): +5.70335
+ 
 The optimal solution is:
     0.3445
     0.3181
-    0.7540
+    0.7539
     0.8020
     0.6418
     0.3517
-    0.1982
-    0.2577
-    0.6372
-    0.3356
+    0.1981
+    0.2578
+    0.6373
+    0.3357
     0.7109
     0.8998
-    0.6086
+    0.6085
     0.6444
-    0.3060
-    0.4521
-    0.8885
+    0.3061
+    0.4522
+    0.8886
     0.7801
     0.3106
     0.6131

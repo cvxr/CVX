@@ -70,33 +70,51 @@ title(<span class="string">'Quadratic discrimination'</span>);
 <a id="output"></a>
 <pre class="codeoutput">
 Find the optimal ellipsoid that seperates the 2 classes... 
-Calling sedumi: 103 variables, 6 equality constraints
-   For improved efficiency, sedumi is solving the dual problem.
+Calling SDPT3: 103 variables, 6 equality constraints
+   For improved efficiency, SDPT3 is solving the dual problem.
 ------------------------------------------------------------
-SeDuMi 1.21 by AdvOL, 2005-2008 and Jos F. Sturm, 1998-2003.
-Alg = 2: xz-corrector, Adaptive Step-Differentiation, theta = 0.250, beta = 0.500
-eqs m = 6, order n = 103, dim = 105, blocks = 2
-nnz(A) = 603 + 0, nnz(ADA) = 36, nnz(L) = 21
- it :     b*y       gap    delta  rate   t/tP*  t/tD*   feas cg cg  prec
-  0 :            3.28E+02 0.000
-  1 :   0.00E+00 1.15E+02 0.000 0.3515 0.9000 0.9000  -1.39  1  1  2.9E+02
-  2 :   0.00E+00 2.31E+01 0.000 0.2005 0.9000 0.9000  -0.10  1  1  9.8E+01
-  3 :   0.00E+00 6.60E-01 0.000 0.0286 0.9900 0.9900   0.59  1  1  6.5E+00
-  4 :   0.00E+00 5.06E-05 0.000 0.0001 1.0000 1.0000   0.99  1  1  1.3E-02
-  5 :   0.00E+00 5.25E-12 0.000 0.0000 1.0000 1.0000   1.00  1  1  2.9E-09
 
-iter seconds digits       c*x               b*y
-  5      0.0   2.6  3.2204638088e-13  0.0000000000e+00
-|Ax-b| =   1.5e-11, [Ay-c]_+ =   0.0E+00, |x|=  6.1e-12, |y|=  7.7e+01
-
-Detailed timing (sec)
-   Pre          IPM          Post
-1.000E-02    2.000E-02    0.000E+00    
-Max-norms: ||b||=0, ||c|| = 1.845499e+01,
-Cholesky |add|=0, |skip| = 0, ||L.L|| = 3.37316.
+ num. of constraints =  6
+ dim. of sdp    var  =  2,   num. of sdp  blk  =  1
+ dim. of linear var  = 100
+*******************************************************************
+   SDPT3: Infeasible path-following algorithms
+*******************************************************************
+ version  predcorr  gam  expon  scale_data
+   HKM      1      0.000   1        0    
+it pstep dstep pinfeas dinfeas  gap      prim-obj      dual-obj    cputime
+-------------------------------------------------------------------
+ 0|0.000|0.000|2.9e+03|9.6e+00|6.4e+04| 2.626414e+03  0.000000e+00| 0:0:00| chol  1  1 
+ 1|0.636|0.827|1.0e+03|1.7e+00|3.0e+04| 7.649394e+02  0.000000e+00| 0:0:00| chol  1  1 
+ 2|0.797|1.000|2.1e+02|1.6e-03|6.7e+03| 1.293218e+02  0.000000e+00| 0:0:00| chol  1  1 
+ 3|0.987|1.000|2.7e+00|1.6e-04|8.4e+01| 1.627774e+00  0.000000e+00| 0:0:00| chol  1  1 
+ 4|0.989|1.000|2.9e-02|1.6e-05|9.3e-01| 1.791336e-02  0.000000e+00| 0:0:00| chol  1  1 
+ 5|0.989|1.000|3.2e-04|5.9e-03|1.0e-02| 1.968772e-04  0.000000e+00| 0:0:00| chol  1  1 
+ 6|0.989|1.000|3.6e-06|6.5e-05|1.1e-04| 2.176872e-06  0.000000e+00| 0:0:00| chol  1  1 
+ 7|0.989|1.000|3.9e-08|7.3e-07|1.2e-06| 2.392715e-08  0.000000e+00| 0:0:00| chol  1  1 
+ 8|0.983|1.000|6.9e-10|7.9e-09|2.2e-08| 4.410963e-10  0.000000e+00| 0:0:00| chol  1  1 
+ 9|0.985|1.000|1.1e-11|1.4e-10|3.4e-10| 6.901849e-12  0.000000e+00| 0:0:00|
+  stop: max(relative gap, infeasibilities) &lt; 1.49e-08
+-------------------------------------------------------------------
+ number of iterations   =  9
+ primal objective value =  6.90184871e-12
+ dual   objective value =  0.00000000e+00
+ gap := trace(XZ)       = 3.40e-10
+ relative gap           = 3.40e-10
+ actual relative gap    = 6.90e-12
+ rel. primal infeas     = 1.06e-11
+ rel. dual   infeas     = 1.38e-10
+ norm(X), norm(y), norm(Z) = 9.9e-13, 1.2e+02, 1.1e+03
+ norm(A), norm(b), norm(C) = 7.8e+01, 1.0e+00, 6.4e+01
+ Total CPU time (secs)  = 0.13  
+ CPU time per iteration = 0.01  
+ termination code       =  0
+ DIMACS: 1.1e-11  0.0e+00  4.5e-10  0.0e+00  6.9e-12  3.4e-10
+-------------------------------------------------------------------
 ------------------------------------------------------------
 Status: Solved
-Optimal value (cvx_optval): -3.22046e-13
+Optimal value (cvx_optval): -6.90185e-12
+ 
 Done! 
 </pre>
 <a id="plots"></a>

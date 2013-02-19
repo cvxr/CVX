@@ -13,7 +13,7 @@ Jump to:&nbsp;&nbsp;&nbsp;&nbsp;
 <a href="#source">Source code</a>&nbsp;&nbsp;&nbsp;&nbsp;
 <a href="#output">Text output</a>
 &nbsp;&nbsp;&nbsp;&nbsp;
-<a href="#plots">Plots</a>
+Plots
 &nbsp;&nbsp;&nbsp;&nbsp;<a href="../../../index.html">Library index</a>
 </div>
 <div id="content">
@@ -93,32 +93,35 @@ cantilever_beam_plot([h; w])
 <pre class="codeoutput">
  
 Successive approximation method to be employed.
-   sedumi will be called several times to refine the solution.
-   Original size: 225 variables, 144 equality constraints
+   For improved efficiency, SeDuMi is solving the dual problem.
+   SeDuMi will be called several times to refine the solution.
+   Original size: 216 variables, 81 equality constraints
    48 exponentials add 384 variables, 240 equality constraints
 -----------------------------------------------------------------
  Cones  |             Errors              |
 Mov/Act | Centering  Exp cone   Poly cone | Status
 --------+---------------------------------+---------
-  8/  8 | 2.949e+00  6.560e-01  1.365e-07 | Solved
-  8/  8 | 2.417e-01  4.179e-03  1.926e-07 | Solved
-  8/  8 | 1.636e-02  1.932e-05  2.106e-07 | Solved
-  7/  8 | 1.028e-03  2.853e-07  2.123e-07 | Solved
-  0/  8 | 6.427e-05  2.153e-07  2.127e-07 | Solved
+ 46/ 46 | 8.000e+00  6.109e+01  0.000e+00 | Solved
+ 46/ 46 | 8.000e+00s 1.097e+01  8.399e-07 | Solved
+ 42/ 43 | 9.432e-02  7.105e-04  1.806e-07 | Solved
+ 25/ 42 | 6.491e-03  3.011e-06  4.837e-07 | Solved
+  2/ 40 | 4.556e-04  1.509e-07  1.509e-07 | Solved
+  0/ 40 | 3.461e-05  1.508e-07  1.508e-07 | Solved
 -----------------------------------------------------------------
 Status: Solved
-Optimal value (cvx_optval): +40.9668
+Optimal value (cvx_optval): +42.3965
+ 
 The optimal widths and heights are: 
 
 w =
 
     0.6214
     0.7830
-    0.8963
-    0.9865
-    1.0627
-    1.1292
-    1.1888
+    0.9060
+    1.0124
+    1.1004
+    1.1762
+    1.2000
     1.3333
 
 
@@ -126,19 +129,15 @@ h =
 
     3.1072
     3.9149
-    4.4814
-    4.9324
-    5.3133
-    5.6462
-    5.9439
+    4.5298
+    5.0620
+    5.5019
+    5.8811
+    6.0000
     6.0000
 
-The optimal minimum volume of the beam is 40.9668.
+The optimal minimum volume of the beam is 42.3965.
 </pre>
-<a id="plots"></a>
-<div id="plotoutput">
-<img src="cantilever_beam__01.png" alt=""> 
-</div>
 </div>
 </body>
 </html>

@@ -41,33 +41,47 @@ cvx_begin
    minimize( norm( A*x-b ) )
 cvx_end
  
-Calling sedumi: 201 variables, 101 equality constraints
-   For improved efficiency, sedumi is solving the dual problem.
+Calling SDPT3: 201 variables, 101 equality constraints
+   For improved efficiency, SDPT3 is solving the dual problem.
 ------------------------------------------------------------
-SeDuMi 1.21 by AdvOL, 2005-2008 and Jos F. Sturm, 1998-2003.
-Alg = 2: xz-corrector, Adaptive Step-Differentiation, theta = 0.250, beta = 0.500
-eqs m = 101, order n = 3, dim = 202, blocks = 2
-nnz(A) = 20001 + 0, nnz(ADA) = 10201, nnz(L) = 5151
- it :     b*y       gap    delta  rate   t/tP*  t/tD*   feas cg cg  prec
-  0 :            6.88E+00 0.000
-  1 :  -8.51E+00 1.66E+00 0.000 0.2408 0.9000 0.9000  -0.52  1  1  2.1E+00
-  2 :  -1.10E+01 1.62E-01 0.000 0.0977 0.9900 0.9900   0.97  1  1  2.4E-01
-  3 :  -1.08E+01 9.64E-05 0.387 0.0006 0.9999 0.9999   1.04  1  1  1.4E-04
-  4 :  -1.08E+01 5.79E-07 0.000 0.0060 0.9990 0.9990   1.62  1  1  6.7E-07
-  5 :  -1.08E+01 7.28E-14 0.000 0.0000 1.0000 1.0000   1.00  1  1  8.9E-14
 
-iter seconds digits       c*x               b*y
-  5      0.0   Inf -1.0766202444e+01 -1.0766202444e+01
-|Ax-b| =   4.3e-14, [Ay-c]_+ =   1.7E-13, |x|=  1.4e+00, |y|=  1.1e+01
-
-Detailed timing (sec)
-   Pre          IPM          Post
-1.000E-02    4.000E-02    0.000E+00    
-Max-norms: ||b||=1, ||c|| = 3.449504e+00,
-Cholesky |add|=0, |skip| = 0, ||L.L|| = 1.
+ num. of constraints = 101
+ dim. of socp   var  = 201,   num. of socp blk  =  1
+*******************************************************************
+   SDPT3: Infeasible path-following algorithms
+*******************************************************************
+ version  predcorr  gam  expon  scale_data
+    NT      1      0.000   1        0    
+it pstep dstep pinfeas dinfeas  gap      prim-obj      dual-obj    cputime
+-------------------------------------------------------------------
+ 0|0.000|0.000|6.6e+00|1.5e+00|2.5e+02| 0.000000e+00  0.000000e+00| 0:0:00| chol  1  1 
+ 1|0.957|1.000|2.9e-01|6.6e-03|2.3e+01|-9.691971e+00 -2.045281e+01| 0:0:00| chol  1  1 
+ 2|1.000|1.000|7.3e-08|6.6e-04|1.4e+00|-8.725326e+00 -1.014181e+01| 0:0:00| chol  1  1 
+ 3|0.985|0.986|1.8e-08|7.5e-05|2.1e-02|-9.515525e+00 -9.535125e+00| 0:0:00| chol  1  1 
+ 4|0.989|0.989|5.6e-09|7.4e-06|2.3e-04|-9.527047e+00 -9.527166e+00| 0:0:00| chol  1  1 
+ 5|0.989|0.989|6.2e-11|8.2e-08|2.5e-06|-9.527175e+00 -9.527176e+00| 0:0:00| chol  1  1 
+ 6|0.989|0.989|1.0e-12|9.1e-10|2.8e-08|-9.527176e+00 -9.527176e+00| 0:0:00|
+  stop: max(relative gap, infeasibilities) &lt; 1.49e-08
+-------------------------------------------------------------------
+ number of iterations   =  6
+ primal objective value = -9.52717641e+00
+ dual   objective value = -9.52717642e+00
+ gap := trace(XZ)       = 2.81e-08
+ relative gap           = 1.40e-09
+ actual relative gap    = 7.16e-10
+ rel. primal infeas     = 1.00e-12
+ rel. dual   infeas     = 9.13e-10
+ norm(X), norm(y), norm(Z) = 1.4e+00, 9.6e+00, 1.3e+01
+ norm(A), norm(b), norm(C) = 1.4e+02, 2.0e+00, 1.5e+01
+ Total CPU time (secs)  = 0.11  
+ CPU time per iteration = 0.02  
+ termination code       =  0
+ DIMACS: 1.0e-12  0.0e+00  3.5e-09  0.0e+00  7.2e-10  1.4e-09
+-------------------------------------------------------------------
 ------------------------------------------------------------
 Status: Solved
-Optimal value (cvx_optval): +10.7662
+Optimal value (cvx_optval): +9.52718
+ 
 
 echo off
 </pre>

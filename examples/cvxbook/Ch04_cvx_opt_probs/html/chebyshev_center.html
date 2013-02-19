@@ -53,37 +53,53 @@ disp(r);
 <a id="output"></a>
 <pre class="codeoutput">
 Computing Chebyshev center... 
-Calling sedumi: 20 variables, 11 equality constraints
-   For improved efficiency, sedumi is solving the dual problem.
+Calling SDPT3: 20 variables, 11 equality constraints
+   For improved efficiency, SDPT3 is solving the dual problem.
 ------------------------------------------------------------
-SeDuMi 1.21 by AdvOL, 2005-2008 and Jos F. Sturm, 1998-2003.
-Alg = 2: xz-corrector, Adaptive Step-Differentiation, theta = 0.250, beta = 0.500
-eqs m = 11, order n = 21, dim = 21, blocks = 1
-nnz(A) = 220 + 0, nnz(ADA) = 121, nnz(L) = 66
- it :     b*y       gap    delta  rate   t/tP*  t/tD*   feas cg cg  prec
-  0 :            1.53E+02 0.000
-  1 :  -6.06E-01 3.12E+01 0.000 0.2043 0.9000 0.9000   1.15  1  1  2.1E+01
-  2 :  -9.46E-03 9.65E+00 0.000 0.3093 0.9000 0.9000   2.65  1  1  3.1E+00
-  3 :   2.00E-01 3.30E+00 0.000 0.3422 0.9000 0.9000   1.53  1  1  1.1E+00
-  4 :   2.68E-01 8.55E-01 0.000 0.2588 0.9000 0.9000   1.11  1  1  2.9E-01
-  5 :   2.87E-01 2.97E-01 0.000 0.3480 0.9000 0.9000   0.85  1  1  1.3E-01
-  6 :   3.02E-01 1.42E-01 0.000 0.4782 0.9000 0.9000  -0.03  1  1  1.2E-01
-  7 :   3.24E-01 4.47E-02 0.000 0.3140 0.9000 0.9000   0.54  1  1  4.3E-02
-  8 :   3.33E-01 1.11E-02 0.000 0.2478 0.9000 0.9000   0.98  1  1  1.1E-02
-  9 :   3.36E-01 1.62E-03 0.000 0.1468 0.9167 0.9000   1.00  1  1  2.3E-03
- 10 :   3.37E-01 3.67E-05 0.000 0.0226 0.9901 0.9900   1.00  1  1  
-iter seconds digits       c*x               b*y
- 10      0.0  15.8  3.3705939820e-01  3.3705939820e-01
-|Ax-b| =   1.8e-16, [Ay-c]_+ =   1.3E-15, |x|=  1.5e-01, |y|=  7.7e+00
 
-Detailed timing (sec)
-   Pre          IPM          Post
-1.000E-02    4.000E-02    0.000E+00    
-Max-norms: ||b||=1, ||c|| = 2.835687e+00,
-Cholesky |add|=0, |skip| = 0, ||L.L|| = 13.8708.
+ num. of constraints = 11
+ dim. of linear var  = 20
+*******************************************************************
+   SDPT3: Infeasible path-following algorithms
+*******************************************************************
+ version  predcorr  gam  expon  scale_data
+    NT      1      0.000   1        0    
+it pstep dstep pinfeas dinfeas  gap      prim-obj      dual-obj    cputime
+-------------------------------------------------------------------
+ 0|0.000|0.000|2.9e+02|8.9e+00|2.8e+03| 1.721824e+02  0.000000e+00| 0:0:00| chol  1  1 
+ 1|0.971|1.000|8.4e+00|6.8e-02|8.5e+01| 5.569883e+00 -4.336238e+00| 0:0:00| chol  1  1 
+ 2|0.940|1.000|5.0e-01|6.8e-03|8.0e+00| 6.227339e-01 -3.291097e+00| 0:0:00| chol  1  1 
+ 3|0.776|0.715|1.1e-01|2.4e-03|2.7e+00| 4.213392e-01 -1.146735e+00| 0:0:00| chol  1  1 
+ 4|0.831|0.952|1.9e-02|1.8e-04|4.0e-01| 3.637727e-01  9.795053e-02| 0:0:00| chol  1  1 
+ 5|1.000|0.969|5.3e-09|3.8e-03|6.9e-02| 3.535620e-01  2.863755e-01| 0:0:00| chol  1  1 
+ 6|1.000|0.987|5.8e-09|5.1e-05|2.6e-02| 3.479517e-01  3.218399e-01| 0:0:00| chol  1  1 
+ 7|0.988|1.000|4.5e-10|7.0e-08|1.0e-02| 3.392570e-01  3.288598e-01| 0:0:00| chol  1  1 
+ 8|1.000|0.844|4.5e-10|1.7e-08|1.8e-03| 3.374285e-01  3.356581e-01| 0:0:00| chol  1  1 
+ 9|1.000|1.000|1.4e-10|7.7e-10|3.5e-04| 3.371978e-01  3.368475e-01| 0:0:00| chol  1  1 
+10|0.987|0.985|1.8e-12|1.1e-10|5.0e-06| 3.370613e-01  3.370563e-01| 0:0:00| chol  1  1 
+11|1.000|0.996|3.6e-13|1.5e-12|7.2e-08| 3.370594e-01  3.370594e-01| 0:0:00| chol  1  1 
+12|1.000|0.997|6.9e-14|1.0e-12|8.9e-10| 3.370594e-01  3.370594e-01| 0:0:00|
+  stop: max(relative gap, infeasibilities) &lt; 1.49e-08
+-------------------------------------------------------------------
+ number of iterations   = 12
+ primal objective value =  3.37059399e-01
+ dual   objective value =  3.37059398e-01
+ gap := trace(XZ)       = 8.91e-10
+ relative gap           = 5.32e-10
+ actual relative gap    = 5.32e-10
+ rel. primal infeas     = 6.87e-14
+ rel. dual   infeas     = 1.00e-12
+ norm(X), norm(y), norm(Z) = 1.5e-01, 7.7e+00, 2.4e+01
+ norm(A), norm(b), norm(C) = 1.9e+01, 2.0e+00, 6.5e+00
+ Total CPU time (secs)  = 0.09  
+ CPU time per iteration = 0.01  
+ termination code       =  0
+ DIMACS: 6.9e-14  0.0e+00  1.7e-12  0.0e+00  5.3e-10  5.3e-10
+-------------------------------------------------------------------
 ------------------------------------------------------------
 Status: Solved
 Optimal value (cvx_optval): +0.337059
+ 
 Done! 
 The Chebyshev center coordinates are: 
    -0.1116

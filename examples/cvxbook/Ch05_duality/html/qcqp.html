@@ -64,40 +64,56 @@ disp(obj1-obj2)
 <a id="output"></a>
 <pre class="codeoutput">
 Computing the optimal value of the QCQP and its dual...  
-Calling sedumi: 35 variables, 10 equality constraints
-   For improved efficiency, sedumi is solving the dual problem.
+Calling SDPT3: 35 variables, 10 equality constraints
+   For improved efficiency, SDPT3 is solving the dual problem.
 ------------------------------------------------------------
-SeDuMi 1.21 by AdvOL, 2005-2008 and Jos F. Sturm, 1998-2003.
-Alg = 2: xz-corrector, Adaptive Step-Differentiation, theta = 0.250, beta = 0.500
-eqs m = 10, order n = 12, dim = 36, blocks = 5
-nnz(A) = 113 + 0, nnz(ADA) = 88, nnz(L) = 49
- it :     b*y       gap    delta  rate   t/tP*  t/tD*   feas cg cg  prec
-  0 :            3.06E+01 0.000
-  1 :  -5.35E-01 8.38E+00 0.000 0.2740 0.9000 0.9000   1.67  1  1  3.4E+00
-  2 :  -2.66E+00 1.59E+00 0.000 0.1893 0.9000 0.9000   2.27  1  1  5.3E-01
-  3 :  -3.12E+00 1.26E-01 0.000 0.0792 0.9900 0.9900   1.12  1  1  3.6E-02
-  4 :  -3.20E+00 3.24E-02 0.000 0.2574 0.9000 0.9000   1.05  1  1  9.1E-03
-  5 :  -3.22E+00 1.96E-03 0.000 0.0605 0.9900 0.9900   0.99  1  1  5.8E-04
-  6 :  -3.23E+00 6.86E-06 0.374 0.0035 0.9990 0.9990   1.00  1  1  2.0E-06
-  7 :  -3.23E+00 2.26E-07 0.000 0.0329 0.9148 0.9000   1.00  1  1  2.0E-07
-  8 :  -3.23E+00 6.53E-10 0.485 0.0029 0.9815 0.9900   1.00  1  1  1.1E-08
 
-iter seconds digits       c*x               b*y
-  8      0.0   Inf -3.2259383635e+00 -3.2259383320e+00
-|Ax-b| =   4.3e-08, [Ay-c]_+ =   1.2E-08, |x|=  1.0e+01, |y|=  1.5e+00
-
-Detailed timing (sec)
-   Pre          IPM          Post
-0.000E+00    5.000E-02    0.000E+00    
-Max-norms: ||b||=6.611392e+00, ||c|| = 4.981209e+00,
-Cholesky |add|=0, |skip| = 0, ||L.L|| = 6.7188.
+ num. of constraints = 10
+ dim. of socp   var  = 32,   num. of socp blk  =  4
+ dim. of linear var  =  3
+*******************************************************************
+   SDPT3: Infeasible path-following algorithms
+*******************************************************************
+ version  predcorr  gam  expon  scale_data
+    NT      1      0.000   1        0    
+it pstep dstep pinfeas dinfeas  gap      prim-obj      dual-obj    cputime
+-------------------------------------------------------------------
+ 0|0.000|0.000|2.0e+01|2.1e+00|5.5e+02| 1.197168e+02  0.000000e+00| 0:0:00| chol  1  1 
+ 1|1.000|0.687|1.3e-06|6.8e-01|9.6e+01| 8.394112e+00 -3.713950e+00| 0:0:00| chol  1  1 
+ 2|1.000|0.971|2.9e-06|2.3e-02|6.6e+00| 9.243206e-01 -3.202859e+00| 0:0:00| chol  1  1 
+ 3|0.836|1.000|1.4e-06|3.6e-04|1.0e+00|-2.412332e+00 -3.408622e+00| 0:0:00| chol  1  1 
+ 4|0.840|0.832|3.9e-07|9.2e-05|2.0e-01|-3.094383e+00 -3.291935e+00| 0:0:00| chol  1  1 
+ 5|0.927|1.000|9.6e-08|3.7e-06|3.0e-02|-3.204453e+00 -3.233858e+00| 0:0:00| chol  1  1 
+ 6|0.945|0.935|1.5e-08|6.0e-07|1.8e-03|-3.224662e+00 -3.226481e+00| 0:0:00| chol  1  1 
+ 7|0.934|0.905|9.5e-09|9.3e-08|1.4e-04|-3.225852e+00 -3.225989e+00| 0:0:00| chol  1  1 
+ 8|0.959|0.915|1.7e-09|9.8e-09|9.7e-06|-3.225934e+00 -3.225943e+00| 0:0:00| chol  1  1 
+ 9|0.990|0.988|9.7e-10|4.7e-10|4.4e-07|-3.225938e+00 -3.225939e+00| 0:0:00| chol  1  1 
+10|0.972|0.956|2.1e-10|6.8e-11|2.1e-08|-3.225938e+00 -3.225938e+00| 0:0:00|
+  stop: max(relative gap, infeasibilities) &lt; 1.49e-08
+-------------------------------------------------------------------
+ number of iterations   = 10
+ primal objective value = -3.22593846e+00
+ dual   objective value = -3.22593847e+00
+ gap := trace(XZ)       = 2.14e-08
+ relative gap           = 2.87e-09
+ actual relative gap    = 2.30e-09
+ rel. primal infeas     = 2.12e-10
+ rel. dual   infeas     = 6.83e-11
+ norm(X), norm(y), norm(Z) = 1.0e+01, 1.5e+00, 1.9e+00
+ norm(A), norm(b), norm(C) = 1.5e+01, 7.9e+00, 7.3e+00
+ Total CPU time (secs)  = 0.12  
+ CPU time per iteration = 0.01  
+ termination code       =  0
+ DIMACS: 2.2e-10  0.0e+00  8.3e-11  0.0e+00  2.3e-09  2.9e-09
+-------------------------------------------------------------------
 ------------------------------------------------------------
 Status: Solved
 Optimal value (cvx_optval): -0.895296
+ 
 Done! 
 ------------------------------------------------------------------------
 The duality gap is equal to 
-  -1.0524e-07
+   1.2878e-08
 
 </pre>
 </div>

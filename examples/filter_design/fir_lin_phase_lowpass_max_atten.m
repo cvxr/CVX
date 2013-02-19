@@ -24,7 +24,7 @@ n = 10;
 
 wpass = 0.12*pi;        % passband cutoff freq (in radians)
 wstop = 0.24*pi;        % stopband start freq (in radians)
-max_pass_ripple = 1;    % (delta) max allowed passband ripple in dB
+ripple = 1;    % (delta) max allowed passband ripple in dB
                         % ideal passband gain is 0 dB
 
 %********************************************************************
@@ -36,8 +36,6 @@ A = [ones(N,1) 2*cos(kron(w',[1:n]))]; % matrix of cosines
 
 % passband 0 <= w <= w_pass
 ind = find((0 <= w) & (w <= wpass));    % passband
-Lp  = 10^(-max_pass_ripple/20)*ones(length(ind),1);
-Up  = 10^(max_pass_ripple/20)*ones(length(ind),1);
 Ap  = A(ind,:);
 
 % transition band is not constrained (w_pass <= w <= w_stop)
@@ -52,12 +50,9 @@ As  = A(ind,:);
 % formulate and solve the linear-phase lowpass filter design
 cvx_begin
   variable h(n+1,1);
-
-  minimize( max( abs( As*h ) ) )
+  minimize(norm(As*h,Inf))
   subject to
-    % passband bounds
-    Lp <= Ap*h;
-    Ap*h <= Up;
+    10^(-ripple/20) <= Ap*h <= 10^(ripple/20);
 cvx_end
 
 % check if problem was successfully solved
@@ -76,8 +71,9 @@ end
 %********************************************************************
 figure(1)
 % FIR impulse response
-plot([0:2*n],h','o',[0:2*n],h','b:')
+plot(-n:n,h','o',[-n:n;-n:n],[zeros(1,2*n+1);h'],'b:',[-n-1,n+1],[0,0],'k-');
 xlabel('t'), ylabel('h(t)')
+set(gca,'XLim',[-n-1,n+1])
 
 figure(2)
 % frequency response
@@ -85,8 +81,8 @@ H = exp(-j*kron(w',[0:2*n]))*h;
 % magnitude
 subplot(2,1,1)
 plot(w,20*log10(abs(H)),...
-     [0 wpass],[max_pass_ripple max_pass_ripple],'r--',...
-     [0 wpass],[-max_pass_ripple -max_pass_ripple],'r--');
+     [0 wpass],[ripple ripple],'r--',...
+     [0 wpass],[-ripple -ripple],'r--');
 axis([0,pi,-50,10])
 xlabel('w'), ylabel('mag H(w) in dB')
 % phase

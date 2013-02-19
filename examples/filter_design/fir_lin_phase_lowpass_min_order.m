@@ -28,8 +28,8 @@ max_order = 20;
 
 wpass = 0.12*pi;        % passband cutoff freq (in radians)
 wstop = 0.24*pi;        % stopband start freq (in radians)
-delta = 1;              % max (+/-) passband ripple in dB
-atten = -30;      % stopband attenuation level in dB
+delta = 0.5;            % max (+/-) passband ripple in dB
+atten = -35;      % stopband attenuation level in dB
 
 %********************************************************************
 % create optimization parameters
@@ -109,7 +109,7 @@ fprintf(1,'\nOptimum number of filter taps for given specs is 2n+1 = %d.\n', len
 %********************************************************************
 figure(1)
 % FIR impulse response
-plot([0:2*n],h','o',[0:2*n],h','b:')
+plot([-n:n],h','o',[-n:n],h','b:')
 xlabel('t'), ylabel('h(t)')
 
 figure(2)

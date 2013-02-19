@@ -55,38 +55,53 @@ disp(<span class="string">'They are the same as expected!'</span>);
 <a id="output"></a>
 <pre class="codeoutput">
 Minimizing the sum of the squares the distances to fixed points... 
-Calling sedumi: 88 variables, 42 equality constraints
+Calling SDPT3: 88 variables, 46 equality constraints
+   For improved efficiency, SDPT3 is solving the dual problem.
 ------------------------------------------------------------
-SeDuMi 1.21 by AdvOL, 2005-2008 and Jos F. Sturm, 1998-2003.
-Alg = 2: xz-corrector, Adaptive Step-Differentiation, theta = 0.250, beta = 0.500
-eqs m = 42, order n = 67, dim = 100, blocks = 23
-nnz(A) = 95 + 0, nnz(ADA) = 524, nnz(L) = 283
- it :     b*y       gap    delta  rate   t/tP*  t/tD*   feas cg cg  prec
-  0 :            8.13E+00 0.000
-  1 :   2.58E+00 2.64E+00 0.000 0.3241 0.9000 0.9000   2.56  1  1  2.2E+00
-  2 :   8.38E+00 8.62E-01 0.000 0.3269 0.9000 0.9000   0.76  1  1  9.5E-01
-  3 :   1.28E+01 2.95E-01 0.000 0.3429 0.9000 0.9000   0.64  1  1  3.8E-01
-  4 :   1.53E+01 9.65E-02 0.000 0.3267 0.9000 0.9000   0.81  1  1  1.4E-01
-  5 :   1.64E+01 1.78E-02 0.000 0.1841 0.9000 0.9000   0.95  1  1  2.5E-02
-  6 :   1.66E+01 2.57E-04 0.000 0.0145 0.0000 0.9000   1.00  1  1  1.5E-02
-  7 :   1.67E+01 1.54E-05 0.000 0.0597 0.9900 0.9582   1.00  1  1  9.2E-04
-  8 :   1.67E+01 5.24E-07 0.000 0.0341 0.9900 0.9438   1.00  1  1  3.7E-05
-  9 :   1.67E+01 1.29E-08 0.000 0.0246 0.9900 0.9828   1.00  1  1  9.1E-07
- 10 :   1.67E+01 5.64E-10 0.053 0.0439 0.9900 0.9900   1.00  1  1  4.0E-08
- 11 :   1.67E+01 2.82E-11 0.000 0.0499 0.9900 0.9900   1.00  2  2  2.0E-09
 
-iter seconds digits       c*x               b*y
- 11      0.2   Inf  1.6683118800e+01  1.6683118802e+01
-|Ax-b| =   1.7e-08, [Ay-c]_+ =   0.0E+00, |x|=  1.1e+01, |y|=  1.3e+01
-
-Detailed timing (sec)
-   Pre          IPM          Post
-1.000E-02    1.500E-01    1.000E-02    
-Max-norms: ||b||=3.848770e+00, ||c|| = 1,
-Cholesky |add|=0, |skip| = 0, ||L.L|| = 3.83951.
+ num. of constraints = 46
+ dim. of sdp    var  = 22,   num. of sdp  blk  = 11
+ dim. of socp   var  = 33,   num. of socp blk  = 11
+ dim. of linear var  = 22
+*******************************************************************
+   SDPT3: Infeasible path-following algorithms
+*******************************************************************
+ version  predcorr  gam  expon  scale_data
+   HKM      1      0.000   1        0    
+it pstep dstep pinfeas dinfeas  gap      prim-obj      dual-obj    cputime
+-------------------------------------------------------------------
+ 0|0.000|0.000|1.0e+01|1.1e+01|4.6e+03| 1.100000e+02  0.000000e+00| 0:0:00| chol  1  1 
+ 1|0.854|0.860|1.5e+00|1.6e+00|9.5e+02| 8.596987e+01 -1.058415e+02| 0:0:00| chol  1  1 
+ 2|1.000|1.000|1.9e-06|1.0e-02|1.3e+02| 4.110764e+01 -8.490538e+01| 0:0:00| chol  1  1 
+ 3|0.978|0.982|9.4e-07|1.2e-03|2.4e+01|-7.230670e+00 -3.138282e+01| 0:0:00| chol  1  1 
+ 4|1.000|1.000|2.2e-07|1.0e-04|8.5e+00|-1.347951e+01 -2.199622e+01| 0:0:00| chol  1  1 
+ 5|0.912|0.910|3.5e-08|1.8e-05|1.1e+00|-1.633531e+01 -1.742632e+01| 0:0:00| chol  1  1 
+ 6|1.000|1.000|9.6e-09|1.0e-06|3.3e-01|-1.657765e+01 -1.691125e+01| 0:0:00| chol  1  1 
+ 7|0.956|0.956|3.9e-09|1.4e-07|1.7e-02|-1.667823e+01 -1.669482e+01| 0:0:00| chol  1  1 
+ 8|0.984|0.984|1.7e-09|1.3e-08|2.7e-04|-1.668304e+01 -1.668331e+01| 0:0:00| chol  1  1 
+ 9|0.989|0.989|3.3e-11|4.9e-10|3.1e-06|-1.668312e+01 -1.668312e+01| 0:0:00| chol  1  1 
+10|0.996|0.995|2.0e-13|9.4e-12|4.0e-08|-1.668312e+01 -1.668312e+01| 0:0:00|
+  stop: max(relative gap, infeasibilities) &lt; 1.49e-08
+-------------------------------------------------------------------
+ number of iterations   = 10
+ primal objective value = -1.66831188e+01
+ dual   objective value = -1.66831189e+01
+ gap := trace(XZ)       = 4.01e-08
+ relative gap           = 1.17e-09
+ actual relative gap    = 1.14e-09
+ rel. primal infeas     = 1.95e-13
+ rel. dual   infeas     = 9.35e-12
+ norm(X), norm(y), norm(Z) = 1.9e+01, 8.1e+00, 1.1e+01
+ norm(A), norm(b), norm(C) = 1.1e+01, 4.3e+00, 6.3e+00
+ Total CPU time (secs)  = 0.22  
+ CPU time per iteration = 0.02  
+ termination code       =  0
+ DIMACS: 4.2e-13  0.0e+00  2.0e-11  0.0e+00  1.1e-09  1.2e-09
+-------------------------------------------------------------------
 ------------------------------------------------------------
 Status: Solved
 Optimal value (cvx_optval): +16.6831
+ 
 Done! 
 ------------------------------------------------------------------
 The optimal point location is: 

@@ -69,39 +69,42 @@ dual_obj = cvx_optval;
 <pre class="codeoutput">
  
 Successive approximation method to be employed.
-   For improved efficiency, sedumi is solving the dual problem.
-   sedumi will be called several times to refine the solution.
-   Original size: 50 variables, 20 equality constraints
+   SDPT3 will be called several times to refine the solution.
+   Original size: 50 variables, 30 equality constraints
    10 exponentials add 80 variables, 50 equality constraints
 -----------------------------------------------------------------
  Cones  |             Errors              |
 Mov/Act | Centering  Exp cone   Poly cone | Status
 --------+---------------------------------+---------
- 10/ 10 | 6.500e+00  2.563e+00  2.020e-06 | Solved
- 10/ 10 | 1.549e+00  1.764e-01  5.261e-07 | Solved
- 10/ 10 | 4.641e-02  1.530e-04  1.514e-07 | Solved
-  9/ 10 | 2.950e-03  6.398e-07  1.497e-07 | Solved
-  0/  0 | 0.000e+00  0.000e+00  0.000e+00 | Solved
+ 10/ 10 | 2.835e+00  8.576e-01  0.000e+00 | Solved
+ 10/ 10 | 9.542e-01  7.939e-02  0.000e+00 | Solved
+ 10/ 10 | 1.666e-01  2.253e-03  0.000e+00 | Solved
+ 10/ 10 | 2.204e-02  3.875e-05  0.000e+00 | Solved
+  9/ 10 | 2.601e-03  5.374e-07  0.000e+00 | Solved
+  0/  7 | 3.015e-04  6.607e-09  0.000e+00 | Solved
 -----------------------------------------------------------------
 Status: Solved
 Optimal value (cvx_optval): -31.5685
  
+ 
 Successive approximation method to be employed.
-   sedumi will be called several times to refine the solution.
+   SDPT3 will be called several times to refine the solution.
    Original size: 50 variables, 20 equality constraints
    10 exponentials add 80 variables, 50 equality constraints
 -----------------------------------------------------------------
  Cones  |             Errors              |
 Mov/Act | Centering  Exp cone   Poly cone | Status
 --------+---------------------------------+---------
- 10/ 10 | 4.952e+00  1.547e+00  1.195e-07 | Solved
- 10/ 10 | 1.014e+00  7.468e-02  3.485e-07 | Solved
- 10/ 10 | 4.831e-02  1.652e-04  1.021e-07 | Solved
- 10/ 10 | 3.073e-03  6.930e-07  1.012e-07 | Solved
-  0/  0 | 0.000e+00  0.000e+00  0.000e+00 | Solved
+ 10/ 10 | 5.283e+00  1.547e+00  1.450e-09 | Solved
+ 10/ 10 | 1.412e+00  1.312e-01  2.806e-09 | Solved
+ 10/ 10 | 1.306e-01  1.080e-03  2.898e-09 | Solved
+ 10/ 10 | 1.689e-02  1.815e-05  2.609e-09 | Solved
+ 10/ 10 | 2.271e-03  3.237e-07  2.635e-09 | Solved
+  0/  7 | 3.067e-04  4.624e-09  2.633e-09 | Solved
 -----------------------------------------------------------------
 Status: Solved
 Optimal value (cvx_optval): -31.5685
+ 
 </pre>
 </div>
 </body>

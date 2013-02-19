@@ -84,23 +84,21 @@ ylabel(<span class="string">'y'</span>);
 <pre class="codeoutput">
  
 Successive approximation method to be employed.
-   For improved efficiency, sedumi is solving the dual problem.
-   sedumi will be called several times to refine the solution.
-   Original size: 600 variables, 202 equality constraints
+   SDPT3 will be called several times to refine the solution.
+   Original size: 602 variables, 400 equality constraints
    200 exponentials add 1600 variables, 1000 equality constraints
 -----------------------------------------------------------------
  Cones  |             Errors              |
 Mov/Act | Centering  Exp cone   Poly cone | Status
 --------+---------------------------------+---------
-200/200 | 6.389e+00  2.483e+00  1.010e-04 | Inaccurate/Solved
-200/200 | 4.837e-01  1.682e-02  6.484e-05 | Inaccurate/Solved
-123/200 | 5.962e-02  2.827e-04  4.536e-05 | Inaccurate/Solved
-  0/197 | 2.398e-03  9.557e-05  9.516e-05 | Inaccurate/Solved
-  0/196 | 2.491e-04  4.552e-05  4.547e-05 | Inaccurate/Solved
-  0/179 | 4.138e-04  6.719e-05  6.710e-05 | Inaccurate/Solved
+200/200 | 5.422e+00  2.242e+00  0.000e+00 | Solved
+200/200 | 5.049e-01  1.636e-02  0.000e+00 | Solved
+194/199 | 2.442e-02  3.880e-05  0.000e+00 | Solved
+  0/148 | 3.819e-04  7.845e-09  0.000e+00 | Solved
 -----------------------------------------------------------------
-Status: Inaccurate/Solved
+Status: Solved
 Optimal value (cvx_optval): -32.9797
+ 
 </pre>
 <a id="plots"></a>
 <div id="plotoutput">

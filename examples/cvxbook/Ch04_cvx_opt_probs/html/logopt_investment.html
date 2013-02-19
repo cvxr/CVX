@@ -97,20 +97,21 @@ ylabel(<span class="string">'wealth'</span>)
 <pre class="codeoutput">
  
 Successive approximation method to be employed.
-   sedumi will be called several times to refine the solution.
+   SDPT3 will be called several times to refine the solution.
    Original size: 35 variables, 21 equality constraints
    10 exponentials add 80 variables, 50 equality constraints
 -----------------------------------------------------------------
  Cones  |             Errors              |
 Mov/Act | Centering  Exp cone   Poly cone | Status
 --------+---------------------------------+---------
- 10/ 10 | 2.153e-01  3.285e-03  1.763e-07 | Solved
- 10/ 10 | 1.223e-02  1.055e-05  1.435e-08 | Solved
-  2/  7 | 1.034e-03  7.866e-08  1.147e-08 | Solved
-  0/  0 | 0.000e+00  0.000e+00  0.000e+00 | Solved
+ 10/ 10 | 2.272e-01  3.277e-03  0.000e+00 | Solved
+ 10/ 10 | 2.176e-02  3.026e-05  0.000e+00 | Solved
+  8/ 10 | 2.785e-03  4.952e-07  0.000e+00 | Solved
+  0/  8 | 3.602e-04  8.044e-09  0.000e+00 | Solved
 -----------------------------------------------------------------
 Status: Solved
 Optimal value (cvx_optval): +0.0230783
+ 
 The long term growth rate of the log-optimal strategy is: 
     0.0231
 

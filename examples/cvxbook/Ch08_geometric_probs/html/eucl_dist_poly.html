@@ -56,36 +56,56 @@ disp([<span class="string">'dist(C,D) = '</span> num2str(cvx_optval)]);
 <a id="output"></a>
 <pre class="codeoutput">
  
-Calling sedumi: 31 variables, 11 equality constraints
-   For improved efficiency, sedumi is solving the dual problem.
+Calling SDPT3: 31 variables, 11 equality constraints
+   For improved efficiency, SDPT3 is solving the dual problem.
 ------------------------------------------------------------
-SeDuMi 1.21 by AdvOL, 2005-2008 and Jos F. Sturm, 1998-2003.
-Alg = 2: xz-corrector, Adaptive Step-Differentiation, theta = 0.250, beta = 0.500
-eqs m = 11, order n = 28, dim = 32, blocks = 2
-nnz(A) = 136 + 0, nnz(ADA) = 121, nnz(L) = 66
- it :     b*y       gap    delta  rate   t/tP*  t/tD*   feas cg cg  prec
-  0 :            1.15E+01 0.000
-  1 :   3.14E-02 5.51E+00 0.000 0.4801 0.9000 0.9000   3.34  1  1  3.4E+00
-  2 :  -5.66E-01 1.54E+00 0.000 0.2799 0.9000 0.9000   1.86  1  1  1.2E+00
-  3 :  -4.73E-01 4.06E-01 0.000 0.2631 0.9000 0.9000   1.31  1  1  2.9E-01
-  4 :  -5.06E-01 3.42E-02 0.000 0.0843 0.9900 0.9900   1.09  1  1  2.3E-02
-  5 :  -5.07E-01 1.24E-02 0.000 0.3638 0.9000 0.9000   1.03  1  1  8.3E-03
-  6 :  -5.08E-01 3.13E-04 0.000 0.0252 0.9900 0.8509   1.01  1  1  2.9E-04
-  7 :  -5.09E-01 2.63E-06 0.286 0.0084 0.9990 0.9931   1.00  1  1  2.4E-06
-  8 :  -5.09E-01 6.39E-09 0.248 0.0024 0.9990 0.9990   1.00  1  1  9.2E-09
 
-iter seconds digits       c*x               b*y
-  8      0.0   Inf -5.0856705170e-01 -5.0856704680e-01
-|Ax-b| =   2.1e-09, [Ay-c]_+ =   9.2E-09, |x|=  1.8e+00, |y|=  1.7e+00
-
-Detailed timing (sec)
-   Pre          IPM          Post
-1.000E-02    4.000E-02    1.000E-02    
-Max-norms: ||b||=1, ||c|| = 2.829728e+00,
-Cholesky |add|=0, |skip| = 0, ||L.L|| = 48.6227.
+ num. of constraints = 11
+ dim. of socp   var  =  6,   num. of socp blk  =  1
+ dim. of linear var  = 25
+*******************************************************************
+   SDPT3: Infeasible path-following algorithms
+*******************************************************************
+ version  predcorr  gam  expon  scale_data
+    NT      1      0.000   1        0    
+it pstep dstep pinfeas dinfeas  gap      prim-obj      dual-obj    cputime
+-------------------------------------------------------------------
+ 0|0.000|0.000|4.9e+01|7.0e+00|2.5e+03| 1.401402e+02  0.000000e+00| 0:0:00| chol  1  1 
+ 1|0.193|0.645|3.9e+01|2.5e+00|1.6e+03| 1.400766e+02 -3.014994e+01| 0:0:00| chol  1  1 
+ 2|0.911|0.702|3.5e+00|7.6e-01|5.8e+02| 1.795535e+02 -2.396806e+01| 0:0:00| chol  1  1 
+ 3|1.000|0.955|1.5e-05|3.5e-02|9.0e+01| 7.786451e+01 -4.168794e+00| 0:0:00| chol  1  1 
+ 4|0.885|1.000|3.5e-06|7.8e-05|1.2e+01| 9.239431e+00 -2.981045e+00| 0:0:00| chol  1  1 
+ 5|0.795|1.000|7.1e-07|8.2e-06|6.1e+00| 4.520886e+00 -1.536892e+00| 0:0:00| chol  1  1 
+ 6|1.000|0.871|1.2e-10|1.9e-06|1.9e+00| 7.328309e-01 -1.126315e+00| 0:0:00| chol  1  1 
+ 7|1.000|0.853|3.4e-10|3.4e-07|8.3e-01| 1.611200e-01 -6.710325e-01| 0:0:00| chol  1  1 
+ 8|0.850|0.859|5.0e-11|5.4e-08|1.6e-01|-3.730764e-01 -5.368661e-01| 0:0:00| chol  1  1 
+ 9|1.000|1.000|4.0e-11|7.6e-10|6.3e-02|-4.638722e-01 -5.269634e-01| 0:0:00| chol  1  1 
+10|0.918|0.986|3.2e-12|9.3e-11|4.7e-03|-5.044152e-01 -5.090797e-01| 0:0:00| chol  1  1 
+11|0.989|0.993|3.6e-14|9.1e-12|1.7e-04|-5.084285e-01 -5.086021e-01| 0:0:00| chol  1  1 
+12|0.981|0.987|1.6e-14|1.1e-12|3.0e-06|-5.085645e-01 -5.085675e-01| 0:0:00| chol  1  1 
+13|1.000|1.000|9.5e-12|1.0e-12|1.2e-07|-5.085670e-01 -5.085671e-01| 0:0:00| chol  1  1 
+14|1.000|1.000|1.4e-11|1.5e-12|1.7e-09|-5.085671e-01 -5.085671e-01| 0:0:00|
+  stop: max(relative gap, infeasibilities) &lt; 1.49e-08
+-------------------------------------------------------------------
+ number of iterations   = 14
+ primal objective value = -5.08567059e-01
+ dual   objective value = -5.08567060e-01
+ gap := trace(XZ)       = 1.73e-09
+ relative gap           = 8.55e-10
+ actual relative gap    = 8.59e-10
+ rel. primal infeas     = 1.44e-11
+ rel. dual   infeas     = 1.50e-12
+ norm(X), norm(y), norm(Z) = 1.8e+00, 1.7e+00, 4.2e+00
+ norm(A), norm(b), norm(C) = 1.1e+01, 2.0e+00, 6.8e+00
+ Total CPU time (secs)  = 0.17  
+ CPU time per iteration = 0.01  
+ termination code       =  0
+ DIMACS: 1.4e-11  0.0e+00  2.6e-12  0.0e+00  8.6e-10  8.6e-10
+-------------------------------------------------------------------
 ------------------------------------------------------------
 Status: Solved
 Optimal value (cvx_optval): +0.508567
+ 
 ------------------------------------------------------------------
 The distance between the 2 polyhedra C and D is: 
 dist(C,D) = 0.50857

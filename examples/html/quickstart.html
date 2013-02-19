@@ -42,8 +42,8 @@ x_ls = A \ b;
 
 <span class="comment">% cvx version</span>
 cvx_begin
-    variable <span class="string">x(n)</span>;
-    minimize( norm(A*x-b) );
+    variable <span class="string">x(n)</span>
+    minimize( norm(A*x-b) )
 cvx_end
 
 echo <span class="string">off</span>
@@ -57,7 +57,7 @@ disp( <span class="string">'Residual vector:'</span> );
 disp( [ <span class="string">'   A*x-b = [ '</span>, sprintf( <span class="string">'%7.4f '</span>, A*x-b ), <span class="string">']'</span> ] );
 disp( <span class="string">' '</span> );
 
-<span class="keyword">try</span>, input( <span class="string">'Press Enter/Return for the next example...'</span> ); clc; <span class="keyword">catch</span>, <span class="keyword">end</span>
+<span class="keyword">try</span> input( <span class="string">'Press Enter/Return for the next example...'</span> ); clc; <span class="keyword">catch</span>, <span class="keyword">end</span>
 echo <span class="string">on</span>
 
 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
@@ -72,16 +72,16 @@ u = max( bnds, [], 2 );
 <span class="keyword">if</span> has_quadprog,
     <span class="comment">% Quadprog version</span>
     x_qp = quadprog( 2*A'*A, -2*A'*b, [], [], [], [], l, u );
-<span class="keyword">else</span>,
+<span class="keyword">else</span>
     <span class="comment">% quadprog not present on this system.</span>
 <span class="keyword">end</span>
 
 <span class="comment">% cvx version</span>
 cvx_begin
-    variable <span class="string">x(n)</span>;
-    minimize( norm(A*x-b) );
+    variable <span class="string">x(n)</span>
+    minimize( norm(A*x-b) )
     subject <span class="string">to</span>
-        l &lt;= x &lt;= u;
+        l &lt;= x &lt;= u
 cvx_end
 
 echo <span class="string">off</span>
@@ -94,7 +94,7 @@ echo <span class="string">off</span>
     disp( [ <span class="string">'   x_qp  = [ '</span>, sprintf( <span class="string">'%7.4f '</span>, x_qp ), <span class="string">']'</span> ] );
     disp( [ <span class="string">'   x     = [ '</span>, sprintf( <span class="string">'%7.4f '</span>, x ), <span class="string">']'</span> ] );
     disp( [ <span class="string">'   u     = [ '</span>, sprintf( <span class="string">'%7.4f '</span>, u ), <span class="string">']'</span> ] );
-<span class="keyword">else</span>,
+<span class="keyword">else</span>
     disp( sprintf( <span class="string">'\nResults:\n--------\nnorm(A*x-b): %6.4f\ncvx_optval:  %6.4f\ncvx_status:  %s\n'</span>, norm(A*x-b), cvx_optval, cvx_status ) );
     disp( <span class="string">'Verify that l &lt;= x &lt;= u:'</span> );
     disp( [ <span class="string">'   l     = [ '</span>, sprintf( <span class="string">'%7.4f '</span>, l ), <span class="string">']'</span> ] );
@@ -105,7 +105,7 @@ disp( <span class="string">'Residual vector:'</span> );
 disp( [ <span class="string">'   A*x-b = [ '</span>, sprintf( <span class="string">'%7.4f '</span>, A*x-b ), <span class="string">']'</span> ] );
 disp( <span class="string">' '</span> );
 
-<span class="keyword">try</span>, input( <span class="string">'Press Enter/Return for the next example...'</span> ); clc; <span class="keyword">catch</span>, <span class="keyword">end</span>
+<span class="keyword">try</span> input( <span class="string">'Press Enter/Return for the next example...'</span> ); clc; <span class="keyword">catch</span>, <span class="keyword">end</span>
 echo <span class="string">on</span>
 
 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
@@ -120,14 +120,14 @@ echo <span class="string">on</span>
     bne  = [ +b;          -b         ];
     xt   = linprog(f,Ane,bne);
     x_lp = xt(1:n,:);
-<span class="keyword">else</span>,
+<span class="keyword">else</span>
     <span class="comment">% linprog not present on this system.</span>
 <span class="keyword">end</span>
 
 <span class="comment">% cvx version</span>
 cvx_begin
-    variable <span class="string">x(n)</span>;
-    minimize( norm(A*x-b,Inf) );
+    variable <span class="string">x(n)</span>
+    minimize( norm(A*x-b,Inf) )
 cvx_end
 
 echo <span class="string">off</span>
@@ -138,7 +138,7 @@ echo <span class="string">off</span>
     disp( <span class="string">'Verify that x_lp == x:'</span> );
     disp( [ <span class="string">'   x_lp  = [ '</span>, sprintf( <span class="string">'%7.4f '</span>, x_lp ), <span class="string">']'</span> ] );
     disp( [ <span class="string">'   x     = [ '</span>, sprintf( <span class="string">'%7.4f '</span>, x ), <span class="string">']'</span> ] );
-<span class="keyword">else</span>,
+<span class="keyword">else</span>
     disp( sprintf( <span class="string">'\nResults:\n--------\nnorm(A*x-b,Inf): %6.4f\ncvx_optval:      %6.4f\ncvx_status:      %s\n'</span>, norm(A*x-b,Inf), cvx_optval, cvx_status ) );
     disp( <span class="string">'Optimal vector:'</span> );
     disp( [ <span class="string">'   x     = [ '</span>, sprintf( <span class="string">'%7.4f '</span>, x ), <span class="string">']'</span> ] );
@@ -147,7 +147,7 @@ disp( sprintf( <span class="string">'Residual vector; verify that the peaks matc
 disp( [ <span class="string">'   A*x-b = [ '</span>, sprintf( <span class="string">'%7.4f '</span>, A*x-b ), <span class="string">']'</span> ] );
 disp( <span class="string">' '</span> );
 
-<span class="keyword">try</span>, input( <span class="string">'Press Enter/Return for the next example...'</span> ); clc; <span class="keyword">catch</span>, <span class="keyword">end</span>
+<span class="keyword">try</span> input( <span class="string">'Press Enter/Return for the next example...'</span> ); clc; <span class="keyword">catch</span>, <span class="keyword">end</span>
 echo <span class="string">on</span>
 
 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
@@ -160,15 +160,15 @@ echo <span class="string">on</span>
     Aeq  = [ A,          -eye(m),    +eye(m)    ];
     lb   = [ -Inf*ones(n,1);  zeros(m,1); zeros(m,1) ];
     xzz  = linprog(f,[],[], Aeq,b,lb,[]);
-    x_lp = xzz(1:n,:);
-<span class="keyword">else</span>,
+    x_lp = xzz(1:n,:) - xzz(n+1:2*n,:);
+<span class="keyword">else</span>
     <span class="comment">% linprog not present on this system</span>
 <span class="keyword">end</span>
 
 <span class="comment">% cvx version</span>
 cvx_begin
-    variable <span class="string">x(n)</span>;
-    minimize( norm(A*x-b,1) );
+    variable <span class="string">x(n)</span>
+    minimize( norm(A*x-b,1) )
 cvx_end
 
 echo <span class="string">off</span>
@@ -179,7 +179,7 @@ echo <span class="string">off</span>
     disp( <span class="string">'Verify that x_lp == x:'</span> );
     disp( [ <span class="string">'   x_lp  = [ '</span>, sprintf( <span class="string">'%7.4f '</span>, x_lp ), <span class="string">']'</span> ] );
     disp( [ <span class="string">'   x     = [ '</span>, sprintf( <span class="string">'%7.4f '</span>, x ), <span class="string">']'</span> ] );
-<span class="keyword">else</span>,
+<span class="keyword">else</span>
     disp( sprintf( <span class="string">'\nResults:\n--------\nnorm(A*x-b,1): %6.4f\ncvx_optval: %6.4f\ncvx_status: %s\n'</span>, norm(A*x-b,1), cvx_optval, cvx_status ) );
     disp( <span class="string">'Optimal vector:'</span> );
     disp( [ <span class="string">'   x     = [ '</span>, sprintf( <span class="string">'%7.4f '</span>, x ), <span class="string">']'</span> ] );
@@ -188,7 +188,7 @@ disp( <span class="string">'Residual vector; verify the presence of several zero
 disp( [ <span class="string">'   A*x-b = [ '</span>, sprintf( <span class="string">'%7.4f '</span>, A*x-b ), <span class="string">']'</span> ] );
 disp( <span class="string">' '</span> );
 
-<span class="keyword">try</span>, input( <span class="string">'Press Enter/Return for the next example...'</span> ); clc; <span class="keyword">catch</span>, <span class="keyword">end</span>
+<span class="keyword">try</span> input( <span class="string">'Press Enter/Return for the next example...'</span> ); clc; <span class="keyword">catch</span>, <span class="keyword">end</span>
 echo <span class="string">on</span>
 
 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
@@ -198,8 +198,8 @@ echo <span class="string">on</span>
 <span class="comment">% cvx specification</span>
 k = 5;
 cvx_begin
-    variable <span class="string">x(n)</span>;
-    minimize( norm_largest(A*x-b,k) );
+    variable <span class="string">x(n)</span>
+    minimize( norm_largest(A*x-b,k) )
 cvx_end
 
 echo <span class="string">off</span>
@@ -213,7 +213,7 @@ disp( sprintf( <span class="string">'Residual vector; verify a tie for %d-th pla
 disp( [ <span class="string">'   A*x-b = [ '</span>, sprintf( <span class="string">'%7.4f '</span>, A*x-b ), <span class="string">']'</span> ] );
 disp( <span class="string">' '</span> );
 
-<span class="keyword">try</span>, input( <span class="string">'Press Enter/Return for the next example...'</span> ); clc; <span class="keyword">catch</span>, <span class="keyword">end</span>
+<span class="keyword">try</span> input( <span class="string">'Press Enter/Return for the next example...'</span> ); clc; <span class="keyword">catch</span>, <span class="keyword">end</span>
 echo <span class="string">on</span>
 
 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
@@ -222,8 +222,8 @@ echo <span class="string">on</span>
 
 <span class="comment">% cvx specification</span>
 cvx_begin
-    variable <span class="string">x(n)</span>;
-    minimize( sum(huber(A*x-b)) );
+    variable <span class="string">x(n)</span>
+    minimize( sum(huber(A*x-b)) )
 cvx_end
 
 echo <span class="string">off</span>
@@ -236,7 +236,7 @@ disp( <span class="string">'Residual vector:'</span> );
 disp( [ <span class="string">'   A*x-b = [ '</span>, sprintf( <span class="string">'%7.4f '</span>, A*x-b ), <span class="string">']'</span> ] );
 disp( <span class="string">' '</span> );
 
-<span class="keyword">try</span>, input( <span class="string">'Press Enter/Return for the next example...'</span> ); clc; <span class="keyword">catch</span>, <span class="keyword">end</span>
+<span class="keyword">try</span> input( <span class="string">'Press Enter/Return for the next example...'</span> ); clc; <span class="keyword">catch</span>, <span class="keyword">end</span>
 echo <span class="string">on</span>
 
 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
@@ -251,10 +251,10 @@ d = randn(p,1);
 <span class="comment">% cvx specification</span>
 cvx_begin
     variable <span class="string">x(n)</span>;
-    minimize( norm(A*x-b) );
+    minimize( norm(A*x-b) )
     subject <span class="string">to</span>
-        C*x == d;
-        norm(x,Inf) &lt;= 1;
+        C*x == d
+        norm(x,Inf) &lt;= 1
 cvx_end
 
 echo <span class="string">off</span>
@@ -269,7 +269,7 @@ disp( <span class="string">'Equality constraints:'</span> );
 disp( [ <span class="string">'   C*x   = [ '</span>, sprintf( <span class="string">'%7.4f '</span>, C*x ), <span class="string">']'</span> ] );
 disp( [ <span class="string">'   d     = [ '</span>, sprintf( <span class="string">'%7.4f '</span>, d   ), <span class="string">']'</span> ] );
 
-<span class="keyword">try</span>, input( <span class="string">'Press Enter/Return for the next example...'</span> ); clc; <span class="keyword">catch</span>, <span class="keyword">end</span>
+<span class="keyword">try</span> input( <span class="string">'Press Enter/Return for the next example...'</span> ); clc; <span class="keyword">catch</span>, <span class="keyword">end</span>
 echo <span class="string">on</span>
 
 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
@@ -278,8 +278,8 @@ echo <span class="string">on</span>
 
 <span class="comment">% The basic problem:</span>
 <span class="comment">% cvx_begin</span>
-<span class="comment">%     variable x(n);</span>
-<span class="comment">%     minimize( norm(A*x-b)+gamma(k)*norm(x,1) );</span>
+<span class="comment">%     variable x(n)</span>
+<span class="comment">%     minimize( norm(A*x-b)+gamma(k)*norm(x,1) )</span>
 <span class="comment">% cvx_end</span>
 
 echo <span class="string">off</span>
@@ -294,8 +294,8 @@ fprintf( 1, <span class="string">'---------------------------------------\n'</sp
 <span class="keyword">for</span> k = 1:length(gamma),
     fprintf( 1, <span class="string">'%8.4e'</span>, gamma(k) );
     cvx_begin
-        variable <span class="string">x(n)</span>;
-        minimize( norm(A*x-b)+gamma(k)*norm(x,1) );
+        variable <span class="string">x(n)</span>
+        minimize( norm(A*x-b)+gamma(k)*norm(x,1) )
     cvx_end
     l1norm(k) = norm(x,1);
     l2norm(k) = norm(A*x-b);
@@ -325,8 +325,8 @@ x_ls = A \ b;
 
 % cvx version
 cvx_begin
-    variable x(n);
-    minimize( norm(A*x-b) );
+    variable x(n)
+    minimize( norm(A*x-b) )
 cvx_end
 
 echo off
@@ -354,46 +354,46 @@ l = min( bnds, [] ,2 );
 u = max( bnds, [], 2 );
 
 if has_quadprog,
-else,
+else
     % quadprog not present on this system.
 end
 
 % cvx version
 cvx_begin
-    variable x(n);
-    minimize( norm(A*x-b) );
+    variable x(n)
+    minimize( norm(A*x-b) )
     subject to
-        l &lt;= x &lt;= u;
+        l &lt;= x &lt;= u
 cvx_end
 
 echo off
 
 Results:
 --------
-norm(A*x-b): 4.6107
-cvx_optval:  4.6107
+norm(A*x-b): 4.1334
+cvx_optval:  4.1334
 cvx_status:  Solved
 
 Verify that l &lt;= x &lt;= u:
-   l     = [  0.3850 -0.2789 -0.9829 -0.9287 -3.0518 -0.0485  0.3182 -0.9417 ]
-   x     = [  0.3850  0.6888 -0.1196 -0.8562  0.2923 -0.0485  0.4074 -0.6355 ]
-   u     = [  0.7395  0.9403 -0.0290  1.6208  0.7450  2.4881  0.6919 -0.6355 ]
+   l     = [ -0.5618  0.2760 -0.2277 -0.0290 -0.9287  0.4520  0.1014 -0.3658 ]
+   x     = [ -0.0910  0.2918  0.2746 -0.0290  0.0828  0.4520  0.1014  0.6919 ]
+   u     = [ -0.0910  0.7395  0.9403  0.1842  0.0828  0.7450  2.4881  0.6919 ]
 Residual vector:
-   A*x-b = [  1.8604  0.2157 -0.2113  2.2664 -1.5320 -0.9598 -1.6815  0.2551  1.1079  0.5313  1.2390 -0.7555  0.2176 -0.3833  1.1950 -1.0823 ]
+   A*x-b = [ -0.1209  0.2155 -1.0903 -0.1312 -2.0952  1.6798  0.3784 -0.5592  1.0411  0.6937  1.6036 -0.0045  0.9935  0.2156  1.2186 -1.2228 ]
  
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % SECTION 2.3: OTHER NORMS AND FUNCTIONS: INFINITY NORM %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 if has_linprog,
-else,
+else
     % linprog not present on this system.
 end
 
 % cvx version
 cvx_begin
-    variable x(n);
-    minimize( norm(A*x-b,Inf) );
+    variable x(n)
+    minimize( norm(A*x-b,Inf) )
 cvx_end
 
 echo off
@@ -414,14 +414,14 @@ Residual vector; verify that the peaks match the objective (0.7079):
 % SECTION 2.3: OTHER NORMS AND FUNCTIONS: ONE NORM %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 if has_linprog,
-else,
+else
     % linprog not present on this system
 end
 
 % cvx version
 cvx_begin
-    variable x(n);
-    minimize( norm(A*x-b,1) );
+    variable x(n)
+    minimize( norm(A*x-b,1) )
 cvx_end
 
 echo off
@@ -435,7 +435,7 @@ cvx_status: Solved
 Optimal vector:
    x     = [ -0.3550  0.8934 -0.0375 -1.1827  0.1694 -0.3870 -0.2148  0.6712 ]
 Residual vector; verify the presence of several zero residuals:
-   A*x-b = [ -0.7666  0.0129 -1.4977 -0.0000 -0.5074  0.0000  0.0000  0.0357  0.0000 -0.0000  0.0299 -1.0842  0.0000  1.4013  0.0000  0.0000 ]
+   A*x-b = [ -0.7666  0.0129 -1.4977  0.0000 -0.5074 -0.0000 -0.0000  0.0357  0.0000  0.0000  0.0299 -1.0842 -0.0000  1.4013  0.0000 -0.0000 ]
  
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -444,8 +444,8 @@ Residual vector; verify the presence of several zero residuals:
 % cvx specification
 k = 5;
 cvx_begin
-    variable x(n);
-    minimize( norm_largest(A*x-b,k) );
+    variable x(n)
+    minimize( norm_largest(A*x-b,k) )
 cvx_end
 
 echo off
@@ -467,8 +467,8 @@ Residual vector; verify a tie for 5-th place ( 0.7079):
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % cvx specification
 cvx_begin
-    variable x(n);
-    minimize( sum(huber(A*x-b)) );
+    variable x(n)
+    minimize( sum(huber(A*x-b)) )
 cvx_end
 
 echo off
@@ -496,35 +496,35 @@ d = randn(p,1);
 % cvx specification
 cvx_begin
     variable x(n);
-    minimize( norm(A*x-b) );
+    minimize( norm(A*x-b) )
     subject to
-        C*x == d;
-        norm(x,Inf) &lt;= 1;
+        C*x == d
+        norm(x,Inf) &lt;= 1
 cvx_end
 
 echo off
 
 Results:
 --------
-norm(A*x-b): 7.9874
-cvx_optval: 7.9874
+norm(A*x-b): 5.9545
+cvx_optval: 5.9545
 cvx_status: Solved
 
 Optimal vector:
-   x     = [  0.5085  0.4243  0.8321 -0.5836  0.2810  0.9406  0.0218 -0.6629 ]
+   x     = [  0.1173  1.0000  0.0979 -0.1256  0.5255  0.7102 -0.0127  0.8397 ]
 Residual vector:
-   A*x-b = [  1.9546 -0.8458 -1.4935  3.9954 -2.5173  0.3568 -3.1377 -2.0091  1.2739  2.7589  2.5399  0.0131  0.8935 -1.4236 -0.4004 -1.4326 ]
+   A*x-b = [ -0.7438  0.0763 -2.0376 -1.3110 -2.3956  0.2175 -1.2595 -0.7583  1.6970  1.9857  0.8180  1.0527  2.5150 -1.2068  2.1631 -0.1360 ]
 Equality constraints:
-   C*x   = [  1.2841 -0.7301 -1.4727 -1.5944 ]
-   d     = [  1.2841 -0.7301 -1.4727 -1.5944 ]
+   C*x   = [  1.0035 -2.6761  0.0168 -1.4432 ]
+   d     = [  1.0035 -2.6761  0.0168 -1.4432 ]
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % SECTION 2.5: AN OPTIMAL TRADEOFF CURVE %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % The basic problem:
 % cvx_begin
-%     variable x(n);
-%     minimize( norm(A*x-b)+gamma(k)*norm(x,1) );
+%     variable x(n)
+%     minimize( norm(A*x-b)+gamma(k)*norm(x,1) )
 % cvx_end
 echo off
  
@@ -534,23 +534,23 @@ Generating tradeoff curve...
 1.0000e-02   3.3796e+00   2.0355e+00
 1.6238e-02   3.3658e+00   2.0357e+00
 2.6367e-02   3.3433e+00   2.0362e+00
-4.2813e-02   3.3067e+00   2.0374e+00
+4.2813e-02   3.3068e+00   2.0374e+00
 6.9519e-02   3.2473e+00   2.0408e+00
 1.1288e-01   3.1498e+00   2.0497e+00
 1.8330e-01   2.9878e+00   2.0737e+00
 2.9764e-01   2.7617e+00   2.1280e+00
 4.8329e-01   2.3445e+00   2.2924e+00
 7.8476e-01   1.4081e+00   2.8895e+00
-1.2743e+00   3.7696e-01   3.9509e+00
-2.0691e+00   1.0084e-08   4.4813e+00
-3.3598e+00   2.8389e-11   4.4813e+00
-5.4556e+00   5.7719e-11   4.4813e+00
-8.8587e+00   1.4442e-11   4.4813e+00
-1.4384e+01   4.6694e-10   4.4813e+00
-2.3357e+01   1.7758e-11   4.4813e+00
-3.7927e+01   9.1445e-13   4.4813e+00
-6.1585e+01   3.3438e-12   4.4813e+00
-1.0000e+02   2.1798e-14   4.4813e+00
+1.2743e+00   3.7687e-01   3.9510e+00
+2.0691e+00   1.0114e-08   4.4813e+00
+3.3598e+00   5.3229e-09   4.4813e+00
+5.4556e+00   1.9095e-09   4.4813e+00
+8.8587e+00   5.4562e-10   4.4813e+00
+1.4384e+01   2.6802e-10   4.4813e+00
+2.3357e+01   3.7102e-10   4.4813e+00
+3.7927e+01   1.0869e-10   4.4813e+00
+6.1585e+01   2.5093e-11   4.4813e+00
+1.0000e+02   2.8798e-11   4.4813e+00
 Done. (Check out the graph!)
 </pre>
 <a id="plots"></a>
