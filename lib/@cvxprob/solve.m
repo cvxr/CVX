@@ -356,10 +356,10 @@ elseif n ~= 0 && ~infeas && ( any( b ) || any( c ) ),
             % error as a threshold to decide when the *primal* point is
             % sufficiently accurate, too.
             if found,
-                if tprec < best_prec,
+                if tprec(1) < best_prec,
                     best_x = x;
                     best_y = y;
-                    best_prec = tprec;
+                    best_prec = tprec(1);
                 end
                 if best_prec <= prec(1) || attempts == 2,
                     break;

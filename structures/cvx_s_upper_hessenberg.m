@@ -1,6 +1,8 @@
-function y = cvx_s_upper_hessenberg( m, n )
+function [ y, symm ] = cvx_s_upper_hessenberg( m, n, symm )
+
 %CVX_S_UPPER_HESSENBERG Upper Hessenberg matrices.
-y = cvx_s_banded( m, n, 1, n );
+
+[ y, symm ] = cvx_s_banded( m, n, symm, 1, n );
 
 % Copyright 2012 CVX Research, Inc. 
 % See the file COPYING.txt for full copyright information.

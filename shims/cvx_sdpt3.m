@@ -257,7 +257,7 @@ if ~isempty( tt ),
         %
         
         str_3 = sqrt(0.5) * ones(nt2,1); str_3(cumsum(1:n2)) = 1;
-        str_3 = spdiags( str_3, 0, nt2, nt2 ) * cvx_create_structure( [n2,n2], 'symmetric_ut' );
+        str_3 = spdiags( str_3, 0, nt2, nt2 ) * cvx_s_symmetric_ut( n2, n2, true );
         Avec{end}{end+1} = reshape( ( str_3 * str_2 ) * reshape( At(ti,:), nt, nv * m ), nt2 * nv, m );
         
         %

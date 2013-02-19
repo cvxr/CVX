@@ -1,6 +1,8 @@
-function y = cvx_s_lower_triangular( m, n )
+function [ y, symm ] = cvx_s_lower_triangular( m, n, symm )
+
 %CVX_S_LOWER_TRIANGULAR Lower triangular matrices.
-y = cvx_s_banded( m, n, m, 0 );
+
+[ y, symm ] = cvx_s_banded( m, n, symm, m, 0 );
 
 % Copyright 2012 CVX Research, Inc. 
 % See the file COPYING.txt for full copyright information.

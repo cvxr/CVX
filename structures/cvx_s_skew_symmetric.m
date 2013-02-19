@@ -1,8 +1,10 @@
-function y = cvx_s_skew_symmetric( m, n )
+function [ y, symm ] = cvx_s_skew_symmetric( m, n, symm )
 %CVX_S_SKEW_SYMMETRIC Skew-symmetric matrices.
 
 if m ~= n,
     error( 'Skew symmetric structure requires square matrices.' );
+elseif symm,
+	error( 'Cannot specify both symmetry and skew symmetry.' );
 end
 
 nsq = n * n;

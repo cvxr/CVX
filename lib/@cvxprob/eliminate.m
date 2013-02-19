@@ -67,13 +67,13 @@ for pass = 1 : 2,
     % structure to them, so that we can make the best decision as to
     % whether or not to convert the problem to dual standard form. Exempted
     % from this are columns with trivial xi = xj constraints, where xi is free.
-    % if pass == 1,
-    %    trivs = sum( dbCA(rsv==0,:) ~= 0, 1 ) == 1 & sum( dbCA(rsv~=0,:) ~= 0, 1 ) - ( dbCA( 1, : ) ~= 0 ) == 1;
-    %    ineqs = full(any(dbCA(rsv~=0&rcnt==1,:),1)) & full(~trivs);
-    %    ineqs = +ineqs;
-    %elseif dualized,
+    if pass == 1,
+        trivs = sum( dbCA(rsv==0,:) ~= 0, 1 ) == 1 & sum( dbCA(rsv~=0,:) ~= 0, 1 ) - ( dbCA( 1, : ) ~= 0 ) == 1;
+        ineqs = full(any(dbCA(rsv~=0&rcnt==1,:),1)) & full(~trivs);
+        ineqs = +ineqs;
+    elseif dualized,
         ineqs = zeros(1,size(dbCA,2));
-    %end
+    end
     ineqs(1) = 1;
     
     while true,

@@ -56,10 +56,6 @@ if ~isvarname( x.name ),
     error( 'Invalid variable specification: %s', nm );
 elseif x.name( end ) == '_',
     error( 'Invalid variable specification: %s\n   Variables ending in underscores are reserved for internal use.', nm );
-elseif exist( [ 'cvx_s_', x.name ], 'file' ) == 2,
-    error( [ 'Invalid variable specification: %s\n', ...
-        '   The name "%s" is reserved as a matrix structure modifier,\n', ...
-        '   which can be used only with the VARIABLE keyword.' ], nm, x.name );
 end
 tt = evalin( 'caller', x.name, '[]' );
 if isa( tt, 'cvxobj' ) && cvx_id( tt ) >= cvx_id( prob ),
@@ -74,7 +70,11 @@ end
 %
 
 if ischar( x.size ),
-    x.size = evalin( 'caller', [ '[', x.size, '];' ], 'NaN' );
+    try
+        x.size = evalin( 'caller', [ '[', x.size, '];' ] );
+    catch exc
+        throw( MException( exc.identifier, exc.message ) );
+    end
     [ temp, x.size ] = cvx_check_dimlist( x.size, true );
     if ~temp,
         error( 'Invalid variable specification: %s\n   Dimension list must be a vector of finite nonnegative integers.', nm );
@@ -85,8 +85,6 @@ end
 % Step 3. Parse the structure.
 %
 
-nmods = length( varargin );
-filt = true( 1, nmods );
 islin = false;
 isgeo = false;
 isepi = false;
@@ -94,7 +92,7 @@ ishypo = false;
 isnneg = false;
 n_itypes = 0;
 itype = '';
-modifiers = '';
+str = [];
 for k = 1 : length( varargin ),
     strs = varargin{k};
     if isempty( strs ),
@@ -103,72 +101,31 @@ for k = 1 : length( varargin ),
         error( 'Matrix structure modifiers must be strings.' );
     end
     switch strs,
-        case 'geometric_',
-            isgeo = true;
-            filt( k ) = false;
-            continue;
-        case 'linear_',
-            islin = true;
-            filt( k ) = false;
-            continue;
-        case 'epigraph_',
-            isepi = true;
-            filt( k ) = false;
-            continue;
-        case 'hypograph_',
-            ishypo = true;
-            filt( k ) = false;
-            continue;
-        case 'integer',
-            n_itypes = n_itypes + 1;
-            itype = 'i_integer';
-            filt( k ) = false;
-            continue;
-        case 'binary',
-            n_itypes = n_itypes + 1;
-            itype = 'i_binary';
-            filt( k ) = false;
-            continue;
-        case 'nonnegative',
-            isnneg = true;
-            filt( k ) = false;
-            continue;
+        case 'geometric_',  isgeo  = true;
+        case 'linear_',     islin  = true;
+        case 'epigraph_',   isepi  = true;
+        case 'hypograph_',  ishypo = true;
+        case 'integer',     n_itypes = n_itypes + 1; itype = 'i_integer';
+        case 'binary',      n_itypes = n_itypes + 1; itype = 'i_binary';
+        case 'nonnegative', isnneg = true;
+        otherwise,
+            if any( strs == '(' ) && strs(end) == ')',
+                xt = find( strs == '(' );
+                strx.name = strs(1:xt(1)-1);
+                strx.args = evalin( 'caller', [ '{', strs(xt(1)+1:end-1), '}' ] );
+                strx.full = strs;
+                str{end+1} = strx; %#ok
+            else
+                str{end+1} = strs; %#ok
+            end
     end
-    valid = true;
-    xt = find( strs == '(' );
-    if isempty( xt ),
-        nm = strs;
-    elseif strs( end ) ~= ')',
-        valid = false;
-    else
-        nm = strs( 1 : xt(1) - 1 );
-        strx.name = nm;
-        strx.args = evalin( 'caller', [ '{', strs(xt(1)+1:end-1), '}' ], 'NaN' );
-        if ~iscell( strx.args ),
-            valid = false;
-        end
-        varargin{k} = strx;
-    end
-    if valid,
-        valid = isvarname( nm ) & exist( [ 'cvx_s_', nm ], 'file' ) == 2;
-    end
-    if valid,
-        modifiers = [ modifiers, ' ', strs ]; %#ok
-    elseif isvarname( nm ),
-        error( [ 'Invalid matrix structure modifier: %s\n', ...
-               'Trying to declare multiple variables? Use the VARIABLES keyword instead.' ], strs );
-    else
-        error( 'Invalid matrix structure modifier: %s', strs );
-    end
-    modifiers = [ modifiers, ' ', strs ]; %#ok
 end
-if ~isempty( varargin ),
-    str = cvx_create_structure( x.size, varargin{filt} );
-    if isempty( str ),
-        error( 'Incompatible structure modifiers:%s', modifiers );
+if ~isempty(str),
+    try
+        str = cvx_create_structure( x.size, str{:} );
+    catch exc
+        throw( MException( exc.identifier, sprintf( '%s\nTrying to declare multiple variables? Use the VARIABLES keyword instead.', exc.message ) ) );
     end
-else
-    str = [];
 end
 if isgeo && islin,
     error( 'GEOMETRIC and LINEAR keywords cannot be used simultaneously.' );
@@ -185,6 +142,7 @@ if n_itypes,
         error( 'At most one integer keyword may be specified.' );
     end
 end
+
 geo = isgeo || ( ~islin && cvx___.problems( p ).gp );
 v = newvar( prob, x.name, x.size, str, geo );
 if isepi || ishypo,

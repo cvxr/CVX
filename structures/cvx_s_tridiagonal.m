@@ -1,6 +1,8 @@
-function y = cvx_s_tridiagonal( m, n )
+function [ y, symm ] = cvx_s_tridiagonal( m, n, symm )
+
 %CVX_S_TRIDIAGONAL Tridiagional matrices.
-y = cvx_s_banded( m, n, 1, 1 );
+
+[ y, symm ] = cvx_s_banded( m, n, symm, 1, 1 );
 
 % Copyright 2012 CVX Research, Inc. 
 % See the file COPYING.txt for full copyright information.

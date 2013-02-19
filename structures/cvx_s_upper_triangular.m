@@ -1,6 +1,8 @@
-function y = cvx_s_upper_triangular( m, n )
+function [ y, symm ] = cvx_s_upper_triangular( m, n, symm )
+
 %CVX_S_UPPER_TRIANGULAR Upper triangular matrices.
-y = cvx_s_banded( m, n, 0, n );
+
+[ y, symm ] = cvx_s_banded( m, n, symm, 0, n );
 
 % Copyright 2012 CVX Research, Inc. 
 % See the file COPYING.txt for full copyright information.

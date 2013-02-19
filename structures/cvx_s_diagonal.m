@@ -1,6 +1,8 @@
-function y = cvx_s_diagonal( m, n )
+function [ y, symm ] = cvx_s_diagonal( m, n, symm )
+
 %CVX_S_DIAGONAL Diagonal matrices.
-y = cvx_s_banded( m, n, 0, 0 );
+
+[ y, symm ] = cvx_s_banded( m, n, symm, 0, 0 );
 
 % Copyright 2012 CVX Research, Inc. 
 % See the file COPYING.txt for full copyright information.
