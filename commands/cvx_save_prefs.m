@@ -20,6 +20,10 @@ try
         'cvx___','expert','precision','precflag',...
         'rat_growth','path','license','solvers');
     cvx___.solvers = osolv;
+    pfile2 = [ prefdir, fs, 'cvx_prefs.mat' ];
+    if ~strcmp( pfile, pfile2 ) && exist( pfile, 'file' ) && exist( pfile2, 'file' ),
+        try delete( pfile2 ); catch end %#ok
+    end
 catch errmsg
     cvx___.solvers = osolv;
     if in_setup,
