@@ -61,28 +61,31 @@ fprintf( 'Version info:\n' );
 fprintf( '    Code: build %s, %s\n', cvx_bld, cvx_bdate );
 fprintf( '    Documentation: build %s, %s\n', cvx_dbld, cvx_ddate );
 fprintf( 'Installation info:\n    Path: %s\n', mpath );
-if usejava('jvm'),
-    os_name = char(java.lang.System.getProperty('os.name'));
-    os_arch = char(java.lang.System.getProperty('os.arch'));
-    os_version = char(java.lang.System.getProperty('os.version'));
-    java_version = char(java.lang.System.getProperty('java.version'));
-    fprintf('    OS: %s %s version %s\n', os_name, os_arch, os_version );
-    fprintf('    Java version %s\n', java_version );
-    try
-        ndxs = strfind( java_version, '.' );
-        java_version = str2double( java_version(1:ndxs(2)-1) );
-        if java_version < 1.6,
-            fprintf('       WARNING: full support for CVX Professional licenses\n' );
-            fprintf('       requres Java version 1.6.0 or later. Please upgrade.\n' );
-        end
-    catch %#ok
-    end
-end
 if isoctave,
     fprintf( '    GNU Octave %s on %s\n', version, computer );
 else
     verd = ver('MATLAB');
-    fprintf( '    MATLAB version %s %s\n', verd.Version, verd.Release );
+    fprintf( '    MATLAB version: %s %s\n', verd.Version, verd.Release );
+    if usejava('jvm'),
+        os_name = char(java.lang.System.getProperty('os.name'));
+        os_arch = char(java.lang.System.getProperty('os.arch'));
+        os_version = char(java.lang.System.getProperty('os.version'));
+        java_version = char(java.lang.System.getProperty('java.version'));
+        fprintf('    OS: %s %s version %s\n', os_name, os_arch, os_version );
+        fprintf('    Java version: %s\n', java_version );
+        try
+            ndxs = strfind( java_version, '.' );
+            java_version = str2double( java_version(1:ndxs(2)-1) );
+            if java_version < 1.6,
+                fprintf('       WARNING: full support for CVX Professional licenses\n' );
+                fprintf('       requres Java version 1.6.0 or later. Please upgrade.\n' );
+            end
+        catch %#ok
+        end
+    else
+        fprintf( '    Architecture: %s\n', computer );
+        fprintf( '    Java version: DISABLED\n' );
+    end
 end
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -191,12 +194,14 @@ end
 
 cvx___.license = [];
 exception = '';
-if usejava('jvm') && exist( 'cvx_license', 'file' ),
+if usejava( 'jvm' ) && exist( 'cvx_license', 'file' ),
     try
         if nargin < 1, license_file = ''; end
         cvx___.license = cvx_license( license_file );
     catch exception
     end
+elseif exist( 'cvx_license', 'file' ),
+    fprintf( 'CVX Professional disabled; requires the Java virtual machine.\n' );
 end
 disp( line );
 if nargout == 0,
