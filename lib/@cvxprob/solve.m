@@ -101,7 +101,9 @@ elseif n ~= 0 && ~infeas && ( any( b ) || any( c ) ),
         if need_iter,
             disp( 'Successive approximation method to be employed.' );
         else
-            fprintf( 'Calling %s: %d variables, %d equality constraints\n', shim.name, n, m );
+            sname = shim.name;
+            if ~isempty( shim.version ), sname = [ sname, ' ', shim.version ]; end
+            fprintf( 'Calling %s: %d variables, %d equality constraints\n', sname, n, m );
             spacer = spacer(:,ones(1,60));
         end
         if dualized,
