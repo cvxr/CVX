@@ -414,14 +414,14 @@ numeric arguments.
     increasing.
 
 ``sum_largest(x,k)``
-    sum of the largest :math:`k` values, for real vector :math:`x`. Convex and increasing.
+    sum of the largest :math:`k` values, for real vector :math:`x`. Convex and nondecreasing.
 
 † ``sum_log(x)``
     :math:`\sum_i\log(x_i)` when :math:`x` is positive; :math:`-\infty` otherwise.
     Concave and nondecreasing.
     
 ``sum_smallest(x,k)``
-    sum of the smallest :math:`k` values, *i.e.*, equivalent to ``-sum_largest(-x,k)``. Concave and decreasing.
+    sum of the smallest :math:`k` values, *i.e.*, equivalent to ``-sum_largest(-x,k)``. Concave and nondecreasing.
 
 ``sum_square``
     Equivalent to ``sum(square(x))``, but more efficient. Convex. Works only for real values.
