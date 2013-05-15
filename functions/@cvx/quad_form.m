@@ -137,36 +137,55 @@ else
         end
         
         %
-        % First, try a Cholesky. If rank deficiency is detected, we may
-        % be able to recover a valid square root nonetheless. So we'll try,
-        % and if it is accurate to a tight tolerance, we'll use it.
+        % We've had to modify this portion of the code because MATLAB has
+        % removed support for the CHOLINC function.
+        %
+        % First, try a Cholesky. If it successfully completes its
+        % factorization without fail, we will assume that it is valid
+        % with no further checking.
+        %
+        % If Cholesky fails, then we have detected either rank deficiency
+        % or an indefinite matrix. In the non-sparse case, we attempt to
+        % construct a square root from the halted Cholesky results. In the
+        % sparse case, we perform an LDL, deleting any 2x2 blocks and any
+        % nonpositive 1x1 blocks.
+        %
+        % Neither of these approaches is guaranteed to produce a valid
+        % square root in the semidefinite case. So we must test the result
+        % and reject any failures.
+        %
+        % We have had to remove the incomplete Cholesky factorization
+        % approach because MATLAB has stopped supporting it. We have
+        % replaced it with an LDL. We delete any 2x2 blocks and any
+        % nonpositive 1x1 blocks. We do not guarantee this will always
+        % produce a numerically valid square root in the semidefinite case,
+        % but our norm test can reject failures.
         %
 
         if cvx_use_sparse( Q ),
             Q = sparse( Q );
-            prm = symamd( Q );
-            warning('off','MATLAB:cholinc:ArgInfToBeRemoved');
-            R = cholinc( Q( prm, prm ), 'inf' ); %#ok
-            R( :, prm ) = R;
-            tt = any( isinf( R ), 2 );
-            valid = ~any( tt );
-            if ~valid, 
-                R( tt, : ) = []; 
+            [ R, p, prm ] = chol( Q, 'upper', 'vector' );
+            if p ~= 0,
+                [ R, DD, prm ] = ldl( Q, 'upper', 'vector' );
+                tt = diag(DD,1) == 0;
+                tt = [ tt ; true ] & [ true ; tt ] & diag(DD) > 0;
+                DD = diag(DD);
+                R  = bsxfun( @times, sqrt(DD(tt,:)), R(tt,:) );
+                R( :, prm ) = R;
             end
         else
-            Q = full( Q );
-            [ R, p ] = chol( Q );
-            valid = p == 0;
-            if ~valid,
-                R = [ R , R' \ Q(1:p-1,p:end) ]; %#ok
+            [ R, p ] = chol( full( Q ), 'upper' );
+            if p ~= 0,
+                R = [ R , R' \ Q(1:p-1,p:end) ];
             end
         end
+        valid = p == 0;
         if ~valid,
-            valid = normest( Q - R' * R ) < tol * normest( Q );
+            valid = norm( Q - R' * R, 'fro' ) < tol * norm( Q, 'fro' );
         end
         
         %
-        % If the Cholesky fails, use an eigenvalue decompositon.
+        % If Cholesky and LDL fail, do an eigendecomposition.
         %
         
         if ~valid,
