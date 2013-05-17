@@ -88,31 +88,37 @@ for pass = 1 : 2,
         % as well be zero. If we have multiple unbounded variables, keep
         % all but one so that the solver can still see this happen.
         %
+        % Eliminated for now. Frankly, my suspicion is that this happens
+        % very infrequently, and this code seems to have been the source
+        % of bugs in the past.
+        %
         
-        rows = ( rcnt == ( cc ~= 0 ) ) & ( ~rsv | nng );
-        nnzr = nnz( rows );
-        if nnzr > 0,
-            csgn = 1 - 2 * dualized;
-            celm = csgn * cc( rows, 1 );
-            celm( nng(rows) & celm < 0 ) = 0;
-            nnzc = nnz( celm );
-            if nnzc > 1 || nnzr > nnzc,
-                success = true;
-                if nnzc,
-                    cnrm = norm( celm );
-                    ndxq = find( rows );
-                    ndxq = ndxq( celm ~= 0 );
-                    ndxq = ndxq( 1 );
-                    Q( :, ndxq ) = Q( :, rows ) * ( celm / cnrm );
-                    dbCA( ndxq, 1 ) = csgn * cnrm; %#ok
-                    rows( ndxq ) = 0;
+        if 0,
+            rows = ( rcnt == ( cc ~= 0 ) ) & ( ~rsv | nng );
+            nnzr = nnz( rows );
+            if nnzr > 0,
+                csgn = 1 - 2 * dualized;
+                celm = csgn * cc( rows, 1 );
+                celm( nng(rows) & celm < 0 ) = 0;
+                nnzc = nnz( celm );
+                if nnzc > 1 || nnzr > nnzc,
+                    success = true;
+                    if nnzc,
+                        cnrm = norm( celm );
+                        ndxq = find( rows );
+                        ndxq = ndxq( celm ~= 0 );
+                        ndxq = ndxq( 1 );
+                        Q( :, ndxq ) = Q( :, rows ) * ( celm / cnrm );
+                        dbCA( ndxq, 1 ) = csgn * cnrm; %#ok
+                        rows( ndxq ) = 0;
+                    end
+                    rowX = ~rows;
+                    dbCA = dbCA( rowX, : );
+                    rsv  = rsv ( rowX, : );
+                    nng  = nng ( rowX, : );
+                    ndxs = ndxs( rowX, : );
+                    Q    =    Q( :, rowX );
                 end
-                rowX = ~rows;
-                dbCA = dbCA( rowX, : );
-                rsv  = rsv ( rowX, : );
-                nng  = nng ( rowX, : );
-                ndxs = ndxs( rowX, : );
-                Q    =    Q( :, rowX );
             end
         end
         
@@ -226,7 +232,7 @@ for pass = 1 : 2,
                 otherwise,
                     SS = [];
             end
-            PP{k} = sparse(1:numel(temp),temp,1,numel(temp),n1);
+            PP{k} = sparse(1:numel(temp),max(temp,1),temp~=0,numel(temp),n1);
             if ~isempty(SS),
                 if ischar(SS),
                     SS = cvx_create_structure([nt,nt,nv],SS);
