@@ -71,7 +71,7 @@ for pass = 1 : 2,
         trivs = sum( dbCA(rsv==0,:) ~= 0, 1 ) == 1 & sum( dbCA(rsv~=0,:) ~= 0, 1 ) - ( dbCA( 1, : ) ~= 0 ) == 1;
         ineqs = full(any(dbCA(rsv~=0&rcnt==1,:),1)) & full(~trivs);
         ineqs = +ineqs;
-    elseif dualized,
+    else % if dualized,
         ineqs = zeros(1,size(dbCA,2));
     end
     ineqs(1) = 1;
@@ -132,10 +132,10 @@ for pass = 1 : 2,
         %
         
         [ xR, dbCA ] = cvx_bcompress( dbCA, 'full', 1 );
-        if size( xR, 1 ) ~= size( xR, 2 ), 
+        if size( xR, 1 ) ~= size( xR, 2 ),
             success = true;
             P       = P * cvx_invert_structure( xR );
-            ineqs   = ineqs( any( xR, 1 ) );
+            ineqs   = ( xR * ineqs(:) )' ~= 0;
         end
         
         while true,
