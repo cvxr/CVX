@@ -124,7 +124,7 @@ else
     quad = +ax * +ay;
     if nnz( quad ) ~= 0,
         if length( quad ) ~= 1,
-            error( 'Disciplined convex programming error:\n    Invalid quadratic form: must be a scalar.', 1 ); %#ok
+            error( 'Disciplined convex programming error:\n    Only scalar quadratic forms can be specified in CVX\n.', 1 ); %#ok
         else
             cx = cx & ~ax;
             cy = cy & ~ay;
