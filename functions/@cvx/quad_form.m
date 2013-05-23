@@ -103,7 +103,7 @@ else
         
         Q = 0.5 * ( Q + Q' );
         dQ = diag( Q );
-        trQ = sum(dQ);
+        trQ = sum( dQ );
         if ~all( dQ ),
             nnzQ = nnz( Q );
             tt = dQ ~= 0;
@@ -202,7 +202,7 @@ else
                 success = false;
                 break;
             end
-            nzero = nnz(cumsum(D)<tol*trQ);
+            nzero = nnz(cumsum(D)<tol*abs(trQ));
             V = V(:,nzero+1:end);
             D = sqrt(D(nzero+1:end));
             R = diag(sparse(D)) * V';
@@ -214,7 +214,7 @@ else
         %
        
         alpha = trQ / size(R,1);
-        cvx_optval = cvx_optval + sg * alpha * sum_square_abs( ( R * x ) / sqrt(alpha) ) + real( v' * x );
+        cvx_optval = cvx_optval + alpha * sum_square_abs( ( R * x ) / sqrt(alpha) ) + real( v' * x );
         break;
         
     end
