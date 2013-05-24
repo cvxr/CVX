@@ -171,8 +171,8 @@ else
                 tt = [ tt ; true ] & [ true ; tt ] & diag(DD) > 0;
                 DD = diag(DD);
                 R  = bsxfun( @times, sqrt(DD(tt,:)), R(tt,:) );
-                R( :, prm ) = R;
             end
+            R( :, prm ) = R;
         else
             [ R, p ] = chol( full( Q ), 'upper' );
             if p ~= 0,
