@@ -22,3 +22,11 @@ CVX Users' Guide
    license
    citing
    credits
+   gurobi
+   mosek
+
+.. _CVX Support: http://support.cvxr.com/
+.. _CVX Sales: mailto:sales@cvxr.com   
+.. _Licensing: http://cvxr.com/cvx/licensing
+.. _Academic License Request: http://cvxr.com/cvx/academic
+

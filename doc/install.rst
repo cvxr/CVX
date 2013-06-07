@@ -88,6 +88,8 @@ Installation instructions
 
 .. index:: License; installing
 
+.. _licinstall:
+
 Installing a CVX Professional license
 --------------------------------------
 
@@ -106,46 +108,40 @@ current license with a new one, simply run ``cvx_setup`` again with the filename
 Once the license has been accepted and installed, you are free to move your license 
 file anywhere you wish for safekeeping---CVX saves a copy in its preferences.
 
-In order to use Gurobi or MOSEK with CVX, you must first install them according to
-their respective developer's instructions. In particular, make sure that the MATLAB
-interface is fully operational in each case. For instance, the commands ``mosekopt``
-and/or ``gurobi`` should run successfully from the MATLAB command line.
-
 .. index::
 	single: SeDuMi
 	single: Solvers; SeDuMi
 	single: SDPT3
 	single: Solvers; SDPT3
+	single: MOSEK
+	single: Solvers; MOSEK
+	single: Gurobi
+	single: Solvers; Gurobi
 	single: Solvers; included
 	single: Solvers
 	
 .. _extsolv:
 
-Using CVX with Gurobi or MOSEK
--------------------------------
+Solvers included with CVX
+-------------------------
 
-When ``cvx_setup`` is run, it configures CVX according to the solvers that it locates
-at that time. Therefore, if you first install CVX Standard, and later install Gurobi
-or MOSEK, you must *re-run* ``cvx_setup`` in order for CVX to detect the new solver.
-
-When installing these solvers, please make sure that their MATLAB interfaces are 
-operating properly before re-running ``cvx_setup``. Please consult the installation
-instructions provided by the solver developer for details. If MATLAB cannot find the
-``gurobi`` or ``mosekopt`` commands when ``cvx_setup`` is run, it will not configure
-CVX to use those solvers.
-
-About the included solvers
----------------------------
-
-The CVX distribution includes copies of the solvers 
+All versions of CVX include copies of the solvers
 `SeDuMi <http://sedumi.ie.lehigh.edu/>`_
 and 
 `SDPT3 <http://www.math.nus.edu.sg/~mattohkc/sdpt3.html>`_
-in the directories :file:`cvx/sedumi` and :file:`cvx/sdpt3`, respectively. We have
-designed CVX to use its own copy of these solvers, because we can better support the 
-specific version that we have chosen. Indeed, CVX has generated quite a few bug reports
-for these solvers! However, you are free to keep an alternate copy in your
-MATLAB path. When you are not constructing a CVX model, MATLAB will rely on your
-copy of the solver instead.
+in the directories :file:`cvx/sedumi` and :file:`cvx/sdpt3`, respectively. When you
+run `cvx_setup`, CVX will automatically add these solvers to its solver list.
 
+If you have downloaded a CVX Professional Solver Bundle, then the solvers 
+`Gurobi <http://gurobi.com>`_
+and/or 
+`MOSEK <http://mosek.com>`_ will be included with CVX as well. Use of these
+solvers requires a CVX Professional license. You may also use your existing
+copies of these solvers with CVX as well. We have created special sections of
+this users' guide for each solver:
 
+* Gurobi: :ref:`gurobi`
+* MOSEK: :ref:`mosek`
+
+For more general information on the solvers supported by CVX, an how to select a
+solver for your particular problem, see the :ref:`Solvers <solvers>` section.

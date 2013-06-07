@@ -77,11 +77,10 @@ on geometric programming, see this
 Previous versions of CVX supported two free SQLP solvers,
 `SeDuMi <http://sedumi.ie.lehigh.edu>`_ [Stu99]_ and
 `SDPT3 <http://www.math.nus.edu.sg/~mattohkc/sdpt3.html>`_ [TTT03]_. These 
-solvers are included with the CVX distribution. This
-version includes support for two more solvers,
+solvers are included with the CVX distribution. Starting with version 2.0,
+CVX supports two *commercial* solvers as well,
 `Gurobi <http://gurobi.com>`_ and `MOSEK <http://mosek.com>`_. For 
-more information, see :ref:`solvers`. These are commercial solvers, and
-must be acquired separately.
+more information, see :ref:`solvers`.
 
 The ability
 to use CVX with commercial solvers is a new capability that we have decided

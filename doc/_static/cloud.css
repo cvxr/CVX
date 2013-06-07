@@ -96,6 +96,9 @@ ul, ol {
 dd { 
 	margin: 0 0 0 2.5em;  
 }
+.last {
+	margin-bottom: 0 !important;
+}
 dt { 
 	margin: 0; 
 }
@@ -705,6 +708,8 @@ table.docutils td { border: 0; margin: 0; padding: 5px; }
 table.docutils tr.row-odd th { background: #fff; }
 table.docutils tr.row-odd td { background: #f8f8f8; }
 table.docutils.html-plain-table tr.row-odd > * { background: none; }
+
+dl.docutils dd { margin-bottom: 1.25em; }
 
 /*****************************************************
  * document - quoted text

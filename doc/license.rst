@@ -31,6 +31,16 @@ recognized by their ``.p`` suffix. Currently the following files are distributed
     shims/cvx_gurobi.p
     cvx_license.p
     
+In addition, all files within the subdirectories
+
+::
+
+	gurobi/
+	mosek/
+	
+are owned by Gurobi Optimization and MOSEK ApS, respectively, and are provided by these
+companies for inclusion in the CVX package by contractual agreement. 
+
 You may redistribute these files only as part of the complete, unmodified CVX package as
 distributed by CVX Research, Inc. itself.
 
@@ -63,15 +73,15 @@ The terms we lay out here are intended to support these trifold goals.
 
 We invite our users to create new interfaces between CVX and other *free* solvers. By 
 "free", we mean that the solver must be made available at no charge for to *all* users,
-including commercial users, without restriction. Please contact us if you are interested
+*including commercial users*, without restriction. Please contact us if you are interested
 in creating such an interface; we can offer assistance. If you do create one, please 
 consider submitting it to us for inclusion in the standard CVX distribution. But you are 
 under no obligation to do this. Instead, you can ship the interface code with the solver
 itself; or you can construct a modified version of CVX with your interface included.
 
 We do not permit the creation and distribution of new interfaces between CVX and 
-*non-free* solvers---even if those solvers are made available to academic users at no 
-charge. If you are a vendor or developer of a commercial solver, and would like to develop
+*non-free* solvers---*even if those solvers are made available to academic users at no 
+charge.* If you are a vendor or developer of a commercial solver, and would like to develop
 or offer a CVX interface to your users, please contact us at info@cvxr.com. We welcome
 the opportunity to support a wider variety of commercial solvers with CVX, and are
 willing to devote engineering resources to make those connections.
@@ -84,11 +94,13 @@ reach out to the solver vendor to work on an implementation.
 Bundled solvers
 ----------------
 
-The solvers SDPT3 and SeDuMi are distributed with CVX in the ``sdpt3/`` and ``sedumi/``
-subdirectories, respectively. Neither of these packages is owned by CVX Research, Inc.
-Both are included with permission of the authors, and licensed under the terms of
-the GPLv2. Please consult the plain-text documentation contained in each of these
-directories for more information about copying, citation, and so forth.
+The solvers SDPT3, SeDuMi, Gurobi, and MOSEK are distributed with CVX in the ``sdpt3/``,
+``sedumi/``, ``gurobi/``, and ``mosek/`` subdirectories, respectively. (If you received a version
+of CVX distributed under the terms of the CVX Standard License, the ``mosek/`` and ``gurobi/``
+directories will not be present.) None of these packages are owned by CVX Research, Inc.
+They are included with permission of the authors. The solvers SDPT3 and SeDuMi are 
+subject to the terms of the GPLv2; therefore, you are free to redistribute them under
+the terms of this license.
 
 Example library
 ---------------

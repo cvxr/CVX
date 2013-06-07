@@ -19,7 +19,6 @@ a fifth solver is currently under development:
 `SDPT3 <http://www.math.nus.edu.sg/~mattohkc/sdpt3.html>`_     Y    Y    Y       Y    E     N         N
 `Gurobi <http://gurobi.com>`_                                  Y    Y    Y       N    N     Y         Y
 `MOSEK <http://mosek.com>`_                                    Y    Y    Y       Y*   E     Y         Y
-`GLPK  <http://www.gnu.org/software/glpk>`_ (in development)   Y    N    N       Y    N     Y         N 
 ============================================================= ==== ==== ====== ===== ====  ========= ============
 
 (key: Y = Yes, N = No, E = Experimental, * = Mosek 7 or later is required.)
@@ -39,6 +38,11 @@ better than the others on *every* model CVX can generate---including commercial 
 That said, if you encounter a problem that one solver can handle well and another 
 cannot, please send us a bug report (see :ref:`support`) and we will forward the
 results to the solver's authors.
+
+We have created special sections in this user guide for using Gurobi and MOSEK with CVX:
+
+* Gurobi: :ref:`gurobi`
+* Mosek:  :ref:`mosek`
 
 .. _solver-selection:
 
@@ -168,6 +172,14 @@ possible values of ``cvx_status`` are as follows:
     computed solution before using it in further calculations. See
     :ref:`solver-precision` for a more advanced
     discussion of solver tolerances and how to make adjustments.
+    
+``Suboptimal``
+    This status is possible only for *mixed-integer* problems. It is
+    returned when the branching algorithm has discovered at least one
+    feasible integer solution, but it was unable to continue the search
+    process to global optimality. This will occur if the solver is 
+    required to terminate due to a time limit or a forced interruption
+    (for example, if the user types `Ctrl-C`.)     
 
 ``Failed``
     The solver failed to make sufficient progress towards a solution,
