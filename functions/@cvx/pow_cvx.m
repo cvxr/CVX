@@ -205,7 +205,7 @@ for k = 1 : nv,
             % pow_abs( complex affine, p > 1 )
             cvx_begin
                 epigraph variable yt(sz)
-                { cat( nd, yt, ones(sz) ), cvx_accept_convex(xt) } == geo_mean_cone( sw, nd, [1/pt,1-1/pt], 'cabs' );  %#ok
+                { cat( nd, yt, ones(sz) ), xt } == geo_mean_cone( sw, nd, [1/pt,1-1/pt], 'cabs' );  %#ok
             cvx_end
     end
     

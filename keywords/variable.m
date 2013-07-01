@@ -39,27 +39,21 @@ global cvx___
 p = index( prob );
 
 %
-% Step 1: separate the name from the parenthetical
+% Step 1: separate the name from the parenthetical, verify the name
 %
 
-xt = find( nm == '(' );
-if isempty( xt ),
-    x.name = nm;
-    x.size = [1,1];
-elseif nm( end ) ~= ')',
+toks = regexp( nm, '^([a-zA-Z]\w*)\s*(\(.*\))?\s*$', 'tokens' );
+if isempty( toks ),
     error( 'Invalid variable specification: %s', nm );
-else
-    x.name = nm( 1 : xt( 1 ) - 1 );
-    x.size = nm( xt( 1 ) + 1 : end - 1 );
 end
-if ~isvarname( x.name ),
-    error( 'Invalid variable specification: %s', nm );
-elseif x.name( end ) == '_',
-    error( 'Invalid variable specification: %s\n   Variables ending in underscores are reserved for internal use.', nm );
-end
+toks = toks{1};
+x.name = toks{1};
+x.size = toks{2};
 tt = evalin( 'caller', x.name, '[]' );
-if isa( tt, 'cvxobj' ) && cvx_id( tt ) >= cvx_id( prob ),
-    error( 'Invalid expression specification: %s\n   Name already used for another CVX object.', nm );
+if isa( tt, 'cvxobj' ),
+    error( 'Invalid expression specification: %s\n   Name %s already used for another CVX object.', nm, x.name );
+elseif x.name(end) == '_',
+    error( 'Invalid variable specification: %s\n   Variables ending in underscores are reserved for internal use.', nm );
 end
 
 %
@@ -69,9 +63,11 @@ end
 % need no be a simple comma-delimited list.
 %
 
-if ischar( x.size ),
+if isempty( x.size ),
+	x.size = [];
+else
     try
-        x.size = evalin( 'caller', [ '[', x.size, '];' ] );
+        x.size = evalin( 'caller', [ '[', x.size(2:end-1), '];' ] );
     catch exc
         throw( MException( exc.identifier, exc.message ) );
     end
@@ -84,6 +80,29 @@ end
 %
 % Step 3. Parse the structure.
 %
+
+str = struct( 'name', {}, 'args', {}, 'full', {} );
+for k = 1 : length( varargin ),
+	strs = varargin{k};
+	if ~isempty( strs ),
+		if ~ischar( strs ) || size( strs, 1 ) ~= 1,
+			error( 'Matrix structure modifiers must be strings.' );
+		end
+		toks = regexp( strs, '^([a-zA-Z]\w*)\s*(\(.*\))?\s*$', 'tokens' );
+		if isempty( toks ),
+			error( 'Invalid structure specification: %s\n', strs );
+		end
+		toks = toks{1};
+		strx.name = toks{1};
+		if isempty( toks{2} ),
+			strx.args = {};
+		else
+			strx.args = evalin( 'caller', [ '{', toks{2}(2:end-1), '}' ] );	
+		end
+		strx.full = strs;
+		str(end+1) = strx; %#ok
+	end
+end
 
 islin = false;
 isgeo = false;

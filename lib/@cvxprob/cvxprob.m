@@ -26,7 +26,7 @@ if ~isempty( cvx___.problems ),
         if temp.depth == depth && ( ~isempty(temp.objective) || ~isempty(temp.variables) || ~isempty(temp.duals) || nnz(temp.t_variable) > 1 );
             warning( 'CVX:Empty', 'A non-empty cvx problem already exists in this scope.\n   It is being overwritten.', 1 ); %#ok
         end
-        cvx_pop( temp.self, 'reset' );
+        pop( temp.self, 'reset' );
     end
 end
 

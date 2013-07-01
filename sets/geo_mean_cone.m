@@ -332,7 +332,7 @@ cvx_begin set
     end
     if isempty( cone ),
         cone = semidefinite( [2,2,nm,nv] );
-    else
+    elseif nm > 1,
         cone = cat( 3, semidefinite( [2,2,nm-1,nv] ), cone );
     end
     xt = [ x ; xw ; xa ]; %#ok

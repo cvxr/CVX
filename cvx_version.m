@@ -80,7 +80,7 @@ else
                 fprintf('       WARNING: full support for CVX Professional licenses\n' );
                 fprintf('       requres Java version 1.6.0 or later. Please upgrade.\n' );
             end
-        catch %#ok
+        catch
         end
     else
         fprintf( '    Architecture: %s\n', computer );
@@ -168,13 +168,6 @@ if fid > 0,
         end
     else
         fprintf( '\n    No missing files.\n' );
-    end
-elseif 0,
-    fid = fopen( [ mpath, fs, 'MANIFEST' ], 'w' );
-    if fid,
-        newman = get_manifest( mpath, fs );
-        fprintf( fid, '%s\n', newman{:} );
-        fclose( fid );
     end
 else    
     fprintf( 'Manifest missing; cannot verify file structure.\n' ) ;

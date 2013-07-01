@@ -1,6 +1,13 @@
 function newobj( prob, dir, x )
 error( nargchk( 3, 3, nargin ) );
 
+persistent remap_min remap_max remap
+if isempty( remap_max ),
+    remap_min = cvx_remap( 'convex', 'log-convex' );
+    remap_max = cvx_remap( 'concave', 'log-concave' );
+    remap = cvx_remap( 'log-valid' ) & ~cvx_remap( 'constant' );
+end
+
 %
 % Check problem
 %
@@ -9,38 +16,52 @@ if ~isa( prob, 'cvxprob' ),
     error( 'First argument must be a cvxprob object.' );
 end
 global cvx___
-p = index( prob );
-if ~isempty( cvx___.problems( p ).objective ),
-    error( 'An objective has already been supplied for this problem.' );
+p = prob.index_;
+if ~isempty( cvx___.problems( p ).direction ),
+	if isequal( dir, 'find' ),
+        error( 'Objective functions cannot be added to sets.' );
+    else
+	    error( 'An objective has already been supplied for this problem.' );
+	end
 end
 
 %
 % Check direction
 %
 
-if ~ischar( dir ) || size( dir, 1 ) ~= 1 || ~any( strcmpi( dir, { 'minimize', 'maximize' } ) ),
-    error( 'The second argument must be either "minimize" or "maximize".' );
+if ~ischar( dir ) || size( dir, 1 ) ~= 1,
+    error( 'The second argument must be a string.' );
 end
 
 %
 % Check objective expression
 %
 
-if ~isreal( x ),
+if ~isa( x, 'cvx' ) && ~isa( x, 'double' ) && ~isa( x, 'sparse' ),
+    error( 'Cannot accept an objective of type ''%s''.', class( arg ) );
+elseif ~isreal( x ),
     error( 'Expressions in objective functions must be real.' );
 elseif isempty( x ),
     warning( 'CVX:EmptyObjective', 'Empty objective.' );
+end
+cx = cvx_classify( x );
+switch dir,
+    case 'minimize',
+	 	vx = remap_min( cx );
+    case 'maximize',
+	 	vx = remap_max( cx );
+    otherwise,
+        error( 'Invalid objective type: %s', dir );
+end
+if ~all( vx ),
+    error( 'Disciplined convex programming error:\n   Cannot %s a(n) %s expression.', dir, cvx_class(x(vx==0),false,true) );
 end
 
 %
 % Store the objective
 %
 
-persistent remap
-if isempty( remap ),
-    remap = cvx_remap( 'log-valid' ) & ~cvx_remap( 'constant' );
-end
-vx = remap( cvx_classify( x ) );
+vx = remap( cx );
 if any( vx ),
     if all( vx ),
         x = log( x );

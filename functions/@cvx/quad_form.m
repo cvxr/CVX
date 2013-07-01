@@ -7,7 +7,8 @@ function [ cvx_optval, success ] = quad_form( x, Q, v, w )
 %
 
 error( nargchk( 2, 4, nargin ) ); %#ok
-tol = 10 * eps;
+tol = 16 * eps;
+tolLDL = 4 * eps;
 if nargin < 4,
     w = 0;
     if nargin < 3,
@@ -118,22 +119,23 @@ else
             end
             v = v( tt, : );
             x = cvx_subsref( x, tt, ':' );
+            sx = length( x );
         end
         
         %
         % Determine the sign of the elements of Q. If they are not all of
-        % the same sign, then neither Q nor -Q is PSD.
+        % the same sign, then neither Q nor -Q is PSD. Note that trQ has
+        % preserved the sign of our quadratic form, so setting Q=-Q here
+        % in the concave case does not cause a problem.
         %
 
         dQ = dQ > 0;
-        if all( dQ ),
-            sg = +1;
-        elseif any( dQ ),
-            success = false;
-            break
-        else
-            sg = -1;
-            Q = -Q;
+        if ~all( dQ ),
+            if any( dQ ),
+                success = false;
+            else
+                Q = -Q;
+            end
         end
         
         %
@@ -141,54 +143,56 @@ else
         % removed support for the CHOLINC function.
         %
         % First, try a Cholesky. If it successfully completes its
-        % factorization without fail, we will assume that it is valid
-        % with no further checking.
+        % factorization without fail, we accept it without question. If
+        % it terminates early, we perform a numerical test to see if the
+        % result still approximates the square root to good precision.
         %
-        % If Cholesky fails, then we have detected either rank deficiency
-        % or an indefinite matrix. In the non-sparse case, we attempt to
-        % construct a square root from the halted Cholesky results. In the
-        % sparse case, we perform an LDL, deleting any 2x2 blocks and any
-        % nonpositive 1x1 blocks.
+        % If Cholesky fails, then we assume the matrix is either rank
+        % deficient or indefinite. For sparse matrices, we perform an LDL
+        % factorization, and remove the contributions of any 2x2 blocks,
+        % negative 1x1 blocks, and near-zero 1x1 blocks on the diagonal.
+        % If there are no such blocks, we accept it without question; if
+        % so, we perform the same numerical test. If the test fails, we 
+        % assume, for sparse matrices, at least, that the matrix is
+        % indefinite.
         %
-        % Neither of these approaches is guaranteed to produce a valid
-        % square root in the semidefinite case. So we must test the result
-        % and reject any failures.
-        %
-        % We have had to remove the incomplete Cholesky factorization
-        % approach because MATLAB has stopped supporting it. We have
-        % replaced it with an LDL. We delete any 2x2 blocks and any
-        % nonpositive 1x1 blocks. We do not guarantee this will always
-        % produce a numerically valid square root in the semidefinite case,
-        % but our norm test can reject failures.
+        % If the matrix is dense, our final test is an eigenvalue
+        % decomposition, the most expensive but the most accurate.
         %
 
-        if cvx_use_sparse( Q ),
+        spQ = nnz(Q) <= 0.1 * sx * sx;
+        if spQ,
             Q = sparse( Q );
             [ R, p, prm ] = chol( Q, 'upper', 'vector' );
-            if p ~= 0,
-                [ R, DD, prm ] = ldl( Q, 'upper', 'vector' );
-                tt = diag(DD,1) == 0;
-                tt = [ tt ; true ] & [ true ; tt ] & diag(DD) > 0;
-                DD = diag(DD);
-                R  = bsxfun( @times, sqrt(DD(tt,:)), R(tt,:) );
+            if any( diff(prm) ~= 1 ),
+                R( :, prm ) = R; %#ok
             end
-            R( :, prm ) = R;
         else
-            [ R, p ] = chol( full( Q ), 'upper' );
-            if p ~= 0,
-                R = [ R , R' \ Q(1:p-1,p:end) ];
+            Q = full( Q );
+            [ R, p ] = chol( Q, 'upper' );
+            if p > 1, 
+                R = [ R , R' \ Q(1:p-1,p:end) ]; %#ok
             end
         end
         valid = p == 0;
         if ~valid,
-            valid = norm( Q - R' * R, 'fro' ) < tol * norm( Q, 'fro' );
+            tolQ = tol * norm( Q, 'fro' );
+            if p > 1,
+                valid = norm( Q - R' * R, 'fro' ) < tolQ;
+            end
         end
-        
-        %
-        % If Cholesky and LDL fail, do an eigendecomposition.
-        %
-        
-        if ~valid,
+        if ~valid && spQ,
+            [ R, DD, prm ] = ldl( sparse( Q ), 'upper', 'vector' );
+            if nnz( R ) > 0.2 * sx * ( sx + 1 ) / 2, spQ = false; end %#ok
+            spQ = cvx_use_sparse( R );
+            tt = diag(DD,1) == 0;
+            tt = [ tt ; true ] & [ true ; tt ] & ( diag(DD) > tolLDL * trQ );
+            DD = diag(DD);
+            R  = bsxfun( @times, sqrt( DD(tt,:) ), R(tt,:) );
+            if any( diff(prm) ~= 1 ), R( :, prm ) = R; end
+            valid = all( tt ) || norm( Q - R' * R, 'fro' ) < tolQ;
+        end
+        if ~valid && ~spQ,
             [ V, D ] = eig( full( Q ) );
             if cvx_use_sparse( V ), 
                 V = sparse( V ); 
@@ -198,14 +202,17 @@ else
                 [D,ndxs] = sort(D);
                 V = V(:,ndxs);
             end
-            if D(1) < -tol * D(end),
-                success = false;
-                break;
+            valid = D(1) > -tol * D(end);
+            if valid,
+                nzero = nnz( cumsum(D) < tol * abs(trQ) );
+                V = V(:,nzero+1:end);
+                D = sqrt(D(nzero+1:end));
+                R = diag(sparse(D)) * V';
             end
-            nzero = nnz(cumsum(D)<tol*abs(trQ));
-            V = V(:,nzero+1:end);
-            D = sqrt(D(nzero+1:end));
-            R = diag(sparse(D)) * V';
+        end
+        if ~valid,
+            success = false;
+            break;
         end
         
         %

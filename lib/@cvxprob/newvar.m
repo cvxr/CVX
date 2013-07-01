@@ -8,7 +8,7 @@ error( nargchk( 2, 5, nargin ) );
 if ~isa( prob, 'cvxprob' ),
     error( 'First argument must be a cvxprob object.' );
 end
-p = index( prob );
+p = prob.index_;
 global cvx___
 
 %

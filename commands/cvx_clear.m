@@ -4,7 +4,10 @@
 %    over. Typing this before entering another CVX_BEGIN again avoids the 
 %    warning message that occurs if CVX_BEGIN detects a model in progress.
 
-cvx_pop;
+prob = evalin( 'caller', 'cvx_problem', '[]' );
+if isa( prob, 'cvxprob' ),
+	evalin( 'caller', 'pop( cvx_problem, ''clear'' )' );
+end
 % cvx_clearpath( 1 );
 
 % Copyright 2012 CVX Research, Inc.

@@ -1,10 +1,6 @@
-function x = subsref( x, S, cheat )
+function y = subsref( x, S, cheat )
 global cvx___
-try
-    x = subsref( cvx___.problems( index( x ) ), S );
-catch
-    error( lasterr );
-end
+y = subsref( cvx___.problems( x.index_ ), S );
 
 % Copyright 2012 CVX Research, Inc.
 % See the file COPYING.txt for full copyright information.

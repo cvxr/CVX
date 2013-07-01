@@ -3,7 +3,7 @@ function disp( prob, prefix )
 if nargin < 2, prefix = ''; end
 
 global cvx___
-p = cvx___.problems( index( prob ) );
+p = cvx___.problems( prob.index_ );
 
 if isempty( p.variables ),
     nvars = 0;

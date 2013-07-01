@@ -32,7 +32,7 @@ end
 y = isnumeric( x ) && length( x ) == numel( x ) && isreal( x ) && nnz( isnan( x ) ) <= 1 && ~any( x < xmin ) && nnz( x ~= floor( x ) ) == nnz( isnan( x ) );
 if y && nargout > 1,
     x = [ x( : )', 1, 1 ];
-    x = x( 1 : max( [ 2, find( x > 1 ) ] ) );
+    x = x( 1 : max( [ 2, find( x ~= 1 ) ] ) );
 end
 
 % Copyright 2012 CVX Research, Inc.

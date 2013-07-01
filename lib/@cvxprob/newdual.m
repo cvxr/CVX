@@ -9,7 +9,7 @@ if ~isa( prob, 'cvxprob' ),
     error( 'First argument must be a cvxprob object.' );
 end
 global cvx___
-p = index( prob );
+p = prob.index_;
 vars = cvx___.problems( p ).duals;
 
 %

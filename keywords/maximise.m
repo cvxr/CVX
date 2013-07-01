@@ -6,37 +6,21 @@ cvx_problem = evalin( 'caller', 'cvx_problem', '[]' );
 if isempty( cvx_problem ) || ~isa( cvx_problem, 'cvxprob' ),
     error( 'A cvx problem does not exist in this scope.' );
 end
-if ~isempty( cvx_problem.direction ),
-    if isequal( cvx_problem.direction, 'find' ),
-        error( 'Objective functions cannot be added to sets.' );
-    else
-        error( 'An objective function has already been supplied.' );
-    end
-end
-
 if nargin < 1,
     error( 'Objective expression missing.' );
 elseif iscellstr( varargin ),
-    arg = evalin( 'caller', sprintf( '%s ', varargin{:} ) );
+	x = sprintf( '%s,', varargin{:} );
+    x = evalin( 'caller', x(1:end-1) );
 elseif nargin > 1,
     error( 'Too many input arguments.' );
 else
-    arg = varargin{1};
+    x = varargin{1};
 end
-
-if ~isa( arg, 'cvx' ) && ~isa( arg, 'double' ) && ~isa( arg, 'sparse' ),
-    error( 'Cannot accept an objective of type ''%s''.', class( arg ) );
+try
+    newobj( cvx_problem, 'maximize', x );
+catch exc
+    rethrow( exc )
 end
-persistent remap
-if isempty( remap ),
-    remap = cvx_remap( 'concave', 'log-concave' );
-end
-vx = remap( cvx_classify( arg ) );
-if ~all( vx ),
-    error( 'Disciplined convex programming error:\n   Cannot maximise a(n) %s expression.', cvx_class(arg(vx==0),false,true) );
-end
-
-newobj( cvx_problem, 'maximize', arg );
 
 % Copyright 2012 CVX Research, Inc.
 % See the file COPYING.txt for full copyright information.

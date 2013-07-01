@@ -9,7 +9,7 @@ if ~isa( prob, 'cvxprob' ),
     error( 'A cvx problem must be created first.' );
 end
 global cvx___
-p = index( prob );
+p = prob.index_;
 y_orig = y;
 
 %

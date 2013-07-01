@@ -3,7 +3,7 @@ if nargin < 3 || nargout < 6, doineqs = true; end
 if nargin < 2 || nargout < 5, destructive = false; end
 
 global cvx___
-p = cvx___.problems( index( pp ) );
+p = cvx___.problems( pp.index_ );
 n = length( cvx___.reserved );
 
 %
@@ -257,7 +257,7 @@ end
 %
 
 if destructive,
-    cvx_pop( pp, 'extract' );
+    pop( pp, 'extract' );
 end
 
 % Copyright 2012 CVX Research, Inc.

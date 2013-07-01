@@ -10,17 +10,18 @@ global cvx___
 prob = evalin( 'caller', 'cvx_problem', '[]' );
 if ~isa( prob, 'cvxprob' ),
     error( 'No cvx problem exists in this scope.' );
-elseif index( prob ) ~= length( cvx___.problems ),
-    error( 'Internal cvx data corruption.' );
 end
 p = index( prob );
+if p ~= length( cvx___.problems ),
+    error( 'Internal cvx data corruption.' );
+end
 pstr = cvx___.problems( p );
 estruc = [];
 
 if isempty( pstr.objective ) && isempty( pstr.variables ) && isempty( pstr.duals ) && nnz( pstr.t_variable ) == 1,
 
     warning( 'CVX:EmptyModel', 'Empty cvx model; no action taken.' );
-    evalin( 'caller', 'cvx_pop( cvx_problem, ''none'' )' );
+    evalin( 'caller', 'pop( cvx_problem, ''none'' )' );
 
 elseif pstr.complete && nnz( pstr.t_variable ) == 1,
 
@@ -117,7 +118,7 @@ elseif pstr.complete && nnz( pstr.t_variable ) == 1,
     % Compute the numerical values and clear out
     %
 
-    evalin( 'caller', 'cvx_pop( cvx_problem, ''value'' )' );
+    evalin( 'caller', 'pop( cvx_problem, ''value'' )' );
 
 else
 
@@ -173,11 +174,11 @@ else
 
     assignin( 'caller', 'cvx_optpnt', cvxtuple( cvx_collapse( vars, false, false ) ) );
     assignin( 'caller', 'cvx_optdpt', cvxtuple( cvx_collapse( dvars, false, false ) ) );
-    x = prob.objective;
+    x = pstr.objective;
     if isempty( x ),
 
         assignin( 'caller', 'cvx_optval', 0 );
-        temp = length( cvx___.problems( p ).t_variable ) + 1 : length( cvx___.readonly );
+        temp = length( pstr.t_variable ) + 1 : length( cvx___.readonly );
         cvx___.readonly( temp ) = cvx___.readonly( temp ) - 1;
 
     else
@@ -232,8 +233,7 @@ else
     % Set the status and clear the problem from internal storage
     %
 
-    assignin( 'caller', 'cvx_status', 'Incorporated' );
-    evalin( 'caller', 'cvx_pop( cvx_problem, ''none'' )' );
+    evalin( 'caller', 'pop( cvx_problem, ''none'' )' );
 
 end
 
