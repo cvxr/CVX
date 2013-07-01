@@ -182,42 +182,122 @@ scalars.
 The successive approximation method
 -----------------------------------
 
-Prior to version 1.2, the functions requested most often to be added to
-the CVX function library were those from the exponential family,
-including ``exp``, ``log``, and various entropy functions.
-Unfortunately, CVX utilizes symmetric primal/dual solvers that
-simply cannot support those functions natively; and a variety of
-practical factors has delayed the use of other types of solvers with
-CVX.
+.. note::
 
-For this reason, we have constructed a *successive approximation* method
-that allows symmetric primal/dual solvers to support the exponential
+	If you were referred to this web page by CVX's warning message: welcome! 
+	Please read this section carefully
+	to fully understand why using functions like `log`, `exp', etc.
+	within CVX models requires special care.
+
+Prior to version 1.2, the functions ``exp``, ``log``, ``log_det``,
+and other functions from the exponential family could not be used within
+CVX. Unfortunately, CVX utilizes symmetric primal/dual solvers that
+simply cannot support those functions natively, and a variety of factors
+prevent us from incorporating other types of solvers into CVX.
+
+Nevertheless, support for these functions was requested quite frequently.
+For this reason, we constructed a *successive approximation* heuristic that
+allows the symmetric primal/dual solvers to support the exponential
 family of functions. A precise description of the approach is beyond the
-scope of this text, but we can provide a highly simplified description
-here. First, we construct a global approximation for each exponential
-family function which is accurate within a neighborhood of some center
-point :math:`x_0`. Solving this approximate model yields an approximate
-optimal point :math:`\bar{x}`. We shift the center point :math:`x_0`
-towards :math:`\bar{x}`, construct a new approximation, and solve again.
-This process is repeated until :math:`|\bar{x}-x_0|` is small enough to
-conclude that our approximation is accurate enough to represent the
-original model. Again, this is a highly simplified description of the
+scope of this text, but roughly speaking, the method proceeds as follows:
+
+1. Choose an initial approximation centerpoint :math:`x_c=0`.
+2. Construct a polynomial approximation for each log/exp/entropy term 
+   which is accurate in the neighborhood of :math:`x_c`.
+3. Solve this approximate model to obtain its optimal point :math:`\bar{x}`. 
+4. If :math:`\bar{x}` satisfies the optimality conditions for
+   the *orignal* model to sufficient precision, exit.
+5. Otherwise, shift :math:`x_c` towards :math:`\bar{x}`, and repeat steps 2-5.
+
+Again, this is a highly simplified description of the
 approach; for instance, we actually employ both the primal and dual
-solutions to guide our judgements for shifting :math:`x_0` and
+solutions to guide our judgements for shifting :math:`x_c` and
 terminating.
 
-So far, we have been pleased with the effectiveness of the successive
-approximation method. Nevertheless, we believe that it is necessary to
+This approach has proven surprisingly effective for many problems. 
+*However, as with many heuristic approaches, it 
+is not perfect.* It will sometimes fail to converge even for problems known to have solutions. 
+Even when it does converge, it is several times slower than the standard solver,
+due to its iterative approach. Therefore, it is best to use it sparingly and carefully.
+Here are some specific usage tips:
+
+- First, confirm that the log/exp/entropy terms are truly necessary for your model. In 
+  many cases, an exactly equivalent model can be constructed without them, and that should
+  always be preferred. For instance, the constraint
+  
+  ::
+  
+  	  sum_log(x) >= 10
+  	  
+  can be expressed in terms of the `geo_mean` function as
+  
+  ::
+       
+      geo_mean(x) >= log(10)^(1/length(x))
+  	  
+  Many determinant maximization problems are commonly written using `log_det`, but in 
+  fact that is often unnecessary. For instance, consider the objective
+
+  ::
+  
+      minimize( log_det(X) )
+      
+  CVX actually converts this internally to this:
+  
+  ::
+  
+      minimize( n*log(det_rootn(X)) )
+      
+  So what you can do instead is simply remove the logarithm, and solve this instead:
+  
+  ::
+  
+      minimize( det_rootn(X) )
+
+  The value of ``log_det(X)`` can simply be computed after the model is completed.
+  Unfortunately, this only 
+  works if ``log_det`` is the only term in the objective; so, for instance, this
+  function cannot, unfortunately, be converted in a similar fashion:
+  
+  ::
+  
+        minimize( log_det(X) + trace(C*X) )
+   
+- Second, try different solvers. For instance, SeDuMi and MOSEK
+  tend to be more effective with the successive approximation method
+  than SDPT3. So if the default solver choice fails to give a 
+  solution to your model, try switching to one of these solvers.
+  
+- Third, try smaller instances of your problem. If they succeed where
+  the larger instance fails, then at least you can confirm if the model
+  is behaving as you hope before considering alternative options like
+  a different solver.  
+  
+The bottom line, unfortunately, is that we cannot guarantee that 
+the successive approximation approach will successfully handle your
+specific models. If you encounter problems, you are invited to submit
+a bug report, but we will not be able to promise a fix.
+
+Suppressing the warning
+~~~~~~~~~~~~~~~~~~~~~~~
+
+Because of all of these caveats, we believe that it is necessary to
 issue a warning when it is used so that users understand its
-experimental nature. Therefore, the first time that you solve a problem
-that will require successive approximation, CVX will issue a warning
-saying so. If you wish to suppress this warning, insert the command
+experimental nature. This warning appears the first time you 
+attempt to specify a model in CVX that uses an function that
+requires the successive approximation method. In fact, that warning
+may very well have brought you to this section of the manual.
+
+If you wish to suppress this warning in the future, simply issue
+the command
 
 ::
 
     cvx_expert true
 
-into your model before the first use of such features.
+before you construct your model. If you wish to suppress this
+message for all future sessions of MATLAB, follow this command
+with the ``cvx_save_prefs`` command.
 
 .. _powerfunc:
 
