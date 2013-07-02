@@ -17,8 +17,10 @@ function expressions( varargin )
 %
 %   See also EXPRESSION.
 
-if ~iscellstr( varargin ),
-    error( 'EXPRESSIONS must be used in command mode.' );
+if nargin < 1,
+    error( 'Incorrect syntax for EXPRESSIONS. Type HELP EXPRESSIONS for details.' );
+elseif ~iscellstr( varargin ),
+    error( 'All arguments must be strings.' );
 end
 for k = 1 : nargin,
     evalin( 'caller', [ 'expression ', varargin{k} ] );

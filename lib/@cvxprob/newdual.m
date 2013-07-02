@@ -61,11 +61,11 @@ if ~isempty( reps ),
     for k = 1 : prod( reps ),
         nstr(2).subs = sprintf( '%d,', ndxs(:,k) );
         nstr(2).subs = eval( [ '{', nstr(2).subs(1:end-1), '}' ] );
-        z{k} = cvxdual( prob, nstr );
+        z{k} = cvxdual( p, nstr );
     end
 else
     y = cvx( [0,0], [] );
-    z = cvxdual( prob, nstr );
+    z = cvxdual( p, nstr );
 end
 vars = cvx___.problems( p ).dvars;
 vars = builtin( 'subsasgn', vars, nstr(1), z );

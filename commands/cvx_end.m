@@ -9,13 +9,11 @@ function cvx_end
 global cvx___
 prob = evalin( 'caller', 'cvx_problem', '[]' );
 if ~isa( prob, 'cvxprob' ),
-    error( 'No cvx problem exists in this scope.' );
+    error( 'No CVX model exists in this scope.' );
+elseif isempty( cvx___.problems ) || cvx___.problems( end ).self ~= prob,
+    error( 'Internal CVX data corruption. Please CLEAR ALL and rebuild your model.' );
 end
-p = index( prob );
-if p ~= length( cvx___.problems ),
-    error( 'Internal cvx data corruption.' );
-end
-pstr = cvx___.problems( p );
+pstr = cvx___.problems( end );
 estruc = [];
 
 if isempty( pstr.objective ) && isempty( pstr.variables ) && isempty( pstr.duals ) && nnz( pstr.t_variable ) == 1,
@@ -80,7 +78,7 @@ elseif pstr.complete && nnz( pstr.t_variable ) == 1,
         solve( prob );
     catch estruc
     end
-    pstr = cvx___.problems( p );
+    pstr = cvx___.problems( end );
 
     %
     % Pause again!
@@ -126,7 +124,8 @@ else
     % Determine the parent problem
     %
 
-    if length( cvx___.problems ) < 2,
+    p = length( cvx___.problems );
+    if p < 2,
         error( 'Internal cvx data corruption.' );
     end
     np = p - 1;

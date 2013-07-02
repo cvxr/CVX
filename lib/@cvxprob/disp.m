@@ -141,13 +141,12 @@ switch class( v ),
         end
     case 'cell',
         names = {}; sizes = {};
-        [ names, sizes ] = dispvar( v{1}, sprintf( '%s{1:%d}', name, length(v) ) );
-        % for k = 1 : length( v ),
-        %     [ name2, size2 ] = dispvar( v{k}, sprintf( '%s{%d}', name, k ) );
-        %     names( end + 1 : end + length( name2 ) ) = name2;
-        %     sizes( end + 1 : end + length( size2 ) ) = size2;
-        %     if k == 1, name( 1 : end ) = ' '; end
-        % end
+        for k = 1 : length( v ),
+            [ name2, size2 ] = dispvar( v{k}, sprintf( '%s{%d}', name, k ) );
+            names( end + 1 : end + length( name2 ) ) = name2;
+            sizes( end + 1 : end + length( size2 ) ) = size2;
+            if k == 1, name( 1 : end ) = ' '; end
+        end
     case 'double',
         names = { name };
         sizes = { '(constant)' };

@@ -31,28 +31,26 @@ function varargout = variable( nm, varargin )
 %
 %   See also VARIABLES, DUAL, DUALS.
 
+global cvx___
 prob = evalin( 'caller', 'cvx_problem', '[]' );
 if ~isa( prob, 'cvxprob' ),
-    error( 'A cvx problem does not exist in this scope.' );
+    error( 'No CVX model exists in this scope.' );
+elseif isempty( cvx___.problems ) || cvx___.problems( end ).self ~= prob,
+    error( 'Internal CVX data corruption. Please CLEAR ALL and rebuild your model.' );
 end
-global cvx___
-p = index( prob );
 
 %
 % Step 1: separate the name from the parenthetical, verify the name
 %
 
-toks = regexp( nm, '^([a-zA-Z]\w*)\s*(\(.*\))?\s*$', 'tokens' );
+toks = regexp( nm, '^\s*([a-zA-Z]\w*)\s*(\(.*\))?\s*$', 'tokens' );
 if isempty( toks ),
     error( 'Invalid variable specification: %s', nm );
 end
 toks = toks{1};
 x.name = toks{1};
 x.size = toks{2};
-tt = evalin( 'caller', x.name, '[]' );
-if isa( tt, 'cvxobj' ),
-    error( 'Invalid expression specification: %s\n   Name %s already used for another CVX object.', nm, x.name );
-elseif x.name(end) == '_',
+if x.name(end) == '_',
     error( 'Invalid variable specification: %s\n   Variables ending in underscores are reserved for internal use.', nm );
 end
 
@@ -60,7 +58,7 @@ end
 % Step 2: Parse the size. In effect, all we do here is surround what is
 % replace the surrounding parentheses with square braces and evaluate. All
 % that matters is the result is a valid size vector. In particular, it
-% need no be a simple comma-delimited list.
+% need to be a simple comma-delimited list.
 %
 
 if isempty( x.size ),
@@ -88,7 +86,7 @@ for k = 1 : length( varargin ),
 		if ~ischar( strs ) || size( strs, 1 ) ~= 1,
 			error( 'Matrix structure modifiers must be strings.' );
 		end
-		toks = regexp( strs, '^([a-zA-Z]\w*)\s*(\(.*\))?\s*$', 'tokens' );
+		toks = regexp( strs, '^\s*([a-zA-Z]\w*)\s*(\(.*\))?\s*$', 'tokens' );
 		if isempty( toks ),
 			error( 'Invalid structure specification: %s\n', strs );
 		end
@@ -155,21 +153,21 @@ end
 if n_itypes,
     if isgeo,
         error( 'Integer variables cannot be use be GEOMETRIC.' );
-    elseif ~islin && cvx___.problems( p ).gp,
+    elseif ~islin && cvx___.problems( end ).gp,
         error( 'Integer variables cannot be used in geometric programs.' );
     elseif n_itypes > 1,
         error( 'At most one integer keyword may be specified.' );
     end
 end
 
-geo = isgeo || ( ~islin && cvx___.problems( p ).gp );
+geo = isgeo || ( ~islin && cvx___.problems( end ).gp );
 v = newvar( prob, x.name, x.size, str, geo );
 if isepi || ishypo,
     if geo, vv = log( v ); else vv = v; end
     if isepi, dir = 'epigraph'; else dir = 'hypograph'; end
-    cvx___.problems( p ).objective = vv;
-    cvx___.problems( p ).direction = dir;
-    cvx___.problems( p ).geometric = geo;
+    cvx___.problems( end ).objective = vv;
+    cvx___.problems( end ).direction = dir;
+    cvx___.problems( end ).geometric = geo;
 end
 if itype,
     [ tx, dummy ] = find( cvx_basis( v ) ); %#ok

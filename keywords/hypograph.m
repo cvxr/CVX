@@ -31,15 +31,14 @@ function hypograph( varargin )
 %
 %   See also VARIABLE, EPIGRAPH.
 
-if ~iscellstr( varargin ),
-    error( 'HYPOGRAPH must be used in command mode.' );
-elseif nargin ~= 2 || ~strcmpi( varargin{1}, 'variable' ),
-    error( 'Syntax: hypograph variable <variable>' );
-elseif ~isa( evalin( 'caller', 'cvx_problem', '[]' ), 'cvxprob' ),
-    error( 'HYPOGRAPH can only be used within a CVX model.' );
-else
-    evalin( 'caller', sprintf( '%s ', 'variable', varargin{2:end}, ' hypograph_' ) );
+if nargin < 2,
+    error( 'Incorrect syntax for HYPOGRAPH VARIABLE. Type HELP HYPOGRAPH for details.' );
+elseif ~iscellstr( varargin ),
+    error( 'All arguments must be strings.' );
+elseif ~strcmp( varargin{1}, 'variable' ),
+    error( 'Incorrect syntax for HYPOGRAPH VARIABLE. Type HELP HYPOGRAPH for details.' );
 end
+evalin( 'caller', sprintf( '%s ', 'variable', varargin{2:end}, ' hypograph_' ) );
 
 % Copyright 2012 CVX Research, Inc.
 % See the file COPYING.txt for full copyright information.

@@ -3,7 +3,7 @@ function binary( varargin )
 %BINARY Declares an binary variable.
 %   BINARY VARIABLE x
 %   where x is a valid MATLAB variable name, declares a scalar variable for
-%   the current CVX problem, and constraints it to the set {0,1}. Put
+%   the current CVX problem, and constrains it to the set {0,1}. Put
 %   another way, it is equivalent to
 %       integer variable x
 %       0 <= x <= 1
@@ -27,16 +27,18 @@ function binary( varargin )
 %
 %   See also INTEGER, VARIABLE, VARIABLES.
 
-if nargin < 2 || ~iscellstr( varargin ),
-    error( 'Syntax: binary variable <variable>   or   binary variables <variables>' );
-elseif strcmpi( varargin{1}, 'variable' ),
-    evalin( 'caller', sprintf( '%s ', 'variable', varargin{2:end}, ' binary' ) );
-elseif strcmpi( varargin{1}, 'variables' ),
+if nargin < 2,
+    error( 'Incorrect syntax for BINARY VARIABLE(S). Type HELP BINARY for details.' );
+elseif ~iscellstr( varargin ),
+    error( 'All arguments must be strings.' );
+elseif strcmp( varargin{1}, 'variable' ),
+    evalin( 'caller', sprintf( '%s ', 'variable', varargin{2:end}, 'binary' ) );
+elseif strcmp( varargin{1}, 'variables' ),
     for k = 2 : nargin,
-        evalin( 'caller', sprintf( '%s ', 'variable', varargin{k}, ' binary' ) );
+        evalin( 'caller', sprintf( '%s ', 'variable', varargin{k}, 'binary' ) );
     end
 else
-    error( 'Syntax: binary variable <variable>   or   binary variables <variables>' );
+    error( 'Incorrect syntax for BINARY VARIABLE(S). Type HELP BINARY for details.' );
 end
 
 % Copyright 2012 CVX Research, Inc.
