@@ -72,7 +72,7 @@ software presents a licensing challenge. Our vision is guided by three goals:
 The terms we lay out here are intended to support these trifold goals.  
 
 We invite our users to create new interfaces between CVX and other *free* solvers. By 
-"free", we mean that the solver must be made available at no charge for to *all* users,
+"free", we mean that the solver must be made available at no charge to *all* users,
 *including commercial users*, without restriction. Please contact us if you are interested
 in creating such an interface; we can offer assistance. If you do create one, please 
 consider submitting it to us for inclusion in the standard CVX distribution. But you are 
@@ -100,7 +100,7 @@ of CVX distributed under the terms of the CVX Standard License, the ``mosek/`` a
 directories will not be present.) None of these packages are owned by CVX Research, Inc.
 They are included with permission of the authors. The solvers SDPT3 and SeDuMi are 
 subject to the terms of the GPLv2; therefore, you are free to redistribute them under
-the terms of this license.
+the terms of that license.
 
 Example library
 ---------------
