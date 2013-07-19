@@ -1,6 +1,6 @@
 function y = cvxdual( prob, name )
 
-y = class( struct( 'problem_', prob, 'name_', name ), 'cvxdual', cvxobj );
+y = class( struct( 'problem_', prob, 'name_', name, 'attached_', false ), 'cvxdual', cvxobj );
 
 % Copyright 2012 CVX Research, Inc.
 % See the file COPYING.txt for full copyright information.

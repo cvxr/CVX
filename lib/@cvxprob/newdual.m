@@ -54,6 +54,7 @@ if ~isempty( reps ),
     y = cell( reps );
     [ y{:} ] = deal( cvx );
     z = cell( reps );
+    q = cell( reps );
     ndxs = cell( 1, length( reps ) - ( reps(end) == 1 ) );
     [ ndxs{:} ] = ind2sub( reps, 1 : prod( reps ) );
     ndxs = vertcat( ndxs{:} );
@@ -66,10 +67,9 @@ if ~isempty( reps ),
 else
     y = [];
     z = cvxdual( p, nstr );
-    q = cvx_id( z );
 end
 vars = cvx___.problems( p ).dvars;
-vars = builtin( 'subsasgn', vars, nstr(1), -q );
+vars = builtin( 'subsasgn', vars, nstr(1), z );
 cvx___.problems( p ).dvars = vars;
 vars = cvx___.problems( p ).duals;
 vars = builtin( 'subsasgn', vars, nstr(1), y );

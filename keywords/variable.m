@@ -148,11 +148,11 @@ end
 
 v = newvar( prob, xname, xsize, str, pstr.gp );
 if isepi || ishypo,
-    if geo, vv = log( v ); else vv = v; end
+    if pstr.gp, vv = log( v ); else vv = v; end
     if isepi, dir = 'epigraph'; else dir = 'hypograph'; end
     cvx___.problems( end ).objective = vv;
     cvx___.problems( end ).direction = dir;
-    cvx___.problems( end ).geometric = geo;
+    cvx___.problems( end ).geometric = pstr.gp;
 end
 if itype,
     [ tx, dummy ] = find( cvx_basis( v ) ); %#ok

@@ -50,7 +50,7 @@ elseif pstr.complete && nnz( pstr.t_variable ) == 1,
         vv2  = vv2( ndxs );
     end
     fn1 = [ fn1 ; fn2 ];
-    i1  = [ cvx_ids( vv1{:} ), vv2{:} ];
+    i1  = cvx_ids( vv1{:}, vv2{:} );
     i2  = sprintf( '%s,', fn1{:} );
     try
         i2 = evalin( 'caller', sprintf( 'cvx_ids( %s )', i2(1:end-1) ) );
