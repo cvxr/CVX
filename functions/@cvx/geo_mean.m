@@ -4,31 +4,18 @@ error( nargchk( 1, 3, nargin ) ); %#ok
 %GEO_MEAN   Internal cvx version.
 
 %
-% Basic argument check
+% Size check
 %
 
-sx = size( x );
-if nargin < 2 || isempty( dim ),
-    dim = cvx_default_dimension( sx );
-elseif ~cvx_check_dimension( dim ),
-    error( 'Second argument must be a positive integer.' );
+try
+    if nargin < 2, dim = []; end
+    [ x, sx, sy, zx, zy, nx, nv, perm ] = cvx_reduce_size( x, dim ); %#ok
+catch exc
+    rethrow( exc )
 end
-
+    
 %
-% Determine sizes, quick exit for empty arrays
-%
-
-sx = [ sx, ones( 1, dim - length( sx ) ) ];
-nx = sx( dim );
-sy = sx;
-sy( dim ) = 1;
-if any( sx == 0 ),
-    y = ones( sy );
-    return
-end
-
-%
-% Third and fourth argument check
+% Third argument check
 %
 
 if nargin < 3 || isempty( w ),
@@ -37,8 +24,14 @@ elseif numel( w ) ~= length( w ) || ~isnumeric( w ) || ~isreal( w ) || any( w < 
     error( 'Third argument must be a vector of nonnegative integers.' );
 elseif length( w ) ~= nx,
     error( 'Third argument must be a vector of length %d', nx );
-elseif ~any( w ),
-    y = ones( sy );
+end
+
+%
+% Quick exit for simple cases
+%
+
+if isempty( x ) || ~isempty( w ) && ~any( w ),
+    y = ones( zy );
     return
 end
 
@@ -55,37 +48,16 @@ if isempty( remap_4 ),
     remap_4 = cvx_remap( 'log-concave' );
 end
 vx = cvx_reshape( cvx_classify( x ), sx );
-t1 = all( reshape( remap_1( vx ), sx ), dim );
-t2 = all( reshape( remap_2( vx ), sx ), dim );
-t3 = all( reshape( remap_3( vx ), sx ), dim ) | ...
-     all( reshape( remap_4( vx ), sx ), dim );
+t1 = all( reshape( remap_1( vx ), sx ) );
+t2 = all( reshape( remap_2( vx ), sx ) );
+t3 = all( reshape( remap_3( vx ), sx ) ) | ...
+     all( reshape( remap_4( vx ), sx ) );
 % Valid combinations with zero or negative entries can be treated as constants
-t1 = t1 | ( ( t2 | t3 ) & any( vx == 1 | vx == 9, dim ) );
+t1 = t1 | ( ( t2 | t3 ) & any( vx == 1 | vx == 9 ) );
 ta = t1 + ( 2 * t2 + 3 * t3 ) .* ~t1;
 nu = sort( ta(:) );
 nu = nu([true;diff(nu)~=0]);
 nk = length( nu );
-
-%
-% Permute and reshape, if needed
-%
-
-perm = [];
-if nk > 1 || ( any( nu > 1 ) && nx > 1 ),
-    if dim > 1 && any( sx( 1 : dim - 1 ) > 1 ),
-        perm = [ dim, 1 : dim - 1, dim + 1 : length( sx ) ];
-        x    = permute( x,  perm );
-        sx   = sx( perm ); %#ok
-        sy   = sy( perm );
-        ta   = permute( ta, perm );
-        dim  = 1;
-    else
-        perm = [];
-    end
-    nv = prod( sy );
-    x  = reshape( x, nx, nv );
-    ta = reshape( ta, 1, nv );
-end
 
 %
 % Perform the computations
@@ -98,23 +70,20 @@ for k = 1 : nk,
 
     if nk == 1,
         xt = x;
-        sz = sy; %#ok
     else
         tt = ta == nu( k );
         xt = cvx_subsref( x, ':', tt );
-        nv = nnz( tt );
-        sz = [ 1, nv ]; %#ok
     end
 
     switch nu( k ),
         case 0,
             error( 'Disciplined convex programming error:\n   Invalid computation: geo_mean( {%s} )', cvx_class( xt, true, true ) );
         case 1,
-            yt = cvx( geo_mean( cvx_constant( xt ), dim, w ) );
+            yt = cvx( geo_mean( cvx_constant( xt ), 1, w ) );
         case 2,
             cvx_begin
-                hypograph variable yt(sz);
-                { cvx_accept_concave(xt), yt } == geo_mean_cone( size(xt), dim,  w, 'func' ); %#ok
+                hypograph variable yt(1,nv);
+                { cvx_accept_concave(xt), yt } == geo_mean_cone( size(xt), 1,  w, 'func' ); %#ok
             cvx_end
         case 3,
             if nx == 1,

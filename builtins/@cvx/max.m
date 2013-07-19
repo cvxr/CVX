@@ -134,27 +134,28 @@ else
     if nargin > 1 && ~isempty( y ),
         error( 'max with two matrices to compare and a working dimension is not supported.' );
     end
-    sx = size( x );
-    if nargin < 2,
-        dim = cvx_default_dimension( sx );
-    elseif ~cvx_check_dimension( dim ),
-        error( 'Third argument must be a positive integer.' );
-    end
 
-    %
-    % Determine sizes, quick exit for empty arrays
-    %
+	%
+	% Size check
+	%
 
-    sx = [ sx, ones( 1, dim - length( sx ) ) ];
-    nx = sx( dim );
-    if any( sx == 0 ),
-        sx( dim ) = min( sx( dim ), 1 );
-        z = zeros( sx );
-        return
-    end
-    sy = sx;
-    sy( dim ) = 1;
-
+	try
+		ox = x;
+		if nargin < 3, dim = []; end
+		[ x, sx, sy, zx, zy, nx, nv, perm ] = cvx_reduce_size( x, dim ); %#ok
+	catch exc
+	    error( exc.message );
+	end
+	
+	%
+	% Quick exit for empty array
+	%
+	
+	if isempty( x ),
+		z = zeros( zx );
+		return
+	end
+	
     %
     % Type check
     %
@@ -165,9 +166,9 @@ else
         remap_3 = cvx_remap( 'convex' );
     end
     vx = cvx_reshape( cvx_classify( x ), sx );
-    t1 = all( reshape( remap_1( vx ), sx ), dim );
-    t2 = all( reshape( remap_2( vx ), sx ), dim );
-    t3 = all( reshape( remap_3( vx ), sx ), dim );
+    t1 = all( reshape( remap_1( vx ), sx ) );
+    t2 = all( reshape( remap_2( vx ), sx ) );
+    t3 = all( reshape( remap_3( vx ), sx ) );
     t3 = t3 & ~( t1 | t2 );
     t2 = t2 & ~t1;
     ta = t1 + ( 2 * t2 + 3 * t3 ) .* ~t1;
@@ -180,25 +181,9 @@ else
     %
 
     if nx == 1 && all( nu ),
-        z = x;
+        z = ox;
         return
     end
-
-    %
-    % Permute and reshape, if needed
-    %
-
-    if dim > 1 && any( sx( 1 : dim - 1 ) > 1 ),
-        perm = [ dim, 1 : dim - 1, dim + 1 : length( sx ) ];
-        x   = permute( x,  perm );
-        ta  = permute( ta, perm );
-        sx  = sx(perm);
-        sy  = sy(perm);
-    else
-        perm = [];
-    end
-    nv = prod( sx ) / nx;
-    x  = reshape( x, nx, nv );
 
     %
     % Perform the computations

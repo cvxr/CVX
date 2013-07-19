@@ -17,29 +17,23 @@ function y = cumprod( x, dim )
 error( nargchk( 1, 2, nargin ) ); %#ok
 
 %
-% Basic argument check
+% Size check
 %
 
-sx = size( x );
-if nargin < 2,
-    dim = cvx_default_dimension( sx );
-elseif ~cvx_check_dimension( dim ),
-    error( 'Second argument must be a positive integer.' );
+try
+    ox = x;
+    if nargin < 2, dim = []; end
+    [ x, sx, sy, zx, zy, nx, nv, perm ] = cvx_reduce_size( x, dim ); %#ok
+catch exc
+    error( exc.message );
 end
-
+    
 %
-% Determine sizes
-%
-
-sx = [ sx, ones( 1, dim - length( sx ) ) ];
-nx = sx( dim );
-
-%
-% Quick exit for empty arrays 
+% Quick exit for easy cases
 %
 
-if any( sx == 0 ),
-    y = ones( sy );
+if isempty( x ) || nx == 1,
+    y = ox;
     return
 end
 
@@ -55,41 +49,15 @@ if isempty( remap_3 ),
     remap_3 = cvx_remap( 'log-concave' );
 end
 vx = cvx_reshape( cvx_classify( x ), sx );
-t0 = any( reshape( remap_0( vx ), sx ), dim );
-t1 = all( reshape( remap_1( vx ), sx ), dim );
-t2 = all( reshape( remap_2( vx ), sx ), dim ) | ...
-     all( reshape( remap_3( vx ), sx ), dim );
+t0 = any( reshape( remap_0( vx ), sx ) );
+t1 = all( reshape( remap_1( vx ), sx ) );
+t2 = all( reshape( remap_2( vx ), sx ) ) | ...
+     all( reshape( remap_3( vx ), sx ) );
 t3 = t2 & t0;
 ta = ( t1 | t3 ) + 2 * ( t2 & ~t3 );
 nu = sort( ta(:) );
 nu = nu([true;diff(nu)~=0]);
 nk = length( nu );
-
-%
-% Quick exit for easy case
-%
-
-if nx == 1 && nu(1) > 0,
-    y = x;
-    return
-end
-
-%
-% Permute and reshape, if needed
-%
-
-perm = [];
-if nk > 1 || ( any( nu > 1 ) && nx > 1 ),
-    if dim > 1 && any( sx( 1 : dim - 1 ) > 1 ),
-        perm = [ dim, 1 : dim - 1, dim + 1 : length( sx ) ];
-        x    = permute( x,  perm );
-        ta   = permute( ta, perm );
-        sx   = sx( perm );
-        dim  = 1;
-    end
-    nv = prod( sx ) / nx;
-    x  = reshape( x, nx, nv );
-end
 
 %
 % Perform the computations
@@ -111,9 +79,9 @@ for k = 1 : nk,
         case 0,
             error( 'Disciplined convex programming error:\n   Invalid computation: cumprod( {%s} )', cvx_class( xt, true, true ) );
         case 1,
-            yt = cvx( cumprod( cvx_constant( xt ), dim ) );
+            yt = cvx( cumprod( cvx_constant( xt ) ) );
         case 2,
-            yt = exp( cumsum( log( xt ), dim ) );
+            yt = exp( cumsum( log( xt ) ) );
         otherwise,
             error( 'Shouldn''t be here.' );
     end
