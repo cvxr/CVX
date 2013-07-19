@@ -1,8 +1,13 @@
 function v = value( x )
+global cvx___
 v = cvxaff( x );
-if isa( v, 'cvx' ),
-    global cvx___
-    v = value( v, cvx___.y );
+switch class( v ),
+    case 'cvx',
+        v = value( v, cvx___.y );
+    case 'cell',
+        for k = 1 : numel( v ),
+            v{k} = value( v{k}, cvx___.y );
+        end
 end
 
 % Copyright 2012 CVX Research, Inc.

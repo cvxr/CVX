@@ -1,5 +1,5 @@
-function x = cvx_value( x )
-x = cell2struct( cvx_value( struct2cell( x ) ), fieldnames( x ), 1 );
+function x = cvx_setdual( x, y )
+x = cvx_setdual( cvxtuple( x ), y );
 
 % Copyright 2012 CVX Research, Inc.
 % See the file COPYING.txt for full copyright information.

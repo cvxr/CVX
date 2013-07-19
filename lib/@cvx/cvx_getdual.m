@@ -1,4 +1,4 @@
-function z = getdual( x )
+function z = cvx_getdual( x )
 z = x.dual_;
 
 % Copyright 2012 CVX Research, Inc.

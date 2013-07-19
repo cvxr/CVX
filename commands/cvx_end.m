@@ -47,17 +47,26 @@ elseif pstr.complete && nnz( pstr.t_variable ) == 1,
         ndxs = ndxs( cumsum( cellfun( 'length', fn2 ) ) ) ~= '_';
         fn2  = fn2( ndxs );
         vv2  = struct2cell( pstr.dvars );
-        vv2  = vv2(ndxs);
+        vv2  = vv2( ndxs );
     end
-    i1 = cvx_ids( vv1{:}, vv2{:} );
-    i2 = sprintf( '%s,', fn1{:}, fn2{:} );
-    i2 = evalin( 'caller', sprintf( 'cvx_ids( %s )', i2(1:end-1) ) );
-    tt = i1 ~= i2;
-    if any( tt ),
-        vv = [ fn1 ; fn2 ];
+    fn1 = [ fn1 ; fn2 ];
+    i1  = [ cvx_ids( vv1{:} ), vv2{:} ];
+    i2  = sprintf( '%s,', fn1{:} );
+    try
+        i2 = evalin( 'caller', sprintf( 'cvx_ids( %s )', i2(1:end-1) ) );
+    catch
+        i2 = zeros(1,numel(fn1));
+        for k = 1 : length(fn1),
+            try
+                i2(k) = evalin( 'caller', sprintf( 'cvx_ids( %s )', fn1{k} ) );
+            catch
+            end
+        end
+    end
+    if any( i1 ~= i2 ),
         evalin( 'caller', 'cvx_clear' );
-        temp = sprintf( ' %s', vv{tt} );
-        error( 'The following cvx variable(s) have been overwritten:\n  %s\nThis is often an indication that an equality constraint was\nwritten with one equals ''='' instead of two ''==''. The model\nmust be rewritten before cvx can proceed.', temp ); %#ok
+        temp = sprintf( ' %s', fn1{ i1 ~= i2 } );
+        error( 'The following cvx variable(s) have been cleared or overwritten:\n  %s\nThis is often an indication that an equality constraint was\nwritten with one equals ''='' instead of two ''==''. The model\nmust be rewritten before cvx can proceed.', temp ); %#ok
     end
 
     %

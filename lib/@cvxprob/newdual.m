@@ -64,11 +64,12 @@ if ~isempty( reps ),
         z{k} = cvxdual( p, nstr );
     end
 else
-    y = cvx( [0,0], [] );
+    y = [];
     z = cvxdual( p, nstr );
+    q = cvx_id( z );
 end
 vars = cvx___.problems( p ).dvars;
-vars = builtin( 'subsasgn', vars, nstr(1), z );
+vars = builtin( 'subsasgn', vars, nstr(1), -q );
 cvx___.problems( p ).dvars = vars;
 vars = cvx___.problems( p ).duals;
 vars = builtin( 'subsasgn', vars, nstr(1), y );

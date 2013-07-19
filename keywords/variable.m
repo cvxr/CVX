@@ -1,4 +1,4 @@
-function varargout = variable( nm, varargin )
+function varargout = variable( varargin )
 
 %VARIABLE Declares a single CVX variable with optional matrix structure.
 %   VARIABLE x
@@ -35,133 +35,118 @@ global cvx___
 prob = evalin( 'caller', 'cvx_problem', '[]' );
 if ~isa( prob, 'cvxprob' ),
     error( 'No CVX model exists in this scope.' );
-elseif isempty( cvx___.problems ) || cvx___.problems( end ).self ~= prob,
+elseif isempty( cvx___.problems ),
+    error( 'Internal CVX data corruption. Please CLEAR ALL and rebuild your model.' );
+end
+pstr = cvx___.problems( end );
+if pstr.self ~= prob,
     error( 'Internal CVX data corruption. Please CLEAR ALL and rebuild your model.' );
 end
 
 %
-% Step 1: separate the name from the parenthetical, verify the name
+% Parse the text
 %
 
-toks = regexp( nm, '^\s*([a-zA-Z]\w*)\s*(\(.*\))?\s*$', 'tokens' );
-if isempty( toks ),
-    error( 'Invalid variable specification: %s', nm );
+name = cell( 1, nargin );
+args = cell( 1, nargin );
+toks = regexp( varargin, '^([a-zA-Z]\w*)(\(.*\))?$', 'tokens' );
+for k = 1 : nargin,
+    tok = toks{k};
+    if isempty( tok ),
+        if k == 1, type = 'Variable'; else type = 'Structure'; end
+        error( sprintf('CVX:Invalid%sSpec',type), 'Invalid %s specification: %s', lower(type), varargin{k} );
+    end
+    tok = tok{1};
+    name{k} = tok{1};
+    if isempty( tok{2} ),
+        args{k} = {};
+    else
+        try
+            args{k} = evalin( 'caller', [ '{', tok{2}(2:end-1), '};' ] );
+        catch exc
+            throw( MException( exc.identifier, exc.message ) );
+        end
+    end
 end
-toks = toks{1};
-x.name = toks{1};
-x.size = toks{2};
-if x.name(end) == '_',
-    error( 'Invalid variable specification: %s\n   Variables ending in underscores are reserved for internal use.', nm );
+
+%
+% Get the variable name and size
+%
+
+xname = name{1};
+if xname(end) == '_',
+    error( 'CVX:InvalidVariableSpec', 'Invalid variable name: %s\n   Variables ending in underscores are reserved for internal use.', xname );
+elseif isfield( cvx___.reswords, xname ),
+    if cvx___.reswords.(xname) == 'S',
+        error( 'CVX:InvalidVariableSpec', 'Invalid variable name: %s\n   This is a reserved word in CVX.\n   Trying to declare a structured matrix? Use the VARIABLE keyword instead.', xname );
+    else
+        error( 'CVX:InvalidVariableSpec', 'Invalid variable name: %s\n   This is a reserved word in CVX.', xname );
+    end
+elseif isfield( pstr.variables, xname ),
+    error( 'CVX:InvalidVariableSpec', 'Variable name already in use: %s', xname );
+end
+try
+    xsize = [ args{1}{:} ];
+catch exc
+    throw( MException( exc.identifier, exc.message ) );
+end
+if ~isempty( xsize ),
+    [ temp, xsize ] = cvx_check_dimlist( xsize, true );
+    if ~temp,
+        error( 'CVX:InvalidDimensions', 'Invalid dimension list: %s\n   Dimension list must be a vector of finite nonnegative integers.', varargin{1} );
+    end
 end
 
 %
-% Step 2: Parse the size. In effect, all we do here is surround what is
-% replace the surrounding parentheses with square braces and evaluate. All
-% that matters is the result is a valid size vector. In particular, it
-% need to be a simple comma-delimited list.
+% Parse the structure
 %
 
-if isempty( x.size ),
-	x.size = [];
-else
+isepi  = false;
+ishypo = false;
+isnneg = false;
+issemi = false;
+itype  = '';
+if nargin > 1,
     try
-        x.size = evalin( 'caller', [ '[', x.size(2:end-1), '];' ] );
+        [ str, itypes ] = cvx_create_structure( varargin, name, args );
     catch exc
         throw( MException( exc.identifier, exc.message ) );
     end
-    [ temp, x.size ] = cvx_check_dimlist( x.size, true );
-    if ~temp,
-        error( 'Invalid variable specification: %s\n   Dimension list must be a vector of finite nonnegative integers.', nm );
+    n_itypes = 0;
+    for k = 1 : length( itypes ),
+        strs = itypes{k};
+        switch strs,
+            case 'epigraph_',    isepi  = true;
+            case 'hypograph_',   ishypo = true;
+            case 'integer',      n_itypes = n_itypes + 1; itype = 'i_integer';
+            case 'binary',       n_itypes = n_itypes + 1; itype = 'i_binary';
+            case 'nonnegative',  isnneg = true;
+            case 'semidefinite', issemi = true;
+        end
     end
+    if isepi && ishypo,
+        error( 'EPIGRAPH and HYPOGRAPH keywords cannot be used simultaneously.' );
+    end
+    if n_itypes,
+        if pstr.gp,
+            error( 'Integer variables cannot be used in geometric programs.' );
+        elseif isepi || ishypo,
+            error( 'Integer variables cannot be used as epigraphs or hypograph variables.' );
+        elseif issemi,
+            error( 'Integer variables cannot also be declared semidefinite.' );
+        elseif n_itypes > 1,
+            error( 'At most one integer keyword may be specified.' );
+        end
+    end
+else
+    str = [];
 end
 
 %
-% Step 3. Parse the structure.
+% Create the variables
 %
 
-str = struct( 'name', {}, 'args', {}, 'full', {} );
-for k = 1 : length( varargin ),
-	strs = varargin{k};
-	if ~isempty( strs ),
-		if ~ischar( strs ) || size( strs, 1 ) ~= 1,
-			error( 'Matrix structure modifiers must be strings.' );
-		end
-		toks = regexp( strs, '^\s*([a-zA-Z]\w*)\s*(\(.*\))?\s*$', 'tokens' );
-		if isempty( toks ),
-			error( 'Invalid structure specification: %s\n', strs );
-		end
-		toks = toks{1};
-		strx.name = toks{1};
-		if isempty( toks{2} ),
-			strx.args = {};
-		else
-			strx.args = evalin( 'caller', [ '{', toks{2}(2:end-1), '}' ] );	
-		end
-		strx.full = strs;
-		str(end+1) = strx; %#ok
-	end
-end
-
-islin = false;
-isgeo = false;
-isepi = false;
-ishypo = false;
-isnneg = false;
-n_itypes = 0;
-itype = '';
-str = [];
-for k = 1 : length( varargin ),
-    strs = varargin{k};
-    if isempty( strs ),
-        continue;
-    elseif ~ischar( strs ) || size( strs, 1 ) ~= 1,
-        error( 'Matrix structure modifiers must be strings.' );
-    end
-    switch strs,
-        case 'geometric_',  isgeo  = true;
-        case 'linear_',     islin  = true;
-        case 'epigraph_',   isepi  = true;
-        case 'hypograph_',  ishypo = true;
-        case 'integer',     n_itypes = n_itypes + 1; itype = 'i_integer';
-        case 'binary',      n_itypes = n_itypes + 1; itype = 'i_binary';
-        case 'nonnegative', isnneg = true;
-        otherwise,
-            if any( strs == '(' ) && strs(end) == ')',
-                xt = find( strs == '(' );
-                strx.name = strs(1:xt(1)-1);
-                strx.args = evalin( 'caller', [ '{', strs(xt(1)+1:end-1), '}' ] );
-                strx.full = strs;
-                str{end+1} = strx; %#ok
-            else
-                str{end+1} = strs; %#ok
-            end
-    end
-end
-if ~isempty(str),
-    try
-        str = cvx_create_structure( x.size, str{:} );
-    catch exc
-        throw( MException( exc.identifier, sprintf( '%s\nTrying to declare multiple variables? Use the VARIABLES keyword instead.', exc.message ) ) );
-    end
-end
-if isgeo && islin,
-    error( 'GEOMETRIC and LINEAR keywords cannot be used simultaneously.' );
-end
-if isepi && ishypo,
-    error( 'EPIGRAPH and HYPOGRAPH keywords cannot be used simultaneously.' );
-end
-if n_itypes,
-    if isgeo,
-        error( 'Integer variables cannot be use be GEOMETRIC.' );
-    elseif ~islin && cvx___.problems( end ).gp,
-        error( 'Integer variables cannot be used in geometric programs.' );
-    elseif n_itypes > 1,
-        error( 'At most one integer keyword may be specified.' );
-    end
-end
-
-geo = isgeo || ( ~islin && cvx___.problems( end ).gp );
-v = newvar( prob, x.name, x.size, str, geo );
+v = newvar( prob, xname, xsize, str, pstr.gp );
 if isepi || ishypo,
     if geo, vv = log( v ); else vv = v; end
     if isepi, dir = 'epigraph'; else dir = 'hypograph'; end
@@ -174,18 +159,17 @@ if itype,
     newnonl( prob, itype, tx(:)' );
     cvx___.canslack( tx ) = false;
 end
-if isnneg && ~geo,
-    if ~n_itypes,
-        [ tx, dummy ] = find( cvx_basis( v ) );  %#ok
-        newnonl( prob, 'nonnegative', tx(:)' );
-    elseif ~isequal( itype, 'i_binary' ),
-        newcnstr( prob, v, 0, '>=' );
-    end
+if issemi,
+    [ dummy, issemi ] = newcnstr( prob, v, 0, '>=', true ); %#ok
+    if ~issemi, isnneg = false; end
+end
+if isnneg && ~pstr.gp && ~strcmp( itype, 'i_binary' ),
+    newcnstr( prob, v, 0, '>=', false );
 end
 if nargout > 0,
     varargout{1} = v;
 else
-    assignin( 'caller', x.name, v );
+    assignin( 'caller', xname, v );
 end
 
 % Copyright 2012 CVX Research, Inc.

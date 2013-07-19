@@ -5,6 +5,10 @@ end
 disp( [ prefix, 'cvx tuple object: ' ] );
 prefix = [ prefix, '   ' ];
 do_disp( x.value_, {}, prefix, prefix, '' );
+if ~isempty( x.dual_ ),
+    dn = cvx_subs2str( x.dual_ );
+    disp( [ prefix, 'dual variable: ', dn(2:end) ] );
+end
 
 function do_disp( x, f, fprefix, prefix, suffix )
 switch class( x ),
@@ -24,7 +28,7 @@ switch class( x ),
             fprefix = prefix;
         end
     case 'cvx',
-        dual = getdual( x );
+        dual = cvx_getdual( x );
         if ~isempty( dual ),
             suffix = sprintf( ' (dual: %s)%s', dual, suffix );
         end

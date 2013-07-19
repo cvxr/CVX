@@ -1,36 +1,25 @@
 function z = colon( x, y )
-
 if ~isa( x, 'cvxdual' ),
-    x = cvx_collapse( x );
-    switch class( x ),
-        case { 'cell', 'struct' },
-            error( 'Cannot assign a dual variable to a composite constraint.' );
-        otherwise,
-            x = cvx( x );
-    end
-    z = x;
-    d = y;
-elseif ~isa( y, 'cvxdual' ),
-    y = cvx_collapse( y );
-    switch class( y ),
-        case { 'cell', 'struct' },
-            error( 'Cannot assign a dual variable to a composite constraint.' );
-        otherwise,
-            y = cvx( y );
-    end
-    z = y;
-    d = x;
-else
-    error( 'Usage: <dual var> : <expression> or <expression> : <dual var>' );
+    z = x; x = y; y = z;
 end
-
-if inuse( d ),
-    nm = cvx_subs2str( d.name_ );
-    error( [ 'Dual variable "', nm(2:end), '" has already been used.' ] );
-else
-    z = setdual( z, d.name_ );
+global cvx___
+try
+    dvars = cvx___.problems( x.problem_ ).dvars;
+    q = subsref( dvars, x.name_ );
+catch
+    error( 'CVX:Corrupt', 'Internal CVX data corruption. Please CLEAR ALL and rebuild your model.' );
 end
-
+if q > 0,
+    nm = cvx_subs2str( x.name_ );
+    error( 'CVX:DualInUse', 'Dual variable "%s" has already been assigned.', nm(2:end) );
+end
+dvars = subsasgn( dvars, x.name_, -q );
+cvx___.problems( x.problem_ ).dvars = dvars;
+try
+    z = cvx_setdual( y, x.name_ );
+catch
+    error( 'CVX:CannotAttachDual', 'Cannot attach a dual variable to an object of type %s.', class( y ) );
+end
 % Copyright 2012 CVX Research, Inc.
 % See the file COPYING.txt for full copyright information.
 % The command 'cvx_where' will show where this file is located.
