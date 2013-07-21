@@ -79,7 +79,11 @@ if ~cx || ~cy,
 end
 xs = all( sx == 1 );
 ys = all( sy == 1 );
-if ~xs && ~ys && ~isequal( sx, sy ),
+if xs,
+    sz = sy;
+elseif ys || isequal( sx, sy ),
+    sz = sx;
+else
     error( 'Matrix dimensions must agree.' );
 end
 
@@ -99,11 +103,16 @@ end
 % Handle the SDP case
 %
 
-z = [];
-mx = sx( 1 ) > 1 & sx( 2 ) > 1;
-my = sy( 1 ) > 1 & sy( 2 ) > 1;
-if nargin == 5 && sdp_mode || op(1) ~= '=' && cvx___.problems( p ).sdp && ( mx || my ),
-
+if nargin < 5 || ~sdp_mode,
+    sdp_mode = op(1) ~= '='  && cvx___.problems( p ).sdp;
+end
+if sdp_mode,
+    mx = sx( 1 ) > 1 & sx( 2 ) > 1;
+    my = sy( 1 ) > 1 & sy( 2 ) > 1;
+    sdp_mode = mx || my;
+end
+if sdp_mode,
+    
     if sx( 1 ) ~= sx( 2 ) || sy( 1 ) ~= sy( 2 ),
         error( 'SDP constraint must be square.' );
     elseif xs && cvx_isnonzero( x ),
@@ -113,23 +122,20 @@ if nargin == 5 && sdp_mode || op(1) ~= '=' && cvx___.problems( p ).sdp && ( mx |
     elseif ~cvx_isaffine( x ) || ~cvx_isaffine( y ),
         error( 'Both sides of an SDP constraint must be affine.' );
     end
-    sdp_mode = true;
-    if mx, sz = sx; else sz = sy; end
     zq = any( cvx_basis( x ), 1 ) | any( cvx_basis( y ), 1 );
     qn = bsxfun( @plus, (1:sz(1)+1:sz(1)*sz(2))', 0:sz(1)*sz(2):prod(sz)-1 );
     if nnz( zq ) == nnz( zq( qn ) ),
-        sdp_mode = false;
-        if mx, x = x(qn); end
-        if my, y = y(qn); end
-    elseif op(1) == '>',
-        x = minus( x, y );
-        y = semidefinite( sz, ~isreal( x ) );
-        op = '==';
+        [ tx, dummy ] = find( cvx_basis( nonnegative( numel(qn) ) ) );
+        z = cvx( sz, sparse( tx, qn, 1, tx(end), prod(sz) ) );
     else
-        y = minus( y, x );
-        x = semidefinite( sz, ~isreal( y ) );
-        op = '==';
+        z = semidefinite( sz, ~isreal( x ) || ~isreal( y ) );
     end
+    if op(1) == '>',
+        z = minus( x, plus( y, z ) );
+    else
+        z = minus( y, plus( x, z ) );
+    end
+    op = '==';
 
 else
     
@@ -207,24 +213,24 @@ else
         x( tt ) = 0;
         y( tt ) = 1 - 2 * ( op(1) == '>' );
     end
+    if op(1) == '<',
+        z = minus( y, x );
+    else
+        z = minus( x, y );
+    end
+    
 end
 
 %
 % Eliminate lexical redundancies
 %
 
-if op(1) == '<',
-    z = minus( y, x );
-    op(1) = '>';
-else
-    z = minus( x, y );
-end
 if op( 1 ) == '=',
     cmode = 'full';
 else
     cmode = 'magnitude';
 end
-[ zR, zL, zS ] = bcompress( z, cmode );
+[ zR, zL ] = bcompress( z, cmode );
 if sdp_mode,
     if isreal( zR ),
         nnq = 0.5 * sz( 1 ) * ( sz( 1 ) + 1 );
@@ -256,7 +262,7 @@ cvx___.needslack( end + 1 : end + mN, : ) = op( 1 ) ~= '=';
 if ~isempty( dx ),
     zI = cvx_invert_structure( zR )';
     zI = sparse( mO + 1 : mO + mN, 1 : mN, 1 ) * zI;
-    zI = cvx( zS, zI );
+    zI = cvx( sz, zI );
     duals = builtin( 'subsasgn', duals, dx, zI );
     cvx___.problems( p ).duals = duals;
 end
