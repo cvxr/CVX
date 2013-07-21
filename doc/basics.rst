@@ -55,6 +55,19 @@ variable, use the ``complex`` keyword:
 ::
 
 	variable w(50) complex
+	
+Nonnegative variables and symmetric/Hermitian positive semidefinite (PSD) matrices can 
+be specified with the ``nonnegative`` and ``semidefinite`` keywords, respectively:
+
+::
+
+    variable x(10) nonnegative
+    variable Z(5,5) semidefinite
+    variable Q(5,5) complex semidefinite
+    
+In this example, ``x`` is a nonnegative vector, and ``Z`` is a real symmetric PSD matrix
+and ``Q``is a complex Hermitian PSD matrix. As we will see below, ``hermitian semidefinite``
+would be an equivalent choice for this third case.
 
 For MIDCPs, the ``integer`` and ``binary`` keywords are used to declare integer
 and binary variables, respectively:
@@ -65,7 +78,8 @@ and binary variables, respectively:
     variable q binary
     
 A variety of keywords are available to help construct variables with
-*matrix structure* such as symmetry or bandedness. For example, the code segment
+*matrix structure* such as symmetry or bandedness.
+For example, the code segment
 
 ::
 
@@ -74,10 +88,8 @@ A variety of keywords are available to help construct variables with
 
 declares Y to be a real :math:`50 \times 50` symmetric matrix
 variable, and Z a :math:`100 \times 100` Hermitian
-Toeplitz matrix variable. (*Note*: the ``hermitian`` keyword implies
-that the matrix is also complex.) Structure keywords can be applied to
-:math:`n`-dimensional arrays as well: each 2-dimensional "slice" of the
-array is given the stated structure. The currently supported structure
+Toeplitz matrix variable. (Note that the ``hermitian`` keyword also specifies
+that the matrix is complex.) The currently supported structure
 keywords are:
 
 ::
@@ -86,8 +98,9 @@ keywords are:
 	skew_symmetric     symmetric          toeplitz           tridiagonal
 	lower_bidiagonal   lower_hessenberg   lower_triangular   
 	upper_bidiagonal   upper_hankel       upper_hessenberg   upper_triangular
-
-The structure keywords are self-explanatory with a couple of exceptions:
+	
+The underscores can actually be omitted; so, for example, ``lower triangular``
+is acceptable as well. These keywords are self-explanatory with a couple of exceptions:
 
 ``banded(lb,ub)``
    the matrix is banded with a lower bandwidth lb
@@ -102,13 +115,26 @@ The structure keywords are self-explanatory with a couple of exceptions:
    :math:`i+j>n+1`.
 
 When multiple keywords are supplied, the resulting matrix structure is
-determined by intersection. For example ``symmetric lower_triangular`` produces
-a diagonal matrix, because that is the only matrix type that is both symmetric
-and lower triangular. If the keywords truly conflict, so that there is
-\emph{no} non-zero matrix that satisfies all keywords, an error will result.
+determined by intersection. For example, ``symmetric tridiagonal`` is a
+valid combination. That said, CVX does reject combinations such as
+``symmetric lower_triangular`` when a more reasonable alternative
+exists---``diagonal``, in this case. Furthermore, if the keywords fully
+conflict, such that \emph{no} non-zero matrix that satisfies all keywords, 
+an error will result.
 
-A ``variable`` statement can be used to declare only a single variable,
-which can be a bit inconvenient if you have a lot of variables to
+Matrix-specific keywords can be applied to
+:math:`n`-dimensional arrays as well: each 2-dimensional "slice" of the
+array is given the stated structure. So for instance, the declaration
+
+::
+
+	variable R(10,10,8) hermitian semidefinite
+	
+constructs 8 :math:`10\times 10` complex Hermitian PSD matrices, stored in the 
+2-D slices of ``R``.
+
+As flexible as the ``variable`` statement may be, it can only be used to declare 
+a single variable, which can be inconvenient if you have a lot of variables to
 declare. For this reason, the ``variables`` statement is provided which
 allows you to declare multiple variables; i.e.,
 
