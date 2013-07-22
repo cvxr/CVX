@@ -119,16 +119,17 @@ typedef struct{
  *Matlab does not include a header file, so the compiler will
  *assume they return an int.*/
 #ifdef PC
-extern double ddot(const mwIndex*, const double*, const mwIndex*, const double*, const mwIndex*);
-extern double dnrm2(const mwIndex*, const double*, const mwIndex*);
-extern mwIndex idamax(mwIndex *,double *,mwIndex *);
+#define FORT(x) x
+#else
+#define FORT(x) x ## _
 #endif
 
-#ifdef UNIX
-extern double ddot_(const mwIndex*, const double*,const mwIndex*, const double*, const mwIndex*);
-extern double dnrm2_(const mwIndex*, const double*,const mwIndex*);
-extern mwIndex idamax_(const mwIndex *,const double *,const mwIndex *);
-#endif
+double FORT(ddot)(const mwIndex*, const double*, const mwIndex*, const double*, const mwIndex*);
+double FORT(dnrm2)(const mwIndex*, const double*, const mwIndex*);
+mwIndex FORT(idamax)(const mwIndex *,const double *,const mwIndex *);
+void FORT(dcopy)(const mwIndex*,const double*,const mwIndex*,double*,const mwIndex*);
+void FORT(dscal)(const mwIndex*,const double*,double*,const mwIndex*);
+void FORT(daxpy)(const mwIndex*,const double*,const double*,const mwIndex*,double*,const mwIndex*);
 
 /* ------------------------------------------------------------
    Prototypes:

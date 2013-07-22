@@ -91,7 +91,7 @@ if ISOCTAVE,
     % There is no definition for mwSignedIndex so include it here.  
     % This means that Octave ignores the -largeArrayDims flag.
     flags{end+1} = '-DmwSignedIndex=int';
-    libs = '-llapack';
+    libs = '-llapack -lblas';
 else
     if nargin > 1 && ~isempty(endpath),
         flags{end+1} = '-outdir';

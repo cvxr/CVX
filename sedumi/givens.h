@@ -37,7 +37,6 @@
 #if !defined(GIVENS_H)
 #define GIVENS_H
 
-#include "matrix.h"
 #include "mex.h"
 
 typedef struct{
