@@ -18,3 +18,7 @@
 %   shims/           - Interface code to connect CVX to solvers.
 %   structures/      - Matrix structure definitions and utilities.
 %   doc/             - Documentation (PDF, HTML)
+
+% Copyright 2005-2013 CVX Research, Inc.
+% See the file COPYING.txt for full copyright information.
+% The command 'cvx_where' will show where this file is located.

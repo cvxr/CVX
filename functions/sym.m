@@ -18,6 +18,6 @@ elseif sx(1) > 1,
     x = 0.5 * ( x + conj( permute( x, [2,1,3:length(sx)] ) ) );
 end
 
-% Copyright 2012 CVX Research, Inc.
+% Copyright 2005-2013 CVX Research, Inc.
 % See the file COPYING.txt for full copyright information.
 % The command 'cvx_where' will show where this file is located.

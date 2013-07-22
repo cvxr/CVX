@@ -33,3 +33,7 @@ if nargin > 1,
 else
     y = log(0.5*erfc(-x*sqrt(0.5)));
 end
+
+% Copyright 2005-2013 CVX Research, Inc. 
+% See the file COPYING.txt for full copyright information.
+% The command 'cvx_where' will show where this file is located.

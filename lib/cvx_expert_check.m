@@ -19,3 +19,7 @@ cvx___.expert = true;
     
 % Note that we do *not* call cvx_save_prefs here. We only save the
 % preferences if an explicit setting of "cvx_expert true" is made.
+
+% Copyright 2005-2013 CVX Research, Inc. 
+% See the file COPYING.txt for full copyright information.
+% The command 'cvx_where' will show where this file is located.

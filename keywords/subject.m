@@ -15,6 +15,6 @@ function subject( to )
 % We had some consistency checking code here, but given that this is supposed to be 
 % no-op, it seems sensible to remove it all.
 
-% Copyright 2012 CVX Research, Inc. 
+% Copyright 2005-2013 CVX Research, Inc. 
 % See the file COPYING.txt for full copyright information.
 % The command 'cvx_where' will show where this file is located.

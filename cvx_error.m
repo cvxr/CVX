@@ -65,3 +65,7 @@ if nargout == 0,
     fprintf( '%s', lines );
     clear lines
 end
+
+% Copyright 2005-2013 CVX Research, Inc.
+% See the file COPYING.txt for full copyright information.
+% The command 'cvx_where' will show where this file is located.

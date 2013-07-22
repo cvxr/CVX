@@ -21,6 +21,6 @@ error(nargchk(2,2,nargin)); %#ok
 cvx_expert_check( 'kl_div', x, y );
 z = rel_entr( x, y ) - x + y;
 
-% Copyright 2012 CVX Research, Inc.
+% Copyright 2005-2013 CVX Research, Inc.
 % See the file COPYING.txt for full copyright information.
 % The command 'cvx_where' will show where this file is located.

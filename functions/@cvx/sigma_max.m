@@ -16,6 +16,6 @@ end
 [ m, n ] = size( x );
 cvx_optval = lambda_max( [ zeros( m, m ), x ; x', zeros( n, n ) ] );
 
-% Copyright 2012 CVX Research, Inc. 
+% Copyright 2005-2013 CVX Research, Inc. 
 % See the file COPYING.txt for full copyright information.
 % The command 'cvx_where' will show where this file is located.

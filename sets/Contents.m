@@ -11,3 +11,7 @@
 %   rotated_lorentz         - Rotated real second-order cone.                   {(x,y,z): norm(x)^2 <= y*z, y>=0, z>=0 }
 %   semidefinite            - Real symmetric positive semidefinite matrices     {X: X==X', min(eig(X))>=0}
 %   simplex                 - The unit simplex.                                 {x: x>=0, sum(x)==1}
+
+% Copyright 2005-2013 CVX Research, Inc. 
+% See the file COPYING.txt for full copyright information.
+% The command 'cvx_where' will show where this file is located.

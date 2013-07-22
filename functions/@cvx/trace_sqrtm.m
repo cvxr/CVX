@@ -27,6 +27,6 @@ cvx_begin sdp
     [eye(n),Y;Y',X] >= 0; %#ok
 cvx_end
 
-% Copyright 2012 CVX Research, Inc. 
+% Copyright 2005-2013 CVX Research, Inc. 
 % See the file COPYING.txt for full copyright information.
 % The command 'cvx_where' will show where this file is located.

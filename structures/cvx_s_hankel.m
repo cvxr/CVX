@@ -10,6 +10,6 @@ v  = abs( r + c ) + 1;
 y = sparse( v, r + m * c + 1, 1, m + n + 1, m * n );
 symm = false;
 
-% Copyright 2012 CVX Research, Inc. 
+% Copyright 2005-2013 CVX Research, Inc. 
 % See the file COPYING.txt for full copyright information.
 % The command 'cvx_where' will show where this file is located.
