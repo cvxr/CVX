@@ -36,9 +36,12 @@ function y = triumtriu(r,u,K) %#ok
 % along with this program; if not, write to the Free Software
 % Foundation, Inc.,  51 Franklin Street, Fifth Floor, Boston, MA
 % 02110-1301, USA
-%
 
-disp('The SeDuMi binaries are not installed.')
-disp('In Matlab, launch "install_sedumi" in the folder you put the SeDuMi files.')
-disp('For more information see the file Install.txt.')
-error(' ')
+Ks=K.s;
+startindices=K.sblkstart-K.mainblks(end)+1;
+y=zeros(K.blkstart(end)-K.mainblks(end),1);
+for k = 1:length(Ks)
+%This works, but I don't like the lot of 0 matrices.
+    temp=triu(reshape(r(startindices(k):startindices(k+1)-1),Ks(k),Ks(k)),0)*triu(reshape(u(startindices(k):startindices(k+1)-1),Ks(k),Ks(k)),0);
+    y(startindices(k):startindices(k+1)-1)=temp+triu(temp,1)';
+end

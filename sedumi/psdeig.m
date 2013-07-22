@@ -40,7 +40,31 @@ function [lab,q] = psdeig(x,K) %#ok
 % 02110-1301, USA
 %
 
-disp('The SeDuMi binaries are not installed.')
-disp('In Matlab, launch "install_sedumi" in the folder you put the SeDuMi files.')
-disp('For more information see the file Install.txt.')
-error(' ')
+Ks=K.s;
+if isempty(Ks)
+    lab=[];
+    return
+end
+
+lab(sum(Ks),1)=0;
+startindices=K.sblkstart-K.mainblks(end)+1;
+labindices=cumsum([1,Ks]);
+ncones=length(Ks);
+if nargout==1
+    %only eigenvalues are needed, not eigenvectors
+    for k = 1:ncones
+        Xk = reshape(x(startindices(k):startindices(k+1)-1),Ks(k),Ks(k));
+        lab(labindices(k):labindices(k+1)-1) = eig(Xk + Xk');
+    end
+else
+    %eigenvalues and eigenvectors
+    q=zeros(sum(Ks.^2),1);
+    for k = 1:ncones
+        Xk = reshape(x(startindices(k):startindices(k+1)-1),Ks(k),Ks(k));
+        [q(startindices(k):startindices(k+1)-1), temp] = eig(Xk + Xk');
+        lab(labindices(k):labindices(k+1)-1)=diag(temp);
+    end
+end
+%We actually got the eigenvalues of twice the matrices, so we need to scale
+%them back.
+lab=lab/2;

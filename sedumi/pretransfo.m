@@ -85,7 +85,7 @@ elseif ~isempty(K.s)
     if min(K.s < 1) || any(K.s~= floor(K.s))
         error('K.s should contain only positive integers')
     end
-    if size(K.s,1) > 1
+    if size(K.s,2) > 1
         K.s = K.s';
     end
 end
@@ -220,7 +220,7 @@ sperm = ones(length(K.s),1);
 sperm(cpx.s) = 0;
 sperm = find(sperm);
 K.rsdpN = length(sperm);          % #real sym PSD blocks
-K.s = K.s([vec(sperm); vec(cpx.s)]);
+K.s = K.s([vec(sperm); vec(cpx.s)]');
 prep.cpx = cpx;
 % ----------------------------------------
 % Transform R-cones (rotated Lorentz) into Q-cones (standard Lorentz).
@@ -245,7 +245,7 @@ if cpx.dim>0
     pars.sdp=0;    % No SDP preprocessing for complex problems
 end
 if length(K.s) > 1000 || ~isempty(K.s) && max(K.s) < 10
-    pars.sdp = 0;
+    pars.sdp=0;
 end
 if pars.sdp==1
     Atf=At(1:K.f,:);
@@ -358,17 +358,17 @@ K.N = length(c);
 
 %Correct the sparsity structure of the variables, this can save a lot of
 %memory.
-[i j s]=find(At);
+[i,j,s]=find(At);
 At=sparse(i,j,s,K.N,m);
 if spars(c)<2/3
-    [i j s]=find(c);
-    c=sparse(i,j,s,K.N,1);
+    [i,j,s]=find(c);
+c=sparse(i,j,s,K.N,1);
 else
     c=full(c);
 end
 if spars(b)<2/3
-    [i j s]=find(b);
-    b=sparse(i,j,s,m,1);
+    [i,j,s]=find(b);
+b=sparse(i,j,s,m,1);
 else
     b=full(b);
 end

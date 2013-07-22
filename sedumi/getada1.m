@@ -15,7 +15,7 @@
 % See also sedumi, getada2, getada3
 
 
-function ADA = getada1(ADA, A,Ajc2,perm, d, blkstart)
+function ADA = getada1(ADA, A,Ajc2,perm, d, blkstart) %#ok
 %
 % This file is part of SeDuMi 1.1 by Imre Polik and Oleksandr Romanko
 % Copyright (C) 2005 McMaster University, Hamilton, CANADA  (since 1.1)

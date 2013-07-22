@@ -99,6 +99,8 @@ if Ubounds_exist
     A= [ A sparse(m,nub); sparse(1:nub,find(ubounds),1,nub,lenx) speye(nub) ];
     b = [b; nonzeros(ubounds)];
     c = [c; zeros(nub,1)];
+else
+    ubounds = [];
 end
 %--------------------------------------------------
 % LOCATE DENSE COLUMNS

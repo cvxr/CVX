@@ -1,13 +1,13 @@
-%                                                    y = psdmul(x,y, K)
+%                                                    z = psdmul(x,y, K)
 % PSDMUL  for full x,y. Computes (XY+YX)/2
 %
 % **********  INTERNAL FUNCTION OF SEDUMI **********
 %
 % See also sedumi
 
-function y = psdmul(x,y, K) %#ok
+function z = psdjmul(x,y, K)
 %
-% This file is part of SeDuMi 1.1 by Imre Polik and Oleksandr Romanko
+% This file is part of SeDuMi 1.3 by Imre Polik
 % Copyright (C) 2005 McMaster University, Hamilton, CANADA  (since 1.1)
 %
 % Copyright (C) 2001 Jos F. Sturm (up to 1.05R5)
@@ -37,7 +37,16 @@ function y = psdmul(x,y, K) %#ok
 % 02110-1301, USA
 %
 
-disp('The SeDuMi binaries are not installed.')
-disp('In Matlab, launch "install_sedumi" in the folder you put the SeDuMi files.')
-disp('For more information see the file Install.txt.')
-error(' ')
+startindices=K.sblkstart;
+z=zeros(K.N-startindices(1)+1,1);
+Ks=K.s;
+endindex=K.mainblks(end);
+clear K
+for k = 1:length(Ks)
+    Ksk=Ks(k);
+    startk=startindices(k);
+    startkp=startindices(k+1);
+    temp=reshape(x(startk:startkp-1),Ksk,Ksk)*reshape(y(startk:startkp-1),Ksk,Ksk);
+    z(startk-endindex+1:startkp-endindex)=temp+temp';
+end
+z=z/2;

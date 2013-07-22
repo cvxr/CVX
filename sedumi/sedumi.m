@@ -180,7 +180,7 @@ function [x,y,info] = sedumi(A,b,c,K,pars)
 %
 % See also mat, vec, cellK, eyeK, eigK
 
-% This file is part of SeDuMi 1.21 by Imre Polik and Oleksandr Romanko
+% This file is part of SeDuMi 1.3 by Imre Polik and Oleksandr Romanko
 % Copyright (C) 2009 Imre Polik, Lehigh University, Bethlehem, PA, USA (since 1.21)
 %
 % Copyright (C) 2006 McMaster University, Hamilton, CANADA  (since 1.1)
@@ -215,7 +215,10 @@ function [x,y,info] = sedumi(A,b,c,K,pars)
 % symmetric cones," Optimization Methods and Software 11-12 (1999) 625-653.
 % http://sedumi.mcmaster.ca
 
+walltime0=now;
 cputime0=cputime;
+%ADA_sedumi_ is usually very large, so we make it global
+global ADA_sedumi_
 % ************************************************************
 % INITIALIZATION
 % ************************************************************
@@ -248,36 +251,49 @@ if (nargin < 5)
         K.l = max(size(A));    % given (A,b,c): default to LP problem.
     end
 end
+if ~isfield(pars,'fid')
+    pars.fid=1;
+end
 % ----------------------------------------
 % Bring data in (strict) internal SeDuMi form, check parameters,
 % and print welcome.
 % ----------------------------------------
 [A,b,c,K,prep,origcoeff] = pretransfo(A,b,c,K,pars);
+%For reasonably sized problems we try to detect infeasibility
 [N,m]=size(A);
-if 0,
-if issparse(A)
-    if sprank([A;b'])>sprank(A)
+if N*m<100000
+    %Test if Ax=b is feasible at all
+    %turn off the rank deficient warning for now
+    warning off all
+    y=[A;b']\[zeros(N,1);1];
+    if abs(y'*b-1) < 1e-10 && norm(A*y) < 1e-10
+        %Infeasibility certificate found
         info.pinf=1;
         x=[];
         %A dual improving direction could be computed easily
-        y=[A;b']\[zeros(N,1);1];
-
-        warning('SeDuMi:PrimalInfeasible','The problem is primal infeasible. there is no x such that Ax=b.')
+        my_fprintf(pars.fid,'The problem is primal infeasible, there is no x such that Ax=b.\n')
         return
-    elseif sprank(A)<m
-        error('The coefficient matrix is not full row rank.')
     end
-else
-    if rank([A;b'])>rank(A)
-        info.pinf=1;
-        x=[];
-        y=[A;b']\[zeros(N,1);1];
-        warning('SeDuMi:PrimalInfeasible', 'The problem is primal infeasible, there is no x such that Ax=b.')
-        return
-    elseif rank(A)<m
-        error('The coefficient matrix is not full row rank.')
+    
+    %Now test if A is full rank
+    %Remember that A is stored as sparse by now.
+    AA=A'*A;
+    rankdeficient=false;
+    if spars(AA)<1e-3
+        if condest(AA)>1e10
+            rankdeficient=true;
+        end
+    else
+        if rcond(full(AA))<1e-10 || ( m < 1000 && rank(full(AA))<m)
+            rankdeficient=true;
+        end
     end
-end
+    clear AA;
+    if rankdeficient
+        my_fprintf(pars.fid,'The coefficient matrix is not full row rank, numerical problems may occur.\n')
+        %TODO: A preprocessing routine should be added here to remove the dependent
+        %rows from A and b
+    end
 end
 if prep.cpx.dim>0
     origcoeff=[];      % No error measures for complex problems.
@@ -285,9 +301,12 @@ end
 lponly = (K.l == length(c));
 pars = checkpars(pars,lponly);
 % ----------------------------------------
-% Print welcome and statistics of cone-problem
+% Print welcome
 % ----------------------------------------
-my_fprintf(pars.fid,'SeDuMi 1.21 by AdvOL, 2005-2008 and Jos F. Sturm, 1998-2003.\n');
+my_fprintf(pars.fid,'SeDuMi 1.3 by AdvOL, 2005-2008 and Jos F. Sturm, 1998-2003.\n');
+% ----------------------------------------
+% Print statistics of cone-problem
+% ----------------------------------------
 switch pars.alg
     case 0
         my_fprintf(pars.fid,'Alg = 0: No corrector, ');
@@ -362,11 +381,12 @@ end
 % ----------------------------------------
 % Get nz-pattern of ADA.
 % ----------------------------------------
-ADA = getsymbada(A,Ablkjc,DAt,K.sblkstart);
+ADA_sedumi_ = getsymbada(A,Ablkjc,DAt,K.sblkstart);
 % ----------------------------------------
 % Ordering and symbolic factorization of ADA.
 % ----------------------------------------
-L = symbchol(ADA);
+%ADA is global, so symbchol gets it automatically
+L = symbchol();
 % --------------------------------------------------
 % Symbolic fwsolve dense cols: L\[dense.A, dense.blkq],
 % sparse ordering for dense column factorization
@@ -380,7 +400,7 @@ n = length(vfrm.lab);                         % order of K
 merit = (sum(R.w) + max(R.sd,0))^2 * y0 / R.b0;  % Merit function
 my_fprintf(pars.fid,'eqs m = %g, order n = %g, dim = %g, blocks = %g\n',...
     length(b),n,length(c),1 + length(K.q) + length(K.s));
-my_fprintf(pars.fid,'nnz(A) = %d + %d, nnz(ADA) = %d, nnz(L) = %d\n',nnz(A),nnz(dense.A), nnz(ADA), nnz(L.L));
+my_fprintf(pars.fid,'nnz(A) = %d + %d, nnz(ADA) = %d, nnz(L) = %d\n',nnz(A),nnz(dense.A), nnz(ADA_sedumi_), nnz(L.L));
 if ~isempty(dense.cols)
     my_fprintf(pars.fid,'Handling %d + %d dense columns.\n',...
         length(dense.cols),length(dense.q));
@@ -402,6 +422,7 @@ wr.desc = 1;
 %Seems unnecessary
 %rate = 1.0;
 feasratio = 0.0;
+walltime1 = now;
 cputime1 = cputime;
 % ************************************************************
 % MAIN PREDICTOR-CORRECTOR LOOP
@@ -421,13 +442,22 @@ while STOP == 0
     % Compute ADA
     % --------------------------------------------------
     DAt = getDAtm(A, Ablkjc, dense, DAt.denq, d, K);
-    ADA = getada1(ADA, A, Ablkjc(:,3), Aord.lqperm, d, K.qblkstart);
-    ADA = getada2(ADA, DAt, Aord, K);
-    [ADA,absd] = getada3(ADA, A, Ablkjc(:,3), Aord, invcholfac(d.u, K, d.perm), K);
+    %If there are no SDP blocks, we proceed in matlab, otherwise we invoke
+    %the mex versions of getada
+    %TODO: getada3 needs to be ported to matlab
+    if sum(K.s)==0
+        %This will update the global ADA variable
+        absd=getada(A,K,d,DAt);
+    else
+        ADA_sedumi_ = getada1(ADA_sedumi_, A, Ablkjc(:,3), Aord.lqperm, d, K.qblkstart);
+        ADA_sedumi_ = getada2(ADA_sedumi_, DAt, Aord, K);
+        [ADA_sedumi_,absd] = getada3(ADA_sedumi_, A, Ablkjc(:,3), Aord, invcholfac(d.u, K, d.perm), K);
+    end
+    %
     % ------------------------------------------------------------
-    % Block Sparse Cholesky: ADA(L.perm,L.perm) = L.L*diag(L.d)*L.L'
+    % Block Sparse Cholesky: ADA_sedumi_(L.perm,L.perm) = L.L*diag(L.d)*L.L'
     % ------------------------------------------------------------
-    [L.L,L.d,L.skip,L.add] = blkchol(L,ADA,pars.chol,absd);
+    [L.L,L.d,L.skip,L.add] = blkchol(L,ADA_sedumi_,pars.chol,absd);
     % ------------------------------------------------------------
     % Factor dense columns
     % ------------------------------------------------------------
@@ -491,8 +521,8 @@ while STOP == 0
     my_fprintf(pars.fid,' %2.0f : %10.2E %8.2E %5.3f %6.4f %6.4f %6.4f %6.2f %2d %2d  ',...
         iter,by/x0,merit,wr.delta,rate,relt.p,relt.d,feasratio,err.kcg, Lsd.kcg);
     if pars.vplot == 1
-        vlist = [vlist vfrm.lab/sqrt((R.b0*y0)/n)];
-        ratelist = [ratelist rate];
+        vlist = [vlist vfrm.lab/sqrt((R.b0*y0)/n)]; %#ok
+        ratelist = [ratelist rate]; %#ok
     end
     % ----------------------------------------
     % If we get in superlinear region of LP,
@@ -500,7 +530,7 @@ while STOP == 0
     % ----------------------------------------
     if lponly && (rate < 0.05)
         [xsol,ysol] = optstep(A,b,c, y0,y,d,v,dxmdz, ...
-            K,L,symLden,dense, Ablkjc,Aord,ADA,DAt, feasratio, R,pars);
+            K,L,symLden,dense, Ablkjc,Aord,ADA_sedumi_,DAt, feasratio, R,pars);
         if ~isempty(xsol)
             STOP = 2;                   % Means that we guessed right !!
             feasratio = 1 - 2*(xsol(1)==0);
@@ -542,7 +572,7 @@ while STOP == 0
     end
 end % while STOP == 0.
 my_fprintf(pars.fid,'\n');
-clear ADA 
+clear ADA_sedumi_ 
 nnzLadd=nnz(L.add);
 nnzLskip=nnz(L.skip);
 normLL=full(max(max(abs(L.L))));
@@ -550,6 +580,7 @@ clear L
 % ************************************************************
 % FINAL TASKS:
 % ************************************************************
+walltime2=now;
 cputime2=cputime;
 info.iter = iter;
 info.feasratio = feasratio;
@@ -578,11 +609,9 @@ Ay = full(Amul(A,dense,y,1));      % "full" since y may be scalar.
 normy = norm(y);
 normx = norm(x(2:end));
 clear A
-
 % ------------------------------------------------------------
 % Determine infeasibility
 % ------------------------------------------------------------
-
 pinf = norm(x0*b-Ax);
 z = qreshape(Ay-x0*c,1,K);
 dinf = max(eigK(z,K));
@@ -710,9 +739,10 @@ end
 [x,y,K] = posttransfo(x,y,prep,K,pars); %#ok
 % Detailed timing
 %Preprocessing+IPM+Postprocessing
-info.timing=[cputime1-cputime0 cputime2-cputime1 cputime-cputime2];
+info.timing=86400*[walltime1-walltime0 walltime2-walltime1 now-walltime2];
 % Total time (for backward compatibility)
-info.cpusec=sum(info.timing);
+info.wallsec=sum(info.timing);
+info.cpusec=cputime-cputime0;
 my_fprintf(pars.fid,'\nDetailed timing (sec)\n')
 my_fprintf(pars.fid,'   Pre          IPM          Post\n')
 my_fprintf(pars.fid,'%1.3E    ',info.timing)
@@ -758,13 +788,21 @@ if ~isempty(origcoeff)
     %Let us get rid of the K.f part, since the free variables don't make
     %any difference in the cone infeasibility.
     %origcoeff.K.f=0;
-    %     Primal cone infeasibility
-    info.err(2)=max(0,-min(eigK(full(x(origcoeff.K.f+1:end)),origcoeff.K))/(1+normb));
+
+    if origcoeff.K.f<length(origcoeff.c)
+        %not all primal variables are free
+        %     Primal cone infeasibility
+        info.err(2)=max(0,-min(eigK(full(x(origcoeff.K.f+1:end)),origcoeff.K))/(1+normb));
+        %     Dual cone infeasibility
+        info.err(4)=max(0,-min(eigK(full(s(origcoeff.K.f+1:end)),origcoeff.K))/(1+normc));
+        
+    else
+        info.err(2)=0;
+        info.err(4)=0;
+    end
     %     Dual infeasibility
     %info.err(3)=0.0; %s is not maintained explicitely
-    %     Dual cone infeasibility
-    info.err(4)=max(0,-min(eigK(full(s(origcoeff.K.f+1:end)),origcoeff.K))/(1+normc));
-    %     Relative duality gap
+        %     Relative duality gap
     info.err(5)=(cx-by)/(1+abs(cx)+abs(by));
     %     Relative complementarity
     info.err(6)=xs/(1+abs(cx)+abs(by));

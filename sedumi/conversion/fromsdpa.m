@@ -37,86 +37,119 @@ function [At,b,c,K]=fromsdpa(fname)
 % Foundation, Inc.,  51 Franklin Street, Fifth Floor, Boston, MA
 % 02110-1301, USA%
 
-fid = fopen(fname,'r');
+fid = fopen(fname, 'r');
 if fid == -1
     error('File not found.')
 end
-%The number of equality constraints
+%The number of equality constraints is the first number in the file
 m='';
 while(isempty(m))
     m = fscanf(fid,'%d',1);
-    if fgetl(fid)==-1;
-        error('Invalid SDPA file.')
+    if fgetl(fid) == -1;
+        fclose(fid);
+        error('Invalid SDPA file. Number of equality constraints not found.')
     end
 end
-%The number of blocks
-nblocks = fscanf(fid,'%d',1);
+%The number of semidefinite blocks
+nblocks = fscanf(fid, '%d', 1);
 if isempty(nblocks)
-    error('Invalid SDPA file.')
+    fclose(fid);
+    error('Invalid SDPA file. Number of semidefinite blocks not found.')
 end
 fgetl(fid);
 %The dimension of the blocks
-%Negative means diagonal block, we convert that to linear
+%Negative means diagonal block, we convert that to nonnegative variables
 %.,(){} are omitted
-dims=sscanf(regexprep(fgetl(fid),'[\.\,(){}]',' '),'%d',nblocks)';
-if ~isempty(dims(dims==0)) || length(dims)~=nblocks
-    error('Invalid SDPA file.')
+dims = sscanf(regexprep(fgetl(fid), '[\.\,(){}]', ' '), '%d', nblocks)';
+%Dimensions cannot be 0, and their number must be nblocks
+if any(dims == 0) || length(dims) ~= nblocks
+    fclose(fid);
+    error('Invalid SDPA file. Invalid semidefinite block dimensions.')
 end
-N=-sum(dims(dims<0))+sum(dims(dims>0).^2);
-nblocks=length(dims);
+nblocks = length(dims);
+N = -sum(dims(dims<0)) + sum(dims(dims>0).^2);
 %Create a vector with the offsets of the blocks.
-%This is one less than the blockstart!
+%Starting with the first component, how many positions later do SDP blocks
+%start
+%This is one less than K.blkstart (inside sedumi)
 %Diagonal and one dimensional blocks are coming first
-loffset=0;
-sdpoffset=sum(abs(dims(dims<=1)));
-offset=zeros(1,nblocks);
-for i=1:nblocks
-    if dims(i)<=1
-        offset(i)=loffset;
-        loffset=loffset+abs(dims(i));
+loffset = 0;
+sdpoffset = sum(abs(dims(dims <= 1) ));
+offset = zeros(1, nblocks);
+for i = 1:nblocks
+    if dims(i) <= 1
+        offset(i) = loffset;
+        loffset = loffset+abs(dims(i));
     else
-        offset(i)=sdpoffset;
-        sdpoffset=sdpoffset+dims(i)^2;
+        offset(i) = sdpoffset;
+        sdpoffset = sdpoffset+dims(i)^2;
     end
 end
-%This is needed so that we can compute where the second column starts
-stride=dims;
-stride(stride<0)=0;
+%This is needed so that we can compute where the subsequent columns start
+%in a block
+stride = dims;
+stride(stride<0) = 0;
 
 %Vector b
 %,(){} are omitted
 b = sscanf(regexprep(fgetl(fid),'[\,(){}]',' '),'%f',m);
-if length(b)~=m
-    error('Invalid SDPA file.')
+if length(b) ~= m
+    fclose(fid);
+    error('Invalid SDPA file. The right-hand side vector is not of the right dimension.')
 end
-if nnz(b)/m<0.1
+%If b is very sparse then we store it as sparse
+if nnz(b)/m < 0.1
     b=sparse(b);
 end
 
 %Coefficients
-E = fscanf(fid,'%d %d %d %d %f',[5. inf]);
+%It is much faster to get all the numbers at once than to read the file
+%line by line
+try
+    E = fscanf(fid,'%d %d %d %d %f',[5. inf]);
+catch
+    fclose(fid);
+    error('Invalid SDPA file. Error reading the coefficients.')
+end
 fclose(fid);
+%We are done with the file
 
 %Extract the objective
-cE=E(:,E(1,:)==0);
+cE = E(:,E(1,:)==0);
+
 %Repeating indices in the sparse matrix structure create the sum of
 %elements, we need to clear one for the diagonals
-data2=cE(5,:);
-data2(cE(3,:)==cE(4,:))=0;
-c=-sparse([offset(cE(2,:))+(cE(3,:)-1).*stride(cE(2,:))+cE(4,:),offset(cE(2,:))+(cE(4,:)-1).*stride(cE(2,:))+cE(3,:)],1,[cE(5,:),data2],N,1);
+data2 = cE(5,:);
+data2(cE(3,:)==cE(4,:)) = 0;
+%we need the minus sign because the SDPA format assumes maximization while
+%SeDuMi uses minimization by default
+%This magic reshuffles the coefficients to the right place
+c = -sparse([offset(cE(2,:))+(cE(3,:)-1).*stride(cE(2,:))+cE(4,:),offset(cE(2,:))+(cE(4,:)-1).*stride(cE(2,:))+cE(3,:)],...
+    1,...
+    [cE(5,:),data2],...
+    N,1);
 clear cE data2
-AtE=E(:,E(1,:)~=0);
+
+
+%Get rid of the objective coefficients from E
+AtE = E(:,E(1,:)~=0);
 clear E
-data2=AtE(5,:);
-data2(AtE(3,:)==AtE(4,:))=0;
-At=sparse([offset(AtE(2,:))+(AtE(3,:)-1).*stride(AtE(2,:))+AtE(4,:),offset(AtE(2,:))+(AtE(4,:)-1).*stride(AtE(2,:))+AtE(3,:)],[AtE(1,:),AtE(1,:)],[AtE(5,:),data2],N,m);
+%Take all the coefficients
+data2 = AtE(5,:);
+%The coefficients for the diagonal elements in the blocks
+data2(AtE(3,:)==AtE(4,:)) = 0;
+At = sparse([offset(AtE(2,:))+(AtE(3,:)-1).*stride(AtE(2,:))+AtE(4,:),offset(AtE(2,:))+(AtE(4,:)-1).*stride(AtE(2,:))+AtE(3,:)],...
+    [AtE(1,:),AtE(1,:)],...
+    [AtE(5,:),data2],...
+    N,m);
 clear AtE data2
 
-K.l=-sum(dims(dims<0))+sum(dims==1);
-K.s=dims(dims>1);
+K.l = -sum(dims(dims<0)) + sum(dims==1);
+K.s = dims(dims>1);
 
 %Finally, let us correct the sparsity
-[i,j,v]=find(c);
-c=sparse(i,1,v,N,1);
-[i,j,v]=find(At);
-At=sparse(i,j,v,N,m);
+%c and At are always stored as sparse
+[i,j,v] = find(c);
+c = sparse(i,1,v,N,1);
+[i,j,v] = find(At);
+At = sparse(i,j,v,N,m);

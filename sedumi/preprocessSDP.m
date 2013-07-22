@@ -6,7 +6,7 @@ function [newAt,newb,newc,newK,prepinfo]=preprocessSDP(At,b,c,K)
 %prepinfo: a cell array describing the operations for the cones
 %prepinfo{i}(1)=0: No change, prepinfo{i}(2) is the number of columns that are
 %                  unchanged.
-%              =1: Diagonal matrix converted to linear variables,
+%              =1: Diagonal matrix block converted to linear variables,
 %                  prepinfo{i}(2) is the number of linear variables that are
 %                  extracted.
 %
@@ -43,41 +43,45 @@ function [newAt,newb,newc,newK,prepinfo]=preprocessSDP(At,b,c,K)
 % Foundation, Inc.,  51 Franklin Street, Fifth Floor, Boston, MA
 % 02110-1301, USA
 
-blockstart=K.l+K.f +sum(K.q)+[0;reshape(cumsum((K.s).^2),length(K.s),1)]+1;
-sparsepattern=c-At*sparse(randn(length(b),1));
+%where do the sdp blocks start?
+blockstart = 1+ K.l + K.f + sum(K.q) + [0;reshape(cumsum((K.s).^2),length(K.s),1)];
+%the sparsity pattern of the dual slack variable s
+sparsepattern = c - At * sparse(randn(length(b), 1));
 
-newAt=[];
-newc=[];
-newK=K;
-newK.s=[];
-newb=b;
-prepinfo={[0; K.l + K.f + sum(K.q)]};
+newAt = [];
+newc = [];
+newK = K;
+newK.s = [];
+newb = b;
+%We don't change the nonsdp blocks
+prepinfo = {[0; K.l + K.f + sum(K.q)]};
 
-for i=1:length(K.s)
-    %Get aggregate sparsity pattern for the ith block
-    blocksparsepattern=reshape(sparsepattern(blockstart(i):blockstart(i+1)-1),K.s(i),K.s(i));
+for i = 1:length(K.s)
+    %Get aggregate sparsity pattern for the ith block in square form
+    blocksparsepattern=reshape(sparsepattern(blockstart(i):blockstart(i+1)-1), K.s(i), K.s(i));
+    
     % Uncomment the following line if you want to see the sparsity pattern
-    % of the blocks in s
+    % of the blocks in s (for debugging)
     %figure,spy(blocksparsepattern)
 
     %Extract information from the sparsity pattern
-    [rindex,cindex]=find(blocksparsepattern);
+    [rindex,cindex] = find(blocksparsepattern);
     clear blocksparsepattern
 
     %Calculate bandwidth (0 means diagonal matrix)
-    bandwidth=norm(rindex-cindex,Inf);
+    bandwidth = norm(rindex - cindex,Inf);
     clear rindex cindex;
     if bandwidth==0
         %We have a diagonal block, we convert it to nonnegative variables.
-        newK.l=newK.l+K.s(i);
-        prepinfo{end+1}=[1; K.s(i)];
+        newK.l = newK.l + K.s(i);
+        prepinfo{end+1}=[1; K.s(i)]; %#ok
     else
-        newK.s=[newK.s;K.s(i)];
-        %If the previous block is also unchanged then we move them together.
+        newK.s = [newK.s; K.s(i)];
+        %If the previous block is also unchanged then we join them together.
         if  prepinfo{end}(1)==0
-            prepinfo{end}(2)=prepinfo{end}(2)+K.s(i)^2;
+            prepinfo{end}(2) = prepinfo{end}(2)+K.s(i)^2;
         else
-            prepinfo{end+1}=[0; K.s(i)^2];
+            prepinfo{end+1}=[0; K.s(i)^2]; %#ok
         end
     end
 end
@@ -85,22 +89,21 @@ end
 
 %Now we transform At and c. We do this here to gain speed if there are a
 %lot of small cones.
-for j=1:length(prepinfo)
-    op=prepinfo{j};
+for j = 1:length(prepinfo)
+    op = prepinfo{j};
     switch op(1)
         case 0
             %Do nothing
-            newAt=[newAt;At(1:op(2),:)];
-            newc=[newc;c(1:op(2))];
-            At=At(op(2)+1:end,:);
-            c=c(op(2)+1:end);
+            newAt=[newAt;At(1:op(2),:)]; %#ok
+            newc=[newc;c(1:op(2))]; %#ok
+            At = At(op(2)+1:end,:);
+            c = c(op(2)+1:end);
         case 1
             %Diagonal matrix
-            newAt=[[At(1:op(2)+1:op(2)^2,:),sparse(op(2),size(newAt,2)-size(At,2))];newAt];
-            newc=[c(1:op(2)+1:op(2)^2);newc];
-            At=At(op(2)^2+1:end,:);
-            c=c(op(2)^2+1:end);
-            newK.rsdpN=newK.rsdpN-1;
+            newAt=[[At(1:op(2)+1:op(2)^2,:),sparse(op(2),size(newAt,2)-size(At,2))];newAt]; %#ok
+            newc=[c(1:op(2)+1:op(2)^2);newc]; %#ok
+            At = At(op(2)^2+1:end,:);
+            c = c(op(2)^2+1:end);
+            newK.rsdpN = newK.rsdpN-1;
     end
 end
-

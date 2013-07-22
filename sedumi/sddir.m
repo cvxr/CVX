@@ -9,7 +9,7 @@
 % See also sedumi
 
 function [dx,dy,dz,dy0, err] = sddir(L,Lden,Lsd,pv,...
-    d,v,vfrm,At,DAt,dense, R,K,y,y0,b, pars,pMode)
+    d,v,vfrm,At,DAt,dense, R,K,y,y0,b, pars,pMode) %#ok
 %
 % This file is part of SeDuMi 1.1 by Imre Polik and Oleksandr Romanko
 % Copyright (C) 2005 McMaster University, Hamilton, CANADA  (since 1.1)

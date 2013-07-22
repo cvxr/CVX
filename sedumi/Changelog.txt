@@ -64,3 +64,15 @@ paper that is available at http://plato.asu.edu/dimacs/node3.html. These are in 
 20090510 Fix: A new installer script is provided by Michael Grant.
 
 20090510 Fix: Michael Grant modified some files to compile under 64 bit versions.
+
+20090805 Fix: Based on feedback from Didier Henrion and others, the rank and infeasibility detection code has been modified.
+
+20090905 Fix: SeDuMi now uses wall clock time instead of cputime, as the CPU time is misleading in parallel processing environments. It is reported in info.walltime. Info.cpusec contains the total cpu time, which may be more than the walltime.
+
+20091115 Fix: the psdeig, psdinvscale, psdjmul, psdfactor, psdscale and triumtriu mex files were replaced with a pure matlab equivalent
+
+20091125 Fix: computation in getsymbada.m has been reorganized for speed
+
+20100215 Fix: getada1 and getada2 have been backported to matlab, which actually increases speed, due to parallel BLAS
+
+20100215 Fix: global variables are used for some large data structures (ADA, At)

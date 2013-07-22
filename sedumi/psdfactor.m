@@ -35,8 +35,29 @@ function [ux,ispos] = psdfactor(x,K) %#ok
 % along with this program; if not, write to the Free Software
 % Foundation, Inc.,  51 Franklin Street, Fifth Floor, Boston, MA
 % 02110-1301, USA
+%
+% disp('The SeDuMi binaries are not installed.')
+% disp('In Matlab, launch "install_sedumi" in the folder you put the SeDuMi files.')
+% disp('For more information see the file Install.txt.')
+% error(' ')
 
-disp('The SeDuMi binaries are not installed.')
-disp('In Matlab, launch "install_sedumi" in the folder you put the SeDuMi files.')
-disp('For more information see the file Install.txt.')
-error(' ')
+Ks=K.s;
+N=sum(Ks.^2);
+ux=zeros(N,1);
+ispos=true;
+startindices=K.sblkstart-K.mainblks(end)+1;
+%Sometimes x containts only the PSD part, sometimes the whole thing
+xstartindices=startindices+(length(x)-N);
+for i=1:K.rsdpN
+    [temp, flag]=chol(reshape(x(xstartindices(i):xstartindices(i+1)-1),Ks(i),Ks(i)),'lower');
+    if ~flag
+        %The matrix is PD
+        ux(startindices(i):startindices(i+1)-1)=(temp+tril(temp,-1)');
+        %        TODO This could be made a bit faster
+    else
+        %The matrix is not PD, stop immediately.
+        ispos=false;
+        break
+    end
+end
+%TODO: Check if the matrices are ever sparse.

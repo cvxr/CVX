@@ -42,8 +42,12 @@ function  [d,vfrm] = updtransfo(x,z,w, dIN,K)
 % PSD:
 % Given w = D(Xscl)Zscl, compute spec-factor Q*WLAB*Q' = W
 % ------------------------------------------------------------
-[wlab,q] = psdeig(w.s,K);
-w.lab(K.l+2*length(K.q) + 1:end) = wlab;
+if ~isempty(K.s)
+    [wlab,q] = psdeig(w.s,K);
+    w.lab(K.l+2*length(K.q) + 1:end) = wlab;
+else
+    q=[];
+end
 % ------------------------------------------------------------
 % lambda(v) = sqrt(lambda(w))
 % ------------------------------------------------------------

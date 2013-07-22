@@ -2,7 +2,7 @@ function [x,y,K]=postprocessSDP(newx,newy,prepinfo,newK)
 % [x,y,K]=postprocessSDP(newx,newy,prepinfo,newK)
 % postprocessSDP: Postprocesses an SDP solution using the info from
 % preprocessing (preprocessSDP)
-%
+% See preprocessSDP for details on the storage format
 % **********  INTERNAL FUNCTION OF SEDUMI **********
 %
 % See also sedumi, preprocessSDP
@@ -37,26 +37,27 @@ function [x,y,K]=postprocessSDP(newx,newy,prepinfo,newK)
 % 02110-1301, USA
 
 if issparse(newx)
-    x=sparse([]);
+    x = sparse([]);
 else
-    x=[];
+    x = [];
 end
-y=newy;
-K=newK;
+y = newy;
+K = newK;
 
-for j=length(prepinfo):-1:1
-    op=prepinfo{j};
+%Go through the preprocessing info BACKWARDS
+for j = length(prepinfo):-1:1
+    op = prepinfo{j};
     switch op(1)
         case 0
             %Do nothing
-            x=[newx(end-op(2)+1:end);x];
-            newx=newx(1:end-op(2));
+            x=[newx(end-op(2)+1:end);x]; %#ok
+            newx = newx(1:end-op(2));
         case 1
-            %Diagonal matrix
-            x=[reshape(diag(newx(1:op(2))),op(2)^2,1);x];
-            newx=newx(op(2)+1:end);
-            K.l=K.l-op(2);
-            K.s(end+1)=op(2);
-            K.rsdpN=K.rsdpN+1;
+            %Convert nonnegative variables into a diagonal PSD matrix
+            x = [reshape(diag(newx(1:op(2))),op(2)^2,1);x]; %#ok
+            newx = newx(op(2)+1:end);
+            K.l = K.l-op(2);
+            K.s(end+1) = op(2);
+            K.rsdpN = K.rsdpN+1;
     end
 end

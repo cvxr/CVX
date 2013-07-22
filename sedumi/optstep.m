@@ -61,9 +61,14 @@ if abs(abs(feasratio)-1) < 0.1
     % Compute ADA, with d[N] = 0. Hence A[B]*D[B]^2*A[B]'.
     % --------------------------------------------------
     DAt = getDAtm(A,Ablkjc,dense,DAt.denq,d,K);
-    ADA = getada1(ADA, A,Ablkjc(:,3),Aord.lqperm, d, K.qblkstart);
-    ADA = getada2(ADA, DAt,Aord, K);
-    [ADA,absd] = getada3(ADA, A,Ablkjc(:,3),Aord,invcholfac(d.u,K, d.perm),K);
+    if sum(K.s)==0
+        %ADA is global already
+        absd=getada(A,K,d,DAt);
+    else
+        ADA = getada1(ADA, A, Ablkjc(:,3), Aord.lqperm, d, K.qblkstart);
+        ADA = getada2(ADA, DAt, Aord, K);
+        [ADA,absd] = getada3(ADA, A, Ablkjc(:,3), Aord, invcholfac(d.u, K, d.perm), K);
+    end
     % ------------------------------------------------------------
     % Block Sparse Cholesky: ADA(L.perm,L.perm) = L.L*diag(L.d)*L.L'
     % ------------------------------------------------------------
@@ -77,7 +82,7 @@ if abs(abs(feasratio)-1) < 0.1
     % Solve ADAt*psi = -x0*b+A*D*v, dx = v-D*At*psi.  LEAST SQUARES.
     % ------------------------------------------------------------
     [psi,dx,err.kcg,err.b] = wrapPcg(L,Lden,A,dense,d, DAt,K,...
-        (-x0) * b,v, pars.cg,pars.eps / pars.cg.restol);
+        (-x0) * b,v, pars.cg,pars.eps / pars.cg.restol); %#ok
     x = sqrt(d.l) .* dx;
     % ----------------------------------------
     % CHECK WHETHER x[B] >= 0 AND WHETHER RESIDUAL DID NOT DETERIORATE.

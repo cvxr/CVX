@@ -45,5 +45,18 @@ Ablks = findblks(At,Ablkjc,3,[],psdblkstart);
 if spars(Ablks)==1 || spars(Alpq)==1 || (~isempty(DAt.q) && spars(DAt.q)==1)
     SYMBADA=sparse(ones(size(At,2),size(At,2)));
 else
-    SYMBADA = Alpq' * Alpq + Ablks'*Ablks + DAt.q'*DAt.q;
+    SYMBADA=DAt.q'*DAt.q;
+    if spars(SYMBADA)>0.9
+        SYMBADA=sparse(ones(size(At,2),size(At,2)));
+        return
+    else
+        SYMBADA = SYMBADA + Alpq' * Alpq;
+        if spars(SYMBADA)>0.9
+            SYMBADA=sparse(ones(size(At,2),size(At,2)));
+            return
+        else
+            SYMBADA = SYMBADA + Ablks'*Ablks;
+
+        end
+    end
 end

@@ -5,7 +5,7 @@
 %
 % See also sedumi
 
-function Lsd = sdfactor(L,Lden, dense,DAt, d,v,y, At,c,K,R,y0,pars)
+function Lsd = sdfactor(L,Lden, dense,DAt, d,v,y, At,c,K,R,y0,pars) %#ok
 %
 % This file is part of SeDuMi 1.1 by Imre Polik and Oleksandr Romanko
 % Copyright (C) 2005 McMaster University, Hamilton, CANADA  (since 1.1)

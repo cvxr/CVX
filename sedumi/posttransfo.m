@@ -87,7 +87,7 @@ if pars.sdp==1 && isfield(prep,'sdp')
     xp=xp(K.f+1:end);
     Kf=K.f;
     K.f=0;
-    [xp,yp,K]=postprocessSDP(xp,y,prep.sdp,K);
+    [xp,yp,K]=postprocessSDP(xp,y,prep.sdp,K); %#ok
     xp=[xpf;xp];
     K.f=Kf;
     clear Kf xpf

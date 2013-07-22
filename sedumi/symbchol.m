@@ -23,7 +23,7 @@
 %
 % See also sparchol, sparfwslv, sparbwslv, symbfact, symmmd, chol.
 
-function L = symbchol(X,cachsz)
+function L = symbchol()
 
 %
 % This file is part of SeDuMi 1.1 by Imre Polik and Oleksandr Romanko
@@ -60,23 +60,22 @@ function L = symbchol(X,cachsz)
 % Enter here the cache-size in KB, for shaping
 % optimal dense blocks of floats.
 % ----------------------------------------
-if ~issparse(X)
+global ADA_sedumi_
+if ~issparse(ADA_sedumi_)
     error('X should be a sparse symmetric matrix')
 end
-if nargin < 2
-    cachsz = 512;
-end
+cachsz = 512;
 % ----------------------------------------
 % Compute multiple minimum degree ordering. 
 % If the matrix is actually dense we don't bother.
 % ----------------------------------------
-if spars(X)<1
-    perm = ordmmdmex(X);
-    L = symfctmex(X,perm);
+if spars(ADA_sedumi_)<1
+    perm = ordmmdmex(ADA_sedumi_);
+    L = symfctmex(ADA_sedumi_,perm);
 else
-    L.perm=(1:size(X,1))';
-    L.L=sparse(tril(ones(size(X))));
-    L.xsuper=[1;size(X,1)+1];
+    L.perm=(1:size(ADA_sedumi_,1))';
+    L.L=sparse(tril(ones(size(ADA_sedumi_))));
+    L.xsuper=[1;size(ADA_sedumi_,1)+1];
 end
 % ----------------------------------------
 % Symbolic Cholesky factorization structures, stored in L.

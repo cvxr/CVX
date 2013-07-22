@@ -36,5 +36,4 @@ function x = vec(X)
 % 02110-1301, USA
 %
 
-[m n] = size(X);
-x = reshape(X,m*n,1);
+x = reshape(X,numel(X),1);
