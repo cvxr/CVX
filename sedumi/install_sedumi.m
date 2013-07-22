@@ -1,4 +1,4 @@
-function install_sedumi(nopath)
+function install_sedumi
 
 %SeDuMi installation script
 %

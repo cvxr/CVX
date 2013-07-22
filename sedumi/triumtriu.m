@@ -6,7 +6,8 @@
 %
 % See also sedumi
 
-function y = triumtriu(r,u,K) %#ok
+function y = triumtriu(r,u,K)
+
 %
 % This file is part of SeDuMi 1.1 by Imre Polik and Oleksandr Romanko
 % Copyright (C) 2005 McMaster University, Hamilton, CANADA  (since 1.1)

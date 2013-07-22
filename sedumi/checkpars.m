@@ -1,4 +1,4 @@
-%                                          pars = checkpars(pars,lponly)
+%                                          pars = checkpars(pars)
 % CHECKPARS  Fills in defaults for missing fields in "pars" structure.
 %
 % **********  INTERNAL FUNCTION OF SEDUMI **********
@@ -6,7 +6,7 @@
 % See also sedumi
 
 
-function pars = checkpars(pars,lponly)
+function pars = checkpars(pars,lponly) %#ok
 %
 % This file is part of SeDuMi 1.1 by Imre Polik and Oleksandr Romanko
 % Copyright (C) 2005 McMaster University, Hamilton, CANADA  (since 1.1)
@@ -102,9 +102,6 @@ if ~isfield(pars,'eps')                   % stopping tolerance
 end
 if ~isfield(pars,'bigeps')                   % threshold for numerr=1 vs 2.
     pars.bigeps = 1E-3;
-end
-if ~isfield(pars,'stopeps')
-    pars.stopeps = pars.eps;
 end
 if ~isfield(pars,'maxiter')
     pars.maxiter = 150;
