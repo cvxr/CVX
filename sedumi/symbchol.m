@@ -1,4 +1,6 @@
+function L = symbchol()
 %                                                          L = symbchol(X)
+%
 % SYMBCHOL Symbolic block sparse Cholesky factorization.
 %   L = symbchol(X) returns a structure L that can be used
 %   by the efficient block sparse Cholesky solver SPARCHOL.
@@ -23,9 +25,6 @@
 %
 % See also sparchol, sparfwslv, sparbwslv, symbfact, symmmd, chol.
 
-function L = symbchol()
-
-%
 % This file is part of SeDuMi 1.1 by Imre Polik and Oleksandr Romanko
 % Copyright (C) 2005 McMaster University, Hamilton, CANADA  (since 1.1)
 %

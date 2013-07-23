@@ -41,7 +41,6 @@ imsel = 1:nfx;
 imsel = imsel' + [zeros(length(cpx.f),1); vec(cpx.x)];
 rsel(imsel) = 0;
 z(1:dimflqr-nfx) = x(rsel~=0);
-
 z(cpx.f) = z(cpx.f) + sqrt(-1) * x(imsel(1:length(cpx.f)));
 z(cpx.x) = z(cpx.x) + sqrt(-1) * x(imsel(length(cpx.f)+1:end));
 % ----------------------------------------

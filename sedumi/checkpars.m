@@ -67,7 +67,7 @@ end
 if ~isfield(pars,'w')
     pars.w = [1;1];
 elseif length(pars.w)~=2
-    warning( 'SeDuMi:pars.w', 'pars.w should be vector of order 2' ); %#ok
+    warning('pars.w should be vector of order 2')
     pars.w = [1;1];
 else
     pars.w = max(pars.w,1e-8);    % positive weights
