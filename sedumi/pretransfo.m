@@ -244,7 +244,7 @@ end
 if cpx.dim>0
     pars.sdp=0;    % No SDP preprocessing for complex problems
 end
-if length(K.s) > 1000 || ~isempty(K.s) && max(K.s) < 10
+if isempty(K.s) || length(K.s) > 1000 || max(K.s) < 10
     pars.sdp=0;
 end
 if pars.sdp==1
