@@ -1,5 +1,8 @@
-%             [x,y] = optstep(A,b,c, y0,y,d,v,dxmdz, K,L,symLden,...
-%                        dense,Ablkjc,Aord,ADA,DAt, feasratio, R,pars)
+function [x,y] = optstep(A,b,c, y0,y,d,v,dxmdz, K,L,symLden,...
+    dense,Ablkjc,Aord,ADA,DAt, feasratio, R,pars)
+% [x,y] = optstep(A,b,c, y0,y,d,v,dxmdz, K,L,symLden,dense,Ablkjc,Aord,...
+%                 ADA,DAt, feasratio, R,pars)
+%
 % OPTSTEP Implements Mehrotra-Ye type optimality projection for
 %  IPM-LP solver.
 %
@@ -7,9 +10,6 @@
 %
 % See also sedumi
 
-function [x,y] = optstep(A,b,c, y0,y,d,v,dxmdz, K,L,symLden,...
-    dense,Ablkjc,Aord,ADA,DAt, feasratio, R,pars)
-%
 % This file is part of SeDuMi 1.1 by Imre Polik and Oleksandr Romanko
 % Copyright (C) 2005 McMaster University, Hamilton, CANADA  (since 1.1)
 %
@@ -87,8 +87,7 @@ if abs(abs(feasratio)-1) < 0.1
     % ----------------------------------------
     % CHECK WHETHER x[B] >= 0 AND WHETHER RESIDUAL DID NOT DETERIORATE.
     % ----------------------------------------
-    if (min(x) < 0.0) || ...
-            (norm(err.b,inf) > 5 * max(max(y0,1e-10 * x0) * R.maxb, y0 * R.maxRb))
+    if (min(x) < 0.0) || (norm(err.b,inf) > 2 * max(max(y0,1e-10 * x0) * R.maxb, y0 * R.maxRb))
         x = [];  % Incorrect guess of LP-basis
         return
     else

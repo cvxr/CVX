@@ -1,12 +1,12 @@
-%                                          y = qinvjmul(labx,frmx,b,K)
+function y = qinvjmul(labx,frmx,b,K)
+% y = qinvjmul(labx,frmx,b,K)
+%
 % QINVJMUL  Inverse of Jordan multiply for Lorentz blocks
 %
 % **********  INTERNAL FUNCTION OF SEDUMI **********
 %
 % See also sedumi
 
-function y = qinvjmul(labx,frmx,b,K)
-%
 % This file is part of SeDuMi 1.1 by Imre Polik and Oleksandr Romanko
 % Copyright (C) 2005 McMaster University, Hamilton, CANADA  (since 1.1)
 %
@@ -35,7 +35,7 @@ function y = qinvjmul(labx,frmx,b,K)
 % along with this program; if not, write to the Free Software
 % Foundation, Inc.,  51 Franklin Street, Fifth Floor, Boston, MA
 % 02110-1301, USA
-%
+
 lorN = length(K.q);
 if lorN == 0
     y = zeros(0,1);

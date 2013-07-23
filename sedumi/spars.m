@@ -1,6 +1,8 @@
 function sparsity=spars(x)
-%Returns the sparsity of the matrix/vector x. It works for sparse and dense
-%storage, too.
+% sparsity = sparse(x)
+%
+% Returns the sparsity of the matrix/vector x. It works for sparse and dense
+% storage, too.
 
 % This file is part of SeDuMi 1.1 by Imre Polik and Oleksandr Romanko
 % Copyright (C) 2005 McMaster University, Hamilton, CANADA  (since 1.1)

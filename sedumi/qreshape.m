@@ -1,4 +1,6 @@
-%                                              y = qreshape(x,flag, K)
+function y = qreshape(x,flag, K) %#ok
+% y = qreshape(x,flag, K)
+%
 % QRESHAPE  Reshuffles entries associated with Lorentz blocks.
 %   If flag = 0 then y = [x1 for each block; x2 for each block]
 %   If flag = 1 then y = [x block 1; x block 2; etc], etc
@@ -8,9 +10,6 @@
 %
 % See also sedumi
 
-
-function y = qreshape(x,flag, K) %#ok
-%
 % This file is part of SeDuMi 1.1 by Imre Polik and Oleksandr Romanko
 % Copyright (C) 2005 McMaster University, Hamilton, CANADA  (since 1.1)
 %
@@ -40,7 +39,5 @@ function y = qreshape(x,flag, K) %#ok
 % Foundation, Inc.,  51 Franklin Street, Fifth Floor, Boston, MA
 % 02110-1301, USA
 
-disp('The SeDuMi binaries are not installed.')
-disp('In Matlab, launch "install_sedumi" in the folder you put the SeDuMi files.')
-disp('For more information see the file Install.txt.')
-error(' ')
+%Indicate to the user Matlab cannot find the SeDuMi binaries
+sedumi_binary_error();

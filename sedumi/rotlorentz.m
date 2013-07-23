@@ -1,13 +1,12 @@
+function c = rotlorentz(c,K)
 % c = rotlorentz(c,K)
+%
 % Rotates vectors from Qcone to Rcone or from Rcone into Qcone.
 %
 % **********  INTERNAL FUNCTION OF SEDUMI **********
 %
 % See also sedumi
 
-function c = rotlorentz(c,K)
-
-%
 % This file is part of SeDuMi 1.1 by Imre Polik and Oleksandr Romanko
 % Copyright (C) 2005 McMaster University, Hamilton, CANADA  (since 1.1)
 %

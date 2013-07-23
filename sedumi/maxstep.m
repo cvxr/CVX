@@ -1,12 +1,12 @@
-%                                     tp = maxstep(dx,x,auxx,K)
+function tp = maxstep(dx,x,auxx,K)
+% tp = maxstep(dx,x,auxx,K)
+%
 % MAXSTEP  Computes maximal step length to the boundary of the cone K.
 %
 % **********  INTERNAL FUNCTION OF SEDUMI **********
 %
 % See also sedumi
 
-function tp = maxstep(dx,x,auxx,K)
-%
 % This file is part of SeDuMi 1.1 by Imre Polik and Oleksandr Romanko
 % Copyright (C) 2005 McMaster University, Hamilton, CANADA  (since 1.1)
 %

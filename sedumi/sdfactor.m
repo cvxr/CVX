@@ -1,12 +1,12 @@
-%      [Lsd,Rscl] = sdfactor(L,Lden, dense,DAt, d,v,y, At,K,R,y0,pars)
+function Lsd = sdfactor(L,Lden, dense,DAt, d,v,y, At,c,K,R,y0,pars) %#ok
+% [Lsd,Rscl] = sdfactor(L,Lden, dense,DAt, d,v,y, At,K,R,y0,pars)
+%
 % SDFACTOR  Factor self-dual embedding
 %
 % ******************** INTERNAL FUNCTION OF SEDUMI ********************
 %
 % See also sedumi
 
-function Lsd = sdfactor(L,Lden, dense,DAt, d,v,y, At,c,K,R,y0,pars) %#ok
-%
 % This file is part of SeDuMi 1.1 by Imre Polik and Oleksandr Romanko
 % Copyright (C) 2005 McMaster University, Hamilton, CANADA  (since 1.1)
 %
@@ -35,7 +35,6 @@ function Lsd = sdfactor(L,Lden, dense,DAt, d,v,y, At,c,K,R,y0,pars) %#ok
 % along with this program; if not, write to the Free Software
 % Foundation, Inc.,  51 Franklin Street, Fifth Floor, Boston, MA
 % 02110-1301, USA
-%
 
 % ------------------------------------------------------------
 % Compute D*Rc

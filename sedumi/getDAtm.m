@@ -1,13 +1,12 @@
-%                                      DAt = getDAtm(A,Ablkjc,dense,DAtdenq,d,K)
+function DAt = getDAtm(A,Ablkjc,dense,DAtdenq,d,K)
+% DAt = getDAtm(A,Ablkjc,dense,DAtdenq,d,K)
+%
 % GETDATM  Computes d[k]'*Aj[k] for each lorentz block k and constraint j.
 %
 % ******************** INTERNAL FUNCTION OF SEDUMI ********************
 %
 % See also sedumi, getada2.
 
-
-function DAt = getDAtm(A,Ablkjc,dense,DAtdenq,d,K)
-%
 % This file is part of SeDuMi 1.1 by Imre Polik and Oleksandr Romanko
 % Copyright (C) 2005 McMaster University, Hamilton, CANADA  (since 1.1)
 %

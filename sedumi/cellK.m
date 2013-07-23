@@ -1,4 +1,6 @@
-%                                                          xcell = cellK(x,K)
+function xcell = cellK(x,K)
+% xcell = cellK(x,K)
+%
 % CELLK  Stores SeDuMi cone K-vector in cell-array format.
 %
 % On output xcell.f and xcell.l are the free and >=0 components,
@@ -8,8 +10,6 @@
 %
 % See also eigK, eyeK, sedumi.
 
-function xcell = cellK(x,K)
-%
 % This file is part of SeDuMi 1.1 by Imre Polik and Oleksandr Romanko
 % Copyright (C) 2005 McMaster University, Hamilton, CANADA  (since 1.1)
 %

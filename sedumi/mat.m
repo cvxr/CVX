@@ -1,3 +1,4 @@
+function X = mat(x,n)
 % Y = MAT(x,n)   or   Y = MAT(x)     (the 2nd argument is optional)
 %   Given a vector of length n^2, this produces the n x n matrix
 %   Y such that x = vec(Y).  In other words, x contains the columns of the
@@ -5,9 +6,6 @@
 %
 % See also vec.
 
-function X = mat(x,n)
-
-%
 % This file is part of SeDuMi 1.1 by Imre Polik and Oleksandr Romanko
 % Copyright (C) 2005 McMaster University, Hamilton, CANADA  (since 1.1)
 %

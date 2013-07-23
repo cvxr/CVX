@@ -1,3 +1,6 @@
+function y = sparbwslv(L,b)
+% y = sparbwslv(L,b)
+%
 % SPARBWSLV Solves block sparse upper-triangular system.
 %    y = sparbwslv(L,b) yields the same result as
 %              y(L.perm,:) = L.L'\b
@@ -13,8 +16,6 @@
 %
 % See also  symbchol, sparchol, sparfwslv, mldivide, mrdivide.
 
-function y = sparbwslv(L,b)
-%
 % This file is part of SeDuMi 1.1 by Imre Polik and Oleksandr Romanko
 % Copyright (C) 2005 McMaster University, Hamilton, CANADA  (since 1.1)
 %
@@ -43,7 +44,6 @@ function y = sparbwslv(L,b)
 % along with this program; if not, write to the Free Software
 % Foundation, Inc.,  51 Franklin Street, Fifth Floor, Boston, MA
 % 02110-1301, USA
-%
 
 y = bwblkslv(L,b);
 %y(L.perm,:) = L.L'\b;

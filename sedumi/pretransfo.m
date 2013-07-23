@@ -1,11 +1,11 @@
-%                                      [At,b,c,K,prep] = pretransfo(At,b,c,K)
+function [At,b,c,K,prep,origcoeff] = pretransfo(At,b,c,K,pars)
+% [At,b,c,K,prep] = pretransfo(At,b,c,K)
+%
 % PRETRANSFO  Checks data and then transforms into internal SeDuMi format.
 %
 % **********  INTERNAL FUNCTION OF SEDUMI **********
 %
 % See also sedumi
-
-function [At,b,c,K,prep,origcoeff] = pretransfo(At,b,c,K,pars)
 
 % This file is part of SeDuMi 1.1 by Imre Polik and Oleksandr Romanko
 % Copyright (C) 2005 McMaster University, Hamilton, CANADA  (since 1.1)
@@ -159,9 +159,9 @@ end
 if N ~= size(c,1)                     % make c an N x 1 vector
     c = c';
 end
-if N <= m
-    error('Should have length(c) > length(b) in any sensible model')
-end
+% if N <= m
+%     error('Should have length(c) > length(b) in any sensible model')
+% end
 if size(At,2) ~= m
     if m == size(At,1)
         At = At';        %user gave A instead of At.
@@ -358,17 +358,11 @@ K.N = length(c);
 
 %Correct the sparsity structure of the variables, this can save a lot of
 %memory.
+%Correct the sparsity structure of the variables, this can save a lot of
+%memory.
 [i,j,s]=find(At);
 At=sparse(i,j,s,K.N,m);
-if spars(c)<2/3
-    [i,j,s]=find(c);
+[i,j,s]=find(c);
 c=sparse(i,j,s,K.N,1);
-else
-    c=full(c);
-end
-if spars(b)<2/3
-    [i,j,s]=find(b);
+[i,j,s]=find(b);
 b=sparse(i,j,s,m,1);
-else
-    b=full(b);
-end

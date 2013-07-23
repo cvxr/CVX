@@ -1,5 +1,6 @@
 function [xp,yp,K] = posttransfo(x,y,prep,K,pars)
-%                                       [xp,yp] = posttransfo(x,y,prep,K)
+% [xp,yp] = posttransfo(x,y,prep,K)
+%
 % POSTTRANSFO  Transforms (x,y) from internal SeDuMi format into original
 %   user format.
 %
@@ -7,7 +8,6 @@ function [xp,yp,K] = posttransfo(x,y,prep,K,pars)
 %
 % See also sedumi
 
-%
 % This file is part of SeDuMi 1.1 by Imre Polik and Oleksandr Romanko
 % Copyright (C) 2005 McMaster University, Hamilton, CANADA  (since 1.1)
 %
@@ -36,7 +36,6 @@ function [xp,yp,K] = posttransfo(x,y,prep,K,pars)
 % along with this program; if not, write to the Free Software
 % Foundation, Inc.,  51 Franklin Street, Fifth Floor, Boston, MA
 % 02110-1301, USA
-%
 
 K.l = K.l - 1;       % remove artificial var of self-dual embedding
 xp=x(2:end);

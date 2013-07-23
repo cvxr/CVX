@@ -1,13 +1,12 @@
-%                                              x = frameit(lab,frmq,frms,K)
+function x = frameit(lab,frmq,frms,K)
+% x = frameit(lab,frmq,frms,K)
+%
 % FRAMEIT
 %
 % **********  INTERNAL FUNCTION OF SEDUMI **********
 %
 % See also sedumi
 
-
-function x = frameit(lab,frmq,frms,K)
-%
 % This file is part of SeDuMi 1.1 by Imre Polik and Oleksandr Romanko
 % Copyright (C) 2005 McMaster University, Hamilton, CANADA  (since 1.1)
 %
@@ -36,5 +35,5 @@ function x = frameit(lab,frmq,frms,K)
 % along with this program; if not, write to the Free Software
 % Foundation, Inc.,  51 Franklin Street, Fifth Floor, Boston, MA
 % 02110-1301, USA
-%
+
 x = [lab(1:K.l); qframeit(lab,frmq,K); psdframeit(lab,frms,K)];

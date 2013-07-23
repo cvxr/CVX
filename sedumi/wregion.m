@@ -1,14 +1,14 @@
-%        [xscl,y,zscl,y0, w,relt, dxmdz,err, wr] = wregion(L,Lden,Lsd,...
+function [xscl,y,zscl,y0, w,relt, dxmdz,err, wr] = ...
+    wregion(L,Lden,Lsd,d,v,vfrm,A,DAt,dense, R,K,y,y0,b, pars, wr)
+%  [xscl,y,zscl,y0, w,relt, dxmdz,err, wr] = wregion(L,Lden,Lsd,...
 %                             d,v,vfrm,A,DAt,dense, R,K,y,y0,b, pars, wr)
+%
 % WREGION  Implements Sturm-Zhang Wide-region Interior Point Method.
 %
 % ******************** INTERNAL FUNCTION OF SEDUMI ********************
 %
 % See also sedumi
 
-function [xscl,y,zscl,y0, w,relt, dxmdz,err, wr] = ...
-    wregion(L,Lden,Lsd,d,v,vfrm,A,DAt,dense, R,K,y,y0,b, pars, wr)
-%
 % This file is part of SeDuMi 1.1 by Imre Polik and Oleksandr Romanko
 % Copyright (C) 2005 McMaster University, Hamilton, CANADA  (since 1.1)
 %

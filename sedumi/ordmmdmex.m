@@ -1,4 +1,6 @@
+function perm = ordmmdmex(adjncy) %#ok
 % perm = ordmmdmex(adjncy)
+%
 %   Computes multiple-minimum-degree permutation, for sparse
 %   Cholesky. Adjncy is  a sparse symmetric matrix; its diagonal
 %   is irrelevant.
@@ -7,9 +9,6 @@
 %
 % **********  INTERNAL FUNCTION OF CHOLTOOL  **********
 
-function perm = ordmmdmex(adjncy) %#ok
-
-%
 %   This file is part of CholTool 1.00
 %   Copyright (C) 1998 Jos F. Sturm
 %   CRL, McMaster University, Canada.
@@ -28,6 +27,6 @@ function perm = ordmmdmex(adjncy) %#ok
 %   You should have received a copy of the GNU General Public License
 %   along with this program; if not, write to the Free Software
 %   Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
-%
 
-error('At OS prompt, type "make" to create cholTool mex-files.')
+%Indicate to the user Matlab cannot find the SeDuMi binaries
+sedumi_binary_error();

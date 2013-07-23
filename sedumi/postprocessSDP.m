@@ -1,5 +1,6 @@
 function [x,y,K]=postprocessSDP(newx,newy,prepinfo,newK)
 % [x,y,K]=postprocessSDP(newx,newy,prepinfo,newK)
+%
 % postprocessSDP: Postprocesses an SDP solution using the info from
 % preprocessing (preprocessSDP)
 % See preprocessSDP for details on the storage format

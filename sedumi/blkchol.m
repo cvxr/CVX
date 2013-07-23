@@ -1,4 +1,6 @@
-%                                     [L.L, L.d, L.skip, L.add] = blkchol(L,X,pars,absd)
+function [LL, Ld, Lskip, Ladd] = blkchol(L,X,pars,absd) %#ok
+% [L.L, L.d, L.skip, L.add] = blkchol(L,X,pars,absd)
+%
 % BLKCHOL Fast block sparse Cholesky factorization.
 %    The sparse Cholesky factor will be placed in the fields L.L, L.d;
 %    the symbolic factorization fields remain unchanged.
@@ -23,10 +25,7 @@
 % or add on the diagonal. Such pivots are then listed in L.{skip,add}.
 %
 % See also symbchol, sparfwslv, sparbwslv, [symbfact, symmmd, chol].
-
-function [LL, Ld, Lskip, Ladd] = blkchol(L,X,pars,absd) %#ok
-
- %  
+  
 % This file is part of SeDuMi 1.1 by Imre Polik and Oleksandr Romanko
 % Copyright (C) 2005 McMaster University, Hamilton, CANADA  (since 1.1)
 %
@@ -55,6 +54,7 @@ function [LL, Ld, Lskip, Ladd] = blkchol(L,X,pars,absd) %#ok
 % along with this program; if not, write to the Free Software
 % Foundation, Inc.,  51 Franklin Street, Fifth Floor, Boston, MA
 % 02110-1301, USA
- %
+%
 
-error('Build the SeDuMi binaries by typing make at the command prompt.');
+%Indicate to the user Matlab cannot find the SeDuMi binaries
+sedumi_binary_error();

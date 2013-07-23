@@ -1,4 +1,6 @@
-%            [Lden, Ld] = deninfac(symLden, L,dense,DAt, d, absd, qblkstart,pars)
+function [Lden, Ld] = deninfac(symLden, L,dense,DAt, d, absd, qblkstart,pars)
+% [Lden, Ld] = deninfac(symLden, L,dense,DAt, d, absd, qblkstart,pars)
+%
 % DENINFAC
 % Uses pars.maxuden as max. allowable |L(i,k)|. Otherwise num. reordering.
 %
@@ -6,8 +8,6 @@
 %
 % See also sedumi
 
-function [Lden, Ld] = deninfac(symLden, L,dense,DAt, d, absd, qblkstart,pars)
-%
 % This file is part of SeDuMi 1.1 by Imre Polik and Oleksandr Romanko
 % Copyright (C) 2005 McMaster University, Hamilton, CANADA  (since 1.1)
 %

@@ -1,12 +1,12 @@
-%                                                    z = psdmul(x,y, K)
+function z = psdjmul(x,y, K)
+% z = psdmul(x,y, K)
+%
 % PSDMUL  for full x,y. Computes (XY+YX)/2
 %
 % **********  INTERNAL FUNCTION OF SEDUMI **********
 %
 % See also sedumi
 
-function z = psdjmul(x,y, K)
-%
 % This file is part of SeDuMi 1.3 by Imre Polik
 % Copyright (C) 2005 McMaster University, Hamilton, CANADA  (since 1.1)
 %

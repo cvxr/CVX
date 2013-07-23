@@ -1,4 +1,6 @@
-%                                           y = asmDxq(d, x, K [, ddotx])
+function [y,t] = asmDxq(d, x, K, ddotx)
+% y = asmDxq(d, x, K [, ddotx])
+%
 % ASMDXQ  Assemble y = D(d)x for x in Lorentz part of K.
 % [y,t] = AasmDxq(d, x, K [, ddotx]) then y[k]+t(k)*d[k] = D(dk)xk.
 %
@@ -6,8 +8,6 @@
 %
 % See also sedumi
 
-function [y,t] = asmDxq(d, x, K, ddotx)
-%
 % This file is part of SeDuMi 1.1 by Imre Polik and Oleksandr Romanko
 % Copyright (C) 2005 McMaster University, Hamilton, CANADA  (since 1.1)
 %

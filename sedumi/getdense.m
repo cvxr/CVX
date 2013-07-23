@@ -1,4 +1,6 @@
-%                             [dense,Adotdden] = getdense(At,Ablkjc,K,pars)
+function [dense,Adotdden] = getdense(At,Ablkjc,K,pars)
+% [dense,Adotdden] = getdense(At,Ablkjc,K,pars)
+%
 % GETDENSE  Creates dense.{l,cols,q}.
 %   Try to find small proportion of the cone primitives that appear
 %   in a large proportion of the primal constraints.
@@ -7,10 +9,6 @@
 %
 % See also sedumi
 
-
-function [dense,Adotdden] = getdense(At,Ablkjc,K,pars)
-
-%
 % This file is part of SeDuMi 1.1 by Imre Polik and Oleksandr Romanko
 % Copyright (C) 2005 McMaster University, Hamilton, CANADA  (since 1.1)
 %

@@ -1,4 +1,6 @@
-%                         Ablk = findblks(At,Ablkjc,blk0,blk1,blkstart)
+function Ablk = findblks(At,Ablkjc,blk0,blk1,blkstart) %#ok
+% Ablk = findblks(At,Ablkjc,blk0,blk1,blkstart)
+%
 % FINDBLKS  Find nonzero blocks
 %   in A, with subscripts per column bounded bij Ablkjc([blk0,blk1]),
 %   block partitioned by blkstart.
@@ -9,10 +11,6 @@
 %
 %  See also partitA.
 
-
-
-function Ablk = findblks(At,Ablkjc,blk0,blk1,blkstart) %#ok
-%
 % This file is part of SeDuMi 1.1 by Imre Polik and Oleksandr Romanko
 % Copyright (C) 2005 McMaster University, Hamilton, CANADA  (since 1.1)
 %
@@ -43,7 +41,5 @@ function Ablk = findblks(At,Ablkjc,blk0,blk1,blkstart) %#ok
 % 02110-1301, USA
 %
 
-disp('The SeDuMi binaries are not installed.')
-disp('In Matlab, launch "install_sedumi" in the folder you put the SeDuMi files.')
-disp('For more information see the file Install.txt.')
-error(' ')
+%Indicate to the user Matlab cannot find the SeDuMi binaries
+sedumi_binary_error();

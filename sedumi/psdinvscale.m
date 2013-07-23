@@ -1,12 +1,12 @@
-%                                           y = psdinvscale(ud,x,K ,transp)
+function y = psdinvscale(ud,x,K)
+% y = psdinvscale(ud,x,K ,transp)
+%
 % PSDINVSCALE  Computes length lenud (=sum(K.s.^2)) vector y.
 %    Computes y = D(d^{-1}) x with d in K.
 %    Y = Ud' \ X / Ud
 % **********  INTERNAL FUNCTION OF SEDUMI **********
 %
 % See also scaleK, factorK.
-
-function y = psdinvscale(ud,x,K)
 
 % This file is part of SeDuMi 1.3 by Imre Polik and Oleksandr Romanko
 % Copyright (C) 2005 McMaster University, Hamilton, CANADA  (since 1.1)

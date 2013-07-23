@@ -1,3 +1,6 @@
+function y = fwblkslv(L,b) %#ok
+% y = fwblkslv(L, b)
+%
 % FWBLKSLV Solves block sparse upper-triangular system.
 %    y = fwblkslv(L,b) yields the same result as
 %              y = L.L\b(L.perm,:)
@@ -11,8 +14,6 @@
 %    Then y solves X*y=b.
 %
 % See also symbchol, sparchol, bwblkslv, mldivide, mrdivide
-
-function y = fwblkslv(L,b) %#ok
 
 % This file is part of SeDuMi 1.1 by Imre Polik and Oleksandr Romanko
 % Copyright (C) 2005 McMaster University, Hamilton, CANADA  (since 1.1)
@@ -43,4 +44,5 @@ function y = fwblkslv(L,b) %#ok
 % Foundation, Inc.,  51 Franklin Street, Fifth Floor, Boston, MA
 % 02110-1301, USA
 
-error('At OS prompt, type "make" to create cholTool mex-files.')
+%Indicate to the user Matlab cannot find the SeDuMi binaries
+sedumi_binary_error();

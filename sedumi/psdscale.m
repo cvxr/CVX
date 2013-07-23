@@ -1,4 +1,6 @@
-%                                           y = psdscale(ud,x,K [,transp])
+function y = psdscale(ud,x,K,varargin)
+% y = psdscale(ud,x,K [,transp])
+%
 % PSDSCALE  Computes length lenud (=sum(K.s.^2)) vector y.
 %   !transp (default) then y[k] = vec(Ldk' * Xk * Ldk)
 %   transp == 1 then y[k] = vec(Udk' * Xk * Udk)
@@ -7,8 +9,6 @@
 % **********  INTERNAL FUNCTION OF SEDUMI **********
 %
 % See also scaleK, factorK.
-
-function y = psdscale(ud,x,K,varargin)
 
 % This file is part of SeDuMi 1.3 by Imre Polik and Oleksandr Romanko
 % Copyright (C) 2005 McMaster University, Hamilton, CANADA  (since 1.1)

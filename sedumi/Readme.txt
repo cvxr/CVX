@@ -1,4 +1,4 @@
-Welcome to SeDuMi 1.21
+Welcome to SeDuMi 1.3
 
 SeDuMi is a Matlab Toolbox for Linear, Second order, Semidefinite or mixed
 problems. It can handle free variables and complex data as well.
@@ -50,4 +50,4 @@ follows:
   note =         {Version 1.05 available from {\texttt{http://fewcal.kub.nl/sturm}}}
 }
 
-Bethlehem, PA, USA, May 12, 2009
+Bethlehem, PA, USA, April 6, 2010

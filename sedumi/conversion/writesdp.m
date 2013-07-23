@@ -134,8 +134,8 @@ else
   for i=1:nsdpblocks,
     fprintf(fid,'1\n');
     work=c(base:base+K.s(i)^2-1);
-    work=reshape(work,K.s(i),K.s(i));
     if nnz(work ~= work'),
+    if (work ~= work'),
       disp('Non symmetric C.s matrix!');
       work=(work+work')/2;
     end;
@@ -161,9 +161,9 @@ else
     base=sizelin+sizeq+1;
     for i=1:nsdpblocks,
       fprintf(fid,'1\n');
-      work=A(cn,base:base+K.s(i)^2-1);
-      work=reshape(work,K.s(i),K.s(i));
       if nnz(work ~= work'),
+      work=reshape(work,K.s(i),K.s(i));
+      if (work ~= work'),
         disp('Non symmetric A.s matrix!');
         work=(work+work')/2;
       end;

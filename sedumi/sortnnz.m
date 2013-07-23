@@ -1,4 +1,6 @@
-%                                           perm = sortnnz(At,Ajc1,Ajc2)
+function perm = sortnnz(At,Ajc1,Ajc2) %#ok
+% perm = sortnnz(At,Ajc1,Ajc2)
+%
 % SORTNNZ  Sorts columns in At
 %     in increasing order of nnzs; only the nnzs between Ajc1 and Ajc2
 %     are considered for each column. If Ajc1 or Ajc2 is empty, we use
@@ -8,9 +10,6 @@
 %
 % See also partitA.
 
-
-function perm = sortnnz(At,Ajc1,Ajc2) %#ok
-%
 % This file is part of SeDuMi 1.1 by Imre Polik and Oleksandr Romanko
 % Copyright (C) 2005 McMaster University, Hamilton, CANADA  (since 1.1)
 %
@@ -39,9 +38,6 @@ function perm = sortnnz(At,Ajc1,Ajc2) %#ok
 % along with this program; if not, write to the Free Software
 % Foundation, Inc.,  51 Franklin Street, Fifth Floor, Boston, MA
 % 02110-1301, USA
-%
 
-disp('The SeDuMi binaries are not installed.')
-disp('In Matlab, launch "install_sedumi" in the folder you put the SeDuMi files.')
-disp('For more information see the file Install.txt.')
-error(' ')
+%Indicate to the user Matlab cannot find the SeDuMi binaries
+sedumi_binary_error();

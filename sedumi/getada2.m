@@ -1,4 +1,6 @@
-%                                       ADA = getada2(ADA, DAt,Aord, K)
+function ADA = getada2(ADA, DAt,Aord, K) %#ok
+% ADA = getada2(ADA, DAt,Aord, K)
+%
 % GETADA2  Compute ADA += DAt.q'*DAt.q
 %   IMPORTANT: Updated ADA only on triu(ADA(Aord.qperm,Aord.qperm)).
 %     Remaining entries are not affected.
@@ -7,10 +9,6 @@
 %
 % See also sedumi, getada1, getada3
 
-
-
-function ADA = getada2(ADA, DAt,Aord, K) %#ok
-%
 % This file is part of SeDuMi 1.1 by Imre Polik and Oleksandr Romanko
 % Copyright (C) 2005 McMaster University, Hamilton, CANADA  (since 1.1)
 %
@@ -39,9 +37,6 @@ function ADA = getada2(ADA, DAt,Aord, K) %#ok
 % along with this program; if not, write to the Free Software
 % Foundation, Inc.,  51 Franklin Street, Fifth Floor, Boston, MA
 % 02110-1301, USA
-%
 
-disp('The SeDuMi binaries are not installed.')
-disp('In Matlab, launch "install_sedumi" in the folder you put the SeDuMi files.')
-disp('For more information see the file Install.txt.')
-error(' ')
+%Indicate to the user Matlab cannot find the SeDuMi binaries
+sedumi_binary_error();

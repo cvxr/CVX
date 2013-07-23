@@ -1,12 +1,12 @@
-%                                           tdetx = tdet(x,K)
+function tdetx = tdet(x,K)
+% tdetx = tdet(x,K)
+%
 % TDET  Computes twice determinant for Lorentz block
 %
 % **********  INTERNAL FUNCTION OF SEDUMI **********
 %
 % See also sedumi
 
-function tdetx = tdet(x,K)
-%
 % This file is part of SeDuMi 1.1 by Imre Polik and Oleksandr Romanko
 % Copyright (C) 2005 McMaster University, Hamilton, CANADA  (since 1.1)
 %
@@ -35,7 +35,7 @@ function tdetx = tdet(x,K)
 % along with this program; if not, write to the Free Software
 % Foundation, Inc.,  51 Franklin Street, Fifth Floor, Boston, MA
 % 02110-1301, USA
-%
+
 if isempty(K.q)
     tdetx = zeros(0,1);
 else

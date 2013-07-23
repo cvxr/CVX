@@ -1,12 +1,12 @@
-%                                                y = Amul(At,dense,x,transp)
+function y = Amul(At,dense,x,transp)
+% y = Amul(At,dense,x,transp)
+%
 % AMUL  Computes A*x (transp=0) or A'*x (transp=1), taking care of dense.A.
 %
 % **********  INTERNAL FUNCTION OF SEDUMI **********
 %
 % See also sedumi
 
-function y = Amul(At,dense,x,transp)
-%
 % This file is part of SeDuMi 1.1 by Imre Polik and Oleksandr Romanko
 % Copyright (C) 2005 McMaster University, Hamilton, CANADA  (since 1.1)
 %

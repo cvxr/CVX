@@ -1,12 +1,12 @@
-%                                                 z = qjmul(x,y,K)
+function z = qjmul(x,y,K)
+% z = qjmul(x,y,K)
+%
 % QJMUL  Implements Jordan product for Lorentz cones
 %
 % **********  INTERNAL FUNCTION OF SEDUMI **********
 %
 % See also sedumi
 
-function z = qjmul(x,y,K)
-%
 % This file is part of SeDuMi 1.1 by Imre Polik and Oleksandr Romanko
 % Copyright (C) 2005 McMaster University, Hamilton, CANADA  (since 1.1)
 %
@@ -35,7 +35,6 @@ function z = qjmul(x,y,K)
 % along with this program; if not, write to the Free Software
 % Foundation, Inc.,  51 Franklin Street, Fifth Floor, Boston, MA
 % 02110-1301, USA
-%
 
 if isempty(K.q)
     z = zeros(0,1);

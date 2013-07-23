@@ -1,4 +1,6 @@
-%                                                mineig = minpsdeig(x,K)
+function mineig = minpsdeig(x,K)
+% mineig = minpsdeig(x,K)
+%
 % MINPSDEIG  Computes the smallest spectral coefficients of x w.r.t. K
 % Uses an iterative method if the matrix is large, takes the minimum of all
 % the eigenvalues if the matrix is small.
@@ -7,8 +9,6 @@
 %
 % See also sedumi
 
-function mineig = minpsdeig(x,K)
-%
 % This file is part of SeDuMi 1.3 by Imre Polik
 % Copyright (C) 2005 McMaster University, Hamilton, CANADA  (since 1.1)
 %

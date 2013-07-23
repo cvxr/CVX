@@ -1,4 +1,5 @@
-%    [y,r,k, DAy] = normeqPcg(L,Lden,At,dense,d, DAt,K, b, cgpars, y0,rhs)
+function [y,dx,k, r] = wrapPcg(L,Lden,At,dense,d, DAt,K, rb,rv,cgpars, y0)
+% [y,r,k, DAy] = normeqPcg(L,Lden,At,dense,d, DAt,K, b, cgpars, y0,rhs)
 %
 % WRAPPCG  Solve y from AP(d)A' * y = b
 % using PCG-method and Cholesky L as conditioner.
@@ -10,8 +11,6 @@
 %
 % See also sedumi, loopPcg
 
-function [y,dx,k, r] = wrapPcg(L,Lden,At,dense,d, DAt,K, rb,rv,cgpars, y0)
-%
 % This file is part of SeDuMi 1.1 by Imre Polik and Oleksandr Romanko
 % Copyright (C) 2005 McMaster University, Hamilton, CANADA  (since 1.1)
 %
@@ -40,7 +39,6 @@ function [y,dx,k, r] = wrapPcg(L,Lden,At,dense,d, DAt,K, rb,rv,cgpars, y0)
 % along with this program; if not, write to the Free Software
 % Foundation, Inc.,  51 Franklin Street, Fifth Floor, Boston, MA
 % 02110-1301, USA
-%
 
 % --------------------------------------------------
 % INITIALIZE:

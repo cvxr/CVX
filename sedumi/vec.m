@@ -1,11 +1,11 @@
+function x = vec(X)
+% x = vec(X)
+%
 % Y = VEC(x)  Given an m x n matrix x, this produces the vector Y of length
 %   m*n that contains the columns of the matrix x, stacked below each other.
 %
 % See also mat.
 
-function x = vec(X)
-
-%
 % This file is part of SeDuMi 1.1 by Imre Polik and Oleksandr Romanko
 % Copyright (C) 2005 McMaster University, Hamilton, CANADA  (since 1.1)
 %
@@ -34,6 +34,5 @@ function x = vec(X)
 % along with this program; if not, write to the Free Software
 % Foundation, Inc.,  51 Franklin Street, Fifth Floor, Boston, MA
 % 02110-1301, USA
-%
 
 x = reshape(X,numel(X),1);

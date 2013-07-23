@@ -1,3 +1,4 @@
+function [y,k, DAy] = loopPcg(L,Lden,At,dense,d, DAt,K, b,p,ssqrNew,cgpars, restol)
 % [y,k, DAy] = loopPcg(L,Lden,At,dense,d, DAt,K, b,p,ssqrNew,cgpars, restol)
 %
 % LOOPPCG Solve y from AP(d)A' * y = b
@@ -18,10 +19,6 @@
 %
 % See also sedumi, wrapPcg
 
-
-function [y,k, DAy] = loopPcg(L,Lden,At,dense,d, DAt,K, b,p,ssqrNew,...
-    cgpars, restol)
-%
 % This file is part of SeDuMi 1.1 by Imre Polik and Oleksandr Romanko
 % Copyright (C) 2005 McMaster University, Hamilton, CANADA  (since 1.1)
 %

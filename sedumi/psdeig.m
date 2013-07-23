@@ -1,4 +1,6 @@
-%                                                [lab,q] = psdeig(x,K)
+function [lab,q] = psdeig(x,K)
+% [lab,q] = psdeig(x,K)
+%
 % PSDEIG  Computes spectral coefficients of x w.r.t. K
 %   Arguments "q" is optional - without it's considerably faster.
 %   FLOPS indication: 1.3 nk^3 versus 9.0 nk^3 for nk=500,
@@ -8,9 +10,6 @@
 %
 % See also sedumi
 
-function [lab,q] = psdeig(x,K)
-
-%
 % This file is part of SeDuMi 1.1 by Imre Polik and Oleksandr Romanko
 % Copyright (C) 2005 McMaster University, Hamilton, CANADA  (since 1.1)
 %
@@ -39,7 +38,6 @@ function [lab,q] = psdeig(x,K)
 % along with this program; if not, write to the Free Software
 % Foundation, Inc.,  51 Franklin Street, Fifth Floor, Boston, MA
 % 02110-1301, USA
-%
 
 Ks=K.s;
 if isempty(Ks)

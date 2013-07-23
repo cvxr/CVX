@@ -1,4 +1,5 @@
-%                                                     [lab,q,f] = eigK(x,K)
+function [lab,q,f] = eigK(x,K)
+% [lab,q,f] = eigK(x,K)
 %
 % EIGK  Computes the spectral values ("eigenvalues") or even the complete
 %       spectral decomposition  of a vector x with respect to a self-dual
@@ -20,12 +21,6 @@
 %
 % See also sedumi, mat, vec, eyeK.
 
-function [lab,q,f] = eigK(x,K) %#ok
-
-% THE M-FILE VERSION OF THIS FUNCTION IS HERE ONLY AS ILLUSTRATION.
-% SEE THE C-SOURCE FOR THE MEX-VERSION.
-
-%
 % This file is part of SeDuMi 1.1 by Imre Polik and Oleksandr Romanko
 % Copyright (C) 2005 McMaster University, Hamilton, CANADA  (since 1.1)
 %
@@ -56,12 +51,13 @@ function [lab,q,f] = eigK(x,K) %#ok
 % 02110-1301, USA
 %
 
-disp('The SeDuMi binaries are not installed.')
-disp('In Matlab, launch "install_sedumi" in the folder you put the SeDuMi files.')
-disp('For more information see the file Install.txt.')
-error(' ')
+%Indicate to the user Matlab cannot find the SeDuMi binaries
+sedumi_binary_error();
 
-lab = zeros(K.l + 2*length(K.q) + sum(K.s),1); %#ok
+
+% THE M-FILE VERSION OF THIS FUNCTION IS HERE ONLY AS ILLUSTRATION.
+% SEE THE C-SOURCE FOR THE MEX-VERSION.
+lab = zeros(K.l + 2*length(K.q) + sum(K.s),1);
 % ----------------------------------------
 % LP: lab = x
 % ----------------------------------------

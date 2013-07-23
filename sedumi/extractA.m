@@ -1,4 +1,6 @@
-%              Apart = extractA(At,Ajc,blk0,blk1,blkstart[,blkstart2])
+function Apart = extractA(At,Ajc,blk0,blk1,blkstart,blkstart2) %#ok
+% Apart = extractA(At,Ajc,blk0,blk1,blkstart[,blkstart2])
+%
 % EXTRACTA  Fast alternative to
 %  Apart = At(blkstart(1):blkstart(2)-1,:).
 %  Instead of blkstart(2), it takes "blkstart2" (if supplied) or
@@ -13,10 +15,6 @@
 %
 %  See also partitA
 
-
-
-function Apart = extractA(At,Ajc,blk0,blk1,blkstart,blkstart2) %#ok
-%
 % This file is part of SeDuMi 1.1 by Imre Polik and Oleksandr Romanko
 % Copyright (C) 2005 McMaster University, Hamilton, CANADA  (since 1.1)
 %
@@ -46,7 +44,5 @@ function Apart = extractA(At,Ajc,blk0,blk1,blkstart,blkstart2) %#ok
 % Foundation, Inc.,  51 Franklin Street, Fifth Floor, Boston, MA
 % 02110-1301, USA
 
-disp('The SeDuMi binaries are not installed.')
-disp('In Matlab, launch "install_sedumi" in the folder you put the SeDuMi files.')
-disp('For more information see the file Install.txt.')
-error(' ')
+%Indicate to the user Matlab cannot find the SeDuMi binaries
+sedumi_binary_error();

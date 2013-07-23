@@ -1,12 +1,12 @@
-%                 [t,rcdx] = stepdif(d,R,y0,x,y,z,dy0,dx,dy,dz,b,mint,tpmtd)
+function [t,rcdx] = stepdif(d,R,y0,x,y,z,dy0,dx,dy,dz,b,mint,tpmtd)
+% [t,rcdx] = stepdif(d,R,y0,x,y,z,dy0,dx,dy,dz,b,mint,tpmtd)
+%
 % STEPDIF  Implements Primal-Dual Step-Differentiation for self-dual model
 %
 % **********  INTERNAL FUNCTION OF SEDUMI **********
 %
 % See also sedumi
 
-function [t,rcdx] = stepdif(d,R,y0,x,y,z,dy0,dx,dy,dz,b,mint,tpmtd)
-%
 % This file is part of SeDuMi 1.1 by Imre Polik and Oleksandr Romanko
 % Copyright (C) 2005 McMaster University, Hamilton, CANADA  (since 1.1)
 %
@@ -35,7 +35,6 @@ function [t,rcdx] = stepdif(d,R,y0,x,y,z,dy0,dx,dy,dz,b,mint,tpmtd)
 % along with this program; if not, write to the Free Software
 % Foundation, Inc.,  51 Franklin Street, Fifth Floor, Boston, MA
 % 02110-1301, USA
-%
 
 % ------------------------------------------------------------
 % Self-Dual Primal/Dual Step length differentiation:

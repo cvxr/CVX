@@ -1,5 +1,6 @@
 function [newAt,newb,newc,newK,prepinfo]=preprocessSDP(At,b,c,K)
 %[newAt,newb,newc,newK,prepinfo]=preprocessSDP(At,b,c,K)
+%
 %Preprocess the SDP part of a problem, return the new variables and the
 %info needed to postprocess the solutions at the end. 
 %

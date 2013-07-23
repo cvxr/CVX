@@ -1,4 +1,6 @@
-%                               [Lden,L.d] = dpr1fact(x, d, Lsym, smult, maxu)
+function [Lden,Ld] = dpr1fact(x, d, Lsym, smult, maxu) %#ok
+% [Lden,L.d] = dpr1fact(x, d, Lsym, smult, maxu)
+%
 % DPR1FACT  Factor d[iag] p[lus] r[ank] 1:
 %    [Lden,L.d] = dpr1fact(x, d, Lsym, smult, maxu)
 %    Computes fi and d such that
@@ -14,9 +16,6 @@
 %
 % See also fwdpr1,bwdpr1,sedumi
 
-
-function [Lden,Ld] = dpr1fact(x, d, Lsym, smult, maxu) %#ok
-%
 % This file is part of SeDuMi 1.1 by Imre Polik and Oleksandr Romanko
 % Copyright (C) 2005 McMaster University, Hamilton, CANADA  (since 1.1)
 %
@@ -45,5 +44,6 @@ function [Lden,Ld] = dpr1fact(x, d, Lsym, smult, maxu) %#ok
 % along with this program; if not, write to the Free Software
 % Foundation, Inc.,  51 Franklin Street, Fifth Floor, Boston, MA
 % 02110-1301, USA
-%
-error('At OS prompt, type "make" to create cholTool mex-files.')
+
+%Indicate to the user Matlab cannot find the SeDuMi binaries
+sedumi_binary_error();

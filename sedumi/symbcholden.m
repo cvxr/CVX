@@ -1,12 +1,12 @@
-%                                            Lden = symbcholden(L,dense,DAt)
+function Lden = symbcholden(L,dense,DAt)
+% Lden = symbcholden(L,dense,DAt)
+%
 % SYMBCHOLDEN  Creates Lden.{LAD, perm,dz, sign, first}
 %
 % ******************** INTERNAL FUNCTION OF SEDUMI ********************
 %
 % See also sedumi, dpr1fact
 
-function Lden = symbcholden(L,dense,DAt)
-%
 % This file is part of SeDuMi 1.1 by Imre Polik and Oleksandr Romanko
 % Copyright (C) 2005 McMaster University, Hamilton, CANADA  (since 1.1)
 %
@@ -35,7 +35,6 @@ function Lden = symbcholden(L,dense,DAt)
 % along with this program; if not, write to the Free Software
 % Foundation, Inc.,  51 Franklin Street, Fifth Floor, Boston, MA
 % 02110-1301, USA
-%
 
 % ------------------------------------------------------------
 % Symbolic forward Cholesky of dense columns, in order

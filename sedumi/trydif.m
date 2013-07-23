@@ -1,4 +1,6 @@
-%                   [t,wr,w] = trydif(t,wrIN,wIN, x,z, pars,K)
+function [t,wr,w] = trydif(t,wrIN,wIN, x,z, pars,K)
+% [t,wr,w] = trydif(t,wrIN,wIN, x,z, pars,K)
+%
 % TRYDIF  Tries feasibility of differentiated step length w.r.t.
 %  wide region and its neighborhood.
 %
@@ -6,8 +8,6 @@
 %
 % See also sedumi, stepdif
 
-function [t,wr,w] = trydif(t,wrIN,wIN, x,z, pars,K)
-%
 % This file is part of SeDuMi 1.1 by Imre Polik and Oleksandr Romanko
 % Copyright (C) 2005 McMaster University, Hamilton, CANADA  (since 1.1)
 %
@@ -36,7 +36,6 @@ function [t,wr,w] = trydif(t,wrIN,wIN, x,z, pars,K)
 % along with this program; if not, write to the Free Software
 % Foundation, Inc.,  51 Franklin Street, Fifth Floor, Boston, MA
 % 02110-1301, USA
-%
 
 thetaSQR = pars.theta^2;
 ix = K.mainblks;

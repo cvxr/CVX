@@ -1,4 +1,6 @@
-%                            Ad = Adendotd(dense, d, sparAd, Ablk, blkstart)
+function Ad = Adendotd(dense, d, sparAd, Ablk, blkstart) %#ok
+% Ad = Adendotd(dense, d, sparAd, Ablk, blkstart)
+%
 % ADENDOTD  Computes d[k]'*Aj[k] for Lorentz blocks that are to be factored
 %  by dpr1fact.
 %
@@ -6,8 +8,6 @@
 %
 % See also sedumi
 
-function Ad = adendotd(dense, d, sparAd, Ablk, blkstart) %#ok
-%
 % This file is part of SeDuMi 1.1 by Imre Polik and Oleksandr Romanko
 % Copyright (C) 2005 McMaster University, Hamilton, CANADA  (since 1.1)
 %
@@ -38,7 +38,5 @@ function Ad = adendotd(dense, d, sparAd, Ablk, blkstart) %#ok
 % 02110-1301, USA
 %
 
-disp('The SeDuMi binaries are not installed.')
-disp('In Matlab, launch "install_sedumi" in the folder you put the SeDuMi files.')
-disp('For more information see the file Install.txt.')
-error(' ')
+%Indicate to the user Matlab cannot find the SeDuMi binaries
+sedumi_binary_error();

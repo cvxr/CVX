@@ -1,4 +1,5 @@
-%              [t,wr,w] = widelen(xc,zc,y0, dx,dz,dy0,d2y0, maxt,pars,K)
+function [t,wr,w] = widelen(xc,zc,y0, dx,dz,dy0,d2y0, maxt,pars,K)
+% [t,wr,w] = widelen(xc,zc,y0, dx,dz,dy0,d2y0, maxt,pars,K)
 %
 % WIDELEN  Computes approximate wide-region neighborhood step length.
 % Does extensive line search only if it pays, that is the resulting
@@ -9,8 +10,6 @@
 %
 % See also sedumi
 
-function [t,wr,w] = widelen(xc,zc,y0, dx,dz,dy0,d2y0, maxt,pars,K)
-%
 % This file is part of SeDuMi 1.1 by Imre Polik and Oleksandr Romanko
 % Copyright (C) 2005 McMaster University, Hamilton, CANADA  (since 1.1)
 %
@@ -39,7 +38,6 @@ function [t,wr,w] = widelen(xc,zc,y0, dx,dz,dy0,d2y0, maxt,pars,K)
 % along with this program; if not, write to the Free Software
 % Foundation, Inc.,  51 Franklin Street, Fifth Floor, Boston, MA
 % 02110-1301, USA
-%
 
 thetaSQR = pars.theta^2;
 ix = K.mainblks;
