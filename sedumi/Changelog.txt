@@ -79,4 +79,6 @@ paper that is available at http://plato.asu.edu/dimacs/node3.html. These are in 
 
 20130404 Fix: Updated to v1.31, corrected bugs in sedumi.m and getada.m, updated .m files as per mlint suggestions, commented length(b) vs length(c) check in pretransfo, recompiled windows mex files, updated install_sedumi.m for MATLAB v8
 
-20130722 Update (Michael Grant): improved Octave compilability, merged with CVX SeDuMi.
+20130722 Update (Michael Grant): Merged changes from CVX and SeDuMi/Octave into the distribution.
+Further changes to suppress Matlab Code Analyzer warnings. Removed "matrix.h" dependency from givens.h
+for Octave compatibility; fixed assertion problem with givensrot.c.

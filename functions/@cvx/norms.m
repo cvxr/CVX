@@ -75,11 +75,13 @@ switch p,
             xt = cvx_subsref( x, ':', tt );
             y  = cvx_subsasgn( y, tt, norms( xt, p ) );
         elseif p == 2,
+        	y = [];
             cvx_begin
                 epigraph variable y( 1, nv )
                 { cvx_accept_convex(x), y } == lorentz( [ nx, nv ], 1, ~isreal( x ) ); %#ok
             cvx_end
 		else
+			z = []; y = [];
             cvx_begin
                 variable z( nx, nv )
                 epigraph variable y( 1, nv )

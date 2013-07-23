@@ -14,6 +14,7 @@ end
 % 
 
 [ m, n ] = size( X ); %#ok
+W1 = []; W2 = [];
 cvx_begin sdp
     variable W1(m,m) symmetric
     variable W2(n,n) symmetric

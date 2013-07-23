@@ -17,6 +17,7 @@ end
 % Construct problem
 % 
 
+Y = [];
 cvx_begin sdp
     if isreal(X),
         variable Y(n,n) symmetric

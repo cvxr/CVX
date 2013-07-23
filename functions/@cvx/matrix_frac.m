@@ -22,6 +22,7 @@ elseif cvx_isconstant( x ) && cvx_isconstant( Y ),
 elseif cvx_isaffine( x ) && cvx_isaffine( Y ),
 
     n = size( x, 1 );
+    z = [];
     cvx_begin
         epigraph variable z
         [Y x; x' z] == semidefinite( n+1 ); %#ok

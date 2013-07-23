@@ -22,6 +22,7 @@ elseif cvx_isconstant( X ),
 
 elseif isreal( X ),
 
+	Z = [];
     cvx_begin
         variable Z(n,n) lower_triangular
         D = diag( Z );
@@ -32,6 +33,7 @@ elseif isreal( X ),
 
 else
 
+	Z = [];
     cvx_begin
         variable Z(n,n) lower_triangular complex
         D = diag( Z );

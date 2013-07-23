@@ -35,6 +35,7 @@ elseif k >= sx( dim ),
 
 else
 
+	z = []; xp = []; yp = [];
     cvx_begin
         epigraph variable z( sy )
         variables xp( sx ) yp( sy )

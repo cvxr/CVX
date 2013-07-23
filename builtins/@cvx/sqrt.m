@@ -64,6 +64,7 @@ for k = 1 : nv,
             cvx_optval = cvx( builtin( 'sqrt', cvx_constant( xt ) ) );
         case 2,
             % Real affine, concave
+            w = [];
             st = size( xt ); %#ok
             cvx_begin
                 hypograph variable w( st );

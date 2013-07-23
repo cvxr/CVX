@@ -3,6 +3,7 @@ function cvx_optval = sum_square_pos( x, varargin ) %#ok
 %SUM_SQUARE_POS   Internal cvx version.
 
 error( nargchk( 1, 2, nargin ) ); %#ok
+x2 = [];
 cvx_begin
     variable x2( size( x ) );
     minimize( sum_square( x2, varargin{:} ) );

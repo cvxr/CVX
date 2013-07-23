@@ -81,6 +81,7 @@ for k = 1 : nk,
         case 1,
             yt = cvx( geo_mean( cvx_constant( xt ), 1, w ) );
         case 2,
+        	yt = [];
             cvx_begin
                 hypograph variable yt(1,nv);
                 { cvx_accept_concave(xt), yt } == geo_mean_cone( size(xt), 1,  w, 'func' ); %#ok

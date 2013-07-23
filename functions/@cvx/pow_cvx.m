@@ -152,6 +152,7 @@ for k = 1 : nv,
         case 3,
             % power( concave, p < 0 )
             % pow_p( concave, p < 0 )
+            yt = [];
             cvx_begin
                 epigraph variable yt(sz)
                 { cat( nd, cvx_accept_concave(xt), yt ), 1 } == geo_mean_cone( sw, nd, [-pt,1], 'func' ); %#ok
@@ -167,6 +168,7 @@ for k = 1 : nv,
             cvx_end
         case 6,
             % pow_p( concave, 0 < p < 1 )
+            yt = [];
             cvx_begin
                 hypograph variable yt(sz)
                 { cat( nd, cvx_accept_concave(xt), ones(sz) ), yt } == geo_mean_cone( sw, nd, [pt,1-pt], 'func' ); %#ok
@@ -190,6 +192,7 @@ for k = 1 : nv,
             % power( affine, p > 1, p noninteger )
             % pow_p( affine, p > 1 )
             % pow_pos( convex, p > 1 )
+            yt = [];
             cvx_begin
                 epigraph variable yt(sz)
                 { cat( nd, yt, ones(sz) ), cvx_accept_convex(xt) } == geo_mean_cone( sw, nd, [1/pt,1-1/pt], cmode );  %#ok
@@ -197,12 +200,14 @@ for k = 1 : nv,
         case 12,
             % pow_abs( affine, p > 1 )
             % power( affine, p even )
+            yt = [];
             cvx_begin
                 epigraph variable yt(sz)
                 { cat( nd, yt, ones(sz) ), cvx_accept_convex(xt) } == geo_mean_cone( sw, nd, [1/pt,1-1/pt], 'abs' ); %#ok 
             cvx_end
         case 13,
             % pow_abs( complex affine, p > 1 )
+            yt = [];
             cvx_begin
                 epigraph variable yt(sz)
                 { cat( nd, yt, ones(sz) ), xt } == geo_mean_cone( sw, nd, [1/pt,1-1/pt], 'cabs' );  %#ok

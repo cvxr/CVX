@@ -13,6 +13,7 @@ elseif cvx_isconstant( x ),
 
 elseif cvx_isaffine( x ),
 
+	z = [];
     n = size( x, 1 );
     cvx_begin
         epigraph variable z

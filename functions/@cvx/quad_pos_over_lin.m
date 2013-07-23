@@ -6,6 +6,7 @@ error( nargchk( 2, 3, nargin ) ); %#ok
 if ~isreal( x ), 
     error( 'First input must be real.' ); 
 end
+x2 = [];
 cvx_begin
     variable x2( size(x) )
     minimize quad_over_lin( x2, y, varargin{:} );

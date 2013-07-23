@@ -30,6 +30,7 @@ elseif k >= size( x, 1 ),
     
 else
     
+    S = [];
     cvx_begin
         variable S(n,n) symmetric
         S == semidefinite(n); %#ok

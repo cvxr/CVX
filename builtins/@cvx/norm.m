@@ -69,6 +69,7 @@ if m == 1 || n == 1 || isequal( p, 'fro' ),
                 end
                 n = length( x );
                 if p == 2,
+                    z = [];
                     cvx_begin
                         epigraph variable z
                         { x, z } == lorentz( n, [], ~isreal( x ) ); %#ok
@@ -79,6 +80,7 @@ if m == 1 || n == 1 || isequal( p, 'fro' ),
                     else
                         cmode = 'cabs';
                     end
+                    y = []; z = [];
                     cvx_begin
                         epigraph variable z
                         variable y( n )

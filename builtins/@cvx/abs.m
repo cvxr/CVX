@@ -61,6 +61,7 @@ for k = 1 : nv,
             cvx_optval = cvx( builtin( 'abs', cvx_constant( xt ) ) );
         case 2,
             % Real affine
+            w = [];
             st = size( xt );
             cvx_begin
                 epigraph variable w( st )
@@ -68,6 +69,7 @@ for k = 1 : nv,
             cvx_end
         case 3,
             % Complex affine
+            w = [];
             st = size( xt );
             cvx_begin
                 epigraph variable w( st )

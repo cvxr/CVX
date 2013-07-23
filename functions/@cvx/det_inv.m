@@ -21,6 +21,7 @@ if cvx_isconstant( X ),
 
 elseif nnz( X ) <= n && nnz( diag( X ) ) == nnz( X ),
     
+    y = [];
     cvx_begin
         epigraph variable y
         geo_mean( [ diag(X) ; y ], w ) >= 1; %#ok
@@ -28,6 +29,7 @@ elseif nnz( X ) <= n && nnz( diag( X ) ) == nnz( X ),
 
 elseif isreal( X ),
 
+	y = []; Z = [];
     cvx_begin
         epigraph variable y
         variable Z(n,n) lower_triangular
@@ -38,6 +40,7 @@ elseif isreal( X ),
 
 else
 
+	y = []; Z = [];
     cvx_begin
         epigraph variable y
         variable Z(n,n) lower_triangular complex

@@ -68,6 +68,7 @@ for k = 1 : nv,
         case 2,
             % Affine, convex (invalid)
             sx = xt.size_; %#ok
+            yt = [];
             cvx_begin
                 hypograph variable yt( sx ) 
                 exp( yt ) <= xt;            %#ok

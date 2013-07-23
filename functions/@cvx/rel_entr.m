@@ -74,6 +74,7 @@ for k = 1 : nv,
             cvx_optval = cvx( rel_entr( cvx_constant( xt ), cvx_constant( yt ) ) );
         case 2,
             % Real affine
+            q = [];
             cvx_begin
                 epigraph variable q( sz );
                 { -q, xt, yt } == exponential( sz ); %#ok

@@ -90,6 +90,7 @@ for k = 1 : nv,
             error( 'Disciplined convex programming error:\n    Illegal operation: log_sum_exp( {%s} ).', cvx_class( xt ) );
         case 1,
             % Affine, convex
+            w = []; z = [];
             cvx_begin
                 variable w( sx )
                 epigraph variable z( sz )

@@ -35,6 +35,7 @@ end
 % Compute result
 %
 
+v = []; w = [];
 cvx_begin separable
     variables v( sz ) w( sz )
     minimize( quad_over_lin( w, t, 0 ) + 2 .* M .* v )

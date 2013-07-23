@@ -67,6 +67,7 @@ elseif any( sx == 0 ),
         y == nonnegative( sz ); %#ok
     cvx_end
 else
+	z = [];
     cvx_begin
         epigraph variable z( sz )
         y = cvx_accept_concave( y );
