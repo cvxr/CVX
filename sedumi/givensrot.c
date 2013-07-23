@@ -116,11 +116,10 @@ void mexFunction(const int nlhs, mxArray *plhs[],
 /* ------------------------------------------------------------
    Get inputs gjc,g,x
    ------------------------------------------------------------ */
-  mxAssert(mxGetM(GJC_IN) * mxGetN(GJC_IN) == sdplen, "gjc size mismatch");
   gjcPr = mxGetPr(GJC_IN);
   g = (double *) mxGetPr(G_IN);
   gnnz = mxGetM(G_IN) * mxGetN(G_IN);
-  mxAssert(mxGetM(X_IN) == lenud && mxGetN(X_IN) == 1, "x size mismatch");
+  mxAssert(mxGetM(X_IN) == lenud && ( lenud == 0 || mxGetN(X_IN) == 1 ), "x size mismatch");
 /* ------------------------------------------------------------
    Allocate output y(lenud), and let y = x.
    ------------------------------------------------------------ */

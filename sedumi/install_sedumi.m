@@ -86,12 +86,13 @@ if ispc,
 elseif isunix,
     flags = {'-DUNIX'};
 end
+libs = {};
 if ISOCTAVE,
     % Octave has mwSize and mwIndex hardcoded in mex.h as ints.
     % There is no definition for mwSignedIndex so include it here.  
     % This means that Octave ignores the -largeArrayDims flag.
     flags{end+1} = '-DmwSignedIndex=int';
-    libs = '-llapack -lblas';
+    libs{end+1} = '-lblas';
 else
     if nargin > 1 && ~isempty(endpath),
         flags{end+1} = '-outdir';
@@ -105,23 +106,15 @@ else
         flags{end+1} = '-DmwSize=int';
         flags{end+1} = '-DmwSignedIndex=int';
     end
-if ispc,
-    if VERSION >= 7.5, libval = 'blas'; else libval = 'lapack'; end
-    if IS64BIT, dirval = 'win64'; else dirval = 'win32'; end
-    libs = [ matlabroot, '\extern\lib\', dirval, '\microsoft\libmw', libval, '.lib' ];
-    if ~exist( libs, 'file' ),
-        libs = [ matlabroot, '\extern\lib\', dirval, '\microsoft\msvc60\libmw', libval, '.lib' ];
+    if ~ispc,
+        libs{end+1} = '-lmwlapack';
+        if VERSION >= 7.5, libs{end+1} = '-lmwblas'; end
     end
-        libs = [ '"', libs, '"' ];
-    elseif VERSION >= 7.5,
-    libs = '-lmwblas';
-else
-    libs = '-lmwlapack';
 end
-end
+libs = sprintf( ' %s', libs{:} );
 flags = sprintf( ' %s', flags{:} );
 for i=1:length(targets64)
-    temp =  [ mexprog, flags, ' ', targets64{i}, ' ', libs ];
+    temp =  [ mexprog, flags, ' ', targets64{i}, libs ];
     disp( temp );
     eval( temp );
 end
