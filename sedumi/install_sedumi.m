@@ -78,7 +78,9 @@ targets64={...
 disp( 'Building SeDuMi binaries...' )
 ISOCTAVE = exist('OCTAVE_VERSION','builtin');
 COMPUTER = computer;
-VERSION  = [1,0.1]*sscanf(version,'%d.%d');
+% Note the use of 0.01 here. That's because version 7 had more than 10
+% minor releases, so 7.10-7.14 need to be ordered after 7.01-7.09.
+VERSION  = [1,0.01]*sscanf(version,'%d.%d');
 IS64BIT  = ~ISOCTAVE & strcmp(COMPUTER(end-1:end),'64');
 mexprog  = 'mex';
 if ispc,
@@ -99,16 +101,22 @@ else
         flags{end+1} = endpath;
     end
     flags{end+1} = '-O';
-    if IS64BIT && ( VERSION >= 7.3 ),
+    if IS64BIT && ( VERSION >= 7.03 ),
         flags{end+1} = '-largeArrayDims';
-    elseif VERSION < 7.3,
+    elseif VERSION < 7.03,
         flags{end+1} = '-DmwIndex=int';
         flags{end+1} = '-DmwSize=int';
         flags{end+1} = '-DmwSignedIndex=int';
     end
-    if ~ispc,
-        libs{end+1} = '-lmwlapack';
-        if VERSION >= 7.5, libs{end+1} = '-lmwblas'; end
+    if VERSION >= 7,
+        if VERSION >= 7.05, libval = 'blas'; else libval = 'lapack'; end
+        if IS64BIT, dirval = 'win64'; else dirval = 'win32'; end
+        libdir = [ matlabroot, '\extern\lib\', dirval, '\microsoft' ];
+        if exist( [ libdir, '\msvc60' ], 'file' ),
+            libdir = [ libdir, '\msvc60' ];
+        end
+        libs{end+1} = [ '-L"', libdir, '"' ];
+        libs{end+1} = [ '-lmw', libval ];
     end
 end
 libs = sprintf( ' %s', libs{:} );
