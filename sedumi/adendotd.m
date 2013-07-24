@@ -1,4 +1,4 @@
-function Ad = Adendotd(dense, d, sparAd, Ablk, blkstart) %#ok
+function Ad = adendotd(dense, d, sparAd, Ablk, blkstart) %#ok
 % Ad = Adendotd(dense, d, sparAd, Ablk, blkstart)
 %
 % ADENDOTD  Computes d[k]'*Aj[k] for Lorentz blocks that are to be factored
