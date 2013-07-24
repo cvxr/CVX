@@ -17,9 +17,10 @@ Supported platforms
 	single: Windows
 	single: Linux
 	single: Mac
-
-CVX is supported on 32-bit and 64-bit versions of Linux, Mac OSX, and Windows, 
-running MATLAB versions 7.5 (R2007b) and later. There are some important platform-specific
+	
+CVX is supported on 32-bit and 64-bit versions of Linux, Mac OSX, and Windows. For 32-bit
+platforms, MATLAB version 7.5 (R2007b) or later is required; for 64-bit platforms, MATLAB
+version 7.8 (R2009a) or later is required. There are some important platform-specific
 cautions, however:
 
 - Gurobi support requires Matlab 7.7 (R2008b) or later.

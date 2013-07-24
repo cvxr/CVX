@@ -67,10 +67,11 @@ Built-in functions
 Linear
 ~~~~~~
 
-A number of Matlab's basic linear functions have been extended to work with
-``cvx`` expressions as well: ``conj``, ``conv``, ``cumsum``, ``diag``, ``dot``,
+A number of Matlab's basic linear and bilinear functions either work automatically
+with ``cvx`` expressions or have been extended to do so, including:
+``conj``, ``conv``, ``cumsum``, ``diag``, ``dot``,
 ``find``, ``fliplr``, ``flipud``, ``flipdim``,
-``horzcat``, ``hankel``, ``ipermute``, ``kron``,
+``horzcat``, ``hankel``, ``ipermute``, ``kron``, ``mean``,
 ``permute``, ``repmat``, ``reshape``, ``rot90``, 
 ``sparse``, ``sum``, ``trace``, ``tril``, ``triu``,   
 ``toeplitz``, ``vertcat``.
@@ -165,9 +166,15 @@ Nonlinear
 
     Negative values of ``p`` are not permitted.
 
+``std``
+    Standard deviation. Convex.
+
 ``sqrt``
-    square root. Implicitly constrains its argument to be nonnegative.
+    Square root. Implicitly constrains its argument to be nonnegative.
     Concave and nondecreasing.
+
+``var``
+    Variance. Convex.
 
 .. _newfuncs:
 
@@ -178,6 +185,18 @@ Even though these functions were developed specifically for CVX,
 they work outside of a CVX specification as well, when supplied with
 numeric arguments.
 
+``avg_abs_dev``
+    The average absolute deviation about the mean :math:`\mu(x)` of :math:`x`. Convex.
+	.. math::
+	
+		f_{\text{aad}}(x) = \frac{1}{n} \sum_{i=1}^n |x_i-\mu(x)| = \frac{1}{n} \sum_{i=1}^n \left| x_i - {\textstyle\frac{1}{n}\sum_i x_i}\right| = \frac{1}{n}\left\| (I-\tfrac{1}{n}\textbf{1}\textbf{1}^T)x \right\|_1.
+		
+``avg_abs_dev_med``
+    The average absolute deviation about the median :math:`\mathop{\textrm{m}}(x)` of :math:`x`. Convex.
+	.. math::
+	
+		f_{\text{aadm}}(x) = \frac{1}{n} \sum_{i=1}^n |x_i-\mathop{\textrm{m}}(x)| = \inf_y \frac{1}{n} \sum_{i=1}^n |x_i-y|
+		
 ``berhu(x,M)``
     The reversed Huber function (hence, Berhu), defined as
 	.. math:: 
