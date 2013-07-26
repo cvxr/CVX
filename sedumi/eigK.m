@@ -1,4 +1,5 @@
-function [lab,q,f] = eigK(x,K)
+function lab = eigK(x,K)
+
 % [lab,q,f] = eigK(x,K)
 %
 % EIGK  Computes the spectral values ("eigenvalues") or even the complete
@@ -7,20 +8,18 @@ function [lab,q,f] = eigK(x,K)
 %
 % > LAB = EIGK(x,K) This yield the spectral values of x with respect to
 %       the self-dual homogeneous cone that you describe in the structure
-%       K. Up to 3 fields can be used, called K.l, K.q and K.s, for
-%       Linear, Quadratic and Semi-definite. Type `help sedumi' for more
-%       details on this structure.
+%       K. Up to 4 fields can be used, called K.l, K.q, K.r, and K.s, for
+%       Linear, Quadratic, Rotated, and Semi-definite. Type `help sedumi' 
+%       for more details on this structure.
 %
-%       The length of the vector LAB is the order of the cone. Remark that
+%       The length of the vector LAB is the order of the cone. Note that
 %       x in K if and only if LAB>=0, and x in int(K) if and only if LAB>0.
-%
-% > [LAB,Q,F] = EIGK(x,K) Also produces the eigenvectors for the symmetric and
-%       Hermitian parts of x (corresponding to K.s), and the Lorentz frame F
-%       for the Lorentz blocks in x (corresponding to K.q). This extended
-%       version of EIGK is intended for INTERNAL USE BY SEDUMI.
 %
 % See also sedumi, mat, vec, eyeK.
 
+% Complete rewrite for SeDuMi 1.3 by Michael C. Grant
+% Copyright (C) 2013 Michael C. Grant.
+%
 % This file is part of SeDuMi 1.1 by Imre Polik and Oleksandr Romanko
 % Copyright (C) 2005 McMaster University, Hamilton, CANADA  (since 1.1)
 %
@@ -51,58 +50,77 @@ function [lab,q,f] = eigK(x,K)
 % 02110-1301, USA
 %
 
-%Indicate to the user Matlab cannot find the SeDuMi binaries
-sedumi_binary_error();
-
-
-% THE M-FILE VERSION OF THIS FUNCTION IS HERE ONLY AS ILLUSTRATION.
-% SEE THE C-SOURCE FOR THE MEX-VERSION.
-lab = zeros(K.l + 2*length(K.q) + sum(K.s),1);
-% ----------------------------------------
-% LP: lab = x
-% ----------------------------------------
-lab(1:K.l) = x(1:K.l);
-firstk = K.l+1;
-nextlab = K.l+1;
-% ----------------------------------------
-% LORENTZ: (lab, f) = qeig(x)
-% ----------------------------------------
-if nargout < 3
-    for k=1:length(K.q)
-        nk = K.q(k); lastk = firstk + nk - 1;
-        lab(nextlab:nextlab+1) = qeig(x(firstk:lastk));
-        firstk = lastk + 1; nextlab = nextlab + 2;
-    end
+if isfield(K,'rsdpN'),
+    % The internal SeDuMi cone format.
+    is_int = true;
+    nf = 0;
+    nl = K.l;
+    nq = length(K.q);
+    nr = 0;
+    ns = length(K.s);
+    nrsdp = K.rsdpN;
+    N = nl+2*length(K.q)+sum(K.s);
 else
-    nextf = 1;
-    for k=1:length(K.q)
-        nk = K.q(k); lastk = firstk + nk - 1;
-        [labk, fk] = qeig(x(firstk:lastk));
-        lab(nextlab:nextlab+1) = labk;
-        f(nextf:nextf+nk-2) = fk;
-        firstk = lastk + 1; nextlab = nextlab + 2; nextf = nextf + nk-1;
+    % The external SeDuMi cone format.
+    is_int = false;
+    N = 0;
+    if isfield(K,'f'), nf = K.f; else nf = 0; end
+    if isfield(K,'l'), nl = K.l; N = N + nl; else nl = 0; end
+    if isfield(K,'q'), nq = length(K.q); N = N + 2 * nq; else nq = 0; end
+    if isfield(K,'r'), nr = length(K.r); N = N + 2 * nr; else nr = 0; end
+    if isfield(K,'s'), ns = length(K.s); N = N + sum(K.s); else ns = 0; end
+end
+li = 0;
+xi = nf;
+lab = zeros(N,1);
+li(li+1:li+nl) = x(xi+1:xi+nl);
+xi = xi + nl;
+li = li + nl;
+if nq,
+    tmp = sqrt(0.5);
+    if is_int,
+        % Internal version: all of the x0 values are at the front, and the
+        % vectors are stacked in order after that.
+        zi = xi;
+        xi = xi + nq;
+        for i = 1:nq,
+            kk = K.q(i) - 1;
+            x0 = x(zi+i);
+            lab(li+1:li+2) = tmp*(x0+[-1;+1]*norm(x(xi+1:xi+kk)));
+            xi = xi + kk;
+            li = li + 2;
+        end
+    else
+        for i = 1:length(K.q)
+            kk = K.q(i);
+            x0 = x(xi+1);
+            lab(li+1:li+2) = tmp*(x0+[-1;+1]*norm(x(xi+2:xi+kk)));
+            xi = xi + kk;
+            li = li + 2;
+        end
     end
 end
-% ----------------------------------------
-% SDP: [q,lab] = eig(x)
-% ----------------------------------------
-offq = firstk - 1;
-q = zeros(length(x)-offq,1);
-for k = 1:K.rsdpN
-    nk = K.s(k); lastk = firstk + nk*nk - 1;
-    Xk = mat(x(firstk:lastk),nk);
-    Xk = (Xk + Xk') / 2;
-    [Qk, Labk] = eig(Xk);
-    lab(nextlab:nextlab+nk-1) = diag(Labk);
-    q(firstk-offq:lastk-offq) = Qk;
-    firstk = lastk + 1; nextlab = nextlab + nk;
+for i = 1:nr,
+    % Only the external format need be implemented here
+    ki = K.r(i);
+    x1 = xx(xi+1);
+    x2 = xx(xi+2);
+    lab(li+1:li+2) = 0.5*(x1+x2+[-1;+1]*norm([x1-x2;2*x(xi+3:xi+ki)]));
+    xi = xi + ki;
+    li = li + 2;
 end
-for k = (1+K.rsdpN):length(K.s)
-    nk = K.s(k); ifirstk = firstk + nk*nk; lastk = ifirstk + nk*nk - 1;
-    Xk = mat(x(firstk:ifirstk-1)+sqrt(-1)*x(ifirstk:lastk),nk);
-    [Qk, Labk] = eig(Xk);
-    lab(nextlab:nextlab+nk-1) = real(diag(Labk));
-    q(firstk-offq:ifirstk-1-offq) = real(Qk);
-    q(ifirstk-offq:lastk-offq) = imag(Qk);
-    firstk = lastk + 1; nextlab = nextlab + nk;
+for i = 1 : ns,
+    ki = K.s(i);
+    qi = ki * ki;
+    XX = x(xi+1:xi+qi); 
+    xi = xi + qi;
+    if i > nrsdp,
+        XX = XX + 1i*x(xi+1:xi+qi); 
+        xi = xi + qi;
+    end
+    XX = reshape(XX,ki,ki);
+    XX = XX + XX';
+    lab(li+1:li+ki) = 0.5*eig( XX );
+    li = li + ki;
 end
+

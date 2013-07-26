@@ -1,4 +1,4 @@
-function y = psdscale(ud,x,K,varargin)
+function y = psdscale(ud,x,K,transp)
 % y = psdscale(ud,x,K [,transp])
 %
 % PSDSCALE  Computes length lenud (=sum(K.s.^2)) vector y.
@@ -42,123 +42,78 @@ function y = psdscale(ud,x,K,varargin)
 %The function is quite dirty as the type and dimension of the inputs may
 %change, that is why we have so many subcases.
 
-if ~isempty(varargin)
-    transp=varargin{1};
-else
-    transp=0;
-end
-
-Ks=K.s;
-if ~isempty(Ks)
-    N=sum(Ks.^2);
-    y(N,1)=0;
-else
-    y=[];
+Ks = K.s;
+if isempty(Ks),
+    y = [];
     return
 end
-startindices=K.sblkstart-K.mainblks(end)+1;
-%Sometimes x containts only the PSD part, sometimes the whole thing
-xstartindices=startindices+(length(x)-N);
-
-permindices=cumsum([1,Ks]);
-if ~transp
-    if isstruct(ud)
-        if isempty(ud.perm)
-            for i=1:K.rsdpN
-                Ksi=Ks(i);
-                temp=tril(reshape(ud.u(startindices(i):startindices(i+1)-1),Ksi,Ksi));
-                y(startindices(i):startindices(i+1)-1)=...
-                    temp'...
-                    *reshape(x(xstartindices(i):xstartindices(i+1)-1),Ksi,Ksi)...
-                    *temp;
-            end
-        else
-            for i=1:K.rsdpN
-                Ksi=Ks(i);
-                temp=tril(reshape(ud.u(startindices(i):startindices(i+1)-1),Ksi,Ksi));
-                X=reshape(x(xstartindices(i):xstartindices(i+1)-1),Ksi,Ksi);
-                %We only permute if we have to
-                if isequal(ud.perm(permindices(i):permindices(i+1)-1),(1:Ksi)')
-                    if nnz(X)/(Ksi*Ksi)<0.1
-                        y(startindices(i):startindices(i+1)-1)=...
-                            temp'...
-                            *sparse(X)...
-                            *temp;
-                    else
-                        y(startindices(i):startindices(i+1)-1)=...
-                            temp'...
-                            *X...
-                            *temp;
-                    end
-                else
-                    y(startindices(i):startindices(i+1)-1)=...
-                        temp'...
-                        *X(ud.perm(permindices(i):permindices(i+1)-1),ud.perm(permindices(i):permindices(i+1)-1))...
-                        *temp;
-                end
-            end
-        end
+if nargin < 4,
+    transp = false;
+end
+Kq = Ks .* Ks;
+nr = K.rsdpN;
+nc = length(Ks);
+N  = sum(Kq) + sum(Kq(nr+1:end));
+y  = zeros(N,1);
+xi = length(x) - N;
+yi = 0;
+ui = 0;
+if isstruct(ud)
+    perm = ud.perm;
+    if isempty(perm),
+        prep = false;
+        postp = false;
     else
-        for i=1:K.rsdpN
-            Ksi=Ks(i);
-            temp=tril(reshape(ud(startindices(i):startindices(i+1)-1),Ksi,Ksi));
-            X=reshape(x(xstartindices(i):xstartindices(i+1)-1),Ksi,Ksi);
-            if spars(X)<0.1
-                y(startindices(i):startindices(i+1)-1)=...
-                    temp'...
-                    *sparse(X)...
-                    *temp;
-            else
-                y(startindices(i):startindices(i+1)-1)=...
-                    temp'...
-                    *X...
-                    *temp;
-            end
+        prep = ~transp;
+        postp = transp;
+        pi = 0;
+    end
+    ud = ud.u;
+else
+    prep  = false;
+    postp = false;
+end
+for i = 1 : nc,
+    ki = Ks(i);
+    qi = Kq(i);
+    TT = ud(ui+1:ui+qi); ui=ui+qi;
+    if i > nr,
+        TT = TT + 1i*ud(ui+1:ui+qi); ui=ui+qi;
+    end
+    TT = reshape(TT,ki,ki);
+    if transp,
+        TT = triu(TT);
+    else
+        TT = tril(TT);
+    end
+    XX = x(xi+1:xi+qi); xi=xi+qi;
+    if i > nr,
+        XX = XX + 1i*x(xi+1:xi+qi); xi=xi+qi;
+    end
+    XX = reshape(XX,ki,ki);
+    if prep,
+        PP = perm(pi+1:pi+ki); pi=pi+ki;
+        if any(diff(PP)~=1),
+            XX = XX(PP,PP);
         end
     end
-else %transp
-    if isstruct(ud)
-        if isempty(ud.perm)
-            for i=1:K.rsdpN
-                Ksi=Ks(i);
-                temp=triu(reshape(ud.u(startindices(i):startindices(i+1)-1),Ksi,Ksi));
-                y(startindices(i):startindices(i+1)-1)=...
-                    temp'...
-                    *reshape(x(xstartindices(i):xstartindices(i+1)-1),Ksi,Ksi)...
-                    *temp;
-            end
-        else
-            for i=1:K.rsdpN
-                Ksi=Ks(i);
-                temp=triu(reshape(ud.u(startindices(i):startindices(i+1)-1),Ksi,Ksi));
-                X=reshape(x(xstartindices(i):xstartindices(i+1)-1),Ksi,Ksi);
-                if isequal(ud.perm(permindices(i):permindices(i+1)-1),(1:Ksi)')
-                    if nnz(X)/(Ksi*Ksi)<0.1
-                        y(startindices(i):startindices(i+1)-1)=temp'...
-                            *sparse(X)...
-                            *temp;
-                    else
-                        y(startindices(i):startindices(i+1)-1)=temp'...
-                            *X...
-                            *temp;
-                    end
-                else
-                    tempy=zeros(Ksi,Ksi);
-                    tempy(ud.perm(permindices(i):permindices(i+1)-1),ud.perm(permindices(i):permindices(i+1)-1))=temp'...
-                        *X...
-                        *temp;
-                    y(startindices(i):startindices(i+1)-1)=tempy;
-                end
-            end
+    if nnz(XX) < 0.1 * qi,
+        XX = sparse(XX);
+    end
+    XX = TT' * XX * TT;
+    if postp,
+        PP = perm(pi+1:pi+ki); pi=pi+ki;
+        if any(diff(PP)~=1),
+            XX(PP,PP) = XX;
         end
-    else
-        for i=1:K.rsdpN
-            Ksi=Ks(i);
-            temp=triu(reshape(ud(startindices(i):startindices(i+1)-1),Ksi,Ksi));
-            y(startindices(i):startindices(i+1)-1)=...
-                temp'...
-                *reshape(x(xstartindices(i):xstartindices(i+1)-1),Ksi,Ksi)...
-                *temp;
-        end
+    end
+    y(yi+1:yi+qi) = real(XX); 
+    yi = yi+qi;
+    if i > nr,
+        XX = imag(XX);
+        % Needed, otherwise psdfactor() will sometimes fail.
+        XX(1:ki+1:end) = 0;
+        y(yi+1:yi+qi) = XX; 
+        yi = yi+qi;
     end
 end

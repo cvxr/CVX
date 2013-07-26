@@ -52,7 +52,7 @@ R.maxc = norm(c,inf);
 % ----------------------------------------
 y = zeros(m,1);
 mu = pars.mu * sqrt((1+R.maxb)*(1+R.maxc));
-id = qreshape(eyeK(K),0,K);
+id = eyeK(K); % qreshape(eyeK(K),0,K);
 v = mu * id;
 y0 = n * mu;   % b0 * y0 = norm(v)^2.
 R.b0 = mu;

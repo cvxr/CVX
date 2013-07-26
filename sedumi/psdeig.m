@@ -39,31 +39,45 @@ function [lab,q] = psdeig(x,K)
 % Foundation, Inc.,  51 Franklin Street, Fifth Floor, Boston, MA
 % 02110-1301, USA
 
-Ks=K.s;
-if isempty(Ks)
-    lab=[];
+Ks = K.s;
+if isempty(Ks),
+    lab = [];
     return
 end
-
-lab(sum(Ks),1)=0;
-startindices=K.sblkstart-K.mainblks(end)+1;
-labindices=cumsum([1,Ks]);
-ncones=length(Ks);
-if nargout==1
-    %only eigenvalues are needed, not eigenvectors
-    for k = 1:ncones
-        Xk = reshape(x(startindices(k):startindices(k+1)-1),Ks(k),Ks(k));
-        lab(labindices(k):labindices(k+1)-1) = eig(Xk + Xk');
-    end
-else
-    %eigenvalues and eigenvectors
-    q=zeros(sum(Ks.^2),1);
-    for k = 1:ncones
-        Xk = reshape(x(startindices(k):startindices(k+1)-1),Ks(k),Ks(k));
-        [q(startindices(k):startindices(k+1)-1), temp] = eig(Xk + Xk');
-        lab(labindices(k):labindices(k+1)-1)=diag(temp);
-    end
+Kq = Ks .* Ks;
+nr = K.rsdpN;
+nc = length(Ks);
+N  = sum(Kq) + sum(Kq(nr+1:end));
+xi = length(x) - N;
+ei = 0;
+lab = zeros(sum(Ks),1);
+needv = nargout > 1;
+if needv,
+    q = zeros(N,1);
+    vi = 0;
 end
-%We actually got the eigenvalues of twice the matrices, so we need to scale
-%them back.
-lab=lab/2;
+for i = 1 : nc,
+    ki = Ks(i);
+    qi = Kq(i);
+    XX = x(xi+1:xi+qi); 
+    xi = xi+qi;
+    if i > nr,
+        XX = XX + 1i*x(xi+1:xi+qi); 
+        xi = xi+qi;
+    end
+    XX = reshape(XX,ki,ki);
+    if needv,
+        [QQ,DD] = eig( XX + XX' );
+        lab(ei+1:ei+ki) = 0.5 * diag(DD);
+        q(vi+1:vi+qi) = real(QQ);
+        vi = vi + qi;
+        if i > nr,
+            q(vi+1:vi+qi) = imag(QQ);
+            vi = vi + qi;
+        end
+    else
+        lab(ei+1:ei+ki) = 0.5 * eig( XX + XX' );
+    end
+    ei = ei + ki;
+end
+

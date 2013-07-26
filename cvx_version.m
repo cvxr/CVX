@@ -11,7 +11,8 @@ function [ fs, ps, mpath, mext, nver, isoctave, problem ] = cvx_version( license
 global cvx___
 
 % File and path separators
-if strncmp( computer, 'PC', 2 ), 
+comp = computer;
+if strncmp( comp, 'PC', 2 ), 
     fs = '\'; 
     ps = ';'; 
 else
@@ -39,24 +40,22 @@ nver = sscanf(nver,'%d');
 nver = nver(1) + 0.01 * ( nver(2) + 0.01 * nver(3) );
 
 % Matlab / Octave flag
-isoctave = exist( 'OCTAVE_VERSION', 'var' );
+isoctave = exist( 'OCTAVE_VERSION', 'builtin' );
 
 if nargout <= 6 && nargout, 
     return; 
 end
 
 % Version and build
-cvx_ver   = '2.0 (beta)';
-cvx_bld = '881';
-cvx_bdate = '2012-11-03 11:50:07';
-cvx_ddate = '2012-11-03 11:46:24';
-cvx_dbld = '880';
+java_version = 0;
+cvx_ver = '2.0 (beta)';
+cvx_bld = '999';
+cvx_bdate = '9999-99-99 99:99:99';
+cvx_ddate = '9999-99-99 99:99:99';
+cvx_dbld = '999';
 line = '---------------------------------------------------------------------------';
-fprintf( '\n' );
-disp( line );
-fprintf( 'CVX, version %-13s                     (c) 2012, CVX Research, Inc.\n', cvx_ver );
-fprintf( 'Software for Disciplined Convex Programming\n' );
-disp( line );
+fprintf( '\n%s\nCVX, version %-13s                     (c) 2012, CVX Research, Inc.\n', line, cvx_ver );
+fprintf( 'Software for Disciplined Convex Programming\n%s\n', line );
 fprintf( 'Version info:\n' );
 fprintf( '    Code: build %s, %s\n', cvx_bld, cvx_bdate );
 fprintf( '    Documentation: build %s, %s\n', cvx_dbld, cvx_ddate );
@@ -66,7 +65,7 @@ if isoctave,
 else
     verd = ver('MATLAB');
     fprintf( '    MATLAB version: %s %s\n', verd.Version, verd.Release );
-    if usejava('jvm'),
+    if usejava( 'jvm'),
         os_name = char(java.lang.System.getProperty('os.name'));
         os_arch = char(java.lang.System.getProperty('os.arch'));
         os_version = char(java.lang.System.getProperty('os.version'));
@@ -84,7 +83,7 @@ else
         end
     else
         fprintf( '    Architecture: %s\n', computer );
-        fprintf( '    Java version: DISABLED\n' );
+        fprintf( '    Java version: disabled\n' );
     end
 end
 
@@ -94,15 +93,13 @@ end
 
 problem = true;
 if isoctave,
-    fprintf( 'Sorry, CVX does not yet run under octave.\n' );
+	fprintf( '%s\nSorry, CVX does not yet run under Octave.\n%s\n', line, line );
+elseif nver < 7.08 && strncmp( comp(end-1:end), '64' ),
+    fprintf( '%s\nCVX requires MATLAB 7.8 or later (7.5 or later on 32-bit platforms).\n' , line, line );
 elseif nver < 7.05,
-    fprintf( 'CVX requires MATLAB 7.5 or later.\n' );
+    fprintf( '%s\nCVX requires MATLAB 7.5 or later (7.8 or later on 64-bit platforms).\n' , line, line );
 else
-    problem = false;
-end
-if problem,
-    if ~nargout, clear fs; end
-    return
+	problem = false;
 end
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -139,11 +136,11 @@ if fid > 0,
                 if length(missing_f) > 10,
                     fprintf( '        (and %d more files)\n', length(missing_f) - 10 );
                 end
-                disp( '    These omissions may prevent CVX from operating properly.'  );
+                fprintf( '    These omissions may prevent CVX from operating properly.\n'  );
             end
             if ~isempty( additional ),
                 if isempty( missing ), fprintf( '\n' ); end
-                disp( '    WARNING: The following extra files/directories were found:' );
+                fprintf( '    WARNING: The following extra files/directories were found:\n' );
                 isdir = cellfun(@(x)x(end)==fs,additional);
                 additional_d = additional(isdir);
                 additional_f = additional(~isdir);
@@ -156,12 +153,12 @@ if fid > 0,
                     additional_f(tt) = [];
                 end
                 for k = 1 : min(length(additional_f),10),
-                    disp( [ '        ', mpath, fs, additional_f{k} ]  );
+                    fprintf( '        %s%s%s\n', mpath, fs, additional_f{k} );
                 end
                 if length(additional_f) > 10,
                     fprintf( '        (and %d more files)\n', length(additional_f) - 10 );
                 end
-                disp( '    These files may alter the behavior of CVX in unsupported ways.' );
+                fprintf( '    These files may alter the behavior of CVX in unsupported ways.\n' );
             end
         else
             fprintf( '\n    No missing files.\n' );
@@ -172,13 +169,14 @@ if fid > 0,
 else    
     fprintf( 'Manifest missing; cannot verify file structure.\n' ) ;
 end
-if ~exist( [ 'lib/cvx_eliminate_mex.', mext ], 'file' ) || ...
-   ~exist( [ 'lib/cvx_bcompress_mex.', mext ], 'file' ),
-    fprintf( 'ERROR: one or more MEX files for this platform are missing.\n' );
-    fprintf( 'These files end in the suffix ".%s". CVX will not operate\n', mext );
-    fprintf( 'without these files. Please visit\n' );
-    fprintf( '    http://cvxr.com/cvx/download\n' );
-    fprintf( 'And download a distribution targeted for your platform.\n' );
+if ( ~exist( [ 'lib/cvx_eliminate_mex.', mext ], 'file' ) || ...
+     ~exist( [ 'lib/cvx_bcompress_mex.', mext ], 'file' ) ) && ~problem,
+    fprintf( '    ERROR: one or more MEX files for this platform are missing.\n' );
+    fprintf( '    These files end in the suffix ".%s". CVX will not operate\n', mext );
+    fprintf( '    without these files. Please visit\n' );
+    fprintf( '        http://cvxr.com/cvx/download\n' );
+    fprintf( '    And download a distribution targeted for your platform.\n' );
+    problem = true;
 end
 
 %%%%%%%%%%%%%%%%
@@ -187,16 +185,16 @@ end
 
 cvx___.license = [];
 exception = '';
-if usejava( 'jvm' ) && exist( 'cvx_license', 'file' ),
+if java_version >= 1.6 && exist( 'cvx_license', 'file' ),
     try
         if nargin < 1, license_file = ''; end
         cvx___.license = cvx_license( license_file );
     catch exception
     end
-elseif exist( 'cvx_license', 'file' ),
+elseif ~isoctave && exist( 'cvx_license', 'file' ),
     fprintf( 'CVX Professional disabled; requires the Java virtual machine.\n' );
 end
-disp( line );
+fprintf( '%s\n', line );
 if nargout == 0,
     clear fs
     fprintf( '\n' );
@@ -212,7 +210,7 @@ nfiles = dir( mpath );
 ndir   = '';
 dndx   = 0;
 pat2   = '^\.|~$|';
-pat    = '^\.|~$|^cvx_license.mat$|^doc$|^examples$';
+pat    = '^\.|~$|^cvx_license.[md]at$|^doc$|^examples$';
 while true,
     isdir  = [ nfiles.isdir ];
     nfiles = { nfiles.name };

@@ -49,14 +49,13 @@ end
 % Transform LQ-vars into F-vars (free)
 % ------------------------------------------------------------
 K.f = prep.Kf;
-if K.f>0
-    switch pars.free
-        case 0
-            K.l = K.l - 2 * K.f;
-            xp = [xp(K.f+1 : 2*K.f) - xp(1:K.f); xp(2*K.f+1:end)];
-        otherwise
-            K.q=K.q(2:end);
-            xp=[xp(K.l+2:K.l+K.f+1);xp(1:K.l);xp(K.l+K.f+2:end)];
+if K.f > 0
+    if pars.free == 0 || pars.free == 2 && isempty(K.q) && isempty(K.s),
+        K.l = K.l - 2 * K.f;
+        xp = [xp(K.f+1 : 2*K.f) - xp(1:K.f); xp(2*K.f+1:end)];
+    else
+        K.q=K.q(2:end);
+        xp=[xp(K.l+2:K.l+K.f+1);xp(1:K.l);xp(K.l+K.f+2:end)];
     end
 end
 

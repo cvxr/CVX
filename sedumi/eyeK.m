@@ -1,4 +1,5 @@
-function x = eyeK(K) %#ok
+function x = eyeK(K)
+
 % eyeK    Identity w.r.t. symmetric cone.
 %
 %    x = eyeK(K) produces the identity solution w.r.t. the symmetric cone,
@@ -7,6 +8,9 @@ function x = eyeK(K) %#ok
 %
 % See also eigK.
 
+% Complete rewrite for SeDuMi 1.3 by Michael C. Grant
+% Copyright (C) 2013 Michael C. Grant.
+%
 % This file is part of SeDuMi 1.1 by Imre Polik and Oleksandr Romanko
 % Copyright (C) 2005 McMaster University, Hamilton, CANADA  (since 1.1)
 %
@@ -36,5 +40,56 @@ function x = eyeK(K) %#ok
 % Foundation, Inc.,  51 Franklin Street, Fifth Floor, Boston, MA
 % 02110-1301, USA
 
-%Indicate to the user Matlab cannot find the SeDuMi binaries
-sedumi_binary_error();
+% The existence of rsdpN is code for 'is this the internal format?'
+is_int = isfield(K,'rsdpN');
+if is_int,
+    N = K.N;
+else
+    N = 0;
+    if isfield(K,'f'), N = N + K.f; end
+    if isfield(K,'l'), N = N + K.l; end
+    if isfield(K,'q'), N = N + sum(K.q); end
+    if isfield(K,'r'), N = N + sum(K.r);  end
+    if isfield(K,'s'), N = N + sum(K.s.^2); end
+end
+x = zeros(N,1);
+xi = 0;
+if ~is_int && isfield(K,'f'),
+    xi = xi + K.f;
+end
+if isfield(K,'l'),
+    x(xi+1:xi+K.l) = 1;
+    xi = xi + K.l;
+end
+if isfield(K,'q') && ~isempty(K.q),
+    if is_int,
+        % Internal version: all of the x0 values are at the front, and the
+        % vectors are stacked in order after that.
+        x(xi+1:xi+length(K.q)) = sqrt(2.0);
+    else
+        tmp = K.q(1:end-1);
+        x(K.f+K.k+cumsum([1;tmp(:)])) = sqrt(2.0);
+    end
+    xi = xi + sum(K.q);
+end
+if ~is_int && isfield(K,'r') && ~isempty(K.r),
+    tmp = K.r(1:end-1);
+    tmp = cumsum([1;tmp(:)]);
+    x([tmp;tmp+1]) = 1;
+    xi = xi + sum(K.r);
+end
+if ~isempty(K.s),
+    nc = length(K.s);
+    if is_int,
+        nr = K.rsdpN;
+    else
+        nr = nc;
+    end
+    for i = 1 : nc,
+        ki = K.s(i);
+        qi = ki * ki;
+        x(xi+1:ki+1:xi+qi) = 1.0;
+        xi = xi + ((1+(i>nr))*qi);
+    end
+end
+

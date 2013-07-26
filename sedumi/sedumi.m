@@ -348,11 +348,10 @@ if pars.prep==1
         my_fprintf(pars.fid,'Detected %i free variables in the linear part\n',length(prep.freeblock1));
     end
     if isfield(prep,'Kf') && prep.Kf>0
-        switch pars.free
-            case 0
-                my_fprintf(pars.fid,'Split %i free variables\n',prep.Kf);
-            case 1
-                my_fprintf(pars.fid,'Put %i free variables in a quadratic cone\n',prep.Kf);
+        if pars.free == 0 || pars.free == 2 && isempty(K.q),
+            my_fprintf(pars.fid,'Split %i free variables\n',prep.Kf);
+        else
+            my_fprintf(pars.fid,'Put %i free variables in a quadratic cone\n',prep.Kf);
         end
     end
 end
@@ -541,7 +540,7 @@ while STOP == 0
             break
         end
     elseif (by > 0) && (abs(1+feasratio) < 0.05) && (R.b0*y0 < 0.5)
-        if max(eigK(full(qreshape(Amul(A,dense,y,1),1,K)),K)) <= pars.eps * by
+        if maxeigK(Amul(A,dense,y,1),K) <= pars.eps * by
             STOP = 3;                   % Means Farkas solution found !
             break
         end
@@ -617,8 +616,7 @@ clear A
 % Determine infeasibility
 % ------------------------------------------------------------
 pinf = norm(x0*b-Ax);
-z = qreshape(Ay-x0*c,1,K);
-dinf = max(eigK(z,K));
+dinf = maxeigK(Ay-x0*c,K);
 if x0 > 0
     relinf = max(pinf / (1+R.maxb), dinf / (1+R.maxc)) / x0;
     % ------------------------------------------------------------
@@ -626,7 +624,7 @@ if x0 > 0
     % ------------------------------------------------------------
     if relinf > pars.eps
         pdirinf = norm(Ax);
-        ddirinf = max(eigK(qreshape(Ay,1,K),K));
+        ddirinf = maxeigK(Ay,K);
         if cx < 0.0
             reldirinf = pdirinf / (-cx);
         else
@@ -796,9 +794,9 @@ if ~isempty(origcoeff)
     if origcoeff.K.f<length(origcoeff.c)
         %not all primal variables are free
         %     Primal cone infeasibility
-        info.err(2)=max(0,-min(eigK(full(x(origcoeff.K.f+1:end)),origcoeff.K))/(1+normb));
+        info.err(2)=max(0,-min(eigK(full(x(origcoeff.K.f+1:end)),origcoeff.K)/(1+normb)));
         %     Dual cone infeasibility
-        info.err(4)=max(0,-min(eigK(full(s(origcoeff.K.f+1:end)),origcoeff.K))/(1+normc));
+        info.err(4)=max(0,-min(eigK(full(s(origcoeff.K.f+1:end)),origcoeff.K)/(1+normc)));
         
     else
         info.err(2)=0;

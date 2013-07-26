@@ -47,7 +47,7 @@ if isempty( shim.name ),
             otp = regexp( otp, 'SeDuMi \d+\.\d+', 'match' );
             if ~isempty(otp), tshim.version = otp{1}(8:end); end
             if str2double( tshim.version ) >= 1.3,
-                dfiles = { 'psdeig', 'psdinvscale', 'psdjmul', 'psdfactor', 'psdscale', 'triumtriu' };
+                dfiles = { 'eigK', 'eyeK', 'psdeig', 'psdinvscale', 'psdjmul', 'psdfactor', 'psdscale', 'triumtriu' };
                 dfiles = strcat( dfiles, [ '.', mexext ] );
                 stillhere = false(1,length(dfiles));
                 for q = 1 : length(dfiles),

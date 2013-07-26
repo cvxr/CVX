@@ -44,23 +44,33 @@ function mineig = minpsdeig(x,K)
 % disp('For more information see the file Install.txt.')
 % error(' ')
 
-% [labold,qold]=psdeig(x,K);
-Ks=K.s;
-if isempty(Ks)
-    mineig=[];
+Ks = K.s;
+if isempty(Ks),
+    mineig = [];
     return
 end
-
-startindices=K.sblkstart-K.mainblks(end)+1;
-ncones=length(Ks);
-OPTS.disp=0;
-mineigvector=zeros(ncones,1);
-for k = 1:ncones
-    Xk = reshape(x(startindices(k):startindices(k+1)-1),Ks(k),Ks(k));
-    if Ks(k)>500
-        mineigvector(k) = eigs(Xk + Xk',1,'SA',OPTS);
+Kq = Ks .* Ks;
+nr = K.rsdpN;
+nc = length(Ks);
+xi = length(x) - sum(Kq) - sum(Kq(nr+1:end));
+eigv = zeros(nc,1);
+for i = 1 : nc,
+    ki = Ks(i);
+    qi = Kq(i);
+    XX = x(xi+1:xi+qi);
+    xi = xi + qi;
+    if i > nr,
+        XX = XX + 1j*x(xi+1:xi+qi);
+        xi = xi + qi;
+    end
+    XX = reshape(XX,ki,ki);
+    XX = XX + XX';
+    if ki > 500,
+        if nnz(XX) < 0.1 * numel(XX), XX = sparse(XX); end
+        [v,eigv(i),flag] = eigs(XX,1,'SA',struct('issym',true)); %#ok
+        if flag, eigv(i) = min(eig(XX)); end
     else
-        mineigvector(k) = min(eig(Xk + Xk'));
+        eigv(i) = min(eig(XX));
     end
 end
-mineig = min(mineigvector) / 2;
+mineig = min(eigv) / 2;

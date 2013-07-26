@@ -264,6 +264,8 @@ end
 % ------------------------------------------------------------
 if ~isfield(pars,'free')
     pars.free=1;
+elseif pars.free==2 && isempty(K.q) && isempty(K.r) && isempty(K.s),
+    pars.free=0;
 end
 if 0 && pars.free && K.l>0 %temporarily disabled due to a bug
     stest=c(K.f+1:K.f+K.l)-At(K.f+1:K.f+K.l,:)*rand(m,1);

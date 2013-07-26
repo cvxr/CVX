@@ -1,7 +1,7 @@
-function y = triumtriu(r,u,K)
-% y = triumtriu(r,u,K)
+function z = triumtriu(x,y,K)
+% z = triumtriu(x,y,K)
 %
-% TRIUMTRIU  Computes y = r * u
+% TRIUMTRIU  Computes y = x * y
 %   Both r and u should be upper triangular.
 %
 % **********  INTERNAL FUNCTION OF SEDUMI **********
@@ -37,11 +37,35 @@ function y = triumtriu(r,u,K)
 % Foundation, Inc.,  51 Franklin Street, Fifth Floor, Boston, MA
 % 02110-1301, USA
 
-Ks=K.s;
-startindices=K.sblkstart-K.mainblks(end)+1;
-y=zeros(K.blkstart(end)-K.mainblks(end),1);
-for k = 1:length(Ks)
-%This works, but I don't like the lot of 0 matrices.
-    temp=triu(reshape(r(startindices(k):startindices(k+1)-1),Ks(k),Ks(k)),0)*triu(reshape(u(startindices(k):startindices(k+1)-1),Ks(k),Ks(k)),0);
-    y(startindices(k):startindices(k+1)-1)=temp+triu(temp,1)';
+Ks = K.s;
+if isempty(Ks),
+    z = [];
+    return
+end
+Kq = Ks .* Ks;
+nr = K.rsdpN;
+nc = length(Ks);
+N  = K.N - K.sblkstart(1) + 1;
+z  = zeros(N,1);
+xi = length(x) - N;
+zi = 0;
+for i = 1 : nc,
+    ki = Ks(i);
+    qi = Kq(i);
+    XX = x(xi+1:xi+qi);
+    YY = y(xi+1:xi+qi);
+    xi = xi + qi;
+    if i > nr,
+        XX = XX + 1j * x(xi+1:xi+qi);
+        YY = YY + 1j * y(xi+1:xi+qi);
+        xi = xi + qi;
+    end
+    ZZ = triu(reshape(XX,ki,ki)) * triu(reshape(YY,ki,ki));
+    ZZ = ZZ + triu(ZZ,1)';
+    z(zi+1:zi+qi) = real(ZZ);
+    zi = zi + qi;
+    if i > nr,
+        z(zi+1:zi+qi) = imag(ZZ);
+        zi = zi + qi;
+    end
 end

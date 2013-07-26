@@ -41,23 +41,40 @@ function [ux,ispos] = psdfactor(x,K)
 % disp('For more information see the file Install.txt.')
 % error(' ')
 
-Ks=K.s;
-N=sum(Ks.^2);
-ux=zeros(N,1);
-ispos=true;
-startindices=K.sblkstart-K.mainblks(end)+1;
-%Sometimes x containts only the PSD part, sometimes the whole thing
-xstartindices=startindices+(length(x)-N);
-for i=1:K.rsdpN
-    [temp, flag]=chol(reshape(x(xstartindices(i):xstartindices(i+1)-1),Ks(i),Ks(i)),'lower');
-    if ~flag
-        %The matrix is PD
-        ux(startindices(i):startindices(i+1)-1)=(temp+tril(temp,-1)');
-        %        TODO This could be made a bit faster
-    else
-        %The matrix is not PD, stop immediately.
-        ispos=false;
-        break
+Ks = K.s;
+if isempty(Ks),
+    ux = zeros(0,1);
+    ispos = true;
+    return
+end
+Kq = Ks .* Ks;
+nr = K.rsdpN;
+nc = length(Ks);
+N  = sum(Kq) + sum(Kq(nr+1:end));
+ux = zeros(N,1);
+xi = length(x) - N;
+ui = 0;
+for i = 1 : nc,
+    ki = Ks(i);
+    qi = Kq(i);
+    XX = x(xi+1:xi+qi);
+    xi = xi + qi;
+    if i > nr,
+        XX = XX + 1j*x(xi+1:xi+qi);
+        xi = xi + qi;
+    end
+    XX = reshape(XX,ki,ki);
+    [XX,flag]=chol(XX,'lower');
+    if flag,
+        ispos = false;
+        return
+    end
+    XX = XX + tril(XX,-1)';
+    ux(ui+1:ui+qi) = real(XX);
+    ui = ui + qi;
+    if i > nr,
+        ux(ui+1:ui+qi) = imag(XX);
+        ui = ui + qi;
     end
 end
-%TODO: Check if the matrices are ever sparse.
+ispos = true;
