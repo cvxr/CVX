@@ -124,7 +124,7 @@ cvx___.unirepls   = temp;
 if try_save,
     try
         cvx_save_prefs( true );
-    catch %#ok
+    catch
     end
 end
 
@@ -133,11 +133,12 @@ end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 cur_d = pwd;
-solvers = cvx___.solvers.list;
-nsolv = length(solvers);
+osolvers = cvx___.solvers.list;
+solvers = struct( 'name', {}, 'version', {}, 'location', {}, 'fullpath', {}, 'error', {}, 'warning', {}, 'dualize', {}, 'path', {}, 'check', {}, 'solve', {}, 'settings', {}, 'sname', {}, 'spath', {}, 'params', {}, 'eargs', {} );
+nsolv = length(osolvers);
 nrej = 0;
-for k = 1 : length(solvers),
-    tsolv = solvers(k);
+for k = 1 : length(osolvers),
+    tsolv = osolvers(k);
     try
         cd(tsolv.spath);
         tsolv.warning = '';
@@ -154,12 +155,13 @@ for k = 1 : length(solvers),
     end
     try
         solvers(k) = tsolv;
-    catch %#ok
+    catch
         for ff = fieldnames(tsolv)',
             solvers(k).(ff{1}) = tsolv.(ff{1});
         end
     end
 end
+clear osolvers
 cvx___.solvers.list = solvers;
 cd( cur_d );
 

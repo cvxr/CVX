@@ -48,6 +48,7 @@ if isempty( shim.name ),
             if ~isempty(otp), tshim.version = otp{1}(16:end); end
             tshim.check = @check;
             tshim.solve = @solve;
+            tshim.eargs = {};
             if k ~= 2,
                 tpath = { new_dir, [new_dir,fs,'Solver'], [new_dir,fs,'HSDSolver'], [new_dir,fs,'Solver',fs,'Mexfun'] };
                 tpath = sprintf( [ '%s', ps ], tpath{:} ) ;
@@ -64,6 +65,7 @@ if isempty( shim.name ),
 else
     shim.check = @check;
     shim.solve = @solve;
+    shim.eargs = {};
 end
 
 function found_bad = check( nonls ) %#ok

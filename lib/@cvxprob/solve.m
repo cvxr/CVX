@@ -10,6 +10,7 @@ prec  = pr.precision;
 solv  = pr.solver;
 ndual = ~isempty( pr.duals );
 shim  = cvx___.solvers.list( solv.index );
+if isempty(shim.eargs), eargs = {}; else eargs = shim.eargs; end
 nobj  = numel( obj );
 if nobj > 1 && ~pr.separable,
     error( 'CVX:NonScalarObjective', 'Your objective function is not a scalar.' );
@@ -242,7 +243,7 @@ elseif n ~= 0 && ~infeas && ( any( b ) || any( c ) ),
             Anew2 = Anew * diag(sparse(vec(amult(orow,:))));
             
             % Solve the approximation
-            [ x, status, tprec, iters2, y, z ] = shim.solve( [ At, Anew2 ], [ b ; bnew ], c, cones, true, prec, solv.settings );
+            [ x, status, tprec, iters2, y, z ] = shim.solve( [ At, Anew2 ], [ b ; bnew ], c, cones, true, prec, solv.settings, eargs{:} );
             iters = iters + iters2;
             x_valid = ~any(isnan(x));
             y_valid = ~any(isnan(y));
@@ -418,13 +419,13 @@ elseif n ~= 0 && ~infeas && ( any( b ) || any( c ) ),
         c = c(1:n,:);
     elseif ndual || dualized,
         try
-            [ x, status, tprec, iters, y ] = shim.solve( At, b, c, cones, quiet, prec, solv.settings );
+            [ x, status, tprec, iters, y ] = shim.solve( At, b, c, cones, quiet, prec, solv.settings, eargs{:} );
         catch estruc
             status = 'Error';
         end
     else
         try
-            [ x, status, tprec, iters ] = shim.solve( At, b, c, cones, quiet, prec, solv.settings );
+            [ x, status, tprec, iters ] = shim.solve( At, b, c, cones, quiet, prec, solv.settings, eargs{:} );
         catch estruc
             status = 'Error';
         end

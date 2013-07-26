@@ -45,8 +45,9 @@ if isempty( shim.name ),
         end
         if isempty( tshim.error ),
             otp = regexp( otp, 'SeDuMi \d+\.\d+', 'match' );
-            if ~isempty(otp), tshim.version = otp{1}(8:end); end
-            if str2double( tshim.version ) >= 1.3,
+            if ~isempty(otp), tshim.version = otp{end}(8:end); end
+            vnum = str2double( tshim.version );
+            if vnum >= 1.3,
                 dfiles = { 'eigK', 'eyeK', 'psdeig', 'psdinvscale', 'psdjmul', 'psdfactor', 'psdscale', 'triumtriu' };
                 dfiles = strcat( dfiles, [ '.', mexext ] );
                 stillhere = false(1,length(dfiles));
@@ -67,6 +68,7 @@ if isempty( shim.name ),
         if isempty( tshim.error ),
             tshim.check = @check;
             tshim.solve = @solve;
+            tshim.eargs = { vnum >= 1.3 && vnum < 1.32 };
             if k ~= 2,
                 tshim.path = [ new_dir, ps ];
             end
@@ -81,12 +83,14 @@ if isempty( shim.name ),
 else
     shim.check = @check;
     shim.solve = @solve;
+    vnum = str2double( shim.version );
+    shim.eargs = { vnum >= 1.3 && vnum < 1.32 };
 end
     
 function found_bad = check( nonls ) %#ok
 found_bad = false;
 
-function [ x, status, tol, iters, y, z ] = solve( At, b, c, nonls, quiet, prec, settings )
+function [ x, status, tol, iters, y, z ] = solve( At, b, c, nonls, quiet, prec, settings, nocplx )
 
 n = length( c );
 m = length( b );
@@ -135,51 +139,52 @@ for k = 1 : length( nonls ),
         reord.s.c = [ reord.s.c; cc( : ) + reord.s.n ];
         reord.s.v = [ reord.s.v; vv( : ) ];
         reord.s.n = reord.s.n + nn * nn * nv;
-    elseif isequal( tt, 'hermitian-semidefinite' ) && 1,
-        % SeDuMi's complex SDP support was broken with the 1.3 update. It
-        % simply applies a conversion to real SDP, however, which we can
-        % reproduce here.
-        %   X >= 0 <==> exists [ Y1, Y2^T ; Y2, Y3 ] >= 0 s.t.
-        %               Y1 + Y3 == real(X), Y2 - Y2^T == imag(X)
-        nsq = nn; nn = sqrt( nn );
-        str = cvx_create_structure( [ nn, nn, nv ], 'hermitian' );
-        [ cc, rr, vv ] = find( cvx_invert_structure( str, 'compact' ) );
-        cc = cc - 1;
-        mm = floor( cc / nsq );
-        cc = cc - mm * nsq;
-        jj = floor( cc / nn );
-        ii = cc - jj * nn + 1;
-        jj = jj + 1;
-        mm = mm + 1;
-        vr = real( vv );
-        vi = imag( vv );
-        ii = [ ii + nn * ~vr ; ii + nn * ~vi ];
-        jj = [ jj ; jj + nn ]; %#ok
-        vv = sqrt( 0.5 ) * [ vr + vi ; vr - vi ];
-        rr = [ rr ; rr ]; %#ok
-        mm = [ mm ; mm ]; %#ok
-        [ jj, ii ] = deal( min( ii, jj ), max( ii, jj ) );
-        cc = ii + ( jj - 1 ) * ( 2 * nn ) + ( mm - 1 ) * ( 4 * nsq );
-        K.s = [ K.s, 2 * nn * ones( 1, nv ) ];
-        rr = temp( rr );
-        reord.s.r = [ reord.s.r; rr( : ) ];
-        reord.s.c = [ reord.s.c; cc( : ) + reord.s.n ];
-        reord.s.v = [ reord.s.v; vv( : ) ];
-        reord.s.n = reord.s.n + 4 * nsq * nv;
     elseif isequal( tt, 'hermitian-semidefinite' ),
-        % If SeDuMi's complex SDP support is restored, we can usse this
-        % simpler mapping instead, if we choose.
-        K.scomplex = [ K.scomplex, length( K.s ) + ( 1 : nv ) ];
-        nn = sqrt( nn );
-        str = cvx_create_structure( [ nn, nn, nv ], 'hermitian' );
-        K.s = [ K.s, nn * ones( 1, nv ) ];
-        stri = cvx_invert_structure( str, 'compact' )';
-        [ rr, cc, vv ] = find( stri );
-        rr = temp( rr );
-        reord.s.r = [ reord.s.r; rr( : ) ];
-        reord.s.c = [ reord.s.c; cc( : ) + reord.s.n ];
-        reord.s.v = [ reord.s.v; vv( : ) ];
-        reord.s.n = reord.s.n + size( stri, 2 );
+        if nocplx,
+            % SeDuMi's complex SDP support was broken with the 1.3 update. So
+            % we must use the following complex-to-real SDP conversion to work
+            % around it, at a modest cost of problem size.
+            %   X >= 0 <==> exists [ Y1, Y2^T ; Y2, Y3 ] >= 0 s.t.
+            %               Y1 + Y3 == real(X), Y2 - Y2^T == imag(X)
+            nsq = nn; nn = sqrt( nn );
+            str = cvx_create_structure( [ nn, nn, nv ], 'hermitian' );
+            [ cc, rr, vv ] = find( cvx_invert_structure( str, 'compact' ) );
+            cc = cc - 1;
+            mm = floor( cc / nsq );
+            cc = cc - mm * nsq;
+            jj = floor( cc / nn );
+            ii = cc - jj * nn + 1;
+            jj = jj + 1;
+            mm = mm + 1;
+            vr = real( vv );
+            vi = imag( vv );
+            ii = [ ii + nn * ~vr ; ii + nn * ~vi ];
+            jj = [ jj ; jj + nn ]; %#ok
+            vv = sqrt( 0.5 ) * [ vr + vi ; vr - vi ];
+            rr = [ rr ; rr ]; %#ok
+            mm = [ mm ; mm ]; %#ok
+            [ jj, ii ] = deal( min( ii, jj ), max( ii, jj ) );
+            cc = ii + ( jj - 1 ) * ( 2 * nn ) + ( mm - 1 ) * ( 4 * nsq );
+            K.s = [ K.s, 2 * nn * ones( 1, nv ) ];
+            rr = temp( rr );
+            reord.s.r = [ reord.s.r; rr( : ) ];
+            reord.s.c = [ reord.s.c; cc( : ) + reord.s.n ];
+            reord.s.v = [ reord.s.v; vv( : ) ];
+            reord.s.n = reord.s.n + 4 * nsq * nv;
+        else
+            % SeDuMi's complex SDP support was restored in v1.33.
+            K.scomplex = [ K.scomplex, length( K.s ) + ( 1 : nv ) ];
+            nn = sqrt( nn );
+            str = cvx_create_structure( [ nn, nn, nv ], 'hermitian' );
+            K.s = [ K.s, nn * ones( 1, nv ) ];
+            stri = cvx_invert_structure( str, 'compact' )';
+            [ rr, cc, vv ] = find( stri );
+            rr = temp( rr );
+            reord.s.r = [ reord.s.r; rr( : ) ];
+            reord.s.c = [ reord.s.c; cc( : ) + reord.s.n ];
+            reord.s.v = [ reord.s.v; vv( : ) ];
+            reord.s.n = reord.s.n + size( stri, 2 );
+        end
     else
         error( 'Unsupported nonlinearity: %s', tt );
     end

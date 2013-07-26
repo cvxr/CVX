@@ -53,7 +53,9 @@ try
     fprintf( 'Saved preferences...' ); nret = true;
     pfile = [ regexprep( prefdir, [ fsre, 'R\d\d\d\d\w$' ], '' ), fs, 'cvx_prefs.mat' ];
     if exist( pfile, 'file' ),
+        s = warning('off','MATLAB:dispatcher:UnresolvedFunctionHandle');
         oprefs = load( pfile );
+        warning(s);
         fprintf( 'found.\n' ); 
         nret = false;
     else
@@ -93,7 +95,7 @@ try
     solvers = { solvers(~[solvers.isdir]).name };
     solvers = solvers( ~cellfun( @isempty, regexp( solvers, '\.(m|p)$' ) ) );
     solvers = unique( cellfun( @(x)x(1:end-2), solvers, 'UniformOutput', false ) );
-    solvers = struct( 'name', '', 'version', '', 'location', '', 'fullpath', '', 'error', '', 'warning', '', 'dualize', '', 'path', '', 'check', [], 'solve', [], 'settings', [], 'sname', solvers, 'spath', shimpath, 'params', [] );
+    solvers = struct( 'name', '', 'version', '', 'location', '', 'fullpath', '', 'error', '', 'warning', '', 'dualize', '', 'path', '', 'check', [], 'solve', [], 'settings', [], 'sname', solvers, 'spath', shimpath, 'params', [], 'eargs', {{}} );
     solver2 = which( 'cvx_solver_shim', '-all' );
     for k = 1 : length(solver2),
         tsolv = solver2{k};
