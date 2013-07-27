@@ -50,7 +50,6 @@ y  = zeros(N,1);
 xi = length(x) - N;
 yi = 0;
 ui = 0;
-OPTS = struct('TRANSA',true,'UT',true);
 for i = 1 : nc,
     ki = Ks(i);
     qi = Kq(i);
@@ -60,8 +59,7 @@ for i = 1 : nc,
         TT = TT + 1i*ud(ui+1:ui+qi); 
         ui = ui+qi;
     end
-    % No need to call triu(), linsolve() below will ignore the lower triangle
-    TT = reshape(TT,ki,ki);
+    TT = triu(reshape(TT,ki,ki));
     XX = x(xi+1:xi+qi); 
     xi = xi+qi;
     if i > nr,
@@ -72,7 +70,7 @@ for i = 1 : nc,
     if nnz(XX) < 0.1 * qi,
         XX = sparse(XX);
     end
-    XX = linsolve( TT, linsolve( TT, XX, OPTS )', OPTS );
+    XX = TT \ ( XX / TT' );
     y(yi+1:yi+qi) = real(XX); 
     yi = yi+qi;
     if i > nr,
