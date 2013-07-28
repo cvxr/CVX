@@ -94,7 +94,7 @@ end
 problem = true;
 if isoctave,
 	fprintf( '%s\nSorry, CVX does not yet run under Octave.\n%s\n', line, line );
-elseif nver < 7.08 && strncmp( comp(end-1:end), '64' ),
+elseif nver < 7.08 && strcmp( comp(end-1:end), '64' ),
     fprintf( '%s\nCVX requires MATLAB 7.8 or later (7.5 or later on 32-bit platforms).\n' , line, line );
 elseif nver < 7.05,
     fprintf( '%s\nCVX requires MATLAB 7.5 or later (7.8 or later on 64-bit platforms).\n' , line, line );
