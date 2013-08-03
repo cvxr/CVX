@@ -37,15 +37,15 @@ else
 
     n = size( X, 1 );
     [ R, q ] = chol( X );
-    if q < n,
+    if q == 0,
+        cvx_optval = prod(diag(R)).^(-p);
+    else
         eigs = eig( X );
-        if any( eigs < 0 ),
-            cvx_optval = -Inf;
+        if any( eigs <= 0 ),
+            cvx_optval = +Inf;
         else
             cvx_optval = prod(eigs).^(-p);
         end
-    else
-        cvx_optval = prod(diag(R)).^(-p);
     end
 
 end

@@ -67,7 +67,6 @@ if cvx_isconstant( x ),
     elseif isequal( oper, 'rdivide' ),
         error( 'Disciplined convex programming error:\n    Matrix divisor must be constant.', 1 ); %#ok
     end
-    xC   = cvx_constant( x );
     yA   = cvx_basis( y );
     laff = true;
     cnst = false;

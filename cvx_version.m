@@ -142,8 +142,10 @@ if fid > 0,
                 if isempty( missing ), fprintf( '\n' ); end
                 fprintf( '    WARNING: The following extra files/directories were found:\n' );
                 isdir = cellfun(@(x)x(end)==fs,additional);
-                additional_d = additional(isdir);
-                additional_f = additional(~isdir);
+                issedumi = cellfun(@any,regexp( additional, [ '^sedumi.*[.]', mexext, '$' ] ));
+                additional_d = additional(isdir&~issedumi);
+                additional_f = additional(~isdir&~issedumi);
+                additional_s = additional(issedumi);
                 while ~isempty( additional_d ),
                     mdir = additional_d{1};
                     ss = strncmp( additional_d, mdir, length(mdir) );
@@ -159,6 +161,18 @@ if fid > 0,
                     fprintf( '        (and %d more files)\n', length(additional_f) - 10 );
                 end
                 fprintf( '    These files may alter the behavior of CVX in unsupported ways.\n' );
+                if ~isempty( additional_s ),
+                	fprintf( '    ERROR: obsolete versions of SeDuMi MEX files were found:\n' );
+	                for k = 1 : length(additional_s),
+	                    fprintf( '        %s%s%s\n', mpath, fs, additional_f{k} );
+	            	end
+	            	fprintf( '    These files are now obsolete, and must be removed to ensure\n' );
+	            	fprintf( '    that SeDuMi operates properly and produces sound results.\n' );
+	            	if ~problem,
+		            	fprintf( '    Please remove these files and re-run CVX_SETUP.\n' );
+		            	problem = true;
+		            end
+	            end
             end
         else
             fprintf( '\n    No missing files.\n' );
