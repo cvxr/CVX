@@ -47,25 +47,6 @@ if isempty( shim.name ),
             otp = regexp( otp, 'SeDuMi \d+\.\d+', 'match' );
             if ~isempty(otp), tshim.version = otp{end}(8:end); end
             vnum = str2double( tshim.version );
-            if vnum >= 1.3,
-                dfiles = { 'eigK', 'eyeK', 'psdeig', 'psdinvscale', 'psdjmul', 'psdfactor', 'psdscale', 'triumtriu' };
-                dfiles = strcat( dfiles, [ '.', mexext ] );
-                stillhere = false(1,length(dfiles));
-                for q = 1 : length(dfiles),
-                   ftest = [ new_dir, fs, dfiles{q} ];
-                   stillhere(q) = exist( ftest, 'file' );
-                end
-                if any( stillhere ),
-                    tshim.error = sprintf( [ ...
-                        'The SeDuMi %s installation found at the location\n    %s\n', ...
-                        'contains the following extra files:\n%s', ...
-                        'These files were used by SeDuMi 1.21, but are now obsolete and\n',...
-                        'need to be removed. Please remove them and re-run CVX_SETUP.' ], ...
-                        tshim.version, new_dir, sprintf( '    %s\n', dfiles{stillhere} ) );
-                end
-            end
-        end
-        if isempty( tshim.error ),
             tshim.check = @check;
             tshim.solve = @solve;
             tshim.eargs = { vnum >= 1.3 && vnum < 1.32 };
