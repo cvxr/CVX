@@ -199,7 +199,7 @@ end
     
 switch length( strs ),
     case 0,
-        nel = prod( sz );
+        nel = sz( 1 ) * sz( 2 );
         S = sparse( 1 : nel, 1 : nel, 1, nel, nel );
     case 1,
         S = strs{ 1 };
