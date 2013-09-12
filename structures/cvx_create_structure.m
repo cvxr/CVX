@@ -199,6 +199,7 @@ end
     
 switch length( strs ),
     case 0,
+        sz(end+1:2) = 1;
         nel = sz( 1 ) * sz( 2 );
         S = sparse( 1 : nel, 1 : nel, 1, nel, nel );
     case 1,
