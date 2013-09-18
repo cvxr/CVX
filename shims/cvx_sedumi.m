@@ -44,7 +44,7 @@ if isempty( shim.name ),
             tshim.error = sprintf( 'Unexpected error:\n%s\n', errmsg.message );
         end
         if isempty( tshim.error ),
-            otp = regexp( otp, 'SeDuMi \d+\.\d+', 'match' );
+            otp = regexp( otp, 'SeDuMi \d\S+', 'match' );
             if ~isempty(otp), tshim.version = otp{end}(8:end); end
             vnum = str2double( tshim.version );
             tshim.check = @check;
@@ -75,10 +75,11 @@ function [ x, status, tol, iters, y, z ] = solve( At, b, c, nonls, quiet, prec, 
 
 n = length( c );
 m = length( b );
-K = struct( 'f', 0, 'l', 0, 'q', [], 's', [], 'scomplex', [], 'ycomplex', [] );
+K = struct( 'f', 0, 'l', 0, 'q', [], 'r', [], 's', [], 'scomplex', [], 'ycomplex', [] );
 reord = struct( 'n', 0, 'r', [], 'c', [], 'v', [] );
-reord = struct( 'f', reord, 'l', reord, 'a', reord, 'q', reord, 's', reord, 'h', reord );
+reord = struct( 'f', reord, 'l', reord, 'a', reord, 'q', reord, 'r', reord, 's', reord, 'h', reord );
 reord.f.n = n;
+zinv = [];
 for k = 1 : length( nonls ),
     temp = nonls( k ).indices;
     nn = size( temp, 1 );
@@ -102,6 +103,7 @@ for k = 1 : length( nonls ),
             reord.a.c = [ reord.a.c ; cc(:) + reord.a.n ];
             reord.a.v = [ reord.a.v ; vv(:) ];
             reord.a.n = reord.a.n + nnv;
+            zinv = [ zinv ; temp(:) ]; %#ok
         else
             temp = temp( [ end, 1 : end - 1 ], : );
             reord.q.r = [ reord.q.r ; temp(:) ];
@@ -111,17 +113,41 @@ for k = 1 : length( nonls ),
             K.q = [ K.q, nn * ones( 1, nv ) ];
         end
     elseif isequal( tt, 'semidefinite' ),
-        nn = 0.5 * ( sqrt( 8 * nn + 1 ) - 1 );
-        str = cvx_create_structure( [ nn, nn, nv ], 'symmetric' );
-        K.s = [ K.s, nn * ones( 1, nv ) ];
-        [ cc, rr, vv ] = find( cvx_invert_structure( str, 'compact' ) );
-        rr = temp( rr );
-        reord.s.r = [ reord.s.r; rr( : ) ];
-        reord.s.c = [ reord.s.c; cc( : ) + reord.s.n ];
-        reord.s.v = [ reord.s.v; vv( : ) ];
-        reord.s.n = reord.s.n + nn * nn * nv;
+        if nn == 3,
+            temp = temp( [1,3,2], : );
+            tempv = [sqrt(2);sqrt(2);1] * ones(1,nv);
+            reord.r.r = [ reord.r.r ; temp(:) ];
+            reord.r.c = [ reord.r.c ; reord.r.n + ( 1 : nnv )' ];
+            reord.r.v = [ reord.r.v ; tempv(:) ];
+            reord.r.n = reord.r.n + nnv;
+            K.r = [ K.r, 3 * ones( 1, nv ) ];
+            temp = temp(1:2,:);
+            zinv = [ zinv ; temp(:) ]; %#ok
+        else
+            nn = 0.5 * ( sqrt( 8 * nn + 1 ) - 1 );
+            str = cvx_create_structure( [ nn, nn, nv ], 'symmetric' );
+            K.s = [ K.s, nn * ones( 1, nv ) ];
+            [ cc, rr, vv ] = find( cvx_invert_structure( str, 'compact' ) );
+            rr = temp( rr );
+            reord.s.r = [ reord.s.r; rr( : ) ];
+            reord.s.c = [ reord.s.c; cc( : ) + reord.s.n ];
+            reord.s.v = [ reord.s.v; vv( : ) ];
+            reord.s.n = reord.s.n + nn * nn * nv;
+            reord.s.z = reord.s.v;
+        end
     elseif isequal( tt, 'hermitian-semidefinite' ),
-        if nocplx,
+        if nn == 4,
+            temp = temp( [1,4,2,3], : );
+            tempv = [sqrt(2);sqrt(2);1;1] * ones(1,nv);
+            reord.r.r = [ reord.r.r ; temp(:) ];
+            reord.r.c = [ reord.r.c ; reord.r.n + ( 1 : nnv )' ];
+            reord.r.v = [ reord.r.v ; tempv(:) ];
+            reord.r.n = reord.r.n + nnv;
+            reord.r.z = reord.r.v;
+            K.r = [ K.r, 4 * ones( 1, nv ) ];
+            temp = temp(1:2,:);
+            zinv = [ zinv ; temp(:) ]; %#ok
+        elseif nocplx,
             % SeDuMi's complex SDP support was broken with the 1.3 update. So
             % we must use the following complex-to-real SDP conversion to work
             % around it, at a modest cost of problem size.
@@ -152,6 +178,7 @@ for k = 1 : length( nonls ),
             reord.s.c = [ reord.s.c; cc( : ) + reord.s.n ];
             reord.s.v = [ reord.s.v; vv( : ) ];
             reord.s.n = reord.s.n + 4 * nsq * nv;
+            reord.s.z = reord.s.v;
         else
             % SeDuMi's complex SDP support was restored in v1.33.
             K.scomplex = [ K.scomplex, length( K.s ) + ( 1 : nv ) ];
@@ -165,6 +192,7 @@ for k = 1 : length( nonls ),
             reord.s.c = [ reord.s.c; cc( : ) + reord.s.n ];
             reord.s.v = [ reord.s.v; vv( : ) ];
             reord.s.n = reord.s.n + size( stri, 2 );
+            reord.s.z = reord.s.v;
         end
     else
         error( 'Unsupported nonlinearity: %s', tt );
@@ -172,7 +200,7 @@ for k = 1 : length( nonls ),
 end
 if reord.f.n > 0,
     reord.f.r = ( 1 : n )';
-    reord.f.r( [ reord.l.r ; reord.a.r ; reord.q.r ; reord.s.r ] ) = [];
+    reord.f.r( [ reord.l.r ; reord.a.r ; reord.q.r ; reord.r.r ; reord.s.r ] ) = [];
     reord.f.c = ( 1 : reord.f.n )';
     reord.f.v = ones(reord.f.n,1);
 end
@@ -186,11 +214,12 @@ n_out = reord.f.n;
 reord.l.c = reord.l.c + n_out; n_out = n_out + reord.l.n;
 reord.a.c = reord.a.c + n_out; n_out = n_out + reord.a.n;
 reord.q.c = reord.q.c + n_out; n_out = n_out + reord.q.n;
+reord.r.c = reord.r.c + n_out; n_out = n_out + reord.r.n;
 reord.s.c = reord.s.c + n_out; n_out = n_out + reord.s.n;
 reord = sparse( ...
-    [ reord.f.r ; reord.l.r ; reord.a.r ; reord.q.r ; reord.s.r ], ...
-    [ reord.f.c ; reord.l.c ; reord.a.c ; reord.q.c ; reord.s.c ], ...
-    [ reord.f.v ; reord.l.v ; reord.a.v ; reord.q.v ; reord.s.v ], ...
+    [ reord.f.r ; reord.l.r ; reord.a.r ; reord.q.r ; reord.r.r ; reord.s.r ], ...
+    [ reord.f.c ; reord.l.c ; reord.a.c ; reord.q.c ; reord.r.c ; reord.s.c ], ...
+    [ reord.f.v ; reord.l.v ; reord.a.v ; reord.q.v ; reord.r.v ; reord.s.v ], ...
     n, n_out );
 
 At = reord' * At;
@@ -242,6 +271,9 @@ else
     y = yy;
     z = real( reord * ( c - At * yy ) );
     if add_row, y = zeros( 0, 1 ); end
+end
+if ~isempty(zinv),
+    z(zinv) = z(zinv) * 0.5;
 end
 if info.numerr == 2,
     status = 'Failed';

@@ -241,15 +241,25 @@ try
     %%%%%%%%%%%%%%%%%%%%%%%%%
 
     fprintf( 'Testing with a simple model...' ); nret = true;
-    m = 16; n = 8;
-    A = randn(m,n);
-    b = randn(m,1);
-    cvx_begin('quiet')
-        variable('x(n)');
-        minimize( norm(A*x-b,1) );
-    cvx_end
-    fprintf( 'done!\n' ); nret = false;
-    
+    need_cc = false;
+    try
+        m = 16; n = 8;
+        A = randn(m,n);
+        b = randn(m,1);
+        cvx_begin('quiet')
+            variable('x(n)');
+            minimize( norm(A*x-b,1) );
+        cvx_end
+        fprintf( 'done!\n' ); nret = false;
+    catch exc
+        if any(strfind(exc.message,'clear classes')),
+            fprintf( 'problem (see below).\n' );
+            need_cc = true;
+        else
+            rethrow( exc );
+        end
+    end
+        
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     % Quick instructions on changing the solver %
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -326,6 +336,17 @@ try
             fprintf( 'Please consult the MATLAB documentation for more information about the\n' );
             fprintf( 'startup.m file and its proper placement and usage.\n' );
         end
+    end
+    
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    % Warn about class conflict with previous version of CVX %
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    
+    if ~isempty(need_cc),
+        fprintf( '%s\n', line );
+        fprintf('WARNING: CVX was unable to run the test model due to a conflict with the\n' );
+        fprintf('previous version of CVX. If no other errors occurred, then the setup was\n' );
+        fprintf('still successful; however, to use CVX, you will need to re-start MATLAB.\n' )';
     end
     
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

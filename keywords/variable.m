@@ -146,7 +146,11 @@ end
 % Create the variables
 %
 
-v = newvar( prob, xname, xsize, str, pstr.gp );
+try
+    v = newvar( prob, xname, xsize, str, pstr.gp );
+catch exc
+    error( exc.message );
+end
 if isepi || ishypo,
     if pstr.gp, vv = log( v ); else vv = v; end
     if isepi, dir = 'epigraph'; else dir = 'hypograph'; end

@@ -23,6 +23,16 @@ if ischar( name ),
             error( 'Invalid variable name: %s', name );
         elseif isfield( cvx___.problems( p ).variables, name ),
             error( 'Variable already exists: %s', name );
+        elseif exist( name, 'builtin' ),
+            error( 'Variable name "%s" is the name of a built-in MATLAB function.\nPlease choose a different name.', name );
+        elseif exist( name, 'file' ),
+            mroot = matlabroot;
+            mpath = which( name );
+            if strncmp( mpath, mroot, length(mroot) ),
+                error( 'Variable name "%s" is the name of an existing MATLAB function or directory:\n    %s\nPlease choose a different name.', name, mpath );
+            else
+                error( 'Variable name "%s" is the name of an function or directory:\n    %s\nPlease mvoe this file or choose a different name.', name, mpath );
+            end
         end
         nstr = struct( 'type', '.', 'subs', name );
     else
