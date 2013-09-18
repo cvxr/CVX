@@ -1,5 +1,5 @@
 function y = newvar( prob, name, siz, str, geo )
-error( nargchk( 2, 5, nargin ) );
+error( nargchk( 2, 5, nargin ) ); %#ok
 
 %
 % Check problem
@@ -15,29 +15,10 @@ global cvx___
 % Check name
 %
 
-if ischar( name ),
-    if ~isempty( name ),
-        if size( name, 1 ) ~= 1,
-            error( 'Second argument must be a string or a subscript structure array.' );
-        elseif ~isvarname( name ),
-            error( 'Invalid variable name: %s', name );
-        elseif isfield( cvx___.problems( p ).variables, name ),
-            error( 'Variable already exists: %s', name );
-        elseif exist( name, 'builtin' ),
-            error( 'Variable name "%s" is the name of a built-in MATLAB function.\nPlease choose a different name.', name );
-        elseif exist( name, 'file' ),
-            mroot = matlabroot;
-            mpath = which( name );
-            if strncmp( mpath, mroot, length(mroot) ),
-                error( 'Variable name "%s" is the name of an existing MATLAB function or directory:\n    %s\nPlease choose a different name.', name, mpath );
-            else
-                error( 'Variable name "%s" is the name of an function or directory:\n    %s\nPlease mvoe this file or choose a different name.', name, mpath );
-            end
-        end
-        nstr = struct( 'type', '.', 'subs', name );
-    else
-        nstr = [];
-    end
+if isempty( name ),
+    nstr = [];
+elseif ischar( name ),
+    nstr = struct( 'type', '.', 'subs', name );
 elseif ~isstruct( name ),
     error( 'Second argument must be a string or a subscript structure array.' );
 else
@@ -125,7 +106,7 @@ else
     if nargin < 4 || isempty( str ),
         dof = len;
         str = [];
-    elseif ~isnumeric( str ) || ndims( str ) > 2 || size( str, 2 ) ~= len,
+    elseif ~isnumeric( str ) || ndims( str ) > 2 || size( str, 2 ) ~= len, %#ok
         error( 'Fourth argument must be a valid structure matrix.' );
     elseif nnz( str ) == 0,
         error( 'Structure matrix cannot be identically zero.' );

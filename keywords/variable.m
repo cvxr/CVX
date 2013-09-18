@@ -74,7 +74,9 @@ end
 %
 
 xname = name{1};
-if xname(end) == '_',
+if ~isvarname( xname ),
+    error( 'CVX:InvalidVariableSpec', 'Invalid variable name: %s', xname );
+elseif xname(end) == '_',
     error( 'CVX:InvalidVariableSpec', 'Invalid variable name: %s\n   Variables ending in underscores are reserved for internal use.', xname );
 elseif isfield( cvx___.reswords, xname ),
     if cvx___.reswords.(xname) == 'S',
@@ -83,7 +85,25 @@ elseif isfield( cvx___.reswords, xname ),
         error( 'CVX:InvalidVariableSpec', 'Invalid variable name: %s\n   This is a reserved word in CVX.', xname );
     end
 elseif isfield( pstr.variables, xname ),
-    error( 'CVX:InvalidVariableSpec', 'Variable name already in use: %s', xname );
+    error( 'CVX:InvalidVariableSpec', 'Duplicate variable name: %s', xname );
+end
+switch evalin('caller',['exist(''',xname,''')']),
+    case {0,1},
+    case 5,
+        error( 'CVX:InvalidVariableSpec', 'Variable name "%s" is the name of a built-in MATLAB function.\nPlease choose a different name.', xname );
+    case 8,
+        error( 'CVX:InvalidVariableSpec', 'Variable name "%s" is the name of an existing MATLAB class.\nPlease choose a different name.', xname );
+    otherwise,
+        mpath = which( xname );
+        if ~isempty( mpath ),
+            if strncmp( mpath, matlabroot, length(matlabroot) ),
+                error( 'CVX:InvalidVariableSpec', 'Variable name "%s" is the name of an existing MATLAB function or directory:\n    %s\nPlease choose a different name.', xname, mpath );
+            elseif strncmp( mpath, cvx___.where, length(cvx___.where) ),
+                error( 'CVX:InvalidVariableSpec', 'Variable name "%s" matches the name of a CVX function or directory:\n    %s\nPlease choose a different name.', xname, mpath );
+            else
+                warning( 'Variable name "%s" matches the name of an function or directory:\n    %s\nThis may cause unintended behavior with CVX models.\nPlease consider moving this file or choosing a different variable name.', xname, mpath );
+            end
+        end
 end
 try
     xsize = [ args{1}{:} ];
