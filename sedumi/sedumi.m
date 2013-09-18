@@ -299,7 +299,7 @@ if N*m<100000
     %Return warning state
     warning(s);
 end
-if prep.cpx.dim>0
+if K.cdim>0
     origcoeff=[];      % No error measures for complex problems.
 end
 lponly = (K.l == length(c));
@@ -307,7 +307,7 @@ pars = checkpars(pars,lponly);
 % ----------------------------------------
 % Print welcome
 % ----------------------------------------
-my_fprintf(pars.fid,'SeDuMi 1.32 by AdvOL, 2005-2008 and Jos F. Sturm, 1998-2003.\n');
+my_fprintf(pars.fid,'SeDuMi 1.34cvx by AdvOL, 2005-2008 and Jos F. Sturm, 1998-2003.\n');
 % ----------------------------------------
 % Print statistics of cone-problem
 % ----------------------------------------
@@ -331,28 +331,17 @@ my_fprintf(pars.fid,'theta = %5.3f, beta = %5.3f\n',pars.theta,pars.beta);
 % Print preprocessing information
 % --------------------------------------------------
 if pars.prep==1
-    if isfield(prep,'sdp')
-        blockcount=0;
-        varcount=0;
-        for sdpind=1:length(prep.sdp)
-            if prep.sdp{sdpind}(1)==1
-                blockcount=blockcount+1;
-                varcount=varcount+prep.sdp{sdpind}(2);
-            end
-        end
-        if blockcount>0
-            my_fprintf(pars.fid,'Detected %i diagonal SDP block(s) with %i linear variables\n',blockcount,varcount);
-        end
+    if isfield(prep,'sdiag'),
+        my_fprintf(pars.fid,'Detected %i diagonal SDP block(s) with %i linear variables\n',nnz(prep.sdiag),sum(prep.sdiag));
     end
     if isfield(prep,'freeblock1') && ~isempty(prep.freeblock1)
         my_fprintf(pars.fid,'Detected %i free variables in the linear part\n',length(prep.freeblock1));
     end
-    if isfield(prep,'Kf') && prep.Kf>0
-        if pars.free == 0 || pars.free == 2 && isempty(K.q),
-            my_fprintf(pars.fid,'Split %i free variables\n',prep.Kf);
-        else
-            my_fprintf(pars.fid,'Put %i free variables in a quadratic cone\n',prep.Kf);
-        end
+    if isfield(prep,'freeL'),
+        my_fprintf(pars.fid,'Split %i free variables\n',prep.freeL);
+    end
+    if isfield(prep,'freeQ'),
+        my_fprintf(pars.fid,'Put %i free variables in a quadratic cone\n',prep.freeQ);
     end
 end
 % --------------------------------------------------

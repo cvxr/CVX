@@ -51,6 +51,7 @@ else
     if isfield(K,'q'), N = N + sum(K.q); end
     if isfield(K,'r'), N = N + sum(K.r);  end
     if isfield(K,'s'), N = N + sum(K.s.^2); end
+    if isfield(K,'z'), N = N + sum(K.z.^2); end
 end
 x = zeros(N,1);
 xi = 0;
@@ -78,7 +79,7 @@ if ~is_int && isfield(K,'r') && ~isempty(K.r),
     x([tmp;tmp+1]) = 1;
     xi = xi + sum(K.r);
 end
-if ~isempty(K.s),
+if isfield(K,'s') && ~isempty(K.s),
     nc = length(K.s);
     if is_int,
         nr = K.rsdpN;
@@ -92,4 +93,12 @@ if ~isempty(K.s),
         xi = xi + ((1+(i>nr))*qi);
     end
 end
+if ~is_int && isfield(K,'z') && ~isempty(K.z),
+    for i = 1 : length(K.z),
+        ki = K.z(i);
+        qi = ki * ki;
+        x(xi+1:ki+1:xi+qi) = 1.0;
+        xi = xi + qi;
+    end
+end    
 

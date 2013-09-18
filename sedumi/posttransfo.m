@@ -1,4 +1,4 @@
-function [xp,yp,K] = posttransfo(x,y,prep,K,pars)
+function [x,y,K] = posttransfo(x,y,prep,K,pars)
 % [xp,yp] = posttransfo(x,y,prep,K)
 %
 % POSTTRANSFO  Transforms (x,y) from internal SeDuMi format into original
@@ -37,84 +37,14 @@ function [xp,yp,K] = posttransfo(x,y,prep,K,pars)
 % Foundation, Inc.,  51 Franklin Street, Fifth Floor, Boston, MA
 % 02110-1301, USA
 
-K.l = K.l - 1;       % remove artificial var of self-dual embedding
-xp=x(2:end);
-% ------------------------------------------------------------
-% If there are Lorentz cones then reorder the variables
-% ------------------------------------------------------------
-if ~isempty(K.q)
-    xp = qreshape(xp,1,K);
+% This routine is significantly simpler than before, because most of the
+% heavy lifting has been accomplished by the QR matrix.
+K.l = K.l - 1;
+x = (x'*prep.QR)';
+if ~isempty(K.ycomplex),
+    ylen = length(y) - length(K.ycomplex);
+    y = y(1:ylen) + 1j * sparse(K.ycomplex,1,y(ylen+1:length(y)),ylen,1);
 end
-% ------------------------------------------------------------
-% Transform LQ-vars into F-vars (free)
-% ------------------------------------------------------------
-K.f = prep.Kf;
-if K.f > 0
-    if pars.free == 0 || pars.free == 2 && isempty(K.q) && isempty(K.s),
-        K.l = K.l - 2 * K.f;
-        xp = [xp(K.f+1 : 2*K.f) - xp(1:K.f); xp(2*K.f+1:end)];
-    else
-        K.q=K.q(2:end);
-        xp=[xp(K.l+2:K.l+K.f+1);xp(1:K.l);xp(K.l+K.f+2:end)];
-    end
-end
-
-% -----------------------------------------------------
-% Reenter the split free variables (if any)
-% -----------------------------------------------------
-if isfield(prep,'freeblock1')
-    numvars=length(prep.freeblock1);
-    block1=false(1,K.l+2*numvars);
-    block2=block1;
-    block1(prep.freeblock1)=true;
-    block2(prep.freeblock2)=true;
-    xkl=zeros(K.l+2*numvars,1);
-    xkl(~(block1+block2))=xp(K.f+1:K.f+K.l);
-    xkl(prep.freeblock1)=max(xp(1:numvars),0);
-    xkl(prep.freeblock2)=-min(xp(1:numvars),0);
-    xp=[xp(numvars+1:K.f);xkl;xp(K.f+K.l+1:end)];
-    K.f=K.f-numvars;
-    K.l=K.l+2*numvars;
-end
-
-% ----------------------------------------
-% Postprocess the SDP part
-% ----------------------------------------
-if pars.sdp==1 && isfield(prep,'sdp')
-    xpf(1:K.f,1)=xp(1:K.f);
-    xp=xp(K.f+1:end);
-    Kf=K.f;
-    K.f=0;
-    [xp,yp,K]=postprocessSDP(xp,y,prep.sdp,K); %#ok
-    xp=[xpf;xp];
-    K.f=Kf;
-    clear Kf xpf
-end
-
-% ----------------------------------------
-% transform q-variables into r-variables (Lorentz) (if any)
-% ----------------------------------------
-if prep.rq==1
-    K.r = K.q(prep.lenKq + 1 : end);
-    K.q = K.q(1:prep.lenKq);
-    xp(K.f+1:end) = rotlorentz(xp(K.f+1:end),K);
-else
-    K.r=[];
-end
-
-% ----------------------------------------
-% Bring x into the complex format of original (At,c),
-% ----------------------------------------
-xp = veccomplex(xp,prep.cpx,K);
-% ----------------------------------------
-% bring y into complex format, indicated by K.ycomplex.
-% ----------------------------------------
-ylen = length(y) - length(K.ycomplex);
-yp = y(1:ylen) ...
-    + sqrt(-1) * sparse(K.ycomplex,1,y(ylen+1:length(y)),ylen,1);
-% ---------------------------
-% Make x sparse if necessary
-% ---------------------------
-if nnz(xp)/length(xp)<2/3
-    xp=sparse(xp);
+if nnz(x) / numel(x) < 1/2
+    x = sparse(x);
 end

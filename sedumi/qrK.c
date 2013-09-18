@@ -87,7 +87,7 @@ void qrfac(double *beta, double *q, double *u, const mwIndex n)
 {
   mwIndex i,k, kcol, nmink, icol;
   double dk, betak, qkui, qkk;
-
+  
   for(k = 0, kcol = 0; k < n-1; k++, kcol += n+1){
 
 /* ------------------------------------------------------------

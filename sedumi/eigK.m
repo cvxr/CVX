@@ -69,6 +69,8 @@ else
     if isfield(K,'q'), nq = length(K.q); N = N + 2 * nq; else nq = 0; end
     if isfield(K,'r'), nr = length(K.r); N = N + 2 * nr; else nr = 0; end
     if isfield(K,'s'), ns = length(K.s); N = N + sum(K.s); else ns = 0; end
+    if isfield(K,'z'), ns = ns + length(K.z); N = N + sum(K.z); end
+    nrsdp = ns;
 end
 li = 0;
 xi = nf;
@@ -101,7 +103,7 @@ if nq,
     end
 end
 for i = 1:nr,
-    % Only the external format need be implemented here
+    % Only the external format needs to be implemented here
     ki = K.r(i);
     x1 = xx(xi+1);
     x2 = xx(xi+2);

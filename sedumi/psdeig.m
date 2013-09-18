@@ -44,12 +44,12 @@ if isempty(Ks),
     lab = [];
     return
 end
-Kq = Ks .* Ks;
-nr = K.rsdpN;
-nc = length(Ks);
-N  = sum(Kq) + sum(Kq(nr+1:end));
-xi = length(x) - N;
-ei = 0;
+Kq  = Ks .* Ks;
+nr  = K.rsdpN;
+nc  = length(Ks);
+N   = sum(Kq) + sum(Kq(nr+1:end));
+xi  = length(x) - N;
+ei  = 0;
 lab = zeros(sum(Ks),1);
 needv = nargout > 1;
 if needv,
@@ -66,18 +66,28 @@ for i = 1 : nc,
         xi = xi+qi;
     end
     XX = reshape(XX,ki,ki);
+    XX = XX + XX';
+    try
+        if needv,
+            [QQ,DD] = eig(XX);
+            DD = diag(DD);
+        else
+            DD = eig(XX);
+        end
+    catch
+        % If eig() fails to converge, fall back onto svd(). This costs
+        % more, so we don't want to use it every time.
+        [QQ,DD,VV] = svd(XX);
+        DD = diag(DD).*sign(real(sum(conj(QQ).*VV)'));
+    end
+    lab(ei+1:ei+ki) = 0.5*DD;
+    ei = ei + ki;
     if needv,
-        [QQ,DD] = eig( XX + XX' );
-        lab(ei+1:ei+ki) = 0.5 * diag(DD);
         q(vi+1:vi+qi) = real(QQ);
         vi = vi + qi;
         if i > nr,
             q(vi+1:vi+qi) = imag(QQ);
             vi = vi + qi;
         end
-    else
-        lab(ei+1:ei+ki) = 0.5 * eig( XX + XX' );
     end
-    ei = ei + ki;
 end
-
