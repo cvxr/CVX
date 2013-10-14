@@ -234,7 +234,7 @@ if L_s && ( ~isfield(pars,'sdp') || pars.sdp ),
     sblk        = zeros(1,N_s);
     sblk(strt)  = 1;
     sblk        = cumsum(sblk);
-    spattern    = find(c(N_flqr+1:N)|any(At(N_flqr+1:N,:),2))';
+    spattern    = find(c(N_flqr+1:N)~=0|any(At(N_flqr+1:N,:),2))';
     sblk        = sblk(spattern);
     sblk        = sblk(rem(spattern-strt(sblk),K.s(sblk)+1)~=0);
     sdiag       = true(1,L_s);
