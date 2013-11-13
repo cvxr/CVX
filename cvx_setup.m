@@ -342,7 +342,7 @@ try
     % Warn about class conflict with previous version of CVX %
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     
-    if ~isempty(need_cc),
+    if need_cc,
         fprintf( '%s\n', line );
         fprintf('WARNING: CVX was unable to run the test model due to a conflict with the\n' );
         fprintf('previous version of CVX. If no other errors occurred, then the setup was\n' );
