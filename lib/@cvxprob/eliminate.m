@@ -136,6 +136,7 @@ for pass = 1 : 2,
             success = true;
             P       = P * cvx_invert_structure( xR );
             ineqs   = ( xR * ineqs(:) )' ~= 0;
+            ineqs   = +ineqs;
         end
         
         while true,
