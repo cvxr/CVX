@@ -108,8 +108,7 @@ if nargin > 0,
         elseif all( flag == 0 ),
             error( 'At least one precision must be positive.' );
         else
-            reshape( sort(flag), 1, 3 );
-            ns = flag;
+            ns = reshape( sort(flag), 1, 3 );
         end
         ndx = find(cellfun(@(x)all(x==ns),prefvals));
         if isempty(ndx),
