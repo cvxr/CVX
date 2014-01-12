@@ -8,8 +8,8 @@
 Installation
 ============
 	
-Supported platforms
--------------------
+Supported platforms: MATLAB
+---------------------------
 
 .. index::
 	single: Platforms
@@ -39,6 +39,54 @@ this version is no longer supported, and will not receive bug fixes or improveme
 We strongly encourage you to update your Matlab installation to the latest version
 possible.
 
+.. _octave:
+
+Preliminary Octave support
+--------------------------
+
+.. index::
+  single: Octave; versions
+
+We are pleased to begin providing support for *version 3.8.1 and later* of 
+`Octave <http://www.gnu.org/software/octave/>`_, a free, open-source alternative to MATLAB.
+
+We must emphasize that having version 3.8.1 or later of Octave is a *firm*
+requirement; CVX will *not* work with earlier versions of Octave. These older
+versions simply did not support many of MATLAB's language features that CVX
+relies upon. With the release of version 3.8.0, it was clear that most of
+those limitations were eliminated. We worked closely with the Octave team
+to ensure that versions 3.8.1 and later can indeed run CVX.
+
+Octave support is preliminary; we would say it is *alpha level*.
+There remain some incompatibilities between MATLAB and Octave that are likely to result
+in unexpected errors or performance differences. Please do not switch from MATLAB to 
+Octave yet if you depend on reliable CVX operation for your work. That said, we
+very pleased with how well CVX is already running, and will be striving to 
+close any gaps in functionality and performance moving ahead.
+
+Here are some other caveats to consider as well:
+
+- SeDuMi is currently the only solver supported on the Octave platform that is actually
+  bundled with CVX. `GLPK <http://www.gnu.org/software/glpk/>`_ is included with most
+  Octave distributions, and we have added preliminary support for that solver as well.
+  We hope to add support for other solvers in the future.
+
+- CVX Professional will not be supported on Octave. If you wish to use commercial
+  solvers such as MOSEK and Gurobi, you will have to use MATLAB as well.
+
+- It may be necessary for you to recompile the SeDuMi and/or CVX MEX files with your
+  particular installation of Octave. This may mean that you will have to install
+  certain compiler packages on your computer, and we cannot offer assistance on
+  how to do that. Eventually, we hope to provide full binary packages for Windows,
+  Mac OSX, and Linux, but we may only be able to support
+  newer verisons of those platforms.
+
+If you encounter problems with the use of CVX with Octave, please do not hesitate
+to avail yourself of our :ref:`support <support>` options. If it is at all possible,
+please consider attempting to reproduce your issue with MATLAB, so that we can determine
+whether or not this is related to a MATLAB/Octave compatibility issue or a
+platform-independent problem.
+
 Installation instructions
 -------------------------
 
@@ -55,23 +103,24 @@ Installation instructions
 2. Unpack the file anywhere you like; a directory called ``cvx`` will be
    created. There are two important exceptions: 
    
-   - *Do not* place CVX in Matlab's own ``toolbox`` directory.
+   - *Do not* place CVX in Matlab's own ``toolbox`` directory, Octave's built-in
+     scripts directory.
    - *Do not* unpack a new version of CVX on top of an old one. We recommend moving the
      old version out of the way, but do not delete it until you are sure the new 
      version is working as you expect.
 
-3. Start Matlab.
+3. Start Matlab or Octave. *Do not add CVX to your path by hand.*
 
 4. Change directories to the top of the CVX distribution, and run  the ``cvx_setup``
-   command. For example, if you installed CVX into ``C:\Matlab\personal\cvx`` on
+   command. For example, if you installed CVX into ``C\personal\cvx`` on
    Windows, type these commands:
 
    ::
 
-       cd C:\Matlab\personal\cvx
+       cd C:\personal\cvx
        cvx_setup
 
-   at the Matlab command prompt. If you installed CVX into
+   at the MATLAB/Octave command prompt. If you installed CVX into
    ``~/MATLAB/cvx`` on Linux or a Mac, type these commands:
    
    ::
@@ -80,7 +129,7 @@ Installation instructions
        cvx_setup
        
    The ``cvx_setup`` function performs a variety of tasks to verify that your 
-   installation is correct, sets your Matlab search path so it can find all of the CVX 
+   installation is correct, sets your Matlab/Octave search path so it can find all of the CVX 
    program files, and runs a simple test problem to verify the installation.       
        
 5. In some cases---usually on Linux---the ``cvx_setup`` command may instruct you to 
@@ -91,8 +140,8 @@ Installation instructions
 
 .. _licinstall:
 
-Installing a CVX Professional license
---------------------------------------
+Installing a CVX Professional license (MATLAB only)
+---------------------------------------------------
 
 If you acquire a license key for CVX Professional, the only change required to the above
 steps is to include the name of the license file as an input to the ``cvx_setup`` command.
@@ -132,6 +181,7 @@ and
 `SDPT3 <http://www.math.nus.edu.sg/~mattohkc/sdpt3.html>`_
 in the directories :file:`cvx/sedumi` and :file:`cvx/sdpt3`, respectively. When you
 run `cvx_setup`, CVX will automatically add these solvers to its solver list.
+(As discussed above, only SeDuMi is operational with Octave at this time.)
 
 If you have downloaded a CVX Professional Solver Bundle, then the solvers 
 `Gurobi <http://gurobi.com>`_

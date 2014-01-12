@@ -91,11 +91,12 @@ a paid CVX Professional license. For more details, see :ref:`licensing`.
 What's new?
 ~~~~~~~~~~~
 
-- Support for commercial solvers; see :ref:`solvers`.
+- Preliminary support for Octave; see :ref:`octave`.
+- Support for commercial solvers (MATLAB only); see :ref:`solvers`.
 - Binary and integer variable support; see :ref:`what-is-midcp`.
-- Commercial licensing for advanced features; see :ref:`licensing`.
+- Commercial licensing for advanced features (MATLAB only); see :ref:`licensing`.
 - New support options; see :ref:`support`.
-- The default solver choice and other preferences can be saved across MATLAB using the ``cvx_save_prefs`` command.
+- The default solver choice and other preferences can be saved across sessions using the ``cvx_save_prefs`` command.
 
 .. index:: DCP
 

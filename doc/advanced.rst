@@ -184,15 +184,14 @@ The successive approximation method
 
 .. note::
 
-	If you were referred to this web page by CVX's warning message: welcome! 
-	Please read this section carefully
-	to fully understand why using functions like `log`, `exp', etc.
-	within CVX models requires special care.
+  If you were referred to this web page by CVX's warning message: welcome! 
+  Please read this section carefully to fully understand why using 
+  functions like ``log``, ``exp``, etc. within CVX models requires special care.
 
 Prior to version 1.2, the functions ``exp``, ``log``, ``log_det``,
 and other functions from the exponential family could not be used within
 CVX. Unfortunately, CVX utilizes symmetric primal/dual solvers that
-simply cannot support those functions natively, and a variety of factors
+simply cannot support those functions natively [4]_, and a variety of factors
 prevent us from incorporating other types of solvers into CVX.
 
 Nevertheless, support for these functions was requested quite frequently.
@@ -717,3 +716,16 @@ code, but these are relatively simple.
    Indeed, a future version of CVX will support the use of the
    Matlab function ``spdiags``, which will reduce the entire for loop to
    the single constraint ``spdiags(X,0:n-1)==b``.
+   
+.. [4]
+   Technically there are a couple of exceptions here. First of all, 
+   SDPT3 does, in fact, support the existence of logarithms and ``log_det``
+   terms in the objective function. However, it doesn't support such terms
+   within constraints. Unfortunately, because CVX does not differentiate
+   between objective terms and constraint terms internally, it is not able
+   to utilize this capability of SDPT3. Secondly, this section was written
+   before the inclusion of MOSEK support in CVX, and CVX does indeed provide
+   support for smooth nonlinearities in its solver. But this capability
+   is not easy to use in MATLAB.
+   
+   
