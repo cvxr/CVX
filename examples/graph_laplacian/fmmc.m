@@ -33,8 +33,7 @@ cvx_begin sdp
     minimize( s )
     subject to
         L == A * diag(w) * A';
-        J - L <= +s * I;
-        J - L >= -s * I;
+        -s * I <= J - L <= +s * I;
         w >= 0;
         diag(L) <= 1;
 cvx_end

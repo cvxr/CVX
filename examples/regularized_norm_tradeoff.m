@@ -15,7 +15,7 @@ nrms = zeros( size( gamma ) );
 xnrms = zeros( size( gamma ) );
 fprintf( 1, 'Gamma: ' );
 for k = 1 : length( gamma ),
-   if k > 1 & rem( k, 10 ) == 1, fprintf( 1, '\n       ' ); end
+   if k > 1 && rem( k, 10 ) == 1, fprintf( 1, '\n       ' ); end
    fprintf( 1, '%g ', gamma( k ) );
    cvx_begin quiet
       variable x(n)
