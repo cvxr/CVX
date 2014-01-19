@@ -1,4 +1,5 @@
 function varargout = cvx_run_solver( sfunc, varargin )
+global cvx___
 settings_arg = varargin{end};
 settings     = varargin{end-1};
 inputs       = varargin(1:end-nargout-2);
@@ -42,6 +43,9 @@ elseif custom_on,
     fprintf( '------------------------------------------------------------\n');
 end
 errmsg = [];
+if cvx___.isoctave,
+    fflush(1);
+end
 try
    [ varargout{1:nargout} ] = sfunc( inputs{:} );
 catch errmsg

@@ -4,7 +4,11 @@ function lines = cvx_error( errmsg, widths, useline, prefix, chop )
 %    This is an internal function used by CVX. It needed to be in the CVX
 %    home directory so that it's available during a fresh installation.
 
-if isa( errmsg, 'MException' ),
+if ~ischar( errmsg ),
+    if ~isfield( errmsg, 'stack' ),
+        tmp = lasterror;
+        errmsg.stack = tmp.stack;
+    end
     if strncmp( errmsg.identifier, 'CVX:', 4 ),
         format = 'basic';
     else
@@ -14,7 +18,11 @@ if isa( errmsg, 'MException' ),
         errmsg = getReport( errmsg, format, 'hyperlinks', 'off' );
         errmsg = regexprep( errmsg,'</?a[^>]*>', '' );
     catch
-        errmsg = sprintf( '%s\n    Line %d: %s\n', errmsg.message, errmsg.stack(1).line, errmsg.stack(1).file );
+        if length(errmsg.stack) >= 1,
+            errmsg = sprintf( '%s\n    Line %d: %s\n', errmsg.message, errmsg.stack(1).line, errmsg.stack(1).file );
+        else
+            errmsg = sprintf( '%s\n', errmsg.message );
+        end
     end
 end
 lines = {};

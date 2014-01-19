@@ -1,5 +1,8 @@
-function x = cvx_setdual( x, y )
-x.dual_ = y;
+function x = vec( x )
+
+% VEC   CVX implementation of vec
+
+x.size_ = [prod(x.size_),1];
 
 % Copyright 2005-2013 CVX Research, Inc.
 % See the file COPYING.txt for full copyright information.

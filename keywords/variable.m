@@ -58,13 +58,13 @@ for k = 1 : nargin,
     end
     tok = tok{1};
     name{k} = tok{1};
-    if isempty( tok{2} ),
+    if length(tok) < 2 || isempty( tok{2} ),
         args{k} = {};
     else
         try
             args{k} = evalin( 'caller', [ '{', tok{2}(2:end-1), '};' ] );
         catch exc
-            throw( MException( exc.identifier, exc.message ) );
+            error( exc.identifier, exc.message );
         end
     end
 end
@@ -108,7 +108,7 @@ end
 try
     xsize = [ args{1}{:} ];
 catch exc
-    throw( MException( exc.identifier, exc.message ) );
+    error( exc.identifier, exc.message );
 end
 if ~isempty( xsize ),
     [ temp, xsize ] = cvx_check_dimlist( xsize, true );
@@ -130,7 +130,7 @@ if nargin > 1,
     try
         [ str, itypes ] = cvx_create_structure( varargin, name, args );
     catch exc
-        throw( MException( exc.identifier, exc.message ) );
+        error( exc.identifier, exc.message );
     end
     n_itypes = 0;
     for k = 1 : length( itypes ),

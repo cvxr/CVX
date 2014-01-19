@@ -79,7 +79,7 @@ for k = 1 : nv,
             [ rx, cx, vx ] = find( xt.basis_ );
             logs = cvx___.logarithm( rx, 1 );
             tt = vx ~= 1; nt = sum( tt );
-            bx = sparse( [ ones( nt, 1 ) ; logs ], [ cx( tt ) ; cx ], [ log( vx( tt ) ) ; ones( nb, 1 ) ], max( logs ), size( xt.basis_, 2 ) );
+            bx = sparse( [ ones( nt, 1 ) ; logs ], [ cx( tt ) ; cx ], [ log( vx( tt ) ) ; ones( nb, 1 ) ], full( max( logs ) ), size( xt.basis_, 2 ) );
             yt = cvx( xt.size_, bx );
         case 4,
             % Posynomial
@@ -106,7 +106,7 @@ for k = 1 : nv,
                 vx = log( vx );
                 tz = rx ~= 1;
                 rx = cvx___.logarithm( rx( tz ), 1 );
-                vx = vx + cvx( nq, sparse( rx, find( tz ), 1, max( rx ), nq ) );
+                vx = vx + cvx( nq, sparse( rx, find( tz ), 1, full( max( rx ) ), nq ) );
                 vx = reshape( vx, rk, nq / rk );
                 vx = log_sum_exp( vx );
                 if nu == 1,

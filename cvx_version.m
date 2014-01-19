@@ -92,11 +92,11 @@ end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 problem = true;
-if isoctave,
-	fprintf( '%s\nSorry, CVX does not yet run under Octave.\n%s\n', line, line );
-elseif nver < 7.08 && strcmp( comp(end-1:end), '64' ),
+if isoctave && nver < 3.08,
+	fprintf( '%s\nCVX requires Octave 3.8 or later.\n%s\n', line, line );
+elseif ~isoctave && nver < 7.08 && strcmp( comp(end-1:end), '64' ),
     fprintf( '%s\nCVX requires MATLAB 7.8 or later (7.5 or later on 32-bit platforms).\n' , line, line );
-elseif nver < 7.05,
+elseif ~isoctave && nver < 7.05,
     fprintf( '%s\nCVX requires MATLAB 7.5 or later (7.8 or later on 64-bit platforms).\n' , line, line );
 else
 	problem = false;
@@ -117,6 +117,10 @@ if fid > 0,
         missing = setdiff( manifest, newman );
         additional = setdiff( newman, manifest );
         if ~isempty( missing ) || ~isempty( additional ),
+            if ~isequal( fs, '/' ),
+                missing = strrep( missing, '/', fs );
+                additional = strrep( additional, '/', fs );
+            end
             if ~isempty( missing ),
                 fprintf( '\n    WARNING: The following files/directories are missing:\n' );
                 isdir = cellfun(@(x)x(end)==fs,missing);
@@ -183,8 +187,8 @@ if fid > 0,
 else    
     fprintf( 'Manifest missing; cannot verify file structure.\n' ) ;
 end
-if ( ~exist( [ 'lib/cvx_eliminate_mex.', mext ], 'file' ) || ...
-     ~exist( [ 'lib/cvx_bcompress_mex.', mext ], 'file' ) ) && ~problem,
+if ( ~exist( [ mpath, fs, 'lib', fs, 'cvx_eliminate_mex.', mext ], 'file' ) || ...
+     ~exist( [ mpath, fs, 'lib', fs, 'cvx_bcompress_mex.', mext ], 'file' ) ) && ~problem,
     fprintf( '    ERROR: one or more MEX files for this platform are missing.\n' );
     fprintf( '    These files end in the suffix ".%s". CVX will not operate\n', mext );
     fprintf( '    without these files. Please visit\n' );

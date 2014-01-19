@@ -253,7 +253,7 @@ end
 
 if ~isempty( estruc ),
     if strncmp( estruc.identifier, 'CVX:', 4 ),
-        throw( MException( estruc.identifier, estruc.message ) );
+        error( estruc.identifier, estruc.message );
     else
         rethrow( estruc );
     end

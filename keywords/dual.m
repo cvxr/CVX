@@ -76,8 +76,13 @@ for k = 2 : nargin,
     if isempty( toks ),
         error( 'Invalid dual variable specification: %s', arg );
     end
-    nam = toks{1}{1};
-    siz = toks{1}{2};
+    tok = toks{1};
+    nam = tok{1};
+    if length(tok) < 2,
+        siz = {};
+    else
+        siz = tok{2};
+    end
     if nam(end) == '_',
         error( 'Invalid dual variable specification: %s\n   Variables ending in underscores are reserved for internal use.', arg );
     end
@@ -85,7 +90,7 @@ for k = 2 : nargin,
         try
             siz = evalin( 'caller', [ '[', siz(2:end-1), ']' ] );
         catch exc
-            throw( MException( exc.identifier, sprintf( 'Error attempting to determine size of: %s\n   %s', arg, exc.message ) ) );
+            error( exc.identifier, 'Error attempting to determine size of: %s\n   %s', arg, exc.message );
         end
         [ temp, siz ] = cvx_check_dimlist( siz, true );
         if ~temp,

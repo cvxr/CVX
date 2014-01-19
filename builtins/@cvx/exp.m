@@ -88,7 +88,7 @@ for k = 1 : nv,
                 exps = cvx___.exponential( rx, 1 );
             end
             nb = size( xt.basis_, 2 );
-            bx = sparse( exps, cx, 1, max( exps ), nb );
+            bx = sparse( exps, cx, 1, full( max( exps ) ), nb );
             if ~isempty( cc ),
                 bx = bx * diag(exp(sparse(cc,1,vc,nb,1)));
             end

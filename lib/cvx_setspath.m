@@ -21,7 +21,7 @@ if osolv ~= nsolv,
     if osolv,
         tstr = cvx___.solvers.list(osolv).path;
         if ~isempty( tstr ),
-            opath = matlabpath;
+            opath = path;
             npath = strrep(opath,tstr,'');
             needupd = true;
         end
@@ -30,7 +30,7 @@ if osolv ~= nsolv,
     if nsolv,
         tstr = cvx___.solvers.list(nsolv).path;
         if ~isempty( tstr ),
-            if isempty(opath), opath = matlabpath; end
+            if isempty(opath), opath = path; end
             if isempty(npath), npath = opath; end
             npath = [ tstr, npath ];
             needupd = true;
@@ -38,7 +38,7 @@ if osolv ~= nsolv,
         cvx___.solvers.active = nsolv;
     end
     if needupd,
-        matlabpath(npath);
+        path(npath);
     end
 end
 

@@ -9,7 +9,10 @@ if ~isempty( shim.solve ),
 end
 if isempty( shim.name ),
     fname = 'sdpt3.m';
-    [ fs, ps, int_path ] = cvx_version;
+    [ fs, ps, int_path, mext, nver, isoctave ] = cvx_version;
+    if isoctave,
+        shim.error = 'SDPT3 is not yet supported in Octave.';
+    end
     int_path(end+1) = fs;
     int_plen = length( int_path );
     shim.name = 'SDPT3';

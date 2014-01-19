@@ -35,11 +35,11 @@ else
         end
         tok = tok{1};
         name{k} = tok{1};
-        if ~isempty( tok{2} ),
+        if length(tok) > 1 && ~isempty( tok{2} ),
             try
                 args{k} = evalin( 'caller', [ '{', tok{2}(2:end-1), '};' ] );
             catch exc
-                throw( MException( exc.identifier, exc.message ) );
+                error( exc.identifier, exc.message );
             end
         else
             args{k} = {};
@@ -181,7 +181,7 @@ for k = 2 : nargs,
         try
             [ strs{end+1}, do_symm ] = feval( [ 'cvx_s_', lower(name{k}) ], sz( 1 ), sz( 2 ), do_symm, args{k}{:} ); %#ok
         catch exc
-            throw( MException( exc.identifer, sprintf( 'Error constructing structure: %s\n   %s', orig{k}, exc.message ) ) );
+            error( exc.identifier, sprintf( 'Error constructing structure: %s\n   %s', orig{k}, exc.message ) );
         end
     end
 end

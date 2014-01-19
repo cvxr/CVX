@@ -15,7 +15,11 @@ try
     [ cvx___.solvers.list.check, cvx___.solvers.list.solve, cvx___.solvers.list.eargs ] = deal( {} );
     cvx___.solvers.active = 0;
     if strncmp( computer, 'PC', 2 ), fs = '\'; fsre = '\\'; else fs = '/'; fsre = '/'; end
-    pfile = [ regexprep( prefdir(1), [ fsre, 'R\d\d\d\d\w$' ], '' ), fs, 'cvx_prefs.mat' ];
+    if exist( 'OCTAVE_VERSION', 'builtin' ),
+        pfile = [ prefdir, fs, '.cvx_prefs.mat' ];
+    else
+        pfile = [ regexprep( prefdir(1), [ fsre, 'R\d\d\d\d\w$' ], '' ), fs, 'cvx_prefs.mat' ];
+    end
     save(pfile,'-struct',...
         'cvx___','expert','precision','precflag',...
         'rat_growth','path','license','solvers');

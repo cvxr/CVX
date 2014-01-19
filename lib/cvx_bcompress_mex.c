@@ -145,7 +145,7 @@ void mexFunction(
 {
     mwSize n, k, col, nskip, lastcol, *ss_ndxs;
     double *map, *scl, lastnorm;
-    bool first;
+    int first = 1;
     
     n       = mxGetN(  prhs[0] );
     ss_ir   = mxGetIr( prhs[0] );
@@ -175,7 +175,6 @@ void mexFunction(
         mexErrMsgTxt( "Unable to allocate output arguments" );
     map = mxGetPr( plhs[0] );
     scl = mxGetPr( plhs[1] );
-    first = true;
     lastnorm = 0.0;
     for ( k = 0 ; k < n ; ++k ) {
         col = ss_ndxs[k];
@@ -190,7 +189,7 @@ void mexFunction(
             lastnorm = ss_pr[ss_jc[col]];
             map[col] = lastcol + 1;
             scl[col] = 1.0;
-            first = false;
+            first = 0;
         } else {
             map[col] = lastcol + 1;
             scl[col] = ss_pr[ss_jc[col]] / lastnorm;

@@ -12,7 +12,7 @@ global cvx___
 cvx_global
 if ~cvx___.path.active,
     s = warning('off'); %#ok
-    matlabpath([cvx___.path.string,matlabpath]);
+    path([cvx___.path.string,path]);
     warning(s);
     cvx___.path.active = true;
 end

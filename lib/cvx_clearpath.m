@@ -16,7 +16,7 @@ if cvx___.path.hold,
 else
     cvx_clearspath;
     if ~isempty( cvx___.path.string ),
-        matlabpath(strrep(matlabpath,cvx___.path.string,''));
+        path(strrep(path,cvx___.path.string,''));
     end
     cvx___.path.active = false;
 end

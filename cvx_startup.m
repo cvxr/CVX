@@ -38,10 +38,12 @@ mpath = mpath( 1 : temp(end) - 1 );
 addpaths = { 'builtins', 'commands', 'functions', 'lib', 'structures' };
 addpaths = strcat( [ mpath, fs ], addpaths );
 addpaths{end+1} = mpath;
-prevpath = matlabpath;
+prevpath = path;
 oldpath = textscan( prevpath, '%s', 'Delimiter', ps );
 oldpath = oldpath{1}(:)';
-other_homes = regexprep( which( 'cvx_setup.m', '-all' ), '.cvx_setup\.m$', '' );
+other_homes = which( 'cvx_setup.m', '-all' );
+if ~iscell( other_homes ), other_homes = { other_homes }; end
+other_homes = regexprep( other_homes, '.cvx_setup\.m$', '' );
 other_homes( strcmp( other_homes, mpath ) ) = [];
 ndxs = false(size(oldpath));
 for k = 0 : length(other_homes),
@@ -54,7 +56,7 @@ end
 newpath = horzcat( addpaths, oldpath(~ndxs) );
 npath = sprintf( [ '%s', pathsep ], newpath{:} );
 npath = npath(1:end-1);
-matlabpath(npath);
+path(npath);
 if ~quiet,
     if isequal( newpath, oldpath ),
         fprintf( 'already set!\n' );

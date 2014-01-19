@@ -86,7 +86,9 @@ if ISOCTAVE,
     % Octave has mwSize and mwIndex hardcoded in mex.h as ints.
     % There is no definition for mwSignedIndex so include it here.  
     % This means that Octave ignores the -largeArrayDims flag.
-    flags{end+1} = '-DmwSignedIndex=int';
+    if VERSION < 3.08,
+        flags{end+1} = '-DmwSignedIndex=int';
+    end
     libs{end+1} = '-lblas';
 else
     if nargin > 1 && ~isempty(endpath),

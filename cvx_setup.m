@@ -18,13 +18,13 @@ try
     % Get version and portability information %
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-    expected = MException( 'CVX:Expected', '' );
-    unexpected = MException( 'CVX:Unexpected', '' );
     if nargin < 1, license_file = []; end
     [ fs, ps, mpath, mext, nver, isoctave, problem ] = cvx_version( license_file ); %#ok
+    expected = struct( 'identifier', 'CVX:Expected', 'message', '' );
+    unexpected = struct( 'identifier', 'CVX:Unexpected', 'message', '' );
     if fs == '/', fsre = '/'; else fsre = '\\'; end
     if problem, throw(expected); end
-    
+
     %%%%%%%%%%%%%%%%%%%%%%%%
     % Set up the CVX paths %
     %%%%%%%%%%%%%%%%%%%%%%%%
@@ -39,26 +39,32 @@ try
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     
     squares = which( 'square', '-all' );
-    if length( squares ) > 1,
+    if iscell( squares ) && length( squares ) > 1,
         squares = squares(~cellfun(@(x)any(strfind(x,[fs,'@cvx',fs])),squares));
         if length(squares) == 1 || ~strncmp(squares{1},[mpath,fs],length(mpath)+1),
             squares = {};
         end
+    else
+        squares = {};
     end
-    
+
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     % Search for saved preferences %
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
     fprintf( 'Saved preferences...' ); nret = true;
-    pfile = [ regexprep( prefdir, [ fsre, 'R\d\d\d\d\w$' ], '' ), fs, 'cvx_prefs.mat' ];
+    if isoctave,
+        pfile = [ prefdir, fs, '.cvx_prefs.mat' ];
+    else
+        pfile = [ regexprep( prefdir, [ fsre, 'R\d\d\d\d\w$' ], '' ), fs, 'cvx_prefs.mat' ];
+    end
     if exist( pfile, 'file' ),
         s = warning('off','MATLAB:dispatcher:UnresolvedFunctionHandle');
         oprefs = load( pfile );
         warning(s);
         fprintf( 'found.\n' ); 
         nret = false;
-    else
+    elseif ~isoctave,
         pfile = [ prefdir, fs, 'cvx_prefs.mat' ];
         if exist( pfile, 'file' ),
             oprefs = load( pfile );
@@ -70,10 +76,15 @@ try
             nret = false;
         end
     end
-    prefs = struct( 'expert', false, 'precision', [eps^0.5,eps^0.5,eps^0.25], ...
+    prefs = struct( 'pfile', pfile, ...
+                    'expert', false, 'precision', [eps^0.5,eps^0.5,eps^0.25], ...
                     'precflag', 'default', 'rat_growth', 10, ...
                     'path', cpath, 'license', [], 'solvers', [] );
-    selected = 'sdpt3';
+    if isoctave,
+        selected = 'sedumi';
+    else
+        selected = 'sdpt3';
+    end
     if ~isempty( oprefs ),
         try prefs.expert = oprefs.expert; catch end %#ok
         try prefs.precision = oprefs.precision; catch end %#ok
@@ -93,10 +104,14 @@ try
     shimpath = [ mpath, fs, 'shims', fs ];
     solvers = dir( shimpath );
     solvers = { solvers(~[solvers.isdir]).name };
-    solvers = solvers( ~cellfun( @isempty, regexp( solvers, '\.(m|p)$' ) ) );
+    if isoctave, efilt = '\.m$'; else, efilt = '\.(m|p)$'; end
+    solvers = solvers( ~cellfun( @isempty, regexp( solvers, efilt ) ) );
     solvers = unique( cellfun( @(x)x(1:end-2), solvers, 'UniformOutput', false ) );
     solvers = struct( 'name', '', 'version', '', 'location', '', 'fullpath', '', 'error', '', 'warning', '', 'dualize', '', 'path', '', 'check', [], 'solve', [], 'settings', [], 'sname', solvers, 'spath', shimpath, 'params', [], 'eargs', {{}} );
     solver2 = which( 'cvx_solver_shim', '-all' );
+    if ~isempty(solver2) && ~iscell(solver2),
+        solver2 = { solver2 };
+    end
     for k = 1 : length(solver2),
         tsolv = solver2{k};
         ndxs = find(tsolv==fs,1,'last');
@@ -228,7 +243,10 @@ try
     end
     if ~isempty( oldpath ),
         fprintf( 'Saving updated path...' ); nret = true;
-        if savepath,
+        s = warning('off');
+        stat = savepath;
+        warning(s);
+        if stat,
             fprintf('failed. (see below)\n');
         else
             fprintf('done.\n');
@@ -369,7 +387,6 @@ catch errmsg
     % Restore the environment in the event of an error %
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-    unexpected = false;
     if nret, fprintf( '\n' ); end
     switch errmsg.identifier,
         case { 'CVX:Expected', 'CVX:Licensing' },

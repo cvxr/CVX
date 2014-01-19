@@ -58,7 +58,7 @@ else
     try
         x.size = evalin( 'caller', [ '[', x.size(2:end-1), '];' ] );
     catch exc
-        throw( MException( exc.identifier, exc.message ) );
+        error( exc.identifier, exc.message );
     end
     [ temp, x.size ] = cvx_check_dimlist( x.size, true );
     if ~temp,

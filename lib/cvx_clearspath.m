@@ -11,7 +11,7 @@ osolv = cvx___.solvers.active;
 if osolv,
     tstr = cvx___.solvers.list(osolv).path;
     if ~isempty( tstr ),
-        matlabpath(strrep(matlabpath,tstr,''));
+        path(strrep(path,tstr,''));
     end
     cvx___.solvers.active = 0;
 end

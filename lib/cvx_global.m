@@ -14,20 +14,21 @@ end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 try_save = false;
-if strncmp( computer, 'PC', 2 ), 
-        fs = '\'; fsre = '\\'; 
-else
-    fs = '/'; fsre = '/'; 
-end
+[ fs, ps, mpath, mext, nver, isoctave ] = cvx_version;
+if fs == '/', fsre = '/'; else fsre = '\\'; end
 if nargin < 1,
     try
-        pfile = [ regexprep( prefdir, [ fsre, 'R\d\d\d\d\w$' ], '' ), fs, 'cvx_prefs.mat' ];
+        if isoctave,
+            pfile = [ prefdir, fs, '.cvx_prefs.mat'];
+        else
+            pfile = [ regexprep( prefdir, [ fsre, 'R\d\d\d\d\w$' ], '' ), fs, 'cvx_prefs.mat' ];
+        end
         if exist( pfile, 'file' ),
             prefs = load( pfile );
         else
             prefs = load( [ prefdir, fs, 'cvx_prefs.mat' ] );
             try_save = true;
-        end
+        end        if ~isfield( prefs, 'pfile' ),            prefs.pfile = pfile;            try_save = true;        end    
     catch %#ok
         error( 'CVX:Preferences', 'Could not load saved CVX preferences; cannot continue. Please run CVX_SETUP.' );
     end
@@ -85,6 +86,12 @@ s_type = cell(1,length(structures));
 reserved = cell2struct([c_type,k_type,s_type],[commands,keywords,structures],2);
 
 cvx___ = struct( ...
+    'isoctave',     isoctave, ...
+    'nver',         nver, ...
+    'fs',           fs, ...
+    'fsre',         fsre, ...
+    'ps',           ps, ...
+    'pfile',        prefs.pfile,      ...
     'expert',       prefs.expert,     ...
     'precision',    prefs.precision,  ...
     'precflag',     prefs.precflag,   ...
