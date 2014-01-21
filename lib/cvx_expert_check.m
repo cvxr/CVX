@@ -4,8 +4,7 @@ global cvx___
 if cvx___.expert, return; end
 if ~isempty( varargin ) && ~any(cellfun('isclass',varargin,'cvx')), return; end
 
-if strcmp( computer, 'PC' ), fs = '\'; else fs = '/'; end
-url = [ 'file:///', cvx___.where, fs, 'doc', fs, 'advanced.html#the-successive-approximation-method' ];
+url = [ 'file:///', cvx___.where, cvx___.fs, 'doc', cvx___.fs, 'advanced.html#the-successive-approximation-method' ];
 fprintf( 1, [ 'CVX Warning:\n', ...
 '   Models involving "%s" or other functions in the log, exp, and entropy\n', ...
 '   family are solved using an experimental successive approximation method.\n', ...

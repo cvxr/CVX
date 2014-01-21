@@ -9,9 +9,7 @@ if ~isempty( shim.solve ),
 end
 if isempty( shim.name ),
     fname = 'glpk.m';
-    [ fs, ps, int_path ] = cvx_version;
-    int_path(end+1) = fs;
-    int_plen = length( int_path );
+    ps = pathsep;
     shim.name = 'GLPK';
     shim.dualize = true;
     flen = length(fname);
@@ -56,7 +54,7 @@ end
 function found_bad = check( nonls ) %#ok
 found_bad = false;
 
-function [ x, status, tol, iters, y, z ] = solve( At, b, c, nonls, quiet, prec, settings, nocplx )
+function [ x, status, tol, iters, y, z ] = solve( At, b, c, nonls, quiet, prec, settings )
 
 n  = length( c );
 m  = length( b );

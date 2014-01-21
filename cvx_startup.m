@@ -25,19 +25,26 @@ function prevpath = cvx_startup( quiet )
 %    Please run CVX_SETUP first when installing CVX, and *then* add the
 %    CVX_STARTUP line if instructed to do so.
 
+global cvx___
 if nargin < 1 || isempty( quiet ), 
     quiet = false; 
 end
 if ~quiet,
     fprintf( 'Setting CVX paths...' );
 end
-if strncmp(computer,'PC',2), fs = '\'; ps = ';'; else fs = '/'; ps = ':'; end
-mpath = mfilename('fullpath');
-temp = strfind( mpath, fs );
-mpath = mpath( 1 : temp(end) - 1 );
+cvx_version(1);
+fs = cvx___.fs;
+ps = cvx___.ps;
+mpath = cvx___.where;
 addpaths = { 'builtins', 'commands', 'functions', 'lib', 'structures' };
 addpaths = strcat( [ mpath, fs ], addpaths );
 addpaths{end+1} = mpath;
+if ~isempty( cvx___.msub ),
+    msub = [ mpath, fs, 'lib', fs, cvx___.msub ];
+    if exist( msub, 'dir' ),
+        addpaths{end+1} = msub;
+    end
+end
 prevpath = path;
 oldpath = textscan( prevpath, '%s', 'Delimiter', ps );
 oldpath = oldpath{1}(:)';

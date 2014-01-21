@@ -1,110 +1,65 @@
-function cvx_setup( license_file )
+function cvx_setup( varargin )
 
 % CVX_SETUP   Sets up and tests the cvx distribution.
 %    This function is to be called any time CVX is installed on a new machine,
 %    to insure that the paths are set properly and the MEX files are compiled.
 
-% Clear out the global CVX structure
 global cvx___
-cvx___ = [];
-squares = {};
-nret = false;
-oldpath = '';
-line = '---------------------------------------------------------------------------'; 
-
 try 
+
+    cvx___ = [];
+    squares = {}; %#ok
+    nret = false;
+    oldpath = '';
+    line = '---------------------------------------------------------------------------'; 
 
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     % Get version and portability information %
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    
+    cvx_version( '-install', varargin{:} );
+    if ~isfield( cvx___, 'loaded' ) || ~cvx___.loaded, %#ok
+        error( 'CVX:Expected', 'Error detected by cvx_version' );
+    end
+    isoctave = cvx___.isoctave;
+    mpath = cvx___.where;
+    fs = cvx___.fs;
+    ps = cvx___.ps;
 
-    if nargin < 1, license_file = []; end
-    [ fs, ps, mpath, mext, nver, isoctave, problem ] = cvx_version( license_file ); %#ok
-    expected = struct( 'identifier', 'CVX:Expected', 'message', '' );
-    unexpected = struct( 'identifier', 'CVX:Unexpected', 'message', '' );
-    if fs == '/', fsre = '/'; else fsre = '\\'; end
-    if problem, throw(expected); end
-
-    %%%%%%%%%%%%%%%%%%%%%%%%
-    % Set up the CVX paths %
-    %%%%%%%%%%%%%%%%%%%%%%%%
-
+    %%%%%%%%%%%%%%%%%%%%%%%
+    % Reset the CVX paths %
+    %%%%%%%%%%%%%%%%%%%%%%%
+    
     oldpath = cvx_startup( false );
-    cpath = struct( 'string', '', 'active', false, 'hold', false );
-    subs = strcat( [ mpath, fs ], { 'keywords', 'sets' } );
-    cpath.string = sprintf( [ '%s', ps ], subs{:} );
-    
-    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    % Test for signal processing toolbox conflict %
-    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    
-    squares = which( 'square', '-all' );
-    if iscell( squares ) && length( squares ) > 1,
-        squares = squares(~cellfun(@(x)any(strfind(x,[fs,'@cvx',fs])),squares));
-        if length(squares) == 1 || ~strncmp(squares{1},[mpath,fs],length(mpath)+1),
-            squares = {};
-        end
-    else
-        squares = {};
-    end
-
-    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    % Search for saved preferences %
-    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-    fprintf( 'Saved preferences...' ); nret = true;
-    if isoctave,
-        pfile = [ prefdir, fs, '.cvx_prefs.mat' ];
-    else
-        pfile = [ regexprep( prefdir, [ fsre, 'R\d\d\d\d\w$' ], '' ), fs, 'cvx_prefs.mat' ];
-    end
-    if exist( pfile, 'file' ),
-        s = warning('off','MATLAB:dispatcher:UnresolvedFunctionHandle');
-        oprefs = load( pfile );
+    if ~isempty( oldpath ),
+        fprintf( 'Saving updated path...' ); 
+        nret = true;
+        s = warning('off'); %#ok
+        stat = savepath;
         warning(s);
-        fprintf( 'found.\n' ); 
-        nret = false;
-    elseif ~isoctave,
-        pfile = [ prefdir, fs, 'cvx_prefs.mat' ];
-        if exist( pfile, 'file' ),
-            oprefs = load( pfile );
-            fprintf( 'found.\n' ); 
-            nret = false;
+        if stat,
+            fprintf('failed. (see below)\n');
         else
-            oprefs = [];
-            fprintf( 'not found; defaults created.\n' ); 
-            nret = false;
+            fprintf('done.\n');
+            oldpath = [];
         end
     end
-    prefs = struct( 'pfile', pfile, ...
-                    'expert', false, 'precision', [eps^0.5,eps^0.5,eps^0.25], ...
-                    'precflag', 'default', 'rat_growth', 10, ...
-                    'path', cpath, 'license', [], 'solvers', [] );
-    if isoctave,
-        selected = 'sedumi';
-    else
-        selected = 'sdpt3';
-    end
-    if ~isempty( oprefs ),
-        try prefs.expert = oprefs.expert; catch end %#ok
-        try prefs.precision = oprefs.precision; catch end %#ok
-        try prefs.precflag = oprefs.precflag; catch end %#ok
-        try prefs.rat_growth = oprefs.rat_groth; catch end %#ok
-        try selected = prefs.solvers.names{prefs.solvers.map.default}; catch end %#ok
-    end
-    prefs.path = cpath;
-    prefs.license = cvx___.license;
-    prefs.solvers = struct( 'selected', 0, 'active', 0, 'list', [], 'names', {{}}, 'map', struct( 'default', 0 ) );
     
     %%%%%%%%%%%%%%%%%%%%%%
     % Search for solvers %
     %%%%%%%%%%%%%%%%%%%%%%
 
+    try
+        selected = cvx___.solvers.names{cvx___.solvers.map.default};
+    catch
+        if isoctave, selected = 'sedumi'; else selected = 'sdpt3'; end
+    end
+    cvx___.solvers = struct( 'selected', 0, 'active', 0, 'list', [], 'names', {{}}, 'map', struct( 'default', 0 ) );
     fprintf( 'Searching for solvers...' ); nret = true;
     shimpath = [ mpath, fs, 'shims', fs ];
     solvers = dir( shimpath );
     solvers = { solvers(~[solvers.isdir]).name };
-    if isoctave, efilt = '\.m$'; else, efilt = '\.(m|p)$'; end
+    if isoctave, efilt = '\.m$'; else efilt = '\.(m|p)$'; end
     solvers = solvers( ~cellfun( @isempty, regexp( solvers, efilt ) ) );
     solvers = unique( cellfun( @(x)x(1:end-2), solvers, 'UniformOutput', false ) );
     solvers = struct( 'name', '', 'version', '', 'location', '', 'fullpath', '', 'error', '', 'warning', '', 'dualize', '', 'path', '', 'check', [], 'solve', [], 'settings', [], 'sname', solvers, 'spath', shimpath, 'params', [], 'eargs', {{}} );
@@ -196,35 +151,35 @@ try
             'No valid solvers were found. This suggests a corrupt installation. Please\n', ...
             'try re-installing the files and re-running cvx_setup. If the same error\n', ...
             'occurs, please contact CVX support.\n' ] );
-        throw(unexpected);
+        error('CVX:Unexpected','No valid solvers were found.');
     end
     solvers = solvers(cellfun(@isempty,{solvers.error}));
-    prefs.solvers.list  = solvers;
-    prefs.solvers.names = { solvers.name };
-    prefs.solvers.map   = struct( 'default', 0 );
+    cvx___.solvers.list  = solvers;
+    cvx___.solvers.names = { solvers.name };
+    cvx___.solvers.map   = struct( 'default', 0 );
     for k = 1 : length(solvers),
-        prefs.solvers.map.(lower(solvers(k).name)) = k;
+        cvx___.solvers.map.(lower(solvers(k).name)) = k;
         if strcmpi( solvers(k).name, selected ),
-            prefs.solvers.map.default = k;
-            prefs.solvers.selected = k;
+            cvx___.solvers.map.default = k;
+            cvx___.solvers.selected = k;
         end
     end
-    if prefs.solvers.selected == 0,
-        prefs.solvers.selected = 1;
-        prefs.solvers.map.default = 1;
+    if cvx___.solvers.selected == 0,
+        cvx___.solvers.selected = 1;
+        cvx___.solvers.map.default = 1;
         fprintf( [ ...
             'WARNING: The default solver %s is missing; %s has been selected as a\n', ...
             '    new default. If this was unexpected, try re-running cvx_setup.\n' ], ...
-            selected, prefs.solvers.list(prefs.solvers.selected).name, lower(prefs.solvers.list(prefs.solvers.selected).name) );
+            selected, cvx___.solvers.list(cvx___.solvers.selected).name, lower(cvx___.solvers.list(cvx___.solvers.selected).name) );
     end
     
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     % Create the global data structure %
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     
-    cvx_global( prefs );
+    cvx_global;
     if isempty( cvx___.solvers.list ),
-        throw(unexpected);
+        error('CVX:Unexpected','No valid solvers were found.');
     end
     
     %%%%%%%%%%%%%%%%%%%%
@@ -233,25 +188,13 @@ try
     
     fprintf( 'Saving updated preferences...' ); nret = true;
     try
-        cvx_save_prefs( true );
+        cvx_save_prefs( 'save' );
         fprintf( 'done.\n' ); nret = false;
     catch errmsg
         fprintf( 'unexpected error:\n' ); nret = false;
         cvx_error( errmsg, 67, true, '    ' );
         fprintf( 'Please attempt to correct this error and re-run cvx_setup. If you cannot,\n' );
         fprintf( 'you will be forced to re-run cvx_setup every time you start MATLAB.\n' );
-    end
-    if ~isempty( oldpath ),
-        fprintf( 'Saving updated path...' ); nret = true;
-        s = warning('off');
-        stat = savepath;
-        warning(s);
-        if stat,
-            fprintf('failed. (see below)\n');
-        else
-            fprintf('done.\n');
-            oldpath = [];
-        end
     end
     
     %%%%%%%%%%%%%%%%%%%%%%%%%
@@ -356,21 +299,30 @@ try
         end
     end
     
-    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     % Warn about class conflict with previous version of CVX %
-    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     
     if need_cc,
         fprintf( '%s\n', line );
         fprintf('WARNING: CVX was unable to run the test model due to a conflict with the\n' );
         fprintf('previous version of CVX. If no other errors occurred, then the setup was\n' );
-        fprintf('still successful; however, to use CVX, you will need to re-start MATLAB.\n' )';
+        fprintf('still successful; however, to use CVX, you will need to re-start MATLAB.\n' );
     end
     
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     % Warn about signal processing toolbox conflict %
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     
+    squares = which( 'square', '-all' );
+    if iscell( squares ) && length( squares ) > 1,
+        squares = squares(~cellfun(@(x)any(strfind(x,[fs,'@cvx',fs])),squares));
+        if length(squares) == 1 || ~strncmp(squares{1},[mpath,fs],length(mpath)+1),
+            squares = {};
+        end
+    else
+        squares = {};
+    end
     if ~isempty(squares),
         fprintf( '%s\n', line );
         fprintf('WARNING: CVX includes a function\n    %s\n', squares{1} );

@@ -1,4 +1,4 @@
-function cvx_global( prefs )
+function cvx_global
 
 %CVX_GLOBAL   Create CVX's global internal data structure, if needed.
 %   CVX_GLOBAL creates a hidden structure CVX needs to do its work. It is
@@ -13,57 +13,7 @@ end
 % Initialize the global data structure %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-try_save = false;
-[ fs, ps, mpath, mext, nver, isoctave ] = cvx_version;
-if fs == '/', fsre = '/'; else fsre = '\\'; end
-if nargin < 1,
-    try
-        if isoctave,
-            pfile = [ prefdir, fs, '.cvx_prefs.mat'];
-        else
-            pfile = [ regexprep( prefdir, [ fsre, 'R\d\d\d\d\w$' ], '' ), fs, 'cvx_prefs.mat' ];
-        end
-        if exist( pfile, 'file' ),
-            prefs = load( pfile );
-        else
-            prefs = load( [ prefdir, fs, 'cvx_prefs.mat' ] );
-            try_save = true;
-        end        if ~isfield( prefs, 'pfile' ),            prefs.pfile = pfile;            try_save = true;        end    
-    catch %#ok
-        error( 'CVX:Preferences', 'Could not load saved CVX preferences; cannot continue. Please run CVX_SETUP.' );
-    end
-end
-if ~isempty( prefs.license ),
-    if ~usejava('jvm'),
-        warning( 'CVX:Licensing', cvx_error( ...
-            'The CVX licensing system requires the Java VM. The professional features of CVX are disabled.', ...
-            [66,75], false, '', true ) );
-        prefs.license = [];
-        try_save = false;
-    elseif ~exist( 'cvx_license', 'file' ), 
-        warning( 'CVX:Licensing', cvx_error( ...
-            'The CVX licensing system cannot be found. The professional features of CVX are disabled.', ...
-            [66,75], false, '', true ) );
-        prefs.license = [];
-        try_save = false;
-    else
-        try
-            prefs.license = cvx_license( prefs.license );
-            if prefs.license.days_left < 0,
-                [ dummy, errmsg ] = cvx_license(''); %#ok
-                errmsg = sprintf( '%s\n', errmsg{2:end} );
-                warning( 'CVX:Licensing', 'A problem was found with the current CVX license:\n%sThe professional features of CVX are disabled.\nPlease correct the issues and re-run CVX_SETUP.', errmsg );
-                prefs.license = [];
-                try_save = false;
-            end
-        catch errmsg
-            prefs.license = [];
-            errmsg = cvx_error( errmsg, 67, false, '    ' );
-            warning( 'CVX:Licensing', 'The CVX licensing system encountered an unexpected error:\n%sThe professional features of CVX are disabled.\nPlease correct the issue or contact CVX Research support.', errmsg );
-            try_save = false;
-        end
-    end
-end
+cvx_version(1);
 
 commands = { 'cvx_begin', 'cvx_clear', 'cvx_end', 'cvx_expert', ...
     'cvx_pause', 'cvx_power_warning', 'cvx_precision', 'cvx_profile', ...
@@ -85,55 +35,29 @@ s_type = cell(1,length(structures));
 [ s_type{:} ] = deal('S');
 reserved = cell2struct([c_type,k_type,s_type],[commands,keywords,structures],2);
 
-cvx___ = struct( ...
-    'isoctave',     isoctave, ...
-    'nver',         nver, ...
-    'fs',           fs, ...
-    'fsre',         fsre, ...
-    'ps',           ps, ...
-    'pfile',        prefs.pfile,      ...
-    'expert',       prefs.expert,     ...
-    'precision',    prefs.precision,  ...
-    'precflag',     prefs.precflag,   ...
-    'rat_growth',   prefs.rat_growth, ...
-    'path',         prefs.path,       ...
-    'license',      prefs.license,    ...
-    'solvers',      prefs.solvers,    ...
-    'where',        regexprep( mfilename( 'fullpath' ), [ fsre, 'lib', fsre, '.*?$' ], '' ), ...
-    'reswords',     reserved, ...
-    'problems',     [],    ...
-    'id',           0,     ...
-    'pause',        false, ...
-    'quiet',        false, ...
-    'profile',      false, ...
-    'reserved',     1, ...
-    'logarithm',    sparse( 1, 1 ), ...
-    'exponential',  sparse( 1, 1 ), ...
-    'vexity',       0, ... % sparse( 1, 1 ), ...
-    'nan_used',     false, ...
-    'canslack',     false, ...
-    'readonly',     0,  ...
-    'equalities',   [], ...
-    'needslack',    false( 0, 1 ) , ...
-    'linforms',     [], ...
-    'linrepls',     [], ...
-    'uniforms',     [], ...
-    'unirepls',     [], ...
-    'cones',        struct( 'type', {}, 'indices', {} ), ...
-    'x',            zeros( 0, 1 ), ...
-    'y',            zeros( 0, 1 ) );
+cvx___.reswords    = reserved;
+cvx___.problems    = [];
+cvx___.id          = 0;
+cvx___.pause       = false;
+cvx___.quiet       = false;
+cvx___.profile     = false;
+cvx___.reserved    = 1;
+cvx___.logarithm   = sparse( 1, 1 );
+cvx___.exponential = sparse( 1, 1 );
+cvx___.vexity      = 0; % sparse( 1, 1 );
+cvx___.nan_used    = false;
+cvx___.canslack    = false;
+cvx___.readonly    = 0;
+cvx___.needslack   = false(0,1);
+cvx___.cones       = struct( 'type', {}, 'indices', {} );
+cvx___.x           = zeros( 0, 1 );
+cvx___.y           = zeros( 0, 1 );
 temp = cvx( [0,1], [] );
-cvx___.equalities = temp;
-cvx___.linforms   = temp;
-cvx___.linrepls   = temp;
-cvx___.uniforms   = temp;
-cvx___.unirepls   = temp;
-if try_save,
-    try
-        cvx_save_prefs( true );
-    catch
-    end
-end
+cvx___.equalities  = temp;
+cvx___.linforms    = temp;
+cvx___.linrepls    = temp;
+cvx___.uniforms    = temp;
+cvx___.unirepls    = temp;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Run each shim to connect/reconnect the solvers %
@@ -194,7 +118,7 @@ for k = 1 : nsolv,
     end
 end
 if ~isempty( reject_java ),
-    reject_lic = sprintf( '%s ', reject_java{:} );
+    reject_java = sprintf( '%s ', reject_java{:} );
     warning( 'CVX:SolverErrors', 'The following solvers were disabled due to the disabling of Java: %s', reject_java );
 end
 if ~isempty( reject_lic ),

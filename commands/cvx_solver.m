@@ -42,7 +42,7 @@ if nargin,
     end
     try
         snumber = cvx___.solvers.map.(lower(sname));
-    catch %#ok
+    catch
         error( 'Unknown, unusable, or missing solver: %s', sname );
     end
     if ~isempty( cvx___.solvers.list(snumber).error ),
@@ -60,6 +60,7 @@ if nargin,
     end
 elseif nargout == 0,
     solvers = cvx___.solvers;
+    snames = solvers.names;
     statvec = [ 0, solvers.map.default, solvers.active ];
     statstr = { 'selected', 'default', 'active' };
     if ~isempty( cvx___.problems ),
@@ -82,7 +83,7 @@ elseif nargout == 0,
         else
             nstat = 'disabled';
         end
-        lens = max( lens, [ length(solvers(k).name), length(nstat), length(solvers(k).version), length(solvers(k).location) ] );
+        lens = max( lens, [ length(snames{k}), length(nstat), length(solvers(k).version), length(solvers(k).location) ] );
     end
     fmt = sprintf( '   %%-%ds   %%-%ds   %%-%ds   %%s\\n', lens(1), lens(2), lens(3) );
     fprintf( fmt, 'Name', 'Status', 'Version', 'Location' ); %#ok
@@ -99,7 +100,7 @@ elseif nargout == 0,
         else
             nstat = 'disabled';
         end
-        fprintf( fmt, solvers(k).name, nstat, solvers(k).version, solvers(k).location );
+        fprintf( fmt, snames{k}, nstat, solvers(k).version, solvers(k).location );
     end
     fprintf( '\n' );
 end

@@ -4,16 +4,18 @@ function shim = cvx_sdpt3( shim )
 %   This procedure returns a 'shim': a structure containing the necessary
 %   information CVX needs to use this solver in its modeling framework.
 
+global cvx___
 if ~isempty( shim.solve ),
     return
 end
 if isempty( shim.name ),
     fname = 'sdpt3.m';
-    [ fs, ps, int_path, mext, nver, isoctave ] = cvx_version;
-    if isoctave,
+    if cvx___.isoctave,
         shim.error = 'SDPT3 is not yet supported in Octave.';
     end
-    int_path(end+1) = fs;
+    ps = cvx___.ps;
+    fs = cvx___.fs;
+    int_path = [ cvx___.where, fs ];
     int_plen = length( int_path );
     shim.name = 'SDPT3';
     shim.dualize = true;

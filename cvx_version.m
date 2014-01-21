@@ -1,4 +1,4 @@
-function [ fs, ps, mpath, mext, nver, isoctave, problem ] = cvx_version( license_file )
+function cvx_version( varargin )
 
 % CVX_VERSION   Returns version and environment information for CVX.
 %
@@ -10,44 +10,105 @@ function [ fs, ps, mpath, mext, nver, isoctave, problem ] = cvx_version( license
 
 global cvx___
 
-% File and path separators
-comp = computer;
-if strncmp( comp, 'PC', 2 ), 
-    fs = '\'; 
-    ps = ';'; 
-else
-    fs = '/'; 
-    ps = ':';
-end
+if isfield( cvx___, 'loaded' ),
     
-% Install location
-mpath = mfilename('fullpath');
-temp = strfind( mpath, fs );
-mpath = mpath( 1 : temp(end) - 1 );
+    if nargin == 1 && ~ischar( varargin{1} ), return; end
+    fs = cvx___.fs;
+    mpath = cvx___.where;
+    isoctave = cvx___.isoctave;
+    
+else
+    
+    % Matlab / Octave flag
+    isoctave = exist( 'OCTAVE_VERSION', 'builtin' );
 
-% MEX extension
+    % File and path separators, MEX extension
+    if isoctave,
+        comp = octave_config_info('canonical_host_type');
+        mext = '.mex';
+        if octave_config_info('mac'),
+            msub = 'mac';
+        elseif octave_config_info('windows'),
+            msub = 'win';
+        elseif octave_config_info('unix') && any(strfind(comp,'linux')),
+            msub = 'lin';
+        else
+            msub = 'unknown';
+        end
+        if ~isempty( msub ),
+            msub = [ 'o_', msub ];
+            if strncmp( comp, 'x86_64', 6 ),
+                msub = [ msub, '64' ];
+            else
+                msub = [ msub, '32' ];
+            end
+        end
+    else
+        comp = computer;
+        ispc = strncmp( comp, 'PC',2  );
+        mext = mexext;
+        msub = '';
+    end
+    if ispc,
+        fs = '\'; 
+        fsre = '\\';
+        ps = ';'; 
+    else
+        fs = '/'; 
+        fsre = '/';
+        ps = ':';
+    end
 
-mext = mexext;
+    % Install location
+    mpath = mfilename('fullpath');
+    temp = strfind( mpath, fs );
+    mpath = mpath( 1 : temp(end) - 1 );
 
-if nargout <= 4 && nargout, 
-    return; 
+    % Numeric version
+    nver = version;
+    nver(nver=='.') = ' ';
+    nver = sscanf(nver,'%d');
+    nver = nver(1) + 0.01 * ( nver(2) + 0.01 * nver(3) );
+    
+    if isoctave || ~usejava('jvm'),
+        jver = 0;
+    else
+        jver = char(java.lang.System.getProperty('java.version'));
+        try
+            ndxs = strfind( jver, '.' );
+            jver = str2double( jver(1:ndxs(2)-1) );
+        catch
+            jver = 0;
+        end
+    end
+    
+    cvx___.where = mpath;
+    cvx___.isoctave = isoctave;
+    cvx___.nver = nver;
+    cvx___.jver = jver;
+    cvx___.comp = comp;
+    cvx___.mext = mext;
+    cvx___.msub = msub;
+    cvx___.fs = fs;
+    cvx___.fsre = fsre;
+    cvx___.ps = ps;
+    
 end
 
-% Numeric version
-nver = version;
-nver(nver=='.') = ' ';
-nver = sscanf(nver,'%d');
-nver = nver(1) + 0.01 * ( nver(2) + 0.01 * nver(3) );
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Quick exit for non-verbose output %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-% Matlab / Octave flag
-isoctave = exist( 'OCTAVE_VERSION', 'builtin' );
-
-if nargout <= 6 && nargout, 
-    return; 
+if nargin ~= 0 && ( ~ischar( varargin{1} ) || ~any( strcmp( varargin{1}, { '-install', '-clear' } ) ) )
+    cvx_load_prefs( false );
+    cvx___.loaded = true;
+    return
 end
 
-% Version and build
-java_version = 0;
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Verbose output (cvx_setup, cvx_version plain) %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 cvx_ver = '2.0 (beta)';
 cvx_bld = '999';
 cvx_bdate = '9999-99-99 99:99:99';
@@ -59,52 +120,48 @@ fprintf( 'Software for Disciplined Convex Programming\n%s\n', line );
 fprintf( 'Version info:\n' );
 fprintf( '    Code: build %s, %s\n', cvx_bld, cvx_bdate );
 fprintf( '    Documentation: build %s, %s\n', cvx_dbld, cvx_ddate );
-fprintf( 'Installation info:\n    Path: %s\n', mpath );
+fprintf( 'Installation info:\n    Path: %s\n', cvx___.where );
 if isoctave,
-    fprintf( '    GNU Octave %s on %s\n', version, computer );
+    fprintf( '    GNU Octave %s on %s\n', version, cvx___.comp );
 else
     verd = ver('MATLAB');
     fprintf( '    MATLAB version: %s %s\n', verd.Version, verd.Release );
-    if usejava( 'jvm'),
+    if usejava( 'jvm' ),
         os_name = char(java.lang.System.getProperty('os.name'));
         os_arch = char(java.lang.System.getProperty('os.arch'));
         os_version = char(java.lang.System.getProperty('os.version'));
-        java_version = char(java.lang.System.getProperty('java.version'));
+        java_str = char(java.lang.System.getProperty('java.version'));
         fprintf('    OS: %s %s version %s\n', os_name, os_arch, os_version );
-        fprintf('    Java version: %s\n', java_version );
-        try
-            ndxs = strfind( java_version, '.' );
-            java_version = str2double( java_version(1:ndxs(2)-1) );
-            if java_version < 1.6,
-                fprintf('       WARNING: full support for CVX Professional licenses\n' );
-                fprintf('       requres Java version 1.6.0 or later. Please upgrade.\n' );
-            end
-        catch
-        end
+        fprintf('    Java version: %s\n', java_str );
     else
-        fprintf( '    Architecture: %s\n', computer );
+        fprintf( '    Architecture: %s\n', cvx___.comp );
         fprintf( '    Java version: disabled\n' );
     end
 end
-
+    
 %%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Check for valid version %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-problem = true;
-if isoctave && nver < 3.08,
-	fprintf( '%s\nCVX requires Octave 3.8 or later.\n%s\n', line, line );
-elseif ~isoctave && nver < 7.08 && strcmp( comp(end-1:end), '64' ),
+issue = false;
+isoctave = cvx___.isoctave;
+nver = cvx___.nver;
+if isoctave,
+    if nver < 3.09,
+        fprintf( '%s\nCVX requires Octave 3.8 or later.\n%s\n', line, line );
+        issue = true;
+    end
+elseif nver < 7.08 && strcmp( cvx___.comp(end-1:end), '64' ),
     fprintf( '%s\nCVX requires MATLAB 7.8 or later (7.5 or later on 32-bit platforms).\n' , line, line );
-elseif ~isoctave && nver < 7.05,
+    issue = true;
+elseif nver < 7.05,
     fprintf( '%s\nCVX requires MATLAB 7.5 or later (7.8 or later on 64-bit platforms).\n' , line, line );
-else
-	problem = false;
+    issue = true;
 end
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% Verify file and directory lists from the manifest %
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%
+% Verify file contents %
+%%%%%%%%%%%%%%%%%%%%%%%%
 
 fid = fopen( [ mpath, fs, 'MANIFEST' ], 'r' );
 if fid > 0,
@@ -117,7 +174,7 @@ if fid > 0,
         missing = setdiff( manifest, newman );
         additional = setdiff( newman, manifest );
         if ~isempty( missing ) || ~isempty( additional ),
-            if ~isequal( fs, '/' ),
+            if ispc,
                 missing = strrep( missing, '/', fs );
                 additional = strrep( additional, '/', fs );
             end
@@ -166,17 +223,17 @@ if fid > 0,
                 end
                 fprintf( '    These files may alter the behavior of CVX in unsupported ways.\n' );
                 if ~isempty( additional_s ),
-                	fprintf( '    ERROR: obsolete versions of SeDuMi MEX files were found:\n' );
-	                for k = 1 : length(additional_s),
-	                    fprintf( '        %s%s%s\n', mpath, fs, additional_f{k} );
-	            	end
-	            	fprintf( '    These files are now obsolete, and must be removed to ensure\n' );
-	            	fprintf( '    that SeDuMi operates properly and produces sound results.\n' );
-	            	if ~problem,
-		            	fprintf( '    Please remove these files and re-run CVX_SETUP.\n' );
-		            	problem = true;
-		            end
-	            end
+                    fprintf( '    ERROR: obsolete versions of SeDuMi MEX files were found:\n' );
+                    for k = 1 : length(additional_s),
+                        fprintf( '        %s%s%s\n', mpath, fs, additional_f{k} );
+                    end
+                    fprintf( '    These files are now obsolete, and must be removed to ensure\n' );
+                    fprintf( '    that SeDuMi operates properly and produces sound results.\n' );
+                    if ~issue,
+                        fprintf( '    Please remove these files and re-run CVX_SETUP.\n' );
+                        issue = true;
+                    end
+                end
             end
         else
             fprintf( '\n    No missing files.\n' );
@@ -187,39 +244,131 @@ if fid > 0,
 else    
     fprintf( 'Manifest missing; cannot verify file structure.\n' ) ;
 end
-if ( ~exist( [ mpath, fs, 'lib', fs, 'cvx_eliminate_mex.', mext ], 'file' ) || ...
-     ~exist( [ mpath, fs, 'lib', fs, 'cvx_bcompress_mex.', mext ], 'file' ) ) && ~problem,
-    fprintf( '    ERROR: one or more MEX files for this platform are missing.\n' );
-    fprintf( '    These files end in the suffix ".%s". CVX will not operate\n', mext );
-    fprintf( '    without these files. Please visit\n' );
-    fprintf( '        http://cvxr.com/cvx/download\n' );
-    fprintf( '    And download a distribution targeted for your platform.\n' );
-    problem = true;
+mexpath = [ mpath, fs, 'lib', fs ];
+mext = cvx___.mext;
+if ( ~exist( [ mexpath, 'cvx_eliminate_mex.', mext ], 'file' ) || ...
+     ~exist( [ mexpath, 'cvx_bcompress_mex.', mext ], 'file' ) ) && ~issue,
+    issue = true;
+    if ~isempty( msub ),
+      mexpath = [ mexpath, msub, fs ];
+      issue = ~exist( [ mexpath, 'cvx_eliminate_mex.mex' ], 'file' ) || ...
+                     ~exist( [ mexpath, 'cvx_bcompress_mex.mex' ], 'file' );
+    end
+    if issue,
+      fprintf( '    ERROR: one or more MEX files for this platform are missing.\n' );
+      fprintf( '    These files end in the suffix ".%s". CVX will not operate\n', mext );
+      fprintf( '    without these files. Please visit\n' );
+      fprintf( '        http://cvxr.com/cvx/download\n' );
+      fprintf( '    And download a distribution targeted for your platform.\n' );
+    end
 end
 
+%%%%%%%%%%%%%%%
+% Preferences %
+%%%%%%%%%%%%%%%
+
+cvx_load_prefs( true );
+    
 %%%%%%%%%%%%%%%%
 % License file %
 %%%%%%%%%%%%%%%%
 
-cvx___.license = [];
-exception = '';
-if java_version >= 1.6 && exist( 'cvx_license', 'file' ),
-    try
-        if nargin < 1, license_file = ''; end
-        cvx___.license = cvx_license( license_file );
-    catch exception
+if isoctave,
+    if ~isempty( cvx___.license ),
+        fprintf( 'CVX Professional is not supported with Octave.\n' );
     end
-elseif ~isoctave && exist( 'cvx_license', 'file' ),
-    fprintf( 'CVX Professional disabled; requires the Java virtual machine.\n' );
+elseif cvx___.jver < 1.6,
+    fprintf('       WARNING: full support for CVX Professional licenses\n' );
+    fprintf('       requres Java version 1.6.0 or later. Please upgrade.\n' );
+elseif exist( 'cvx_license', 'file' ),
+    cvx_license( varargin{:} );
 end
+
+%%%%%%%%%%%%%%%
+% Wrapping up %
+%%%%%%%%%%%%%%%
+
+if ~issue,
+    cvx___.loaded = true;
+end
+clear fs;
 fprintf( '%s\n', line );
-if nargout == 0,
-    clear fs
+if nargin == 0,
     fprintf( '\n' );
 end
-if ~isempty( exception ),
-    rethrow( exception )
+
+%%%%%%%%%%%%%%%%%%%%%%
+% Preference loading %
+%%%%%%%%%%%%%%%%%%%%%%
+
+function cvx_load_prefs( verbose )
+
+global cvx___
+fs = cvx___.fs;
+isoctave = cvx___.isoctave;
+errmsg = '';
+if verbose,
+    fprintf( 'Preferences: ' );
 end
+if isoctave,
+    pfile = [ prefdir, fs, '.cvx_prefs.mat' ];
+else
+    pfile = [ regexprep( prefdir(1), [ cvx___.fsre, 'R\d\d\d\d\w$' ], '' ), fs, 'cvx_prefs.mat' ];
+end
+outp = [];
+try
+    if exist( pfile, 'file' )
+        outp = load( pfile );
+        pfile2 = pfile;
+    elseif ~isoctave,
+        pfile2 = [ prefdir, fs, 'cvx_prefs.mat' ];
+        if exist( pfile2, 'file' ),
+            outp = load( pfile2 );
+        end
+    end
+catch errmsg
+    errmsg = cvx_error( errmsg, 67, false, '    ' );
+    errmsg = sprintf( 'CVX encountered the following error attempting to load your preferences:\n%sPlease attempt to diagnose this error and try again.\nYou may need to re-run CVX_SETUP as well.\nIn the meanwhile, preferences will be set to their defaults.\n', errmsg );
+end
+if ~isempty( outp ),
+    try
+        cvx___.expert = outp.expert;
+        cvx___.precision = outp.precision;
+        cvx___.precflag = outp.precflag;
+        cvx___.rat_growth = outp.rat_growth;
+        cvx___.path = outp.path;
+        cvx___.solvers = outp.solvers;
+        cvx___.license = outp.license;
+    catch
+        outp = [];
+        errmsg = 'Your CVX preferences file seems out of date; default preferences will be used.';
+    end
+end
+if isempty( outp ),
+    cvx___.expert = false;
+    cvx___.precision = [eps^0.5,eps^0.5,eps^0.25];
+    cvx___.precflag = 'default';
+    cvx___.rat_growth = 10;
+    cvx___.path = [];
+    cvx___.solvers = [];
+    cvx___.license = [];
+end
+cvx___.pfile = pfile;
+if verbose,
+    if ~isempty( errmsg ),
+        fprintf( 'error during load:\n%s', cvx_error( errmsg, 70, false, '   ' ) );
+    elseif isempty( cvx___.path ),
+        fprintf( 'none found; defaults loaded.\n' );
+    else
+        fprintf( '\n    Path: %s\n', pfile2 );
+    end
+elseif ~isempty( errmsg ),
+    warning( 'CVX:BadPrefsLoad', errmsg );
+end
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Recursive manifest building function %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 function newman = get_manifest( mpath, fs )
 dirs   = {};
@@ -251,7 +400,7 @@ end
 [tmp,ndxs1] = sort(upper(dirs)); %#ok
 [tmp,ndxs2] = sort(upper(files)); %#ok
 newman = horzcat( dirs(ndxs1), files(ndxs2) );
-if ~isequal( fs, '/' ),
+if ispc,
     newman = strrep( newman, fs, '/' );
 end
 newman = newman(:);

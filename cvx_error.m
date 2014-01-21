@@ -5,10 +5,6 @@ function lines = cvx_error( errmsg, widths, useline, prefix, chop )
 %    home directory so that it's available during a fresh installation.
 
 if ~ischar( errmsg ),
-    if ~isfield( errmsg, 'stack' ),
-        tmp = lasterror;
-        errmsg.stack = tmp.stack;
-    end
     if strncmp( errmsg.identifier, 'CVX:', 4 ),
         format = 'basic';
     else

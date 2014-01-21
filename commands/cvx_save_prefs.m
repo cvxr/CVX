@@ -1,4 +1,4 @@
-function cvx_save_prefs( in_setup )
+function cvx_save_prefs( varargin )
 
 %CVX_SAVE_PREFS   Saves current CVX settings for future MATLAB sessions.
 %   CVX_SAVE_PREFS saves the the current global CVX settings to a special
@@ -6,36 +6,25 @@ function cvx_save_prefs( in_setup )
 %   remember your preferred settings (solver, precision, etc.) between
 %   MATLAB sessions.
 
-if nargin < 1, in_setup = false; end
 global cvx___
-if isempty( cvx___ ), return; end
-cvx___.solvers.map.default = cvx___.solvers.selected;
-osolv = cvx___.solvers;
-try
-    [ cvx___.solvers.list.check, cvx___.solvers.list.solve, cvx___.solvers.list.eargs ] = deal( {} );
-    cvx___.solvers.active = 0;
-    if strncmp( computer, 'PC', 2 ), fs = '\'; fsre = '\\'; else fs = '/'; fsre = '/'; end
-    if exist( 'OCTAVE_VERSION', 'builtin' ),
-        pfile = [ prefdir, fs, '.cvx_prefs.mat' ];
-    else
-        pfile = [ regexprep( prefdir(1), [ fsre, 'R\d\d\d\d\w$' ], '' ), fs, 'cvx_prefs.mat' ];
-    end
-    save(pfile,'-struct',...
-        'cvx___','expert','precision','precflag',...
-        'rat_growth','path','license','solvers');
-    cvx___.solvers = osolv;
-    pfile2 = [ prefdir, fs, 'cvx_prefs.mat' ];
-    if ~strcmp( pfile, pfile2 ) && exist( pfile, 'file' ) && exist( pfile2, 'file' ),
-        try delete( pfile2 ); catch end %#ok
-    end
-catch errmsg
-    cvx___.solvers = osolv;
-    if in_setup,
-        rethrow( errmsg );
-    else
-        errmsg = cvx_error( errmsg, 67, false, '    ' );
-        error( 'CVX:BadPrefsSave', 'CVX encountered the following error attempting to save your preferences:\n%sYour preferences will revert once you exit this MATLAB session.', errmsg  );
-    end
+if ~isfield( cvx___, 'pfile' ),
+    error( 'CVX:BadPrefsSave', 'CVX is not currently loaded; there are no preferences to save.' );
+elseif nargin == 0,
+    fprintf( 'Saving prefs...' );
+end
+outp.expert = cvx___.expert;
+outp.precision = cvx___.precision;
+outp.precflag = cvx___.precflag;
+outp.rat_growth = cvx___.rat_growth;
+outp.path = cvx___.path;
+outp.solvers = cvx___.solvers;
+outp.license = cvx___.license;
+outp.solvers.map.default = cvx___.solvers.selected;
+[ outp.solvers.list.check, outp.solvers.list.solve, outp.solvers.list.eargs ] = deal( {} );
+outp.solvers.active = 0;
+save(cvx___.pfile,'-struct','outp');
+if nargin == 0,
+    fprintf( 'done.\n' );
 end
 
 % Copyright 2005-2013 CVX Research, Inc.

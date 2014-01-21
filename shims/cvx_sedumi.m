@@ -4,13 +4,15 @@ function shim = cvx_sedumi( shim )
 %   This procedure returns a 'shim': a structure containing the necessary
 %   information CVX needs to use this solver in its modeling framework.
 
+global cvx___
 if ~isempty( shim.solve ),
     return
 end
 if isempty( shim.name ),
     fname = 'sedumi.m';
-    [ fs, ps, int_path ] = cvx_version;
-    int_path(end+1) = fs;
+    fs = cvx___.fs;
+    ps = cvx___.ps;
+    int_path = [ cvx___.where, fs ];
     int_plen = length( int_path );
     shim.name = 'SeDuMi';
     shim.dualize = true;
@@ -52,6 +54,16 @@ if isempty( shim.name ),
             tshim.eargs = { vnum >= 1.3 && vnum < 1.32 };
             if k ~= 2,
                 tshim.path = [ new_dir, ps ];
+                if ~isempty(cvx___.msub) && ~exist( [ new_dir, fs, 'cholsplit', cvx___.mext ], 'file' ),
+                  path2 = [ new_dir, fs, cvx___.msub ];
+                  if exist( [ path2, fs, 'cholsplit', cvx___.mext ], 'file' ),
+                      tshim.path = [ path2, ps, tshim.path ];
+                  else
+                      tshim.error = 'Could not find the SeDuMi MEX files for this platform. Please run INSTALL_SEDUMI in the SeDuMi directory and try again.';
+                  end
+                end
+            elseif ~exist( [ 'cholsplit', mext ], 'file' ),
+                tshim.error = 'SeDuMi''s MEX files are missing from the path. Please run "install_sedumi" and re-run cvx_setup.';
             end
         end
         shim = [ shim, tshim ]; %#ok
