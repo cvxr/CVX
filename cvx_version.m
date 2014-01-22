@@ -25,7 +25,7 @@ else
     % File and path separators, MEX extension
     if isoctave,
         comp = octave_config_info('canonical_host_type');
-        mext = '.mex';
+        mext = 'mex';
         if octave_config_info('mac'),
             msub = 'mac';
         elseif octave_config_info('windows'),

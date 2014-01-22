@@ -54,9 +54,9 @@ if isempty( shim.name ),
             tshim.eargs = { vnum >= 1.3 && vnum < 1.32 };
             if k ~= 2,
                 tshim.path = [ new_dir, ps ];
-                if ~isempty(cvx___.msub) && ~exist( [ new_dir, fs, 'cholsplit', cvx___.mext ], 'file' ),
+                if ~isempty(cvx___.msub) && ~exist( [ new_dir, fs, 'cholsplit.', cvx___.mext ], 'file' ),
                   path2 = [ new_dir, fs, cvx___.msub ];
-                  if exist( [ path2, fs, 'cholsplit', cvx___.mext ], 'file' ),
+                  if exist( [ path2, fs, 'cholsplit.', cvx___.mext ], 'file' ),
                       tshim.path = [ path2, ps, tshim.path ];
                   else
                       tshim.error = 'Could not find the SeDuMi MEX files for this platform. Please run INSTALL_SEDUMI in the SeDuMi directory and try again.';

@@ -60,7 +60,12 @@ for k = 0 : length(other_homes),
     tndxs(tndxs) = cellfun(@(x)length(x)<=plen||x(plen+1)==fs,oldpath(tndxs));
     ndxs = ndxs | tndxs;
 end
-newpath = horzcat( addpaths, oldpath(~ndxs) );
+dndx = find(ndxs,1) - 1;
+if isempty(dndx),
+  dndx = strcmp(oldpath{1},'.');
+end
+ndxs(1:dndx) = true;
+newpath = horzcat( oldpath(1:dndx), addpaths, oldpath(~ndxs) );
 npath = sprintf( [ '%s', pathsep ], newpath{:} );
 npath = npath(1:end-1);
 path(npath);
@@ -83,6 +88,10 @@ if nargout,
 else
     clear prevpath
 end
+cpath = struct('string','','active',false,'hold',false);
+subs = strcat([mpath,fs],{'keywords','sets'});
+cpath.string = sprintf( ['%s',ps], subs{:} );
+cvx___.path = cpath;
 
 % Copyright 2005-2013 CVX Research, Inc.
 % See the file COPYING.txt for full copyright information.
