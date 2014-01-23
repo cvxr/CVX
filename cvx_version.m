@@ -109,7 +109,7 @@ end
 % Verbose output (cvx_setup, cvx_version plain) %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-cvx_ver = '2.0 (beta)';
+cvx_ver = '2.1';
 cvx_bld = '999';
 cvx_bdate = '9999-99-99 99:99:99';
 cvx_ddate = '9999-99-99 99:99:99';
