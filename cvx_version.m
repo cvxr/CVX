@@ -1,4 +1,4 @@
-function cvx_version( varargin )
+function varargout = cvx_version( varargin )
 
 % CVX_VERSION   Returns version and environment information for CVX.
 %
@@ -99,7 +99,10 @@ end
 % Quick exit for non-verbose output %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-if nargin ~= 0 && ( ~ischar( varargin{1} ) || ~any( strcmp( varargin{1}, { '-install', '-clear' } ) ) )
+if nargout || nargin ~= 0 && ( ~ischar( varargin{1} ) || ~any( strcmp( varargin{1}, { '-install', '-clear' } ) ) )
+    if nargout,
+        varargout = { fs, cvx___.ps, mpath, cvx___.mext };
+    end
     cvx_load_prefs( false );
     cvx___.loaded = true;
     return

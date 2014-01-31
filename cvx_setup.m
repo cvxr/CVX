@@ -70,8 +70,8 @@ try
     for k = 1 : length(solver2),
         tsolv = solver2{k};
         ndxs = find(tsolv==fs,1,'last');
-        solvers(end+1).spath = tsolv(1:ndxs-1); %#ok
-        solvers(end).sname = tsolv(ndxs+1:end);
+        solvers(end+1).spath = tsolv(1:ndxs); %#ok
+        solvers(end).sname = tsolv(ndxs+1:end-2);
     end
     cur_d = pwd;
     nsolvers = [];

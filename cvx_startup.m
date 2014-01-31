@@ -62,7 +62,7 @@ for k = 0 : length(other_homes),
 end
 dndx = find(ndxs,1) - 1;
 if isempty(dndx),
-  dndx = strcmp(oldpath{1},'.');
+  dndx = +strcmp(oldpath{1},'.');
 end
 ndxs(1:dndx) = true;
 newpath = horzcat( oldpath(1:dndx), addpaths, oldpath(~ndxs) );
