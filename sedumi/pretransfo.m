@@ -464,13 +464,12 @@ if K.rsdpN < length(K.s),
     sdpL  = 2 * sum(jsize);
     jstrt = cumsum([N_flqr+1,K.s(1:end-1).^2]);
     jstrt = jstrt(scplx);
-    bstrt = cumsum([1,2*jsize(1:end-1).^2]);
+    bstrt = cumsum([1,2*jsize(1:end-1)]);
     dblks = cumsum(full(sparse(1,bstrt,1,1,sdpL)));
     istrt = bstrt + nb_off;
     dsize = dsize(dblks);
     istrt = istrt(dblks);
     bndxs = ( nb_off + 1 : nb_off + sdpL ) - istrt;
-    dsize = dsize(dblks);
     cols  = floor( bndxs ./ dsize );
     rows  = bndxs - dsize .* cols;
     imgv  = cols >= dsize;
@@ -478,7 +477,7 @@ if K.rsdpN < length(K.s),
     indxs = max(rows,cols) + min(rows,cols) .* dsize + imgv .* jsize(dblks) + istrt;
     vals  = ( 1 - 2 * ( cols > rows ) ) .* ( 1 - ( 1 + 1j ) .* imgv );
     keep  = ~imgv | ( rows ~= cols );
-    jndxs = rows + cols .* dsize + jstrt;
+    jndxs = rows + cols .* dsize + jstrt(dblks);
     ii{end+1} = indxs(keep);
     jj{end+1} = jndxs(keep);
     vv{end+1} = vals(keep);
