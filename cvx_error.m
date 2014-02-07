@@ -14,7 +14,7 @@ if ~ischar( errmsg ),
         errmsg = getReport( errmsg, format, 'hyperlinks', 'off' );
         errmsg = regexprep( errmsg,'</?a[^>]*>', '' );
     catch
-        if length(errmsg.stack) >= 1,
+        if isfield(errmsg,'stack') && length(errmsg.stack) >= 1,
             errmsg = sprintf( '%s\n    Line %d: %s\n', errmsg.message, errmsg.stack(1).line, errmsg.stack(1).file );
         else
             errmsg = sprintf( '%s\n', errmsg.message );

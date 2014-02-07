@@ -1,4 +1,5 @@
 function xi = cvx_invert_structure( x, compact )
+global cvx___
 if nargin < 2, compact = false; end
 
 %CVX_INVERT_STRUCTURE Compute a right-inverse of a structure mapping.
@@ -12,8 +13,14 @@ if ~isreal( x ),
     xi = xi(1:2:end,:) - sqrt(-1) * xi(2:2:end,:);
     
 elseif compact,
-    
-    [LL,UU] = lu(x);
+
+    if cvx___.isoctave,
+      [LL,UU,PP,QQ] = lu(x);
+      LL = PP' * LL;
+      UU = UU * QQ';
+    else 
+      [LL,UU] = lu(x);
+    end
     [jj,ii] = find(UU');
     dd = [true;diff(ii)~=0];
     jj = jj(dd);

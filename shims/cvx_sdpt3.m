@@ -422,7 +422,7 @@ if ~y_good || ~all(isfinite(y)),
     y = NaN * ones(m,1);
 end
 if azero,
-    y(end) = [];
+    y(end,:) = [];
 end
 
 % Iteration count

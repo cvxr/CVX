@@ -342,6 +342,7 @@ catch errmsg
     if nret, fprintf( '\n' ); end
     switch errmsg.identifier,
         case { 'CVX:Expected', 'CVX:Licensing' },
+            unexpected = false;
             if ~isempty( errmsg.message ),
                 cvx_error( errmsg, 67, 'ERROR: ', '    ' );
             end

@@ -1,4 +1,4 @@
-function y = abs_abs_dev( x, dim )
+function y = avg_abs_dev( x, dim )
 
 %AVG_ABS_DEV   Average absolute deviation (about the mean).
 %   For vectors, AVG_ABS_DEV(X) is the average absolute deviation of X
