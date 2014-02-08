@@ -36,15 +36,7 @@ cvx_version(1);
 fs = cvx___.fs;
 ps = cvx___.ps;
 mpath = cvx___.where;
-addpaths = { 'builtins', 'commands', 'functions', 'lib', 'structures' };
-addpaths = strcat( [ mpath, fs ], addpaths );
-addpaths{end+1} = mpath;
-if ~isempty( cvx___.msub ),
-    msub = [ mpath, fs, 'lib', fs, cvx___.msub ];
-    if exist( msub, 'dir' ),
-        addpaths{end+1} = msub;
-    end
-end
+
 prevpath = path;
 oldpath = textscan( prevpath, '%s', 'Delimiter', ps );
 oldpath = oldpath{1}(:)';
@@ -64,6 +56,23 @@ dndx = find(ndxs,1) - 1;
 if isempty(dndx),
   dndx = +strcmp(oldpath{1},'.');
 end
+ndxs(1:dndx)=false;
+npath = sprintf( [ '%s', pathsep ], oldpath{~ndxs} );
+npath = npath(1:end-1);
+path(npath);
+
+addpaths = { 'builtins', 'commands', 'functions', 'lib', 'structures' };
+if ~any(which('vec')), addpaths{end+1} = [ 'functions', fs, 'vec_' ]; end
+if ~any(which('square')), addpaths{end+1} = [ 'functions', fs, 'square_' ]; end
+addpaths = strcat( [ mpath, fs ], addpaths );
+addpaths{end+1} = mpath;
+if ~isempty( cvx___.msub ),
+    msub = [ mpath, fs, 'lib', fs, cvx___.msub ];
+    if exist( msub, 'dir' ),
+        addpaths{end+1} = msub;
+    end
+end
+
 ndxs(1:dndx) = true;
 newpath = horzcat( oldpath(1:dndx), addpaths, oldpath(~ndxs) );
 npath = sprintf( [ '%s', pathsep ], newpath{:} );
