@@ -52,7 +52,7 @@ for PNSpec=0.7e-12:0.2e-12:1e-11
     variable SRF;      % self resonance frequency
     variable l;        % length of CMOS transistor
     variable w;        % width of CMOS transistor
-    variable I;        % maximum current through CMOS transistor
+    variable Imax;     % maximum current through CMOS transistor
     variable VOsc;     % differential voltage amplitude
     variable CT;       % total capacitance of oscillator
     variable Csw;      % maximum switching capacitance
@@ -93,9 +93,9 @@ for PNSpec=0.7e-12:0.2e-12:1e-11
       %****************************************%
       % transistor definitions and constraints %
       %****************************************%
-      GM  = 6e-3*(w/l)^0.6*(I/2)^(0.4);
-      GD  = 4e-10*(w/l)^0.4*(I/2)^(0.6)*1/l;
-      Vgs = 0.34+1e-8/l+800*(I*l/(2*w))^0.7;
+      GM  = 6e-3*(w/l)^0.6*(Imax/2)^(0.4);
+      GD  = 4e-10*(w/l)^0.4*(Imax/2)^(0.6)*1/l;
+      Vgs = 0.34+1e-8/l+800*(Imax*l/(2*w))^0.7;
       Cgs = 1e-2*w*l;
       Cgd = 1e-9*w;
       Cdb = 1e-9*w;
@@ -134,7 +134,7 @@ for PNSpec=0.7e-12:0.2e-12:1e-11
       VOsc*invVOsc <= 1;
       invLoopGain*LoopGainSpec <= 1; % loop gain spec
       Vbias+Vgs+IBias/2*R/2 <= Vdd;  % bias constraint spec
-      I == IBias;
+      Imax == IBias;
   cvx_end
   fprintf('min_power = %3.2f mW\n', cvx_optval/1e-3);
   powers = [powers cvx_optval];

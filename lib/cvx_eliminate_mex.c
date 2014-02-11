@@ -119,7 +119,7 @@ void mexFunction(
             double  c_max = 0;
             for ( k = kBeg ; k != kEnd ; ++k ) {
                 mwIndex tr = row_index_A[k];
-                if ( tr != 0 )
+                if ( tr != 0 ) {
                     if ( row_flags[tr] && reserved[tr] ) {
                         c_max = 0;
                         break;
@@ -128,21 +128,22 @@ void mexFunction(
                         if ( c_max < temp ) 
                             c_max = temp;
                     }
+                }
             }
             if ( c_max != 0 ) {
                 mwIndex nc = kEnd - kBeg;
                 c_max /= MAX_GROWTH;
                 for ( k = kBeg ; k != kEnd ; ++k ) {
                     mwIndex tr = row_index_A[k];
-                    if ( tr == 0 ) 
+                    if ( tr == 0 ) {
                         --nc;
-                    else if ( reserved[tr] == 0 ) {
+                    } else if ( reserved[tr] == 0 ) {
                         mwSize nr = row_counts[tr],
                                n1 = ( nr - 1 ) * ( nc - 1 ),
                                n2 = nr + nc - 1;
                         if ( n1 <= n2 && row_flags[tr] <= 0 ) {
                             double temp = fabs(value_A[k]);
-                            if ( temp > c_max || temp == c_max && row_flags[rb] && !row_flags[tr] ) {
+                            if ( temp > c_max || ( temp == c_max && row_flags[rb] && !row_flags[tr] ) ) {
                                 rb = tr;
                                 c_max = temp;
                             }

@@ -10,9 +10,6 @@ if ~isempty( shim.solve ),
 end
 if isempty( shim.name ),
     fname = 'sdpt3.m';
-    if cvx___.isoctave,
-        shim.error = 'SDPT3 is not yet supported in Octave.';
-    end
     ps = cvx___.ps;
     fs = cvx___.fs;
     int_path = [ cvx___.where, fs ];
@@ -47,6 +44,9 @@ if isempty( shim.name ),
             fclose(fid);
         catch errmsg
             tshim.error = sprintf( 'Unexpected error:\n%s\n', errmsg.message );
+        end
+        if is_internal && cvx___.isoctave,
+            tshim.error = 'SDPT3 is not yet supported in Octave.';
         end
         if isempty( tshim.error ),
             otp = regexp( otp, 'SDPT3: version \d+\.\d+', 'match' );

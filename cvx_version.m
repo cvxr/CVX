@@ -10,9 +10,25 @@ function varargout = cvx_version( varargin )
 
 global cvx___
 
+args = varargin;
+compile = false;
+quick = nargout > 0;
+if nargin
+    if ~ischar( args{1} ),
+        quick = true;
+    else
+        tt = strcmp( args, '-quick' );
+        quick = any( tt );
+        if quick, args(tt) = []; end
+        tt = strcmp( args, '-compile' );
+        compile = any( tt );
+        if compile, quick = false; args(tt) = []; end
+    end
+end
+
 if isfield( cvx___, 'loaded' ),
     
-    if nargin == 1 && ~ischar( varargin{1} ), return; end
+    if quick, return; end
     fs = cvx___.fs;
     mpath = cvx___.where;
     isoctave = cvx___.isoctave;
@@ -99,7 +115,7 @@ end
 % Quick exit for non-verbose output %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-if nargout || nargin ~= 0 && ( ~ischar( varargin{1} ) || ~any( strcmp( varargin{1}, { '-install', '-clear' } ) ) )
+if quick,
     if nargout,
         varargout = { fs, cvx___.ps, mpath, cvx___.mext };
     end
@@ -245,22 +261,24 @@ if fid > 0,
 else    
     fprintf( 'Manifest missing; cannot verify file structure.\n' ) ;
 end
-mexpath = [ mpath, fs, 'lib', fs ];
-mext = cvx___.mext;
-if ( ~exist( [ mexpath, 'cvx_eliminate_mex.', mext ], 'file' ) || ...
-     ~exist( [ mexpath, 'cvx_bcompress_mex.', mext ], 'file' ) ) && ~issue,
-    issue = true;
-    if ~isempty( msub ),
-      mexpath = [ mexpath, msub, fs ];
-      issue = ~exist( [ mexpath, 'cvx_eliminate_mex.mex' ], 'file' ) || ...
-                     ~exist( [ mexpath, 'cvx_bcompress_mex.mex' ], 'file' );
-    end
-    if issue,
-      fprintf( '    ERROR: one or more MEX files for this platform are missing.\n' );
-      fprintf( '    These files end in the suffix ".%s". CVX will not operate\n', mext );
-      fprintf( '    without these files. Please visit\n' );
-      fprintf( '        http://cvxr.com/cvx/download\n' );
-      fprintf( '    And download a distribution targeted for your platform.\n' );
+if ~compile,
+    mexpath = [ mpath, fs, 'lib', fs ];
+    mext = cvx___.mext;
+    if ( ~exist( [ mexpath, 'cvx_eliminate_mex.', mext ], 'file' ) || ...
+         ~exist( [ mexpath, 'cvx_bcompress_mex.', mext ], 'file' ) ) && ~issue,
+        issue = true;
+        if ~isempty( msub ),
+          mexpath = [ mexpath, msub, fs ];
+          issue = ~exist( [ mexpath, 'cvx_eliminate_mex.mex' ], 'file' ) || ...
+                         ~exist( [ mexpath, 'cvx_bcompress_mex.mex' ], 'file' );
+        end
+        if issue,
+          fprintf( '    ERROR: one or more MEX files for this platform are missing.\n' );
+          fprintf( '    These files end in the suffix ".%s". CVX will not operate\n', mext );
+          fprintf( '    without these files. Please visit\n' );
+          fprintf( '        http://cvxr.com/cvx/download\n' );
+          fprintf( '    And download a distribution targeted for your platform.\n' );
+        end
     end
 end
 
@@ -282,7 +300,7 @@ elseif cvx___.jver < 1.6,
     fprintf('       WARNING: full support for CVX Professional licenses\n' );
     fprintf('       requres Java version 1.6.0 or later. Please upgrade.\n' );
 elseif exist( 'cvx_license', 'file' ),
-    cvx_license( varargin{:} );
+    cvx_license( args{:} );
 end
 
 %%%%%%%%%%%%%%%
@@ -294,7 +312,7 @@ if ~issue,
 end
 clear fs;
 fprintf( '%s\n', line );
-if nargin == 0,
+if length(dbstack) <= 1,
     fprintf( '\n' );
 end
 

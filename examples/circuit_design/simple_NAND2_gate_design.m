@@ -46,9 +46,17 @@ Amax = linspace(5,45,Npoints);
 Dopt = [];
 
 disp('Generating the optimal tradeoff curve...')
-for k = 1:Npoints   
+need_sedumi = strncmpi(cvx_solver,'sdpt',4);
+if need_sedumi,
+    warning('This model does not converge with SDPT3... switching to SeDuMi.');
+end
+for k = 1:Npoints
     fprintf(1,'  Amax = %5.2f:', Amax(k));
     cvx_begin gp quiet
+        if need_sedumi,
+            cvx_solver sedumi
+        end
+            
         % device width variables
         variable w(N)
 

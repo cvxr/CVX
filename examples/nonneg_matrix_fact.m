@@ -25,7 +25,7 @@ Y = rand(m,k);
 MAX_ITERS = 30;
 residual = zeros(1,MAX_ITERS);
 for iter = 1:MAX_ITERS
-    cvx_begin
+    cvx_begin quiet
         if mod(iter,2) == 1
             variable X(k,n)
             X >= 0; 
