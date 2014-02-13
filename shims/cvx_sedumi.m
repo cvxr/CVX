@@ -55,7 +55,7 @@ if isempty( shim.name ),
             if k ~= 2,
                 tshim.path = [ new_dir, ps ];
                 if ~isempty(cvx___.msub) && exist([new_dir,fs,cvx___.msub],'dir'),
-                   tshim.path = [ tshim.path, new_dir, fs, cvx___.msub, ps ];
+                   tshim.path = [ new_dir, fs, cvx___.msub, ps, tshim.path ];
                 end
             end
         end
