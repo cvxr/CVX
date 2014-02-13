@@ -52,7 +52,7 @@ try
     try
         selected = cvx___.solvers.names{cvx___.solvers.map.default};
     catch
-        if isoctave, selected = 'sedumi'; else selected = 'sdpt3'; end
+        selected = 'sdpt3';
     end
     cvx___.solvers = struct( 'selected', 0, 'active', 0, 'list', [], 'names', {{}}, 'map', struct( 'default', 0 ) );
     fprintf( 'Searching for solvers...' ); nret = true;
