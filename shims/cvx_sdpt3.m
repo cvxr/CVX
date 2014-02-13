@@ -45,9 +45,6 @@ if isempty( shim.name ),
         catch errmsg
             tshim.error = sprintf( 'Unexpected error:\n%s\n', errmsg.message );
         end
-        if is_internal && cvx___.isoctave,
-            tshim.error = 'SDPT3 is not yet supported in Octave.';
-        end
         if isempty( tshim.error ),
             otp = regexp( otp, 'SDPT3: version \d+\.\d+', 'match' );
             if ~isempty(otp), tshim.version = otp{1}(16:end); end
