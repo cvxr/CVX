@@ -39,7 +39,7 @@ this version is no longer supported, and will not receive bug fixes or improveme
 We strongly encourage you to update your Matlab installation to the latest version
 possible.
 
-.. _octave:
+.. _octavesup:
 
 Preliminary Octave support
 --------------------------
@@ -66,19 +66,19 @@ close any gaps in functionality and performance moving ahead.
 
 Here are some other caveats to consider as well:
 
-- SeDuMi is currently the only solver supported on the Octave platform that is actually
-  bundled with CVX. `GLPK <http://www.gnu.org/software/glpk/>`_ is included with most
+- SeDuMi and SDPT3 are not as well-tested with Octave, and will likely have failures or
+  numerical issues that do not occur with MATLAB. On the other hand,
+  `GLPK <http://www.gnu.org/software/glpk/>`_ is included with most
   Octave distributions, and we have added preliminary support for that solver as well.
-  We hope to add support for other solvers in the future.
 
 - CVX Professional will not be supported on Octave. If you wish to use commercial
   solvers such as MOSEK and Gurobi, you will have to use MATLAB as well.
 
-- It may be necessary for you to recompile the SeDuMi and/or CVX MEX files with your
-  particular installation of Octave. This may mean that you will have to install
-  certain compiler packages on your computer, and we cannot offer assistance on
-  how to do that. Eventually, we hope to provide full binary packages for Windows,
-  Mac OSX, and Linux, but we may only be able to support
+- It may be necessary for you to recompile the SeDuMi, SDPT3, and/or CVX MEX files
+  with your particular installation of Octave. This may mean that you will have 
+  to install certain compiler packages on your computer, and we cannot offer 
+  assistance on how to do that. Eventually, we hope to provide full binary packages
+  for Windows, Mac OSX, and Linux, but we may only be able to support
   newer verisons of those platforms.
 
 If you encounter problems with the use of CVX with Octave, please do not hesitate

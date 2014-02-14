@@ -18,6 +18,6 @@ y  = mx + mn .* ( n - 0.5 * ( mn + 1 ) ) + 1;
 y  = sparse( y( : ), 1 : nsq, sign( r( : ) - c( : ) ), ntr, nsq );
 y  = y( any( y, 2 ), : );
 
-% Copyright 2005-2013 CVX Research, Inc. 
-% See the file COPYING.txt for full copyright information.
+% Copyright 2005-2014 CVX Research, Inc. 
+% See the file LICENSE.txt for full copyright information.
 % The command 'cvx_where' will show where this file is located.

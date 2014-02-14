@@ -13,6 +13,6 @@ else
     y = isreal( x.basis_ ) | nnz(imag(x.basis_)) == 0;
 end
 
-% Copyright 2005-2013 CVX Research, Inc.
-% See the file COPYING.txt for full copyright information.
+% Copyright 2005-2014 CVX Research, Inc.
+% See the file LICENSE.txt for full copyright information.
 % The command 'cvx_where' will show where this file is located.

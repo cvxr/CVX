@@ -91,7 +91,7 @@ a paid CVX Professional license. For more details, see :ref:`licensing`.
 What's new?
 ~~~~~~~~~~~
 
-- Preliminary support for Octave; see :ref:`octave`.
+- Preliminary support for Octave; see :ref:`octavesup`.
 - Support for commercial solvers (MATLAB only); see :ref:`solvers`.
 - Binary and integer variable support; see :ref:`what-is-midcp`.
 - Commercial licensing for advanced features (MATLAB only); see :ref:`licensing`.

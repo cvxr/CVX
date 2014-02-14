@@ -11,105 +11,152 @@ License
 
 Thank you for using CVX!
 
-The files contained in the CVX distribution come from several different sources and
-are covered under a variety of licenses. The files owned by CVX Research, Inc. are
-covered under one of two licenses: the *CVX Standard License* and the *CVX Professional
-License*. The CVX Standard License is effectively the GNU General Public License, Version
-2 (GPLv2), but with additional terms that govern modifications that connect CVX to 
-additional solvers. The added terms are discussed in "Solver Interfaces" below.
+The files contained in the CVX distribution come from several different
+sources and are covered under a variety of licenses. Those files owned by CVX
+Research, Inc. are released under one of two licenses: the *CVX Standard 
+License* and the *CVX Professional License*. The CVX Professional License
+is not a permissive license, and it does not permit redistribution. The
+CVX Standard License, on the other hand, is in fact the GNU Standard
+License, Version 3, amended with a single additional permission.
 
 CVX Professional License
 ------------------------
 
-The standard CVX distribution includes several files in Matlab *p-code* format, which
-contain encrypted binary versions of Matlab bytecode. As their name implies, they are 
-recognized by their ``.p`` suffix. Currently the following files are distributed this way:
+The full CVX package, including the commercial solver functionality,
+includes several files in Matlab *p-code* format. This format contains
+an encrypted form of Matlab bytecode, and are distinguished by a ``.p``
+suffix. For instance, the package currently includes the files
 
 ::
 
     shims/cvx_mosek.p
     shims/cvx_gurobi.p
     cvx_license.p
-    
-In addition, all files within the subdirectories
+
+but future versions may add additional .p files, and they are governed
+by this text as well. Furthermore, all files within the subdirectories
 
 ::
 
-	gurobi/
-	mosek/
-	
-are owned by Gurobi Optimization and MOSEK ApS, respectively, and are provided by these
-companies for inclusion in the CVX package by contractual agreement. 
+    gurobi/
+    mosek/  
 
-You may redistribute these files only as part of the complete, unmodified CVX package as
-distributed by CVX Research, Inc. itself.
+are licensed by Gurobi Optimization and MOSEK ApS, respectively, for
+inclusion in the CVX package by contractual agreement. In the future,
+CVX Research may include other commercial solvers in its distributions,
+and they will be governed by this section as well.
+
+Any package containing even one of the files mentioned above is subject
+to the *CVX Professional License*. You may *not* redistribute such a package,
+nor make it available on a public repository, without the express written
+consent of CVX Research, Inc. Of course, the full CVX package is freely
+available to download directly from our servers, so please feel free to
+refer people to our web site---even directly to our 
+`download page <http://cvxr.com/cvx/download>`_.
 
 CVX Standard License
 --------------------
 
-If you wish, you may distribute a version of CVX with all of the p-code files *removed*.
-The resulting package retains full functionality with the exception of its ability to
-connect to commercial solvers. This modified package is covered by the CVX Standard
-License. Under this license, you are free to redistribute and/or modify the files under
-the terms of the GPLv2, plus the additional terms discussed in "Solver Interfaces" below. 
+CVX also offers what we call "redistributable" packages that omit all of 
+the files listed above. This package retains all of the functionality of 
+CVX, with the exception of its ability to connect to commercial solvers.
+Redistributable packages are offered on the same download page as our
+standard packages.
 
-You must include the files ``LICENSE.txt`` and ``GPL.txt`` in unmodified form when 
-redistributing this software. If you did not receive a copy of either of these files
-with your distribution, please contact us.
+The redistributable package is covered by the *CVX Standard License*. This
+license is nothing more than the GNU Standard License, Version 3 (GPLv3),
+with one additional permission we call the "Free Solver Clause", discused
+in the next section.
 
-Solver Interfaces
------------------
+The full text of the GPLv3 is given in the file GPL.txt found in the top
+directory of the CVX package. Please see Section 7 of this license for more
+information about additional permissions such as the one offered here. In
+particular, you are free to *remove* this permission from any modified 
+version of CVX you create; but you may not *create new ones*. 
 
-CVX relies upon other software packages, called *solvers*, to perform many of its 
-underlying calculations. Currently CVX supports free solvers SeDuMi and SDPT3, and 
-commercial solvers Gurobi and MOSEK. The resulting nexus of free and commercial
-software presents a licensing challenge. Our vision is guided by three goals:
+You must include the files LICENSE.txt and GPL.txt in unmodified form when
+redistributing this software or any subset of it. If you did not receive a
+copy of either of these files with your distribution, please contact us.
 
-- to ensure that CVX remains free to use by *all* users with any compatible *free* solver.
-- to generate revenue by selling interfaces to *commercial* solvers to *commercial* customers.
-- to provide the academic community with the full commercial capability at no charge.
+The Free Solver Clause
+----------------------
+
+We have chosen to add a single "additional permission" clause to the CVX
+Standard License above and beyond the text of the GPLv3. This full text of 
+this clause is contained in the following paragraph:
+
+    You are free to modify CVX to connect to any solver whose full
+    functionality is provided free of charge to *all* users, even if the 
+    solver's license is otherwise incompatible with the GNU Standard 
+    License Version 3. This permission does not apply to solvers which 
+    are free just to certain users (e.g., academic users), free for 
+    limited time periods, or free with restricted functionality.
+
+CVX relies upon other software packages, called *solvers*, to perform many 
+of its underlying calculations. Currently CVX supports free solvers SeDuMi
+and SDPT3, and commercial solvers Gurobi and MOSEK. The resulting nexus of 
+free and commercial software presents a licensing challenge. Our vision is
+guided by three goals:
+
+- to ensure that CVX remains fully free to use with any fully free solver.
+- to support the development and support of CVX by selling interfaces to 
+  commercial solvers to commercial customers.
+- to provide the academic community with our full commercial capabilities
+  at no charge. (Obviously this depends upon the cooperation of commercial
+  solver vendors. Gurobi and MOSEK fully support this goal.)
 
 The terms we lay out here are intended to support these trifold goals.  
 
-We invite our users to create new interfaces between CVX and other *free* solvers. By 
-"free", we mean that the solver must be made available at no charge to *all* users,
-*including commercial users*, without restriction. Please contact us if you are interested
-in creating such an interface; we can offer assistance. If you do create one, please 
-consider submitting it to us for inclusion in the standard CVX distribution. But you are 
-under no obligation to do this. Instead, you can ship the interface code with the solver
-itself; or you can construct a modified version of CVX with your interface included.
+We invite our users to create new interfaces between CVX and other free
+solvers. By  "free", we mean that the solver must be made available at no
+charge for to *all* users, including commercial users, without restriction.
+Please contact us if you are interested in creating such an interface; we can
+offer assistance. If you do create one, please consider submitting it to us
+for inclusion in the standard CVX distribution; but you are under no 
+obligation to do this. Instead, you can ship the interface code with the
+solver itself; or you can construct a modified version of the 
+redistributable CVX package with your interface included.
 
-We do not permit the creation and distribution of new interfaces between CVX and 
-*non-free* solvers---*even if those solvers are made available to academic users at no 
-charge.* If you are a vendor or developer of a commercial solver, and would like to develop
-or offer a CVX interface to your users, please contact us at info@cvxr.com. We welcome
-the opportunity to support a wider variety of commercial solvers with CVX, and are
-willing to devote engineering resources to make those connections.
+We do not permit the creation and distribution of new interfaces between CVX
+and *non-free* solvers---even if those solvers are made available to academic
+academic users at no charge. If you are a vendor or developer of a 
+commercial solver, and would like to develop or offer a CVX interface to
+your users, please contact us at info@cvxr.com. We welcome the opportunity
+to support a wider variety of commercial solvers with CVX, and are willing
+to devote engineering resources to make those connections. Of course, we 
+hope that you support our goal of making commercial solver capability
+available at no charge to academic customers; and our licensing interface
+helps to facilitate that offering.
 
-If you are a user of a particular commercial solver and would like to see it supported by 
-CVX, please contact your solver vendor---but please contact us at info@cvxr.com as well. 
-If there is sufficient demand, and it proves technically and financially feasible, we will
-reach out to the solver vendor to work on an implementation.
+If you are a user of a particular commercial solver and would like to see it
+supported by CVX, please contact your solver vendor---but please contact us
+at info@cvxr.com as well. If there is sufficient demand, and it proves
+technically and financially feasible, we will reach out to the solver vendor
+to work on an implementation.
 
 Bundled solvers
 ----------------
 
-The solvers SDPT3, SeDuMi, Gurobi, and MOSEK are distributed with CVX in the ``sdpt3/``,
-``sedumi/``, ``gurobi/``, and ``mosek/`` subdirectories, respectively. (If you received a version
-of CVX distributed under the terms of the CVX Standard License, the ``mosek/`` and ``gurobi/``
-directories will not be present.) None of these packages are owned by CVX Research, Inc.
-They are included with permission of the authors. The solvers SDPT3 and SeDuMi are 
-subject to the terms of the GPLv2; therefore, you are free to redistribute them under
-the terms of that license.
+The solvers SDPT3, SeDuMi, Gurobi, and MOSEK are distributed with CVX in the 
+``sdpt3/``, ``sedumi/``, ``gurobi/``, and ``mosek/`` subdirectories, respectively. (The
+redistributable version of CVX does not include ``gurobi/`` and ``mosek/``.) Future
+versions of CVX may include additional solvers as well, each in their own 
+subdirectories. None of these packages are owned by CVX Research, Inc. They 
+are included with permission of the authors. The solvers SDPT3 and SeDuMi
+are subject to the terms of the GPLv2; therefore, you are free to redistribute
+them under the terms of that license.
 
 Example library
 ---------------
 
-The contents of the example library, which is distributed with CVX in the ``examples/``
-subdirectory, is *public domain*. You are free to use them in any way you wish; but when 
-you do, we request that you give appropriate credit to the authors. A number of people 
-have contributed to the examples in this library, including Lieven Vandenberghe, 
-Joëlle Skaf, Argyris Zymnis, Almir Mutapcic, Michael Grant, and Stephen Boyd.
+The contents of the example library, which is distributed with CVX in the
+examples/ subdirectory, is *public domain*. You are free to use them in any
+way you wish; but when you do, we request that you give appropriate credit
+to the authors. A number of people have contributed to the examples in this
+library, including Lieven Vandenberghe, Joëlle Skaf, Argyris Zymnis, Almir
+Mutapcic, Michael Grant, and Stephen Boyd. If you would like to offer some
+examples to be included in this library, and are willing to release them to
+the public domain, please contact us!
 
 No Warranty
 -----------

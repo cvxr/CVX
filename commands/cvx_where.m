@@ -6,7 +6,7 @@ function s = cvx_where
 %   subdirectories and files:
 %       functions/    new functions 
 %       examples/     sample cvx models
-%       COPYING.txt   copyright information
+%       LICENSE.txt   copyright information
 %   The proper operation of this function assumes that it has not been
 %   moved from its default position within the cvx distribution.
 
@@ -29,6 +29,6 @@ end
 temp = strfind( s, fs );
 s( temp(end-1) + 1 : end ) = [];
 
-% Copyright 2005-2013 CVX Research, Inc.
-% See the file COPYING.txt for full copyright information.
+% Copyright 2005-2014 CVX Research, Inc.
+% See the file LICENSE.txt for full copyright information.
 % The command 'cvx_where' will show where this file is located.
