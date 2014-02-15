@@ -165,7 +165,7 @@ isoctave = cvx___.isoctave;
 nver = cvx___.nver;
 if isoctave,
     if nver <= 3.08,
-        fprintf( '%s\nCVX requires Octave 3.8.1 or later.\n%s\n', line, line );
+        fprintf( '%s\nCVX is not yet supported on Octave.\n(Please do not waste further time trying: changes to Octave are required.\nBut they are coming! Stay tuned.)\n%s\n', line, line );
         issue = true;
     end
 elseif nver < 7.08 && strcmp( cvx___.comp(end-1:end), '64' ),

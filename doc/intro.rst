@@ -91,12 +91,20 @@ a paid CVX Professional license. For more details, see :ref:`licensing`.
 What's new?
 ~~~~~~~~~~~
 
-- Preliminary support for Octave; see :ref:`octavesup`.
-- Support for commercial solvers (MATLAB only); see :ref:`solvers`.
-- Binary and integer variable support; see :ref:`what-is-midcp`.
-- Commercial licensing for advanced features (MATLAB only); see :ref:`licensing`.
-- New support options; see :ref:`support`.
-- The default solver choice and other preferences can be saved across sessions using the ``cvx_save_prefs`` command.
+If you browse the source code and documentation, 
+you will find indications of support for Octave with CVX. However:
+
+.. note:: 
+
+  Unfortunately, for average end users (this means you!), Octave
+  will *not* work. The *currently released* versions of Octave,
+  including versions 3.8.0 and earlier, do not
+  support CVX. Please do not waste your time by trying!
+
+We are working hard with the Octave team on final updates
+to bring CVX to Octave, and we anticipate version 3.8.1 or 3.9.0 will
+be ready. We add this here to warn you *not* to interpret the mentions
+of Octave in the code as a hidden code to try it yourself!
 
 .. index:: DCP
 

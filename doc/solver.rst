@@ -14,11 +14,11 @@ This version of CVX supports four solvers, each with different capabilities:
 ============================================================= ==== ==== ====== ===== ====  ========= ======== ========
  Solver name                                                   LP   QP   SOCP   SDP   GP    Integer   MATLAB   Octave 
 ============================================================= ==== ==== ====== ===== ====  ========= ======== ========
-`SeDuMi <http://sedumi.ie.lehigh.edu>`_                        Y    Y    Y       Y    E     N         Y         Y     
-`SDPT3 <http://www.math.nus.edu.sg/~mattohkc/sdpt3.html>`_     Y    Y    Y       Y    E     N         Y         Y     
-`Gurobi <http://gurobi.com>`_                                  Y    Y    Y       N    N     Y         P         N     
-`MOSEK <http://mosek.com>`_                                    Y    Y    Y       Y*   E     Y         P         N     
-`GLPK <http://www.gnu.org/software/glpk/>`_                    Y    N    N       N    N     Y         N         Y     
+`SeDuMi <http://sedumi.ie.lehigh.edu>`_                        Y    Y    Y       Y    E     N         Y        *soon*     
+`SDPT3 <http://www.math.nus.edu.sg/~mattohkc/sdpt3.html>`_     Y    Y    Y       Y    E     N         Y        *soon*     
+`Gurobi <http://gurobi.com>`_                                  Y    Y    Y       N    N     Y         P        *soon*     
+`MOSEK <http://mosek.com>`_                                    Y    Y    Y       Y*   E     Y         P        *soon*     
+`GLPK <http://www.gnu.org/software/glpk/>`_                    Y    N    N       N    N     Y         N        *soon*     
 ============================================================= ==== ==== ====== ===== ====  ========= ======== ========
 
 (key: Y = Yes, N = No, E = Experimental, P = CVX Professional license required, * = Mosek 7 or later is required.)
@@ -47,7 +47,7 @@ We have created special sections in this user guide for using Gurobi and MOSEK w
 * Mosek:  :ref:`mosek`
 
 Support for GLPK should be considered experimental, and has been provided primarly to support
-the new :ref:`Octave <octave>` capability.
+upcoming :ref:`Octave <octave>` capability (that is *not* ready yet.)
 
 .. _solver-selection:
 
