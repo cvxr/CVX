@@ -47,7 +47,7 @@ We have created special sections in this user guide for using Gurobi and MOSEK w
 * Mosek:  :ref:`mosek`
 
 Support for GLPK should be considered experimental, and has been provided primarly to support
-upcoming :ref:`Octave <octave>` capability (that is *not* ready yet.)
+upcoming Octave capability (that is *not* ready yet.)
 
 .. _solver-selection:
 
