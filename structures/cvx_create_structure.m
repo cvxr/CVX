@@ -31,7 +31,7 @@ else
         tok = toks{k};
         if isempty( tok ),
             if k == 1, type = 'Variable'; else type = 'Structure'; end
-            error( sprintf('CVX:Invalid%sSpec',type), 'Invalid %s specification: %s', lower(type), varargin{k} );
+            error( sprintf('CVX:Invalid%sSpec',type), 'Invalid %s specification: %s', lb(type), varargin{k} );
         end
         tok = tok{1};
         name{k} = tok{1};
@@ -70,74 +70,98 @@ is_hank = false;
 sflags  = false(1,nargs);
 bflags  = false(1,nargs);
 pflags  = false(1,nargs);
+switch length(sz),
+    case 0, bands = [1,1];
+    case 1, bands = sz * [1,1];
+    otherwise, bands = sz(1:2);
+end
 for k = 2 : nargs,
     amin = 0; amax = 0;
     nm = lower( name{k} );
     if ~isempty(uplo),
-        switch nm,
-            case { 'bidiagonal', 'triangular', 'hessenberg' },
-                pflags(k) = true;
-                bflags(k) = true;
-                sflags(k) = true;
-                name{k} = [ uplo, '_', nm ];
-            otherwise,
-                error( 'CVX:InvalidStructure', 'Invalid structure type: %s %s', orig{k-1}, orig{k} );
-        end
+        nm = [ uplo, '_', nm ]; %#ok
+        name{k} = nm;
+        orig{k} = [ uplo, '_', orig{k} ];
         uplo = '';
-        continue;
-    else
-        switch nm,
-            case 'complex',        
-                                  do_comp = true;
-                if do_semi, do_conj = true; end
-            case 'symmetric',
-                sflags(k) = true;                 do_symm = true;
-            case 'symmetric_ut',
-                sflags(k) = true;
-                pflags(k) = true;
-            case 'hermitian',      
-                sflags(k) = true; do_comp = true; do_symm = true; do_conj = true;
-            case 'skew_symmetric', 
-                sflags(k) = true;                 do_symm = true;                 do_skew = true;
-            case 'skew_hermitian', 
-                sflags(k) = true; do_comp = true; do_symm = true; do_conj = true; do_skew = true;
-            case {'hankel','upper_hankel'},
-                pflags(k) = true;
-                sflags(k) = true;
-                is_hank = true;
-            case 'toeplitz', 
-                pflags(k) = true;
-                is_toep = true;
-            case 'semidefinite',
-                do_semi = k; do_symm = true;
-                if do_comp, do_conj = true; end
-            case { 'upper', 'lower' },
-                uplo = nm;
-            case {'upper_bidiagonal','upper_triangular','upper_hessenberg',...
-                  'lower_bidiagonal','lower_triangular','lower_hessenberg' }, ...
-                pflags(k) = true;
-                bflags(k) = true;
-                sflags(k) = true;
-            case { 'diagonal', 'tridiagonal' },
-                pflags(k) = true;
-                bflags(k) = true;
-            case 'scaled_identity',
-                pflags(k) = true;
-                bflags(k) = true;
-                is_toep = true;
-            case 'banded',
-                amin = 1; amax = 2;
-                pflags(k) = true;
-                sflags(k) = length(args{k}) == 2 && ~isequal(args{k}{1},args{k}{2});
-                bflags(k) = true;
-            case { 'binary', 'integer', 'nonnegative', 'semidefinite', 'epigraph_', 'hypograph_', 'geometric_', 'linear_' },
-                itypes{end+1} = nm; %#ok
-            otherwise,
-                pflags(k) = true;
-                if ~exist( [ 'cvx_s_', nm ], 'file' ),
-                    error( 'CVX:UnknownStructure', 'Undefined matrix structure type: %s\nTrying to declare multiple variables? Use the VARIABLES keyword instead.', orig{k} );
-                end
-        end
+    end
+    switch nm,
+        case { 'upper', 'lower', 'skew', },
+            uplo = nm;
+            continue;
+        case 'complex',        
+                              do_comp = true;
+            if do_semi, do_conj = true; end
+        case 'symmetric',
+            sflags(k) = true;                 do_symm = true;
+        case 'symmetric_ut',
+            sflags(k) = true;
+            pflags(k) = true;
+        case 'hermitian',      
+            sflags(k) = true; do_comp = true; do_symm = true; do_conj = true;
+        case { 'skew_symmetric', 'skew-symmetric' },
+            sflags(k) = true;                 do_symm = true;                 do_skew = true;
+        case { 'skew_hermitian', 'skew-hermitian' }
+            sflags(k) = true; do_comp = true; do_symm = true; do_conj = true; do_skew = true;
+        case {'hankel','upper_hankel'},
+            pflags(k) = true;
+            sflags(k) = true;
+            is_hank = true;
+        case 'toeplitz',
+            is_toep = true;
+        case 'semidefinite',
+            do_semi = k;                      do_symm = true;
+            if do_comp,                                       do_conj = true; end
+        case 'upper_bidiagonal',
+            bflags(k) = true; sflags(k) = true;
+            bands = min(bands,[0,1]);
+        case 'lower_bidiagonal',
+            bflags(k) = true; sflags(k) = true;
+            bands = min(bands,[1,0]);
+        case 'upper_hessenberg',
+            bflags(k) = true; sflags(k) = true;
+            bands = min(bands,[1,Inf]);
+        case 'lower_hessenberg',
+            bflags(k) = true; sflags(k) = true;
+            bands = min(bands,[Inf,1]);
+        case 'upper_triangular',
+            bflags(k) = true; sflags(k) = true;
+            bands = min(bands,[0,Inf]);
+        case 'lower_triangular',
+            bflags(k) = true; sflags(k) = true;
+            bands = min(bands,[Inf,0]);
+        case 'diagonal',
+            bflags(k) = true;
+            bands = min(bands,[0,0]);
+        case 'tridiagonal',
+            bflags(k) = true;
+            bands = min(bands,[1,1]);
+        case 'scaled_identity',
+            bflags(k) = true; is_toep = true;
+            bands = min(bands,[0,0]);
+        case 'banded',
+            amin = 1; amax = 2;
+            sflags(k) = length(args{k}) == 2 && ~isequal(args{k}{1},args{k}{2});
+            bflags(k) = true;
+            lb = args{k}{1};
+            switch length(args{k}),
+                case 0, error( 'CVX:InvalidStructure', 'Not enough arguments for "banded()" structure.' );
+                case 1, ub = args{k}{1};
+                case 2, ub = args{k}{2};
+                otherwise, error( 'Too many arguments for "banded()" structure.' );
+            end
+            if ~isnumeric( lb ) || length( lb ) ~= 1 || lb < 0 || lb ~= floor( lb ),
+                error( 'Bandwidth arguments must be nonnegative integers.' );
+            elseif ~isnumeric( ub ) || length( ub ) ~= 1 || ub < 0 || ub ~= floor( ub ),
+                error( 'Bandwidth arguments must be nonnegative integers.' );
+            end
+            bands = min(bands,[lb,ub]);
+        case { 'binary', 'integer', 'nonnegative', 'epigraph_', 'hypograph_', 'geometric_', 'linear_' },
+            itypes{end+1} = nm; %#ok
+        otherwise,
+            pflags(k) = true;
+            if ~exist( [ 'cvx_s_', nm ], 'file' ),
+                error( 'CVX:UnknownStructure', 'Undefined matrix structure type: %s\nTrying to declare multiple variables? Use the VARIABLES keyword instead.', orig{k} );
+            end
     end
     if length( args{k} ) < amin,
         error( 'CVX:InvalidStructure', 'Not enough arguments: %s', orig{k} );
@@ -161,13 +185,15 @@ end
 % Verify symmetry consistency %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-if nnz(sflags) > 1 || do_semi && ( do_skew || do_comp && ~do_conj ) || is_toep && is_hank,
-    if do_semi, sflags(do_semi) = true; end
+if nnz(sflags) > 1 || do_semi && ( do_skew || do_comp && ~do_conj ),
+    if do_semi, sflags = sflags | strcmpi( name, 'semidefinite' ); end
     error( 'CVX:InvalidStructure', 'These forms of structure may not be specified simultaneously:\n   %s', sprintf(' %s', orig{sflags} ) );
+elseif is_toep && is_hank,
+    error( 'CVX:InvalidStructure', 'These forms of structure may not be specified simultaneously:\n   toeplitz hankel' );
 elseif nnz(bflags) > 1,
     error( 'CVX:InvalidStructure', 'These forms of structure may not be specified simultaneously:\n   %s', sprintf(' %s', orig{bflags} ) );
 elseif do_symm && sz(1) ~= sz(2),
-    if do_semi, sflags(do_semi) = true; end
+    if do_semi, sflags = sflags | strcmpi( name, 'semidefinite' ); end
     error( 'CVX:InvalidStructure', 'This type of structure requires square matrices:%s', sprintf(' %s', orig{sflags} ) );
 end
 
@@ -176,12 +202,16 @@ end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 strs = {};
+if is_toep || any( bands < sz(1:2) ),
+    [ strs{end+1}, do_symm ] = cvx_s_banded( sz(1), sz(2), [ do_symm, is_toep ], bands(1), bands(2) );
+    do_symm = do_symm(1);
+end
 for k = 2 : nargs,
     if pflags(k),
         try
             [ strs{end+1}, do_symm ] = feval( [ 'cvx_s_', lower(name{k}) ], sz( 1 ), sz( 2 ), do_symm, args{k}{:} ); %#ok
         catch exc
-            error( exc.identifier, sprintf( 'Error constructing structure: %s\n   %s', orig{k}, exc.message ) );
+            error( exc.identifier, 'Error constructing structure: %s\n   %s', orig{k}, exc.message );
         end
     end
 end

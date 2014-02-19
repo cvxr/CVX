@@ -1,6 +1,7 @@
-function [ y, symm ] = cvx_s_hermitian( m, n, symm )
+function [ y, symm ] = cvx_s_hermitian( m, n, symm ) %#ok
 
-%CVX_S_HERMITIAN Complex Hermitian matrices.
+%CVX_S_HERMITIAN Complex Hermitian matrices. This is no longer used by
+%cvx_create_structure, but it is used by cvx_sdpt3.
 
 if m ~= n,
     error( 'Hermitian structure requires square matrices.' );
