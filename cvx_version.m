@@ -42,10 +42,14 @@ else
     if isoctave,
         comp = octave_config_info('canonical_host_type');
         mext = 'mex';
+        ispc = false;
+        ismac = false;
         if octave_config_info('mac'),
             msub = 'mac';
+            ismac = true;
         elseif octave_config_info('windows'),
             msub = 'win';
+            ispc = true;
         elseif octave_config_info('unix') && any(strfind(comp,'linux')),
             msub = 'lin';
         else
@@ -61,7 +65,8 @@ else
         end
     else
         comp = computer;
-        ispc = strncmp( comp, 'PC',2  );
+        ispc = strncmp( comp, 'PC', 2  );
+        ismac = strncmp( comp, 'MAC', 3 );
         mext = mexext;
         msub = '';
     end
@@ -69,10 +74,12 @@ else
         fs = '\'; 
         fsre = '\\';
         ps = ';'; 
+        cs = false;
     else
         fs = '/'; 
         fsre = '/';
         ps = ':';
+        cs = ~ismac;
     end
 
     % Install location
@@ -108,6 +115,7 @@ else
     cvx___.fs = fs;
     cvx___.fsre = fsre;
     cvx___.ps = ps;
+    cvx___.cs = cs;
     
 end
 
@@ -129,9 +137,9 @@ end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 cvx_ver = '2.1';
-cvx_bld = '9999';
-cvx_bdate = '9999-99-99 99:99:99';
-cvx_bcomm = '999999';
+cvx_bld = '1055';
+cvx_bdate = 'Wed Feb 19 11:06:48 2014 -0600';
+cvx_bcomm = 'b8ff285';
 line = '---------------------------------------------------------------------------';
 fprintf( '\n%s\n', line );
 fprintf( 'CVX: Software for Disciplined Convex Programming       (c)2014 CVX Research\n' );

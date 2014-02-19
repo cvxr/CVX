@@ -35,6 +35,7 @@ end
 cvx_version(1);
 fs = cvx___.fs;
 ps = cvx___.ps;
+cs = cvx___.cs;
 mpath = cvx___.where;
 
 prevpath = path;
@@ -48,36 +49,37 @@ ndxs = false(size(oldpath));
 for k = 0 : length(other_homes),
     if k, tpath = other_homes{k}; else tpath = mpath; end
     plen = length(tpath);
-    tndxs = strncmp( tpath, oldpath, plen );
+    if cs, tndxs = strncmp( tpath, oldpath, plen );
+    else tndxs = strncmpi( tpath, oldpath, plen ); end
     tndxs(tndxs) = cellfun(@(x)length(x)<=plen||x(plen+1)==fs,oldpath(tndxs));
     ndxs = ndxs | tndxs;
 end
 dndx = find(ndxs,1) - 1;
 if isempty(dndx),
-  dndx = +strcmp(oldpath{1},'.');
+    dndx = +strcmp(oldpath{1},'.');
 end
-ndxs(1:dndx)=false;
-npath = sprintf( [ '%s', pathsep ], oldpath{~ndxs} );
-npath = npath(1:end-1);
-path(npath);
+changed = false;
+if any(ndxs),
+    changed = true;
+    newpath = horzcat( oldpath(~ndxs) );
+    npath = sprintf( [ '%s', pathsep ], newpath{:} );
+    npath = npath(1:end-1);
+    path(npath);
+end
 
 addpaths = { 'builtins', 'commands', 'functions', 'lib', 'structures' };
 if ~any(which('vec')), addpaths{end+1} = [ 'functions', fs, 'vec_' ]; end
 if ~any(which('square')), addpaths{end+1} = [ 'functions', fs, 'square_' ]; end
 addpaths = strcat( [ mpath, fs ], addpaths );
 addpaths{end+1} = mpath;
-if ~isempty( cvx___.msub ),
-    msub = [ mpath, fs, 'lib', fs, cvx___.msub ];
-    if exist( msub, 'dir' ),
-        addpaths{end+1} = msub;
-    end
-end
 
 ndxs(1:dndx) = true;
 newpath = horzcat( oldpath(1:dndx), addpaths, oldpath(~ndxs) );
-npath = sprintf( [ '%s', pathsep ], newpath{:} );
-npath = npath(1:end-1);
-path(npath);
+if changed || ~isequal( newpath, oldpath ),
+    npath = sprintf( [ '%s', pathsep ], newpath{:} );
+    npath = npath(1:end-1);
+    path(npath);
+end
 if ~quiet,
     if isequal( newpath, oldpath ),
         fprintf( 'already set!\n' );
