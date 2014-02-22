@@ -137,13 +137,13 @@ end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 cvx_ver = '2.1';
-cvx_bld = '1055';
-cvx_bdate = 'Wed Feb 19 11:06:48 2014 -0600';
-cvx_bcomm = 'b8ff285';
+cvx_bld = '****';
+cvx_bdate = '<undated>';
+cvx_bcomm = '*******';
 line = '---------------------------------------------------------------------------';
 fprintf( '\n%s\n', line );
 fprintf( 'CVX: Software for Disciplined Convex Programming       (c)2014 CVX Research\n' );
-fprintf( 'Version %3s, Build %4s (%6s)%43s\n', cvx_ver, cvx_bld, cvx_bcomm, cvx_bdate );
+fprintf( 'Version %3s, Build %4s (%7s)%42s\n', cvx_ver, cvx_bld, cvx_bcomm, cvx_bdate );
 fprintf( '%s\n', line );
 fprintf( 'Installation info:\n    Path: %s\n', cvx___.where );
 if isoctave,

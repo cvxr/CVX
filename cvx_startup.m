@@ -37,6 +37,7 @@ fs = cvx___.fs;
 ps = cvx___.ps;
 cs = cvx___.cs;
 mpath = cvx___.where;
+msub = cvx___.msub;
 
 prevpath = path;
 oldpath = textscan( prevpath, '%s', 'Delimiter', ps );
@@ -71,6 +72,12 @@ addpaths = { 'builtins', 'commands', 'functions', 'lib', 'structures' };
 if ~any(which('vec')), addpaths{end+1} = [ 'functions', fs, 'vec_' ]; end
 if ~any(which('square')), addpaths{end+1} = [ 'functions', fs, 'square_' ]; end
 addpaths = strcat( [ mpath, fs ], addpaths );
+if ~isempty(msub),
+  mpath2 = [ mpath, fs, 'lib', fs, msub ];
+  if exist( mpath2, 'dir' ),
+    addpaths{end+1} = mpath2;
+  end
+end
 addpaths{end+1} = mpath;
 
 ndxs(1:dndx) = true;
