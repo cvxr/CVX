@@ -571,7 +571,7 @@ else
     cvx___.x = x;
     cvx___.y = y(2:end);
 end
-if nnz( cvx___.exponential ),
+if cvx___.exp_used,
     esrc = find( cvx___.exponential );
     edst = cvx___.exponential( esrc );
     cvx___.x( edst ) = min( 1e300, exp( cvx___.x( esrc ) ) );

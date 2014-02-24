@@ -51,6 +51,7 @@ if ~isequal( clearmode, 'none' ),
         if ~isequal( clearmode, 'extract' ),
             cvx___.exponential = sparse( 1, 1 );
             cvx___.logarithm   = sparse( 1, 1 );
+            cvx___.exp_used    = false;
         end
     elseif length( cvx___.reserved ) >= nf,
         temp = nf : length( cvx___.reserved );
@@ -69,6 +70,7 @@ if ~isequal( clearmode, 'none' ),
         if ~isequal( clearmode, 'extract' ),
             cvx___.exponential( temp, : ) = [];
             cvx___.logarithm(  temp, : ) = [];
+            cvx___.exp_used = nnz( cvx___.exponential );
         end
     end
     if nf <= 2 || ne <= 1,

@@ -45,6 +45,7 @@ cvx___.reserved    = 1;
 cvx___.logarithm   = sparse( 1, 1 );
 cvx___.exponential = sparse( 1, 1 );
 cvx___.vexity      = 0; % sparse( 1, 1 );
+cvx___.exp_used    = false;
 cvx___.nan_used    = false;
 cvx___.canslack    = false;
 cvx___.readonly    = 0;

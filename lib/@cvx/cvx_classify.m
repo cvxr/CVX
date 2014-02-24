@@ -47,7 +47,7 @@ end
 tt = isnan( v );
 v( tt ) = 13;
 
-if nnz( cvx___.exponential ),
+if nnz( cvx___.exp_used ),
     tt = find( ( v == 13 | v == 7 ) & q == 1 );
     if ~isempty( tt ),
         [ rx, cx, vx ] = find( x.basis_( :, tt ) );

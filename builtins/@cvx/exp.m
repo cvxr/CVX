@@ -86,6 +86,7 @@ for k = 1 : nv,
                     cvx___.canslack( n2 ) = +1;
                 end
                 exps = cvx___.exponential( rx, 1 );
+                cvx___.exp_used = true;
             end
             nb = size( xt.basis_, 2 );
             bx = sparse( exps, cx, 1, full( max( exps ) ), nb );

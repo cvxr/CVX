@@ -146,6 +146,7 @@ else
         cvx___.logarithm( end + 1 : end + dof, 1 ) = ndim';
         ndim = ndim(end) + 1 : ndim(end) + dof;
         cvx___.exponential( end + 1 : end + dof, 1 ) = ndim';
+        cvx___.exp_used = true;
     end
     cvx___.exponential( end + dof, 1 ) = 0;
     cvx___.x = [];
