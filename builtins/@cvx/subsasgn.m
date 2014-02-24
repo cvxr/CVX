@@ -39,6 +39,10 @@ catch errmsg
     error( errmsg.identifier, errmsg.message );
 end
 szx_n = size( ndx_x );
+if length( szx_n ) ~= length( szx ),
+   szx_n(end+1:length(szx)) = 1;
+   szx(end+1:length(szx_n)) = 1;
+end
 
 %
 % Assign data

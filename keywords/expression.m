@@ -53,7 +53,7 @@ end
 %
 
 if isempty( x.size ),
-	x.size = [];
+	x.size = [1,1];
 else
     try
         x.size = evalin( 'caller', [ '[', x.size(2:end-1), '];' ] );
