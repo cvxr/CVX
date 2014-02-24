@@ -22,6 +22,7 @@ if ~any( p ),
     end
     return
 end
+ab = any( b( abs( p ) <= 1, : ) );
 b = b( p ~= 0, : );
 p = nonzeros(p).';
 if cvx___.nan_used,
@@ -37,7 +38,7 @@ end
 if ~isreal( x ),
     v( any( imag( x.basis_ ), 1 ) & v ) = NaN;
 end
-v = sign( v );
+v = sign( v ) .* ( 2 - ab );
 v = reshape( v, x.size_ );
 
 % Copyright 2005-2014 CVX Research, Inc.

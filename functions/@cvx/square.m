@@ -10,7 +10,7 @@ error( nargchk( 1, 1, nargin ) ); %#ok
 persistent remap
 if isempty( remap ),
     remap1 = cvx_remap( 'constant' );
-    remap2 = cvx_remap( 'affine' ) & ~remap1;
+    remap2 = cvx_remap( 'affine', 'nonnegative-convex' ) & ~remap1;
     remap3 = cvx_remap( 'log-valid' ) & ~remap1;
     remap  = remap1 + 2 * remap2 + 3 * remap3;
 end
@@ -54,7 +54,7 @@ for k = 1 : nv,
             yt = cvx( yt .* yt );
         case 2,
             % Real affine
-            yt = quad_over_lin( xt, 1, 0 );
+            yt = quad_over_lin( cvx_accept_convex( xt ), 1, 0 );
         case 3,
             % Monomial, posynomial
             yt = exp( 2 * log( xt ) );
