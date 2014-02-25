@@ -102,7 +102,6 @@ if nargin == 2,
                 epigraph variable zt( sz );
                 xt <= zt; %#ok
                 yt <= zt; %#ok
-                cvx_setnneg( zt );
             cvx_end
         case 5,
             % non-posy
@@ -216,7 +215,6 @@ else
                 cvx_begin gp
                     epigraph variable zt( 1, nv )
                     xt <= ones(nx,1) * zt; %#ok
-                    cvx_setnneg( zt );
                 cvx_end
             case 3,
 	            zt = [];

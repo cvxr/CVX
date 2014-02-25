@@ -109,6 +109,7 @@ if nargin == 2,
                 hypograph variable zt( sz )
                 xt >= zt; %#ok
                 yt >= zt; %#ok
+                cvx_setnpos( cvx_subsref( zt, (cvx_sign(xt,-1)<0)|(cvx_sign(yt,-1)<0) ) );
             cvx_end
         otherwise,
             error( 'Shouldn''t be here.' );
@@ -219,6 +220,7 @@ else
                 cvx_begin
                     hypograph variable zt( 1, nv )
                     xt >= ones(nx,1) * zt; %#ok
+                    cvx_setnpos( cvx_subsref( zt, any(cvx_sign(xt,-1)<0,1) ) );
                 cvx_end
             otherwise,
                 error( 'Shouldn''t be here.' );
