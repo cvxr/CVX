@@ -33,9 +33,7 @@ for i = 1:length(delta)
     disp(['* delta = ' num2str(delta(i)) ' and eta = ' num2str(eta(i))]);
     cvx_begin quiet
     variable u(N+1)
-    minimize ( square_pos(norm(H*u - y_des))/(N+1) + ...
-               eta(i)*square_pos(norm(u))/(N+1) + ...
-               delta(i)*square_pos(norm(D*u))/N )
+    minimize ( norm(H*u-y_des).^2/(N+1)+eta(i)*norm(u).^2/(N+1)+delta(i)*norm(D*u).^2/N )
     cvx_end
     switch(i)
         case 1

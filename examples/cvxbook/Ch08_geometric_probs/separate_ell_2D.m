@@ -25,8 +25,8 @@ cvx_begin
     dual variables lam muu z
     minimize ( norm(w,2) )
     subject to
-    lam:    square_pos( norm (A*x + b) ) <= 1;
-    muu:    square_pos( norm (C*y + d) ) <= 1;
+    lam:    norm (A*x + b).^2 <= 1;
+    muu:    norm (C*y + d).^2 <= 1;
     z:      x - y == w;
 cvx_end
 
@@ -38,6 +38,7 @@ c = linspace(-2,2,100);
 q = repmat(t,1,length(c)) +p*c;
 
 % figure
+clf
 nopts = 1000;
 angles = linspace(0,2*pi,nopts);
 [u,v] = meshgrid([-2:0.01:4]);

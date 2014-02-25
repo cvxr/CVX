@@ -10,8 +10,8 @@ error( nargchk( 1, 1, nargin ) ); %#ok
 persistent remap
 if isempty( remap ),
     remap1 = cvx_remap( 'constant' );
-    remap2 = cvx_remap( 'affine', 'nonnegative-convex' ) & ~remap1;
     remap3 = cvx_remap( 'log-valid' ) & ~remap1;
+    remap2 = cvx_remap( 'affine', 'nn-convex' ) & ~remap1 & ~remap3;
     remap  = remap1 + 2 * remap2 + 3 * remap3;
 end
 v = remap( cvx_classify( x ) );
@@ -53,7 +53,7 @@ for k = 1 : nv,
             yt = cvx_constant( xt );
             yt = cvx( yt .* yt );
         case 2,
-            % Real affine
+            % Real affine, non-negative convex
             yt = quad_over_lin( cvx_accept_convex( xt ), 1, 0 );
         case 3,
             % Monomial, posynomial

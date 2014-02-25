@@ -65,7 +65,7 @@ fprintf(1,'Computing the optimal solution of problem 4... ');
 
 cvx_begin quiet
     variables x(n) y(m)
-    minimize ( 0.5 * square_pos ( norm ( y , p ) ) )
+    minimize ( 0.5 * norm( y, p ) .^ 2 )
     A*x - b == y;
 cvx_end
 
@@ -77,7 +77,7 @@ fprintf(1,'Computing the optimal solution of problem 5... ');
 
 cvx_begin quiet
     variable nu(m)
-    maximize ( -0.5 * square_pos ( norm ( nu , q ) ) + b'*nu )
+    maximize ( -0.5 * norm ( nu , q ) .^ 2 + b'*nu )
     A'*nu == 0;
 cvx_end
 

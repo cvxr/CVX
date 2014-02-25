@@ -12,7 +12,7 @@ n = size(X,1);
 if n ~= size( X, 2 ),
     error( 'Matrix must be square.' );
 end
-
+it abs
 %
 % Construct problem
 % 

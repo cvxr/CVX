@@ -82,8 +82,11 @@ cvx_begin set
            else
                ndxs = cumsum( [ 1, sz(1) : -1 : 2 ] );
            end
+           cvx___.sign( tx(ndxs) ) = 1;
            tx( ndxs, : ) = [];
            cvx___.canslack( tx ) = false;
+       else
+           cvx___.sign( tx ) = 1; %#ok
        end
    end
 cvx_end

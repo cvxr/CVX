@@ -42,7 +42,7 @@ end
 persistent remap1 remap2
 if isempty( remap2 ),
     remap1 = cvx_remap( 'constant', 'log-convex' );
-    remap2 = cvx_remap( 'affine', 'log-convex' );
+    remap2 = cvx_remap( 'affine', 'nn-convex' );
 end
 xc = reshape( cvx_classify( x ), sx );
 if ~all( remap2( xc( : ) ) ),
@@ -79,6 +79,7 @@ switch p,
             cvx_begin
                 epigraph variable y( 1, nv )
                 { cvx_accept_convex(x), y } == lorentz( [ nx, nv ], 1, ~isreal( x ) ); %#ok
+                cvx_setnneg(y);
             cvx_end
 		else
 			z = []; y = [];
@@ -89,6 +90,7 @@ switch p,
                 { cat( 3, z, y( ones(nx,1), : ) ), cvx_accept_convex(x) } ...
                     == geo_mean_cone( sw, 3, [1/p,1-1/p], cmode ); %#ok
                 sum( z ) == y; %#ok
+                cvx_setnneg(y);
             cvx_end
         end
 end

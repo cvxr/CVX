@@ -44,12 +44,17 @@ end
 % Check curvature
 %
 
-if ~cvx_isaffine( x ),
-    error( 'The first argument must be affine.' );
-elseif ~isreal( y ),
-    error( 'The second argument must be real.' );
-elseif ~cvx_isconcave( y ),
-    error( 'The second argument must be concave.' );
+persistent remap_n remap_d
+if isempty( remap_d ),
+    remap_n = cvx_remap( 'affine', 'nn-convex' );
+    remap_d = cvx_remap( 'concave' );
+end
+vn = remap_n( cvx_classify( x ) );
+vd = remap_d( cvx_classify( y ) );
+if ~all( vn(:) ),
+    error( 'The first argument must be affine or non-negative convex.' );
+elseif ~all( vd(:) ),
+    error( 'The second argument must be real affine or concave.' );
 end
 
 %
@@ -71,10 +76,12 @@ else
     cvx_begin
         epigraph variable z( sz )
         y = cvx_accept_concave( y );
+        x = cvx_accept_convex( x );
         if need_contraction,
             x = cvx_accept_convex( norms( x, 2, dim ) );
         end
         { x, y, z } == rotated_lorentz( sx, dim, ~isreal( x ) ); %#ok
+        cvx_setnneg(z);
     cvx_end
 end
 

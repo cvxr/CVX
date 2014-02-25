@@ -166,6 +166,7 @@ end
 % Create the variables
 %
 
+tx = [];
 try
     v = newvar( prob, xname, xsize, str, pstr.gp );
 catch exc
@@ -182,13 +183,25 @@ if itype,
     [ tx, dummy ] = find( cvx_basis( v ) ); %#ok
     newnonl( prob, itype, tx(:)' );
     cvx___.canslack( tx ) = false;
+    if ~isnneg && ~strcmp( itype, 'i_binary' ), tx = []; end
 end
 if issemi,
-    [ dummy, issemi ] = newcnstr( prob, v, 0, '>=', true ); %#ok
-    if ~issemi, isnneg = false; end
+    if xsize(1) > 1,
+        isnneg = false;
+        newcnstr( prob, v, 0, '>=', true );
+        vv = reshape( v, xsize(1) * xsize(2), prod(xsize(3:end)) );
+        vv = vv(1:xsize(1)+1:end,:);
+        [ tx, dummy ] = find( cvx_basis( vv ) ); %#ok
+    else
+        isnneg = true;
+    end
 end
-if isnneg && ~pstr.gp && ~strcmp( itype, 'i_binary' ),
+if isnneg && ~pstr.gp,
     newcnstr( prob, v, 0, '>=', false );
+    [ tx, dummy ] = find( cvx_basis( v ) ); %#ok
+end
+if ~isempty( tx ),
+    cvx___.sign( tx ) = 1;
 end
 if nargout > 0,
     varargout{1} = v;

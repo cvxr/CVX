@@ -16,6 +16,7 @@ function cvx_optpnt = nonnegative( sx ) %#ok
 %       NONNEGATIVE is a cvx set specification. See the user guide for
 %       details on how to use sets.
 
+global cvx___
 error( nargchk( 1, 1, nargin ) ); %#ok
 
 [ temp, sx ] = cvx_check_dimlist( sx, true );
@@ -28,6 +29,7 @@ cvx_begin set
     if all( sx ~= 0 ),
         [ tx, dummy ] = find( cvx_basis( x ) ); %#ok
         newnonl( cvx_problem, 'nonnegative', tx(:) );
+        cvx___.sign(tx) = 1;
     end
 cvx_end
 

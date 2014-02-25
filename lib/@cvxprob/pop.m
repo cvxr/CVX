@@ -45,6 +45,7 @@ if ~isequal( clearmode, 'none' ),
     if nf <= 2,
         cvx___.reserved    = 0;
         cvx___.vexity      = 0;
+        cvx___.sign        = 1;
         cvx___.canslack    = false;
         cvx___.readonly    = 0;
         cvx___.cones       = struct( 'type', {}, 'indices', {} );
@@ -57,6 +58,7 @@ if ~isequal( clearmode, 'none' ),
         temp = nf : length( cvx___.reserved );
         cvx___.reserved(    temp, : ) = [];
         cvx___.vexity(      temp, : ) = [];
+        cvx___.sign(        temp, : ) = [];
         cvx___.canslack(    temp, : ) = [];
         cvx___.readonly(    temp, : ) = [];
         if ~isempty( cvx___.cones ),

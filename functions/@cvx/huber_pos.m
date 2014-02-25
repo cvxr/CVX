@@ -37,11 +37,13 @@ end
 
 v = []; w = [];
 cvx_begin separable
-    variables v( sz ) w( sz )
+    epigraph variable z( sz )
     minimize( quad_over_lin( w, t, 0 ) + 2 .* M .* v )
+    quad_over_lin( w, t, 0 ) + 2 .* M .* v <= z; %#ok
     x <= w + v; %#ok
     w <= M * t; %#ok
     v >= 0; %#ok
+    cvx_setnneg( sz );
 cvx_end
 
 % Copyright 2005-2014 CVX Research, Inc.

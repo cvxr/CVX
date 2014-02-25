@@ -1,4 +1,4 @@
-function y = berhu( x, M, t )
+function y = berhu( x, varargin )
 
 %BERHU   Reverse Huber penalty function.
 %   BERHU(X) computes the reverse Huber penalty function
@@ -25,45 +25,15 @@ function y = berhu( x, M, t )
 %   sense as .*: one must be a scalar, or they must have identical size.
 %
 %   Disciplined convex programming information:
-%       BERHU is jointly convex in X and T. It is nonomonotonic in X and
-%       nonincreasing in T. Therefore, when used in CVX specifications, X
-%       must be affine and T must be concave (or affine). T must be real.
+%       BERHU is jointly convex in X and T, nondecreasing for positive X,
+%       and nonincreasing in T. Therefore, when used in CVX specifications, 
+%       X must be affine or nonnegative convex, and T must be concave or
+%       affine. T must be real.
 
-%
-% Check arguments
-%
-
-error( nargchk( 1, 3, nargin ) ); %#ok
-if nargin < 2,
-    M = 1;
-elseif ~isreal( M ) || any( M( : ) <= 0 ),
-    error( 'Second argument must be real and positive.' );
+if ~cvx_isaffnnc( x ),
+    error( 'Disciplined convex programming error:\n    X must be affine or nonnegative convex.' );
 end
-if nargin < 3,
-    t = 1;
-elseif ~isreal( t ),
-    error( 'Third argument must be real.' );
-end
-sz = cvx_size_check( x, M, t );
-if isempty( sz ),
-    error( 'Sizes are incompatible.' );
-end
-
-%
-% Compute result
-%
-
-y = abs( x ./ max(t,realmin) );
-z = min( y, M );
-y = t .* ( y + ( y - z ).^2 ./ (2*M) );
-q = t <= 0;
-if nnz( q ),
-    if length(t) == 1, 
-        y = Inf * ones( sz );
-    else
-        y( q ) = Inf;
-    end
-end
+y = berhu_pos( abs( x ), varargin{:} );
 
 % Copyright 2005-2014 CVX Research, Inc.
 % See the file LICENSE.txt for full copyright information.

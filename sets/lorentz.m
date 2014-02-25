@@ -35,6 +35,7 @@ function cvx_optpnt = lorentz( sx, dim, iscplx )
 %       LORENTZ is a cvx set specification. See the user guide for
 %       details on how to use sets.
 
+global cvx___
 error( nargchk( 1, 3, nargin ) ); %#ok
 
 %
@@ -97,6 +98,7 @@ cvx_begin set
     else
         newnonl( cvx_problem, 'nonnegative', ty );
     end
+    cvx___.sign( ty ) = 1;
 cvx_end
 
 %

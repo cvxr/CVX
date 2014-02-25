@@ -1,7 +1,6 @@
 function x = sparsify( x, mode )
 
 global cvx___
-error( nargchk( 2, 2, nargin ) );
 persistent remap
 
 %
@@ -138,8 +137,11 @@ if nB ~= 0,
     [ ndxs, temp ] = find( newrepl.basis_ ); %#ok
     repls = [ repls ; newrepl ];
     bV = cvx_vexity( bN );
-    cvx___.vexity( ndxs ) = bV;
-    cvx___.readonly( ndxs ) = vec( cvx_readlevel( bN ) );
+    bS = cvx_sign( bN );
+    bR = cvx_readlevel( bN );
+    cvx___.vexity( ndxs ) = bV(:);
+    cvx___.sign( ndxs ) = bS(:);
+    cvx___.readonly( ndxs ) = bR(:);
     if ~isobj,
         ss = bV == 0;
         if any( ss ),

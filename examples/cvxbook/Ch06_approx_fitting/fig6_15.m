@@ -49,7 +49,7 @@ fprintf(1,'2) the stochastic robust approximation problem ... ');
 P = (1/3)*B'*B;
 cvx_begin quiet
     variable x_stoch(n)
-    minimize (  square_pos(norm(A*x_stoch - b)) + quad_form(x_stoch,P) )
+    minimize (  norm(A*x_stoch-b).^2 + quad_form(x_stoch,P) )
 cvx_end
 
 fprintf(1,'Done! \n');

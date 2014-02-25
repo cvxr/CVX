@@ -1,9 +1,9 @@
 function v = cvx_vexity( x )
 
 global cvx___
-s = x.size_;
-if any( s == 0 ),
-    v = cvx_zeros( s );
+sz = x.size_;
+if any( sz == 0 ),
+    v = cvx_zeros( sz );
     return
 end
 p  = cvx___.vexity;
@@ -15,31 +15,50 @@ if nb < n,
 elseif n < nb,
     p( nb, 1 ) = 0;
 end
-if ~any( p ),
-    v = cvx_zeros( x.size_ );
-    if x.slow_,
-        v( isnan( x.basis_( 1, : ) ) ) = NaN;
+b = b( p ~= 0, : );
+if isempty( b ),
+    v = cvx_zeros( sz );
+    if x.slow_
+        v( isnan( b( 1, : ) ) ) = NaN;
     end
     return
 end
-ab = any( b( abs( p ) <= 1, : ) );
-b = b( p ~= 0, : );
-p = nonzeros(p).';
+s = cvx___.sign;
+if nb < n,
+    s = s( 1 : nb, 1 );
+elseif n < nb,
+    s( nb, 1 ) = 0;
+end
+bs = x.basis_;
+ib = ~isreal( bs );
+if ib,
+    isreal( bs ),
+    bi = any( imag( bs ) );
+end
+s0 = any( bs( s == 0, : ), 1 );
+bs = bs( s ~= 0, : );
 if cvx___.nan_used,
+    bs = sparse( bs );
     b = sparse( b );
 end
+s = nonzeros(s).';
+p = nonzeros(p).';
 v = full( p * b );
+w = full( s * bs );
+w( abs( w ) ~= abs( s ) * abs( bs ) | s0 ) = 0;
 tt = abs( v ) ~= abs( p ) * abs( b );
 if x.slow_,
     v( tt | isnan( x.basis_( 1, : ) ) ) = NaN;
 else
     v( tt ) = NaN;
 end
-if ~isreal( x ),
-    v( any( imag( x.basis_ ), 1 ) & v ) = NaN;
+if ib,
+    v( bi & v ) = NaN;
+    w( bi ) = 0;
 end
-v = sign( v ) .* ( 2 - ab );
-v = reshape( v, x.size_ );
+v = sign( v );
+v = v .* ( 1 + ( v == sign( w ) ) );
+v = reshape( v, sz );
 
 % Copyright 2005-2014 CVX Research, Inc.
 % See the file LICENSE.txt for full copyright information.

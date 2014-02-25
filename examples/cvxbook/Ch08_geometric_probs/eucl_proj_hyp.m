@@ -24,7 +24,7 @@ fprintf(1,'Computing the optimal solution by solving a QP ...');
 
 cvx_begin quiet
     variable x(n)
-    minimize ( square_pos(norm(x - x0)) )
+    minimize ( norm(x-x0)^2 )
     a'*x == b;
 cvx_end
 

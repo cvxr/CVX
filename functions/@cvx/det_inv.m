@@ -25,6 +25,7 @@ elseif nnz( X ) <= n && nnz( diag( X ) ) == nnz( X ),
     cvx_begin
         epigraph variable y
         geo_mean( [ diag(X) ; y ], w ) >= 1; %#ok
+        cvx_setnneg( y );
     cvx_end
 
 elseif isreal( X ),
@@ -36,6 +37,7 @@ elseif isreal( X ),
         D = diag( Z );
         [ diag( D ), Z' ; Z, X ] == semidefinite(2*n); %#ok
         geo_mean( [ D ; y ], [], w ) >= 1; %#ok
+        cvx_setnneg( y );
     cvx_end
 
 else
@@ -47,6 +49,7 @@ else
         D = diag( Z );
         [ diag( D ), Z' ; Z, X ] == hermitian_semidefinite(2*n); %#ok
         geo_mean( [ real( D ) ; y ], [], w ) >= 1; %#ok
+        cvx_setnneg( y );
     cvx_end
 
 end

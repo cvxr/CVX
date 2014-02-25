@@ -18,7 +18,7 @@ if isempty( remap ),
     remap_1 = cvx_remap( 'constant' );
     remap_2 = cvx_remap( 'real-affine' );
     remap_3 = cvx_remap( 'complex-affine' );
-    remap_4 = cvx_remap( 'log-valid' );
+    remap_4 = cvx_remap( 'log-valid', 'nn-convex' ) & ~remap_2;
     remap = remap_1 + ( 2 * remap_2 + 3 * remap_3 + 4 * remap_4 ) .* ~remap_1;
 end
 v = remap( cvx_classify( x ) );
@@ -66,6 +66,7 @@ for k = 1 : nv,
             cvx_begin
                 epigraph variable w( st )
                 { xt, w } == lorentz( st, 0 ); %#ok
+                cvx_setnneg( w );
             cvx_end
         case 3,
             % Complex affine
@@ -74,9 +75,10 @@ for k = 1 : nv,
             cvx_begin
                 epigraph variable w( st )
                 { xt, w } == complex_lorentz( st, 0 ); %#ok
+                cvx_setnneg( w );
             cvx_end
         case 4,
-            % log-affine, log-convex
+            % log-affine, log-convex, nn-convex
             cvx_optval = xt;
         otherwise,
             error( 'Shouldn''t be here.' );

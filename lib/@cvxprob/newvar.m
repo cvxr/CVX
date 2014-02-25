@@ -138,11 +138,13 @@ else
     nmel = ( 1 + geo ) * dof;
     cvx___.reserved( end + nmel, 1 ) = 0;
     cvx___.vexity( end + dof, 1 ) = 0;
+    cvx___.sign( end + dof, 1 ) = 0;
     cvx___.canslack( end + 1 : end + nmel, 1 ) = true;
     cvx___.readonly( end + 1 : end + nmel, 1 ) = p;
     cvx___.logarithm( end + dof, 1 ) = 0;
     if geo,
         cvx___.vexity( end + 1 : end + dof, 1 ) = 1;
+        cvx___.sign( end + 1 : end + dof, 1 ) = 1;
         cvx___.logarithm( end + 1 : end + dof, 1 ) = ndim';
         ndim = ndim(end) + 1 : ndim(end) + dof;
         cvx___.exponential( end + 1 : end + dof, 1 ) = ndim';

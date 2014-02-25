@@ -79,6 +79,7 @@ for k = 1 : nv,
                 cvx___.exponential( n1, 1 ) = n2( : );
                 cvx___.logarithm( n2, 1 ) = n1( : );
                 cvx___.vexity( n2 ) = 1;
+                cvx___.sign( n2 ) = 1;
                 n2 = n2( cvx___.vexity( n1 ) < 0 );
                 if ~isempty( n2 ),
                     cvx___.vexity( n2 ) = NaN;

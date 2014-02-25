@@ -58,9 +58,8 @@ end
 %
 
 cvx_begin set
-   variables x( sx )
+   variable x( sx ) nonnegative
    sum( x, dim ) == 1; %#ok
-   x >= 0; %#ok
 cvx_end
 
 % Copyright 2005-2014 CVX Research, Inc. 

@@ -19,7 +19,7 @@ fprintf(1,'Minimizing the sum of the squares the distances to fixed points...');
 
 cvx_begin
     variable x(2)
-    minimize ( sum( square_pos( norms(x*ones(1,K) - P,2) ) ) )
+    minimize ( sum( norms(x*ones(1,K)-P,2).^2 ) )
 cvx_end
 
 fprintf(1,'Done! \n');

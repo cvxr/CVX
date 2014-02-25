@@ -30,11 +30,12 @@ elseif sx( dim ) == 1,
 else
 
     sy = sx;
-    sy( dim ) = 1;
+    sy( dim ) = 1; %#ok
     y = [];
     cvx_begin
         epigraph variable y( sy )
         geo_mean( cat( dim, x, y ), dim, [ ones(n,1) ; p ] ) >= 1; %#ok
+        cvx_setnneg( y );
     cvx_end
 
 end

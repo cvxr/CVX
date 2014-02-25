@@ -46,6 +46,8 @@ cvx_begin set
     newnonl( cvx_problem, 'exponential', [ tx(:)' ; ty(:)' ; tz(:)' ] );
     cvx___.canslack( tx ) = false;
     cvx___.canslack( ty ) = false;
+    cvx___.sign( ty ) = 1;
+    cvx___.sign( tz ) = 1;
 cvx_end
 
 cvx_optpnt = cvxtuple( struct( 'x', x, 'y', y, 'z', z ) );

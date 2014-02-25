@@ -12,7 +12,7 @@ function cvx_optval = norm( x, p )
 persistent remap1 remap2
 if isempty( remap2 ),
     remap1 = cvx_remap( 'log-convex' );
-    remap2 = cvx_remap( 'affine', 'log-convex' );
+    remap2 = cvx_remap( 'affine', 'nn-convex' );
 end
 
 %
@@ -29,7 +29,7 @@ if ndims( x ) > 2, %#ok
     error( 'norm is not defined for N-D arrays.' );
 end
 
-[m,n] = size(x);
+[ m, n ] = size(x);
 if m == 1 || n == 1 || isequal( p, 'fro' ),
     
     %
@@ -59,20 +59,22 @@ if m == 1 || n == 1 || isequal( p, 'fro' ),
         otherwise,
             tt = remap1( xc );
             if all( tt ),
-                cvx_optval = ( sum( x .^ p ) ) .^ (1/p);
+                cvx_optval = ( sum( x .^ p ) ) .^ ( 1 / p );
             else
                 if nnz( tt ) > 1,
                     tt = tt ~= 0;
                     xx = cvx_subsref( x, tt );
                     xx = ( sum( xx .^ p ) ) .^ (1/p);
-                    x  = [ cvx_subsref( x, ~tt ) ; cvx_accept_convex( xx ) ];
+                    x  = [ cvx_subsref( x, ~tt ) ; xx ];
                 end
+                x = cvx_accept_convex( x );
                 n = length( x );
                 if p == 2,
                     z = [];
                     cvx_begin
                         epigraph variable z
                         { x, z } == lorentz( n, [], ~isreal( x ) ); %#ok
+                        cvx_setnneg(z);
                     cvx_end
                 else
                     if isreal( x ),
@@ -86,6 +88,7 @@ if m == 1 || n == 1 || isequal( p, 'fro' ),
                         variable y( n )
                         { [ y, z*ones(n,1) ], x } == geo_mean_cone( [n,2], 2, [1/p,1-1/p], cmode ); %#ok
                         sum( y ) == z; %#ok
+                        cvx_setnneg(z);
                     cvx_end
                 end
             end

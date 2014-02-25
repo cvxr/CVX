@@ -13,8 +13,8 @@ end
 % Construct problem
 % 
 
-[ m, n ] = size( x );
 cvx_optval = lambda_max( [ zeros( m, m ), x ; x', zeros( n, n ) ] );
+cvx_setnneg( cvx_optval );
 
 % Copyright 2005-2014 CVX Research, Inc. 
 % See the file LICENSE.txt for full copyright information.

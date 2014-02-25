@@ -47,7 +47,7 @@ opt2 = cvx_optval;
 disp('Computing optimal solution for 3rd formulation...');
 cvx_begin
     variables x3(n) w(n) v(m)
-    minimize( square_pos(norm(v)) + matrix_frac(w, diag(x3)) )
+    minimize( norm(v)^2 + matrix_frac(w, diag(x3)) )
     v + B*w == A*x3 + b;
     x3 >= 0;
 cvx_end
@@ -58,7 +58,7 @@ disp('Computing optimal solution for 4th formulation...');
 cvx_begin
     variables x4(n) w(n) v(m)
     variable Y(n,n) diagonal
-    minimize( square_pos(norm(v)) + matrix_frac(w, Y) )
+    minimize( norm(v)^2 + matrix_frac(w, Y) )
     v + B*w == A*x4 + b;
     x4 >= 0;
     Y == diag(x4);

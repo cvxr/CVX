@@ -26,6 +26,8 @@ elseif cvx_isaffine( x ) && cvx_isaffine( Y ),
     cvx_begin
         epigraph variable z
         [Y x; x' z] == semidefinite( n+1 ); %#ok
+        cvx_setnneg( z );
+        cvx_setnneg( diag( Y ) );
     cvx_end
 
 else

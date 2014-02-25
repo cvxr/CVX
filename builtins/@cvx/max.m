@@ -102,6 +102,7 @@ if nargin == 2,
                 epigraph variable zt( sz );
                 xt <= zt; %#ok
                 yt <= zt; %#ok
+                cvx_setnneg( zt );
             cvx_end
         case 5,
             % non-posy
@@ -110,6 +111,7 @@ if nargin == 2,
                 epigraph variable zt( sz );
                 xt <= zt; %#ok
                 yt <= zt; %#ok
+                cvx_setnneg(zt((cvx_sign(xt,1)>0)|(cvx_sign(yt,1)>0)));
             cvx_end
         otherwise,
             error( 'Shouldn''t be here.' );
@@ -214,12 +216,14 @@ else
                 cvx_begin gp
                     epigraph variable zt( 1, nv )
                     xt <= ones(nx,1) * zt; %#ok
+                    cvx_setnneg( zt );
                 cvx_end
             case 3,
 	            zt = [];
                 cvx_begin
                     epigraph variable zt( 1, nv )
                     xt <= ones(nx,1) * zt; %#ok
+                    cvx_setnneg( zt(any(cvx_sign(xt,1)>0,1)) );
                 cvx_end
             otherwise,
                 error( 'Shouldn''t be here.' );

@@ -54,7 +54,7 @@ fprintf(1,'Computing the optimal locations of the 6 free points...');
 
 cvx_begin
     variable x(N+M,2)
-    minimize ( sum(square_pos(square_pos(norms( A*x,2,2 )))))
+    minimize ( sum(norms( A*x,2,2 ).^4) )
     x(N+[1:M],:) == fixed;
 cvx_end
 
