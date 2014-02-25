@@ -53,6 +53,7 @@ sz = args{1};
 if iscell( sz ),
     sz = [ sz{:} ];
 end
+sz(end+1:2) = 1;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Scan the structure strings for symmetry and complex cases. We now handle %
