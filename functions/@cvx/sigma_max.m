@@ -13,6 +13,7 @@ end
 % Construct problem
 % 
 
+[ m, n ] = size( x );
 cvx_optval = lambda_max( [ zeros( m, m ), x ; x', zeros( n, n ) ] );
 cvx_setnneg( cvx_optval );
 
