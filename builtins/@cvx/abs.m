@@ -19,7 +19,8 @@ if isempty( remap ),
     remap_2 = cvx_remap( 'real-affine' );
     remap_3 = cvx_remap( 'complex-affine' );
     remap_4 = cvx_remap( 'log-valid', 'nn-convex' ) & ~remap_2;
-    remap = remap_1 + ( 2 * remap_2 + 3 * remap_3 + 4 * remap_4 ) .* ~remap_1;
+    remap_5 = cvx_remap( 'np-concave' ) & ~remap_2;
+    remap = remap_1 + ( 2 * remap_2 + 3 * remap_3 + 4 * remap_4 + 5 * remap_5 ) .* ~remap_1;
 end
 v = remap( cvx_classify( x ) );
 
@@ -80,6 +81,9 @@ for k = 1 : nv,
         case 4,
             % log-affine, log-convex, nn-convex
             cvx_optval = xt;
+        case 5,
+            % np-concave
+            cvx_optval = -xt;
         otherwise,
             error( 'Shouldn''t be here.' );
     end

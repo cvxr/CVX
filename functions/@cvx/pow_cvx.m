@@ -14,31 +14,37 @@ if isempty( remap_uniq ),
     remap_x2  = cvx_remap( 'log-valid' )      & ~remap_x1;
     remap_x3  = cvx_remap( 'real-affine' )    & ~remap_x1;
     remap_x3c = cvx_remap( 'complex-affine' ) & ~remap_x1c;
-    remap_x4  = cvx_remap( 'concave' )        & ~( remap_x1 | remap_x3 );
+    remap_x4n = cvx_remap( 'np-concave' )     & ~( remap_x1 | remap_x2 | remap_x3 );
+    remap_x4  = cvx_remap( 'concave' )        & ~( remap_x1 | remap_x3 | remap_x4n );
     remap_x5p = cvx_remap( 'nn-convex' )      & ~( remap_x1 | remap_x2 | remap_x3 );
     remap_x5  = cvx_remap( 'convex'  )        & ~( remap_x1 | remap_x2 | remap_x3 | remap_x5p );
     remap_x6  = cvx_remap( 'valid'   )        & ~( remap_x1 | remap_x2 | remap_x3 | remap_x4 );
-    remap_p   = [1;1;1; 1; 1; 1; 1] * remap_x1  + ...
-                [2;2;2; 2; 2; 2; 2] * remap_x2  + ...
-                [3;5;6; 8;11;11;11] * remap_x3  + ...
-                [0;0;0; 7;11;11;11] * remap_x5p + ...
-                [3;5;6; 8; 0; 0; 0] * remap_x4; 
+    remap_p   = [1 ;1 ; 1; 1; 1; 1; 1] * remap_x1  + ...
+                [2 ;2 ; 2; 2; 2; 2; 2] * remap_x2  + ...
+                [3 ;5 ; 6; 8;11;11;11] * remap_x3  + ...
+                [3 ;5 ; 6; 8; 0; 0; 0] * remap_x4  + ...
+                [17;18;19;19;19;19;19] * remap_x4n + ...
+                [0 ;0 ;0 ; 7;14;14;14] * remap_x5p;
     remap_pos = [0;0;0; 1; 1; 1; 1] * remap_x1  + ...
                 [0;0;0; 2; 2; 2; 2] * remap_x2  + ...
-                [0;0;0; 9;11;11;11] * remap_x3  + ...
+                [0;0;0; 9;15;15;15] * remap_x3  + ...
+                [0;0;0;16;16;16;16] * remap_x4n + ...
                 [0;0;0; 9; 0; 0; 0] * remap_x4  + ...
-                [0;0;0; 7;11;11;11] * remap_x5p + ...
-                [0;0;0; 0;11;11;11] * remap_x5;
-    remap_abs = [0;0;0; 1; 1; 1; 1] * ( remap_x1 | remap_x1c ) + ...
+                [0;0;0; 7;14;14;14] * remap_x5p + ...
+                [0;0;0; 0;15;15;15] * remap_x5;
+    remap_abs = [0;0;0; 1; 1; 1; 1] * remap_x1  + ...
+                [0;0;0; 1; 1; 1; 1] * remap_x1c + ...
                 [0;0;0; 2; 2; 2; 2] * remap_x2  + ...
                 [0;0;0;10;12;12;12] * remap_x3  + ...
-                [0;0;0; 7;11;11;11] * remap_x5p + ...
-                [0;0;0;10;13;13;13] * remap_x3c;
+                [0;0;0;10;13;13;13] * remap_x3c + ...
+                [0;0;0; 7;14;14;14] * remap_x4n + ...
+                [0;0;0; 7;14;14;14] * remap_x5p;
     remap_pwr = [1;1;1; 1; 1; 1; 1] * remap_x1  + ...
                 [2;2;2; 2; 2; 2; 2] * remap_x2  + ...
                 [0;4;6; 7;11; 0;12] * remap_x3  + ...
+                [0;0;0; 7; 0; 0;14] * remap_x4n + ...
                 [0;4;6; 7; 0; 0; 0] * remap_x4  + ...
-                [0;0;0; 7;11;11;11] * remap_x5p + ...
+                [0;0;0; 7;14;14;14] * remap_x5p + ...
                 [0;0;0; 7; 0; 0; 0] * remap_x6;
     remap_uniq = logical( [0,0,0,1,0,1,0,0,0,0,1,1,1] );
 end
@@ -56,20 +62,11 @@ if ~ischar( mode ) || size( mode, 1 ) ~= 1,
     error( 'Third argument must be a string.' );
 end
 switch mode,
-    case 'power',
-        cmode  = 'pos';
-        remap  = remap_pwr;
-    case 'pow_p',
-        cmode = 'pos';
-        remap  = remap_p;
-    case 'pow_pos',
-        cmode = 'hypo';
-        remap  = remap_pos;
-    case 'pow_abs',
-        cmode = 'abs';
-        remap  = remap_abs;
-    otherwise
-        error( [ 'Invalid power mode: ', mode ] );
+    case 'power',   remap = remap_pwr;
+    case 'pow_p',   remap = remap_p;
+    case 'pow_pos', remap = remap_pos;
+    case 'pow_abs', remap = remap_abs;
+    otherwise, error( [ 'Invalid power mode: ', mode ] );
 end
 
 %
@@ -142,8 +139,13 @@ for k = 1 : nv,
     switch vk,
         case 0,
             % Invalid
-            pt = sprintf( '%g,', unique(pt) );
-            pt = [ '{', pt(1:end-1), '}' ];
+            pt = unique( pt );
+            if length(pt) > 1,
+                pt = sprintf( '%g,', unique(pt) );
+                pt = [ '{', pt(1:end-1), '}' ];
+            else
+                pt = sprintf( '%g', pt );
+            end
             if isequal( mode, 'power' ),
                 error( 'Disciplined convex programming error:\n    Illegal operation: {%s} .^ %s\n    (Consider POW_P, POW_POS, or POW_ABS instead.)', cvx_class( xt, true, true ), pt ); 
             else
@@ -156,30 +158,43 @@ for k = 1 : nv,
             % Log-convex/affine/concave
             yt = exp( log( xt ) .* pt );
         case 3,
-            % power( concave, p < 0 )
-            % pow_p( concave, p < 0 )
+            % pow_p( affine/concave, p < 0 )
             yt = [];
             cvx_begin
                 epigraph variable yt(sz)
                 { cat( nd, cvx_accept_concave(xt), yt ), 1 } == geo_mean_cone( sw, nd, [-pt,1], 'func' ); %#ok
                 cvx_setnneg(yt);
             cvx_end
+        case 17,
+            % pow_p( np-concave, p < 0 )
+            error( 'Disciplined convex programming error:\n    Trivially infeasible: %s( {%s}, %g )', mode, cvx_class( xt, true, true ), pt ); 
         case 4,
             % power( valid, 0 )
             yt = ones(sz);
-        case 5,
-            % pow_p( concave, 0 )
+        case {5,18},
+            % pow_p( affine/concave, 0 )
+            if vk == 18,
+                % np-concave case
+                warning( 'Disciplined convex programming warning:\n    Almost certainly infeasible: %s( {%s}, %g )', mode, cvx_class( xt, true, true ), pt );
+            end
             yt = ones(sz);
             cvx_begin
                 xt >= 0; %#ok
             cvx_end
         case 6,
-            % pow_p( concave, 0 < p < 1 )
+            % pow_p( affine/concave, 0 < p < 1 )
             yt = [];
             cvx_begin
                 hypograph variable yt(sz)
                 { cat( nd, cvx_accept_concave(xt), ones(sz) ), yt } == geo_mean_cone( sw, nd, [pt,1-pt], 'func' ); %#ok
                 cvx_setnneg(yt);
+            cvx_end
+        case 19,
+            % pow_p( np-concave, ... )
+            warning( 'Disciplined convex programming warning:\n     Almost certainly infeasible: %s( {%s}, %g )', mode, cvx_class( xt, true, true ), pt );
+            yt = zeros(sz);
+            cvx_begin
+                xt >= 0; %#ok
             cvx_end
         case 7,
             % power( valid, 1 )
@@ -194,19 +209,18 @@ for k = 1 : nv,
         case 9,
             % pow_pos( affine, 1 )
             yt = max( xt, 0 );
-            cvx_setnneg(yt);
         case 10,
             % pow_abs( affine, 1 )
             yt = abs( xt );
+        case 16,
+            % pow_pos( np-concave, p >= 1 )
+            xt = zeros(sz);
         case 11,
-            % power( affine, p > 1, p noninteger )
             % pow_p( affine, p > 1 )
-            % pow_pos( convex, p > 1 )
-            % power( nn-convex, p > 1 )
             yt = [];
             cvx_begin
                 epigraph variable yt(sz)
-                { cat( nd, yt, ones(sz) ), cvx_accept_convex(xt) } == geo_mean_cone( sw, nd, [1/pt,1-1/pt], cmode );  %#ok
+                { cat( nd, yt, ones(sz) ), xt } == geo_mean_cone( sw, nd, [1/pt,1-1/pt], 'pos' );  %#ok
                 cvx_setnneg(yt);
             cvx_end
         case 12,
@@ -215,7 +229,7 @@ for k = 1 : nv,
             yt = [];
             cvx_begin
                 epigraph variable yt(sz)
-                { cat( nd, yt, ones(sz) ), cvx_accept_convex(xt) } == geo_mean_cone( sw, nd, [1/pt,1-1/pt], 'abs' ); %#ok 
+                { cat( nd, yt, ones(sz) ), xt } == geo_mean_cone( sw, nd, [1/pt,1-1/pt], 'abs' ); %#ok 
                 cvx_setnneg(yt);
             cvx_end
         case 13,
@@ -225,6 +239,31 @@ for k = 1 : nv,
                 epigraph variable yt(sz)
                 { cat( nd, yt, ones(sz) ), xt } == geo_mean_cone( sw, nd, [1/pt,1-1/pt], 'cabs' );  %#ok
                 cvx_setnneg(yt);
+            cvx_end
+        case 14,
+            % power( nn-convex/np-concave, p even )
+            % pow_abs( nn-convex/np-concave, p > 1 )
+            % pow_pos( nn-convex, p > 1 )
+            % pow_p( nn-convex, p > 1 )
+            yt = [];
+            cvx_begin
+                epigraph variable yt(sz)
+                variable zt(sz)
+                { cat( nd, yt, ones(sz) ), zt } == geo_mean_cone( sw, nd, [1/pt,1-1/pt], 'func' );  %#ok
+                abs(xt) <= zt; %#ok
+                cvx_setnneg(yt);
+                cvx_setnneg(zt);
+            cvx_end
+        case 15,
+            % pow_pos( affine/convex, p > 1 )
+            yt = [];
+            cvx_begin
+                epigraph variable yt(sz)
+                variable zt(sz)
+                { cat( nd, yt, ones(sz) ), zt } == geo_mean_cone( sw, nd, [1/pt,1-1/pt], 'pos' );  %#ok
+                xt <= zt; %#ok
+                cvx_setnneg(yt);
+                cvx_setnneg(zt);
             cvx_end
     end
     
