@@ -247,45 +247,49 @@ expressions you construct are valid.
 Functions
 ---------
 
-In CVX, functions are categorized in two attributes: *curvature*
-(*constant*, *affine*, *convex*, or *concave*) and *monotonicity*
-(*nondecreasing*, *nonincreasing*, or *nonmonotonic*). Curvature
+In CVX, functions are categorized by three attributes: *curvature*
+(*constant*, *affine*, *convex*, or *concave*), *monotonicity*
+(*nondecreasing*, *nonincreasing*, or *nonmonotonic*), and *sign*
+(*nonnegative*, *nonpositive*, or *unknown sign*). (Previous versions
+of CVX did not consider the sign of a function; more on this below.) Curvature
 determines the conditions under which they can appear in expressions
-according to the expression rules given above. Monotonicity determines
-how they can be used in function compositions, as we shall see in the
+according to the expression rules given above. Monotonicity and sign
+determine how they can be used in function compositions, as we shall see in the
 next section.
 
 For functions with only one argument, the categorization is
 straightforward. Some examples are given in the table below.
 
-.. tabularcolumns:: CCCC
+.. tabularcolumns:: CCCCC
 
-===============   ====================   ===========  ===============
- Function          Meaning                Curvature    Monotonicity   
-===============   ====================   ===========  ===============
- ``sum( x )``      :math:`\sum_i x_i`     affine       nondecreasing  
- ``abs( x )``      :math:`|x|`            convex       nonmonotonic   
- ``log( x )``      :math:`\log x`         concave      nondecreasing   
- ``sqrt( x )``     :math:`\sqrt x`        concave      nondecreasing  
-===============   ====================   ===========  ===============
+===============   ====================   ===========  =============== =============
+ Function          Meaning                Curvature    Monotonicity    Sign
+===============   ====================   ===========  =============== =============
+ ``sum( x )``      :math:`\sum_i x_i`     affine       nondecreasing   unknown
+ ``abs( x )``      :math:`|x|`            convex       nonmonotonic    nonnegative
+ ``log( x )``      :math:`\log x`         concave      nondecreasing   unknown
+ ``sqrt( x )``     :math:`\sqrt x`        concave      nondecreasing   unknown
+===============   ====================   ===========  =============== =============
 
 Following standard practice in convex analysis, convex functions are
 interpreted as :math:`+\infty` when the argument is outside the domain
 of the function, and concave functions are interpreted as
 :math:`-\infty` when the argument is outside its domain. In other words,
 convex and concave functions in CVX are interpreted as their
-*extended-valued extensions*.
+*extended-valued extensions*. So, for instance, both ``log`` and
+``sqrt`` are defined as equal to :math:`-\infty` whenever their
+arguments are negative. This is why ``sqrt`` is labeled as having 
+*unknown* sign in the table above.
 
-This has the effect of automatically constraining the argument of a
-function to be in the function's domain. For example, if we form
-``sqrt(x+1)`` in a CVX specification, where ``x`` is a variable,
-then ``x`` will automatically be constrained to be larger than or equal
-to :math:`-1`. There is no need to add a separate constraint, ``x>=-1``,
-to enforce this.
+One effect of the extended-value interpreation is that any use
+of a function automatically constrains its argument to be in the 
+function's domain. For example, if we form
+``sqrt(x+1)`` in a CVX specification, a new constraint ``x+1>=0``
+is automatically assumed; there is no need to add it seprately.
 
-Monotonicity of a function is determined in the extended sense, *i.e.*,
-*including the values of the argument outside its domain*. For example,
-``sqrt(x)`` is determined to be nondecreasing since its value is
+Monotonicity of a function is also determined in the extended sense, 
+*i.e.*, *including the values of the argument outside its domain*. 
+For example, ``sqrt(x)`` is determined to be nondecreasing since its value is
 constant (:math:`-\infty`) for negative values of its argument; then
 jumps *up* to :math:`0` for argument zero, and increases for positive
 values of its argument.
@@ -314,8 +318,12 @@ For functions with multiple arguments, curvature is always considered
 
 	f_{\text{quad\_over\_lin}}(x,y) = \begin{cases} |x|^2/y & y > 0 \\ +\infty & y\leq 0  \end{cases}
 
-is jointly convex in both :math:`x` and :math:`y`, but it is monotonic
-(nonincreasing) only in :math:`y`.
+is jointly convex in both :math:`x` and :math:`y` and nonincreasing
+in :math:`y`. It is nonmonotonic for arbitrary :math:`x`; however,
+it exhibits *sign-dependent* montonicity: is is nondecreasing for
+nonnegative :math:`x`, and nonincreasing for nonpositive :math:`x`.
+Previous versions of CVX did not consider this sign-dependent
+montonicity, but newer ones can; more on this below.
 
 Some functions are convex, concave, or affine only for a *subset* of its
 arguments. For example, the function ``norm(x,p)`` where ``p \geq 1`` is
@@ -461,8 +469,8 @@ Of course, the workaround is simple in this case: use ``norm( x )``
 instead, since ``norm`` is in the atom library and known by CVX to
 be convex.
 
-Monotonicity in nonlinear compositions
---------------------------------------
+Sign-dependent monotonicity in nonlinear compositions
+-----------------------------------------------------
 
 Monotonicity is a critical aspect of the rules for nonlinear
 compositions. This has some consequences that are not so obvious, as we
@@ -473,40 +481,83 @@ shall demonstrate here by example. Consider the expression
     square( square( x ) + 1 )
 
 where ``x`` is a scalar variable. This expression is in fact convex,
-since :math:`(x^2+1)^2 = x^4+2x^2+1` is convex. But CVX will reject
-the expression, because the outer ``square`` cannot accept a convex
-argument. Indeed, the square of a convex function is not, in general,
-convex: for example, :math:`(x^2-1)^2 = x^4-2x^2+1` is not convex.
+since :math:`(x^2+1)^2 = x^4+2x^2+1` is convex. However, previous
+versions of CVX used to *reject* this expression, because ``square``
+is nonmontonic; and so it may not accept a convex argument according
+to the strictest reading of the composition rules above. Indeed, the 
+square of a convex function is not, in general, convex: for example,
+ :math:`(x^2-1)^2 = x^4-2x^2+1` is not convex.
 
-There are several ways to modify the expression above to comply with the
-ruleset. One way is to write it as ``x^4 + 2*x^2 + 1``, which CVX
-recognizes as convex, since CVX allows positive even integer powers
-using the ``^`` operator. (Note that the same technique, applied to the
-function :math:`(x^2-1)^2`, will fail, since its second term is
-concave.)
+In practice, this explanation may not seem very satisfying. Because
+even though ``square`` is nonmonotonic over the entire real line,
+its argument ``square(x)+1`` has a range of :math:`[1,+\infty)`.
+And over that restricted interval, ``square`` *is* nondecreasing.
+Therefore, one could justifiably claim that the composition rules
+are satisfied it this case.
 
-Another approach is to use the alternate outer function ``square_pos``,
-included in the CVX library, which represents the function
-:math:`(x_+)^2`, where :math:`x_+ = \max\{0,x\}`. Obviously, ``square``
+The latest versions of CVX implement a simple but effective
+approach for extending the composition rules: *sign-dependent
+monotonicity*. This approach has three aspects:
+
+- First, the sign of each nonlinear function in CVX is now noted
+  whenever it is unambiguously know; for example, ``square``,
+  ``exp``, and ``quad_over_lin`` are all nonnegative.
+- Second, the monotonicty of a function is now considered
+  separately for nonnegative and nonpositive inputs. For instance,
+  ``square'' is nondecreasing for nonnegative inputs, and
+  nonincreasing for nonpositive inputs.
+- Third, CVX performs a simple *sign analysis* on each subexpression.
+  If the sign of the expression can be conclusively determined,
+  that information can be used to inform the composition rules.
+
+Under this new regime, we can now see how ``square(square(x)+1)`` 
+can be accepted by CVX. First, CVX knows that ``square`` is nonnegative;
+and as the sum of two nonnegative terms, it draws the same conclusion
+about ``square(x)+1``. Because of this, CVX can conclude that the
+outer instance to ``square`` is nondecreasing. CVX determines that
+this expression is the composition of a convex, nondecreasing function
+and a convex argument, and it is accepted by the ruleset.
+
+It is important to note that the sign analysis CVX performs on
+subexpressions is relatively limited. For example, when determining
+if an expression is nonnegative, it considers the following:
+
+- Each function call is treated only as "nonnegative", "nonpositive",
+  or "unknown sign".
+- Among simple variables, only those declared ``nonnegative``
+  in their variable statement (or the diagonal elements of a 
+  ``semidefinite`` variable) are considered nonnegative.
+- Sums of nonnegative quantities are considered nonnegative. 
+- ``max()`` functions are considered nonnegative if at least one
+  of its arguments is known to be nonnegative.
+
+One particular thing that CVX does *not* do is attempt to parse
+constraints, even simple ones like ``x >= 0``, to gain information
+about sign.
+
+On first reading, it may seem that this sign-sensitive extension of 
+the composition rules is too simplistic to be useful. But in fact,
+what we have found over the years of experience using and maintaining
+CVX is that this change covers nearly all of the instances in 
+practice where the composition rules proved too strict.
+
+Because past versions of CVX did not have this capability, CVX
+includes a number of functions that represent "globally monotonic"
+equivalents of common functions. For instance, the function
+``square_pos`` implements ``\max\{0,x\}^2``. Obviously, ``square``
 and ``square_pos`` coincide when their arguments are nonnegative. But
-``square_pos`` is nondecreasing, so it can accept a convex argument.
+because  ``square_pos`` is nondecreasing, it could accept a convex
+argument where ``square`` previously could not.
 Thus, the expression
 
 ::
 
     square_pos( square( x ) + 1 )
 
-is mathematically equivalent to the rejected version above (since the
-argument to the outer function is always positive), but it satisfies the
-DCP ruleset and is therefore accepted by CVX.
-
-This is the reason several functions in the CVX atom library come in
-two forms: the "natural" form, and one that is modified in such a way
-that it is monotonic, and can therefore be used in compositions. Other
-such "monotonic extensions" include ``sum_square_pos`` and
-``quad_pos_over_lin``. If you are implementing a new function yourself,
-you might wish to consider if a monotonic extension of that function
-would also be useful.
+is mathematically equivalent, but satisfied the stricter DCP ruleset.
+We have left these functions in the library for back-compatibility,
+but we think you will find that you should rarely if ever need them 
+when building models now.
 
 .. _quadforms:
 
@@ -588,4 +639,3 @@ efficient. In fact, in our experience, the non-squared form will often
 be handled more accurately. So we strongly encourage you to re-evaluate
 the use of quadratic forms in your models, in light of the new
 capabilities afforded by disciplined convex programming.
-
