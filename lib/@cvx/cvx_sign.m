@@ -15,16 +15,14 @@ if nb < n,
 elseif n < nb,
     s( nb, 1 ) = 0;
 end
-sn = ~any( b, 1 );
-s0 = any( b( ~s, : ) ) | any( imag( b ) );
+s0 = any( b( s == 0, : ), 1 ) | any( imag( b ), 1 );
 b  = b( s ~= 0, : );
 s  = nonzeros(s).';
-if cvx___.nan_used,
-    b = sparse( b );
-end
-w = full( s * b );
+w  = full( s * b );
 w( abs( w ) ~= abs( s ) * abs( b ) | s0 ) = 0;
-if nargin == 2, w( sn ) = dz; end
+if nargin == 2, 
+    w( ~any( x.basis_, 1 ) ) = dz;
+end
 w = reshape( sign( w ), sz );
 
 % Copyright 2005-2014 CVX Research, Inc.

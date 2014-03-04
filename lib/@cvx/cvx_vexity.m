@@ -32,13 +32,11 @@ end
 bs = x.basis_;
 ib = ~isreal( bs );
 if ib,
-    isreal( bs ),
-    bi = any( imag( bs ) );
+    bi = any( imag( bs ), 1 );
 end
 s0 = any( bs( s == 0, : ), 1 );
 bs = bs( s ~= 0, : );
 if cvx___.nan_used,
-    bs = sparse( bs );
     b = sparse( b );
 end
 s = nonzeros(s).';
