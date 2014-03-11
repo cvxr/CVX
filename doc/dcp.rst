@@ -4,235 +4,189 @@
 The DCP ruleset
 ===============
 
-CVX enforces the conventions dictated by the disciplined convex
-programming ruleset, or *DCP ruleset* for short. CVX will issue an
-error message whenever it encounters a violation of any of the rules, so
-it is important to understand them before beginning to build models. The
-rules are drawn from basic principles of convex analysis, and are easy
-to learn, once you've had an exposure to convex analysis and convex
-optimization.
+CVX requires that all models obey a set of rules, or conventions, 
+that govern how expressions and functions can appear in
+objectives and constraints. We call these rules the *disciplined
+convex programming ruleset*, or the *DCP ruleset* for short.
+The ruleset is drawn from basic principles of convex analysis,
+and are relatively easy to learn.
+CVX rejects any model that violates any of the rules, so it is 
+important to understand them before beginning to build models.
 
-The DCP ruleset is a set of sufficient, but not necessary, conditions
-for convexity. So it is possible to construct expressions that violate
-the ruleset but are in fact convex. As an example consider the entropy
-function, :math:`-\sum_{i=1}^n x_i \log x_i`, defined for :math:`x>0`,
-which is concave. If it is expressed as
-
-::
-
-    - sum( x .* log( x ) )
-
-CVX will reject it, because its concavity does not follow from any
-of the composition rules. (Specifically, it violates the no-product rule
-described in :ref:`expressions`.) Problems involving entropy,
-however, can be solved, by explicitly using the entropy function,
+The rules form a set of *sufficient*, but not
+*necessary*, conditions for convexity. What this means is that it is
+possible to construct expressions and models that 
+are known to be convex, but still violate the rules.
+For example, consider the convex function
+:math:`f(x)=\sqrt{x^2+1}`, expressed most naturally in MATLAB
+as ``sqrt(x^2+1)``. CVX *rejects* this 
+expression, and any model that contains it, with an error:
 
 ::
 
-    sum( entr( x ) )
+    >> sqrt(sum(square(x)))
+    Error using cvx/sqrt (line 61)
+    Disciplined convex programming error:
+        Illegal operation: sqrt( {nonnegative convex} ).
 
-which is in the base CVX library, and thus recognized as concave by
-CVX. If a convex (or concave) function is not recognized as convex
-or concave by CVX, it can be added as a new atom; see
-:ref:`newfunc`.
+It is simple to prove that :math:`f` is convex---after all,
+its second derivative :math:`f^{(2)}(x)=(x^2+1)^{-3/2}` is positive
+for all :math:`x`---but CVX knows nothing about derivatives. Instead,
+it knows that this expression violates the 
+:ref:`composition rules <compositions>` described
+below, so it cannot be used in a CVX model.
 
-As another example consider the function
-:math:`\sqrt{x^2+1}=\|[x~1]\|_2`, which is convex. If it is written as
-
-::
-
-    norm( [ x 1 ] )
-
-(assuming ``x`` is a scalar variable or affine expression) it will be
-recognized by CVX as a convex expression, and therefore can be used
-in (appropriate) constraints and objectives. But if it is written as
+In many cases, convex expressions that violate the ruleset can be
+easily rewritten. In this case, :math:`f` can also be written as
+:math:`f(x)=\|[x~1]\|_2`; a form which CVX accepts:
 
 ::
 
-    sqrt( x^2 + 1 )
+    >> norm([x 1])
+    ans =     
+        cvx nonnegative convex expression (scalar)
 
-CVX will reject it, since convexity of this function does not follow
-from the CVX ruleset.
+This expression is acceptable because `norm` is among the
+:ref:`functions supported by CVX <funcref>`,
+and it is being used in a manner compliant with
+the :ref:`composition rules <compositions>`. So 
+:math:`f(x)=\sqrt{x^2+1}` *can*
+be used in CVX models; it simply needs to be written
+in a compliant manner.
 
-A taxonomy of curvature
------------------------
-
-In disciplined convex programming, a scalar expression is classified by
-its *curvature*. There are four categories of curvature: *constant*,
-*affine*, *convex*, and *concave*. For a function
-:math:`f:\mathbf{R}^n\rightarrow\mathbf{R}` defined on all
-:math:`\mathbf{R}^n`, the categories have the following meanings:
-
-.. math::
-
-	\begin{array}{lll}
-		\text{constant} & f(\alpha x + (1-\alpha)y) = f(x)                             & \forall x,y\in\mathbf{R}^n,~\alpha\in\mathbf{R} \\
-		\text{affine}   & f(\alpha x + (1-\alpha)y) = \alpha f(x) + (1-\alpha) f(y)    & \forall x,y\in\mathbf{R}^n,~\alpha\in\mathbf{R} \\
-		\text{convex}   & f(\alpha x + (1-\alpha)y) \leq \alpha f(x) + (1-\alpha) f(y) & \forall x,y\in\mathbf{R}^n,~\alpha\in[0,1] \\
-		\text{concave}  & f(\alpha x + (1-\alpha)y) \geq \alpha f(x) + (1-\alpha) f(y) & \forall x,y\in\mathbf{R}^n,~\alpha\in[0,1]
-	\end{array}		
-
-Of course, there is significant overlap in these categories. For
-example, constant expressions are also affine, and (real) affine
-expressions are both convex and concave.
-
-Convex and concave expressions are real by definition. Complex constant
-and affine expressions can be constructed, but their usage is more
-limited; for example, they cannot appear as the left- or right-hand side
-of an inequality constraint.
+The DCP ruleset may seem arbitrary or restrictive, but it serves
+a very important purpose. Each rule corresponds to a specific step
+that CVX must take to convert a model to solvable form. A model that 
+violates the rules---*even if it is convex*---is a model that CVX simply
+is not equipped to solve. By complying with the rules, then, you are
+not only proving that your model is convex, you are also giving CVX
+*a detailed recipe for solving it.* (We thank you for the help!)
 
 Top-level rules
 ---------------
 
-CVX supports three different types of disciplined convex programs:
+Objectives
+~~~~~~~~~~
 
--  A *minimization problem*, consisting of a convex objective function
-   and zero or more constraints.
--  A *maximization problem*, consisting of a concave objective function
-   and zero or more constraints.
--  A *feasibility problem*, consisting of one or more constraints and no
-   objective.
+Acceptable objective expressions come in one of two forms:
+
+-  Convex minimization: ``minimize(`` *expr* ``)``, where *expr* is convex (or real affine).
+-  Concave maximization: ``maximize(`` *expr* ``)``, where *expr* is concave (or real affine).
+
+A model does not need to have an objective; such a problem is called a
+*feasibility problem*. CVX will attempt to find a single point that 
+satisfies all of the constraints.
 
 Constraints
------------
+~~~~~~~~~~~
 
-Three types of constraints may be specified in disciplined convex
-programs:
+Acceptable constraints come in one of four forms:
 
--  An *equality constraint*, constructed using ``==``, where both sides
-   are affine.
--  A *less-than inequality constraint*, using ``<=``, where the left
-   side is convex and the right side is concave.
--  A *greater-than inequality constraint*, using ``>=``, where the left
-   side is concave and the right side is convex.
+- A *less-than inequality constraint*, using ``<=``, where the left
+  side is convex and the right side is concave.
+- A *greater-than inequality constraint*, using ``>=``, where the left
+  side is concave and the right side is convex.
+- An *equality constraint*, using ``==``, where both the left and
+  right-hand sides are affine.
+- A *set membership constraint*, using ``<In>``, involving affine
+  expressions. (See :ref:`sets` for more details.)
 
-*Non*-equality constraints, constructed using ``~=``, are never allowed.
+*Non*-equality constraints, constructed using ``~=``, are *never allowed*.
 (Such constraints are not convex.)
 
-One or both sides of an equality constraint may be complex; inequality
-constraints, on the other hand, must be real. A complex equality
-constraint is equivalent to two real equality constraints, one for the
-real part and one for the imaginary part. An equality constraint with a
-real side and a complex side has the effect of constraining the
-imaginary part of the complex side to be zero.
+CVX treats strict ``<`` ``>`` inequalities identically to non-strict 
+``<=`` ``>=`` inequalities, so to avoid confusion the use of strict 
+inequalities is *strongly discouraged*. For more information, 
+see :ref:`strict` below.
 
-As discussed in :ref:`sets`, CVX enforces set membership
-constraints (*e.g.*, :math:`x\in S`) using equality constraints. The
-rule that both sides of an equality constraint must be affine applies to
-set membership constraints as well. In fact, the returned value of set
-atoms like ``semidefinite()`` and ``lorentz()`` is affine, so it is
-sufficient to simply verify the remaining portion of the set membership
-constraint. For composite values like ``{ x, y }``, each element must be
-affine.
-
-.. _strict:
-
-Strict inequalities
-~~~~~~~~~~~~~~~~~~~
-
-As mentioned in :ref:`constraints`, strict inequalities ``<``, ``>`` are interpreted 
-in an identical fashion to nonstrict inequalities ``>=``, ``<=``. It is important to 
-note that CVX cannot guarantee that an inequality will be strictly satisfied
-at the solution it computes. This is not simply a choice we have made in CVX; it is
-a natural consequence of both the underlying mathematics and the
-design of convex optimization solvers.
-For that reason, we *strongly* discourage the use of strict inequalities in CVX, 
-and a future version may remove them altogether.
-
-When a strict inequality is essential to your model, you may need to take additional
-steps to ensure compliance. In some cases, this can be accomplished through 
-*normalization*. For instance, consider a set of homogeneous equations and inequalities:
-
-.. math::
-
-	A x = 0, \quad C x \preceq 0, \quad x \succ 0
-	
-Except for the strict inequality, :math:`x=0` would be an acceptable solution; indeed
-the need to avoid the origin is the very reason for the strict inequality. However, note
-that if a given :math:`x` satisfies these constraints, then so does 
-:math:`\alpha x` for all :math:`\alpha>0`. By eliminating this degree of freedom with
-normalization, we can eliminate the strict inequality; for instance:
-
-.. math::
-
-	A x = 0, \quad C x \preceq 0, \quad x \succ 0, \quad \mathbf{1}^T x = 1
-	
-If normalization is not a valid approach for your model, you may simply need to convert
-the strict inequality into a non-strict one by adding a small offset; *e.g.*, convert
-``x > 0`` to, say, ``x >= 1e-4``. Note that the bound needs to be large enough so
-that the underlying solver considers it numerically significant.
-
-Finally, note that for some functions like ``log(x)`` and ``inv_pos(x)``, which have domains
-defined by strict inequalities, the domain restriction is handled *by the function itself*.
-You do not need to add an explicit constraint ``x > 0`` to your model to guarantee
-that the solution is positive.
+Inequality constraints must be real. Equality constraints, on the
+other hand, may be complex. Complex equality constraints are equivalent
+to two real equality constraints, one for the real part and one for
+the imaginary part. An equality constraint with a real side and a complex 
+side, then, has the effect of constraining the imaginary part
+of the complex side to be zero.
 
 .. _expressions:
 
 Expression rules
 ----------------
 
-So far, the rules as stated are not particularly restrictive, in that
-all convex programs (disciplined or otherwise) typically adhere to them.
-What distinguishes disciplined convex programming from more general
-convex programming are the rules governing the construction of the
-expressions used in objective functions and constraints.
+Each scalar expression and subexpression is analyzed to determin
+its *curvature* and *sign*. Vectors, matrices, and arrays are analyzed on an elementwis basis.
 
-Disciplined convex programming determines the curvature of scalar
-expressions by recursively applying the following rules. While this list
-may seem long, it is for the most part an enumeration of basic rules of
+Curvature
+~~~~~~~~~
+
+CVX considers four types of *curvature*:
+curvature:  *constant*, *affine*, *convex*, and *concave*. The reader should
+already be familiar with these definitions. But for review, a function
+:math:`f:\mathbf{R}^n\rightarrow\mathbf{R}` defined on all
+:math:`\mathbf{R}^n`, the categories have the following meanings:
+
+.. math::
+
+  \begin{array}{l@{\quad}ll}
+    \text{constant} & f(\alpha x + (1-\alpha)y) = f(x)                             & \forall x,y\in\mathbf{R}^n,~\alpha\in\mathbf{R} \\
+    \text{affine}   & f(\alpha x + (1-\alpha)y) = \alpha f(x) + (1-\alpha) f(y)    & \forall x,y\in\mathbf{R}^n,~\alpha\in\mathbf{R} \\
+    \text{convex}   & f(\alpha x + (1-\alpha)y) \leq \alpha f(x) + (1-\alpha) f(y) & \forall x,y\in\mathbf{R}^n,~\alpha\in[0,1] \\
+    \text{concave}  & f(\alpha x + (1-\alpha)y) \geq \alpha f(x) + (1-\alpha) f(y) & \forall x,y\in\mathbf{R}^n,~\alpha\in[0,1]
+  \end{array}
+
+There is, of course, significant overlap in these 
+categories: constant expressions are also affine, and (real) affine
+expressions are both convex and concave. Convex and concave expressions
+are real by definition, but constants and affine expressions can be complex.
+
+CVX does *not* determine convexity using the above definitions. Instead,
+curvature is determined recursively applying the following rules. 
+While this list may seem long, it is for the most part 
+an enumeration of basic rules of
 convex analysis for combining convex, concave, and affine forms: sums,
 multiplication by scalars, and so forth.
 
 -  A valid constant expression is
 
-   -  any well-formed Matlab expression that evaluates to a finite
+   -  any well-formed expression that immediately evaluates to a finite
       value.
 
 -  A valid affine expression is
 
    -  a valid constant expression;
    -  a declared variable;
-   -  a valid call to a function in the atom library with an affine
-      result;
    -  the sum or difference of affine expressions;
    -  the product of an affine expression and a constant.
+   -  a valid affine function expression---see :ref:`compositions`;
 
 -  A valid convex expression is
 
    -  a valid constant or affine expression;
-   -  a valid call to a function in the atom library with a convex
-      result;
-   -  an affine scalar raised to a constant power :math:`p\geq 1`,
-      :math:`p\neq3,5,7,9,...`;
-   -  a convex scalar quadratic form---see
-      :ref:`quadforms`;
    -  the sum of two or more convex expressions;
    -  the difference between a convex expression and a concave
       expression;
    -  the product of a convex expression and a nonnegative constant;
    -  the product of a concave expression and a nonpositive constant;
-   -  the negation of a concave expression.
+   -  the negation of a concave expression;
+   -  a valid convex function expression---see :ref:`compositions`;
+   -  an affine scalar raised to a constant power :math:`p\geq 1`,
+      :math:`p\neq3,5,7,9,...`;
+   -  a convex scalar quadratic form---see :ref:`quadforms`.
 
 -  A valid concave expression is
 
    -  a valid constant or affine expression;
-   -  a valid call to a function in the atom library with a concave
-      result;
-   -  a concave scalar raised to a power :math:`p\in(0,1)`;
-   -  a concave scalar quadratic form---see
-      :ref:`quadforms`;
    -  the sum of two or more concave expressions;
-   -  the difference between a concave expression and a convex
-      expression;
+   -  the difference between a concave expression and a convex expression;
    -  the product of a concave expression and a nonnegative constant;
    -  the product of a convex expression and a nonpositive constant;
-   -  the negation of a convex expression.
+   -  the negation of a convex expression;
+   -  a valid concave function expression---see :ref:`compositions`;
+   -  a concave scalar raised to a power :math:`p\in(0,1)`;
+   -  a concave scalar quadratic form---see :ref:`quadforms`.
 
-If an expression cannot be categorized by this ruleset, it is rejected
-by CVX. For matrix and array expressions, these rules are applied on
-an elementwise basis. We note that the set of rules listed above is
+We note that the set of rules listed above is
 redundant; there are much smaller, equivalent sets of rules.
+For matrix and array expressions, these rules are applied on
+an elementwise basis. 
 
 Of particular note is that these expression rules generally forbid
 *products* between nonconstant expressions, with the exception of scalar
@@ -240,74 +194,141 @@ quadratic forms. For
 example, the expression ``x*sqrt(x)`` happens to be a convex function of
 ``x``, but its convexity cannot be verified using the CVX ruleset,
 and so is rejected. (It can be expressed as ``pow_p(x,3/2)``, however.) 
-We call this the *no-product rule*, and paying close attention to it will 
-go a long way to insuring that the
-expressions you construct are valid.
+We call this the *no-product rule*:
 
-Functions
----------
+- The product or ratio of two non-constant (affine, convex, concave)
+  expressions is forbidden.
 
-In CVX, functions are categorized by three attributes: *curvature*
-(*constant*, *affine*, *convex*, or *concave*), *monotonicity*
-(*nondecreasing*, *nonincreasing*, or *nonmonotonic*), and *sign*
-(*nonnegative*, *nonpositive*, or *unknown sign*). (Previous versions
-of CVX did not consider the sign of a function; more on this below.) Curvature
-determines the conditions under which they can appear in expressions
-according to the expression rules given above. Monotonicity and sign
-determine how they can be used in function compositions, as we shall see in the
-next section.
+Adherence to the no-product rule will go a long way to insuring that you
+construct valid expressions. There is one notable exception to this rule,
+however: see :ref:`quadforms` below. But quadratic forms are, strictly
+speaking, an unnecessary convenience, since CVX includes a ``quad_form``
+function that provides the same functionality.
 
+.. _sign:
+
+Sign
+~~~~
+
+CVX also keeps track of the *sign* of an expression as well.
+Expressions are classified as *positive*, *negative*, and *unknown sign*.
+In a slight abuse of notation, nonnegative expressions are also treated as positive,
+and nonpositive expressions are also treated as negative. It should be noted
+that CVX does *not* perform any sort of advanced interval analysis to determine if
+an expression is positive or negative. As with curvature, it draws its conclusions
+by applying a simple set of rules:
+
+- A "positive" expression is
+  
+  - a positive constant (or zero);
+  - a variable *declared* `nonnegative` (see :ref:`variables`);
+  - a diagonal element of a variable declared `semidefinite`  (see :ref:`variables`);
+  - a call to any function specifically labeled as *positive* (see :ref:`functions` below);
+  - a negative expression multiplied by a negative constant;
+  - a positive expression multiplied by a positive constant;
+  - the sum of positive expressions.
+
+- A "negative" expression is 
+
+  - a negative constant (or zero);
+  - a call to any function specifically labeled as *negative* (see :ref:`functions` below);
+  - a negative expression multiplied by a positive constant;
+  - a positive expression multiplied by a negative constant;
+  - the sum of negative expressions.
+
+That's it! Any expression whose sign cannot be determined from these rules is classified
+as having *unknown sign*. For example, the expression ``x - 1`` has unknown sign---even if a
+constraint in the model ensures that ``x >= 1``. These rules provide just enough information
+to CVX to give the user more flexibility in how it combines functions together;
+more on this in :ref:`sign-monotonicity` below.
+
+Function expressions
+--------------------
+
+Now let us consider how CVX classifies an expression of
+the form :math:`f(\arg_1,\arg_2,\dots,\arg_n)`,
+where :math:`f` is a function from CVX's function library, and
+each argument :math:`arg_k` is an otherwise well-posed scalar 
+CVX expression. In the case where a MATLAB function accepts
+vector, matrix, or array arguments, everything we discuss here
+is applied in an elementwise fashion. For instance, the 
+expression `norm(x)`, where `x` is a vector of length :math:`n`,
+can be thought of as a function expression involving :math:`n` separate
+scalar arguments.
+
+Function classification
+~~~~~~~~~~~~~~~~~~~~~~~
+
+In order to proceed, we must first understand the properties of
+the function :math:`f` itself. As with basic expressions, CVX categorizes
+functions according to their *curvature* and *sign*.
+They also obtain two more attributes as well: *monotonicity* and *domain*.
 For functions with only one argument, the categorization is
 straightforward. Some examples are given in the table below.
 
-.. tabularcolumns:: CCCCC
+.. tabularcolumns:: CCCCCCC
 
-===============   ====================   ===========  =============== =============
- Function          Meaning                Curvature    Monotonicity    Sign
-===============   ====================   ===========  =============== =============
- ``sum( x )``      :math:`\sum_i x_i`     affine       nondecreasing   unknown
- ``abs( x )``      :math:`|x|`            convex       nonmonotonic    nonnegative
- ``log( x )``      :math:`\log x`         concave      nondecreasing   unknown
- ``sqrt( x )``     :math:`\sqrt x`        concave      nondecreasing   unknown
-===============   ====================   ===========  =============== =============
+================== ==================== =========== ================ ========== ===========================
+ Function           Meaning              Curvature   Monotonicity     Sign       Domain
+================== ==================== =========== ================ ========== ===========================
+ ``sum( x )``       :math:`\sum_i x_i`   affine      increasing       unknown    :math:`\mathbb{R}`
+ ``abs( x )``       :math:`|x|`          convex      sign-dependent   positive   :math:`\mathbb{R}`
+ ``log( x )``       :math:`1/x`          convex      decreasing       unknown    :math:`\{x\,|\,x>0\}`
+ ``sqrt( x )``      :math:`\sqrt x`      concave     increasing       positive   :math:`\{x\,|\,x\geq 0\}`
+ ``inv_pos( x )``   :math:`\log x`       concave     increasing       unknown    :math:`\{x\,|\,x>0\}`
+ ``entr( x )``      :math:`-x\log x`     concave     non-monotonic    unknown    :math:`\{x\,|\,x\geq 0\}`
+================== ==================== =========== ================ ========== ===========================
 
-Following standard practice in convex analysis, convex functions are
-interpreted as :math:`+\infty` when the argument is outside the domain
-of the function, and concave functions are interpreted as
-:math:`-\infty` when the argument is outside its domain. In other words,
-convex and concave functions in CVX are interpreted as their
-*extended-valued extensions*. So, for instance, both ``log`` and
-``sqrt`` are defined as equal to :math:`-\infty` whenever their
-arguments are negative. This is why ``sqrt`` is labeled as having 
-*unknown* sign in the table above.
+Domain
+======
 
-One effect of the extended-value interpreation is that any use
-of a function automatically constrains its argument to be in the 
-function's domain. For example, if we form
-``sqrt(x+1)`` in a CVX specification, a new constraint ``x+1>=0``
-is automatically assumed; there is no need to add it seprately.
-
-Monotonicity of a function is also determined in the extended sense, 
-*i.e.*, *including the values of the argument outside its domain*. 
-For example, ``sqrt(x)`` is determined to be nondecreasing since its value is
-constant (:math:`-\infty`) for negative values of its argument; then
-jumps *up* to :math:`0` for argument zero, and increases for positive
-values of its argument.
+The *domain* of a function is simply the set of points over which a
+function is well-defined. For a convex or concave function, this
+set is always convex. The domain serves as an
+*implicit constraint* on the function's input. For instance, if
+we form  ``sqrt(x+1)`` in a CVX specification, a new constraint 
+``x+1>=0`` is automatically assumed. There is no need to add such
+a constraint separately. Monotonicity is also considered with
+respect to the function's domain; so, for instance, ``sqrt(x)``
+is considered increasing, since that is indeed the case
+for all nonnegative inputs.
 
 CVX does *not* consider a function to be convex or concave if it is
 so only over a portion of its domain, even if the argument is
-constrained to lie in one of these portions. As an example, consider the
-function :math:`1/x`. This function is convex for :math:`x>0`, and
+constrained to lie in one of these portions. For example, consider
+the function :math:`1/x`. This function is convex for :math:`x>0`, and
 concave for :math:`x<0`. But you can never write ``1/x`` in CVX
 (unless ``x`` is constant), even if you have imposed a constraint such
 as ``x>=1``, which restricts ``x`` to lie in the convex portion of
-function :math:`1/x`. You can use the CVX function ``inv_pos(x)``,
-defined as :math:`1/x` for :math:`x>0` and :math:`\infty` otherwise, for
-the convex portion of :math:`1/x`; CVX recognizes this function as
-convex and nonincreasing. In CVX, you can express the concave
-portion of :math:`1/x`, where :math:`x` is negative, using
-``-inv_pos(-x)``, which will be correctly recognized as concave and
-nonincreasing.
+function. You *can*, however, use the CVX function ``inv_pos(x)``,
+listed above, which is defined to have the domain `:math:\mathbb{R}_{++}`.
+CVX recognizes this function as convex and decreasing.
+
+Monotonicity
+============
+
+CVX considers two types of monotonicity: *increasing* and *decreasing*.
+In a slight abuse of notation, we classify increasing functions as 
+increasing, and decreasing functions as decreasing. These categories
+have the following meanings:
+
+.. math::
+
+  \begin{array}{l@{\quad}l}
+    \text{increasing} & x \geq y ~~\Longrightarrow~~ f(x) \geq f(y) \\
+    \text{decreasing} & x \geq y ~~\Longrightarrow~~ f(x) \leq f(y)
+  \end{array}   
+
+A function that is neither increasing or decreasing is called *nonmonotonic*.
+In more recent versiojns of CVX, we also consider *sign-dependent* monotonicity.
+For example, the function ``square(x)`` representing :math:`f(x)=x^2` is decreasing for
+negative :math:`x` and increasing for positive :math:`x`.
+
+Note that ``abs`` is listed as having *sign-dependent* 
+monotonicity. This is an acknowledgement that :math:`|x|` is increasing for
+positive :math:`x` and decreasing for negative :math:`x`. Previous
+versions of CVX classifed ``abs`` as nonmonotonic, which affects its
+use in compositions; more on this in :ref:`sign-monotonicity` below.
 
 For functions with multiple arguments, curvature is always considered
 *jointly*, but monotonicity can be considered on an
@@ -318,12 +339,8 @@ For functions with multiple arguments, curvature is always considered
 
 	f_{\text{quad\_over\_lin}}(x,y) = \begin{cases} |x|^2/y & y > 0 \\ +\infty & y\leq 0  \end{cases}
 
-is jointly convex in both :math:`x` and :math:`y` and nonincreasing
-in :math:`y`. It is nonmonotonic for arbitrary :math:`x`; however,
-it exhibits *sign-dependent* montonicity: is is nondecreasing for
-nonnegative :math:`x`, and nonincreasing for nonpositive :math:`x`.
-Previous versions of CVX did not consider this sign-dependent
-montonicity, but newer ones can; more on this below.
+is jointly convex in both :math:`x` and :math:`y` and decreasing
+in :math:`y`, and exhibits sign-dependent monotonicity in `x`.
 
 Some functions are convex, concave, or affine only for a *subset* of its
 arguments. For example, the function ``norm(x,p)`` where ``p \geq 1`` is
@@ -342,77 +359,67 @@ CVX function as being convex, concave, or affine, we will assume
 that its parameters are known and have been given appropriate, constant
 values.
 
-Compositions
-------------
+.. _compositions:
 
-A basic rule of convex analysis is that convexity is closed under
-composition with an affine mapping. This is part of the DCP ruleset as
-well:
+Composition rules
+~~~~~~~~~~~~~~~~~
 
--  A convex, concave, or affine function may accept an affine expression
-   (of compatible size) as an argument. The result is convex, concave,
-   or affine, respectively.
+Armed with relevant information about :math:`f` and the classification
+of the arguments :math:`\arg_k` according to the rules in :ref:`expressions`,
+we may proceed to classify the full expression. We call the
+rules that govern these function expressions the *composition rules*.
 
-For example, consider the function ``square(x)``, which is provided in
-the CVX atom library. This function squares its argument; *i.e.*, it
-computes ``x.*x``. (For array arguments, it squares each element
-independently.) It is in the CVX atom library, and known to be
-convex, provided its argument is real. So if ``x`` is a real variable of
-dimension :math:`n`, ``a`` is a constant :math:`n`-vector, and ``b`` is
-a constant, the expression
+Perhaps the most basic composition rule in convex anaysis is 
+that convexity is closed under composition with an affine mapping.
+For example, function  ``square(x)``---which, as its name implies,
+computes :math:`f(x)=x^2`---is convex for real arguments `x`. 
+So if ``x`` is a real variable of dimension :math:`n`, ``a`` is a 
+constant :math:`n`-vector, and ``b`` is a constant, the expression
 
 ::
 
     square( a' * x + b )
 
-is accepted by CVX, which knows that it is convex.
+is accepted by CVX, which knows that it is convex. 
 
-The affine composition rule above is a special case of a more
-sophisticated composition rule, which we describe now. We consider a
-function, of known curvature and monotonicity, that accepts multiple
-arguments. For *convex* functions, the rules are:
+The affine composition rule is just one one case in a more
+sophisiticated composition ruleset. Here is the complete set:
 
--  If the function is nondecreasing in an argument, that argument must
-   be convex.
--  If the function is nonincreasing in an argument, that argument must
-   be concave.
--  If the function is neither nondecreasing or nonincreasing in an
-   argument, that argument must be affine.
+- The function expression :math:`f(\arg_1,\arg_2,\dots,\arg_n)` is affine
+  if :math:`f` is affine and every expression
+  :math:`\arg_k` is affine.
 
-If each argument of the function satisfies these rules, then the
-expression is accepted by CVX, and is classified as convex. Recall
-that a constant or affine expression is both convex and concave, so any
-argument can be affine, including as a special case, constant.
+- The function expression :math:`f(\arg_1,\arg_2,\dots,\arg_n)` is convex
+  if :math:`f` is convex (or affine), and if one of the following is true
+  for *every* expression :math:`\arg_k`:
 
-The corresponding rules for a concave function are as follows:
+  - :math:`\arg_k` is affine.
+  - :math:`\arg_k` is convex, *and* the function is increasing in argument :math:`k`.
+  - :math:`\arg_k` is concave, *and* the function is decreasing in argument :math:`k`.
 
--  If the function is nondecreasing in an argument, that argument must
-   be concave.
--  If the function is nonincreasing in an argument, that argument must
-   be convex.
--  If the function is neither nondecreasing or nonincreasing in an
-   argument, that argument must be affine.
+- The function expression :math:`f(\arg_1,\arg_2,\dots,\arg_n)` is concave
+  if :math:`f` is concave (or affine), and if one of the following is true
+  for *every* expression :math:`\arg_k`:
 
-In this case, the expression is accepted by CVX, and classified as
-concave.
+  - :math:`\arg_k` is affine.
+  - :math:`\arg_k` is concave, *and* the function is increasing in argument :math:`k`.
+  - :math:`\arg_k` is convex, *and* the function is decreasing in argument :math:`k`.
 
 For more background on these composition rules, see `Convex
 Optimization <http://www.stanford.edu/~boyd/cvxbook>`_, Section 3.2.4.
-In fact, with the exception of scalar quadratic expressions, the entire
-DCP ruleset can be thought of as special cases of these six rules.
 
 Let us examine some examples. The maximum function is convex and
-nondecreasing in every argument, so it can accept any convex expressions
+increasing in every argument, so it can accept any convex expressions
 as arguments. For example, if ``x`` is a vector variable, then
 
 ::
 
     max( abs( x ) )
 
-obeys the first of the six composition rules and is therefore accepted
+obeys the "convex/increasing/convex" composition rule, and is therefore accepted
 by CVX, and classified as convex. As another example, consider the
 sum function, which is both convex and concave (since it is affine), and
-nondecreasing in each argument. Therefore the expressions
+increasing in each argument. Therefore the expressions
 
 ::
 
@@ -420,23 +427,18 @@ nondecreasing in each argument. Therefore the expressions
     sum( sqrt( x ) )
 
 are recognized as valid in CVX, and classified as convex and
-concave, respectively. The first one follows from the first rule for
-convex functions; and the second one follows from the first rule for
-concave functions.
+concave, respectively. The first one follows from the "convex/increasing/convex"
+rule, while the second follows from the "concave/increasing/concave" rule.
 
 Most people who know basic convex analysis like to think of these
-examples in terms of the more specific rules: a maximum of convex
+simpler examples in terms of more specific rules: a maximum of convex
 functions is convex, and a sum of convex (concave) functions is convex
-(concave). But these rules are just special cases of the general
-composition rules above. Some other well known basic rules that follow
-from the general composition rules are:
+(concave). But as you can see, these rules are just *special cases* of the
+this general composition ruleset. In fact, with the exception of scalar quadratic 
+expressions, the entire DCP ruleset can be thought of as special cases 
+of these rules.
 
--  a nonnegative multiple of a convex (concave) function is convex
-   (concave);
--  a nonpositive multiple of a convex (concave) function is concave
-   (convex).
-
-Now we consider a more complex example in depth. Suppose ``x`` is a
+For a more complex example, suppose ``x`` is a
 vector variable, and ``A``, ``b``, and ``f`` are constants with
 appropriate dimensions. CVX recognizes the expression
 
@@ -448,33 +450,31 @@ as concave. Consider the term ``sqrt(f'*x)``. CVX recognizes that
 ``sqrt`` is concave and ``f'*x`` is affine, so it concludes that
 ``sqrt(f'*x)`` is concave. Now consider the second term
 ``min(4,1.3-norm(A*x-b))``. CVX recognizes that ``min`` is concave
-and nondecreasing, so it can accept concave arguments. CVX
+and increasing, so it can accept concave arguments. CVX
 recognizes that ``1.3-norm(A*x-b)`` is concave, since it is the
 difference of a constant and a convex function. So CVX concludes
 that the second term is also concave. The whole expression is then
 recognized as concave, since it is the sum of two concave functions.
 
-The composition rules are sufficient but not necessary for the
-classification to be correct, so some expressions which are in fact
-convex or concave will fail to satisfy them, and so will be rejected by
-CVX. For example, if ``x`` is a vector variable, the expression
+For a negative example, we can return to the original expression
+presented in the beginnnig of this chapter,
+``sqrt( x^2 + 1 )``. Assuming that ``x`` is a scalar variable, this is
+the composition of a concave, increasing
+function ``sqrt`` and a convex expression ``x^2+1``. According to the
+composition rules, ``sqrt`` can accept a *concave* argument, not a
+convex argument, so CVX rejects it. On the other hand, ``norm([x 1])``
+is the composition of a convex function ``norm`` and an affine
+expression ``[x 1]``, so CVX can indeed accept that.
 
-::
+.. _sign-monotonicity:
 
-        sqrt( sum( square( x ) ) )
+Sign-dependent monotonicity 
+~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-is rejected by CVX, because there is no rule governing the
-composition of a concave nondecreasing function with a convex function.
-Of course, the workaround is simple in this case: use ``norm( x )``
-instead, since ``norm`` is in the atom library and known by CVX to
-be convex.
-
-Sign-dependent monotonicity in nonlinear compositions
------------------------------------------------------
-
-Monotonicity is a critical aspect of the rules for nonlinear
-compositions. This has some consequences that are not so obvious, as we
-shall demonstrate here by example. Consider the expression
+Monotonicity is clearly a critical aspect of the rules for nonlinear
+compositions. Previous versions of CVX enforced these rules in a way
+that occasionally produced some unfortunate consequences. For 
+example, consider the expression
 
 ::
 
@@ -486,78 +486,42 @@ versions of CVX used to *reject* this expression, because ``square``
 is nonmontonic; and so it may not accept a convex argument according
 to the strictest reading of the composition rules above. Indeed, the 
 square of a convex function is not, in general, convex: for example,
- :math:`(x^2-1)^2 = x^4-2x^2+1` is not convex.
+:math:`(x^2-1)^2 = x^4-2x^2+1` is not convex.
 
-In practice, this explanation may not seem very satisfying. Because
+In practice, this explanation may proved unsatisfying. After all,
 even though ``square`` is nonmonotonic over the entire real line,
-its argument ``square(x)+1`` has a range of :math:`[1,+\infty)`.
-And over that restricted interval, ``square`` *is* nondecreasing.
+the expression ``square(x)+1`` has a range of :math:`[1,+\infty)`.
+And *over that interval*, ``square`` is increasing.
 Therefore, one could justifiably claim that the composition rules
 are satisfied it this case.
 
 The latest versions of CVX implement a simple but effective
-approach for extending the composition rules: *sign-dependent
-monotonicity*. This approach has three aspects:
-
-- First, the sign of each nonlinear function in CVX is now noted
-  whenever it is unambiguously know; for example, ``square``,
-  ``exp``, and ``quad_over_lin`` are all nonnegative.
-- Second, the monotonicty of a function is now considered
-  separately for nonnegative and nonpositive inputs. For instance,
-  ``square'' is nondecreasing for nonnegative inputs, and
-  nonincreasing for nonpositive inputs.
-- Third, CVX performs a simple *sign analysis* on each subexpression.
-  If the sign of the expression can be conclusively determined,
-  that information can be used to inform the composition rules.
+approach for extending the composition rules to cover such cases: 
+*sign-dependent monotonicity*. To accomplish this, functions that
+are positive or negative over their entire domain are noted as
+such, so this information can be used in the sign analysis described
+in :ref:`sign` above. Furthermore, each functions monotonicity
+is considered *with respect to the sign of its input*. So, for
+example, ``square`` is increasing for positive inputs, and
+decreasing for negative inputs.
 
 Under this new regime, we can now see how ``square(square(x)+1)`` 
 can be accepted by CVX. First, CVX knows that ``square`` is nonnegative;
 and as the sum of two nonnegative terms, it draws the same conclusion
 about ``square(x)+1``. Because of this, CVX can conclude that the
-outer instance to ``square`` is nondecreasing. CVX determines that
-this expression is the composition of a convex, nondecreasing function
+outer instance to ``square`` is increasing. CVX determines that
+this expression is the composition of a convex, increasing function
 and a convex argument, and it is accepted by the ruleset.
 
-It is important to note that the sign analysis CVX performs on
-subexpressions is relatively limited. For example, when determining
-if an expression is nonnegative, it considers the following:
-
-- Each function call is treated only as "nonnegative", "nonpositive",
-  or "unknown sign".
-- Among simple variables, only those declared ``nonnegative``
-  in their variable statement (or the diagonal elements of a 
-  ``semidefinite`` variable) are considered nonnegative.
-- Sums of nonnegative quantities are considered nonnegative. 
-- ``max()`` functions are considered nonnegative if at least one
-  of its arguments is known to be nonnegative.
-
-One particular thing that CVX does *not* do is attempt to parse
-constraints, even simple ones like ``x >= 0``, to gain information
-about sign.
-
-On first reading, it may seem that this sign-sensitive extension of 
-the composition rules is too simplistic to be useful. But in fact,
-what we have found over the years of experience using and maintaining
-CVX is that this change covers nearly all of the instances in 
-practice where the composition rules proved too strict.
-
-Because past versions of CVX did not have this capability, CVX
-includes a number of functions that represent "globally monotonic"
-equivalents of common functions. For instance, the function
-``square_pos`` implements ``\max\{0,x\}^2``. Obviously, ``square``
-and ``square_pos`` coincide when their arguments are nonnegative. But
-because  ``square_pos`` is nondecreasing, it could accept a convex
-argument where ``square`` previously could not.
-Thus, the expression
-
-::
-
-    square_pos( square( x ) + 1 )
-
-is mathematically equivalent, but satisfied the stricter DCP ruleset.
-We have left these functions in the library for back-compatibility,
-but we think you will find that you should rarely if ever need them 
-when building models now.
+Clearly, sign-dependent monotonicity, and the simple rule-based
+sign analysis performed in CVX, is limited. For example, `entr( x )`
+defined above is increasing for :math:`x\geq 1/e` and decreasing
+for :math:`x\leq 1/e`, but CVX does not consider that. But our
+experience with implementations found in 
+`CVXPY <https://github.com/cvxgrp/cvxpy)>`_,
+the `Stanford DCP expression analyzer <http://dcp.stanford.edu/>`_, and
+our internal version of CVX suggest that this covers nearly
+all of the cases CVX users are likely to encounter.
 
 .. _quadforms:
 
@@ -639,3 +603,58 @@ efficient. In fact, in our experience, the non-squared form will often
 be handled more accurately. So we strongly encourage you to re-evaluate
 the use of quadratic forms in your models, in light of the new
 capabilities afforded by disciplined convex programming.
+
+.. _strict:
+
+Strict inequalities
+-------------------
+
+As mentioned in :ref:`constraints`, strict inequalities ``<``, ``>`` are interpreted 
+in an identical fashion to nonstrict inequalities ``>=``, ``<=``. It is important to 
+note that CVX cannot guarantee that an inequality will be strictly satisfied
+at the solution it computes. This is not simply a choice we have made in CVX; it is
+a natural consequence of both the underlying mathematics and the
+design of convex optimization solvers.
+For that reason, we *strongly* discourage the use of strict inequalities in CVX, 
+and a future version may remove them altogether.
+
+When a strict inequality is essential to your model, you may need to take additional
+steps to ensure compliance. In some cases, this can be accomplished through 
+*normalization*. For instance, consider a set of homogeneous equations and inequalities:
+
+.. math::
+
+  A x = 0, \quad C x \preceq 0, \quad x \succ 0
+  
+Except for the strict inequality, :math:`x=0` would be an acceptable solution; indeed
+the need to avoid the origin is the very reason for the strict inequality. However, note
+that if a given :math:`x` satisfies these constraints, then so does 
+:math:`\alpha x` for all :math:`\alpha>0`. By eliminating this degree of freedom with
+normalization, we can eliminate the strict inequality; for instance:
+
+.. math::
+
+  A x = 0, \quad C x \preceq 0, \quad x \succ 0, \quad \mathbf{1}^T x = 1
+  
+If normalization is not a valid approach for your model, you may simply need to convert
+the strict inequality into a non-strict one by adding a small offset; *e.g.*, convert
+``x > 0`` to, say, ``x >= 1e-4``. Note that the bound needs to be large enough so
+that the underlying solver considers it numerically significant.
+
+Finally, note that for some functions like ``log(x)`` and ``inv_pos(x)``, which have domains
+defined by strict inequalities, the domain restriction is handled *by the function itself*.
+You do not need to add an explicit constraint ``x > 0`` to your model to guarantee
+that the solution is positive.
+
+Log convexity
+-------------
+
+Given our strong emphasis on adherence to the DCP ruleset, experienced users of CVX 
+may be surprised to accidentally stumble upon certain expressions involving ``log``
+and ``exp`` that violate the ruleset *but are accepted anyway*; for example,
+``log(exp(x)+1)``. It turns out that this is an artifact of CVX's support for
+:ref:`geometric programming <gp-mode>`; and since it also requires the use of
+CVX's experimental :ref:`successive approximation approach <successive>`, it is
+unsupported. Nevertheless, advanced users may be interested in reading more about
+these "hidden" rules in the :ref:`Advanced topics <log-convexity>` chapter.
+

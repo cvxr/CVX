@@ -416,6 +416,94 @@ correct this problem by replacing the equality constraint with
 
 ``sym`` is a function we have provided that extracts the symmetric part
 of its argument; that is, ``sym(W)`` equals ``0.5 * ( W + W' )``.
+
+.. _log-convexity:
+
+Log convexity
+-------------
+
+A few CVX users have stumbled across a construction that *should* be rejected,
+but is not: usually something similar to this expression:
+
+::
+
+  log( exp(x) + 1 )
+
+This expression is indeed convex, but it does *not* comply with the DCP 
+:ref:`composition rules <compositions>`. After all,
+``log`` is concave and increasing, and therefore can accept a concave argument; but
+``exp(x) + 1`` is convex! What's going on here?
+
+The answer lies in CVX's support for :ref:`geometric programming <gp-mode>`. 
+Geometric programs in CVX must obey a *different* set of rules than standard
+DCP models. But underneath the hood, CVX processes both models in a unified
+manner. In short, every geometric variable ``x`` is related to an *internal*
+variable, say ``x_``, by an exponential; that is, ``x = exp(x_)``. Therefore,
+each geometric programming rule has a corresponding rule in the linear/DCP space.
+
+The net effect is that CVX implements a set of rules that govern three additional
+kinds of curvature in CVX: *log-convex*, *log-concave*, and *log-affine*. As the
+name suggests, a log-concave expression is one whose logarithm is convex; so,
+for example, :math:`e^{x^2}` is log-convex (and convex). Similarly, a log-concave
+expression has a concave logarithm, and a log-affine expression has an affine logarithm.
+
+For more information about log-convexity, see
+`Convex Optimization <http://www.stanford.edu/~boyd/cvxbook>`_,
+Section 3.5. Not surprisingly, CVX does not recognize all instances of log-convexity,
+just those that adhere to a finite set of rules:
+
+- A valid log-convex expression is
+
+  - ``exp(`` *expr* ``)``, where *expr* is convex;
+  - a log-convex expression multiplied by a positive constant;
+  - the inverse of a log-concave expression;
+  - a log-convex expression raised to a positive power;
+  - a log-concave expression raised to a negative power;
+  - the sum of log-convex and/or log-affine expressions.
+
+- A valid log-concave expression is
+
+  - ``exp(`` *expr* ``)``, where *expr* is concave;
+  - a log-concave expression multiplied by a positive constant;
+  - the inverse of a log-convex expression;
+  - a log-concave expression raised to a positive power;
+  - a log-convex expression raised to a negative power.
+
+- A valid log-affine expression is
+
+  - any positive constant;
+  - ``exp(`` *expr* ``)``, where *expr* is affine;
+  - a log-affine expression multiplied by a positive constant;
+  - the inverse of a log-affine expression;
+  - a log-affine expression raised to a constant power.
+
+In these rules above we show how ``exp`` is used to "elevate"
+expressons with "standard" curvature to log-curvature; not surprisingly,
+``log`` reverses the effect:
+
+- If *expr* is log-convex, log-concave, or log-affine, then
+  ``log(`` *expr* ``)`` is convex, concave, or affine, respectively.
+
+Log-convex/concave/affine expressions can be employed in objectives
+and constraints. Acceptable log-convex objectives include
+
+- ``minimize(`` *expr* ``)``, where *expr* is log-convex; and
+- ``maximize(`` *expr* ``)``, where *expr* is log-concave.
+
+Acceptable log-convex constraints include
+
+-  An equality constraint, using ``==``, where both sides
+   are log-affine.
+-  A less-than inequality constraint, using ``<=``, where the left
+   side is log-convex and the right side is log-concave.
+-  A greater-than inequality constraint, using ``>=``, where the left
+   side is log-concave and the right side is log-convex.
+
+So there you have it: the hidden log-convexity rules of CVX. Again, we do not
+recommend that you actually use these, as they are meant simply to support
+the geometric programming capability of CVX. In fact, because log-convexity
+requires the :ref:`successive approximation approach <successive>` to solve,
+its use is *unsupported*.
 	
 .. _newfunc:
 

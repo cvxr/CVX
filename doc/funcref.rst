@@ -125,11 +125,11 @@ Nonlinear
     This function can be used in CVX in two ways:
 
     -  If ``p`` is a variable and ``x`` is a constant, then
-       ``polyval(x,p)`` computes a linear combination of the elements of
+       ``polyval(p,x)`` computes a linear combination of the elements of
        ``p``. The combination must satisfy the DCP rules for addition
        and scaling.
     -  If ``p`` is a constant and ``x`` is a variable, then
-       ``polyval(x,p)`` constructs a polynomial function of the variable
+       ``polyval(p,x)`` constructs a polynomial function of the variable
        ``x``. The polynomial must be affine, convex, or concave, and
        ``x`` must be real and affine.
        
@@ -154,17 +154,17 @@ Nonlinear
     see the functions ``pow_p``, ``pow_pos``, and ``pow_abs`` in the
     next section for useful alternatives.
 
-† ``power(p,x)``
-    ``p.^x`` and ``p^x``, where ``p`` is a real constant and ``x`` is a
-    real variable. For ``p^x``, both ``p`` and ``x`` must be scalars.
-    Valid values of ``p`` include:
+† ``power(q,x)``
+    ``q.^x`` and ``q^x``, where ``q`` is a real constant and ``x`` is a
+    real variable. For ``q^x``, both ``q`` and ``x`` must be scalars.
+    Valid values of ``q`` include:
 
-    -  :math:`p \in \{0,1\}`. Constant.
-    -  :math:`0 < p < 1`. Convex and nonincreasing; ``x`` must be
+    -  :math:`q \in \{0,1\}`. Constant.
+    -  :math:`0 < q < 1`. Convex and nonincreasing; ``x`` must be
        concave.
-    -  :math:`p > 1`. Convex and nondecreasing; ``x`` must be convex.
+    -  :math:`q > 1`. Convex and nondecreasing; ``x`` must be convex.
 
-    Negative values of ``p`` are not permitted.
+    Negative values of ``q`` are not permitted.
 
 ``std``
     Standard deviation. Convex.

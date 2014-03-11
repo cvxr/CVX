@@ -66,7 +66,7 @@ be specified with the ``nonnegative`` and ``semidefinite`` keywords, respectivel
     variable Q(5,5) complex semidefinite
     
 In this example, ``x`` is a nonnegative vector, and ``Z`` is a real symmetric PSD matrix
-and ``Q``is a complex Hermitian PSD matrix. As we will see below, ``hermitian semidefinite``
+and ``Q`` is a complex Hermitian PSD matrix. As we will see below, ``hermitian semidefinite``
 would be an equivalent choice for this third case.
 
 For MIDCPs, the ``integer`` and ``binary`` keywords are used to declare integer
@@ -119,7 +119,7 @@ determined by intersection. For example, ``symmetric tridiagonal`` is a
 valid combination. That said, CVX does reject combinations such as
 ``symmetric lower_triangular`` when a more reasonable alternative
 exists---``diagonal``, in this case. Furthermore, if the keywords fully
-conflict, such that \emph{no} non-zero matrix that satisfies all keywords, 
+conflict, such that *no* non-zero matrix that satisfies all keywords, 
 an error will result.
 
 Matrix-specific keywords can be applied to

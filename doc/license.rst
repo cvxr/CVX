@@ -5,19 +5,17 @@ License
 =======
 
 | CVX: A system for disciplined convex programming   
-| © 2012 CVX Research, Inc., Austin, TX.
+| © 2015-2014 CVX Research, Inc., Austin, TX.
 | http://cvxr.com
 | info@cvxr.com
 
 Thank you for using CVX!
 
-The files contained in the CVX distribution come from several different
-sources and are covered under a variety of licenses. Those files owned by CVX
-Research, Inc. are released under one of two licenses: the *CVX Standard 
-License* and the *CVX Professional License*. The CVX Professional License
-is not a permissive license, and it does not permit redistribution. The
-CVX Standard License, on the other hand, is in fact the GNU Standard
-License, Version 3, amended with a single additional permission.
+The files contained in the various CVX distributions come from various sources
+and are covered under a variety of licenses. Files created and owned by CVX
+Research, Inc. are governed by two licenses: the *CVX Standard License* and
+the *CVX Professional License*. The file README.txt that accompanies each
+package specifies which license applies.
 
 CVX Professional License
 ------------------------
@@ -33,8 +31,15 @@ suffix. For instance, the package currently includes the files
     shims/cvx_gurobi.p
     cvx_license.p
 
-but future versions may add additional .p files, and they are governed
-by this text as well. Furthermore, all files within the subdirectories
+but future versions may add additional ``.p`` files, and they are governed
+by this text as well. Individual .m files may explicitly declare that the
+are governed by the CVX Professional license; currently, the only such file is
+
+::
+
+    cvx_grbgetkey.m
+
+Furthermore, all files within the subdirectories
 
 ::
 
@@ -51,7 +56,7 @@ to the *CVX Professional License*. You may *not* redistribute such a package,
 nor make it available on a public repository, without the express written
 consent of CVX Research, Inc. Of course, the full CVX package is freely
 available to download directly from our servers, so please feel free to
-refer people to our web site---even directly to our 
+refer people to our web site---even directly to our
 `download page <http://cvxr.com/cvx/download>`_.
 
 CVX Standard License
