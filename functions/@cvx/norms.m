@@ -39,13 +39,15 @@ end
 % Type check
 %
 
-persistent remap1 remap2
-if isempty( remap2 ),
+persistent remap1 remap2 remap3
+if isempty( remap3 ),
     remap1 = cvx_remap( 'constant', 'log-convex' );
-    remap2 = cvx_remap( 'affine', 'nn-convex' );
+    remap2 = cvx_remap( 'affine' );
+    remap3 = cvx_remap( 'nn-convex', 'np-concave', 'affine' );
 end
 xc = reshape( cvx_classify( x ), sx );
-if ~all( remap2( xc( : ) ) ),
+xv = xc( : );
+if ~all( remap3( xv ) ),
     error( 'Disciplined convex programming error:\n   Invalid computation: norms( {%s}, ... )', cvx_class( x, true, true ) );
 end
 
@@ -76,9 +78,13 @@ switch p,
             y  = cvx_subsasgn( y, tt, norms( xt, p ) );
         elseif p == 2,
         	y = [];
+            if ~all( remap2( xv ) ),
+                x = cvx_accept_convex( x );
+                x = cvx_accept_concave( x );
+            end
             cvx_begin
                 epigraph variable y( 1, nv )
-                { cvx_accept_convex(x), y } == lorentz( [ nx, nv ], 1, ~isreal( x ) ); %#ok
+                { x, y } == lorentz( [ nx, nv ], 1, ~isreal( x ) ); %#ok
                 cvx_setnneg(y);
             cvx_end
 		else

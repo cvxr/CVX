@@ -438,10 +438,10 @@ The answer lies in CVX's support for :ref:`geometric programming <gp-mode>`.
 Geometric programs in CVX must obey a *different* set of rules than standard
 DCP models. But underneath the hood, CVX processes both models in a unified
 manner. In short, every geometric variable ``x`` is related to an *internal*
-variable, say ``x_``, by an exponential; that is, ``x = exp(x_)``. Therefore,
-each geometric programming rule has a corresponding rule in the linear/DCP space.
+variable, say ``x_``, by an exponential; that is, ``x = exp(x_)``. 
+Most geometric programming rules have a corresponding rule in the linear/DCP space.
 
-The net effect is that CVX implements a set of rules that govern three additional
+The net effect is that CVX has a set of rules that govern three additional
 kinds of curvature in CVX: *log-convex*, *log-concave*, and *log-affine*. As the
 name suggests, a log-concave expression is one whose logarithm is convex; so,
 for example, :math:`e^{x^2}` is log-convex (and convex). Similarly, a log-concave

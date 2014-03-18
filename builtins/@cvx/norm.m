@@ -9,10 +9,11 @@ function cvx_optval = norm( x, p )
 % Argument map
 %
 
-persistent remap1 remap2
-if isempty( remap2 ),
+persistent remap1 remap2 remap3
+if isempty( remap3 ),
     remap1 = cvx_remap( 'log-convex' );
-    remap2 = cvx_remap( 'affine', 'nn-convex' );
+    remap2 = cvx_remap( 'affine' );
+    remap3 = cvx_remap( 'nn-convex', 'np-concave', 'affine' );
 end
 
 %
@@ -48,7 +49,7 @@ if m == 1 || n == 1 || isequal( p, 'fro' ),
         p = 1;
     end
     xc = cvx_classify( x );
-    if ~all( remap2( xc ) ),
+    if ~all( remap3( xc ) ),
         error( 'Disciplined convex programming error:\n    Cannot perform the operation norm( {%s}, %g )', cvx_class( x ), p );
     end
     switch p,
@@ -67,7 +68,10 @@ if m == 1 || n == 1 || isequal( p, 'fro' ),
                     xx = ( sum( xx .^ p ) ) .^ (1/p);
                     x  = [ cvx_subsref( x, ~tt ) ; xx ];
                 end
-                x = cvx_accept_convex( x );
+                if ~all( remap2( xc ) ),
+                    x = cvx_accept_convex( x );
+                    x = cvx_accept_concave( x );
+                end
                 n = length( x );
                 if p == 2,
                     z = [];
@@ -100,7 +104,13 @@ else
     % Matrix norms
     %
     
-    if ~cvx_isaffine( x ),
+    xc = cvx_classify( x );
+    if p == 2,
+        map = remap2;
+    else
+        map = remap3;
+    end
+    if ~all( map( xc( : ) ) ),
         error( 'Disciplined convex programming error:\n    Cannot perform the operation norm( {%s}, %g )\n   when the first argument is a matrix.', cvx_class( xt ), p );
     end
     switch p,

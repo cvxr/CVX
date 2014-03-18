@@ -7,37 +7,42 @@ The DCP ruleset
 CVX requires that all models obey a set of rules, or conventions, 
 that govern how expressions and functions can appear in
 objectives and constraints. We call these rules the *disciplined
-convex programming ruleset*, or the *DCP ruleset* for short.
+convex programming ruleset*, or the *DCP ruleset* for short. 
 The ruleset is drawn from basic principles of convex analysis,
-and are relatively easy to learn.
-CVX rejects any model that violates any of the rules, so it is 
-important to understand them before beginning to build models.
+and are relatively easy to learn. But they are not *exhaustive*,
+which means that it is possible to construct expressions and 
+models that are known to be convex, but still violate the rules.
 
-The rules form a set of *sufficient*, but not
-*necessary*, conditions for convexity. What this means is that it is
-possible to construct expressions and models that 
-are known to be convex, but still violate the rules.
-For example, consider the convex function
-:math:`f(x)=\sqrt{x^2+1}`, expressed most naturally in MATLAB
-as ``sqrt(x^2+1)``. CVX *rejects* this 
-expression, and any model that contains it, with an error:
+CVX rejects any model that violates the ruleset---even
+if it can be proven convex by some other means. This is because
+each rule corresponds to a specific step that CVX takes to convert
+models to solvable form. When CVX rejects a model for violating
+the ruleset, it is doing so *because it does not know how to solve it*.
+Put another way, by complying with the rules, you are
+not only proving that your model is convex, you are also giving CVX
+*a detailed recipe for solving it.* (We thank you for the help!)
+
+To illustrate the difference between convexity and ruleset compliance,
+consider the function :math:`f(x)=\sqrt{x^2+1}`. It is simple to
+prove that :math:`f` is convex;
+its second derivative :math:`f^{(2)}(x)=(x^2+1)^{-3/2}` is
+positive for all :math:`x`. But CVX knows nothing about derivatives;
+and if ``x`` is a variable, then this expression will produce an error:
 
 ::
 
-    >> sqrt(sum(square(x)))
+    >> sqrt(x^2+1)
     Error using cvx/sqrt (line 61)
     Disciplined convex programming error:
         Illegal operation: sqrt( {nonnegative convex} ).
 
-It is simple to prove that :math:`f` is convex---after all,
-its second derivative :math:`f^{(2)}(x)=(x^2+1)^{-3/2}` is positive
-for all :math:`x`---but CVX knows nothing about derivatives. Instead,
-it knows that this expression violates the 
-:ref:`composition rules <compositions>` described
-below, so it cannot be used in a CVX model.
+The problem here is that one of the :ref:`composition rules <compositions>`
+says that applying a concave function (like ``sqrt``)
+to a convex expression (like ``x^2+1``) *usually* produces
+a nonconvex result. So CVX rejects the expression on this basis.
 
-In many cases, convex expressions that violate the ruleset can be
-easily rewritten. In this case, :math:`f` can also be written as
+Fortunately, most situations like this can be resolved simply
+by rewriting the expression. In this case, :math:`f` can also be written as
 :math:`f(x)=\|[x~1]\|_2`; a form which CVX accepts:
 
 ::
@@ -50,17 +55,12 @@ This expression is acceptable because `norm` is among the
 :ref:`functions supported by CVX <funcref>`,
 and it is being used in a manner compliant with
 the :ref:`composition rules <compositions>`. So 
-:math:`f(x)=\sqrt{x^2+1}` *can*
-be used in CVX models; it simply needs to be written
-in a compliant manner.
+:math:`f(x)=\sqrt{x^2+1}` can indeed be used in
+CVX models, as long as it is expressed in a compliant manner.
 
-The DCP ruleset may seem arbitrary or restrictive, but it serves
-a very important purpose. Each rule corresponds to a specific step
-that CVX must take to convert a model to solvable form. A model that 
-violates the rules---*even if it is convex*---is a model that CVX simply
-is not equipped to solve. By complying with the rules, then, you are
-not only proving that your model is convex, you are also giving CVX
-*a detailed recipe for solving it.* (We thank you for the help!)
+So while the DCP ruleset may at first seem arbitrary or restrictive, 
+it serves a very important purpose. Please take the time to understand
+the ruleset before beginning to build CVX models.
 
 Top-level rules
 ---------------
