@@ -504,12 +504,12 @@ positive integer constant.
 ``semidefinite(n)``
     .. math:: 
     
-    	\mathbf{S}^n_+ \triangleq \left\{\,X\in\mathbf{R}^{n\times n}\,~|~\,X=X^T,~X\succeq 0\,\right\}
+    	\mathbf{S}^n_+ \triangleq \left\{\,X\in\mathbf{R}^{n\times n}\,~|~\,X=X^T,~\lambda_{\min}(X)\geq 0\,\right\}
 
 ``hermitian_semidefinite(n)``
     .. math:: 
     
-    	\mathbf{H}^n_+ \triangleq \left\{\,Z\in\mathbf{C}^{n\times n}\,~|~\,Z=Z^H,~X\succeq 0\,\right\}
+    	\mathbf{H}^n_+ \triangleq \left\{\,Z\in\mathbf{C}^{n\times n}\,~|~\,Z=Z^H,~\lambda_{\min}(Z)\geq 0\,\right\}
 
 ``nonneg_poly_coeffs(n)``
     The cone of all coefficients of nonnegative polynomials of degree :math:`n`; :math:`n` must be even: 
