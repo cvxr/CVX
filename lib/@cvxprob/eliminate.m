@@ -204,9 +204,10 @@ for pass = 1 : 2,
     % Check to see if dualization will result in smaller problem
     %
     ineqs(1) = 0; rsv(1) = 0;
-    n_save = nnz(sum(dbCA(:,ineqs~=0)~=0,1)==1+(dbCA(1,ineqs~=0)~=0));
+    n_save = nnz(cvx_eliminate_mex(dbCA,1,rsv,zeros(size(ineqs))));
+    % n_save = nnz(sum(dbCA(:,ineqs~=0)~=0,1)==1+(dbCA(1,ineqs~=0)~=0));
     n_ineq = nnz(any(dbCA(rsv&rcnt==(cc~=0)+1,:)));
-    rsv(1) = 1; ineqs(1) = 1;
+    rsv(1) = 1; ineqs(1) = 1; %#ok
     [n1,m1] = size(dbCA);
     m_pri = m1 - n_save - 1;
     n_pri = n1 - n_save - 1;
