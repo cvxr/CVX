@@ -35,34 +35,26 @@ dbCA(:,1) = -dbCA(:,1);
 if ~issparse( dbCA ),
     dbCA = sparse( dbCA );
 end
-
-for pass = 1 : 2,
-
-    if pass == 1 || dualized,
-        n_tot = 0;
-        nn  = size(dbCA,1);
-        rsv = sparse( 1, 1, 1, nn, 1 );
-        nng = sparse( nn, 1 );
+pass = 1 + ~can_dual;
+pmax = 3 - ~can_dual;
+while pass <= pmax,
+    
+    % Pass 1: primal, do not eliminate inequalities
+    % Pass 2: primal, eliminate inequalities
+    % Pass 3: dual
+    
+    if pass ~= 2,
+        nold = size(dbCA,1);
+        rsv = zeros( nold, 1 );
         for k = 1 : length( cones ),
-            temp = cones(k).indices;
-            n_tot = n_tot + numel(temp);
-            temp = sparse( temp, 1, 1, nn, 1 );
-            rsv = rsv + temp;
-            if isequal( cones(k).type, 'nonnegative' ),
-                nng = nng + temp;
-            elseif can_dual && strncmp( cones(k).type, 'i_', 2 ),
-                can_dual = false;
-            end
+            rsv( cones(k).indices ) = 1;
+            if strncmpi( cones(k).type, 'i_', 2 ), pmax = 2; end
         end
-        rsv   = full( rsv );
-        nng   = full( nng );
-        ndxs  = ( 1 : nn )';
-        nold  = nn;
+        ndxs = ( 1 : nold )';
+        rcnt = full( sum( dbCA ~= 0, 2 ) );
+        cc   = full( dbCA( :, 1 ) );
     end
 
-    cc   = dbCA( :, 1 );
-    rcnt = sum( dbCA ~= 0, 2 );
-        
     % In the first pass, we don't eliminate columns which have inequality
     % structure to them, so that we can make the best decision as to
     % whether or not to convert the problem to dual standard form. Exempted
@@ -71,59 +63,19 @@ for pass = 1 : 2,
         trivs = sum( dbCA(rsv==0,:) ~= 0, 1 ) == 1 & sum( dbCA(rsv~=0,:) ~= 0, 1 ) - ( dbCA( 1, : ) ~= 0 ) == 1;
         ineqs = full(any(dbCA(rsv~=0&rcnt==1,:),1)) & full(~trivs);
         ineqs = +ineqs;
-    else % if dualized,
+    else
         ineqs = zeros(1,size(dbCA,2));
     end
+    
     ineqs(1) = 1;
+    rsv(1) = 1;
     
     while true,
         
         success = false;
         
         %
-        % STEP 1: Look for free or nonnegative variables that do not appear
-        % in any constraints. Unconstrained variables that also appear in
-        % the objective are unbounded, as are nonnegative variables that
-        % appear there with the right sign. Otherwise their values might
-        % as well be zero. If we have multiple unbounded variables, keep
-        % all but one so that the solver can still see this happen.
-        %
-        % Eliminated for now. Frankly, my suspicion is that this happens
-        % very infrequently, and this code seems to have been the source
-        % of bugs in the past.
-        %
-        
-        if 0,
-            rows = ( rcnt == ( cc ~= 0 ) ) & ( ~rsv | nng );
-            nnzr = nnz( rows );
-            if nnzr > 0,
-                csgn = 1 - 2 * dualized;
-                celm = csgn * cc( rows, 1 );
-                celm( nng(rows) & celm < 0 ) = 0;
-                nnzc = nnz( celm );
-                if nnzc > 1 || nnzr > nnzc,
-                    success = true;
-                    if nnzc,
-                        cnrm = norm( celm );
-                        ndxq = find( rows );
-                        ndxq = ndxq( celm ~= 0 );
-                        ndxq = ndxq( 1 );
-                        Q( :, ndxq ) = Q( :, rows ) * ( celm / cnrm );
-                        dbCA( ndxq, 1 ) = csgn * cnrm; %#ok
-                        rows( ndxq ) = 0;
-                    end
-                    rowX = ~rows;
-                    dbCA = dbCA( rowX, : );
-                    rsv  = rsv ( rowX, : );
-                    nng  = nng ( rowX, : );
-                    ndxs = ndxs( rowX, : );
-                    Q    =    Q( :, rowX );
-                end
-            end
-        end
-        
-        %
-        % STEP 2: Look for columns which differ only by a constant factor.
+        % STEP 1: Look for columns which differ only by a constant factor.
         % These correspond to redundant equality constraints. These occur
         % often enough as as consequence of our tranformation method, and
         % they cause problems in solvers, so we must eliminate them. Of
@@ -142,7 +94,7 @@ for pass = 1 : 2,
         while true,
             
             %
-            % STEP 3: Look for variables that we can eliminate without
+            % STEP 2: Look for variables that we can eliminate without
             % increasing fill-in. This means looking for rows or columns
             % with only 1, 2, or (in some cases) 3 nonzeros.
             %
@@ -181,7 +133,6 @@ for pass = 1 : 2,
             Q     = Q( :, rowX ) + Q( :, rows ) * temp';
             dbCA  = A11 + temp * A21;
             rsv   =   rsv( rowX, : );
-            nng   =   nng( rowX, : );
             ndxs  =  ndxs( rowX, : );
             ineqs = ineqs( :, colX );
             
@@ -196,18 +147,23 @@ for pass = 1 : 2,
         
     end
     
-    if pass == 2 || isempty(cones) || ~can_dual,
+    if pass == pmax || isempty(cones),
         break;
     end
     
     %
     % Check to see if dualization will result in smaller problem
     %
-    ineqs(1) = 0; rsv(1) = 0;
-    n_save = nnz(cvx_eliminate_mex(dbCA,1,rsv,zeros(size(ineqs))));
-    % n_save = nnz(sum(dbCA(:,ineqs~=0)~=0,1)==1+(dbCA(1,ineqs~=0)~=0));
+    
+    if pass == 1,
+        ineqs( 2 : end ) = 0;
+        n_save = nnz( cvx_eliminate_mex( dbCA, 1, rsv, ineqs ) );
+    else
+        n_save = 0;
+    end
+    rsv(1) = 0;
     n_ineq = nnz(any(dbCA(rsv&rcnt==(cc~=0)+1,:)));
-    rsv(1) = 1; ineqs(1) = 1; %#ok
+    rsv(1) = 1;
     [n1,m1] = size(dbCA);
     m_pri = m1 - n_save - 1;
     n_pri = n1 - n_save - 1;
@@ -251,6 +207,11 @@ for pass = 1 : 2,
         nold  = size(dbCA,1);
         Q(:,nold) = 0;
         dualized = true;
+        pass = 3;
+    elseif pass == 2,
+        break;
+    else
+        pass = 2;
     end
     
 end
