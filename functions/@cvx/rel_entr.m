@@ -22,8 +22,8 @@ end
 % 4 : concave x
 if isempty( remap_z ),
     remap_1 = cvx_remap( 'real' );
-    remap_2 = cvx_remap( 'real-affine' ) & ~remap_1;
-    remap_3 = cvx_remap( 'concave' )     & ~remap_1;
+    remap_2 = cvx_remap( 'r-affine' ) & ~remap_1;
+    remap_3 = cvx_remap( 'concave' )  & ~remap_1;
     remap_x = remap_1 + 2 * remap_2;
     remap_y = remap_1 + 2 * remap_3;
     remap_z = ...

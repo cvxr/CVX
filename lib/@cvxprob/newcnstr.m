@@ -146,21 +146,23 @@ else
         
         map_ne  = cvx_remap;
 
-        map_eq2 = cvx_remap( 'log-affine' );
+        map_eq2 = cvx_remap( 'l-affine' );
         map_eq2 = ( map_eq2' * map_eq2 ) & temp;
         map_eq3 = cvx_remap( 'affine' );
         map_eq3 = map_eq3' * map_eq3;
         map_eq  = 2 * map_eq2 + map_eq3;
 
-        % Trivially feasible constraints
-        map_ge1 = ( cvx_remap( 'log-concave' )' * cvx_remap( 'nonpositive' ) ) & temp;
-        % Trivially infeasible constraints
-        map_ge2 = ( cvx_remap( 'nonpositive' )' * cvx_remap( 'log-convex'  ) ) & temp;
+        % Trivially feasible inequalities: nonneg >= nonpos
+        map_ge = 4 * cvx_remap( 'nonnegative', 'p-nonconst' )' * cvx_remap( 'nonpositive', 'n-nonconst' );
+        % Trivially infeasible inequalities: negative >= nonneg, nonpositive >= positive
+        map_ge = map_ge + 3 * ( ( ...
+            cvx_remap( 'negative' )' * cvx_remap( 'nonnegative', 'n-nonconst' ) | ...
+            cvx_remap( 'nonpositive' )' * cvx_remap( 'positive' ) ) & ~map_ge );
         % Full geometric constraints
-        map_ge3  = ( cvx_remap( 'log-concave' )' * cvx_remap( 'log-convex'  ) ) & temp;
+        map_ge = map_ge + 2 * ( ( ...
+            cvx_remap( 'l-concave' )' * cvx_remap( 'l-convex'  ) ) & ~map_ge );
         % Linear constraints
-        map_ge4 = ( cvx_remap( 'concave' )' * cvx_remap( 'convex' ) ) & ~map_ge3;
-        map_ge = map_ge4 + 2 * map_ge3 + 3 * map_ge2 + 4 * map_ge1;
+        map_ge = map_ge + ( ( cvx_remap( 'concave' )' * cvx_remap( 'convex' ) ) & ~map_ge );
 
         map_le = map_ge';
     end

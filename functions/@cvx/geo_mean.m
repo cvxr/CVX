@@ -44,8 +44,8 @@ if isempty( remap_4 ),
     % Constant (postive or negative)
     remap_1 = cvx_remap( 'real' );
     remap_2 = cvx_remap( 'concave' );
-    remap_3 = cvx_remap( 'log-convex' );
-    remap_4 = cvx_remap( 'log-concave' );
+    remap_3 = cvx_remap( 'l-convex' );
+    remap_4 = cvx_remap( 'l-concave' );
 end
 vx = cvx_reshape( cvx_classify( x ), sx );
 t1 = all( reshape( remap_1( vx ), sx ) );

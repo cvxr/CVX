@@ -98,8 +98,8 @@ else
         remap_1 = cvx_remap( 'nonzero', 'complex' );
         temp    = ~( remap_0 | remap_1 );
         remap_2 = cvx_remap( 'affine' ) & temp;
-        remap_4 = cvx_remap( 'log-convex' );
-        remap_5 = cvx_remap( 'log-concave' ) & ~remap_4;
+        remap_4 = cvx_remap( 'l-convex' );
+        remap_5 = cvx_remap( 'l-concave' ) & ~remap_4;
         remap_4 = remap_4 & temp;
         remap_3 = cvx_remap( 'valid' ) & ~( remap_0 | remap_1 | remap_2 | remap_4 | remap_5 );
         remap   = remap_1 + 2 * remap_2 + 3 * remap_3 + 4 * remap_4 + 5 * remap_5 - cvx_remap( 'invalid' );
@@ -293,8 +293,7 @@ end
 % Check that the sums are legal
 %
 
-v = cvx_vexity( z );
-if any( isnan( v( : ) ) ),
+if nnz( isnan( cvx_vexity( z ) ) ),
     temp = 'Disciplined convex programming error:';
     tt = isnan( cvx_constant( z ) );
     if any( tt ),

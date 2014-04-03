@@ -50,8 +50,7 @@ else
     [ r, c, v ] = find( b );
     b = sparse( r, cc( c ), v, size( b, 1 ), prod( s ) );
     y = cvx( s, b );
-    v = cvx_vexity( y );
-    if any( isnan( v( : ) ) ),
+    if nnz( isnan( cvx_vexity( y ) ) ),
         error( 'Disciplined convex programming error:\n   Illegal addition encountered (e.g., {convex} + {concave}).', 1 ); %#ok
     end
 

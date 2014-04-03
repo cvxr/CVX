@@ -54,7 +54,7 @@ end
 if ~cheat,
     if isempty( remap_plus ),
         temp0  = cvx_remap( 'affine'  );
-        tempc  = cvx_remap( 'complex', 'complex-affine' );
+        tempc  = cvx_remap( 'complex', 'c-affine' );
         temp1  = cvx_remap( 'convex'  ) & ~temp0;
         temp1c = temp1 + tempc;
         temp2  = cvx_remap( 'concave' ) & ~temp0;
@@ -62,7 +62,7 @@ if ~cheat,
         temp3  = temp1' * temp2c + temp2' * temp1c;
         temp1  = temp1' * temp1c;
         temp2  = temp2' * temp2c;
-        temp4  = ( cvx_remap( 'log-concave' ) & ~cvx_remap( 'log-affine' ) )' * +(~cvx_remap( 'zero' )) | ...
+        temp4  = ( cvx_remap( 'l-concave' ) & ~cvx_remap( 'l-affine' ) )' * +(~cvx_remap( 'zero' )) | ...
                    cvx_remap( 'invalid' )' * cvx_remap( 'valid', 'invalid' );
         temp4 = temp4 | temp4';
         remap_minus = temp4 | temp1 | temp1' | temp2 | temp2';

@@ -24,17 +24,45 @@ if nargin < 4, needzero = needsign; end
 % 17 - affine
 % 18 - real constant
 
+% Classifications:
+% 1  - negative constant
+% 2  - zero
+% 3  - positive constant
+% 4  - complex constant
+% 5  - negative concave
+% 6  - concave
+% 7  - positive concave
+% 8  - negative affine
+% 9  - real affine
+% 10 - positive affine
+% 11 - negative convex
+% 12 - convex
+% 13 - positive convex
+% 14 - complex affine
+% 15 - log concave
+% 16 - log affine
+% 17 - log convex monomial
+% 18 - log convex posynomial
+% 19 - invalid
+% --
+% 20 - constant
+% 21 - affine
+% 22 - real constant
+
 if isempty( x ),
     v = 'empty';
     return
 end
 persistent remap_s remap_r remap_z strs
 if isempty( strs ),
-    remap_s = [18,2,18,4,6,6,7,8,8,10,11,12,13,14,15];
-    remap_r = [1,2,3,16,5,6,17,8,9,17,11,12,13,14,15,16,17,16];
-    remap_z = [1,16,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18];
+    remap_s = [22, 2,22, 4, 6, 6, 6, 9, 9, 9,12,12,12,14,15,16,17,18,19,20,21,22];
+    remap_r = [ 1, 2, 3,20, 5, 6, 7, 8, 9,10,11,12,13,21,15,16,17,18,19,20,21,22];
+    remap_z = [ 1,20, 3, 4, 5, 6, 7, 8, 9,10,11,12,13,14,15,16,17,18,19,20,21,22];
     strs = { 'negative constant', 'zero', 'positive constant', 'complex constant', ...
-             'nonpositive concave', 'concave', 'real affine', 'convex', 'nonnegative convex', 'complex affine', ...
+             'negative concave', 'concave', 'positive concave', ...
+             'negative affine', 'real affine', 'positive affine', ...
+             'negative convex', 'convex', 'positive convex', ...
+             'complex affine', ...
              'log-concave', 'log-affine', 'log-convex', 'log-convex', ...
              'invalid', 'constant', 'affine', 'real constant' };
 end

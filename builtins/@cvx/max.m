@@ -30,7 +30,6 @@ if nargin == 2,
     % Determine the computation methods
     %
 
-
     if isempty( remap ),
         remap1 = cvx_remap( 'real' );
         remap1 = remap1' * remap1;

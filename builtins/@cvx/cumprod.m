@@ -45,8 +45,8 @@ persistent remap_1 remap_2 remap_3 remap_0
 if isempty( remap_3 ),
     remap_0 = cvx_remap( 'zero' );
     remap_1 = cvx_remap( 'constant' );
-    remap_2 = cvx_remap( 'log-convex' );
-    remap_3 = cvx_remap( 'log-concave' );
+    remap_2 = cvx_remap( 'l-convex' );
+    remap_3 = cvx_remap( 'l-concave' );
 end
 vx = cvx_reshape( cvx_classify( x ), sx );
 t0 = any( reshape( remap_0( vx ), sx ) );

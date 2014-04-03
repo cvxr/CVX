@@ -1,11 +1,5 @@
-function y = cvx_isconcave( x, full )
-error( nargchk( 1, 2, nargin ) );
-y = cvx_vexity( x );
-if nargin < 2,
-    y = nnz( y > 0 ) == 0;
-else
-    y = cvx_reshape( y <= 0, x.size_ );
-end
+function y = cvx_isconcave( x )
+y = nnz( cvx_vexity( x ) > 0 ) == 0;
 
 % Copyright 2005-2014 CVX Research, Inc.
 % See the file LICENSE.txt for full copyright information.

@@ -25,8 +25,8 @@ sx = size(x);
 
 persistent remap
 if isempty( remap ),
-    remap_1 = cvx_remap( 'real-affine' );
-    remap_2 = cvx_remap( 'log-convex' );
+    remap_1 = cvx_remap( 'r-affine' );
+    remap_2 = cvx_remap( 'l-convex' );
     remap = remap_1 + 2 * remap_2;
 end
 

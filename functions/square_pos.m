@@ -8,12 +8,7 @@ function y = square_pos( x )
 %       SQUARE_POS(X) is convex and nondecreasing in X. Thus when used in
 %       CVX expressions, X must be convex (or affine).
 
-error( nargchk( 1, 1, nargin ) ); %#ok
-if ~isreal( x ), 
-    error( 'Argument must be real.' ); 
-end
-
-y = square( max( x, 0 ) );
+y = square( pos( x ) );
 
 % Copyright 2005-2014 CVX Research, Inc. 
 % See the file LICENSE.txt for full copyright information.

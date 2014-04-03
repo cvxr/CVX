@@ -9,9 +9,10 @@ function y = cvx_recip( x )
 error( nargchk( 1, 1, nargin ) ); %#ok
 persistent remap
 if isempty( remap ),
-    remap_1 = cvx_remap( 'constant' ) & ~cvx_remap( 'zero' );
-    remap_2 = cvx_remap( 'log-valid' ) & ~remap_1;
-    remap = remap_1 + 2 * remap_2;
+    remap = cvx_remap( 'constant' ) & ~cvx_remap( 'zero' );
+    remap = remap + 2 * ( cvx_remap( 'l-valid' ) & ~remap );
+    remap = remap + 3 * ( cvx_remap( 'p-concave' ) & ~remap );
+    remap = remap + 4 * ( cvx_remap( 'n-convex' ) & ~remap );
 end
 vr = remap( cvx_classify( x ) );
 vu = sort( vr(:) );
@@ -52,6 +53,12 @@ for k = 1 : nv,
         case 2,
             % Monomial, posynomial
             yt = exp( -log( xt ) );
+        case 3,
+            % Positive concave
+            yt = power( xt, -1 );
+        case 4,
+            % Negative convex
+            yt = - power( - xt, -1 );
         otherwise,
             error( 'Shouldn''t be here.' );
     end

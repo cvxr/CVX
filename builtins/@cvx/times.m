@@ -67,7 +67,7 @@ if isempty( remap_r ),
     remap_1n  = ~remap_1;
     % constant / nonzero, zero / log-concave, zero / log-convex
     temp_4    = temp_1 & ~temp_2;
-    remap_1r  = ( temp_1' * temp_4 ) | ( temp_2' * cvx_remap( 'log-valid' ) );
+    remap_1r  = ( temp_1' * temp_4 ) | ( temp_2' * cvx_remap( 'l-valid' ) );
     remap_1rn = ~remap_1r;
 
     % constant * affine, real * convex/concave/log-convex, positive * log-concave
@@ -75,13 +75,13 @@ if isempty( remap_r ),
     temp_6   = cvx_remap( 'positive' );
     temp_7   = cvx_remap( 'affine' );
     temp_1n   = ~temp_1;
-    temp_8   = cvx_remap( 'log-concave' ) & temp_1n;
+    temp_8   = cvx_remap( 'l-concave' ) & temp_1n;
     remap_2  = ( temp_1' * temp_7 ) | ...
-               ( temp_5' * cvx_remap( 'convex', 'concave', 'log-convex' ) ) | ...
+               ( temp_5' * cvx_remap( 'convex', 'concave', 'l-convex' ) ) | ...
                ( temp_6' * temp_8 );
     remap_2  = remap_2 & remap_1n;
     % real / log-concave, positive / log-convex
-    temp_9   = cvx_remap( 'log-convex' ) & temp_1n;
+    temp_9   = cvx_remap( 'l-convex' ) & temp_1n;
     remap_2r = ( temp_5' * temp_8 ) | ...
                ( temp_6' * temp_9 );
     remap_2r = remap_2r & remap_1rn;

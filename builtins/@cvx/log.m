@@ -23,7 +23,7 @@ persistent remap
 if isempty( remap ),
     remap_0 = cvx_remap( 'nonpositive' );
     remap_1 = cvx_remap( 'positive' );
-    remap_2 = cvx_remap( 'real-affine', 'concave' ) & ~remap_1 & ~remap_0;
+    remap_2 = cvx_remap( 'r-affine', 'concave' ) & ~remap_1 & ~remap_0;
     remap_3 = cvx_remap( 'monomial' );
     remap_4 = cvx_remap( 'posynomial' );
     remap   = remap_1 + 2 * remap_2 + 3 * remap_3 + 4 * remap_4;

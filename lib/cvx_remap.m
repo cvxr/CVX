@@ -8,54 +8,74 @@ function r = cvx_remap( varargin )
 % 2  - zero
 % 3  - positive constant
 % 4  - complex constant
-% 5  - nonpositive concave
+% 5  - negative concave
 % 6  - concave
-% 7  - real affine
-% 8  - convex
-% 9  - nonnegative convex
-% 10 - complex affine
-% 11 - log concave
-% 12 - log affine
-% 13 - log convex monomial
-% 14 - log convex posynomial
-% 15 - invalid
+% 7  - positive concave
+% 8  - negative affine
+% 9  - real affine
+% 10 - positive affine
+% 11 - negative convex
+% 12 - convex
+% 13 - positive convex
+% 14 - complex affine
+% 15 - log concave
+% 16 - log affine
+% 17 - log convex monomial
+% 18 - log convex posynomial
+% 19 - invalid
 
 persistent remap_big remap_str
 if isempty( remap_str ),
     remap_str = { ...
-        'negative', 'zero', 'positive', 'complex', 'nonnegative', 'nonzero', 'nonpositive', 'real', 'constant', ...
-        'non-constant', 'np-concave' 'concave', 'affine', 'convex', 'nn-convex', 'real-affine', 'complex-affine', 'non-affine', ...
-        'log-concave', 'log-affine', 'log-convex', 'log-valid', 'monomial', 'posynomial', ...
+        'negative', 'nonpositive', 'zero', 'nonnegative', 'positive', ...
+        'nonzero', 'real', 'complex', 'constant', ...
+        'n-concave' 'concave', 'p-concave', ...
+        'n-affine', 'affine',  'p-affine', 'r-affine', 'c-affine', ...
+        'n-convex', 'convex',  'p-convex', ...
+        'l-concave', 'l-affine', 'l-convex', 'log-valid', 'monomial', 'posynomial', ...
+        'n-nonconst', 'nonconst', 'p-nonconst', ...
         'valid', 'invalid' ...
     };
     remap_big = [ ...
-        1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0; ... % negative
-        0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0; ... % zero
-        0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0; ... % positive
-        0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0; ... % complex
-        0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0; ... % nonnegative
-        1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0; ... % nonzero (real)
-        1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0; ... % nonpositive
-        1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0; ... % real
-        1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0; ... % constant
-        0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0; ... % non-constant
-        1, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0; ... % nonpositive concave
-        1, 1, 1, 0, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0; ... % concave
-        1, 1, 1, 1, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0; ... % affine
-        1, 1, 1, 0, 0, 0, 1, 1, 1, 0, 0, 1, 1, 1, 0; ... % convex
-        0, 1, 1, 0, 0, 0, 0, 0, 1, 0, 0, 1, 1, 1, 0; ... % nonnegative convex
-        1, 1, 1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0; ... % real-affine
-        0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0; ... % complex-affine
-        0, 0, 0, 0, 1, 1, 0, 1, 1, 0, 0, 1, 1, 1, 0; ... % non-affine
-        0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0; ... % log-concave
-        0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0; ... % log-affine
-        0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 0; ... % log-convex
-        0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 0; ... % log-valid
-        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 0, 0; ... % monomial
-        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0; ... % posynomial
-        1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0; ... % valid
-        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1; ... % invalid
-     ];
+        1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0; ... % negative
+        1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0; ... % nonpositive
+        0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0; ... % zero
+        0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0; ... % nonnegative
+        0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0; ... % positive
+
+        1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0; ... % nonzero
+        1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0; ... % real
+        0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0; ... % complex
+        1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0; ... % constant
+
+        1, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0; ... % negative concave
+        1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0; ... % concave
+        0, 0, 1, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0; ... % positive concave
+ 
+        1, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0; ... % negative affine
+        1, 1, 1, 1, 0, 0, 0, 1, 1, 1, 0, 0, 0, 1, 0, 0, 0, 0, 0; ... % affine
+        0, 0, 1, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0; ... % positive affine
+        1, 1, 1, 0, 0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0; ... % real-affine
+        0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0; ... % complex-affine
+
+        1, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0; ... % negative convex
+        1, 1, 1, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 0, 0, 1, 1, 1, 0; ... % convex
+        0, 1, 1, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1, 0, 0, 1, 1, 1, 0; ... % positive convex
+
+        0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0; ... % log-concave
+        0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0; ... % log-affine
+        0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 0; ... % log-convex
+        0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 0; ... % log-valid
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 0, 0; ... % monomial
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0; ... % posynomial
+
+        0, 0, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0; ... % negative nonconst
+        0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0; ... % nonconst
+        0, 0, 0, 0, 0, 0, 1, 0, 0, 1, 0, 0, 1, 1, 1, 1, 1, 0, 0; ... % positive nonconst
+
+        1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0; ... % valid
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1; ... % invalid
+     ]; 
      remap_str = remap_str(:);
      [ remap_str, ndx ] = sort( remap_str );
      remap_big = remap_big( ndx, : );

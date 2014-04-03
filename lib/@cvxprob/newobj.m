@@ -3,9 +3,9 @@ error( nargchk( 3, 3, nargin ) );
 
 persistent remap_min remap_max remap
 if isempty( remap_max ),
-    remap_min = cvx_remap( 'convex', 'log-convex' );
-    remap_max = cvx_remap( 'concave', 'log-concave' );
-    remap = cvx_remap( 'log-valid' ) & ~cvx_remap( 'constant' );
+    remap_min = cvx_remap( 'convex', 'l-convex' );
+    remap_max = cvx_remap( 'concave', 'l-concave' );
+    remap = cvx_remap( 'l-valid' ) & ~cvx_remap( 'constant' );
 end
 
 %

@@ -5,21 +5,25 @@ function v = cvx_classify( x )
 % 2  - zero
 % 3  - positive constant
 % 4  - complex constant
-% 5  - nonpositive concave
+% 5  - negative concave
 % 6  - concave
-% 7  - real affine
-% 8  - convex
-% 9  - nonnegative convex
-% 10 - complex affine
-% 11 - log concave
-% 12 - log affine
-% 13 - log convex monomial
-% 14 - log convex posynomial
-% 15 - invalid
+% 7  - positive concave
+% 8  - negative affine
+% 9  - real affine
+% 10 - positive affine
+% 11 - negative convex
+% 12 - convex
+% 13 - positive convex
+% 14 - complex affine
+% 15 - log concave
+% 16 - log affine
+% 17 - log convex monomial
+% 18 - log convex posynomial
+% 19 - invalid
 
 global cvx___
-v = full( cvx_vexity( x ) );
-v = reshape( v, 1, prod( x.size_ ) );
+[ v, w ] = cvx_vexity( x );
+v = reshape( full( 3 * v + w ), 1, prod( x.size_ ) );
 if isempty( x ), return; end
 b = x.basis_ ~= 0;
 q = sum( b, 1 );
@@ -39,30 +43,30 @@ end
 tt = ~tt & ~isnan( v );
 if any( tt ),
     temp = v( tt );
-    temp = temp + 7;
+    temp = temp + 9;
     v( tt ) = temp;
     if ~isreal( x.basis_ ),
         ti = any( imag( x.basis_ ), 1 );
-        v( tt & ti ) = 10;
+        v( tt & ti ) = 14;
     end
 end
 
 tt = isnan( v );
-v( tt ) = 15;
+v( tt ) = 19;
 
 if nnz( cvx___.exp_used ),
-    tt = find( ( v == 15 | v == 8 | v == 9 ) & q == 1 );
+    tt = find( ( v == 19 | v == 12 | v == 13 ) & q == 1 );
     if ~isempty( tt ),
         [ rx, cx, vx ] = find( x.basis_( :, tt ) );
         qq = reshape( cvx___.logarithm( rx ), size( vx ) ) & ( vx > 0 );
-        v( tt( cx( qq ) ) ) = 12 + sign( cvx___.vexity( cvx___.logarithm( rx( qq ) ) ) );
+        v( tt( cx( qq ) ) ) = 16 + sign( cvx___.vexity( cvx___.logarithm( rx( qq ) ) ) );
     end
-    tt = find( ( v == 8 | v == 9 ) & q > 1 );
+    tt = find( ( v == 12 | v == 13 ) & q > 1 );
     if ~isempty( tt ),
         [ rx, cx, vx ] = find( x.basis_( :, tt ) );
         qq = ( ~reshape( cvx___.logarithm( rx ), size( vx ) ) & ( rx > 1 ) ) | vx < 0;
         tt( cx( qq ) ) = [];
-        v( tt ) = 14;
+        v( tt ) = 18;
     end
 end
 

@@ -55,8 +55,7 @@ z = cvx( [ m, n ], xb );
 % Verify vexity is preserved
 %
 
-v = cvx_vexity( z );
-if any( isnan( v( : ) ) ),
+if nnz( isnan( cvx_vexity( z ) ) ),
     error( 'Disciplined convex programming error:\n    Sparse matrix construction produced invalid sums of convex and concave terms.' );
 end
 

@@ -33,9 +33,9 @@ if nargin == 2,
     if isempty( remap ),
         remap1 = cvx_remap( 'real' );
         remap1 = remap1' * remap1;
-        remap2 = cvx_remap( 'log-concave' )' * cvx_remap( 'nonpositive' );
+        remap2 = cvx_remap( 'l-concave' )' * cvx_remap( 'nonpositive' );
         remap3 = remap2';
-        remap4 = cvx_remap( 'log-concave', 'real' );
+        remap4 = cvx_remap( 'l-concave', 'real' );
         remap4 = remap4' * remap4;
         remap5 = cvx_remap( 'concave' );
         remap5 = remap5' * remap5;
@@ -164,7 +164,7 @@ else
 
     if isempty( remap_3 ),
         remap_1 = cvx_remap( 'real' );
-        remap_2 = cvx_remap( 'log-concave', 'real' );
+        remap_2 = cvx_remap( 'l-concave', 'real' );
         remap_3 = cvx_remap( 'concave' );
     end
     vx = cvx_reshape( cvx_classify( x ), sx );

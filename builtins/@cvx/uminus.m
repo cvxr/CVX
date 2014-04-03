@@ -12,7 +12,7 @@ function z = uminus( x )
 
 persistent remap
 if isempty( remap ),
-    remap = cvx_remap( 'invalid', 'log-concave' ) & ~cvx_remap( 'log-affine' );
+    remap = cvx_remap( 'invalid', 'l-concave' ) & ~cvx_remap( 'l-affine' );
 end
 tt = remap( cvx_classify( x ) );
 if nnz( tt ),

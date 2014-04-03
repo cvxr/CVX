@@ -1,4 +1,4 @@
-function y = sum_square_abs( x, dim )
+function y = sum_square_abs( x, varargin )
 
 %SUM_SQUARE_ABS   Sum of the squares of absolute values.
 %   For real arrays, SUM_SQUARE_ABS(X) computes the same result as
@@ -11,13 +11,8 @@ function y = sum_square_abs( x, dim )
 %       SUM_SQUARE_ABS(X,...) is convex and nonmonotonic in X. Thus, when
 %       used in CVX expressions, X must be affine. DIM must be constant.
 
-error( nargchk( 1, 2, nargin ) ); %#ok
-y = conj( x ) .* x;
-if nargin == 2,
-    y = sum( y, dim );
-else
-    y = sum( y );
-end
+if ~isreal( x ), x = abs( x ); end
+y = sum_square( x, varargin{:} );
 
 % Copyright 2005-2014 CVX Research, Inc.
 % See the file LICENSE.txt for full copyright information.

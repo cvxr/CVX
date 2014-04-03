@@ -7,16 +7,8 @@ function y = pos( x )
 %        POS(X) is convex and nondecreasing in X. Thus when used in CVX
 %        expressions, X must be convex (or affine).
 
-error( nargchk( 1, 1, nargin ) ); %#ok
-if ~isreal( x ),
-
-	error( 'Argument must be real.' );
-	
-else
-
-	y = max( x, 0 );
-
-end
+if ~isreal( x ), error( 'Argument must be real.' ); end
+y = max( x, 0 );
 
 % Copyright 2005-2014 CVX Research, Inc. 
 % See the file LICENSE.txt for full copyright information.

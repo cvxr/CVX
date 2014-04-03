@@ -5,23 +5,27 @@ function v = cvx_classify( x )
 % 2  - zero
 % 3  - positive constant
 % 4  - complex constant
-% 5  - nonpositive concave
+% 5  - negative concave
 % 6  - concave
-% 7  - real affine
-% 8  - convex
-% 9  - nonnegative convex
-% 10 - complex affine
-% 11 - log concave
-% 12 - log affine
-% 13 - log convex monomial
-% 14 - log convex posynomial
-% 15 - invalid
+% 7  - positive concave
+% 8  - negative affine
+% 9  - real affine
+% 10 - positive affine
+% 11 - negative convex
+% 12 - convex
+% 13 - positive convex
+% 14 - complex affine
+% 15 - log concave
+% 16 - log affine
+% 17 - log convex monomial
+% 18 - log convex posynomial
+% 19 - invalid
 
 v = full( sign( real( x ) ) ) + 2;
 if ~isreal( x ),
 	v( imag( x ) ~= 0 ) = 4;
 end
-v( ~isfinite( x ) ) = 15;
+v( isnan( x ) ) = 19;
 v = reshape( v, 1, numel( x ) );
 
 % Copyright 2005-2014 CVX Research, Inc.

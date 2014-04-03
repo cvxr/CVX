@@ -94,7 +94,7 @@ else
     end
 end
 if ~isempty( A2 ),
-    zV = cvx_vexity( A2 );
+    zV = cvx_vexity( A2 ); 
     zQ = ( zV == 0 ) - zV;
     dbcA = [ dbcA ; minus( zQ .* A1, zQ .* A2, true ) ];
     ineqs( end + 1 : end + length( A1 ), : ) = zV ~= 0;
