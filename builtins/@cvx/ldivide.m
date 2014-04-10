@@ -15,7 +15,12 @@ function z = ldivide( x, y )
 %For vectors, matrices, and arrays, these rules are verified indepdently
 %for each element.
 
-z = times( x, y, '.\' );
+try
+    z = times( x, y, '.\' );
+catch exc
+	if isequal( exc.identifier, 'CVX:DCPError' ), throw( exc ); 
+	else rethrow( exc ); end
+end
 
 % Copyright 2005-2014 CVX Research, Inc.
 % See the file LICENSE.txt for full copyright information.

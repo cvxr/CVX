@@ -26,7 +26,6 @@ if ~isreal( x ),
 	v( imag( x ) ~= 0 ) = 4;
 end
 v( isnan( x ) ) = 19;
-v = reshape( v, 1, numel( x ) );
 
 % Copyright 2005-2014 CVX Research, Inc.
 % See the file LICENSE.txt for full copyright information.

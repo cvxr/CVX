@@ -15,13 +15,7 @@ function y = pow_p( x, p )
 %           1 <= P    : convex  and nonmonotonic;  X must be affine.
 %       In all cases, X must be real.
 
-error( nargchk( 2, 2, nargin ) ); %#ok
-if ~isnumeric( x ) || ~isreal( x ) || ~isnumeric( p ) || ~isreal( p ),
-    error( 'Arguments must be real.' );
-end
-y  = x .^ p;
-y( x < 0 & ( p >= 0 & p <  1 ) ) = -Inf;
-y( x < 0 & ( p <  0 | p >= 1 ) ) = +Inf;
+y = power( pdom( x ), p );
 
 % Copyright 2005-2014 CVX Research, Inc. 
 % See the file LICENSE.txt for full copyright information.

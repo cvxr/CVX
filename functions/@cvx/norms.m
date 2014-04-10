@@ -2,112 +2,78 @@ function y = norms( x, p, dim )
 
 %NORMS   Internal cvx version.
 
-%
-% Size check
-%
-
-error( nargchk( 1, 3, nargin ) ); %#ok
-try
-    if nargin < 3, dim = []; end
-    [ x, sx, sy, zx, zy, nx, nv, perm ] = cvx_reduce_size( x, dim ); %#ok
-catch exc
-    error( exc.message );
-end
-    
-%
-% Check second argument
-%
-
-if nargin < 2 || isempty( p ),
+if nargin < 2 || isempty(p),
     p = 2;
-elseif ~isnumeric( p ) || numel( p ) ~= 1 || ~isreal( p ),
-    error( 'Second argument must be a real number.' );
-elseif p < 1 || isnan( p ),
-    error( 'Second argument must be between 1 and +Inf, inclusive.' );
+elseif ~isnumeric( p ) || numel( p ) ~= 1 || ~isreal( p ) || isnan( p ) || p < 1,
+    error( 'Second argument must be a scalar between 1 and +Inf, inclusive.' );
 end
 
-%
-% Quick exit for empty matrices
-%
-
-if isempty( x ),
-    y = zeros( zy );
-    return
-end
-
-%
-% Type check
-%
-
-persistent remap1 remap2 remap3
-if isempty( remap3 ),
-    remap1 = cvx_remap( 'constant', 'l-convex' );
-    remap2 = cvx_remap( 'affine' );
-    remap3 = cvx_remap( 'p-convex', 'n-concave', 'affine' );
-end
-xc = reshape( cvx_classify( x ), sx );
-xv = xc( : );
-if ~all( remap3( xv ) ),
-    error( 'Disciplined convex programming error:\n   Invalid computation: norms( {%s}, ... )', cvx_class( x, true, true ) );
-end
-
-%
-% Compute norms
-%
-
-if nx == 1,
-	p = 0;
-end
-switch p,
-	case 0,
-		y = abs( x );
-    case 1,
-        y = sum( abs(x) );
-    case Inf,  
-        y = max( abs(x) );
-    otherwise,
-        tt = all( remap1( xc ) );
-        if all( tt( : ) ),
-            y = sum( abs(x) .^ p ) .^ (1/p);
-        elseif any( tt( : ) ),
-            y  = cvx( [ 1, nv ], [] );
-            xt = cvx_subsref( x, ':', tt );
-            y  = cvx_subsasgn( y, tt, norms( xt, p ) );
-            tt = ~tt;
-            xt = cvx_subsref( x, ':', tt );
-            y  = cvx_subsasgn( y, tt, norms( xt, p ) );
-        elseif p == 2,
-        	y = [];
-            if ~all( remap2( xv ) ),
-                x = cvx_accept_convex( x );
-                x = cvx_accept_concave( x );
-            end
-            cvx_begin
-                epigraph variable y( 1, nv )
-                { x, y } == lorentz( [ nx, nv ], 1, ~isreal( x ) ); %#ok
-                cvx_setnneg(y);
-            cvx_end
-		else
-			z = []; y = [];
-            cvx_begin
-                variable z( nx, nv )
-                epigraph variable y( 1, nv )
-                if isreal(x), cmode = 'abs'; else cmode = 'cabs'; end
-                { cat( 3, z, y( ones(nx,1), : ) ), cvx_accept_convex(x) } ...
-                    == geo_mean_cone( sw, 3, [1/p,1-1/p], cmode ); %#ok
-                sum( z ) == y; %#ok
-                cvx_setnneg(y);
-            cvx_end
+try
+    if size( x, dim ) == 0,
+        y = abs( x );
+        return
+    else
+        switch p,
+            case 0,
+                y = abs( x );
+                return
+            case 1,
+                y = sum( abs( x ), dim );
+                return
+            case Inf,
+                y = max( abs( x ), [], dim );
+                return
         end
+    end
+catch
+    cvx_dcp_error( x, p, 'norms' );
 end
 
-%
-% Reverse the reshaping and permutation steps
-%
+persistent params
+if isempty( params ),
+    params.map = cvx_remap( { 'constant' ; 'l_convex' ; { 'p_convex', 'p_concave', 'affine' } } );
+    params.funcs = { @norms_1, @norms_2, @norms_3 };
+    params.zero = 0;
+    params.reduce = true;
+    params.reverse = false;
+    params.dimarg = 3;
+    params.fname = 'norms';
+end
 
-y = reshape( y, sy );
-if ~isempty( perm ),
-    y = ipermute( y, perm );
+try
+    y = reduce_op( params, x, p, dim );
+catch exc
+    if isequal( exc.identifier, 'CVX:DCPError' ), throw( exc ); 
+    else rethrow( exc ); end
+end
+
+function y = norms_1( x, p )
+y = cvx( sum( abs( cvx_constant( x ) ) .^ p ) .^ (1/p) );
+
+function y = norms_2( x, p )
+y = sum( abs( x ) .^ p ) .^ (1/p);
+
+function y = norms_3( x, p )
+[nx,nv] = size(x);
+y = [];
+x = cvx_accept_cvxccv( x );
+if p == 2,
+    cvx_begin
+        epigraph variable y( 1, nv )
+        { x, y } == lorentz( [ nx, nv ], 1, ~isreal( x ) ); %#ok
+        cvx_setnneg(y);
+    cvx_end
+else
+    z = []; y = [];
+    cvx_begin
+        variable z( nx, nv )
+        epigraph variable y( 1, nv )
+        if isreal(x), cmode = 'abs'; else cmode = 'cabs'; end
+        { cat( 3, z, repmat(y,[nx,1]) ), x } ...
+            == geo_mean_cone( [nx,nv,2], 3, [1/p,1-1/p], cmode ); %#ok
+        sum( z ) == y; %#ok
+        cvx_setnneg(y);
+    cvx_end
 end
 
 % Copyright 2005-2014 CVX Research, Inc.

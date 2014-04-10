@@ -366,6 +366,11 @@ if ~isempty( outp ),
         cvx___.path = outp.path;
         cvx___.solvers = outp.solvers;
         cvx___.license = outp.license;
+        if isfield( outp, 'broadcast' ),
+            cvx___.broadcast = outp.broadcast;
+        else
+            cvx___.broadcast = cvx___.isoctave;
+        end
     catch
         outp = [];
         errmsg = 'Your CVX preferences file seems out of date; default preferences will be used.';
@@ -376,6 +381,7 @@ if isempty( outp ),
     cvx___.precision = [eps^0.5,eps^0.5,eps^0.25];
     cvx___.precflag = 'default';
     cvx___.rat_growth = 10;
+    cvx___.broadcast = cvx___.isoctave;
     cvx___.path = [];
     cvx___.solvers = [];
     cvx___.license = [];

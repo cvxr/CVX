@@ -5,7 +5,9 @@ function varargout = size( x, dim )
 %       The second argument, if supplied, must be a positive integer.
 
 s = x.size_;
-if nargin > 1,
+if nargin <= 1 && nargout <= 1,
+    varargout{1} = s;
+elseif nargin > 1,
     if nargout > 1,
         error( 'Too many output arguments.' );
     elseif ~isnumeric( dim ) || length( dim ) ~= 1 || dim <= 0 || dim ~= floor( dim ),
@@ -15,7 +17,7 @@ if nargin > 1,
     else
         varargout{1} = s(dim);
     end
-elseif nargout > 1,
+else % nargout > 1,
     ns = length( s );
     no = nargout;
     if no > ns,
@@ -26,8 +28,6 @@ elseif nargout > 1,
     for k = 1 : no,
         varargout{k} = s(k); %#ok
     end
-else
-    varargout{1} = s;
 end
 
 % Copyright 2005-2014 CVX Research, Inc.

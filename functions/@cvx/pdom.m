@@ -2,91 +2,54 @@ function y = pdom( x )
 
 % PDOM(X) internal CVX implementation.
 
-persistent remap
-if isempty( remap ),
-    remap = cvx_remap( 'nonnegative', 'p-nonconst' );
-    remap = remap + 2 * cvx_remap( 'negative' );
-    remap = remap + 3 * ( cvx_remap( 'n-concave' ) & ~remap );
-    remap = remap + 4 * ( cvx_remap( 'r-affine' ) & ~remap );
-    remap = remap + 5 * ( cvx_remap( 'concave' ) & ~remap );
+persistent remap funcs
+if isempty( funcs ),
+    remap = max( 0, cvx_remap( ...
+        { 'negative' }, ...
+        { 'nonnegative', 'p_nonconst' }, ...
+        { 'n_concave' }, ...
+        { 'r_affine' }, ...
+        { 'concave' }, [-1,1,2,3,4] );
+    funcs = { @pdom_1, @pdom_2, @pdom_3, @pdom_4 };
 end
-v = remap( cvx_classify( x ) );
 
-%
-% Process each type of expression one piece at a time
-%
+try
+    y = unary_op( 'pdom', funcs, remap, x );
+catch exc
+    throw( exc );
+end
 
-yt = [];
-vu = sort( v(:) );
-vu = vu([true;diff(vu)~=0]);
-nv = length( vu );
+function y = pdom_1( x )
+% Nonnegative
+y = x;
+
+function y = pdom_2( x )
+% Nonpositive
 sx = x.size_;
-if nv ~= 1,
-    y = cvx( sx, [] );
-end
-for k = 1 : nv,
+y = cvx( sx, [] );
+y( 'Disciplined convex programming warning:\n    Almost certainly infeasible: p( {%s} ).', ...
+    cvx_class( x, true, true, true ) );
+cvx_begin
+    x >= 0; %#ok
+cvx_end
 
-    %
-    % Select the category of expression to compute
-    %
+function y = pdom_3( x )
+% Real affine
+y = [];
+sx = x.size_;
+cvx_begin
+    variable y( sx ) nonnegative
+    y == x; %#ok
+cvx_end
 
-    vk = vu( k );
-    if nv == 1,
-        xt = x;
-    else
-        t = v == vk;
-        xt = cvx_subsref( x, t );
-    end
-    st = size( xt ); %#ok
-
-    %
-    % Perform the computations
-    %
-
-    switch vk,
-        case 0,
-            % Invalid
-            error( 'Disciplined convex programming error:\n    Illegal operation: abs( {%s} ).', cvx_class( xt ) );
-        case 1,
-            % Nonnegative
-            yt = xt;
-        case 2,
-            % Negative
-            error( 'Disciplined convex programming error:\n    Trivially infeasible: p( %g ).', min( xt(:) ) );
-        case 3,
-            % Nonpositive
-            yt = 0;
-            warning( 'Disciplined convex programming error:\n    Almost certainly infeasible: p( {%s} ).', cvx_class( xt ) );
-            cvx_begin
-                xt >= 0; %#ok
-            cvx_end
-        case 4,
-            % Real affine
-            cvx_begin
-                variable yt( st ) nonnegative
-                yt == xt; %#ok
-            cvx_end
-        case 5,
-            % Concave
-            cvx_begin
-                hypograph variable yt( st ) nonnegative
-                yt <= xt; %#ok
-            cvx_end
-        case 6,
-            error( 'Shouldn''t be here.' );
-    end
-
-    %
-    % Store the results
-    %
-
-    if nv == 1,
-        y = yt;
-    else
-        y = cvx_subsasgn( y, t, yt );
-    end
-
-end
+function y = pdom_4 ( x )
+% Concave
+y = [];
+sx = x.size_;
+cvx_begin
+    hypograph variable y( sx ) nonnegative
+    y <= x; %#ok
+cvx_end
 
 % Copyright 2005-2014 CVX Research, Inc.
 % See the file LICENSE.txt for full copyright information.

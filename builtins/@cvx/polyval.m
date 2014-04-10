@@ -25,12 +25,11 @@ sx = size(x);
 
 persistent remap
 if isempty( remap ),
-    remap_1 = cvx_remap( 'r-affine' );
-    remap_2 = cvx_remap( 'l-convex' );
-    remap = remap_1 + 2 * remap_2;
+    remap = cvx_remap( 'r_affine', 'l_convex' );
 end
 
 if cvx_isconstant( p ),
+    
     p = cvx_constant( p );
     if cvx_isconstant( x ),
         y = cvx( polyval( p, cvx_constant( x ) ) );

@@ -6,7 +6,7 @@ function a = ge( x, y )
 %   expressions are both convex and concave and can be used on either
 %   side as well.
 %
-%Disciplined geometric programming information for GE (>=):
+%Disciplined geometric programming information for GE (>=):å
 %   The right-hand side of a less-than constraint must be log-convex---
 %   including positive constants, monomials, posynomials, generalized
 %   posynomials, and products thereof. The left-hand side must be log-
@@ -18,7 +18,12 @@ function a = ge( x, y )
 %Feasible interior-point solvers tend to return points which satisfy
 %strict inequality, but not all solvers do.
 
-b = newcnstr( evalin( 'caller', 'cvx_problem', '[]' ), x, y, '>=' );
+try
+    b = newcnstr( evalin( 'caller', 'cvx_problem', '[]' ), x, y, '>=' );
+catch exc
+	if isequal( exc.identifier, 'CVX:DCPError' ), throw( exc ); 
+	else rethrow( exc ); end
+end
 if nargout, a = b; end
 
 % Copyright 2005-2014 CVX Research, Inc.

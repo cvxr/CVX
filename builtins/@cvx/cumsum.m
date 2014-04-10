@@ -1,4 +1,4 @@
-function y = cumsum( x, dim )
+function y = cumsum( varargin )
 
 %Disciplined convex/geometric programming information for SUM:
 %   CUMSUM(X) and CUMSUM(X,DIM) are vectorized forms of addition. So 
@@ -12,43 +12,35 @@ function y = cumsum( x, dim )
 %   violation of the DCP ruleset. For DGPs, addition rules dictate that
 %   the elements of X must be log-convex or log-affine.
 
-s = x.size_;
-switch nargin,
-    case 0,
-        error( 'Not enough input arguments.' );
-    case 1,
-        dim = cvx_default_dimension( s );
-    case 2,
-        if ~cvx_check_dimension( dim, false ),
-            error( 'Second argument must be a dimension.' );
-        end
+persistent params
+if isempty( params ),
+    params.map     = cvx_remap( { 'constant' ; 'affine' ; 'convex' ; 'concave' } );
+    params.funcs   = { @cumsum_1, @cumsum_1, @cumsum_1 };
+    params.zero    = 0;
+    params.reduce  = false;
+    params.reverse = true;
+    params.dimarg  = 2;
+    params.name    = 'cumsum';
 end
 
-if dim > length( s ) || s( dim ) <= 1,
+try
+    y = reduce_op( params, varargin{:} );
+catch exc
+    if strncmp( exc.identifier, 'CVX:', 4 ), throw( exc ); 
+    else rethrow( exc ); end
+end
 
-    y = x;
+function x = cumsum_1( x )
+if x.size_(2) ~= 1,
+    x = cvx( cumsum( cvx_constant( x ), 2 ) );
+end
 
-else
-
-    b = x.basis_;
-    sb = size( b );
-    need_perm = any( s( dim + 1 : end ) > 1 );
-    if need_perm,
-        ndxs = reshape( 1 : prod( s ), s );
-        ndxs = permute( ndxs, [ 1 : dim - 1, dim + 1 : length( s ), dim ] );
-        b = b( :, ndxs );
-    end
-    b = reshape( b, prod( sb ) / s( dim ), s( dim ) );
+function x = cumsum_2( x )
+s = x.size_;
+if s(2) ~= 1,
+    b = reshape( x.basis_, [], s(2) );
     b = cumsum( b, 2 );
-    b = reshape( b, sb );
-    if need_perm,
-        b( :, ndxs ) = b;
-    end
-    y = cvx( s, b );
-    if nnz( isnan( cvx_vexity( y ) ) ),
-        error( 'Disciplined convex programming error:\n   Illegal addition encountered (e.g., {convex} + {concave}).', 1 ); %#ok
-    end
-
+    x = cvx( s, reshape( b, [], prod(s) ) );
 end
 
 % Copyright 2005-2014 CVX Research, Inc.

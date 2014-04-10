@@ -18,7 +18,12 @@ function a = le( x, y )
 %   Feasible interior-point solvers tend to return points which satisfy
 %   strict inequality, but not all solvers do.
 
-b = newcnstr( evalin( 'caller', 'cvx_problem', '[]' ), x, y, '<=' );
+try
+    b = newcnstr( evalin( 'caller', 'cvx_problem', '[]' ), x, y, '<=' );
+catch exc
+	if isequal( exc.identifier, 'CVX:DCPError' ), throw( exc ); 
+	else rethrow( exc ); end
+end
 if nargout, a = b; end
 
 % Copyright 2005-2014 CVX Research, Inc.

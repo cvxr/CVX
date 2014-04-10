@@ -1,19 +1,18 @@
-function cvx_optval = matrix_frac( x,Y )
+function cvx_optval = matrix_frac( x, Y )
 
 %MATRIX_FRAC   Internal cvx version.
 
-error( nargchk( 2, 2, nargin ) ); %#ok
 if ndims( Y ) > 2 || size( Y, 1 ) ~= size( Y, 2 ), %#ok
 
     error( 'Second argument must be a square matrix.' );
 
 elseif ndims( x ) > 2 || size( x, 2 ) > 1, %#ok
 
-    error( 'First argument must be a column vector.' );
+    error( 'First argument must be a column vector or matrix.' );
 
 elseif size( x, 1 ) ~= size( Y, 1 ),
 
-    error( 'Size of first argument (vector) must match size of second argument (matrix).' );
+    error( 'The number of rows in X and Y must match.' );
 
 elseif cvx_isconstant( x ) && cvx_isconstant( Y ),
 
@@ -21,13 +20,13 @@ elseif cvx_isconstant( x ) && cvx_isconstant( Y ),
 
 elseif cvx_isaffine( x ) && cvx_isaffine( Y ),
 
-    n = size( x, 1 );
+    [n,m] = size(x);
     z = [];
     cvx_begin
-        epigraph variable z
-        [Y x; x' z] == semidefinite( n+1 ); %#ok
+        variable z(n)
+        minimize(sum(n))
+        [Y x; x' diag(z)] == semidefinite( n+m ); %#ok
         cvx_setnneg( z );
-        cvx_setnneg( diag( Y ) );
     cvx_end
 
 else

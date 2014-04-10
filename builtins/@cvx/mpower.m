@@ -5,10 +5,14 @@ function z = mpower( x, y )
 %      the case where X and Y are scalars. In such instances, the rules
 %      are identical to those outlined in the help for CVX/POWER.
 
-if length( x ) == 1 && length( y ) == 1,
-    z = power( x, y );
-else
+if length( x ) > 1 && length( y ) > 1,
     error( 'Disciplined convex programming error:\n    Matrix powers not permitted.', 1 ); %#ok
+end
+try
+    z = power( x, y, '^' );
+catch exc
+	if isequal( exc.identifier, 'CVX:DCPError' ), throw( exc ); 
+	else rethrow( exc ); end
 end
 
 % Copyright 2005-2014 CVX Research, Inc.

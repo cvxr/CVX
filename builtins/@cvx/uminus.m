@@ -12,14 +12,12 @@ function z = uminus( x )
 
 persistent remap
 if isempty( remap ),
-    remap = cvx_remap( 'invalid', 'l-concave' ) & ~cvx_remap( 'l-affine' );
+    remap = cvx_remap( 'invalid', 'l_concave_' );
 end
-tt = remap( cvx_classify( x ) );
-if nnz( tt ),
-    xt = cvx_subsref( x, tt );
-    error( 'Disciplined convex programming error:\n    Illegal operation: - {%s}', cvx_class( xt ) );
+tt = remap( cvx_classify(x) );
+if any( tt ),
+    throw( cvx_unary_error( x, tt, '-' ) );
 end
-
 z = cvx( x.size_, -x.basis_ );
 
 % Copyright 2005-2014 CVX Research, Inc.

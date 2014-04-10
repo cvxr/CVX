@@ -35,33 +35,28 @@ end
 slow = false;
 if isempty( b ),
     b = sparse( 1, prod( s ) );
-%elseif issparse( b ) & ~cvx_use_sparse( b ),
-%    b = full( b );
 end
-switch length( s ),
+switch numel( s ),
     case 2,
     case 1,
-        s( 2 ) = 1;
+        s( 1, 2 ) = 1;
     case 0,
         s = [ 0, 0 ];
     otherwise,
-        while s(end) == 1,
-            s(end) = [];
-            if length( s ) == 2, 
-                break; 
-            end
+        if s(end) == 1,
+            s = s( 1 : max( 2, find( s > 1, 1, 'last' ) ) );
         end
 end
-if ~all( isfinite( nonzeros( b ) ) ),
-    slow = true;
-    tt = any( isnan( b ), 1 ) | sum( isinf( b ), 1 ) > isinf( b( 1, : ) );
-    b( :, tt ) = 0;
-    b( 1, tt ) = NaN;
-end
+% if ~all( isfinite( nonzeros( b ) ) ),
+%     slow = true;
+%     tt = any( isnan( b ), 1 ) | sum( isinf( b ), 1 ) > isinf( b( 1, : ) );
+%     b( :, tt ) = 0;
+%     b( 1, tt ) = NaN;
+% end
 if clean,
     b1 = b( 1, : );
     if nnz( b ) == nnz( b1 ),
-        v = cvx_reshape( b1, s );
+        v = reshape( cvx_sparse_if( b1 ), s );
         return
     end
 end

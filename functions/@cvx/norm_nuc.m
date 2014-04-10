@@ -2,7 +2,6 @@ function cvx_optval = norm_nuc( X ) %#ok
 
 %NORM_NUC   Internal cvx version.
 
-error( nargchk( 1, 1, nargin ) ); %#ok
 if ndims( X ) > 2, %#ok
     error( 'norm_nuc is not defined for N-D arrays.' );
 elseif ~cvx_isaffine( X ),

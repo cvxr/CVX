@@ -22,9 +22,11 @@ function v = cvx_classify( x )
 % 19 - invalid
 
 global cvx___
-[ v, w ] = cvx_vexity( x );
-v = reshape( full( 3 * v + w ), 1, prod( x.size_ ) );
-if isempty( x ), return; end
+if isempty( x ),
+    v = zeros( size( x ) );
+    return
+end
+v = 3 * cvx_vexity( x ) + cvx_sign( x );
 b = x.basis_ ~= 0;
 q = sum( b, 1 );
 s = b( 1, : );
@@ -32,15 +34,19 @@ s = b( 1, : );
 % Constants
 tt = q == s;
 if any( tt ),
+    v( tt ) = sign( x.basis_( 1, tt ) ) + 2;
     if ~isreal( x.basis_ ),
         ti = any( imag( x.basis_ ), 1 );
         v( tt & ti ) = 4;
-        tt = tt & ~ti;
     end
-    v( tt ) = sign( x.basis_( 1, tt ) ) + 2;
 end
 
-tt = ~tt & ~isnan( v );
+% Invalids
+tn = isnan( v );
+v( tn ) = 19;
+
+% Non-constants
+tt = ~tt & ~tn(:)';
 if any( tt ),
     temp = v( tt );
     temp = temp + 9;
@@ -51,17 +57,16 @@ if any( tt ),
     end
 end
 
-tt = isnan( v );
-v( tt ) = 19;
-
+% Geometrics
 if nnz( cvx___.exp_used ),
-    tt = find( ( v == 19 | v == 12 | v == 13 ) & q == 1 );
+    t1 = v(:) == 13;
+    tt = find( ( t1 | v(:) == 19 ) & q(:) == 1 );
     if ~isempty( tt ),
         [ rx, cx, vx ] = find( x.basis_( :, tt ) );
         qq = reshape( cvx___.logarithm( rx ), size( vx ) ) & ( vx > 0 );
         v( tt( cx( qq ) ) ) = 16 + sign( cvx___.vexity( cvx___.logarithm( rx( qq ) ) ) );
     end
-    tt = find( ( v == 12 | v == 13 ) & q > 1 );
+    tt = find( t1 & q(:) > 1 );
     if ~isempty( tt ),
         [ rx, cx, vx ] = find( x.basis_( :, tt ) );
         qq = ( ~reshape( cvx___.logarithm( rx ), size( vx ) ) & ( rx > 1 ) ) | vx < 0;

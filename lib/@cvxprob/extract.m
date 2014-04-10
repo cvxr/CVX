@@ -69,7 +69,7 @@ end
 if ~isempty( A1 ),
     zV = cvx_vexity( A2 ); 
     zQ = ( zV == 0 ) - zV;
-    dbcA = [ dbcA ; minus( zQ .* A1, zQ .* A2, true ) ];
+    dbcA = [ dbcA ; plus( zQ .* A1, zQ .* A2, '-', true ) ];
     ineqs( end + 1 : end + length( A1 ), : ) = zV ~= 0;
     clear A1 A2 zV zQ
 end
@@ -96,7 +96,7 @@ end
 if ~isempty( A2 ),
     zV = cvx_vexity( A2 ); 
     zQ = ( zV == 0 ) - zV;
-    dbcA = [ dbcA ; minus( zQ .* A1, zQ .* A2, true ) ];
+    dbcA = [ dbcA ; plus( zQ .* A1, zQ .* A2, '-', true ) ];
     ineqs( end + 1 : end + length( A1 ), : ) = zV ~= 0;
     clear A1 A2 zV zQ
 end

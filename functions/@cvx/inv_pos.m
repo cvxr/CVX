@@ -2,7 +2,7 @@ function y = inv_pos( x )
 
 %INV_POS   Internal cvx version.
 
-y = pow_cvx( x, -1, 'pow_p' );
+y = cvx_recip( pdom( x ) );
 
 % Copyright 2005-2014 CVX Research, Inc.
 % See the file LICENSE.txt for full copyright information.

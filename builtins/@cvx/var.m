@@ -1,8 +1,16 @@
-function y = var( varargin )
+function y = var( x, w, dim )
 
-%STD    Internal cvx version.
+%VAR    Internal cvx version.
 
-y = square_pos( std( varargin{:} ) );
+if nargin < 3, dim = []; end
+if nargin < 2, w = []; end
+
+try
+	y = std( x, w, dim, true );
+catch exc
+	if isequal( exc.identifier, 'CVX:DCPError' ), throw( exc ); 
+	else rethrow( exc ); end
+end
 
 % Copyright 2005-2014 CVX Research, Inc. 
 % See the file LICENSE.txt for full copyright information.

@@ -46,7 +46,7 @@ end
 
 persistent remap_n remap_d
 if isempty( remap_d ),
-    remap_n = cvx_remap( 'affine', 'p-convex', 'n-concave' );
+    remap_n = cvx_remap( 'affine', 'p_convex', 'n_concave' );
     remap_d = cvx_remap( 'concave' );
 end
 vn = remap_n( cvx_classify( x ) );

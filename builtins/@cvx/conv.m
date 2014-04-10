@@ -49,7 +49,7 @@ elseif cvx_isconstant(x) || cvx_isconstant(y),
     yv = yv * reshape( xv, 1, nx );
     z  = sparse( yi, yj, yv, size(yb,1), nz );
     z  = cvx( sz, z );
-    if nnz( cvx_classify( z ) == 13 ),
+    if ~cvx_isvalid( z ),
         error( 'Disciplined convex programming error:\n   Illegal affine combination of convex/concave terms in convolution.' );
     end
     

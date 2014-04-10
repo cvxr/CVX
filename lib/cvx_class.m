@@ -76,7 +76,7 @@ end
 if ~needzero,
     x = remap_z( x );
 end
-v = sparse( x, 1, 1, 18, 1 ) ~= 0;
+v = sparse( x, 1, 1, 22, 1 ) ~= 0;
 if nnz( v ) ~= v( 2 ),
     v( 2 ) = false;
 end

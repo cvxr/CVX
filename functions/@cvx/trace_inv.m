@@ -25,7 +25,6 @@ cvx_begin sdp
         variable Y(n,n) Hermitian
     end
     cvx_setnneg(diag(Y));
-    cvx_setnneg(diag(X));
     minimize(trace(Y));
     [Y,eye(n);eye(n),X] >= 0; %#ok
 cvx_end

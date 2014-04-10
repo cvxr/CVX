@@ -1,9 +1,10 @@
-function y = pow_p( x, p )
-
-%POW_P   Internal cvx version.
-
-error(nargchk(2,2,nargin)); %#ok
-y = pow_cvx( x, p, 'pow_p' );
+function y = cvx_isvalid( x )
+persistent remap
+if isempty( remap ),
+    remap = cvx_remap( 'valid' );
+end
+y = remap( cvx_classify( x ) );
+y = all( y(:) );
 
 % Copyright 2005-2014 CVX Research, Inc.
 % See the file LICENSE.txt for full copyright information.

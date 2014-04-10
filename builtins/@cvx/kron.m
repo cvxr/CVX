@@ -32,7 +32,7 @@ end
 [ ix, jx, vx ] = find(x);
 [ iy, jy, vy ] = find(y);
 if isempty( vx ) || isempty( vy ),
-    z = cvx( sparse( [], [], [], sz(1), sz(2) ) );
+    z = cvx( sx, [] );
 else
     ix = ix(:); jx = jx(:); nx = numel(ix); kx = ones(nx,1);
     iy = iy(:); jy = jy(:); ny = numel(iy); ky = ones(ny,1);
@@ -40,8 +40,13 @@ else
     iz = t( ky, : ) + iy( :, kx );
     t  = sy(2) * ( jx - 1 )';
     jz = t( ky, : ) + jy( :, kx );
-    z  = reshape( vy, ny, 1 ) * reshape( vx, 1, nx );
-    z  = sparse( iz, jz, z, sz(1), sz(2) );
+    try
+        z = reshape( vy, ny, 1 ) * reshape( vx, 1, nx );
+    catch exc
+        if isequal( exc.identifier, 'CVX:DCPError' ), throw( exc ); 
+        else rethrow( exc ); end
+    end
+    z = sparse( iz, jz, z, sz(1), sz(2) );
 end
 
 % Copyright 2005-2014 CVX Research, Inc.

@@ -11,9 +11,9 @@ function cvx_optval = norm( x, p )
 
 persistent remap1 remap2 remap3
 if isempty( remap3 ),
-    remap1 = cvx_remap( 'l-convex' );
+    remap1 = cvx_remap( 'l_convex' );
     remap2 = cvx_remap( 'affine' );
-    remap3 = cvx_remap( 'p-convex', 'n-concave', 'affine' );
+    remap3 = cvx_remap( 'p_convex', 'n_concave', 'affine' );
 end
 
 %

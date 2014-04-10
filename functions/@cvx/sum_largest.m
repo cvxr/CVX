@@ -2,7 +2,6 @@ function cvx_optval = sum_largest( x, k, dim )
 
 %SUM_LARGEST   Internal cvx version.
 
-error( nargchk( 2, 3, nargin ) ); %#ok
 sx = size( x );
 if nargin < 3 || isempty( dim ),
 	dim = cvx_default_dimension( sx );
@@ -35,6 +34,8 @@ elseif k >= sx( dim ),
 
 else
 
+    xsg = cvx_sign(x);
+    xzr = ~cvx_isnonzero(x,true);
 	z = []; xp = []; yp = [];
     cvx_begin
         epigraph variable z( sy )
@@ -42,6 +43,8 @@ else
         z == sum( xp, dim ) - k * yp; %#ok
         xp >= cvx_expand_dim( yp, dim, sx(dim) ) + x; %#ok
         xp >= 0; %#ok
+        cvx_setnneg( cvx_subsref( z, all((xsg>0)|xzr,dim) ) );
+        cvx_setnpos( cvx_subsref( z, all((xsg<0)|xzr,dim) ) );
     cvx_end
 
 end

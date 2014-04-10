@@ -14,96 +14,28 @@ function y = prod( x, dim )
 %      because the top row contains the product of log-convex and 
 %      log-concave terms, in violation of the DGP ruleset.
 
-error( nargchk( 1, 2, nargin ) ); %#ok
-
-%
-% Size check
-%
+persistent remap,
+if isempty( remap ),
+    remap = remap( { 'constant' ; 'l_convex' ; 'l_concave' } );
+    funcs = { @prod_1, @prod_2 };
+end
 
 try
-    ox = x;
     if nargin < 2, dim = []; end
-    [ x, sx, sy, zx, zy, nx, nv, perm ] = cvx_reduce_size( x, dim ); %#ok
+    y = reduce_op( 'prod', funcs, remap, 1, true, false, x, dim );
 catch exc
-    error( exc.message );
-end
-    
-%
-% Quick exit for easy cases
-%
-
-if isempty( x ),
-    y = ones( zy );
-    return
-elseif nx == 1,
-    y = ox;
-    return
+	if isequal( exc.identifier, 'CVX:DCPError' ), throw( exc ); 
+	else rethrow( exc ); end
 end
 
-%
-% Type check
-%
-
-persistent remap_1 remap_2 remap_3 remap_0
-if isempty( remap_3 ),
-    remap_0 = cvx_remap( 'zero' );
-    remap_1 = cvx_remap( 'constant' );
-    remap_2 = cvx_remap( 'l-convex' );
-    remap_3 = cvx_remap( 'l-concave' );
-end
-vx = cvx_reshape( cvx_classify( x ), sx );
-t0 = any( reshape( remap_0( vx ), sx ) );
-t1 = all( reshape( remap_1( vx ), sx ) );
-t2 = all( reshape( remap_2( vx ), sx ) ) | ...
-     all( reshape( remap_3( vx ), sx ) );
-t3 = t2 & t0;
-ta = ( t1 | t3 ) + 2 * ( t2 & ~t3 );
-nu = sort( ta(:) );
-nu = nu([true;diff(nu)~=0]);
-nk = length( nu );
-
-%
-% Perform the computations
-%
-
-if nk > 1,
-    y = cvx( [ 1, nv ], [] );
-end
-for k = 1 : nk,
-
-    if nk == 1,
-        xt = x;
-    else
-        tt = ta == nu( k );
-        xt = cvx_subsref( x, ':', tt );
-    end
-
-    switch nu( k ),
-        case 0,
-            error( 'Disciplined convex programming error:\n   Invalid computation: prod( {%s} )', cvx_class( xt, true, true ) );
-        case 1,
-            yt = cvx( prod( cvx_constant( xt ) ) );
-        case 2,
-            yt = exp( sum( log( xt ) ) );
-        otherwise,
-            error( 'Shouldn''t be here.' );
-    end
-
-    if nk == 1,
-        y = yt;
-    else
-        y = cvx_subsasgn( y, tt, yt );
-    end
-
+function x = prod_1( x )
+if x.size_(1) ~= 1,
+    x = cvx( prod( cvx_constant( x ), 1 ) );
 end
 
-%
-% Reverse the reshaping and permutation steps
-%
-
-y = reshape( y, sy );
-if ~isempty( perm ),
-    y = ipermute( y, perm );
+function x = prod_2( x )
+if x.size_(1) ~= 1,
+    x = exp( sum( log( x ), 1 ) );
 end
 
 % Copyright 2005-2014 CVX Research, Inc.

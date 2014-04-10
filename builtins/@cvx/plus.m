@@ -1,4 +1,4 @@
-function z = plus( x, y, isdiff, cheat )
+function z = plus( x, y, op, cheat )
 
 %   Disciplined convex programming information for PLUS:
 %      Both terms in a sum must have the same curvature. Real affine
@@ -17,111 +17,62 @@ function z = plus( x, y, isdiff, cheat )
 %   For vectors, matrices, and arrays, these rules are verified 
 %   indepdently for each element.
 
-%
-% Default arguments
-%
+% Determine sizes
 
-persistent remap_plus remap_minus
-if nargin < 4,
-    if nargin < 3,
-        isdiff = false;
-    end
-    cheat = false;
+try
+    [ x, y, sz, xs, ys ] = cvx_broadcast( x, y );
+catch exc
+    if isequal( exc.identifier, 'CVX:DCPError' ), throw( exc ); 
+    else rethrow( exc ); end
+end
+nn = prod( sz );
+if ~nn, 
+    z = zeros( sz ); 
+    return; 
 end
 
-%
-% Check sizes
-%
+% Build basis
 
-sx = size( x );
-sy = size( y );
-xs = all( sx == 1 );
-ys = all( sy == 1 );
+x  = cvx( x );
+y  = cvx( y );
+bx = x.basis_;
+by = y.basis_;
 if xs,
-    sz = sy;
+    bx = bx( :, ones( 1, nn ) );
 elseif ys,
-    sz = sx;
-elseif ~isequal( sx, sy ),
-    error( 'Matrix dimensions must agree.' );
-else
-    sz = sx;
+    by = by( :, ones( 1, nn ) );
 end
-
-%
-% Check vexity
-%
-
-if ~cheat,
-    if isempty( remap_plus ),
-        temp0  = cvx_remap( 'affine'  );
-        tempc  = cvx_remap( 'complex', 'c-affine' );
-        temp1  = cvx_remap( 'convex'  ) & ~temp0;
-        temp1c = temp1 + tempc;
-        temp2  = cvx_remap( 'concave' ) & ~temp0;
-        temp2c = temp2 + tempc;
-        temp3  = temp1' * temp2c + temp2' * temp1c;
-        temp1  = temp1' * temp1c;
-        temp2  = temp2' * temp2c;
-        temp4  = ( cvx_remap( 'l-concave' ) & ~cvx_remap( 'l-affine' ) )' * +(~cvx_remap( 'zero' )) | ...
-                   cvx_remap( 'invalid' )' * cvx_remap( 'valid', 'invalid' );
-        temp4 = temp4 | temp4';
-        remap_minus = temp4 | temp1 | temp1' | temp2 | temp2';
-        remap_plus  = temp4 | temp3 | temp3';
-    end
-    vx = cvx_classify( x );
-    vy = cvx_classify( y );
-    bad = vx + size( remap_plus, 1 ) * ( vy - 1 );
-    if isdiff,
-        bad = remap_minus( bad );
-    else
-        bad = remap_plus( bad );
-    end
-    if nnz( bad ),
-        if ~xs, x = cvx_subsref( x, bad ); end
-        if ~ys, y = cvx_subsref( y, bad ); end
-        if isdiff, op = '-'; else op = '+'; end
-        error( 'Disciplined convex programming error:\n   Illegal operation: {%s} %s {%s}', cvx_class( x, false, true ), op, cvx_class( y, false, true ) );
-    end
+[ nx, nv ] = size( bx );
+ny = size( by, 1 );
+if nx < ny
+    if issparse( by ), bx = sparse( bx ); end
+    bx = [ bx ; sparse( ny - nx, nv ) ];
+elseif ny < nx,
+    if issparse( bx ), by = sparse( by ); end
+    by = [ by ; sparse( nx - ny, nv ) ];
 end
-
-%
-% Apply operation, stretching basis matrices as needed
-%
-
-if any( sz == 0 ),
-    bz = sparse( 1, 0 );
+if nargin >= 3 && op == '-',
+    bz = bx - by;
 else
-    x  = cvx( x );
-    y  = cvx( y );
-    bx = x.basis_;
-    by = y.basis_;
-    if isdiff,
-        by = -by;
-    end
-    if xs && ~ys,
-        nz = prod( sz );
-        bx = bx( :, ones( 1, nz ) );
-    elseif ys && ~xs,
-        nz = prod( sz );
-        by = by( :, ones( 1, nz ) );
-    end
-    [ nx, nv ] = size( bx );
-    ny = size( by, 1 );
-    if nx < ny,
-        if issparse( by ), bx = sparse( bx ); end
-        bx = [ bx ; sparse( ny - nx, nv ) ];
-    elseif ny < nx,
-        if issparse( bx ), by = sparse( by ); end
-        by = [ by ; sparse( nx - ny, nv ) ];
-    end
     bz = bx + by;
 end
 
-%
-% Construct result
-%
+% Build object
 
 z = cvx( sz, bz );
+
+% Check
+
+if nargin < 4 || ~cheat,
+    if nargin < 3, 
+        op = '+'; 
+    end
+    try
+        cvx_dcp_error( x, y, z, op );
+    catch exc
+        throw( exc );
+    end
+end
 
 % Copyright 2005-2014 CVX Research, Inc.
 % See the file LICENSE.txt for full copyright information.

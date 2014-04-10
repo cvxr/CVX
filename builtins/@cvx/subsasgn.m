@@ -36,7 +36,7 @@ try
     temp = reshape( 1 : nlx, szx );
     ndx_x = builtin( 'subsasgn', temp, S, zeros( szy ) );
 catch errmsg
-    error( errmsg.identifier, errmsg.message );
+    throw( errmsg );
 end
 szx_n = size( ndx_x );
 if length( szx_n ) ~= length( szx ),

@@ -19,7 +19,12 @@ function a = lt( x, y )
 %   strict inequality, but not all solvers do.
 
 warning( 'CVX:StrictInequalities', cvx_error( 'The use of strict inequalities in CVX is strongly discouraged, because solvers treat them as non-strict inequalities. Please consider using "<=" instead.', [66,75], false, '' ) );
-b = newcnstr( evalin( 'caller', 'cvx_problem', '[]' ), x, y, '<' );
+try
+    b = newcnstr( evalin( 'caller', 'cvx_problem', '[]' ), x, y, '<' );
+catch exc
+	if isequal( exc.identifier, 'CVX:DCPError' ), throw( exc ); 
+	else rethrow( exc ); end
+end
 if nargout, a = b; end
 
 % Copyright 2005-2014 CVX Research, Inc.

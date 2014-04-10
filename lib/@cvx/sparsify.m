@@ -33,8 +33,8 @@ if at,
             remap = cvx_remap( 'posynomial' );
         end
         t2 = remap( cvx_classify( x ) );
-        if any( t2 ),
-            if all( t2 ),
+        if any( t2(:) ),
+            if all( t2(:) ),
                 x = exp( log( x ) );
             else
                 x = cvx_subsasgn( x, t2, exp( log( cvx_subsref( x, t2 ) ) ) );

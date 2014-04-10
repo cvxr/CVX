@@ -1,80 +1,52 @@
 function y = cvx_recip( x )
 
-%RECIP   Internal cvx version.
+%CVX_RECIP   Internal cvx version.
 
-%
-% Determine the expression types
-%
-
-error( nargchk( 1, 1, nargin ) ); %#ok
-persistent remap
-if isempty( remap ),
-    remap = cvx_remap( 'constant' ) & ~cvx_remap( 'zero' );
-    remap = remap + 2 * ( cvx_remap( 'l-valid' ) & ~remap );
-    remap = remap + 3 * ( cvx_remap( 'p-concave' ) & ~remap );
-    remap = remap + 4 * ( cvx_remap( 'n-convex' ) & ~remap );
+persistent remap funcs
+if isempty( funcs ),
+    remap = cvx_remap( ...
+        { 'nonzero' }, ...
+        { 'l_valid' }, ...
+        { 'p_concave' }, ...
+        { 'n_convex' } );
+    funcs = { @recip_1, @recip_2, @recip_3, @recip_4 };
 end
-vr = remap( cvx_classify( x ) );
-vu = sort( vr(:) );
-vu = vu([true;diff(vu)~=0]);
-nv = length( vu );
 
-%
-% Process each result type one at a time
-%
+y = unary_op( '1.0 ./', funcs, remap, x );
 
-if nv ~= 1,
-    y = cvx( x.size_, [] );
-end
-for k = 1 : nv,
 
-    %
-    % Select the category of expression to compute
-    %
+function y = recip_1( x )
+% Non-zero constant
+y = cvx( 1.0 ./ cvx_constant( x ) );
 
-    if nv == 1,
-        xt = x;
-    else
-        t = vr == vu( k );
-        xt = cvx_subsref( x, t );
-    end
+function y = recip_2( x )
+% Monomial, posynomial
+y = exp( -log( x ) );
 
-    %
-    % Perform the computations
-    %
+function y = recip_3( x )
+% Positive concave
+y = [];
+sx = x.size_;
+cvx_begin
+    epigraph variable y( sx )
+    variable z( sx )
+    { 1, z, y } == rotated_lorentz( sx, length(sx)+1, 0 ); %#ok
+    z <= x; %#ok
+    cvx_setnneg(y);
+cvx_end
 
-    switch vu( k ),
-        case 0,
-            % Invalid
-            error( 'Disciplined convex programming error:\n    Cannot perform the operation recip( {%s} )', cvx_class( x, false, false, true ) );
-        case 1,
-            % Non-zero constant
-            yt = cvx( 1.0 ./ cvx_constant( xt ) );
-        case 2,
-            % Monomial, posynomial
-            yt = exp( -log( xt ) );
-        case 3,
-            % Positive concave
-            yt = power( xt, -1 );
-        case 4,
-            % Negative convex
-            yt = - power( - xt, -1 );
-        otherwise,
-            error( 'Shouldn''t be here.' );
-    end
-
-    %
-    % Store the results
-    %
-
-    if nv == 1,
-        y = yt;
-    else
-        y = cvx_subsasgn( y, t, yt );
-    end
-
-end
+function y = recip_4( x )
+% Negative convex
+y = [];
+sx = x.size_;
+cvx_begin
+    hypograph variable y( sx )
+    variable z( sx )
+    { 1, z, -y } == rotated_lorentz( sx, length(sx)+1, 0 ); %#ok
+    z <= -x; %#ok
+    cvx_setnpos(y);
+cvx_end
 
 % Copyright 2005-2014 CVX Research, Inc.
-% See the file LICENSE.txt for full copyright information.
+% See the file LICENSE.tx for full copyright information.
 % The command 'cvx_where' will show where this file is located.

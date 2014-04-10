@@ -1,64 +1,76 @@
-function y = std( x, w, dim )
+function y = std( x, w, dim, square_it )
 
 %STD    Internal cvx version.
+%This actually implements VAR and STD, controlled by the square_it flag.
 
-if ~cvx_isaffine( x ),
-    error( 'Disciplined convex programming error:\n    VAR is convex and nonmonotonic in X, so X must be affine.', 1 ); %#ok
-elseif nargin > 1 && ~cvx_isconstant( w ),
-    error( 'Weight vector must be constant.' );
+if nargin < 2
+    w = [];
+elseif ~cvx_isconstant( w ) || numel( w ) ~= length( w ),
+    error( 'Second argument must be a logical scalar or a nonnegative vector.' );
+elseif ~isempty( w ),
+    w = cvx_constant( w );
+    if numel( w ) == 1,
+        w = w ~= 0;
+    elseif ~isreal( w ) || any( w < 0 )
+        error( 'Weight vector must be nonnegative.' );
+    elseif ~any( w ),
+        error( 'Weight vector must not be all zeros.' );
+    else
+        w = w(:) / sum( w );
+    end
+end
+
+persistent remap funcs
+if isempty( remap ),
+    remap = cvx_remap( 'affine' );
+    funcs = { @std_1 };
 end
 
 try
     if nargin < 3, dim = []; end
-    [ x, sx, sy, zx, zy, nx, nv, perm ] = cvx_reduce_size( x, dim ); %#ok
+    if nargin < 4, square_it = []; op = 'var'; else op = 'std'; end
+    y = reduce_op( op, funcs, remap, NaN, true, false, x, dim, w, square_it );
 catch exc
-    error( exc.message );
+    if isequal( exc.identifier, 'CVX:DCPError' ), throw( exc ); 
+    else rethrow( exc ); end
 end
 
-if nx > 1 && nv > 0,
-    if nargin < 2 || numel( w ) == 1,
-        if nargin == 2 && w,
-            denom = nx;
+function y = std_1( x, w, square_it )
+y = [];
+[nx,nv] = size( x );
+nw = numel(w);
+if nx == 1,
+    y = cvx( [nx,nv], [] );
+elseif nw <= 1,
+    denom = sqrt(nx - ~(nw&&w));
+    % In theory we could just say y = norm(x-mean(x))/denom. However, by
+    % adding an extra variable we preserve sparsity.
+    cvx_begin
+        variable xbar( 1, nv )
+        epigraph variable y( 1, nv );
+        nx * xbar == sum( x, 1 ); %#ok
+        if square_it
+            { x - repmat(xbar,[nx,1]), denom, denom * y } == rotated_lorentz( [ nx, nv ], 1, ~isreal( x ) ); %#ok
         else
-            denom = nx - 1;
+            { x - repmat(xbar,[nx,1]), denom * y } == lorentz( [ nx, nv ], 1, ~isreal( x ) ); %#ok
         end
-        % In theory we could just say y = mean(abs(x-mean(x))). However, by
-        % adding an extra variable we preserve sparsity.
-        cvx_begin
-            variable xbar( 1, nv )
-            denom * xbar == sum( x ); %#ok
-            minimize( norms( x - ones(nx,1) * xbar ) / sqrt( denom ) );
-        cvx_end
-        y = cvx_optval;
-    elseif numel( w ) ~= nx || ~isreal( w ) || any( w < 0 ),
-        error( 'Weight vector expected to have %d nonnegative elements.', w );
-    else
-        sw = sum( w(:) );
-        if sw == 0,
-            error( 'Weight vector must not be all zeros.' );
-        end
-        w = w(:) / sw;
-        cvx_begin
-            variable xbar( 1, nv )
-            xbar == sum( w' * x ); %#ok
-            w = sqrt( w );
-            minimize( norms( w( :, ones(1,nv) ) .* ( x - ones(nx,1) * xbar ) ) );
-        cvx_end
-        y = cvx_optval;
-    end
-elseif nx == 0,
-    y = NaN( sy );
+    cvx_end
+    y = cvx_optval;
+elseif numel( w ) ~= nx,
+    error( 'Weight vector expected to have %d elements.', nx );
 else
-    y = zeros( sy );
-end
-
-%
-% Reverse the reshaping and permutation steps
-%
-
-y = reshape( y, sy );
-if ~isempty( perm ),
-    y = ipermute( y, perm );
+    cvx_begin
+        variable xbar( 1, nv )
+        epigraph variable y( 1, nv );
+        xbar == sum( w' * x ); %#ok
+        w = sqrt( w );
+        if square_it
+            { repmat(w,[1,nv]) .* ( x - repmat(xbar,[nx-1]) ), 1, y } == rotated_lorentz( [ nx, nv ], 1, ~isreal( x ) ); %#ok
+        else
+            { repmat(w,[1,nv]) .* ( x - repmat(xbar,[nx-1]) ), y } == lorentz( [ nx, nv ], 1, ~isreal( x ) ); %#ok
+        end
+    cvx_end
+    y = cvx_optval;
 end
 
 % Copyright 2005-2014 CVX Research, Inc.

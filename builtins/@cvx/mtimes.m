@@ -24,7 +24,7 @@ function z = mtimes( x, y, oper )
 %      summed, both X and Y must be elementwise log-convex/affine.
 
 persistent remap
-if nargin < 3, oper = 'times'; end
+if nargin < 3, oper = '*'; end
 
 %
 % Check sizes
@@ -33,7 +33,11 @@ if nargin < 3, oper = 'times'; end
 sx = size( x );
 sy = size( y );
 if all( sx == 1 ) || all( sy == 1 ),
-    z = feval( oper, x, y );
+    try
+        z = times( x, y, oper );
+    catch exc
+        throw( exc );
+    end
     return
 elseif length( sx ) > 2 || length( sy ) > 2,
     error( 'Input arguments must be 2-D.' );
@@ -42,6 +46,8 @@ elseif sx( 2 ) ~= sy( 1 ),
 else
     sz = [ sx( 1 ), sy( 2 ) ];
 end
+nx = prod( sx );
+ny = prod( sy );
 nz = prod( sz );
 
 %
@@ -51,36 +57,33 @@ nz = prod( sz );
 if cvx_isconstant( x ),
     
     xC = cvx_constant( x );
-    if nnz( isnan( xC ) ),
-        error( 'Disciplined convex programming error:\n    Invalid numeric values (NaNs) may not be used in CVX expressions.', 1 ); %#ok
-    elseif cvx_isconstant( y ),
+    if cvx_isconstant( y ),
         yC = cvx_constant( y );
-        if nnz( isnan( yC ) ),
-            error( 'Disciplined convex programming error:\n    Invalid numeric values (NaNs) may not be used in CVX expressions.', 1 ); %#ok
+        switch oper,
+            case '/',  z = xC / yC;
+            case '\',  z = xC \ yC;
+            otherwise, z = xC * yC;
         end
-        z = feval( [ 'm', oper ], xC, yC );
         if nnz( isnan( z ) ),
             error( 'Disciplined convex programming error:\n    This expression produced one or more invalid numeric values (NaNs).', 1 ); %#ok
         end
         z = cvx( z );
         return
-    elseif isequal( oper, 'rdivide' ),
+    elseif isequal( oper, '/' ),
         error( 'Disciplined convex programming error:\n    Matrix divisor must be constant.', 1 ); %#ok
     end
     yA   = cvx_basis( y );
-    laff = true;
-    cnst = false;
     raff = false;
+    laff = true;
     quad = false;
+    cnst = false;
     posy = false;
     vpos = false;
     
 elseif cvx_isconstant( y ),
 
     yC = cvx_constant( y );
-    if nnz( isnan( yC ) ),
-        error( 'Disciplined convex programming error:\n    Invalid numeric values (NaNs) may not be used in CVX expressions.', 1 ); %#ok
-    elseif isequal( oper, 'ldivide' ),
+    if isequal( oper, '\' ),
         error( 'Disciplined convex programming error:\n    Matrix divisor must be constant.', 1 ); %#ok
     end
     xA   = cvx_basis( x );
@@ -98,8 +101,8 @@ else
         remap_1 = cvx_remap( 'nonzero', 'complex' );
         temp    = ~( remap_0 | remap_1 );
         remap_2 = cvx_remap( 'affine' ) & temp;
-        remap_4 = cvx_remap( 'l-convex' );
-        remap_5 = cvx_remap( 'l-concave' ) & ~remap_4;
+        remap_4 = cvx_remap( 'l_convex' );
+        remap_5 = cvx_remap( 'l_concave' ) & ~remap_4;
         remap_4 = remap_4 & temp;
         remap_3 = cvx_remap( 'valid' ) & ~( remap_0 | remap_1 | remap_2 | remap_4 | remap_5 );
         remap   = remap_1 + 2 * remap_2 + 3 * remap_3 + 4 * remap_4 + 5 * remap_5 - cvx_remap( 'invalid' );
@@ -149,7 +152,7 @@ else
     end
     othr = +( vx > 1 | vx < 0 ) * +( vy > 1 | vy < 0 ) - quad - posy - vpos;
     if nnz( othr ) ~= 0,
-        error( 'Disciplined convex programming error:\n    Cannot perform the operation {%s}*{%s}', cvx_class( x ), cvx_class( y ) );
+        error( 'Disciplined convex programming error:\n    Cannot perform the operation {%s} %s {%s}', cvx_class( x ), oper, cvx_class( y ) );
     end
     quad = nnz( quad ) ~= 0;
     posy = nnz( posy ) ~= 0;
@@ -160,59 +163,44 @@ first = true;
 
 if cnst,
     switch oper,
-    case 'ldivide', z2 = xC \ yC;
-    case 'rdivide', z2 = xC / yC;
-    otherwise,      z2 = xC * yC;
+    case '\',  z2 = xC \ yC;
+    case '/',  z2 = xC / yC;
+    otherwise, z2 = xC * yC;
     end
     if first, z = z2; first = false; else z = z + z2; end %#ok
 end
 
 if raff,
     % everything * constant
-    nA = size( xA, 1 );
-    z2 = cvx_reshape( xA, [ nA * sx( 1 ), sx( 2 ) ] );
-    if issparse( z2 ),
-        tt = any( z2, 2 );
-        if cvx_use_sparse( size( z2 ), nnz( tt ) * sx( 2 ), isreal( z2 ) & isreal( yC ) ),
-            z2 = z2( tt, : );
-        else
-            tt = [];
-        end
-    else
-        tt = [];
-    end
+    z2 = x.basis_;
+    if cnst, z2(1,:) = 0; end
+    z2 = reshape( z2, [], sx(2) );
+    [ zC, z2 ] = cvx_sparse_if( yC, z2 );
     switch oper,
-    case 'rdivide', z2 = z2 / yC;
-    otherwise,      z2 = z2 * yC;
+    case '/',  z2 = z2 / zC;
+    otherwise, z2 = z2 * zC;
     end
-    z2 = cvx_reshape( z2, [ nA, nz ], tt );
+    z2 = reshape( z2, [], nz );
+    z2 = cvx_sparse_if( z2 );
     z2 = cvx( sz, z2 );
     if first, z = z2; first = false; else z = z + z2; end
 end
 
 if laff,
     % constant * everything
-    nA = size( yA, 1 );
-    t1 = reshape( 1 : prod( sy ), sy )';
-    t2 = reshape( 1 : prod( sz ), [ sz(2), sz(1) ] )';
-    z2 = yA; if raff, z2( 1, : ) = 0; end
-    z2 = cvx_reshape( z2, [ nA * sy( 2 ), sy( 1 ) ], [], t1 );
-    if issparse( z2 ),
-        tt = any( z2, 2 );
-        if cvx_use_sparse( size( z2 ), nnz( tt ) * sy( 1 ), isreal( z2 ) & isreal( xC ) ),
-            z2 = z2( tt, : );
-        else
-            tt = [];
-        end
-    else
-        tt = [];
-    end
+    z2 = y.';
+    z2 = z2.basis_;
+    if cnst || raff, z2(1,:) = 0; end
+    z2 = reshape( z2, [], sy(1) );
+    [ zC, z2 ] = cvx_sparse_if( xC, z2 );
     switch oper,
-    case 'ldivide', z2 = z2 / xC.';
-    otherwise,      z2 = z2 * xC.';
+    case '\', z2 = z2 / zC.';
+    case '*', z2 = z2 * zC.';
     end
-    z2 = cvx_reshape( z2, [ nA, nz ], tt, [], t2 );
-    z2 = cvx( sz, z2 );
+    z2 = reshape( z2, [], nz );
+    z2 = cvx_sparse_if( z2 );
+    z2 = cvx( [sz(2),sz(1)], z2 );
+    z2 = z2.';
     if first, z = z2; first = false; else z = z + z2; end
 end
 
@@ -289,16 +277,20 @@ if vpos,
     if first, z = z2; first = false; else z = z + z2; end %#ok
 end
 
+check( z );
+
 %
 % Check that the sums are legal
 %
 
-if nnz( isnan( cvx_vexity( z ) ) ),
+function check( z )
+if ~cvx_isvalid( z )
     temp = 'Disciplined convex programming error:';
     tt = isnan( cvx_constant( z ) );
-    if any( tt ),
+    if any( tt(:) ),
         temp = [ temp, '\n    This expression produced one or more invalid numeric values (NaNs).' ];
     end
+    v = cvx_vexity( z );
     if any( isnan( v( ~tt ) ) ),
         temp = [ temp, '\n   Illegal affine combination of convex and/or concave terms detected.' ];
     end

@@ -1,11 +1,11 @@
 function newobj( prob, dir, x )
 error( nargchk( 3, 3, nargin ) );
 
-persistent remap_min remap_max remap
+persistent remap_min remap_max remap_log
 if isempty( remap_max ),
-    remap_min = cvx_remap( 'convex', 'l-convex' );
-    remap_max = cvx_remap( 'concave', 'l-concave' );
-    remap = cvx_remap( 'l-valid' ) & ~cvx_remap( 'constant' );
+    remap_min = cvx_remap( 'convex', 'l_convex' );
+    remap_max = cvx_remap( 'concave', 'l_concave' );
+    remap_log = cvx_remap( 'l_valid' ) & ~cvx_remap( 'constant' );
 end
 
 %
@@ -44,7 +44,7 @@ elseif ~isreal( x ),
 elseif isempty( x ),
     warning( 'CVX:EmptyObjective', 'Empty objective.' );
 end
-cx = cvx_classify( x );
+cx = cvx_classify( x(:) );
 switch dir,
     case 'minimize',
 	 	vx = remap_min( cx );
@@ -61,7 +61,7 @@ end
 % Store the objective
 %
 
-vx = remap( cx );
+vx = remap_log( cx );
 if any( vx ),
     if all( vx ),
         x = log( x );

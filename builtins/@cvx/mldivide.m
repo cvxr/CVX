@@ -11,7 +11,12 @@ function z = mldivide( x, y )
 %      constant and nonsingular. The resulting matrix multiplication 
 %      must obey the same rules as outlined in the help for CVX/MTIMES.
 
-z = mtimes( x, y, 'ldivide' );
+try
+    z = mtimes( x, y, '\' );
+catch exc
+	if isequal( exc.identifier, 'CVX:DCPError' ), throw( exc ); 
+	else rethrow( exc ); end
+end
 
 % Copyright 2005-2014 CVX Research, Inc.
 % See the file LICENSE.txt for full copyright information.

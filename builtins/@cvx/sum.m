@@ -1,4 +1,4 @@
-function y = sum( x, dim )
+function y = sum( varargin )
 
 %   Disciplined convex/geometric programming information for SUM:
 %      SUM(X) and SUM(X,DIM) is a vectorized version of addition. So 
@@ -12,48 +12,33 @@ function y = sum( x, dim )
 %      in violation of the DCP ruleset. For DGPs, addition rules dictate
 %      that the elements of X must be log-convex or log-affine.
 
-%
-% Basic argument check
-%
-
-s = size( x );
-switch nargin,
-    case 0,
-        error( 'Not enough input arguments.' );
-    case 1,
-        dim = [ find( s > 1 ), 1 ];
-        dim = dim( 1 );
-    case 2,
-        if ~isnumeric( dim ) || dim <= 0 || dim ~= floor( dim ),
-            error( 'Second argument must be a dimension.' );
-        end
+persistent params
+if isempty( params ),
+    params.map     = cvx_remap( { 'affine' ; 'convex' ; 'concave' } );
+    params.funcs   = { @sum_1, @sum_1, @sum_1 };
+    params.zero    = 0;
+    params.reduce  = true;
+    params.reverse = true;
+    params.dimarg  = 2;
+    params.name    = 'sum';
 end
 
-if dim > length( s ) || s( dim ) == 1,
+try
+    y = reduce_op( params, varargin{:} );
+catch exc
+    if isequal( exc.identifier, 'CVX:DCPError' ), throw( exc ); 
+    else rethrow( exc ); end
+end
 
-    y = x;
-
-elseif s( dim ) == 0,
-
-    s( dim ) = 1;
-    y = cvx( s, sparse( 1, prod( s ) ) );
-
-else
-
-    p  = prod( s( 1 : dim - 1 ) );
-    cc = 0 : prod( s ) - 1;
-    cl = rem( cc, p );
-    cr = floor( cc / ( p * s( dim ) ) );
-    cc = cl + cr * p + 1;
-    s( dim ) = 1;
+function x = sum_1( x )
+s = x.size_;
+if s(1) > 1,
     b = x.basis_;
-    [ r, c, v ] = find( b );
-    b = sparse( r, cc( c ), v, size( b, 1 ), prod( s ) );
-    y = cvx( s, b );
-    if nnz( isnan( cvx_vexity( y ) ) ),
-        error( 'Disciplined convex programming error:\n   Illegal addition encountered (e.g., {convex} + {concave}).', 1 ); %#ok
-    end
-
+    [m,n] = size(b);
+    b = reshape( b, m*s(1), s(2) );
+    b = sum( b, 2 );
+    b = reshape( b, m, s(1) );
+    x = cvx( s, b );
 end
 
 % Copyright 2005-2014 CVX Research, Inc.

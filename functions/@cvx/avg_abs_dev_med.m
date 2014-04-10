@@ -1,38 +1,33 @@
-function y = avg_abs_dev_med( x, dim )
+function y = avg_abs_dev_med( varargin )
 
 %AVG_ABS_DEV_MED    Internal cvx version.
 
-if ~cvx_isaffine( x ),
-    error( 'Disciplined convex programming error:\n    ABS_AVG_DEV_MED is convex and nonmonotonic in X, so X must be affine.', 1 ); %#ok
+persistent params
+if isempty( params ),
+	params.map = cvx_remap( 'affine' );
+	params.funcs = { @avg_abs_dev_med_1 };
+	params.zero = NaN;
+	params.reduce = true;
+	params.reverse = false;
+	params.dimarg = 2;
+	params.name = 'avg_abs_dev_med';
 end
 
 try
-	if nargin < 2, dim = []; end
-	[ x, sx, sy, zx, zy, nx, nv, perm ] = cvx_reduce_size( x, dim ); %#ok
+    y = reduce_op( params, varargin{:} );
 catch exc
-	error( exc.message );
+    if isequal( exc.identifier, 'CVX:DCPError' ), throw( exc ); 
+    else rethrow( exc ); end
 end
 
-if nx > 1 && nv > 0,
-    cvx_begin
-        variable y( 1, nv );
-        minimize( sum( abs( x - ones(nx,1) * y ) ) / nx ); %#ok
-    cvx_end
-    y = cvx_optval;
-elseif nx == 0,
-	y = NaN( sy );
-else
-	y = zeros( sy );
-end
-
-%
-% Reverse the reshaping and permutation steps
-%
-
-y = reshape( y, sy );
-if ~isempty( perm ),
-    y = ipermute( y, perm );
-end
+function y = avg_abs_dev_med_1( x )
+y = [];
+[nx,nv] = size(x); %#ok
+cvx_begin
+    variable y( 1, nv );
+    minimize( sum( abs( x - repmat(y,[nx,1]) ) ) / nx );
+cvx_end
+y = cvx_optval;
 
 % Copyright 2005-2014 CVX Research, Inc. 
 % See the file LICENSE.txt for full copyright information.

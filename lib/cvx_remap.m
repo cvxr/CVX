@@ -24,17 +24,17 @@ function r = cvx_remap( varargin )
 % 18 - log convex posynomial
 % 19 - invalid
 
-persistent remap_big remap_str
+persistent remap_big remap_str remapper
 if isempty( remap_str ),
     remap_str = { ...
         'negative', 'nonpositive', 'zero', 'nonnegative', 'positive', ...
         'nonzero', 'real', 'complex', 'constant', ...
-        'n-concave' 'concave', 'p-concave', ...
-        'n-affine', 'affine',  'p-affine', 'r-affine', 'c-affine', ...
-        'n-convex', 'convex',  'p-convex', ...
-        'l-concave', 'l-affine', 'l-convex', 'log-valid', 'monomial', 'posynomial', ...
-        'n-nonconst', 'nonconst', 'p-nonconst', ...
-        'valid', 'invalid' ...
+        'n_concave' 'concave', 'p_concave', ...
+        'n_affine', 'affine',  'p_affine', 'r_affine', 'c_affine', ...
+        'n_convex', 'convex',  'p_convex', ...
+        'l_concave', 'l_concave_', 'l_affine', 'l_convex', 'l_convex_', 'l_valid', 'monomial', 'posynomial', ...
+        'n_nonconst', 'nonconst', 'p_nonconst', ...
+        'valid', 'invalid', 'nothing', 'any' ...
     };
     remap_big = [ ...
         1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0; ... % negative
@@ -63,27 +63,70 @@ if isempty( remap_str ),
         0, 1, 1, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1, 0, 0, 1, 1, 1, 0; ... % positive convex
 
         0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0; ... % log-concave
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0; ... % log-concave_
         0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0; ... % log-affine
         0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 0; ... % log-convex
+        0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0; ... % log-convex_
         0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 0; ... % log-valid
         0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 0, 0; ... % monomial
         0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0; ... % posynomial
 
         0, 0, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0; ... % negative nonconst
         0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0; ... % nonconst
-        0, 0, 0, 0, 0, 0, 1, 0, 0, 1, 0, 0, 1, 1, 1, 1, 1, 0, 0; ... % positive nonconst
+        0, 0, 0, 0, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 1, 1, 1, 0, 0; ... % positive nonconst
 
         1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0; ... % valid
         0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1; ... % invalid
-     ]; 
-     remap_str = remap_str(:);
-     [ remap_str, ndx ] = sort( remap_str );
-     remap_big = remap_big( ndx, : );
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0; ... % nothing
+        1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1; ... % any
+     ] ~= 0;
+     for k = 1 : length(remap_str),
+         remap_str{2,k} = k;
+     end
+     remap_str = struct( remap_str{:} );
+     remapper = @(y) +any( remap_big( cellfun( @(x)remap_str.(x), y ), : ), 1 );
 end
 
-[ c, ndx ] = sort( [ remap_str ; varargin(:) ] );
-d = strcmp(c(1:end-1),c(2:end));
-r = +any( remap_big( ndx(d), : ), 1 );
+nargs = nargin;
+if nargs == 0,
+    r = remap_big( end, : );
+elseif iscell( varargin{1} )
+    frst = varargin{1};
+    nrows = size(frst,1);
+    if nrows > 1,
+        for k = 1 : nrows,
+            if ~iscell( frst{k} ), frst{k} = { frst{k} }; end %#ok
+            r(k,:) = remapper( frst{k} ); %#ok
+        end
+    else
+        if isnumeric( varargin{nargs} ),
+            priorities = varargin{end};
+            nargs = nargs - 1;
+        else
+            priorities = 1 : nargs;
+        end
+        if iscell( varargin{1}{1} ),
+            r = 0;
+            for k = 1 : nargs,
+                tmp = varargin{k};
+                rr = remapper( tmp{1} );
+                if length( tmp ) == 1,
+                    rr = rr' * rr;
+                else
+                    rr = rr' * remapper( tmp{2} );
+                end
+                r = r + priorities(k) * ( rr & ~r );
+            end
+        else
+            r = 0;
+            for k = 1 : nargs,
+                r = r + priorities(k) * ( remapper( varargin{k} ) & ~r );
+            end
+        end
+    end
+else
+    r = remapper( varargin );
+end
 
 % Copyright 2005-2014 CVX Research, Inc.
 % See the file LICENSE.txt for full copyright information.

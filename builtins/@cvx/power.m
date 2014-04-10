@@ -1,140 +1,216 @@
-function z = power( x, y )
+function z = power( x, y, op )
 
-%   Disciplined convex programming information for POWER (.^):
-%      When used in CVX expressions, either X or Y must be constant. Only
-%      certain convex or concave branches are accepted as valid:
-%         --- if both X and Y are constant, then Z = X.^Y is interpreted
-%             precisely as the MATLAB built-in version.
-%         --- if Y is constant and 0 < Y < 1, then Z = X.^Y is concave and
-%             nondecreasing in X. Therefore, X must be concave, and is
-%             implicitly constrained to be nonnegative.
-%         --- if Y is constant and Y == 1, then Z = X.
-%         --- if Y is constant and a positive even integer, then Z = X.^Y
-%             is convex and nonmonotonic in X. Therefore, X must be affine.
-%         --- if Y is constant and Y > 1, but *not* an integer, then 
-%             Z = X.^Y is convex and nonmonotonic in X. Therefore, X must
-%             be affine (and real), and is implicitly constrained to be
-%             nonnegative.
-%      In expert mode, additional cases are handled:
-%         --- if X is constant and 0 < X < 1, then Z = X.^Y is convex and
-%             nonincreasing in X. Therefore, Y must be concave.
-%         --- if X is constant and X == 1, then Z = 1.
-%         --- if X is constant and X > 1, then Z = X.^Y is convex and
-%             nondecreasing in X. Therefore, Y must be convex.
-%      All other combinations are rejected as invalid. For instance, if Y
-%      is an odd integer, then X .^ Y is neither convex nor concave, so it
-%      is rejected. In such cases, consider using POW_P, POW_POS, or
-%      POW_ABS instead.
-%             
-%   Disciplined geometric programming information for POWER (.^):
-%      In disciplined geometric programs, the power operation Z=X.^Y is
-%      valid only if Y is a real constant. There are no restrictions on
-%      X. Note that a negative exponent Y reverses curvature; that is, Z
-%      is log-convex if X is log-concave, and vice versa.
+%POWER   Internal cvx version.
 
-%
-% Check sizes
-%
+persistent remap funcs
+if isempty( remap ),
+    remap = cvx_remap( ...
+        { { 'constant' } }, ...
+        { { 'positive' }, { 'convex', 'concave' } }, ...
+        { { 'valid' }, { 'real' } }, [1,2,3] );
+    funcs = { @power_1, @power_2, @power_3 };
+end
 
-sx = size( x ); xs = all( sx == 1 );
-sy = size( y ); ys = all( sy == 1 );
-if xs,
-    sz = sy;
-elseif ys || isequal( sx, sy ),
-    sz = sx;
+try
+    z = binary_op( op, funcs, remap, x, y );
+catch exc
+    if isequal( exc.identifier, 'CVX:DCPError' ), throw( exc ); 
+    else rethrow( exc ); end
+end
+
+function z = @power_1( x, y )
+z = cvx( power( cvx_constant( x ), cvx_constant( y ) ) );
+
+function z = @power_2( x, y )
+z = exp( log( cvx_constant( x ) ) .* y );
+
+function z = @power_3( x, y )
+nx = x.size_(1);
+ny = numel( y );
+if ny == 1
+    pu = y;
+    multp = false;
 else
-    error( 'Matrix dimensions must agree.' );
+    pu = sort( y' ); %#ok'
+    pu = pu( [ true, diff(pu) ~= 0 ] );
+    multp = length( pu ) ~= 1;
+end
+if multp,
+    zp = cvx( sz, [] );
+    vp = vx;
+    xp = x;
+    yp = y;
+end
+for pk = pu,
+    if multp,
+        tp = yp == pk;
+        if nx > 1, 
+            x = xp.basis_( :, tp );
+            x = cvx( [size(x,2),1], x );
+            vx = vp( tp ); 
+        end
+        if ny > 1, 
+            y = yp( tp ); 
+        end
+    end
+    np = numel(y);
+    y1 = y(1);
+    if y1 > 1,
+        z = power_cvx( x, vx, y1 );
+    elseif y1 == 1,
+        z = x;
+    elseif y1 > 0,
+        z = power_ccv( x, vx, y1 );
+    elseif y1 == 0,
+        z = cvx( ones(size(x)) );
+    else
+        z = power_neg( x, vx, y1 );
+    end
+    if islogical( z ),
+        errs(end+1,:) = { cvx_subsref( x, z ), y }; %#ok
+        continue
+    end
+    if nx == 1 && np > 1,
+        z.size_(1) = np;
+        z.basis_ = repmat( z.basis_, [1,np] );
+    end
+    if multp,
+        zp.basis_(1:size(z.basis_,1),tp) = z.basis_;
+    end
+end
+if multp
+    z = zp;
+end
+if ~isempty( errs ),
+    throw( cvx_dcp_error( errs, op ) );
+elseif mult
+    z = zm;
+else
+    z.size_ = sz;
 end
 
 %
-% Determine the expression types
+% P > 1, integer: X affine, p-convex, n-concave
+% P > 1, non-integer: X affine, p-convex
 %
 
-if cvx_isconstant( y ),
-    
-    z = pow_cvx( x, y, 'power' );
-    return
-    
-elseif ~cvx_isconstant( x ),
-    
-    error( 'Disciplined convex programming error:\n   In an expression X .^ Y, either X or Y must be constant.', 1 ); %#ok
-    
+function y = power_cvx( x, v, p )
+persistent remap remap_i remap_e
+if isempty( remap_e ),
+    remap   = cvx_remap( 'affine', 'p_convex' );
+    remap_i = cvx_remap( 'p_convex', 'n_concave' );
+    remap_e = remap_i | remap;
+end
+if ~isempty( v ),
+    isint = rem( p, 1 ) == 0;
+    if isint,
+        isevn = rem( p, 2 ) == 0;
+        if isevn,
+            v = remap_e( v );
+        else
+            v = remap_i( v );
+        end
+    else
+        v = remap( v );
+    end
+    if ~all( v ),
+        y = v == 0;
+        return
+    end
+    v = 1 - 2 * ( v == 3 );
+    x = cvx_accept_convex( v .* x );
+else
+    isint = false;
+end
+ne = 0;
+nx = numel( x );
+while rem(p,2) == 0,
+    ne = ne + 1;
+    p = p * 0.5;
+end
+cvx_begin
+    epigraph variable y(nx)
+    if ne > 0,
+        variables z2(nx,ne-1)
+        if p == 1,
+            w = y; %#ok
+        else
+            variable w(nx)
+        end
+        { [x,z2], 1, [z2,w] } == rotated_lorentz( [ nx, ne ], 3 ); %#ok
+    else
+        w = x;
+    end
+    if p > 1,
+        { [y,ones(nx,1)], w } == geo_mean_cone( [ nx, 2 ], 2, [1/p,1-1/p], 'func' );  %#ok
+    end
+    cvx_setnneg(y)
+cvx_end
+if isint,
+    y = v .* y; 
 end
 
 %
-% Now handle constant .^ non-constant
+% 0 < P < 1: X concave
 %
-    
+
+function y = power_ccv( x, v, p )
 persistent remap
 if isempty( remap ),
-	remap_y1 = cvx_remap( 'real-affine' );
-	remap_y2 = cvx_remap( 'convex' )    & ~remap_y1;
-	remap_y3 = cvx_remap( 'concave' )   & ~remap_y1;
-	remap_y4 = cvx_remap( 'l-valid' ) & ~( remap_y1 | remap_y2 | remap_y3 );
-	remap    = [0;0;2;2;2] * remap_y1 + ...
-	           [0;0;0;2;2] * remap_y2 + ...
-	           [0;0;2;2;0] * remap_y3 + ...
-	           [0;1;0;2;0] * remap_y4;
+    remap = ~cvx_remap( 'concave' );
 end
-x  = cvx_constant( x );
-vy = cvx_classify( y );
-vx = 1 + isreal( x ) .* ( ( x >= 0 ) + ( x > 0 ) + ( x >= 1 ) + ( x > 1 ) );
-vr = remap( vx + size( remap, 1 ) * ( vy - 1 ) );
-vu = sort( vr(:) );
-vu = vu([true;diff(vu)~=0]);
-nv = length( vu );
+v = remap( v );
+if any( v ), 
+    y = v;
+    return
+end
+p = 1.0 / p;
+if p ~= floor( p ),
+    [ nn, dd ] = rat( p );
+    p = nn / dd;
+end    
+cvx_begin
+    hypograph variable y(numel(x))
+    power_cvx( y, [], p ) <= x; %#ok
+    cvx_setnneg(y);
+cvx_end
 
 %
-% Perform the individual computations and combine
+% P < 0, integer: p-concave, n-convex
+% P < 0, non-integer: p-concave
 %
 
-x = cvx( x ); xt = x;
-y = cvx( y ); yt = y;
-if nv ~= 1,
-    z = cvx( sz, [] );
+function y = power_neg( x, v, p )
+persistent remap remap_i
+if isempty( remap_i ),
+    remap   = cvx_remap( 'p_concave' );
+    remap_i = cvx_remap( { 'p_concave' }, { 'n_convex' }, [1,-1] );
 end
-for k = 1 : nv,
-
-    %
-    % Select the category of expression to compute
-    %
-
-    if nv ~= 1,
-        t = vr == vu( k );
-        if ~xs, xt = cvx_subsref( x, t ); sz = size( xt ); end
-        if ~ys, yt = cvx_subsref( y, t ); sz = size( yt ); end
-    end
-
-    %
-    % The computational kernels
-    %
-
-    switch vu( k ),
-        case 0,
-            % Invalid
-            error( 'Disciplined convex programming error:\n    Cannot perform the operation {%s}.^{%s}', cvx_class( xt, true, true, true ), cvx_class( yt, true, true, true ) );
-        case 1,
-            % zero .^ convex
-            cvx_optval = cvx( zeros( sz ) );
-        case 2,
-            % (0<x<1) .^ concave, (x>1) .^ convex
-            cvx_optval = exp( log( cvx_constant( xt ) ) .* yt );
-        otherwise,
-            error( 'Shouldn''t be here.' );
-    end
-
-    %
-    % Store the results
-    %
-
-    if nv == 1,
-        z = cvx_optval;
+if rem( p, 1 ) == 0,
+    % Integer: positive and negative lobes
+    v = remap_i( v );
+else
+    % Non-integer: positive lobe only
+    v = remap( v );
+end
+if ~all( v ),
+    y = v == 0;
+    return
+end
+nx = numel(x);
+z  = cvx_accept_concave( v .* x );
+cvx_begin
+    epigraph variable y(nx)
+    if p == 1,
+        { 1, z, y } == rotated_lorentz( [nx,1], 2, 0 ); %#ok
     else
-        z = cvx_subsasgn( z, t, cvx_optval );
+        { [z,y], 1 } == geo_mean_cone( [nx,2], 2, [-p,1], 'func' ); %#ok
     end
-
-end
+    cvx_setnneg(y);
+cvx_end
+y = v .* y;
 
 % Copyright 2005-2014 CVX Research, Inc.
 % See the file LICENSE.txt for full copyright information.
 % The command 'cvx_where' will show where this file is located.
+

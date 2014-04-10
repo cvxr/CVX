@@ -5,7 +5,11 @@ function a = ne( x, y )
 %      not-equal expressions may only appear in CVX models when both 
 %      sides are constant.
 
-b = newcnstr( evalin( 'caller', 'cvx_problem', '[]' ), x, y, '~=' );
+try
+    b = newcnstr( evalin( 'caller', 'cvx_problem', '[]' ), x, y, '~=' );
+catch exc
+    throw( exc );
+end
 if nargout, a = b; end
 
 % Copyright 2005-2014 CVX Research, Inc.
