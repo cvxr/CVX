@@ -17,7 +17,7 @@ function y = cumprod( varargin )
 persistent params
 if isempty( params ),
 	params.map     = cvx_remap( { 'constant' ; 'l_convex' ; 'l_concave' } );
-	params.funcs   = { @cumprod_1, @cumprod_2 };
+	params.funcs   = { @cumprod_1, @cumprod_2, @cumprod_2 };
 	params.zero    = 1;
 	params.reduce  = false;
 	params.reverse = true;

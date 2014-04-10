@@ -15,7 +15,7 @@ function y = cumsum( varargin )
 persistent params
 if isempty( params ),
     params.map     = cvx_remap( { 'constant' ; 'affine' ; 'convex' ; 'concave' } );
-    params.funcs   = { @cumsum_1, @cumsum_1, @cumsum_1 };
+    params.funcs   = { @cumsum_1, @cumsum_2, @cumsum_2 };
     params.zero    = 0;
     params.reduce  = false;
     params.reverse = true;

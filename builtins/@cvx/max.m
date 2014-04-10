@@ -40,16 +40,28 @@ else
     % max( X, [], dim )
     %
 
-    if isempty( remap2 ),
-        remap2 = cvx_remap( { 'real' ; 'l_convex' ; 'convex' } );
-        funcs2 = { @max_r1, @max_r2, @max_r3 };
+    persistent params
+    if isempty( params ),
+        params.map     = cvx_remap( { 'real' ; 'l_convex' ; 'convex' } );
+        params.funcs   = { @max_r1, @max_r2, @max_r3 };
+        params.zero    = [];
+        params.reduce  = true;
+        params.reverse = false;
+        params.dimarg  = 2;
+        params.name    = 'max';
+    end
+
+    if nargin > 1 && ~isempty( y ),
+        error( 'MAX with two matrices to compare and a working dimension is not supported. ');
+    end
+    if nargin < 3, 
+        dim = []; 
     end
     
     try
-        if nargin < 2, dim = []; end
-        z = reduce_op( 'max', funcs2, remap2, [], true, false, x, dim );
+        y = reduce_op( params, x, dim );
     catch exc
-        if isequal( exc.identifier, 'CVX:DCPError' ), throw( exc ); 
+        if strncmp( exc.identifier, 'CVX:', 4 ), throw( exc ); 
         else rethrow( exc ); end
     end
    

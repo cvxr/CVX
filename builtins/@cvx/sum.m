@@ -14,8 +14,8 @@ function y = sum( varargin )
 
 persistent params
 if isempty( params ),
-    params.map     = cvx_remap( { 'affine' ; 'convex' ; 'concave' } );
-    params.funcs   = { @sum_1, @sum_1, @sum_1 };
+    params.map     = cvx_remap( { 'constant' ; 'affine' ; 'convex' ; 'concave' } );
+    params.funcs   = { @sum_1, @sum_2, @sum_2 };
     params.zero    = 0;
     params.reduce  = true;
     params.reverse = true;
@@ -26,19 +26,21 @@ end
 try
     y = reduce_op( params, varargin{:} );
 catch exc
-    if isequal( exc.identifier, 'CVX:DCPError' ), throw( exc ); 
+    if strncmp( exc.identifier, 'CVX:', 4 ), throw( exc ); 
     else rethrow( exc ); end
 end
 
 function x = sum_1( x )
+if x.size_(2) ~= 1,
+    x = cvx( sum( cvx_constant( x ), 2 ) );
+end
+
+function x = sum_2( x )
 s = x.size_;
-if s(1) > 1,
-    b = x.basis_;
-    [m,n] = size(b);
-    b = reshape( b, m*s(1), s(2) );
+if s(2) ~= 1,
+    b = reshape( x.basis_, [], s(2) );
     b = sum( b, 2 );
-    b = reshape( b, m, s(1) );
-    x = cvx( s, b );
+    x = cvx( s, reshape( b, [], s(1) ) );
 end
 
 % Copyright 2005-2014 CVX Research, Inc.

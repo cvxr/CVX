@@ -19,17 +19,29 @@ elseif ~isempty( w ),
         w = w(:) / sum( w );
     end
 end
-
-persistent remap funcs
-if isempty( remap ),
-    remap = cvx_remap( 'affine' );
-    funcs = { @std_1 };
+if nargin < 3,
+    dim = [];
+end
+if nargin < 4,
+    square_it = [];
+    op = 'var';
+else
+    op = 'std';
 end
 
+persistent params
+if isempty( remap ),
+    params.map     = cvx_remap( 'affine' );
+    params.funcs   = { @std_1 };
+    params.zero    = NaN;
+    params.reduce  = true;
+    params.reverse = false;
+    params.dimarg  = 3;
+end
+params.name = op;
+
 try
-    if nargin < 3, dim = []; end
-    if nargin < 4, square_it = []; op = 'var'; else op = 'std'; end
-    y = reduce_op( op, funcs, remap, NaN, true, false, x, dim, w, square_it );
+    y = reduce_op( params, x, w, dim );
 catch exc
     if isequal( exc.identifier, 'CVX:DCPError' ), throw( exc ); 
     else rethrow( exc ); end
@@ -57,7 +69,7 @@ elseif nw <= 1,
     cvx_end
     y = cvx_optval;
 elseif numel( w ) ~= nx,
-    error( 'Weight vector expected to have %d elements.', nx );
+    error( 'CVX:FuncError', 'Weight vector expected to have %d elements.', nx );
 else
     cvx_begin
         variable xbar( 1, nv )

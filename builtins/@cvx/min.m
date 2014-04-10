@@ -40,16 +40,29 @@ else
     % min( X, [], dim )
     %
 
-    if isempty( remap2 ),
-        remap2 = cvx_remap( { 'real' ; 'l_concave' ; 'concave' } );
-        funcs2 = { @min_r1, @min_r2, @min_r3 };
+    persistent params
+    if isempty( params ),
+        params.map     = cvx_remap( { 'real' ; 'l_concave' ; 'concave' } );
+        params.funcs   = { @min_r1, @min_r2, @min_r3 };
+        params.zero    = [];
+        params.reduce  = true;
+        params.reverse = false;
+        params.dimarg  = 2;
+        params.name    = 'min';
+    end
+    
+    if nargin > 1 && ~isempty( y ),
+        error( 'MIN with two matrices to compare and a working dimension is not supported. ');
+    end
+    if nargin < 3, 
+        dim = []; 
     end
     
     try
-        if nargin < 2, dim = []; end
-        z = reduce_op( 'min', funcs2, remap2, [], true, false, x, dim );
+        y = reduce_op( params, x, dim );
     catch exc
-        throw( exc );
+        if strncmp( exc.identifier, 'CVX:', 4 ), throw( exc ); 
+        else rethrow( exc ); end
     end
    
 end 

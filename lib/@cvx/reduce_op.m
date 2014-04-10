@@ -15,8 +15,8 @@ end
 if isempty( dim ),
     dim = find( zx ~= 1, 1, 'first' );
     if isempty( dim ), dim = 1; end
-elseif ~isnumeric( dim ) || numel( dim ) ~= 1 || ~isreal( dim ) || dim <= 0 || isinf(dim) || isnan(dim) || dim ~= floor(dim),
-    error( 'Dimension argument must be a positive integer.' );
+elseif ~( isnumeric( dim ) && numel( dim ) == 1 && isreal( dim ) && dim > 0 && dim ~= floor(dim) && ~isinf(dim) ),
+    error( 'Dimension argument must be a positive integer scalar within indexing range.' );
 end
 nd = length( zx );
 if nd < dim,
@@ -36,12 +36,12 @@ if ~all( zy ),
 end
 nv = prod( zx ) / nx;
 
-% Reshape, and permute if needed
+% Permute if needed, and reshape to canonical size
 ndxs = [];
 if nx > 1,
-    if ~p.reverse && any(zy(1:dim-1)),
+    if ~p.reverse && any(zy(1:dim-1)>1),
         ndxs = [ dim, 1 : dim - 1, dim + 1 : nd ];
-    elseif any(zy(dim+1:end)),
+    elseif any(zy(dim+1:nd)>1),
         ndxs = [ 1 : dim - 1, dim + 1 : nd, dim ];
     end
     if isempty( ndxs ),
@@ -56,33 +56,41 @@ else
     x.size_ = [ nx, nv ];
 end
 
-% Process XXX WON'T WORK FOR REVERSE MODE
-map = reshape( p.map( :, cvx_classify( x ) ), [], nx, nv );
-[ mmm, map ] = max( all( map, 2 ), [], 1 );
+map = reshape( p.map( :, cvx_classify( x ) ), [], x.size_ );
+[ mmm, map ] = max( all( map, 3 - ~p.reverse ), [], 1 );
 if ~all( mmm ),
-    b = x.basis_( :, repmat( mmm(:) == 0, [ nx, 1 ] ) );
-    b = cvx( size( b, 2 ), b );
-    cvx_dcp_error( b, p.name );
+    mmm = ~mmm(:);
+    x.size_( 2 - ~p.reverse ) = nnz( mmm );
+    mmm = repmat( mmm, [ nx, 1 ] );
+    if p.reverse, mmm = mmm'; end
+    x.basis_ = x.basis_( :, mmm );
+    if p.reverse, x = x'; end
+    cvx_dcp_error( x, p.name );
 end
 map = map(:)';
-mu = sort( map );
-mu = mu([true,diff(mu)~=0]);
+mu  = sort( map );
+mu  = mu([true,diff(mu)~=0]);
 if length(mu) == 1,
     y = p.funcs{mu}( x, varargin{:} );
 else
-    y = cvx( sy, [] );
-    for kk = mu;
+    if p.reduce,
+        y = cvx( nv, [] );
+    else
+        y = cvx( x.size_, [] );
+    end
+    for kk = mu
         tt = map == mu;
         if p.reverse,
             t2 = repmat( tt', [1,nx] );
+            sz = [ nnz(tt), nx ];
         else
             t2 = repmat( tt, [nx,1] );
+            sz = [ nx, nnz(tt) ];
         end
-        b = x.basis_( :, t2 );
-        b = cvx( [nx,size(b,2)/nx], b );
+        b = cvx( sz, x.basis_( :, t2 ) );
         b = p.funcs{kk}( b, varargin{:} );
         b = b.basis_;
-        if p.reverse, tt = t2; end
+        if ~p.reduce, tt = t2; end
         y.basis_(1:size(b,1),tt) = b;
     end
 end

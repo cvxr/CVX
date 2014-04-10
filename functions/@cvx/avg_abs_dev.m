@@ -17,7 +17,7 @@ try
     if nargin < 2, dim = []; end
     y = reduce_op( params, varargin{:} );
 catch exc
-    if isequal( exc.identifier, 'CVX:DCPError' ), throw( exc ); 
+    if strncmp( exc.identifier, 'CVX:', 4 ), throw( exc ); 
     else rethrow( exc ); end
 end
 

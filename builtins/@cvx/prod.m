@@ -1,4 +1,4 @@
-function y = prod( x, dim )
+function y = prod( varargin )
 
 %   Disciplined geometric programming information for PROD:
 %      PROD(X) and PROD(X,DIM) are vectorized versions of multiplication
@@ -14,28 +14,36 @@ function y = prod( x, dim )
 %      because the top row contains the product of log-convex and 
 %      log-concave terms, in violation of the DGP ruleset.
 
-persistent remap,
-if isempty( remap ),
-    remap = remap( { 'constant' ; 'l_convex' ; 'l_concave' } );
-    funcs = { @prod_1, @prod_2 };
+persistent params
+if isempty( params ),
+	params.map     = cvx_remap( { 'constant' ; 'l_convex' ; 'l_concave' } );
+	params.funcs   = { @prod_1, @prod_2, @prod_2 };
+	params.zero    = 1;
+	params.reduce  = true;
+	params.reverse = true;
+	params.dimarg  = 2;
+	params.name    = 'prod';
 end
 
 try
-    if nargin < 2, dim = []; end
-    y = reduce_op( 'prod', funcs, remap, 1, true, false, x, dim );
+    y = reduce_op( params, varargin{:} );
 catch exc
-	if isequal( exc.identifier, 'CVX:DCPError' ), throw( exc ); 
-	else rethrow( exc ); end
+    if strncmp( exc.identifier, 'CVX:', 4 ), throw( exc ); 
+    else rethrow( exc ); end
 end
 
 function x = prod_1( x )
-if x.size_(1) ~= 1,
-    x = cvx( prod( cvx_constant( x ), 1 ) );
+if x.size_(2) ~= 1,
+	x = cvx( prod( cvx_constant( x ), 2 ) );
 end
 
 function x = prod_2( x )
-if x.size_(1) ~= 1,
-    x = exp( sum( log( x ), 1 ) );
+s = x.size_;
+if s(2) ~= 1,
+	x = log( x );
+    b = reshape( x.basis_, [], s(2) );
+    b = sum( b, 2 );
+    x = exp( cvx( s, reshape( b, [], s(1) ) ) );
 end
 
 % Copyright 2005-2014 CVX Research, Inc.
