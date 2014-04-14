@@ -39,15 +39,15 @@ end
 %
 
 cvx_begin set
-    variables x( sx ) y( sx ) z( sx )
+    variable x( sx )
+    variable y( sx ) assert_nonnegative
+    variable z( sx ) assert_nonnegative
     [ tx, dummy ] = find( cvx_basis( x ) ); %#ok
     [ ty, dummy ] = find( cvx_basis( y ) ); %#ok
     [ tz, dummy ] = find( cvx_basis( z ) ); %#ok
     newnonl( cvx_problem, 'exponential', [ tx(:)' ; ty(:)' ; tz(:)' ] );
     cvx___.canslack( tx ) = false;
     cvx___.canslack( ty ) = false;
-    cvx___.sign( ty ) = 1;
-    cvx___.sign( tz ) = 1;
 cvx_end
 
 cvx_optpnt = cvxtuple( struct( 'x', x, 'y', y, 'z', z ) );

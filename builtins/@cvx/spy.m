@@ -23,7 +23,7 @@ switch mode,
         b = sum( b ~= 0, 1 );
         b = reshape( b, s );
     case { '', '3-d', '3-D', '3d', '3D' },
-        p = length( cvx___.reserved ) + 1;
+        p = length( cvx___.classes ) + 1;
         if size( b, 1 ) < p, b( p, end ) = 0; end
     otherwise,
         error( [ 'Unknown spy mode: ', mode ] );

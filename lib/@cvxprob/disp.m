@@ -15,12 +15,17 @@ if isempty( p.duals ),
 else
     nduls = length( fieldnames( p.duals ) );
 end
+persistent naff ylog
+if isempty( naff ),
+    naff = ~cvx_remap( 'affine' );
+    ylog = cvx_remap( 'l_valid_' );
+end
 neqns = ( length( cvx___.equalities ) - p.n_equality ) + ...
         ( length( cvx___.linforms )   - p.n_linform  ) + ...
         ( length( cvx___.uniforms )   - p.n_uniform  );
 nineqs = nnz( cvx___.needslack( p.n_equality + 1 : end ) ) + ...
-         nnz( cvx_vexity( cvx___.linrepls( p.n_linform + 1 : end ) ) ) + ...
-         nnz( cvx_vexity( cvx___.unirepls( p.n_uniform + 1 : end ) ) );
+         nnz( naff(cvx_classify( cvx___.linrepls( p.n_linform + 1 : end ) )) ) + ...
+         nnz( naff(cvx_classify( cvx___.unirepls( p.n_uniform + 1 : end ) )) );
 neqns = neqns - nineqs;     
 if isempty( p.name ) || strcmp( p.name, 'cvx_' ),
     nm = '';
@@ -28,17 +33,14 @@ else
     nm = [ p.name, ': ' ];
 end
 
-rsv = cvx___.reserved;
-nt  = length( rsv );
+nt  = length( cvx___.classes );
 fv = length( p.t_variable );
 qv = fv + 1 : nt;
 tt = p.t_variable;
 ni = nnz( tt ) - 1;
-ndup = sum( rsv ) - nnz( rsv );
-neqns = neqns + ndup;
-nv = nt - fv + ni + ndup;
+nv = nt - fv + ni;
 tt( qv ) = true;
-gfound = nnz( cvx___.logarithm( tt ) );
+gfound = nnz(ylog(cvx___.classes(tt)));
 cfound = false;
 for k = 1 : length( cvx___.cones ),
     if any( any( tt( cvx___.cones( k ).indices ) ) ),
@@ -152,7 +154,7 @@ switch class( v ),
         sizes = { '(constant)' };
     otherwise,
         names = { name };
-        sizes = { [ '(', type( v, true ), ')' ] };
+        sizes = { [ '(', type( v ), ')' ] };
 end
 
 % Copyright 2005-2014 CVX Research, Inc.

@@ -29,41 +29,45 @@ function y = berhu_pos( x, M, t )
 %       nonincreasing in T. Therefore, when used in CVX specifications, X
 %       must be convex and T must be concave. T must be real.
 
-%
-% Check arguments
-%
-
-error( nargchk( 1, 3, nargin ) ); %#ok
-if nargin < 2,
-    M = 1;
-elseif ~isreal( M ) || any( M( : ) <= 0 ),
-    error( 'Second argument must be real and positive.' );
-end
-if nargin < 3,
-    t = 1;
-elseif ~isreal( t ),
-    error( 'Third argument must be real.' );
-end
-sz = cvx_size_check( x, M, t );
-if isempty( sz ),
-    error( 'Sizes are incompatible.' );
+persistent params
+if isempty( params ),
+    params.map = cvx_remap( ...
+        { { 'any' }, { 'nonpositive' } }, ...
+        { { 'real' } }, ...
+        { { 'convex' }, { 'concave' } }, [0,1,2] );
+    params.funcs = { @berhu_pos_c, @berhu_pos_nc };
+    params.constant = 1;
+    params.name = 'berhu_pos';
 end
 
-%
-% Compute result
-%
+try
+    if nargin < 2,
+        M = 1;
+    elseif ~( isnumeric(M) && numel(M)==1 && isreal(M) && M>0 ),
+        error( 'Second argument must be a positive scalar.' );
+    end
+    if nargin < 3,
+        t = 1;
+    end
+    y = cvx_binary_op( params, x, t, M );
+catch exc
+    if strncmp( exc.identifier, 'CVX:', 4 ), throw( exc );
+    else rethrow( exc ); end
+end        
 
+function y = berhu_pos_c( x, t, M )
 y = max( x, 0 ) ./ max(t,realmin);
 z = min( y, M );
 y = t .* ( y + ( y - z ).^2 ./ (2*M) );
-q = t <= 0;
-if nnz( q ),
-    if length(t) == 1, 
-        y = Inf * ones( sz );
-    else
-        y( q ) = Inf;
-    end
-end
+
+function cvx_optval = berhu_pos_nc( x, t, M ) %#ok
+cvx_begin separable
+    variable v( sz ) nonnegative
+    variable w( sz ) nonnegative
+    minimize( quad_over_lin( w, t, 0 ) ./ ( 2 * M ) + w + v )
+    x <= w + v; %#ok
+    v <= M .* t; %#ok
+cvx_end
 
 % Copyright 2005-2014 CVX Research, Inc.
 % See the file LICENSE.txt for full copyright information.

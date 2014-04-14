@@ -1,9 +1,8 @@
 function y = cvx_isaffine( x, full ) %#ok
-error( nargchk( 1, 2, nargin ) ); %#ok
-if nargin == 1,
-    y = true;
+if nargin == 2 && full,
+	y = true( size( x ) );
 else
-    y = true( size( x ) );
+    y = true;
 end
 
 % Copyright 2005-2014 CVX Research, Inc.

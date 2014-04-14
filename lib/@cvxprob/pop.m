@@ -43,9 +43,7 @@ end
 
 if ~isequal( clearmode, 'none' ),
     if nf <= 2,
-        cvx___.reserved    = 0;
-        cvx___.vexity      = 0;
-        cvx___.sign        = 1;
+        cvx___.classes     = int8(3);
         cvx___.canslack    = false;
         cvx___.readonly    = 0;
         cvx___.cones       = struct( 'type', {}, 'indices', {} );
@@ -54,11 +52,9 @@ if ~isequal( clearmode, 'none' ),
             cvx___.logarithm   = sparse( 1, 1 );
             cvx___.exp_used    = false;
         end
-    elseif length( cvx___.reserved ) >= nf,
-        temp = nf : length( cvx___.reserved );
-        cvx___.reserved(    temp, : ) = [];
-        cvx___.vexity(      temp, : ) = [];
-        cvx___.sign(        temp, : ) = [];
+    elseif length( cvx___.classes ) >= nf,
+        temp = nf : length( cvx___.classes );
+        cvx___.classes(     temp, : ) = [];
         cvx___.canslack(    temp, : ) = [];
         cvx___.readonly(    temp, : ) = [];
         if ~isempty( cvx___.cones ),
@@ -77,7 +73,7 @@ if ~isequal( clearmode, 'none' ),
     end
     if nf <= 2 || ne <= 1,
         cvx___.equalities = cvx( [ 0, 1 ], [] );
-        cvx___.needslack = ( false( 0, 1 ) );
+        cvx___.needslack = false( 0, 1 );
     elseif length( cvx___.equalities ) >= ne,
         cvx___.equalities( ne : end ) = [];
         cvx___.needslack( ne : end ) = [];
@@ -96,7 +92,6 @@ if ~isequal( clearmode, 'none' ),
         cvx___.uniforms( nu : end ) = [];
         cvx___.unirepls( nu : end ) = [];
     end
-    cvx___.nan_used = any( isnan( cvx___.vexity ) );
 end
 
 if ~isequal( clearmode, 'extract' ),

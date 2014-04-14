@@ -7,10 +7,16 @@ function y = isreal( x, full )
 %   expressions.
 
 y = x.basis_;
-if nargin > 1 && full,
-    y = any( imag( y ), 1 );
+if isreal( y ),
+    if nargin > 1 && full,
+        y = true( x.size_ );
+    else
+        y = true;
+    end
+elseif nargin > 1 && full,
+    y = ~any( imag( y ), 1 );
 else
-    y = isreal( x.basis_ ) | nnz(imag(x.basis_)) == 0;
+    y = nnz( imag( y ) ) == 0;
 end
 
 % Copyright 2005-2014 CVX Research, Inc.

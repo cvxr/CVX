@@ -8,7 +8,7 @@ function x = real( x )
 
 b = x.basis_;
 if ~isreal( b ),
-    x = cvx( x.size_, b );
+    x = cvx( x.size_, real( b ) );
 end
 
 % Copyright 2005-2014 CVX Research, Inc.

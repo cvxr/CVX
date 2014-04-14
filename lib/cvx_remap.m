@@ -32,7 +32,7 @@ if isempty( remap_str ),
         'n_concave' 'concave', 'p_concave', ...
         'n_affine', 'affine',  'p_affine', 'r_affine', 'c_affine', ...
         'n_convex', 'convex',  'p_convex', ...
-        'l_concave', 'l_concave_', 'l_affine', 'l_convex', 'l_convex_', 'l_valid', 'monomial', 'posynomial', ...
+        'l_concave', 'l_concave_', 'l_affine', 'l_convex', 'l_convex_', 'l_valid', 'l_valid_', 'monomial', 'posynomial', ...
         'n_nonconst', 'nonconst', 'p_nonconst', ...
         'valid', 'invalid', 'nothing', 'any' ...
     };
@@ -49,7 +49,7 @@ if isempty( remap_str ),
         1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0; ... % constant
 
         1, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0; ... % negative concave
-        1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0; ... % concave
+        1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0; ... % concave
         0, 0, 1, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0; ... % positive concave
  
         1, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0; ... % negative affine
@@ -68,7 +68,8 @@ if isempty( remap_str ),
         0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 0; ... % log-convex
         0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0; ... % log-convex_
         0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 0; ... % log-valid
-        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 0, 0; ... % monomial
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 0; ... % log-valid_
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0; ... % monomial
         0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0; ... % posynomial
 
         0, 0, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0; ... % negative nonconst
@@ -84,7 +85,7 @@ if isempty( remap_str ),
          remap_str{2,k} = k;
      end
      remap_str = struct( remap_str{:} );
-     remapper = @(y) +any( remap_big( cellfun( @(x)remap_str.(x), y ), : ), 1 );
+     remapper = @(y) any( remap_big( cellfun( @(x)remap_str.(x), y ), : ), 1 );
 end
 
 nargs = nargin;
@@ -94,9 +95,10 @@ elseif iscell( varargin{1} )
     frst = varargin{1};
     nrows = size(frst,1);
     if nrows > 1,
+        r = false(nrows,19);
         for k = 1 : nrows,
             if ~iscell( frst{k} ), frst{k} = { frst{k} }; end %#ok
-            r(k,:) = remapper( frst{k} ); %#ok
+            r(k,:) = remapper( frst{k} );
         end
     else
         if isnumeric( varargin{nargs} ),
@@ -105,23 +107,28 @@ elseif iscell( varargin{1} )
         else
             priorities = 1 : nargs;
         end
+        tt = priorities == 0;
+        priorities(tt) = -1;
         if iscell( varargin{1}{1} ),
             r = 0;
             for k = 1 : nargs,
                 tmp = varargin{k};
-                rr = remapper( tmp{1} );
+                rr = +remapper( tmp{1} );
                 if length( tmp ) == 1,
                     rr = rr' * rr;
                 else
-                    rr = rr' * remapper( tmp{2} );
+                    rr = rr' * +remapper( tmp{2} );
                 end
                 r = r + priorities(k) * ( rr & ~r );
             end
         else
             r = 0;
             for k = 1 : nargs,
-                r = r + priorities(k) * ( remapper( varargin{k} ) & ~r );
+                r = r + priorities(k) * +( remapper( varargin{k} ) & ~r );
             end
+        end
+        if any( tt ),
+            r = max( 0, r );
         end
     end
 else

@@ -136,11 +136,10 @@ if nB ~= 0,
     newrepl = newvar( cvx___.problems( end ).self, '', nB );
     [ ndxs, temp ] = find( newrepl.basis_ ); %#ok
     repls = [ repls ; newrepl ];
-    [ bV, bS ] = cvx_vexity( bN );
+    bC = cvx_classify( bN );
     bR = cvx_readlevel( bN );
-    cvx___.vexity( ndxs ) = bV(:);
-    cvx___.sign( ndxs ) = bS(:);
     cvx___.readonly( ndxs ) = bR(:);
+    cvx___.classes( ndxs ) = bC(:);
     if ~isobj,
         ss = bV == 0;
         if any( ss ),

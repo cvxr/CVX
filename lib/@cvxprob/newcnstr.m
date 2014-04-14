@@ -88,27 +88,52 @@ if tx || ty,
     error( 'Constraints may not involve internal, read-only variables.' );
 end
 
-%
-% Check sizes
-%
-
-dvalid = true;
-if nargin < 5,
-    sdp_mode = op(1) ~= '=' && cvx___.problems( p ).sdp;
+persistent param_eq param_ge param_le
+if isempty( param_eq ),
+    param_eq.map = cvx_remap( ...
+            { { 'affine',  } }, ...
+            { { 'l_affine' } } );
+    param_eq.funcs = { @minus_nc, @eq_2 };
+    param_eq.name = '=';
+    param_ge.map = cvx_remap( ...
+            { { 'constant' } }, ...
+            { { 'l_concave' }, { 'l_convex' } }, ...
+            { { 'concave' }, { 'convex' } }, ...
+            [ 1, 2, 1 ] );
+    param_ge.funcs = { @minus_nc, @ge_2 };
+    param_ge.name = '>=';
+    param_le.map = param_ge.map';
+    param_le.funcs = { @le_1, @le_2 };
+    param_le.name = '<=';
 end
-[ x, y, sz, xs, ys, sdp_mode ] = cvx_broadcast( x, y, sdp_mode );
+
+try
+    if nargin < 5,
+        sdp_mode = cvx___.problems( p ).sdp;
+    end
+    switch op(1),
+    case '=',
+        params = param_eq;
+        sdp_mode = false;
+    case '<',
+        params = param_le;
+    case '>',
+        params = param_ge;
+    end
+    params.name = op;
+    params.sdp = sdp_mode;
+    [ z, sdp_mode ] = cvx_binary_op( params, x, y );
+catch exc
+    if strncmp( exc.identifier, 'CVX:', 4 ), throw( exc );
+    else rethrow( exc ); end
+end
     
 %
-% Handle the SDP case
+% Handle LMIs
 %
 
+sz = size( z );
 if sdp_mode,
-    
-    if op(1) == '>',
-        z = plus( x, y, '-' );
-    else
-        z = plus( y, x, '-' );
-    end
     zq = any( cvx_basis( z ), 1 );
     qn = bsxfun( @plus, (1:sz(1)+1:sz(1)*sz(2))', 0:sz(1)*sz(2):prod(sz)-1 );
     if nnz( zq ) == nnz( zq( qn ) ),
@@ -117,73 +142,8 @@ if sdp_mode,
     else
         zz = semidefinite( sz, ~isreal( x ) || ~isreal( y ) );
     end
-    z = plus( z, zz, '-' );
+    z = minus_nc( z, zz );
     op = '==';
-
-else
-    
-    persistent map_eq map_le map_ge map_ne map_N %#ok
-    if isempty( map_ge ),
-        map_ne = cvx_remap( ...
-            { { } } );
-        map_eq = cvx_remap( ...
-            { { 'affine' } }, { { 'l_affine' } } );
-        map_ge = cvx_remap( ...
-            { { 'constant' } }, ...
-            { { 'positive' }, { 'l_convex' } }, ...
-            { { 'l_concave' }, { 'l_convex' } }, ...
-            { { 'concave' }, { 'convex' } }, ...
-            [ 1, 3, 2, 1 ] );
-        map_le = map_ge';
-        map_N  = size( map_ne, 1 );
-    end
-    switch op(1),
-        case '<',
-            remap = map_le;
-        case '>',
-            remap = map_ge;
-        case '~',
-            remap = map_ne;
-        otherwise,
-            remap = map_eq;
-    end
-    vx = cvx_classify( x );
-    vy = cvx_classify( y );
-    vm = vx + map_N * ( vy - 1 );
-    vr = remap( vm );
-    tt = vr == 0;
-    if any( tt(:) ),
-        cvx_dcp_error( x, y, tt, op );
-    end
-    % If the user wants to use a dual variable, we need to be more
-    % conservative in judging which constraints we need to take the
-    % logarithm of. Othewise, we can do them all
-    if isempty( dx ),
-        tt = vr >= 2;
-    else
-        tt = vr == 2;
-    end
-    if any( tt(:) ),
-        dvalid = false;
-        if ~isempty( dx ),
-            tt = vr >= 2;
-        end
-        if all( tt(:) ),
-            x = log( x );
-            y = log( y );
-        else
-            if xs, x = x * ones(sz); end
-            if ys, y = y * ones(sz); end
-            x( tt ) = log( x( tt ) );
-            y( tt ) = log( y( tt ) );
-        end
-    end
-    if op(1) == '<',
-        z = plus( y, x, '-' );
-    else
-        z = plus( x, y, '-' );
-    end
-    
 end
 
 %
@@ -224,15 +184,15 @@ cvx___.needslack( end + 1 : end + mN, : ) = op( 1 ) ~= '=';
 % Create the dual
 %
 
-if ~isempty( dx ),
-    if dvalid,
+if ~isempty( dx )
+    if isempty( cvx_getdual( z ) ),
         zI = cvx_invert_structure( zR )';
         zI = sparse( mO + 1 : mO + mN, 1 : mN, 1 ) * zI;
         zI = cvx( sz, zI );
         duals = builtin( 'subsasgn', duals, dx, zI );
         cvx___.problems( p ).duals = duals;
     else
-        warning( 'CVX:NoDualVariables', 'Dual variables are not availble for this constraint.' )
+        warning( 'CVX:NoDualVariables', 'Dual variables are not availble for log-convex constraints.' )
     end
 end
 
@@ -243,6 +203,18 @@ end
 if nargout,
     outp = cvxcnst( prob, y_orig );
 end
+
+function z = eq_2( x, y )
+z = cvx_setdual( minus_nc( log( x ), log( y ) ), 1 );
+
+function z = ge_2( x, y )
+z = cvx_setdual( minus_nc( log( x ), log( y ) ), 1 );
+
+function z = le_1( x, y )
+z = minus_nc( y, x );
+
+function z = le_2( x, y )
+z = cvx_setdual( minus_nc( log( y ), log( x ) ), 1 );
 
 % Copyright 2005-2014 CVX Research, Inc.
 % See the file LICENSE.txt for full copyright information.

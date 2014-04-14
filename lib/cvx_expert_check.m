@@ -1,8 +1,8 @@
 function cvx_expert_check( fname, varargin )
 
+if ~isempty( varargin ) && ~any(cellfun('isclass',varargin,'cvx')), return; end
 global cvx___
 if cvx___.expert, return; end
-if ~isempty( varargin ) && ~any(cellfun('isclass',varargin,'cvx')), return; end
 
 url = [ 'file:///', cvx___.where, cvx___.fs, 'doc', cvx___.fs, 'advanced.html#the-successive-approximation-method' ];
 fprintf( 1, [ 'CVX Warning:\n', ...

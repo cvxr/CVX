@@ -1,5 +1,5 @@
-function y = dof( x )
-y = size( cvx_basis( cvxaff( x ) ), 2 );
+function y = cvx_isconvex( x )
+y = testall( @cvx_isvalid, x );
 
 % Copyright 2005-2014 CVX Research, Inc. 
 % See the file LICENSE.txt for full copyright information.

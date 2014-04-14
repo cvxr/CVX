@@ -1,5 +1,4 @@
 function y = cvx_isnonzero( x, full )
-error( nargchk( 1, 2, nargin ) );
 y = any( x.basis_, 1 );
 if nargin < 2,
     y = all( y );

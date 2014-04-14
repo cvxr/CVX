@@ -1,5 +1,4 @@
 function newnonl( prob, ncones, arg ) %#ok
-error( nargchk( 2, 3, nargin ) );
 global cvx___
 cones = cvx___.cones;
 if nargin == 3,
@@ -7,11 +6,6 @@ if nargin == 3,
 end
 for k = 1 : length( ncones ),
     ncone = ncones(k);
-    if any( cvx___.reserved( ncone.indices( : ) ) ),
-        error( 'Variables placed in nonlinearities must be free.' );
-    else
-        cvx___.reserved( ncone.indices ) = 1;
-    end
     if isequal( ncone.type, 'nonnegative' ),
         ncone.indices = ncone.indices(:)';
     end
@@ -23,13 +17,13 @@ for k = 1 : length( ncones ),
             nlsiz = size( ncone.indices, 1 );
             match = match( cellfun( 'size', { cones(match).indices }, 1 ) == nlsiz );
             if isempty( match ),
-                cones = [ cones, ncone ];
+                cones = [ cones, ncone ]; %#ok
             else
                 match = match(1);
                 cones(match).indices = [ cones(match).indices, ncone.indices ];
             end
         else
-            cones = [ cones, ncone ];
+            cones = [ cones, ncone ]; %#ok
         end
     end
 end

@@ -38,7 +38,7 @@ if isempty( p ),
 elseif ~isa( p, 'double' ) || ~isreal( p ) || length( sp ) > 2 || ~any( sp == 1 ),
     error( 'First argument must be a non-empty real vector.' );
 elseif any( isnan( p ) | isinf( p ) ),
-    error( 'Inf and NaN not accepted here.' );
+    error( 'First argument must not contain Inf or NaN.' );
 end
 n = prod( sp );
 if n > 2 && rem( n, 2 ) == 0,

@@ -1,4 +1,4 @@
-function z = trace_inv( Y )
+function y = trace_inv( X )
 
 % TRACE_INV   Trace of the inverse of a PSD matrix.
 %     For square matrix X, TRACE_INV(X) is TRACE(INV(X)) if X is Hermitian
@@ -10,24 +10,52 @@ function z = trace_inv( Y )
 %         TRACE_INV is convex and nonmonotonic (at least with respect to
 %         elementwise comparison), so its argument must be affine.
 
-error( nargchk( 1, 1, nargin ) ); %#ok
-if ndims( Y ) > 2 || size( Y, 1 ) ~= size( Y, 2 ), %#ok
-    error( 'Input must be a square matrix.' );
-end
-err = Y - Y';
-Y   = 0.5 * ( Y + Y' );
-if norm( err, 'fro' )  > 8 * eps * norm( Y, 'fro' ),
-    z = Inf;
-else
-    z = eig( full( Y ) );
-    if any( z <= 0 ),
-        z = Inf;
-    else
-        z = sum(1.0./z);
-    end
+persistent params
+if isempty( params ),
+    params.funcs  = { @trace_inv_cnst, @trace_inv_real, @trace_inv_cplx };
+    params.square = true;
+    params.name   = 'trace_inv';
 end
 
-% Copyright 2005-2014 CVX Research, Inc.
+try
+    y = matrix_op( params, X );
+catch exc
+    if strncmp( exc.identifier, 'CVX:', 4 ), throw(exc);
+    else rethrow(exc); end
+end
+
+function z = trace_inv_cnst( X )
+err = X - X';
+X   = 0.5 * ( X + X' );
+if norm( err, 'fro' ) > 8 * eps * norm( X, 'fro' ),
+	z = Inf;
+else
+	z = eig( full( X ) );
+	if any( z <= 0 ),
+		z = Inf;
+	else
+		z = sum( 1.0 ./ z );
+	end
+end
+
+function cvx_optval = trace_inv_real( X ) %#ok
+sx = size(X);
+cvx_begin sdp
+    variable Y(sx) symmetric
+    cvx_setnneg(diag(Y));
+    minimize(trace(Y));
+    [Y,eye(sx);eye(sx),X] >= 0; %#ok
+cvx_end
+
+function cvx_optval = trace_inv_cplx( X ) %#ok
+sx = size(X);
+cvx_begin sdp
+    variable Y(sx) Hermitian
+    cvx_setnneg(diag(Y));
+    minimize(trace(Y));
+    [Y,eye(sx);eye(sx),X] >= 0; %#ok
+cvx_end
+
+% Copyright 2005-2014 CVX Research, Inc. 
 % See the file LICENSE.txt for full copyright information.
 % The command 'cvx_where' will show where this file is located.
-

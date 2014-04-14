@@ -1,6 +1,5 @@
 function y = cvx_isconcave( x, full ) %#ok
-error( nargchk( 1, 2, nargin ) ); %#ok
-if nargin == 2,
+if nargin == 2 && full,
     y = ~imag( x );
 elseif isreal( x ),
     y = true;

@@ -1,13 +1,15 @@
 function x = cvx_accept_convex( x )
 global cvx___
-if ~isa( x, 'cvx' ), return; end
-t = cvx_vexity( x ) > 0;
-if nnz( t ) == 0, return; end
+persistent cmap
+if isempty( cmap ),
+	cmap = cvx_remap('convex') & ~cvx_remap('affine');
+end
+tt = cmap(cvx_classify(x));
+if ~any(tt(:)), return; end
 prob = cvx___.problems(end).self;
-t = t(:) ~= 0;
-src = x( t );
+src = x( tt );
 dst = newtemp( prob, size( src ) );
-x( t ) = dst;
+x( tt ) = dst;
 newcnstr( prob, src(:), dst(:), '<=' );
 
 % Copyright 2005-2014 CVX Research, Inc.

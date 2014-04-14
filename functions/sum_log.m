@@ -1,4 +1,4 @@
-function y = sum_log( x, dim )
+function y = sum_log( varargin )
 
 %SUM_LOG   Sum of logarithms.
 %   For vectors, SUM_LOG(X) is the sum of the logarithms of the elements of
@@ -18,14 +18,33 @@ function y = sum_log( x, dim )
 %       SUM_LOG(X) is concave and nondecreasing in X. Therefore, when used
 %       in CVX expressions, X must be concave. X must be real.
 
-error( nargchk( 1, 2, nargin ) ); %#ok
-if ~isreal( x ),
-    error( 'Argument must be real.' );
-elseif nargin == 2,
-    y = sum( log( max( x, 0 ) ), dim );
-else
-    y = sum( log( max( x, 0 ) ) );
+cvx_expert_check( 'sum_log', varargin{1} );
+
+persistent params
+if isempty( params ),
+    params.map = cvx_remap( { 'real' ; 'l_convex' ; { 'p_convex', 'n_concave', 'r_affine' } } );
+    params.map = bsxfun( @and, params.map, ~cvx_remap( 'nonpositive' ) );
+    params.funcs = { @sum_log_1, @sum_log_1, @sum_log_2 };
+    params.zero = 0;
+    params.constant = 1;
+    params.reduce = true;
+    params.reverse = false;
+    params.name = 'sum_log';
+    params.dimarg = 2;
 end
+
+try
+    y = cvx_reduce_op( params, varargin{:} );
+catch exc
+    if strncmp( exc.identifier, 'CVX:', 4 ), throw( exc ); 
+    else rethrow( exc ); end
+end
+
+function y = sum_log_1(x)
+y = sum(log(x));
+
+function y = sum_log_2( x )
+y = size(x,1) * log(geo_mean(x,1));	
 
 % Copyright 2005-2014 CVX Research, Inc.
 % See the file LICENSE.txt for full copyright information.

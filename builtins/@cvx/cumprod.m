@@ -16,26 +16,25 @@ function y = cumprod( varargin )
 
 persistent params
 if isempty( params ),
-	params.map     = cvx_remap( { 'constant' ; 'l_convex' ; 'l_concave' } );
-	params.funcs   = { @cumprod_1, @cumprod_2, @cumprod_2 };
-	params.zero    = 1;
-	params.reduce  = false;
-	params.reverse = true;
-	params.dimarg  = 2;
-	params.name    = 'cumprod';
+	params.map      = cvx_remap( { 'constant' ; 'l_convex' ; 'l_concave' } );
+	params.funcs    = { @cumprod_1, @cumprod_2, @cumprod_2 };
+	params.constant = 1;
+	params.zero     = 1;
+	params.reduce   = false;
+	params.reverse  = true;
+	params.dimarg   = 2;
+	params.name     = 'cumprod';
 end
 
 try
-    y = reduce_op( params, varargin{:} );
+    y = reduce_op( params, varargin );
 catch exc
 	if strncmp( exc.identifier, 'CVX:', 4 ), throw( exc ); 
 	else rethrow( exc ); end
 end
 
 function x = cumprod_1( x )
-if x.size_(2) ~= 1,
-	x = cvx( cumprod( cvx_constant( x ), 2 ) );
-end
+x = builtin( 'prod', x, 1 );
 
 function x = cumprod_2( x )
 s = x.size_;

@@ -1,5 +1,4 @@
 function y = cvx_isnonzero( x, full ) %#ok
-error( nargchk( 1, 2, nargin ) ); %#ok
 if nargin == 1,
 	y = nnz( x ) ~= 0;
 else

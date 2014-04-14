@@ -1,5 +1,12 @@
-function y = cvx_isaffine( x )
-y = nnz( cvx_vexity( x ) ) == 0;
+function y = cvx_isaffine( x, full )
+persistent remap
+if isempty( remap ),
+	remap = cvx_remap( 'affine' );
+end
+y = remap( cvx_classify( x ) );
+if nargin < 2 || ~full,
+	y = all( y(:) );
+end
 
 % Copyright 2005-2014 CVX Research, Inc.
 % See the file LICENSE.txt for full copyright information.

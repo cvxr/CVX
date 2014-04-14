@@ -125,6 +125,7 @@ isepi  = false;
 ishypo = false;
 isnneg = false;
 issemi = false;
+asnneg = pstr.gp;
 itype  = '';
 if nargin > 1,
     try
@@ -140,20 +141,22 @@ if nargin > 1,
             case 'hypograph_',   ishypo = true;
             case 'integer',      n_itypes = n_itypes + 1; itype = 'i_integer';
             case 'binary',       n_itypes = n_itypes + 1; itype = 'i_binary';
-            case 'nonnegative',  isnneg = true;
+            case 'nonnegative',  isnneg = ~pstr.gp; asnneg = true;
             case 'semidefinite', issemi = true;
+            case 'nonnegative_', asnneg = true;
         end
     end
     if isepi && ishypo,
         error( 'EPIGRAPH and HYPOGRAPH keywords cannot be used simultaneously.' );
+    end
+    if issemi && pstr.gp,
+        error( 'SEMIDEFINITE keywords cannot be used in geometric programs.' );
     end
     if n_itypes,
         if pstr.gp,
             error( 'Integer variables cannot be used in geometric programs.' );
         elseif isepi || ishypo,
             error( 'Integer variables cannot be used as epigraphs or hypograph variables.' );
-        elseif issemi,
-            error( 'Integer variables cannot also be declared semidefinite.' );
         elseif n_itypes > 1,
             error( 'At most one integer keyword may be specified.' );
         end
@@ -183,7 +186,7 @@ if itype,
     [ tx, dummy ] = find( cvx_basis( v ) ); %#ok
     newnonl( prob, itype, tx(:)' );
     cvx___.canslack( tx ) = false;
-    if ~isnneg && ~strcmp( itype, 'i_binary' ), tx = []; end
+    if ~asnneg && ~strcmp( itype, 'i_binary' ), tx = []; end
 end
 if issemi,
     if xsize(1) > 1,
@@ -192,16 +195,24 @@ if issemi,
         vv = reshape( v, xsize(1) * xsize(2), prod(xsize(3:end)) );
         vv = vv(1:xsize(1)+1:end,:);
         [ tx, dummy ] = find( cvx_basis( vv ) ); %#ok
+        asnneg = false;
     else
         isnneg = true;
     end
 end
-if isnneg && ~pstr.gp,
+if isnneg,
     newcnstr( prob, v, 0, '>=', false );
+    asnneg = true;
+end
+if asnneg,
     [ tx, dummy ] = find( cvx_basis( v ) ); %#ok
 end
 if ~isempty( tx ),
-    cvx___.sign( tx ) = 1;
+    persistent mpos; %#ok
+    if isempty( mpos ),
+        mpos = int8([2,2,3,19,2,7,7,2,10,10,2,13,13,19,15,16,17,18,19]);
+    end
+    cvx___.classes( tx ) = mpos( cvx___.classes( tx ) );
 end
 if nargout > 0,
     varargout{1} = v;

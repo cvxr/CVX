@@ -17,11 +17,22 @@ function z = minus( x, y )
 %      Non-constant expressions (log-convex or log-concave) may not be
 %      involved in a subtraction in disciplined geometric programs.
 
+persistent params
+if isempty( params ),
+    params.map   = cvx_remap( ...
+        { { 'affine' } }, ...
+        { { 'convex' }, { 'concave' } }, ...
+        { { 'concave' }, { 'convex' } }, ...
+        [1,1,1] );
+    params.funcs = { @minus_nc };
+    params.name = '-';
+end
+
 try
-    z = plus( x, y, '-' );
+    z = binary_op( params, x, y );
 catch exc
-	if isequal( exc.identifier, 'CVX:DCPError' ), throw( exc ); 
-	else rethrow( exc ); end
+    if strncmp( exc.identifier, 'CVX:', 4 ), throw( exc ); 
+    else rethrow( exc ); end
 end
 
 % Copyright 2005-2014 CVX Research, Inc.

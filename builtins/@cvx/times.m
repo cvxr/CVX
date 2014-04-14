@@ -27,9 +27,9 @@ function z = times( x, y, oper )
 %   For vectors, matrices, and arrays, these rules are verified 
 %   indepdently for each element.
 
-persistent remap_m remap_l remap_r func_m func_l func_r
-if isempty( remap_r ),
-    remap_m = max( 0, cvx_remap( ...
+persistent mparam rparam lparam
+if isempty( mparam ),
+    mparam.map = max( 0, cvx_remap( ...
         { { 'negative' },   { 'l_concave_' } }, ... % negative of log-concave
         { { 'l_concave_' }, { 'negative' }   }, ... % negative of log-concave
         { { 'constant' },   { 'affine' }     }, ... % constant * affine/constant
@@ -41,7 +41,7 @@ if isempty( remap_r ),
         { { 'l_convex' }                     }, ... % log-convex
         { { 'l_concave' }                    }, ... % log-concave
         [ -1, -1, 1, 1, 2, 2, 3, 3, 4, 4 ] ) );
-    remap_r = max( 0, cvx_remap( ...
+    rparam.map = max( 0, cvx_remap( ...
         { { 'valid' },      { 'zero' }      }, ... % division by zero
         { { 'l_concave_' }, { 'negative' }  }, ... % negative of log-concave
         { { 'negative' },   { 'l_convex_' } }, ... % negative of 1/log-convex
@@ -53,28 +53,28 @@ if isempty( remap_r ),
         { { 'l_convex' },   { 'l_concave' } }, ... % log-convex / log-concave
         { { 'l_concave' },  { 'l_convex' }  }, ... % log-concave / log-convex
         [ -1, -1, -1, 1, 1, 1, 2, 2, 4, 4 ] ) );
-    remap_l = remap_r';
-    func_m = { @times_1m, @times_2m, @times_3, @times_4m };
-    func_l = { @times_1l, @times_2l, [], @times_4l };
-    func_r = { @times_1r, @times_2r, [], @times_4r };
-end
-if nargin < 3,
-    oper = '.*';
-end
-switch oper,
-    case { '*', '.*' },
-        remap = remap_m;
-        funcs = func_m;
-    case { '/', './' },
-        remap = remap_r;
-        funcs = func_r;
-    case { '\', '.\' },
-        remap = remap_l;
-        funcs = func_l;
+    lparam.map = rparam.map';
+    mparam.funcs = { @times_1m, @times_2m, @times_3, @times_4m };
+    rparam.funcs = { @times_1l, @times_2l, [], @times_4l };
+    lparam.funcs = { @times_1r, @times_2r, [], @times_4r };
 end
 
 try
-    z = binary_op( oper, funcs, remap, x, y );
+    if nargin < 3,
+        oper = '.*';
+    end
+    switch oper,
+        case { '*', '.*' },
+            mparam.name = oper;
+            param = mparam;
+        case { '/', './' },
+            rparam.name = oper;
+            param = rparam;
+        case { '\', '.\' },
+            lparam.name = oper;
+            param = lparam;
+    end
+    z = binary_op( param, x, y );
 catch exc
     if isequal( exc.identifier, 'CVX:DCPError' ), throw( exc ); 
     else rethrow( exc ); end
@@ -91,13 +91,13 @@ function z = times_1r( x, y )
 % constant ./ something
 if isa( x, 'cvx' ), x = x.basis_;
 else x = x'; end
-y = cvx_recip( y );
+y = recip( y );
 z = bsxfun( @times, x', y.basis_ );
 z = cvx( [size(z,2),1], z );
 
 function z = times_1l( x, y )
 % something .\ constant
-x = cvx_recip( x );
+x = recip( x );
 if isa( y, 'cvx' ), y = y.basis_;
 else y = y'; end
 z = bsxfun( @ldivide, x.basis_, y );
@@ -140,8 +140,8 @@ alpha = sum( yB .* cyB, 1 );
 alpha = sum( bsxfun( @times, xB, yB ), 1 ) ./ max( alpha, realmin );
 if nnz( xB - bsxfun( @times, alpha, cyB ) > 2 * eps * sqrt( conj( xB ) .* xB ) ),
     error( 'Disciplined convex programming error:\n    Invalid quadratic form(s): not a square.\n', 1 ); %#ok
-elseif any( abs(imag(alpha)) > 2 * abs(real(alpha)) ),
-    error( 'Disciplined convex programming error:\n    Invalid quadratic form(s): product is not real.\n', 1 ); %#ok
+elseif any( abs(imag(alpha)) > 2 * eps * abs(real(alpha)) ),
+    error( 'Disciplined convex programming error:\n    Invalid quadratic form(s): not real.\n', 1 ); %#ok
 else
     if isreal( xB ),
         z = square( y );

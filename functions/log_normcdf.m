@@ -1,4 +1,4 @@
-function y = log_normcdf( x, approx ) %#ok
+function y = log_normcdf( x, approx )
 
 %LOG_NORMCDF   Logarithm of the cumulative normal distribution.
 %   Y = LOG_NORMCDF(X) is the logarithm of the CDF of the normal
@@ -23,17 +23,43 @@ function y = log_normcdf( x, approx ) %#ok
 %       LOG_NORMCDF is concave and nondecreasing in X. Therefore, when used
 %       in CVX specifications, X must be concave.
 
-error(nargchk(1,2,nargin)); %#ok
-if ~isreal( x ),
-    error( 'Argument must be real.' );
-end
-if nargin > 1,
-    % For debugging purposes only
-    y = cvx_constant(log_normcdf(cvx(x)));
-else
-    y = log(0.5*erfc(-x*sqrt(0.5)));
+persistent params
+if isempty( params ),
+    params.map = cvx_remap( { 'real' }, { 'concave' } );
+    params.constant = 1;
+    params.funcs = { @log_normcdf_c, @log_normcdf_nc };
+    params.name = 'log_normcdf';
 end
 
-% Copyright 2005-2014 CVX Research, Inc. 
+try
+    if nargin == 2 && approx,
+        params.funcs{1} = @log_normcdf_nc;
+    else
+        params.funcs{1} = @log_normcdf_c;
+    end
+    y = cvx_unary_op( params, x );
+catch exc
+    if strncmp( exc.identifier, 'CVX:', 4 ), throw( exc ); 
+    else rethrow( exc ); end
+end
+
+function y = log_normcdf_c( x )
+y = log(0.5*erfc(-x*sqrt(0.5)));
+
+function y = log_normcdf_nc( x )
+persistent a b
+if isempty( a ),
+    a = sqrt( [ 0.018102332171520
+                0.011338501342044
+                0.072727608432177
+                0.184816581789135
+                0.189354610912339
+                0.023660365352785 ]' );
+    b = [3 2.5 2 1 -1 -2];
+end
+y = bsxfun( @times, a, bsxfun( @minus, b, x ) );
+y = - sum_square( pos( y ), 2 );
+
+% Copyright 2005-2014 CVX Research, Inc.
 % See the file LICENSE.txt for full copyright information.
 % The command 'cvx_where' will show where this file is located.

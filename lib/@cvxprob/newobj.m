@@ -1,5 +1,4 @@
 function newobj( prob, dir, x )
-error( nargchk( 3, 3, nargin ) );
 
 persistent remap_min remap_max remap_log
 if isempty( remap_max ),

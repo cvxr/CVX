@@ -14,34 +14,32 @@ function y = sum( varargin )
 
 persistent params
 if isempty( params ),
-    params.map     = cvx_remap( { 'constant' ; 'affine' ; 'convex' ; 'concave' } );
-    params.funcs   = { @sum_1, @sum_2, @sum_2 };
-    params.zero    = 0;
-    params.reduce  = true;
-    params.reverse = true;
-    params.dimarg  = 2;
-    params.name    = 'sum';
+    params.map      = cvx_remap( { 'constant' ; 'affine' ; 'convex' ; 'concave' } );
+    params.funcs    = { @sum_1, @sum_2, @sum_2 };
+    params.zero     = 0;
+    params.one      = @(x) x;
+    params.reduce   = true;
+    params.reverse  = true;
+    params.name     = 'sum';
+    params.constant = 1;
+    params.dimarg   = 2;
 end
 
 try
-    y = reduce_op( params, varargin{:} );
+    y = cvx_reduce_op( params, varargin{:} );
 catch exc
     if strncmp( exc.identifier, 'CVX:', 4 ), throw( exc ); 
     else rethrow( exc ); end
 end
 
 function x = sum_1( x )
-if x.size_(2) ~= 1,
-    x = cvx( sum( cvx_constant( x ), 2 ) );
-end
+x = sum( x, 2 );
 
 function x = sum_2( x )
 s = x.size_;
-if s(2) ~= 1,
-    b = reshape( x.basis_, [], s(2) );
-    b = sum( b, 2 );
-    x = cvx( s, reshape( b, [], s(1) ) );
-end
+b = reshape( x.basis_, [], s(2) );
+b = sum( b, 2 );
+x = cvx( [ s(1), 1 ], reshape( b, [], s(1) ) );
 
 % Copyright 2005-2014 CVX Research, Inc.
 % See the file LICENSE.txt for full copyright information.

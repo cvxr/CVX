@@ -24,8 +24,6 @@ if len == 1,
         st = 'complex scalar';
     end
 else
-    dof = size( cvx_basis( x ), 2 ) - 1;
-    isstruct = dof < ( 2 - isr ) * len;
     st = sprintf( '%dx', s );
     st = st( 1 : end - 1 );
     if ~isr,
@@ -37,9 +35,6 @@ else
         st = [ st, ' vector' ];
     else
         st = [ st, ' matrix' ];
-    end
-    if isstruct,
-        st = sprintf( '%s (%d d.o.f.)', st, dof );
     end
 end
 

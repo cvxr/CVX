@@ -1,5 +1,4 @@
 function y = cvx_isconstant( x, full ) %#ok
-error( nargchk( 1, 2, nargin ) ); %#ok
 if nargin == 1,
     y = true;
 else

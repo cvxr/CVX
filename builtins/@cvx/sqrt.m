@@ -20,7 +20,7 @@ end
 try
      y = unary_op( 'sqrt', funcs, remap, x );
 catch exc
-    if isequal( exc.identifier, 'CVX:DCPError' ), throw( exc ); 
+    if strncmp( exc.identifier, 'CVX:', 4 ), throw( exc ); 
     else rethrow( exc ); end
 end
 

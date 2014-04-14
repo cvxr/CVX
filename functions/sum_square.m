@@ -1,4 +1,4 @@
-function y = sum_square( x, dim )
+function y = sum_square( varargin )
 
 %SUM_SQUARE   Sum of squares.
 %   For vectors, SUM_SQUARE(X) is the sum of the squares of the elements of
@@ -16,13 +16,40 @@ function y = sum_square( x, dim )
 %       concave. Thus, when used in CVX expressions, X must be affine. DIM
 %       must be constant.
 
-error( nargchk( 1, 2, nargin ) ); %#ok
-y = x .* x;
-if nargin == 2,
-    y = sum( y, dim );
-else
-    y = sum( y );
+persistent params
+if isempty( params ),
+    params.map = cvx_remap( { 'real' ; 'l_convex' ; { 'p_convex', 'n_concave', 'r_affine' } } );
+    params.funcs = { @ssq_1, @ssq_2, @ssq_3 };
+    params.zero = 0;
+    params.constant = 1;
+    params.reduce = true;
+    params.reverse = false;
+    params.name = 'sum_square';
+    params.dimarg = 2;
 end
+
+try
+    y = cvx_reduce_op( params, varargin{:} );
+catch exc
+    if strncmp( exc.identifier, 'CVX:', 4 ), throw( exc ); 
+    else rethrow( exc ); end
+end
+
+function x = ssq_1( x )
+x = sum( x .^ 2, 1 );
+
+function x = ssq_2( x )
+x = sum( exp( 2 * log( x ), 1 ) );
+
+function y = ssq_3( x )
+[ nx, nv ] = size(x);
+y = [];
+x = cvx_accept_cvxccv( x );
+cvx_begin
+    epigraph variable y( 1, nv )
+    { x, y, 1 } == rotated_lorentz( [ nx, nv ], 1, ~isreal( x ) ); %#ok
+    cvx_setnneg(y);
+cvx_end
 
 % Copyright 2005-2014 CVX Research, Inc.
 % See the file LICENSE.txt for full copyright information.

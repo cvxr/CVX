@@ -1,4 +1,4 @@
-function cvx_optval = det_rootn( X )
+function y = det_rootn( X )
 
 %DET_ROOTN nth-root of the determinant of an SPD matrix.
 %   For a square matrix X, DET_ROOTN(X) returns
@@ -15,23 +15,46 @@ function cvx_optval = det_rootn( X )
 %       DET_ROOTN is concave and nonmonotonic; therefore, when used in
 %       CVX specifications, its argument must be affine.
 
-error( nargchk( 1, 1, nargin ) ); %#ok
-if ndims( X ) > 2 || size( X, 1 ) ~= size( X, 2 ), %#ok
-    error( 'Second argument must be a square matrix.' );
-end
-err = X - X';
-X   = 0.5 * ( X + X' );
-if norm( err, 'fro' ) > 8 * eps * norm( X, 'fro' ),
-    cvx_optval = -Inf;
-else
-    [R,p] = chol(X);
-    if p > 0,
-        cvx_optval = geo_mean(eig(full(X)));
-    else
-        cvx_optval = geo_mean(diag(R)).^2;
-    end
+persistent params
+if isempty( params ),
+    params.funcs  = { @det_rootn_cnst, @det_rootn_aff };
+    params.square = true;
+    params.name   = 'det_rootn';
 end
 
-% Copyright 2005-2014 CVX Research, Inc. 
+try
+    y = matrix_op( params, X );
+catch exc
+    if strncmp( exc.identifier, 'CVX:', 4 ), throw(exc);
+    else rethrow(exc); end
+end
+
+function y = det_rootn_cnst( X )
+[ psd, X, Z ] = cvx_check_psd( X, 'chol' ); %#ok
+if ~psd,
+	y = -Inf;
+else
+	y = geo_mean( diag( Z ) ) .^ 2;
+end
+
+function cvx_optval = det_rootn_aff( X )
+n = size( X, 1 );
+if nnz( X ) <= n && nnz( diag( X ) ) == nnz( X ),
+    cvx_optval = geo_mean( diag( X ) );
+else
+    cvx_begin sdp
+    	if isreal( X ),
+	        variable Z(n,n) lower_triangular
+	    else
+	        variable Z(n,n) lower_triangular complex
+	    end
+        D = real( diag( Z ) );
+        maximize( geo_mean( D ) );
+        subject to
+            [ diag( D ), Z' ; Z, X ] >= 0;
+    cvx_end
+end
+
+% Copyright 2005-2014 CVX Research, Inc.
 % See the file LICENSE.txt for full copyright information.
 % The command 'cvx_where' will show where this file is located.

@@ -2,19 +2,20 @@ function z = power( x, y, op )
 
 %POWER   Internal cvx version.
 
-persistent remap funcs
-if isempty( remap ),
-    remap = cvx_remap( ...
+persistent bparam
+if isempty( bparam ),
+    bparam.map = cvx_remap( ...
         { { 'constant' } }, ...
         { { 'positive' }, { 'convex', 'concave' } }, ...
         { { 'valid' }, { 'real' } }, [1,2,3] );
-    funcs = { @power_1, @power_2, @power_3 };
+    bparam.funcs = { @power_1, @power_2, @power_3 };
 end
 
 try
-    z = binary_op( op, funcs, remap, x, y );
+    bparam.name = op;
+    z = binary_op( bparam, x, y );
 catch exc
-    if isequal( exc.identifier, 'CVX:DCPError' ), throw( exc ); 
+    if strncmp( exc.identifier, 'CVX:', 4 ), throw( exc ); 
     else rethrow( exc ); end
 end
 

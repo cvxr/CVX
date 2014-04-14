@@ -218,8 +218,8 @@ else
         % Set the vexity flags
         %
 
-        cvx___.vexity( r, : ) = os;
         cvx___.readonly( r, : ) = np;
+        cvx___.classes( r, : ) = int8( cvx___.classes( r, : ) + 3 * os );
         
         %
         % Convert to geometric form if necessary

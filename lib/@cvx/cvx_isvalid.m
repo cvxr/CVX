@@ -1,10 +1,12 @@
-function y = cvx_isvalid( x )
+function y = cvx_isvalid( x, full )
 persistent remap
 if isempty( remap ),
     remap = cvx_remap( 'valid' );
 end
 y = remap( cvx_classify( x ) );
-y = all( y(:) );
+if nargin < 2 || ~full,
+	y = all( y(:) );
+end
 
 % Copyright 2005-2014 CVX Research, Inc.
 % See the file LICENSE.txt for full copyright information.

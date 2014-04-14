@@ -26,7 +26,7 @@ end
 try
     y = unary_op( 'log', funcs, remap, x );
 catch exc
-    if isequal( exc.identifier, 'CVX:DCPError' ), throw( exc ); 
+    if strncmp( exc.identifier, 'CVX:', 4 ), throw( exc ); 
     else rethrow( exc ); end
 end
 
@@ -84,9 +84,9 @@ end
 function y = log_4( x )
 % Affine, concave
 y = [];
-sx = x.size_;
+sx = x.size_; %#ok
 cvx_begin
-    hypograph variable y( sx ) 
+    hypograph variable y( sx )
     exp( y ) <= x; %#ok
 cvx_end
 

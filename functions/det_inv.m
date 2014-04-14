@@ -1,4 +1,4 @@
-function cvx_optval = det_inv( X, p )
+function y = det_inv( X, p )
 
 %DET_INV determinant of the inverse of an SPD matrix.
 %   For a square matrix X, DET_INV(X) returns 1.0./DET(X) if X is symmetric
@@ -17,37 +17,46 @@ function cvx_optval = det_inv( X, p )
 %       DET_INV(X) is convex and nonmonotonic in X; therefore, when used in
 %       CVX specifications, its argument must be affine.
 
-error( nargchk( 1, 2, nargin ) ); %#ok
-n = size( X, 1 );
-if ndims( X ) > 2, %#ok
-    error( 'N-D arrays are not supported.' );
-elseif size( X, 2 ) ~= n,
-    error( 'Matrix must be square.' );
-elseif nargin < 2,
-    p = 1;
-elseif ~isnumeric( p ) || ~isreal( p ) || numel( p ) ~=  1 || p <= 0,
-    error( 'Second argument must be a positive scalar.' );
+persistent params
+if isempty( params ),
+    params.funcs  = { @det_inv_cnst, @det_inv_aff };
+    params.square = true;
+    params.name   = 'det_inv';
 end
 
-if nnz( X - X' ) ~= 0,
+try
+	if nargin < 2,
+	    p = 1;
+	elseif ~isnumeric( p ) || ~isreal( p ) || numel( p ) ~=  1 || p <= 0,
+	    error( 'Second argument must be a positive scalar.' );
+	end
+    y = matrix_op( params, X, p );
+catch exc
+    if strncmp( exc.identifier, 'CVX:', 4 ), throw(exc);
+    else rethrow(exc); end
+end
 
-    cvx_optval = +Inf;
-
+function y = det_inv_cnst( X, p )
+[psd,X,Z] = check_psd( X, 'chol' );	
+if ~psd,
+	y = Inf;
 else
+	y = prod( diag(Z) .^ ( -2 * p ) );
+end
 
-    n = size( X, 1 );
-    [ R, q ] = chol( X );
-    if q == 0,
-        cvx_optval = prod(diag(R)).^(-p);
-    else
-        eigs = eig( X );
-        if any( eigs <= 0 ),
-            cvx_optval = +Inf;
+function y = det_inv_aff( X, p )
+if nnz( X ) <= n && nnz( diag( X ) ) == nnz( X ),
+	y = prod_inv( diag(X), p );
+else
+    cvx_begin sdp
+        if isreal( X ),
+	        variable Z(n,n) lower_triangular
         else
-            cvx_optval = prod(eigs).^(-p);
-        end
-    end
-
+	        variable Z(n,n) lower_triangular complex
+	    end
+	    minimize(prod_inv(real(diag(Z)),2*p))
+        [ diag( D ), Z' ; Z, X ] >= 0;
+    cvx_end
 end
 
 % Copyright 2005-2014 CVX Research, Inc. 

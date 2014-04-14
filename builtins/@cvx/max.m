@@ -1,4 +1,4 @@
-function z = max( x, y, dim )
+function z = max( varargin )
 
 %   Disciplined convex/geometric programming information:
 %       MAX is convex, log-log-convex, and nondecreasing in its first 
@@ -6,27 +6,29 @@ function z = max( x, y, dim )
 %       both arguments must be convex (or affine). In disciplined 
 %       geometric programs, both arguments must be log-convex/affine.
 
-persistent remap remap2 funcs funcs2
 if nargin == 2,
     
     %
     % max( X, Y )
     %
 
-    if isempty( remap ),
-        remap = cvx_remap( ...
+    persistent bparam %#ok
+    if isempty( bparam ),
+        bparam.map = cvx_remap( ...
             { { 'real' } }, ...
             { { 'nonnegative', 'p_nonconst' }, { 'nonpositive', 'n_nonconst' } }, ...
             { { 'nonpositive', 'n_nonconst' }, { 'nonnegative', 'p_nonconst' } }, ...
             { { 'l_convex', 'positive' } }, ...
             { { 'convex' } } );
-        funcs = { @max_b1, @max_b2, @max_b3, @max_b4, @max_b5 };
+        bparam.funcs = { @max_b1, @max_b2, @max_b3, @max_b4, @max_b5 };
+        bparam.name = 'max';
+        bparam.constant = 1;
     end
     
     try
-        z = binary_op( 'max', funcs, remap, x, y );
+        z = binary_op( bparam, varargin{:} );
     catch exc
-        if isequal( exc.identifier, 'CVX:DCPError' ), throw( exc ); 
+        if strncmp( exc.identifier, 'CVX:', 4 ), throw( exc ); 
         else rethrow( exc ); end
     end
 
@@ -40,26 +42,20 @@ else
     % max( X, [], dim )
     %
 
-    persistent params
+    persistent params %#ok
     if isempty( params ),
-        params.map     = cvx_remap( { 'real' ; 'l_convex' ; 'convex' } );
-        params.funcs   = { @max_r1, @max_r2, @max_r3 };
-        params.zero    = [];
-        params.reduce  = true;
-        params.reverse = false;
-        params.dimarg  = 2;
-        params.name    = 'max';
+        params.map      = cvx_remap( { 'real' ; 'l_convex' ; 'convex' } );
+        params.funcs    = { @max_r1, @max_r2, @max_r3 };
+        params.constant = 1;
+        params.zero     = [];
+        params.reduce   = true;
+        params.reverse  = false;
+        params.dimarg   = 3;
+        params.name     = 'max';
     end
 
-    if nargin > 1 && ~isempty( y ),
-        error( 'MAX with two matrices to compare and a working dimension is not supported. ');
-    end
-    if nargin < 3, 
-        dim = []; 
-    end
-    
     try
-        y = reduce_op( params, x, dim );
+        z = cvx_reduce_op( params, varargin{:} );
     catch exc
         if strncmp( exc.identifier, 'CVX:', 4 ), throw( exc ); 
         else rethrow( exc ); end
@@ -69,7 +65,7 @@ end
 
 function z = max_b1( x, y )
 % constant
-z = cvx( max( cvx_constant( x ), cvx_constant( y ) ) );
+z = builtin( 'max', x, y );
 
 function z = max_b2( x, y )
 % max( positive, negative ) (pass through x)
@@ -90,27 +86,30 @@ cvx_begin gp
 cvx_end
 
 function z = max_b5( x, y )
+persistent nneg npos
+if isempty( nneg ),
+    nneg = cvx_remap( 'nonnegative', 'p_nonconst' );
+    npos = cvx_remap( 'nonpositive', 'n_nonconst' );
+end
 % linear
 z = [];
 sz = [ max(numel(x),numel(y)), 1 ]; %#ok
-xsg = cvx_sign( x );
-ysg = cvx_sign( y );
-xzr = ~cvx_isnonzero( x, true );
-yzr = ~cvx_isnonzero( y, true );
+vx = cvx_classify( x );
+vy = cvx_classify( y );
+nn = nneg(vx)|nneg(vy);
+np = npos(vx)&npos(vy);
 cvx_begin
     epigraph variable z( sz );
     x <= z; %#ok
     y <= z; %#ok
-    cvx_setnneg( fastref( z, (xsg>0)|(ysg>0)|xzr|yzr ) );
-    cvx_setnpos( fastref( z, ((xsg<0)|xzr)&((ysg<0)|yzr) ) );
+    cvx_setnneg( cvx_subsref( z, nn ) );
+    cvx_setnpos( cvx_subsref( z, np ) );
 cvx_end
 
-function x = max_r1( x )
-if x.size_ > 1,
-    x = max( cvx_constant( x ), [], 1 );
-end
+function x = max_r1( x, y ) %#ok
+x = builtin( 'max', x, [], 1 );
 
-function x = max_r2( x )
+function x = max_r2( x, y ) %#ok
 nx = x.size_(1);
 if nx > 1,
     nv = x.size_(2); %#ok
@@ -121,17 +120,23 @@ if nx > 1,
     x = cvx_optval;
 end
 
-function x = max_r3( x )
+function x = max_r3( x, y ) %#ok
+persistent nneg npos
+if isempty( nneg ),
+    nneg = cvx_remap( 'nonnegative', 'p_nonconst' );
+    npos = cvx_remap( 'nonpositive', 'n_nonconst' );
+end
 nx = x.size_(1);
 if nx > 1,
     nv = x.size_(2); %#ok
-    xsg = cvx_sign( x );
-    xzr = ~cvx_isnonzero( x, true );
+    vx = cvx_classify(x);
+    nn = any(nneg(vx),1);
+    np = all(npos(vx),1);
     cvx_begin
         epigraph variable z( 1, nv )
         x <= repmat( z, nx, 1 ); %#ok
-        cvx_setnneg( fastref( z, any((xsg>0)|xzr,1) ) );
-        cvx_setnpos( fastref( z, all((xsg<0)|xzr,1) ) );
+        cvx_setnneg( cvx_subsref( z, nn ) );
+        cvx_setnpos( cvx_subsref( z, np ) );
     cvx_end
     x = cvx_optval;
 end

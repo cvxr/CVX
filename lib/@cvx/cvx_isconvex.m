@@ -1,5 +1,12 @@
-function y = cvx_isconvex( x )
-y = nnz( cvx_vexity( x ) < 0 ) == 0;
+function y = cvx_isconvex( x, full )
+persistent remap
+if isempty( remap ),
+	remap = cvx_remap('convex');
+end
+y = remap( cvx_classify( x ) );
+if nargin < 2 || ~full,
+	y = all( y(:) );
+end
 
 % Copyright 2005-2014 CVX Research, Inc.
 % See the file LICENSE.txt for full copyright information.

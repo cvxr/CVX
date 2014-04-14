@@ -1,4 +1,4 @@
-function v = cvx( s, b, d, clean )
+function v = cvx( v, b, d )
 
 %CVX   The CVX disciplined convex programming system.
 %   CVX is a modeling framework for building, constructing, and solving
@@ -15,54 +15,43 @@ function v = cvx( s, b, d, clean )
 %      cvx_where
 %   at the command prompt.
 
+if isa( v, 'cvx' ), 
+    return; 
+end
 switch nargin,
-    case 2,
-        d = [];
-        clean = false;
-    case 3,
-        clean = true;
-    case 1,
-        if isa( s, 'cvx' ),
-            v = s;
-        else
-            v = class( struct( 'size_', size( s ), 'basis_', sparse( s(:).' ), 'dual_', '', 'dof_', [], 'slow_', nnz( isinf( s ) | isnan( s ) ) ~= 0 ), 'cvx', cvxobj );
+    case { 2, 3 },
+        switch numel( v ),
+            case 2,
+                s = v;
+            case 1,
+                s = [ v, 1 ];
+            case 0,
+                s = [ 0, 0 ];
+            otherwise,
+                s = v;
+                if s(end) == 1,
+                    s = s( 1 : max( 2, find( s > 1, 1, 'last' ) ) );
+                end
         end
-        return
-    case 0,
-        v = class( struct( 'size_', [ 0, 0 ], 'basis_', sparse( 1, 0 ), 'dual_', '', 'dof_', [], 'slow_', false ), 'cvx', cvxobj );
-        return
-end
-slow = false;
-if isempty( b ),
-    b = sparse( 1, prod( s ) );
-end
-switch numel( s ),
-    case 2,
+        if isempty( b ),
+            b = sparse( 1, prod( s ) );
+        else
+            b = sparse( b );
+        end
+        if nargin < 3,
+            d = prod( s );
+        end
     case 1,
-        s( 1, 2 ) = 1;
+        b = sparse( v(:).' );
+        s = size( v );
+        d = prod( s );
     case 0,
         s = [ 0, 0 ];
-    otherwise,
-        if s(end) == 1,
-            s = s( 1 : max( 2, find( s > 1, 1, 'last' ) ) );
-        end
+        b = sparse( 1, 0 );
+        d = 0;
 end
-% if ~all( isfinite( nonzeros( b ) ) ),
-%     slow = true;
-%     tt = any( isnan( b ), 1 ) | sum( isinf( b ), 1 ) > isinf( b( 1, : ) );
-%     b( :, tt ) = 0;
-%     b( 1, tt ) = NaN;
-% end
-if clean,
-    b1 = b( 1, : );
-    if nnz( b ) == nnz( b1 ),
-        v = reshape( cvx_sparse_if( b1 ), s );
-        return
-    end
-end
-
-v = class( struct( 'size_', s, 'basis_', b, 'dual_', '', 'dof_', d, 'slow_', slow ), 'cvx', cvxobj );
-
+v = class( struct( 'size_', s, 'basis_', b, 'dof_', d, 'dual_', '' ), 'cvx', cvxobj );
+    
 % Copyright 2005-2014 CVX Research, Inc.
 % See the file LICENSE.txt for full copyright information.
 % The command 'cvx_where' will show where this file is located.

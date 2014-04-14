@@ -1,15 +1,4 @@
 function y = newvar( prob, name, siz, str, geo )
-error( nargchk( 2, 5, nargin ) ); %#ok
-
-%
-% Check problem
-%
-
-if ~isa( prob, 'cvxprob' ),
-    error( 'First argument must be a cvxprob object.' );
-end
-p = prob.index_;
-global cvx___
 
 %
 % Check name
@@ -19,22 +8,20 @@ if isempty( name ),
     nstr = [];
 elseif ischar( name ),
     nstr = struct( 'type', '.', 'subs', name );
-elseif ~isstruct( name ),
-    error( 'Second argument must be a string or a subscript structure array.' );
 else
     nstr = name;
     name = cvx_subs2str( name, [ 1, 0, 1 ], 1 );
     name(1) = [];
-    if ~isequal( nstr(1).type, '.' ),
-        error( 'Invalid subscript structure: first element must be a field reference.' );
-    end
 end
 
 %
 % Retrieve an existing variable, and check for conflicts
 %
 
-vars = cvx___.problems( p ).variables;
+global cvx___
+p = prob.index_;
+pstr = cvx___.problems( p );
+vars = pstr.variables;
 if ~isempty( nstr ),
     try
         y = builtin( 'subsref', vars, nstr );
@@ -57,7 +44,7 @@ end
 % Check for conflict with dual variable
 %
 
-if ~isempty( nstr ) && isfield( cvx___.problems( p ).duals, nstr(1).subs ),
+if ~isempty( nstr ) && isfield( pstr.duals, nstr(1).subs ),
     error( 'Primal/dual variable name conflict: %s', nstr(1).subs );
 end
 
@@ -66,7 +53,7 @@ end
 %
 
 if nargin == 2,
-    y = cvx___.problems( p ).variables;
+    y = vars;
     try
         y = subsref( y, name );
         return
@@ -133,18 +120,15 @@ else
     %
 
     geo = any( geo( : ) );
-    ndim = length( cvx___.reserved );
+    ndim = length( cvx___.classes );
     ndim = ndim + 1 : ndim + dof;
     nmel = ( 1 + geo ) * dof;
-    cvx___.reserved( end + nmel, 1 ) = 0;
-    cvx___.vexity( end + dof, 1 ) = 0;
-    cvx___.sign( end + dof, 1 ) = 0;
+    cvx___.classes( end + 1 : end + dof, 1 ) = int8(9);
     cvx___.canslack( end + 1 : end + nmel, 1 ) = true;
     cvx___.readonly( end + 1 : end + nmel, 1 ) = p;
     cvx___.logarithm( end + dof, 1 ) = 0;
     if geo,
-        cvx___.vexity( end + 1 : end + dof, 1 ) = 1;
-        cvx___.sign( end + 1 : end + dof, 1 ) = 1;
+        cvx___.classes( end + 1 : end + dof, 1 ) = int8(16);
         cvx___.logarithm( end + 1 : end + dof, 1 ) = ndim';
         ndim = ndim(end) + 1 : ndim(end) + dof;
         cvx___.exponential( end + 1 : end + dof, 1 ) = ndim';
@@ -166,7 +150,7 @@ else
             str2 = str2 * str;
         end
     end
-    y = cvx( siz, str2, dof * ( 1 - 2 * geo ), false );
+    y = cvx( siz, str2 );
 
 end
 

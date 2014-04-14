@@ -1,4 +1,4 @@
-function z = quad_over_lin( x, y, dim )
+function z = quad_over_lin( varargin )
 
 %QUAD_OVER_LIN Sum of squares over linear.
 %   Z=QUAD_OVER_LIN(X,Y), where X is a vector and Y is a scalar, is equal to
@@ -25,34 +25,47 @@ function z = quad_over_lin( x, y, dim )
 % Check arguments
 %
 
-error( nargchk( 2, 3, nargin ) ); %#ok
-if ~isreal( y ),
-    error( 'Second argument must be real.' );
-elseif nargin < 3 || isempty( dim ),
-    dim = cvx_default_dimension( size( x ) );
-elseif ~cvx_check_dimension( dim, true ),
-    error( 'Third argument, if supplied, must be a positive integer.' );
-elseif dim == 0,
-    dim = ndims( x ) + 1;
+persistent params
+if isempty( params ),
+    params.map = cvx_remap( ...
+        { { 'any' }, { 'nonpositive' } }, ...
+        { { 'constant' }, { 'positive' } }, ...
+        { { 'l_convex' },  { 'l_concave' } }, ...
+        { { 'l_concave' }, { 'l_convex' } }, ...
+        { { 'affine', 'p_convex', 'n_concave' }, { 'positive' } }, ...
+        { { 'affine', 'p_convex', 'n_concave' }, { 'concave' } }, ...
+        [ 0, 1, 2, 2, 3, 4 ] );
+    params.funcs = { @qol_cnst, @qol_log, @qol_sqr, @qol_lin };
+    params.constant = 1;
+    params.name = 'quad_over_lin';
 end
 
-%
-% Perform calculation
-%
+try
+    [ sx, x, y, dim ] = cvx_get_dimension( -3, varargin );
+    if sx(dim) > 1, x = norms( x, 2, dim ); end
+    z = cvx_binary_op( params, x, y );
+catch exc
+    if strncmp( exc.identifier, 'CVX:', 4 ), throw( exc );
+    else rethrow( exc ); end
+end
 
-z = sum_square( x, dim );
-if length( y ) ~= 1 && ~isequal( size( z ), size( y ) ),
-    error( 'Input size mismatch.' );
-end
-temp = y <= 0;
-inf_fix = any( temp );
-if inf_fix,
-    y( temp ) = 1;
-end
-z = z ./ y;
-if inf_fix,
-    z( temp ) = +Inf;
-end
+function z = qol_cnst( x, y )
+z = x .^ 2 / y;
+
+function z = qol_log( x, y )
+z = exp( 2 * log( x ) - y );
+
+function z = qol_sqr( x, y )
+z = square( x ) ./ y;
+
+function z = qol_lin( x, y ) %#ok
+sz = max( size(x), size(y) );
+cvx_begin
+    epigraph variable z( sz ) nonnegative_
+    y = cvx_accept_concave( y );
+    x = cvx_accept_cvxccv( x );
+    { x, y, z } == rotated_lorentz( sz, length(sz)+1, ~isreal(x) ); %#ok
+cvx_end
 
 % Copyright 2005-2014 CVX Research, Inc.
 % See the file LICENSE.txt for full copyright information.

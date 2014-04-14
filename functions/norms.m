@@ -1,4 +1,4 @@
-function cvx_optval = norms( x, p, dim )
+function y = norms( varargin )
 
 %NORMS   Computation of multiple vector norms.
 %   NORMS( X ) provides a means to compute the norms of multiple vectors
@@ -25,45 +25,66 @@ function cvx_optval = norms( x, p, dim )
 %       non-convex "norms" are used within CVX expressions. NORMS is
 %       nonmonotonic, so its input must be affine.
 
-%
-% Check second argument
-%
-
-error( nargchk( 1, 3, nargin ) ); %#ok
-if nargin < 2 || isempty( p ),
-    p = 2;
-elseif ~isnumeric( p ) || numel( p ) ~= 1 || ~isreal( p ),
-    error( 'Second argument must be a real number.' );
-elseif p < 1 || isnan( p ),
-    error( 'Second argument must be between 1 and +Inf, inclusive.' );
-end
-    
-%
-% Check third argument
-%
-
-sx = size( x );
-if nargin < 3 || isempty( dim ),
-    dim = cvx_default_dimension( sx );
-elseif ~cvx_check_dimension( dim, false ),
-    error( 'Third argument must be a valid dimension.' );
-elseif isempty( x ) || dim > length( sx ) || sx( dim ) == 1,
-    p = 1;
+persistent params
+if isempty( params ),
+    params.map = cvx_remap( { 'constant' ; 'l_convex' ; { 'p_convex', 'p_concave', 'affine' } } );
+    params.funcs = { @norms_1, @norms_1, @norms_2 };
+    params.zero = 0;
+    params.reduce = true;
+    params.reverse = false;
+    params.constant = 1;
+    params.fname = 'norms';
+    params.dimarg = [];
 end
 
-%
-% Compute the norms
-%
+try
+    [ sx, x, p, dim ] = cvx_get_dimension( 3, varargin );
+    if nargin < 2 || isempty(p),
+        p = 2;
+    elseif ~( isnumeric(p) && numel(p)==1 && isreal(p) && p >= 1 ),
+        error( 'Second argument must be a scalar between 1 and +Inf, inclusive.' );
+    end
+    if sx(dim) == 0,
+        sx(dim) = 1;
+        y = zeros( sx, 1 );
+        if isa( x, 'cvx' ), y = cvx( y ); end
+    elseif sx(dim) == 1,
+        y = abs( x );
+    elseif p == 1,
+        y = sum( abs( x ), dim );
+    elseif p == Inf,
+        y = max( abs( x ), [], dim );
+    else
+        y = cvx_reduce_op( params, x, dim, p );
+    end
+catch exc
+    if strncmp( exc.identifier, 'CVX:', 4 ), throw( exc ); 
+    else rethrow( exc ); end
+end
 
-switch p,
-    case 1,
-        cvx_optval = sum( abs( x ), dim );
-    case 2,
-        cvx_optval = sqrt( sum( x .* conj( x ), dim ) );
-    case Inf,
-        cvx_optval = max( abs( x ), [], dim );
-    otherwise,
-        cvx_optval = sum( abs( x ) .^ p, dim ) .^ ( 1 / p );
+function y = norms_1( x, p )
+y = sum( abs( x ) .^ p, 1 ) .^ ( 1 / p );
+
+function y = norms_2( x, p )
+[nx,nv] = size(x);
+y = [];
+x = cvx_accept_cvxccv( x );
+if p == 2,
+    cvx_begin
+        epigraph variable y( 1, nv )
+        { x, y } == lorentz( [ nx, nv ], 1, ~isreal( x ) ); %#ok
+        cvx_setnneg(y);
+    cvx_end
+else
+    z = []; y = [];
+    cvx_begin
+        variable z( nx, nv )
+        epigraph variable y( 1, nv ) nonnegative_
+        if isreal(x), cmode = 'abs'; else cmode = 'cabs'; end
+        { cat( 3, z, repmat(y,[nx,1]) ), x } ...
+            == geo_mean_cone( [nx,nv,2], 3, [1/p,1-1/p], cmode ); %#ok
+        sum( z ) == y; %#ok
+    cvx_end
 end
 
 % Copyright 2005-2014 CVX Research, Inc.

@@ -1,4 +1,4 @@
-function z = min( x, y, dim )
+function z = min( varargin )
 
 %   Disciplined convex/geometric programming information:
 %       MAX is convex, log-log-concave, and nondecreasing in its first
@@ -6,31 +6,33 @@ function z = min( x, y, dim )
 %       both arguments must be concave (or affine). In disciplined 
 %       geometric programs, both arguments must be log-concave/affine.
 
-persistent remap remap2 funcs funcs2
 if nargin == 2,
     
     %
     % min( X, Y )
     %
 
-    if isempty( remap ),
-        remap = cvx_remap( ...
+    persistent bparam %#ok
+    if isempty( bparam ),
+        bparam.map = cvx_remap( ...
             { { 'real' } }, ...
             { { 'nonpositive', 'n_nonconst' }, { 'nonnegative', 'p_nonconst' } }, ...
             { { 'nonnegative', 'p_nonconst' }, { 'nonpositive', 'n_nonconst' } }, ...
             { { 'l_concave', 'positive' } }, ...
             { { 'concave' } } );
-        funcs = { @min_b1, @min_b2, @min_b3, @min_b4, @min_b5 };
+        bparam.constant = 1;
+        bparam.funcs = { @min_b1, @min_b2, @min_b3, @min_b4, @min_b5 };
+        bparam.name = 'min';
     end
     
     try
-        z = binary_op( 'min', funcs, remap, x, y );
+        z = binary_op( bparam, varargin{:} );
     catch exc
-        if isequal( exc.identifier, 'CVX:DCPError' ), throw( exc ); 
+        if strncmp( exc.identifier, 'CVX:', 4 ), throw( exc ); 
         else rethrow( exc ); end
     end
 
-elseif nargin > 1 && ~isempty( y ),
+elseif nargin > 1 && ~isempty( varargin{2} ),
 
     error( 'MIN with two matrices to compare and a working dimension is not supported.' );
         
@@ -40,26 +42,20 @@ else
     % min( X, [], dim )
     %
 
-    persistent params
+    persistent params %#ok
     if isempty( params ),
-        params.map     = cvx_remap( { 'real' ; 'l_concave' ; 'concave' } );
-        params.funcs   = { @min_r1, @min_r2, @min_r3 };
-        params.zero    = [];
-        params.reduce  = true;
-        params.reverse = false;
-        params.dimarg  = 2;
-        params.name    = 'min';
+        params.map      = cvx_remap( { 'real' ; 'l_concave' ; 'concave' } );
+        params.funcs    = { @min_r1, @min_r2, @min_r3 };
+        params.constant = 1;
+        params.zero     = [];
+        params.reduce   = true;
+        params.reverse  = false;
+        params.name     = 'min';
+        params.dimarg   = 3;
     end
-    
-    if nargin > 1 && ~isempty( y ),
-        error( 'MIN with two matrices to compare and a working dimension is not supported. ');
-    end
-    if nargin < 3, 
-        dim = []; 
-    end
-    
+
     try
-        y = reduce_op( params, x, dim );
+        z = cvx_reduce_op( params, varargin{:} );
     catch exc
         if strncmp( exc.identifier, 'CVX:', 4 ), throw( exc ); 
         else rethrow( exc ); end
@@ -68,8 +64,7 @@ else
 end 
 
 function z = min_b1( x, y )
-% constant
-z = cvx( min( cvx_constant( x ), cvx_constant( y ) ) );
+z = builtin( 'min', x, y );
 
 function z = min_b2( x, y ) %#ok
 % min( nonnegative, nonpositive ) (pass-through x)
@@ -90,25 +85,30 @@ cvx_begin gp
 cvx_end
 
 function z = min_b5( x, y )
-z = [];
-sz = [max(numel(x),numel(y)),1]; %#ok
+persistent nneg npos
+if isempty( nneg ),
+    nneg = cvx_remap( 'nonnegative', 'p_nonconst' );
+    npos = cvx_remap( 'nonpositive', 'n_nonconst' );
+end
 % linear
-xsg = cvx_sign( x );
-ysg = cvx_sign( y );
-xzr = ~cvx_isnonzero( x, true );
-yzr = ~cvx_isnonzero( y, true );
+z = [];
+sz = [ max(numel(x),numel(y)), 1 ]; %#ok
+vx = cvx_classify( x );
+vy = cvx_classify( y );
+nn = nneg(vx)&nneg(vy);
+np = npos(vx)|npos(vy);
 cvx_begin
     hypograph variable z( sz )
     x >= z; %#ok
     y >= z; %#ok
-    cvx_setnpos( fastref( z, (xsg<0)|xzr|(ysg<0)|yzr ) );
-    cvx_setnneg( fastref( z, ((xsg>0)|xzr)&((ysg>0)|yzr) ) );
+    cvx_setnneg( cvx_subsref( z, nn ) );
+    cvx_setnpos( cvx_subsref( z, np ) );
 cvx_end
 
-function x =  min_r1( x )
-x = min( cvx_constant( x ), [], 1 );
+function x =  min_r1( x, y ) %#ok
+x = builtin( 'min', x, [], 1 );
 
-function x = min_r2( x )
+function x = min_r2( x, y ) %#ok
 nx = x.size_(1);
 if nx > 1,
     nv = x.size_(2); %#ok
@@ -119,17 +119,23 @@ if nx > 1,
     x = cvx_optval;
 end
 
-function x = min_r3( x )
+function x = min_r3( x, y ) %#ok
+persistent nneg npos
+if isempty( nneg ),
+    nneg = cvx_remap( 'nonnegative', 'p_nonconst' );
+    npos = cvx_remap( 'nonpositive', 'n_nonconst' );
+end
 nx = x.size_(1);
 if nx > 1,
     nv = x.size_(2); %#ok
-    xsg = cvx_sign( xt );
-    xzr = ~cvx_isnonzero( xt, true );
+    vx = cvx_classify( x );
+    nn = all(nneg(vx),1);
+    np = any(npos(vx),1);
     cvx_begin
         hypograph variable zt( 1, nv )
         xt >= repmat( zt, nx, 1 ); %#ok
-        cvx_setnpos( fastref( zt, any((xsg<0)|xzr,1) ) );
-        cvx_setnneg( fastref( zt, all((xsg>0)|xzr,1) ) );
+        cvx_setnneg( cvx_subsref( z, nn ) );
+        cvx_setnpos( cvx_subsref( z, np ) );
     cvx_end
     x = cvx_optval;
 end

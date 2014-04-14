@@ -1,4 +1,4 @@
-function z = plus( x, y, op, cheat )
+function z = plus( x, y )
 
 %   Disciplined convex programming information for PLUS:
 %      Both terms in a sum must have the same curvature. Real affine
@@ -19,60 +19,31 @@ function z = plus( x, y, op, cheat )
 
 % Determine sizes
 
+persistent params
+if isempty( params ),
+    params.map   = cvx_remap( ...
+        { { 'affine' } }, ...
+        { { 'convex' }, { 'concave' } }, ...
+        [1,1,1] );
+    params.funcs = { @plus_ };
+    params.name  = '+';
+end
+
 try
-    [ x, y, sz, xs, ys ] = cvx_broadcast( x, y );
+    z = binary_op( params, x, y );
 catch exc
-    if isequal( exc.identifier, 'CVX:DCPError' ), throw( exc ); 
+    if strncmp( exc.identifier, 'CVX:', 4 ), throw( exc ); 
     else rethrow( exc ); end
 end
-nn = prod( sz );
-if ~nn, 
-    z = zeros( sz ); 
-    return; 
-end
 
-% Build basis
-
-x  = cvx( x );
-y  = cvx( y );
-bx = x.basis_;
-by = y.basis_;
-if xs,
-    bx = bx( :, ones( 1, nn ) );
-elseif ys,
-    by = by( :, ones( 1, nn ) );
-end
-[ nx, nv ] = size( bx );
-ny = size( by, 1 );
-if nx < ny
-    if issparse( by ), bx = sparse( bx ); end
-    bx = [ bx ; sparse( ny - nx, nv ) ];
-elseif ny < nx,
-    if issparse( bx ), by = sparse( by ); end
-    by = [ by ; sparse( nx - ny, nv ) ];
-end
-if nargin >= 3 && op == '-',
-    bz = bx - by;
-else
-    bz = bx + by;
-end
-
-% Build object
-
-z = cvx( sz, bz );
-
-% Check
-
-if nargin < 4 || ~cheat,
-    if nargin < 3, 
-        op = '+'; 
-    end
-    try
-        cvx_dcp_error( x, y, z, op );
-    catch exc
-        throw( exc );
-    end
-end
+function z = plus_( x, y )
+x = cvx_basis( x );
+y = cvx_basis( y );
+mx = max(size(x),size(y));
+x(end+1:mx(1),:) = 0;
+y(end+1:mx(1),:) = 0;
+z = bsxfun( @plus, x, y );
+z = cvx( mx(2), z );
 
 % Copyright 2005-2014 CVX Research, Inc.
 % See the file LICENSE.txt for full copyright information.

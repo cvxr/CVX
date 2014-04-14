@@ -12,7 +12,18 @@ function z = mldivide( x, y )
 %      must obey the same rules as outlined in the help for CVX/MTIMES.
 
 try
-    z = mtimes( x, y, '\' );
+    sz = size( x );
+    if all( sz == 1 ),
+        z = times( x, y, '\' );
+    elseif length( sz ) > 2,
+        error( 'Inputs must be 2-D, or at least one input must be scalar.' );
+    elseif sz( 1 ) ~= sz( 2 ),
+        error( 'Non-square matrix divisors are not supported in CVX.' );
+    elseif ~cvx_isconstant( x ),
+        error( 'Matrix divisors must be constant.' );
+    else
+        z = mtimes( cvx_constant( x ), y, '\' );
+    end
 catch exc
 	if isequal( exc.identifier, 'CVX:DCPError' ), throw( exc ); 
 	else rethrow( exc ); end

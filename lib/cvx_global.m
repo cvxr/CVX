@@ -22,7 +22,8 @@ c_type = cell(1,length(commands));
 [ c_type{:} ] = deal('C');
 keywords = { 'in', 'dual', 'epigraph', 'expression', 'expressions', ...
     'hypograph', 'maximize', 'maximise', 'minimize', 'minimise', ...
-    'subject', 'variable', 'variables' };
+    'subject', 'variable', 'variables', ...
+    'epigraph_', 'hypograph_' };
 k_type = cell(1,length(keywords)); 
 [ k_type{:} ] = deal('K');
 structures = { 'banded', 'binary', 'complex', 'diagonal', 'hankel', ...
@@ -30,7 +31,7 @@ structures = { 'banded', 'binary', 'complex', 'diagonal', 'hankel', ...
     'lower_triangular', 'nonnegative', 'scaled_identity', ...
     'skew_symmetric', 'semidefinite', 'sparse', 'symmetric', ...
     'toeplitz', 'tridiagonal', 'upper_bidiagonal', 'upper_hankel', ...
-    'upper_hessenberg', 'upper_triangular' };
+    'upper_hessenberg', 'upper_triangular', 'nonnegative_' };
 s_type = cell(1,length(structures)); 
 [ s_type{:} ] = deal('S');
 reserved = cell2struct([c_type,k_type,s_type],[commands,keywords,structures],2);
@@ -41,13 +42,10 @@ cvx___.id          = 0;
 cvx___.pause       = false;
 cvx___.quiet       = false;
 cvx___.profile     = false;
-cvx___.reserved    = 1;
 cvx___.logarithm   = 0;
 cvx___.exponential = 0;
-cvx___.vexity      = 0;
-cvx___.sign        = 0;
+cvx___.classes     = int8(3);
 cvx___.exp_used    = false;
-cvx___.nan_used    = false;
 cvx___.canslack    = false;
 cvx___.readonly    = 0;
 cvx___.needslack   = false(0,1);

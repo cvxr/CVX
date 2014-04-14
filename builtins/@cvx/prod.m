@@ -1,4 +1,4 @@
-function y = prod( varargin )
+function y = prod( x, dim )
 
 %   Disciplined geometric programming information for PROD:
 %      PROD(X) and PROD(X,DIM) are vectorized versions of multiplication
@@ -16,26 +16,25 @@ function y = prod( varargin )
 
 persistent params
 if isempty( params ),
-	params.map     = cvx_remap( { 'constant' ; 'l_convex' ; 'l_concave' } );
-	params.funcs   = { @prod_1, @prod_2, @prod_2 };
-	params.zero    = 1;
-	params.reduce  = true;
-	params.reverse = true;
-	params.dimarg  = 2;
-	params.name    = 'prod';
+	params.map      = cvx_remap( { 'constant' ; 'l_convex' ; 'l_concave' } );
+	params.funcs    = { @prod_1, @prod_2, @prod_2 };
+	params.zero     = 1;
+	params.reduce   = true;
+	params.reverse  = true;
+	params.constant = 1;
+	params.dimarg   = 2;
+	params.name     = 'prod';
 end
 
 try
-    y = reduce_op( params, varargin{:} );
+    y = cvx_reduce_op( params, varargin{:} );
 catch exc
     if strncmp( exc.identifier, 'CVX:', 4 ), throw( exc ); 
     else rethrow( exc ); end
 end
 
 function x = prod_1( x )
-if x.size_(2) ~= 1,
-	x = cvx( prod( cvx_constant( x ), 2 ) );
-end
+x = prod( x, 2 );
 
 function x = prod_2( x )
 s = x.size_;

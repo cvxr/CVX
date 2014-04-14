@@ -1,75 +1,80 @@
-function estr = cvx_dcp_error( varargin )
+function estr = cvx_dcp_error( op, mode, x, varargin )
 
-x = varargin{1};
-estr = '';
-if isempty( x ), return; end
-op = varargin{end};
+nargs = nargin - 3;
 y = [];
-tt = [];
-if nargin == 3,
-    if iscell( varargin{2} ),
-        x = [ x, varargin{2} ];
-    else
-        tt = varargin{2};
-    end
-elseif nargin == 4,
-    y = varargin{2};
-    tt = varargin{3};
+switch mode,
+case { 'binary', 'mmult' },
+    y = varargin{1};
+    varargin(1) = [];
+    nargs = nargs - 1;
 end
-if iscell( x ) && size( x, 2 ) == 2,
-    y = x(:,2);
-    x = x(:,1);
-end
-if isa( tt, 'cvx' ),
-    tt = cvx_classify( tt ) == 19;
-end
-if ~isempty(tt),
-    tt = find(tt);
-    if isempty(tt),
-        return;
-    end
-end
-strs = {};
-for k = 1 : max(numel(x),numel(y)),
-    if isempty( tt ), vk = k; else vk = tt(k); end
-    strx = get_arg( x, vk );
-    if isempty( y ),
-        if op(1) >= 'a' && op(1) <= 'z',
-            strx = [ op, '( ', strx, ' )' ]; %#ok
-        else
-            strx = [ op, ' ', strx ]; %#ok
+strx = {};
+maxed = false;
+switch mode,
+    case 'unary',
+        for k = 1 : numel(x),
+            if length(strx)==4, maxed = true; break; end
+            s = get_arg( x, k );
+            if ~any(strcmp(s,strx)), strx{end+1} = s; end %#ok
         end
-    else
-        stry = get_arg( y, vk );
-        if op(1) >= 'a' && op(1) <= 'z',
-            strx = [ op, '( ', strx, ', ', stry, ' )' ]; %#ok
-        else
-            strx = [ strx, ' ', op, ' ', stry ]; %#ok
+    case 'binary',
+        nx = numel(x); ny = numel(y);
+        if nx == 1, sx = get_arg( x, 1 ); end
+        if ny == 1, sy = get_arg( y, 1 ); end
+        for k = 1 : max(numel(x),numel(y)); 
+            if length(strx)==4, maxed = true; break; end
+            if nx > 1, sx = get_arg( x, k ); end
+            if ny > 1, sy = get_arg( y, k ); end
+            if op(1) >= 'a' && op(1) <= 'z',
+                s = [ sx, ', ' sy ];
+            else
+                s = [ sx, ' ', op, ' ', sy ];
+            end
+            if ~any(strcmp(s,strx)), strx{end+1} = s; end %#ok
         end
-    end
-    strs{end+1} = strx; %#ok
+    case 'reduce',
+        for k = 1 : size(x,2),
+            if length(strx)==4, maxed = true; break; end
+            s = get_arg( { x(:,k) }, 1 );
+            if ~any(strcmp(s,strx)), strx{end+1} = s; end %#ok
+        end
+    case 'mmult',
+        strx{1} = get_arg( { x }, 1 );
+    case 'misc',
+        if iscell( x ),
+            strx = x;
+        else
+            strx = { x };
+        end
 end
-[strs,ia] = unique(strs);
-[ia,ndxs] = sort(ia); %#ok
-strs = strs(ndxs);
-if length( strs ) == 1,
+for k = 1 : nargs,
+    strx = strcat( strx, [ ', ', get_arg( varargin, k ) ] );
+end
+if op(1) >= 'a' && op(1) <= 'z',
+    strx = strcat( { [ op, '( ' ] }, strx );
+    strx = strcat( strx, ' )' );
+elseif ~isequal( mode, 'binary' ),
+    strx = strcat( [ op, ' ' ], strx );
+end
+if length( strx ) == 1,
     plural = '';
-    strs = strs{1};
+    strx = strx{1};
 else
     plural = 's';
-    strs = sprintf( '\n        %s', strs{:} );
+    if maxed, strx{end+1} = '... and others'; end
+    strx = sprintf( '\n        %s', strx{:} );
 end
 switch op,
     case { '<', '<=', '>', '>=', '==' },
         type = 'constraint';
     case '~=',
         type = 'constraint';
-        strs = sprintf( '%s\n   Not-equal (~=) constraints are never allowed in CVX.', strs );
+        strx = sprintf( '%s\n   Not-equal (~=) constraints are never allowed in CVX.', strx );
     otherwise,
         type = 'operation';
 end
 try
-    error( 'CVX:DCPError', 'Disciplined convex programming error:\n   Invalid %s%s: %s', type, plural, strs );
+    error( 'CVX:DCPError', 'Disciplined convex programming error:\n   Invalid %s%s: %s', type, plural, strx );
 catch estr
     if nargout == 0,
         rethrow( estr );
@@ -82,14 +87,23 @@ if ~iscell( x ) || numel( x ) > 1,
 else
     x = x{vk};
 end
-if cvx_isconstant( x ),
+if isempty( x ),
+    strx = '[]';
+    return
+elseif cvx_isconstant( x ),
     x = cvx_constant( x );
-    if numel(x) > 1 && ~nnz( x ~= x(1) ),
-        x = x(1);
-    end
 end
 if isa( x, 'cvx' ) || isnumeric( x ) && numel( x ) > 1,
-    strx = [ '{', cvx_class( x, true, true, true ), '}' ];
+    strx = [ '{', cvx_class( x, true, true, true ); ];
+    if numel( x ) > 1, 
+        sx = size( x );
+        if length(sx) > 2, tp = 'array';
+        elseif all(sx>1), tp = 'matrix';
+        else tp = 'vector'; 
+        end
+        strx = [ strx, ' ', tp ];
+    end
+    strx = [ strx, '}' ];
 elseif ~isnumeric( x ),
     strx = [ '{', class( x ), '}' ];
 elseif isreal( x ),

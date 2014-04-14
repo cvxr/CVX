@@ -1,5 +1,4 @@
 function y = cvx_isconvex( x, full ) %#ok
-error( nargchk( 1, 2, nargin ) ); %#ok
 if nargin == 2,
     y = ~imag( x );
 elseif isreal( x ),

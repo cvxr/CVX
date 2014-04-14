@@ -23,7 +23,6 @@ function z = mtimes( x, y, oper )
 %      multiplications and additions. Since only log-convex terms can be
 %      summed, both X and Y must be elementwise log-convex/affine.
 
-persistent remap
 if nargin < 3, oper = '*'; end
 
 %
@@ -33,21 +32,17 @@ if nargin < 3, oper = '*'; end
 sx = size( x );
 sy = size( y );
 if all( sx == 1 ) || all( sy == 1 ),
-    try
-        z = times( x, y, oper );
-    catch exc
-        throw( exc );
-    end
+    z = times( x, y, oper );
     return
 elseif length( sx ) > 2 || length( sy ) > 2,
-    error( 'Input arguments must be 2-D.' );
+    error( 'CVX:ArgError', 'Input arguments must be 2-D, or at least one input must be scalar.' );
 elseif sx( 2 ) ~= sy( 1 ),
-    error( 'Inner matrix dimensions must agree.' );
-else
-    sz = [ sx( 1 ), sy( 2 ) ];
+    error( 'CVX:ArgError', 'Inner matrix dimensions do not agree.' );
+elseif sx( 2 ) == 1,
+    z = bsxfun( @times, x, y, oper );
+    return
 end
-nx = prod( sx );
-ny = prod( sy );
+sz = [ sx( 1 ), sy( 2 ) ];
 nz = prod( sz );
 
 %
@@ -55,246 +50,126 @@ nz = prod( sz );
 %
 
 if cvx_isconstant( x ),
-    
-    xC = cvx_constant( x );
+    x = sparse( cvx_constant( x ) );
     if cvx_isconstant( y ),
-        yC = cvx_constant( y );
+        % constant * constant
+        y = sparse( cvx_constant( y ) );
         switch oper,
-            case '/',  z = xC / yC;
-            case '\',  z = xC \ yC;
-            otherwise, z = xC * yC;
-        end
-        if nnz( isnan( z ) ),
-            error( 'Disciplined convex programming error:\n    This expression produced one or more invalid numeric values (NaNs).', 1 ); %#ok
+        case '\',  z = x \ y;
+        case '/',  z = x / y;
+        otherwise, z = x * y;
         end
         z = cvx( z );
-        return
-    elseif isequal( oper, '/' ),
-        error( 'Disciplined convex programming error:\n    Matrix divisor must be constant.', 1 ); %#ok
-    end
-    yA   = cvx_basis( y );
-    raff = false;
-    laff = true;
-    quad = false;
-    cnst = false;
-    posy = false;
-    vpos = false;
-    
-elseif cvx_isconstant( y ),
-
-    yC = cvx_constant( y );
-    if isequal( oper, '\' ),
-        error( 'Disciplined convex programming error:\n    Matrix divisor must be constant.', 1 ); %#ok
-    end
-    xA   = cvx_basis( x );
-    raff = true;
-    laff = false;
-    quad = false;
-    cnst = false;
-    posy = false;
-    vpos = false;
-    
-else
-
-    if isempty( remap ),
-        remap_0 = cvx_remap( 'zero' );
-        remap_1 = cvx_remap( 'nonzero', 'complex' );
-        temp    = ~( remap_0 | remap_1 );
-        remap_2 = cvx_remap( 'affine' ) & temp;
-        remap_4 = cvx_remap( 'l_convex' );
-        remap_5 = cvx_remap( 'l_concave' ) & ~remap_4;
-        remap_4 = remap_4 & temp;
-        remap_3 = cvx_remap( 'valid' ) & ~( remap_0 | remap_1 | remap_2 | remap_4 | remap_5 );
-        remap   = remap_1 + 2 * remap_2 + 3 * remap_3 + 4 * remap_4 + 5 * remap_5 - cvx_remap( 'invalid' );
-    end
-    vx = remap( cvx_classify( x ) );
-    vy = remap( cvx_classify( y ) );
-    xA = cvx_basis( x );
-    yA = cvx_basis( y );
-    xC = cvx_reshape( xA( 1, : ), sx );
-    yC = cvx_reshape( yA( 1, : ), sy );
-    vx = reshape( vx, sx );
-    vy = reshape( vy, sy );
-    cx = xC ~= 0;
-    cy = yC ~= 0;
-    ax = vx == 2;
-    ay = vy == 2;
-    px = vx == 4;
-    py = vy == 4;
-    gx = vx == 5;
-    gy = vy == 5;
-    quad = +ax * +ay;
-    if nnz( quad ) ~= 0,
-        if length( quad ) ~= 1,
-            error( 'Disciplined convex programming error:\n    Only scalar quadratic forms can be specified in CVX\n.', 1 ); %#ok
-        else
-            cx = cx & ~ax;
-            cy = cy & ~ay;
-            xC( ax ) = 0;
-            yC( ay ) = 0;
-        end
-    end
-    cnst = +cx * +cy; %#ok
-    laff = +cx * +( vy > 1 );
-    raff = +( vx > 1 ) * cy;
-    posy = +px * +py;
-    vpos = +gx * +gy;
-    if nnz( raff ) ~= 0,
-        raff = true;
-        cnst = false;
-    elseif nnz( laff ) ~= 0,
-        laff = true;
-        cnst = false;
     else
-        laff = false;
-        raff = false;
-        cnst = true;
+        % constant * everything
+        z = y.basis_(:,reshape(1:prod(sy),sy)');
+        z = reshape( z, [], sy(1) );
+        switch oper,
+        case '\', z = z / sparse( x.' );
+        case '*', z = z * sparse( x.' );
+        end
+        z = reshape( z, [], nz );
+        z = z(:,reshape(1:prod(sz),[sz(2),sz(1)])');
+        z = cvx( sz, z );
     end
-    othr = +( vx > 1 | vx < 0 ) * +( vy > 1 | vy < 0 ) - quad - posy - vpos;
-    if nnz( othr ) ~= 0,
-        error( 'Disciplined convex programming error:\n    Cannot perform the operation {%s} %s {%s}', cvx_class( x ), oper, cvx_class( y ) );
+    if ~cvx_isvalid( z ),
+        cvx_dcp_error( '*', 'mmult', x, y );
     end
-    quad = nnz( quad ) ~= 0;
-    posy = nnz( posy ) ~= 0;
+    return
+end
     
-end
-
-first = true;
-
-if cnst,
-    switch oper,
-    case '\',  z2 = xC \ yC;
-    case '/',  z2 = xC / yC;
-    otherwise, z2 = xC * yC;
-    end
-    if first, z = z2; first = false; else z = z + z2; end %#ok
-end
-
-if raff,
+if cvx_isconstant( y ),
     % everything * constant
-    z2 = x.basis_;
-    if cnst, z2(1,:) = 0; end
-    z2 = reshape( z2, [], sx(2) );
-    [ zC, z2 ] = cvx_sparse_if( yC, z2 );
+    y = sparse( cvx_constant( y ) );
+    z = reshape( x.basis_, [], sx(2) );
     switch oper,
-    case '/',  z2 = z2 / zC;
-    otherwise, z2 = z2 * zC;
+    case '/',  z = z / sparse( y );
+    otherwise, z = z * sparse( y );
     end
-    z2 = reshape( z2, [], nz );
-    z2 = cvx_sparse_if( z2 );
-    z2 = cvx( sz, z2 );
-    if first, z = z2; first = false; else z = z + z2; end
+    z = reshape( z, [], nz );
+    z = cvx( sz, z );
+    if ~cvx_isvalid( z ),
+        cvx_dcp_error( '*', 'mmult', x, y );
+    end
+    return
 end
 
-if laff,
-    % constant * everything
-    z2 = y.';
-    z2 = z2.basis_;
-    if cnst || raff, z2(1,:) = 0; end
-    z2 = reshape( z2, [], sy(1) );
-    [ zC, z2 ] = cvx_sparse_if( xC, z2 );
-    switch oper,
-    case '\', z2 = z2 / zC.';
-    case '*', z2 = z2 * zC.';
-    end
-    z2 = reshape( z2, [], nz );
-    z2 = cvx_sparse_if( z2 );
-    z2 = cvx( [sz(2),sz(1)], z2 );
-    z2 = z2.';
-    if first, z = z2; first = false; else z = z + z2; end
+vx = cvx_classify( x );
+vy = cvx_classify( y );
+
+persistent affnnc lvalid affine
+if isempty( affnnc ),
+    affnnc = cvx_remap( 'affine', 'n_concave', 'p_convex' );
+    affine = cvx_remap( 'affine' );
+    lvalid = cvx_remap( 'l_valid' );
 end
 
-if quad,
-    % affine * affine
-    tt = ax( : ) & ay( : );
-    xA = xA( :, tt ); xB = xA( 1, : ); xA( 1, : ) = 0;
-    yA = yA( :, tt ); yB = yA( 1, : ); yA( 1, : ) = 0;
-    xM = size( xA, 1 ); yM = size( yA, 1 );
-    if xM < yM, xA( yM, end ) = 0;
-    elseif yM < xM, yA( xM, end ) = 0; end
-    %
-    % Quadratic form test 1: See if x == a conj( y ) + b for some real a, b,
-    % so that the quadratic form involves a simple squaring (or sum of squares)
-    %
-    cyA   = conj( yA );
-    alpha = sum( sum( real( xA .* yA ) ) ) ./ max( sum( sum( cyA .* yA ) ), realmin );
-    if sum( sum( abs( xA - alpha * cyA ) ) ) <= 2 * eps * sum( sum( abs( xA ) ) ),
-        beta = xB - alpha * conj( yB );
-        yt = cvx( [ 1, size( yA, 2 ) ], yA ) + yB;
-        if isreal( yA ) && isreal( yB ) && isreal( beta ),
-            beta = ( 0.5 / alpha ) * beta;
-            z2 = alpha * ( sum_square( yt + beta ) - sum_square( beta ) );
-        elseif all( abs( beta ) <= 2 * eps * abs( xB ) ),
-            z2 = alpha * sum_square_abs( yt );
-        else
-            error( 'Disciplined convex programming error:\n    Invalid quadratic form: product is not real.\n', 1 ); %#ok
+if all(affnnc(vx(:))) && all(affnnc(vy(:))),
+    if nz ~= 1,
+        error( 'CVX:DCPError', 'Disciplined convex programming error:\n    Invalid quadratic form: not a scalar.\n' );
+    end
+    % quadratic form test 1: look for x' * y, x = D * conj( y ) + b
+    % where D is diagonal psd or nsd, b is constant
+    xA = x.basis_; 
+    yA = y.basis_;
+    mm = max( size( xA, 1 ), size( yA, 1 ) );
+    xA( end + 1 : mm, : ) = 0;
+    yA( end + 1 : mm, : ) = 0;
+    xB  = xA( 2 : end, : );
+    yB  = yA( 2 : end, : );
+    cyB = conj( yB );
+    alpha = sum( yB .* cyB, 1 );
+    alpha = sum( bsxfun( @times, xB, yB ), 1 ) ./ max( alpha, realmin );
+    if ~nnz( xB - bsxfun( @times, alpha, cyB ) > 2 * eps * sqrt( conj( xB ) .* xB ) ),
+        if any( abs(imag(alpha)) > 2 * eps * abs(real(alpha)) ),
+            error( 'CVX:DCPError', 'Disciplined convex programming error:\n    Invalid quadratic form: not real.\n' );
         end
-    else
-        %
-        % Quadratic form test 2: Extract the quadratic coefficient matrix
-        % and test it for semidefiniteness
-        %
-        dx = find( any( xA, 2 ) | any( yA, 2 ) );
-        zb = length( dx );
-        cxA = conj( xA( dx, : ) );
-        cyA = cyA( dx, : );
-        P  = cxA * cyA.';
-        Q  = cxA * yB.' + cyA * xB.';
-        R  = xB * yB.';
-        P  = 0.5 * ( P + P.' );
-        if ~isreal( R ) || ~isreal( Q ) || ~isreal( P ),
-            error( 'Disciplined convex programming error:\n   Invalid quadratic form: product is complex.', 1 ); %#ok
+        alpha = real( alpha );
+        neg = any( alpha < 0 );
+        if neg && ~all( alpha <= 0 ),
+            error( 'CVX:DCPError', 'Disciplined convex programming error:\n    Invalid quadratic form: neither convex or concave.\n' );
         else
-            xx = cvx( zb, sparse( dx, 1 : zb, 1 ) );
-            [ z2, success ] = quad_form( xx, P, Q, R );
-            if ~success,
-                error( 'Disciplined convex programming error:\n   Invalid quadratic form: neither convex nor concave.', 1 ); %#ok
+            offset = conj(x.basis_(1,:)-alpha.*y.basis_(1,:));
+            if any( abs(imag(offset)) > 2*eps*abs(real(offset)) ),
+                error( 'CVX:DCPError', 'Disciplined convex programming error:\n    Invalid quadratic form: not real.\n' );
             end
+            z = y;
+            if ~isreal( z ), z = abs(z); end
+            z.basis_ = bsxfun( @times, sqrt(abs(alpha)), z.basis_ );
+            z = sum_square( z );
+            if neg, z.basis_ = -z.basis_; end
+            offset = real(offset);
+            if any(offset), z = z + offset * y; end
+            return
         end
     end
-    if first, z = z2; first = false; else z = z + z2; end
-end
-
-if posy,
-    [ ix, jx ] = find( reshape( px, sx ) );
-    vx = log( cvx_subsref( x, px ) );
-    [ iy, jy ] = find( reshape( py, sy ) );
-    vy = log( cvx_subsref( y, py ) );
-    [ iz, jz ] = find( sparse( 1 : nnz(px), jx, 1 ) * sparse( iy, 1 : nnz(py), 1 ) );
-    z2 = exp( vec( cvx_subsref( vx, iz ) ) + vec( cvx_subsref( vy, jz ) ) );
-    z2 = sparse( ix(iz), jy(jz), z2, sz(1), sz(2) );
-    if first, z = z2; first = false; else z = z + z2; end
-end
-
-if vpos,
-    [ ix, jx ] = find( reshape( gx, sx ) );
-    vx = log( cvx_subsref( x, gx ) );
-    [ iy, jy ] = find( reshape( gy, sy ) );
-    vy = log( cvx_subsref( y, gy ) );
-    [ iz, jz ] = find( sparse( 1 : nnz(gx), jx, 1 ) * sparse( iy, 1 : nnz(gy), 1 ) );
-    z2 = exp( vec( cvx_subsref( vx, iz ) ) + vec( cvx_subsref( vy, jz ) ) );
-    z2 = sparse( ix(iz), jy(jz), z2, sz(1), sz(2) );
-    if first, z = z2; first = false; else z = z + z2; end %#ok
-end
-
-check( z );
-
-%
-% Check that the sums are legal
-%
-
-function check( z )
-if ~cvx_isvalid( z )
-    temp = 'Disciplined convex programming error:';
-    tt = isnan( cvx_constant( z ) );
-    if any( tt(:) ),
-        temp = [ temp, '\n    This expression produced one or more invalid numeric values (NaNs).' ];
+    dx = find( any( xA, 2 ) | any( yA, 2 ) );
+    if all(affine(cvx___.classes(dx))),
+        zb  = length( dx );
+        xA  = xA( dx, : );
+        yA  = yA( dx, : );
+        P   = xA * yA.';
+        Q   = xA * y.basis_(1,:).' + yA * x.basis_(1,:).';
+        R   = x.basis_(1,:) * y.basis_(1,:).';
+        if ~isreal( R ) || ~isreal( Q ) || ~isreal( P ),
+            error( 'CVX:DCPError', 'Disciplined convex programming error:\n   Invalid quadratic form: not real.' );
+        elseif ~all(affine(vx(:))) && ~all(affine(vy(:))),
+            xx = cvx( zb, sparse( dx, 1 : zb, 1 ) );
+            [ z, success ] = quad_form( xx, P, Q, R );
+            if ~success,
+                error( 'CVX:DCPError', 'Disciplined convex programming error:\n    Invalid quadratic form: neither convex or concave.\n' );
+            end
+            return
+        end
     end
-    v = cvx_vexity( z );
-    if any( isnan( v( ~tt ) ) ),
-        temp = [ temp, '\n   Illegal affine combination of convex and/or concave terms detected.' ];
-    end
-    error( temp, 1 ); 
+end
+
+if all( lvalid(vx(:)) ) && all( lvalid(vy(:)) ),
+    z = bsxfun( @times, x, reshape( y, [ 1, size(y) ] ) );
+    z = sum( z, 2 );
+    z = reshape( z, sz );
+else
+    cvx_dcp_error( '*', 'mmult', x, y );
 end
 
 % Copyright 2005-2014 CVX Research, Inc.

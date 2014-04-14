@@ -20,10 +20,27 @@ function z = rel_entr( x, y )
 %       to be nonnegative, hence there is no need to add additional
 %       constraints X >= 0 or Y >= 0 to enforce this.
 
-error(nargchk(2,2,nargin)); %#ok
-if ~isreal( x ) || ~isreal( y ),
-    error( 'Arguments must be real.' );
+cvx_expert_check( 'rel_entr', x, y );
+
+persistent params
+if isempty( params ),
+    params.map = cvx_remap( ...
+        { { 'negative' }, { 'any' } }, ...
+        { { 'nonnegative' }, { 'real' } }, ...
+        { { 'r_affine' }, { 'concave' } }, [0,1,2] );
+    params.funcs = { @rel_entr_1, @rel_entr_2 };
+    params.constant = 1;
+    params.name = 'rel_entr';
 end
+
+try
+    z = cvx_binary_op( params, x, y );
+catch exc
+	if strncmp( exc.identifier, 'CVX:', 4 ), throw( exc );
+	else rethrow( exc ); end
+end
+
+function z = rel_entr_1( x, y )            
 t1 = x < 0  | y <= 0;
 t2 = x == 0 & y >= 0;
 x  = max( x, realmin );
@@ -31,6 +48,14 @@ y  = max( y, realmin );
 z  = x .* log( x ./ y );
 z( t1 ) = +Inf;
 z( t2 ) = 0;
+
+function z = rel_entr_2( x, y )
+z = [];
+sz = max( numel(y), numel(x) );
+cvx_begin
+    epigraph variable z( sz );
+    { -z, x, y } == exponential( sz ); %#ok
+cvx_end
 
 % Copyright 2005-2014 CVX Research, Inc.
 % See the file LICENSE.txt for full copyright information.

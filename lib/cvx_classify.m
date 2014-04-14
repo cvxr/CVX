@@ -21,11 +21,10 @@ function v = cvx_classify( x )
 % 18 - log convex posynomial
 % 19 - invalid
 
-v = full( sign( real( x ) ) ) + 2;
-if ~isreal( x ),
-	v( imag( x ) ~= 0 ) = 4;
-end
-v( isnan( x ) ) = 19;
+v = full(sign(real(x))+2);
+if ~isreal( x ), v(imag(x)~=0) = 4; end
+v(isnan(x)) = 19;
+v = int8(v);
 
 % Copyright 2005-2014 CVX Research, Inc.
 % See the file LICENSE.txt for full copyright information.

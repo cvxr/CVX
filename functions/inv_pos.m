@@ -10,11 +10,7 @@ function y = inv_pos( x )
 %         INV_POS is convex and nonincreasing; therefore, when used in CVX
 %         specifications, its argument must be concave (or affine).
 
-error( nargchk( 1, 1, nargin ) ); %#ok
-if ~isreal( x ),
-    error( 'Input must be real.' );
-end
-y = 1.0 ./ max( x, 0 );
+y = recip( pdom( x ) );
 
 % Copyright 2005-2014 CVX Research, Inc.
 % See the file LICENSE.txt for full copyright information.

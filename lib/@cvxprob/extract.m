@@ -4,7 +4,7 @@ if nargin < 2 || nargout < 5, destructive = false; end
 
 global cvx___
 p = cvx___.problems( pp.index_ );
-n = length( cvx___.reserved );
+n = length( cvx___.classes );
 
 %
 % Objective
@@ -67,7 +67,7 @@ else
     end
 end
 if ~isempty( A1 ),
-    zV = cvx_vexity( A2 ); 
+    zV = vex( cvx_classify( A2 ) );
     zQ = ( zV == 0 ) - zV;
     dbcA = [ dbcA ; plus( zQ .* A1, zQ .* A2, '-', true ) ];
     ineqs( end + 1 : end + length( A1 ), : ) = zV ~= 0;
@@ -94,7 +94,7 @@ else
     end
 end
 if ~isempty( A2 ),
-    zV = cvx_vexity( A2 ); 
+    zV = vex( cvx_classify( A2 ) );
     zQ = ( zV == 0 ) - zV;
     dbcA = [ dbcA ; plus( zQ .* A1, zQ .* A2, '-', true ) ];
     ineqs( end + 1 : end + length( A1 ), : ) = zV ~= 0;
@@ -131,6 +131,11 @@ end
 % inequalities may be converted to equations.
 %
 
+persistent vex %#ok
+if isempty( vex ),
+    vex = [0,0,0,NaN,-1,-1,-1,0,0,0,1,1,1,NaN,NaN,1,1,1,1,NaN]';
+end
+
 if any( ineqs ) && any( cvx___.canslack ),
     slacks = find( cvx___.canslack );
     sterms = dbcA( slacks, : );
@@ -139,7 +144,7 @@ if any( ineqs ) && any( cvx___.canslack ),
     sterms = sterms( :, ineqs );
     icount = sum( sterms ~= 0, 2 );
     sterms = sum( sterms, 2 );
-    sdirec = cvx___.vexity( slacks );
+    sdirec = vex(cvx___.classes(slacks));
     nslack = icount == 1 & ecount == 0 & sterms .* sdirec <= 0 & sterms .* oterms >= 0;
     ineqs( any( dbcA( slacks( nslack ), : ), 1 ) ) = false;
 end

@@ -1,4 +1,4 @@
-function cvx_optval = sum_largest( x, k, dim )
+function y = sum_largest( varargin )
 
 %SUM_LARGEST Sum of the largest k values of a vector.
 %   For a real vector X and an integer k between 1 and length(X) inclusive,
@@ -27,63 +27,66 @@ function cvx_optval = sum_largest( x, k, dim )
 %       used in CVX expressions, X must be convex (or affine). k and DIM
 %       must both be constant.
 
-%
-% Check arguments
-%
+%SUM_LARGEST   Internal cvx version.
 
-error( nargchk( 2, 3, nargin ) ); %#ok
-if ~isreal( x ),
-    error( 'First argument must be real.' );
-elseif ~isnumeric( k ) || ~isreal( k ) || length( k ) ~= 1,
-    error( 'Second argument must be a real scalar.' );
-elseif nargin < 3 || isempty( dim ),
-    dim = cvx_default_dimension( size( x ) );
-elseif ~cvx_check_dimension( dim, false ),
-    error( 'Third argument, if supplied, must be a positive integer.' );
+persistent params
+if isempty( params ),
+    params.map = cvx_remap( { 'real' ; 'convex' } );
+    params.funcs = { @sum_largest_cnst, @sum_largest_cvx };
+    params.constant = 1;
+    params.zero = 0;
+    params.reduce = true;
+    params.reverse = false;
+    params.name = 'sum_largest';
+    params.dimarg = [];
 end
 
-%
-% Determine output size
-%
-
-sx = size( x );
-nd = max( dim, length( sx ) );
-sx = [ sx, ones( 1, dim - nd ) ];
-sy = sx;
-sy( dim ) = 1;
-
-%
-% Compute results
-%
-
-if k <= 0,
-
-    cvx_optval = zeros( sy );
-
-elseif k <= 1,
-
-    cvx_optval = k * max( x, [], dim );
-
-elseif k >= sx( dim ),
-
-    cvx_optval = sum( x, dim );
-
-else
-
-    ck = ceil( k );
-    x = sort( x, dim );
-    ndxs = cell( 1, nd );
-    [ ndxs{:} ] = deal( ':' );
-    ndxs{ dim } = size( x, dim ) - ( 0 : ck - 1 );
-    x = x( ndxs{ : } );
-    if k ~= ck,
-        ndxs{ dim } = ck;
-        x( ndxs{ : } ) = ( k - floor( k ) ) * x( ndxs{ : } );
+try
+    [ sx, x, k, dim ] = cvx_get_dimension( 3, varargin );
+    if ~isnumeric( k ) || numel(k) ~= 1 || ~isreal( k ),
+        error( 'Second argument must be real.' );
+    elseif k <= 0,
+        sx( dim ) = 1;
+        y = zeros( sx );
+        if isa( x, 'cvx' ), y = cvx( x ); end
+    elseif k >= sx( dim ),
+        y = sum( x, dim );
+    elseif k <= 1,
+        y = k * max( x, [], dim );
+    else
+        y = cvx_reduce_op( params, x, dim, k );
     end
-    cvx_optval = sum( x, dim );
-
+catch exc
+    if strncmp( exc.identifier, 'CVX:', 4 ), throw(exc);
+    else rethrow(exc); end
 end
+
+function y = sum_largest_cnst( x, k )
+y = sort( x, 1, 'descend' );
+y = sum( y(1:floor(k),:), 1 ) + (k-floor(k)) * y(ceil(k),:);
+
+function z = sum_largest_cvx( x, k )
+[ nx, nv ] = size( x ); %#ok
+persistent nneg npos
+if isempty( nneg ),
+    nneg = cvx_remap( 'nonnegative', 'p_nonconst' );
+    npos = cvx_remap( 'nonpositive', 'n_nonconst' );
+end
+vx = cvx_classify(x);
+nn = any(nneg(vx),1);
+np = all(npos(vx),1);
+z = []; xp = []; yp = [];
+cvx_begin
+    epigraph variable z( 1, nv )
+    variables xp( nx, nv ) yp( 1, nv )
+    z == sum( xp, 1 ) - k * yp; %#ok
+    xp >= repmat( yp, [nx,1] ) + x; %#ok
+    xp >= 0; %#ok
+    cvx_setnneg( cvx_subsref( z, nn ) );
+    cvx_setnpos( cvx_subsref( z, np ) );
+cvx_end
 
 % Copyright 2005-2014 CVX Research, Inc.
 % See the file LICENSE.txt for full copyright information.
 % The command 'cvx_where' will show where this file is located.
+

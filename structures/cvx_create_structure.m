@@ -86,6 +86,8 @@ for k = 2 : nargs,
         uplo = '';
     end
     switch nm,
+        case { 'binary', 'integer', 'nonnegative', 'nonnegative_', 'epigraph_', 'hypograph_', 'geometric_', 'linear_' },
+            itypes{end+1} = nm; %#ok
         case { 'upper', 'lower', 'skew', },
             uplo = nm;
             continue;
@@ -156,8 +158,6 @@ for k = 2 : nargs,
                 error( 'Bandwidth arguments must be nonnegative integers.' );
             end
             bands = min(bands,[lb,ub]);
-        case { 'binary', 'integer', 'nonnegative', 'epigraph_', 'hypograph_', 'geometric_', 'linear_' },
-            itypes{end+1} = nm; %#ok
         otherwise,
             pflags(k) = true;
             if ~exist( [ 'cvx_s_', nm ], 'file' ),
