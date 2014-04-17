@@ -2,9 +2,6 @@ function z = cvxprob( varargin )
 
 global cvx___
 cvx_global
-if ~iscellstr( varargin ),
-    error( 'Arguments must be strings.' );
-end
 
 %
 % Clear out any old problems left at this depth. These will be here due to
@@ -86,6 +83,7 @@ temp = struct( ...
     'bound',         [],         ...
     'iters',         Inf,        ...
     'tol',           Inf,        ...
+    'cleared',       false,      ...
     'depth',         depth, ...
     'self',          z );
 temp.t_variable( 1 ) = true;
@@ -96,6 +94,9 @@ temp.t_variable( 1 ) = true;
 
 for k = 1 : nargin,
     mode = varargin{k};
+    if ~ischar( mode ),
+        error( 'CVX:ArgError', 'Arguments must be strings.' );
+    end
     switch lower( mode ),
         case 'quiet',
             temp.quiet = true;
@@ -104,12 +105,12 @@ for k = 1 : nargin,
             temp.direction = 'find';
         case 'sdp',
             if temp.gp,
-                error( 'The GP and SDP modifiers cannot be used together.' );
+                error( 'CVX:ArgError', 'The GP and SDP modifiers cannot be used together.' );
             end
             temp.sdp = true;
         case 'gp',
             if temp.sdp,
-                error( 'The GP and SDP modifiers cannot be used together.' );
+                error( 'CVX:ArgError', 'The GP and SDP modifiers cannot be used together.' );
             end
             temp.gp = true;
             if cvx___.expert == 0,
@@ -118,7 +119,7 @@ for k = 1 : nargin,
         case 'separable',
             temp.separable = true;
         otherwise,
-            error( 'Invalid CVX problem modifier: %s', mode );
+            error( 'CVX:ArgError', 'Invalid CVX problem modifier: %s', mode );
     end
 end
 

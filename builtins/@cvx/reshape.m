@@ -8,18 +8,15 @@ function x = reshape( x, varargin )
 %
 
 switch nargin,
-    case {0,1},
-        error( 'Not enough input arguments.' );
-    case 2,
-        [ temp, sz ] = cvx_check_dimlist( varargin{1}, true );
-        if ~temp,
-            error( 'Second argument must be a valid dimension list.' );
-        end
-    otherwise,
-        [ temp, sz ] = cvx_check_dimlist( varargin, true );
-        if ~temp,
-            error( 'Second and subsequent arguments must be nonnegative integers.' );
-        end
+case {0,1},
+    error( 'Not enough input arguments.' );
+case 2,
+    [ temp, sz ] = cvx_check_dimlist( varargin{1}, true );
+otherwise,
+    [ temp, sz ] = cvx_check_dimlist( varargin, true );
+end
+if ~temp,
+    error( 'Second argument must be a valid dimension list.' );
 end
 
 %

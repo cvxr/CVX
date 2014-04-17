@@ -1,4 +1,4 @@
-function [ dbCA, cones, dir, Q, P, dualized ] = eliminate( prob, destructive, can_dual )
+function [ dbCA, cones, dir, Q, P, exps, dualized ] = eliminate( prob, destructive, can_dual )
 if nargin < 3, can_dual = nargout >= 6; end
 if nargin < 2, destructive = false; end
 
@@ -20,7 +20,7 @@ if nargin < 2, destructive = false; end
 % that solves an equivalent problem. The original x and y can be recovered
 % from the reduced xx and yy by Q*[1;xx] and P*[1;-yy], respectively.
 
-[ dbCA, cones, dir, Q, P ] = extract( prob, destructive );
+[ dbCA, cones, dir, Q, P, exps ] = extract( prob, destructive );
 dualized = false;
 if size( dbCA, 1 ) == 1, 
     return; 

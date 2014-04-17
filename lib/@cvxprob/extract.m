@@ -1,4 +1,4 @@
-function [ dbcA, cones, dir, Q, P, ineqs ] = extract( pp, destructive, doineqs )
+function [ dbcA, cones, dir, Q, P, exps, ineqs ] = extract( pp, destructive )
 if nargin < 3 || nargout < 6, doineqs = true; end
 if nargin < 2 || nargout < 5, destructive = false; end
 
@@ -223,10 +223,13 @@ P = sparse( [ 1, npre + 2 : ntot + 1 ], 1 : ntot - npre + 1, 1, ntot + 1, size( 
 % Exponential and logarithm indices
 %
 
-if cvx___.exp_used,
-    esrc = find( cvx___.exponential );
-    edst = full( cvx___.exponential( esrc ) );
-    tt   = any(dbcA(esrc,:),2) & any(dbcA(edst,:),2);
+exps = cvx___.exponential;
+if ~isempty( exps ),
+    esrc = find( exps );
+    edst = exps( esrc );
+    tt   = any(dbcA(esrc,:),2) & any(dbcA(edst,:,2));
+    tn   = ~tt;
+    exps = [ esrc(tn), esrc(tn) ];
     if any( tt ),
         % Determine the indices of the exponentials
         esrc = esrc(tt);
@@ -265,7 +268,7 @@ end
 %
 
 if destructive,
-    pop( pp, 'extract' );
+    erase( pp );
 end
 
 % Copyright 2005-2014 CVX Research, Inc.

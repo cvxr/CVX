@@ -9,6 +9,10 @@ if ~isa( prob, 'cvxprob' ),
 end
 global cvx___
 p = prob.index_;
+if length( cvx___.problems ) > p,
+    % Some cruft left over from a previous interrupted problem.
+    pop( cvx___.problems(p+1).self, 'reset' );
+end
 y_orig = y;
 if isa( x, 'cvxcnst' ),
     x = rhs( x );

@@ -37,8 +37,12 @@ function cvx_begin( varargin )
 %   one or more of the subproblems is infeasible or unbounded. The keyword is
 %   ignored for sets and incomplete specifications.
 
-if ~iscellstr( varargin ), error( 'Arguments must be strings.' ); end
-assignin( 'caller', 'cvx_problem', cvxprob( varargin{:} ) );
+try
+    assignin( 'caller', 'cvx_problem', cvxprob( varargin{:} ) );
+catch exc
+    if strncmp( exc.identifier, 'CVX:', 4 ), throw( exc );
+    else rethrow( exc ); end
+end
 
 % Copyright 2005-2014 CVX Research, Inc. 
 % See the file LICENSE.txt for full copyright information.

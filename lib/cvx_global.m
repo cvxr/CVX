@@ -31,34 +31,32 @@ structures = { 'banded', 'binary', 'complex', 'diagonal', 'hankel', ...
     'lower_triangular', 'nonnegative', 'scaled_identity', ...
     'skew_symmetric', 'semidefinite', 'sparse', 'symmetric', ...
     'toeplitz', 'tridiagonal', 'upper_bidiagonal', 'upper_hankel', ...
-    'upper_hessenberg', 'upper_triangular', 'nonnegative_' };
+    'upper_hessenberg', 'upper_triangular', 'nonnegative_', ...
+    'complex_if', 'hermitian_if' };
 s_type = cell(1,length(structures)); 
 [ s_type{:} ] = deal('S');
-reserved = cell2struct([c_type,k_type,s_type],[commands,keywords,structures],2);
+reserved = cell2struct( [ c_type, k_type, s_type ], ...
+    [ commands, keywords, structures ], 2 );
 
 cvx___.reswords    = reserved;
 cvx___.problems    = [];
-cvx___.id          = 0;
 cvx___.pause       = false;
 cvx___.quiet       = false;
 cvx___.profile     = false;
-cvx___.logarithm   = 0;
-cvx___.exponential = 0;
+cvx___.logarithm   = zeros( 0, 1, 'int32' );
+cvx___.exponential = zeros( 0, 1, 'int32' );
 cvx___.classes     = int8(3);
-cvx___.exp_used    = false;
 cvx___.canslack    = false;
 cvx___.readonly    = 0;
-cvx___.needslack   = false(0,1);
 cvx___.cones       = struct( 'type', {}, 'indices', {} );
+cvx___.equalities  = cvx;
+cvx___.needslack   = false(0,1);
+cvx___.linforms    = cvx;
+cvx___.linrepls    = cvx;
+cvx___.uniforms    = cvx;
+cvx___.unirepls    = cvx;
 cvx___.x           = zeros( 0, 1 );
 cvx___.y           = zeros( 0, 1 );
-temp = cvx( [0,1], [] );
-cvx___.n_equality  = 0;
-cvx___.equalities  = {};
-cvx___.linforms    = temp;
-cvx___.linrepls    = temp;
-cvx___.uniforms    = temp;
-cvx___.unirepls    = temp;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Run each shim to connect/reconnect the solvers %
@@ -66,7 +64,10 @@ cvx___.unirepls    = temp;
 
 cur_d = pwd;
 osolvers = cvx___.solvers.list;
-solvers = struct( 'name', {}, 'version', {}, 'location', {}, 'fullpath', {}, 'error', {}, 'warning', {}, 'dualize', {}, 'path', {}, 'check', {}, 'solve', {}, 'settings', {}, 'sname', {}, 'spath', {}, 'params', {}, 'eargs', {} );
+solvers = struct( 'name', {}, 'version', {}, 'location', {}, ...
+    'fullpath', {}, 'error', {}, 'warning', {}, 'dualize', {}, ...
+    'path', {}, 'check', {}, 'solve', {}, 'settings', {}, ...
+    'sname', {}, 'spath', {}, 'params', {}, 'eargs', {} );
 nsolv = length(osolvers);
 nrej = 0;
 for k = 1 : length(osolvers),

@@ -20,6 +20,10 @@ end
 
 global cvx___
 p = prob.index_;
+if length( cvx___.problems ) > p,
+    % Some cruft left over from a previous interrupted problem.
+    pop( cvx___.problems(p+1).self, 'reset' );
+end
 pstr = cvx___.problems( p );
 vars = pstr.variables;
 if ~isempty( nstr ),
@@ -119,22 +123,23 @@ else
     % Allocate the raw variable data
     %
 
-    geo = any( geo( : ) );
-    ndim = length( cvx___.classes );
-    ndim = ndim + 1 : ndim + dof;
-    nmel = ( 1 + geo ) * dof;
-    cvx___.classes( end + 1 : end + dof, 1 ) = int8(9);
-    cvx___.canslack( end + 1 : end + nmel, 1 ) = true;
-    cvx___.readonly( end + 1 : end + nmel, 1 ) = p;
-    cvx___.logarithm( end + dof, 1 ) = 0;
+    geo  = any( geo( : ) );
+    omax = length( cvx___.classes );
+    nmax = omax + dof;
+    ndim = omax + 1 : nmax;
+    cvx___.classes ( ndim, 1 ) = int8(9);
+    cvx___.canslack( ndim, 1 ) = true;
+    cvx___.readonly( ndim, 1 ) = p;
     if geo,
-        cvx___.classes( end + 1 : end + dof, 1 ) = int8(16);
-        cvx___.logarithm( end + 1 : end + dof, 1 ) = ndim';
-        ndim = ndim(end) + 1 : ndim(end) + dof;
-        cvx___.exponential( end + 1 : end + dof, 1 ) = ndim';
-        cvx___.exp_used = true;
+        gdim = nmax + 1 : nmax + dof;
+        cvx___.classes( gdim, 1 ) = int8(16);
+        cvx___.canslack( gdim, 1 ) = true;
+        cvx___.readonly( gdim, 1 ) = p;
+        cvx___.logarithm( gdim, 1 ) = ndim';
+        cvx___.exponential( ndim, 1 ) = gdim';
+        cvx___.exponential( nmax + dof, 1 ) = 0;
+        ndim = gdim;
     end
-    cvx___.exponential( end + dof, 1 ) = 0;
     cvx___.x = [];
     cvx___.y = [];
 

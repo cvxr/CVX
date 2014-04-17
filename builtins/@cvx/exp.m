@@ -31,7 +31,7 @@ y = builtin( 'exp', x );
 
 function y = exp_cxcv( x )
 global cvx___
-persistent expv ccv
+persistent expv
 if isempty( expv )
     expv = int8([3,3,3,4,15,15,15,16,16,16,17,17,17,19,19,17,17,17,19]);
 end
@@ -40,6 +40,7 @@ x = sparsify( x, 'exponential' );
 tt = rx == 1;  rx( tt ) = [];
 cc = cx( tt ); cx( tt ) = [];
 vc = vx( tt ); % vx( tt ) = [];
+cvx___.exponential(end+1:max(rx),1) = 0;
 exps = cvx___.exponential( rx, 1 );
 tt = exps == 0;
 if any( tt ),
@@ -50,7 +51,6 @@ if any( tt ),
     cvx___.logarithm( n2, 1 ) = n1( : );
     cvx___.classes( n2 ) = expv( cvx___.classes( n1 ) );
     exps = cvx___.exponential( rx, 1 );
-    cvx___.exp_used = true;
 end
 nb = size( x.basis_, 2 );
 bx = sparse( exps, cx, 1, full( max( exps ) ), nb );

@@ -15,7 +15,7 @@ nobj  = numel( obj );
 if nobj > 1 && ~pr.separable,
     error( 'CVX:NonScalarObjective', 'Your objective function is not a scalar.' );
 end
-[ At, cones, sgn, Q, P, dualized ] = eliminate( prob, true, shim.dualize );
+[ At, cones, sgn, Q, P, exps, dualized ] = eliminate( prob, true, shim.dualize );
 
 if ndual && any( strncmp( {cones.type}, 'i_', 2 ) ),
     idual_error = true;
@@ -118,7 +118,14 @@ elseif n ~= 0 && ~infeas && ( any( b ) || any( c ) ),
             disp( spacer );
         end
     end
-    if cvx___.profile, profile off; end
+    if cvx___.profile, 
+        profile off; 
+    end
+    if cvx___.pause,
+        disp( ' ' );
+        input( 'Press Enter/Return to call the solver:' );
+        disp( ' ' );
+    end
     if need_iter,
         
         %
@@ -430,6 +437,11 @@ elseif n ~= 0 && ~infeas && ( any( b ) || any( c ) ),
             status = 'Error';
         end
     end
+    if cvx___.pause,
+        disp( ' ' );
+        input( 'Press Enter/Return to continue:' );
+        disp( ' ' );
+    end
     if cvx___.profile, 
         profile resume; 
     end
@@ -571,10 +583,8 @@ else
     cvx___.x = x;
     cvx___.y = y(2:end);
 end
-if cvx___.exp_used,
-    esrc = find( cvx___.exponential );
-    edst = cvx___.exponential( esrc );
-    cvx___.x( edst ) = min( 1e300, exp( cvx___.x( esrc ) ) );
+if ~isempty( exps ),
+    cvx___.x( exps(:,2) ) = min( 1e300, exp( cvx___.x( exps(:,1) ) ) );
 end
 
 %
