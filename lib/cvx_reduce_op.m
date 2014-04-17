@@ -25,26 +25,27 @@ end
 nv = prod( zx ) / nx;
 
 % Permute if needed, and reshape to canonical size
-ndxs = [];
+perm = [];
 if nx > 1 && nv > 1,
     if p.reverse,
         if any(zy(dim+1:nd)>1)
-            ndxs = [ 1 : dim - 1, dim + 1 : nd, dim ];
+            perm = [ 1 : dim - 1, dim + 1 : nd, dim ];
         end
     else
         if any(zy(1:dim-1)>1)
-            ndxs = [ dim, 1 : dim - 1, dim + 1 : nd ];
+            perm = [ dim, 1 : dim - 1, dim + 1 : nd ];
         end
     end
-    if ~isempty( ndxs ),
+    if ~isempty( perm ),
         if ox,
-            ndxs = permute( reshape( 1 : nx * nv, zx ), ndxs );
-            x.basis_ = x.basis_( :, ndxs );
+            x    = cvx_basis( x );
+            ndxs = permute( reshape( 1 : nx * nv, zx ), perm );
+            x    = cvx( zx(perm), x(:,ndxs) );
         else
-            x = permute( x, ndxs );
+            x = permute( x, perm );
         end
         if p.reduce, 
-            ndxs = []; 
+            perm = [];
         end
     end
 end
@@ -60,36 +61,51 @@ end
 
 % Determine expression types
 x = reshape( x, sx );
-map = reshape( p.map( :, cvx_classify( x ) ), [], sx(1), sx(2) );
-[ mmm, map ] = max( all( map, xdim + 1 ), [], 1 );
-
-if ~all( mmm ),
-    % Errors found
-    mmm = ~mmm(:);
-    sx( vdim ) = nnz( mmm );
-    mmm = repmat( mmm, [ 1, nx ] );
-    if ~p.reverse, mmm = mmm'; end
-    x = reshape( cvx_subsref( x, mmm ), sx );
-    if p.reverse, x = x'; end
-    if isfield( p, 'errargs' ), varargin = varargin(p.errargs); end
-    cvx_dcp_error( p.name, 'reduce', x, varargin{:} );
-end
-
-if length( mmm ) ~= 1,
-    mu = sort( map(:)' ); %#ok
-    mu = mu([true,diff(mu)~=0]);
+if isempty( p.map ),
+    mu = 1;
 else
-    mu = map;
+    map = reshape( p.map( :, cvx_classify( x ) ), [], sx(1), sx(2) );
+    [ mmm, map ] = max( all( map, xdim + 1 ), [], 1 );
+    if ~all( mmm ),
+        mu = 0;
+    elseif length( mmm ) ~= 1,
+        mu = sort( map(:)' ); %#ok
+        mu = mu([true,diff(mu)~=0]);
+    else
+        mu = map;
+    end
 end
 
 if length(mu) == 1,
     
     % Homogeneous input (single type)
-    sx = any( mu == p.constant );
-    if sx, x = cvx_constant( x ); end
-    y = p.funcs{mu}( x, varargin{:} );
-    if sx && ox, y = cvx( y ); end
+    if mu ~= 0,
+        sx = any( mu == p.constant );
+        if sx, x = cvx_constant( x ); end
+        y = p.funcs{mu}( x, varargin{:} );
+        if sx && ox, y = cvx( y ); end
+    end
     
+    % Post-op check, if necessary
+    if isempty( p.map ),
+        mu = cvx_isvalid( y );
+        if ~mu, 
+            mmm = cvx_isvalid( y, true ); 
+        end
+    end
+        
+    % Errors found
+    if mu == 0,
+        mmm = ~mmm(:);
+        sx( vdim ) = nnz( mmm );
+        mmm = repmat( mmm, [ 1, nx ] );
+        if ~p.reverse, mmm = mmm'; end
+        x = reshape( cvx_subsref( x, mmm ), sx );
+        if p.reverse, x = x'; end
+        if isfield( p, 'errargs' ), varargin = varargin(p.errargs); end
+        cvx_dcp_error( p.name, 'reduce', x, varargin{:} );
+    end
+
 else
     
     % Heterogenous input (multiple types)
@@ -108,15 +124,14 @@ else
     for kk = mu
         tt = map == mu;
         t2 = repmat( tt, rep );
-        sy( vdim ) = nnz( tt );
-        b = cvx( sz, x.basis_( :, t2 ) );
+        b = reshape( cvx_subsref( x, t2 ), sz );
         sx = any( mu == p.constant );
         if sx, b = cvx_constant( b ); end
         b = p.funcs{kk}( b, varargin{:} );
         if sx && ox, b = cvx( b ); end
         if ~p.reduce, tt = t2; end
         if ox,
-            y.basis_( 1:size(b,1), tt ) = b.basis_;
+            y = cvx_subsasgn( y, tt, b );
         else
             y( tt ) = b;
         end
@@ -125,14 +140,15 @@ else
 end
 
 % Reverse permute/reshape (only needed if we didn't reduce)
-if ~isempty( ndxs ),
-    if ox,
-        y.basis_(:,ndxs) = y.basis_;
-    else
-        y = ipermute( y, ndxs );
-    end
+if isempty( perm ),
+    y = reshape( y, zy );
+elseif ox,
+    y = cvx_basis( y );
+    y( :, ndxs ) = y;
+    y = cvx( zy, y );
+else
+    y = reshape( ipermute( y, perm ), zy );
 end
-y = reshape( y, zy );
 
 % Copyright 2005-2014 CVX Research, Inc. 
 % See the file LICENSE.txt for full copyright information.

@@ -40,8 +40,8 @@ end
 
 cvx_begin set
     variable x( sx )
-    variable y( sx ) assert_nonnegative
-    variable z( sx ) assert_nonnegative
+    variable y( sx ) nonnegative_
+    variable z( sx ) nonnegative_
     [ tx, dummy ] = find( cvx_basis( x ) ); %#ok
     [ ty, dummy ] = find( cvx_basis( y ) ); %#ok
     [ tz, dummy ] = find( cvx_basis( z ) ); %#ok

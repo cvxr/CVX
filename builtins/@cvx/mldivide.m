@@ -14,7 +14,7 @@ function z = mldivide( x, y )
 try
     sz = size( x );
     if all( sz == 1 ),
-        z = times( x, y, '\' );
+        z = ldivide( x, y, '\' );
     elseif length( sz ) > 2,
         error( 'Inputs must be 2-D, or at least one input must be scalar.' );
     elseif sz( 1 ) ~= sz( 2 ),

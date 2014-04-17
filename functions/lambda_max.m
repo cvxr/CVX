@@ -1,4 +1,4 @@
-function y = lambda_max( X )
+function y = lambda_max( varargin )
 
 % LAMBDA_MAX    Maximum eigenvalue of a symmetric matrix.
 %     For square matrix X, LAMBDA_MAX(X) is MAX(EIG(X)) if X is Hermitian
@@ -12,31 +12,28 @@ function y = lambda_max( X )
 
 persistent params
 if isempty( params ),
-    params.funcs  = { @lambda_max_cnst, @lambda_max_aff };
-    params.square = true;
-    params.name   = 'lambda_max';
+	params.nargs     = 1;
+	params.args      = [];
+	params.empty     = [];
+	params.constant  = @lambda_max_diag;
+	params.diagonal  = @lambda_max_diag;
+	params.structure = 'eig';
 end
 
 try
-    y = matrix_op( params, X );
+    y = cvx_matrix_op( params, varargin );
 catch exc
     if strncmp( exc.identifier, 'CVX:', 4 ), throw(exc);
     else rethrow(exc); end
 end
 
-function y = lambda_max_cnst( X )
-[psd,X] = cvx_check_psd( X, 'sym' );
-if psd,
-    y = max(eig(full(X)));
-else
-    y = Inf; 
-end
+function y = lambda_max_diag( D )
+y = max( D );	
 
 function z = lambda_max_aff( X ) %#ok
-n = size( X, 1 );
 cvx_begin sdp
     epigraph variable z
-    z * eye( n ) >= X; %#ok
+    z * eye(size(x)) >= X; %#ok
 cvx_end
 
 % Copyright 2005-2014 CVX Research, Inc.

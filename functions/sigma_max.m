@@ -9,26 +9,30 @@ function y = sigma_max( X )
 
 persistent params
 if isempty( params ),
-    params.funcs  = { @sigma_max_cnst, @sigma_max_aff };
-    params.square = false;
-    params.name   = 'sigma_max';
+    params.nargs     = 1;
+    params.args      = [];
+    params.empty     = 0;
+	params.constant  = @sigma_max_diag;
+	params.diagonal  = @sigma_max_diag;
+	params.affine    = @sigma_max_aff;
+    params.structure = 'svd';
 end
 
 try
-    y = matrix_op( params, X );
+    y = cvx_matrix_op( params, X );
 catch exc
     if strncmp( exc.identifier, 'CVX:', 4 ), throw(exc);
     else rethrow(exc); end
 end
 
-function y = sigma_max_cnst( X )
-y = norm( X );
+function y = sigma_max_diag( D )
+y = max( abs( D ) );
 
 function z = sigma_max_aff( X )
 [ m, n ] = size( X );
 cvx_begin sdp
-    epigraph variable z assert_nonnegative
-    z * speye(m,n) >= [zeros(m,m),X;X',zeros(n,n)]; %#ok
+    epigraph variable z nonnegative_
+    z * speye(m+n) >= [zeros(m,m),X;X',zeros(n,n)]; %#ok
 cvx_end
 
 % Copyright 2005-2014 CVX Research, Inc. 

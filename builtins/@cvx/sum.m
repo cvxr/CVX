@@ -14,14 +14,12 @@ function y = sum( varargin )
 
 persistent params
 if isempty( params ),
-    params.map      = cvx_remap( { 'constant' ; 'affine' ; 'convex' ; 'concave' } );
-    params.funcs    = { @sum_1, @sum_2, @sum_2 };
-    params.zero     = 0;
-    params.one      = @(x) x;
+    params.map      = {};
+    params.funcs    = { @sum_1 };
     params.reduce   = true;
     params.reverse  = true;
     params.name     = 'sum';
-    params.constant = 1;
+    params.constant = [];
     params.dimarg   = 2;
 end
 
@@ -33,9 +31,6 @@ catch exc
 end
 
 function x = sum_1( x )
-x = sum( x, 2 );
-
-function x = sum_2( x )
 s = x.size_;
 b = reshape( x.basis_, [], s(2) );
 b = sum( b, 2 );

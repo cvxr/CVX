@@ -6,54 +6,37 @@ function y = abs( x )
 %   its special structure, CVX considers the sign of X as well. So,
 %   for instance, if X is known to be nonnegative, then ABS(X)=X.
 
-persistent remap funcs
-if isempty( remap ),
-    remap = cvx_remap( ...
-        { 'constant' }, ...
-        { 'p_nonconst' }, ...
-        { 'n_nonconst' }, ...
-        { 'r_affine' }, ...
-        { 'c_affine' } );
-    funcs = { @abs_1, @abs_2, @abs_3, @abs_4, @abs_5 };
+persistent P
+if isempty( P ),
+    P.map = cvx_remap( { 'constant' }, { 'p_nonconst' }, { 'n_nonconst' }, ...
+        { 'r_affine' }, { 'c_affine' } );
+    P.funcs = { @abs_cnst, @abs_posn, @abs_negn, @abs_affn, @abs_affn };
 end
 
 try
-    y = unary_op( 'abs', funcs, remap, x );
+    y = cvx_unary_op( P, x );
 catch exc
     if strncmp( exc.identifier, 'CVX:', 4 ), throw( exc ); 
     else rethrow( exc ); end
 end
 
-function y = abs_1( x )
+function y = abs_cnst( x )
 % Constant
-y = cvx( abs( cvx_constant( x ) ) );
+y = builtin( 'abs', x );
 
-function y = abs_2( x )
+function y = abs_posn( x )
 % Positive any
 y = x;
 
-function y = abs_3( x )
+function y = abs_negn( x )
 % Negative any
 y = -x;
 
-function y = abs_4( x )
-% Real affine
-y = [];
-sx = x.size_;
+function y = abs_affn( x ) %#ok
+% Affine
 cvx_begin
-    epigraph variable y( sx )
-    { x, y } == lorentz( sx, 0 ); %#ok
-    cvx_setnneg( y );
-cvx_end
-
-function y = abs_5( x )
-% Complex affine
-y = [];
-sx = x.size_;
-cvx_begin
-    epigraph variable yt( sx )
-    { x, y } == complex_lorentz( sx, 0 ); %#ok
-    cvx_setnneg( y );
+    epigraph variable y( size(x) ) nonnegative_
+    { x, y } == lorentz( size(x), 0, ~isreal(x) ); %#ok
 cvx_end
 
 % Copyright 2005-2014 CVX Research, Inc.

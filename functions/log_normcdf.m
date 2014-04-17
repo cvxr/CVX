@@ -23,30 +23,28 @@ function y = log_normcdf( x, approx )
 %       LOG_NORMCDF is concave and nondecreasing in X. Therefore, when used
 %       in CVX specifications, X must be concave.
 
-persistent params
-if isempty( params ),
-    params.map = cvx_remap( { 'real' }, { 'concave' } );
-    params.constant = 1;
-    params.funcs = { @log_normcdf_c, @log_normcdf_nc };
-    params.name = 'log_normcdf';
+persistent P
+if isempty( P ),
+    P.map = cvx_remap( { 'real' }, { 'concave' } );
+    P.funcs = { @log_normcdf_cnst, @log_normcdf_cncv };
 end
 
 try
     if nargin == 2 && approx,
-        params.funcs{1} = @log_normcdf_nc;
+        P.funcs{1} = @log_normcdf_cncv;
     else
-        params.funcs{1} = @log_normcdf_c;
+        P.funcs{1} = @log_normcdf_cnst;
     end
-    y = cvx_unary_op( params, x );
+    y = cvx_unary_op( P, x );
 catch exc
     if strncmp( exc.identifier, 'CVX:', 4 ), throw( exc ); 
     else rethrow( exc ); end
 end
 
-function y = log_normcdf_c( x )
+function y = log_normcdf_cnst( x )
 y = log(0.5*erfc(-x*sqrt(0.5)));
 
-function y = log_normcdf_nc( x )
+function y = log_normcdf_cncv( x )
 persistent a b
 if isempty( a ),
     a = sqrt( [ 0.018102332171520

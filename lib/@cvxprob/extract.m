@@ -3,6 +3,10 @@ if nargin < 3 || nargout < 6, doineqs = true; end
 if nargin < 2 || nargout < 5, destructive = false; end
 
 global cvx___
+persistent vex
+if isempty( vex ),
+    vex = [0,0,0,NaN,-1,-1,-1,0,0,0,1,1,1,NaN,NaN,1,1,1,1,NaN]';
+end
 p = cvx___.problems( pp.index_ );
 n = length( cvx___.classes );
 
@@ -11,14 +15,16 @@ n = length( cvx___.classes );
 %
 
 dbcA = p.objective;
+if numel( dbcA ) > 1,
+    dbcA = cvx( [1,1], sum( cvx_basis( dbCA ), 2 ) );
+end
 if isempty(p.objective),
     dir = 1;
     dbcA = cvx( [ 1, 1 ], [] );
 elseif strcmp( p.direction, 'minimize' ) || strcmp( p.direction, 'epigraph' ),
-    dbcA = sum( vec( dbcA ) );
     dir = 1;
 else
-    dbcA = - sum( vec( dbcA ) );
+    dbcA = -dbcA;
     dir = -1;
 end
 
@@ -38,7 +44,7 @@ if p.n_equality > 0,
         cvx___.needslack( p.n_equality + 1 : end ) = [];
     end
 elseif destructive,
-    cvx___.equalities = cvx( [ 0, 1 ], [] );
+    cvx___.equalities = cvx;
     cvx___.needslack =  false( 0, 1 ) ;
 end
 if ~isempty( AA ),
@@ -62,14 +68,14 @@ else
     A1 = cvx___.linforms;
     A2 = cvx___.linrepls;
     if destructive,
-        cvx___.linforms = cvx( [ 0, 1 ], [] );
-        cvx___.linrepls = cvx( [ 0, 1 ], [] );
+        cvx___.linforms = cvx;
+        cvx___.linrepls = cvx;
     end
 end
 if ~isempty( A1 ),
     zV = vex( cvx_classify( A2 ) );
     zQ = ( zV == 0 ) - zV;
-    dbcA = [ dbcA ; plus( zQ .* A1, zQ .* A2, '-', true ) ];
+    dbcA = [ dbcA ; minus_nc( zQ .* A1, zQ .* A2 ) ];
     ineqs( end + 1 : end + length( A1 ), : ) = zV ~= 0;
     clear A1 A2 zV zQ
 end
@@ -89,14 +95,14 @@ else
     A1 = cvx___.uniforms;
     A2 = cvx___.unirepls;
     if destructive,
-        cvx___.uniforms = cvx( [ 0, 1 ], [] );
-        cvx___.unirepls = cvx( [ 0, 1 ], [] );
+        cvx___.uniforms = cvx;
+        cvx___.unirepls = cvx;
     end
 end
 if ~isempty( A2 ),
     zV = vex( cvx_classify( A2 ) );
     zQ = ( zV == 0 ) - zV;
-    dbcA = [ dbcA ; plus( zQ .* A1, zQ .* A2, '-', true ) ];
+    dbcA = [ dbcA ; minus_nc( zQ .* A1, zQ .* A2 ) ];
     ineqs( end + 1 : end + length( A1 ), : ) = zV ~= 0;
     clear A1 A2 zV zQ
 end
@@ -130,11 +136,6 @@ end
 % so it is possible that we do not catch all of the cases where
 % inequalities may be converted to equations.
 %
-
-persistent vex %#ok
-if isempty( vex ),
-    vex = [0,0,0,NaN,-1,-1,-1,0,0,0,1,1,1,NaN,NaN,1,1,1,1,NaN]';
-end
 
 if any( ineqs ) && any( cvx___.canslack ),
     slacks = find( cvx___.canslack );

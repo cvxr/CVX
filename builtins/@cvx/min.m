@@ -26,7 +26,7 @@ if nargin == 2,
     end
     
     try
-        z = binary_op( bparam, varargin{:} );
+        z = cvx_binary_op( bparam, varargin{:} );
     catch exc
         if strncmp( exc.identifier, 'CVX:', 4 ), throw( exc ); 
         else rethrow( exc ); end

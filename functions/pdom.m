@@ -20,32 +20,26 @@ function y = pdom( x )
 %        and PDOM(X,1), accepting any argument that would be accepted by
 %        either specific form of the function.
 
-persistent params
-if isempty( params ),
-    params.map = cvx_remap( ...
-        { 'negative' }, ...
-        { 'nonnegative' }, ...
-        { 'p_nonconst' }, ...
-        { 'n_concave' }, ...
-        { 'r_affine' }, ...
+persistent P
+if isempty( P ),
+    P.map = cvx_remap( { 'negative' }, { 'nonnegative' }, ...
+        { 'p_nonconst' }, { 'n_concave' }, { 'r_affine' }, ...
         { 'concave' }, [0,1,2,3,4,5] );
-    params.constant = 1;
-    params.funcs = { @pdom_1, @pdom_1, @pdom_2, @pdom_3, @pdom_4 };
-    params.name = 'pdom';
+    P.funcs = { @pdom_nneg, @pdom_nneg, @pdom_npos, @pdom_affn, @pdom_cncv };
 end
 
 try
-    y = cvx_unary_op( params, x );
+    y = cvx_unary_op( P, x );
 catch exc
     if strncmp( exc.identifier, 'CVX:', 4 ), throw( exc ); 
     else rethrow( exc ); end
 end
 
-function y = pdom_1( x )
+function y = pdom_nneg( x )
 % Nonnegative
 y = x;
 
-function y = pdom_2( x )
+function y = pdom_npos( x )
 % Nonpositive
 y = x;
 warning( 'CVX:Warning', ...
@@ -56,13 +50,13 @@ cvx_begin
     x >= 0; %#ok
 cvx_end
 
-function y = pdom_3( x ) %#ok
+function y = pdom_affn( x ) %#ok
 cvx_begin
     variable y(size(x)) nonnegative
     y == x; %#ok
 cvx_end
 
-function y = pdom_4( x ) %#ok
+function y = pdom_cncv( x ) %#ok
 cvx_begin
     hypograph variable y(size(x)) nonnegative
     y <= x; %#ok

@@ -10,6 +10,9 @@ end
 global cvx___
 p = prob.index_;
 y_orig = y;
+if isa( x, 'cvxcnst' ),
+    x = rhs( x );
+end
 
 %
 % Check for a dual reference
@@ -40,9 +43,6 @@ end
 % Check arguments
 %
 
-if isa( x, 'cvxcnst' ), 
-    x = rhs( x ); 
-end
 cx = isnumeric( x ) | isa( x, 'cvx' );
 cy = isnumeric( y ) | isa( y, 'cvx' );
 if ~cx,
@@ -134,15 +134,41 @@ end
 
 sz = size( z );
 if sdp_mode,
-    zq = any( cvx_basis( z ), 1 );
-    qn = bsxfun( @plus, (1:sz(1)+1:sz(1)*sz(2))', 0:sz(1)*sz(2):prod(sz)-1 );
-    if nnz( zq ) == nnz( zq( qn ) ),
-        [ tx, dummy ] = find( cvx_basis( nonnegative( numel(qn) ) ) ); %#ok
-        zz = cvx( sz, sparse( tx, qn, 1, tx(end), prod(sz) ) );
-    else
-        zz = semidefinite( sz, ~isreal( x ) || ~isreal( y ) );
+    z  = cvx_basis( z );
+    zr = isreal( z );
+    dg = false;
+    if zr,
+        n  = sz(1);
+        zq = any( z, 1 );
+        nq = nnz( zq );
+        if nq <= n,
+            qn = bsxfun( @plus, (1:n+1:n*n)', 0:n*n:prod(sz)-1 );
+            dg = nq == nnz( zq( qn ) );
+            if dg,
+                [ tx, dummy ] = find( cvx_basis( nonnegative( nq ) ) ); %#ok
+                zz = sparse( tx, qn(zq(qn)), 1, tx(end), prod(sz) );
+            end
+        end
     end
-    z = minus_nc( z, zz );
+    if ~dg,
+        zt = z(:,permute(reshape(1:prod(sz),sz),[2,1,sz(3:end)]));
+        if ~zr, zt = conj( zt ); end
+        err = z - zt;
+        z   = 0.5 * ( z + zt );
+        err = max( sum(abs(err),1) ./ max(realmin,sum(abs(z),1)) );
+        if err > 8 * eps,
+            if isreal(z), str = 'symmetric'; else str = 'Hermitian'; end
+            error( 'CVX:ArgError', [ ...
+                'SDP constraints are expected to be %s (deviation: %g).\n', ...
+                '--- If this number is small (<1e-6), it may simply be due to roundoff error.\n', ...
+                '    This can be corrected by applying the SYM(X) function.\n', ...
+                '--- Otherwise, this is likely due to a modeling error. Did you declare the\n', ...
+                '    relevant matrix variables to be "symmetric" or "hermitian"?' ], str, full(err) );
+        end
+        zz = cvx_basis( semidefinite( sz, ~zr ) );
+    end
+    z(size(zz,1),:) = 0;
+    z = cvx( sz, z - zz );
     op = '==';
 end
 
@@ -156,19 +182,6 @@ else
     cmode = 'magnitude';
 end
 [ zR, zL ] = bcompress( z, cmode );
-if sdp_mode,
-    if isreal( zR ),
-        nnq = 0.5 * sz( 1 ) * ( sz( 1 ) + 1 );
-    else
-        nnq = sz( 1 ) * sz( 1 );
-    end
-    if size( zR, 1 ) > nnq * prod( sz( 3 : end ) ),
-        warning( 'CVX:UnsymmetricLMI', [ ...
-            'This linear matrix inequality appears to be unsymmetric. This is\n', ...
-            'very likely an error that will produce unexpected results. Please check\n', ...
-            'the LMI; and, if necessary, re-enter the model.' ], 1 );  
-    end
-end
 
 %
 % Add the (in)equalities

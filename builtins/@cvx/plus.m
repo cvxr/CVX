@@ -21,29 +21,17 @@ function z = plus( x, y )
 
 persistent params
 if isempty( params ),
-    params.map   = cvx_remap( ...
-        { { 'affine' } }, ...
-        { { 'convex' }, { 'concave' } }, ...
-        [1,1,1] );
-    params.funcs = { @plus_ };
+    params.map   = {};
+    params.funcs = { @plus_nc };
     params.name  = '+';
 end
 
 try
-    z = binary_op( params, x, y );
+    z = cvx_binary_op( params, x, y );
 catch exc
     if strncmp( exc.identifier, 'CVX:', 4 ), throw( exc ); 
     else rethrow( exc ); end
 end
-
-function z = plus_( x, y )
-x = cvx_basis( x );
-y = cvx_basis( y );
-mx = max(size(x),size(y));
-x(end+1:mx(1),:) = 0;
-y(end+1:mx(1),:) = 0;
-z = bsxfun( @plus, x, y );
-z = cvx( mx(2), z );
 
 % Copyright 2005-2014 CVX Research, Inc.
 % See the file LICENSE.txt for full copyright information.

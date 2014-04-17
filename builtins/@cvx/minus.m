@@ -19,17 +19,13 @@ function z = minus( x, y )
 
 persistent params
 if isempty( params ),
-    params.map   = cvx_remap( ...
-        { { 'affine' } }, ...
-        { { 'convex' }, { 'concave' } }, ...
-        { { 'concave' }, { 'convex' } }, ...
-        [1,1,1] );
+    params.map = {};
     params.funcs = { @minus_nc };
     params.name = '-';
 end
 
 try
-    z = binary_op( params, x, y );
+    z = cvx_binary_op( params, x, y );
 catch exc
     if strncmp( exc.identifier, 'CVX:', 4 ), throw( exc ); 
     else rethrow( exc ); end

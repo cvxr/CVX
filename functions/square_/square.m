@@ -9,47 +9,30 @@ function y = square( x )
 %       is complex, then SQUARE(X) is neither convex nor concave. Thus when
 %       when use in CVX expressions, X must be real and affine.
 
-persistent params
-if isempty( params ),
-    params.map = cvx_remap( ...
-        { 'real' }, ...
-        { 'l_valid' }, ...
-        { 'r_affine' }, ...
-        { 'p_convex', 'n_concave' } );
-    params.funcs = { @square_1, @square_2, @square_3, @square_4 };
-    params.constant = 1;
-    params.name = 'square';
+persistent P
+if isempty( P ),
+    P.map = cvx_remap( { 'real' }, { 'l_valid' }, ...
+        { 'r_affine', 'p_convex', 'n_concave' } );
+    P.funcs = { @square_cnst, @square_logv, @square_affn };
 end
 
 try
-    y = cvx_unary_op( params, x );
+    y = cvx_unary_op( P, x );
 catch exc
     if strncmp( exc.identifier, 'CVX:', 4 ), throw( exc );
     else rethrow( exc ); end
 end
 
-function y = square_1( x )
-y = x .^ 2;
+function y = square_cnst( x )
+y = builtin( 'power', x, 2 );
 
-function y = square_2( x )
+function y = square_logv( x )
 y = exp( 2 * log( x ) );
 
-function y = square_3( x ) %#ok
-sx = size( x );
+function y = square_affn( x ) %#ok
 cvx_begin
-    epigraph variable y( sx )
-    { x, 1, y } == rotated_lorentz( sx, length(sx)+1 ); %#ok
-    cvx_setnneg(y);
-cvx_end
-
-function y = square_4( x ) %#ok
-sx = size( x );
-cvx_begin
-    epigraph variable y( sx )
-    variable z( sx )
-    { z, 1, y } == rotated_lorentz( sx, length(sx)+1 ); %#ok
-    abs( x ) <= z; %#ok
-    cvx_setnneg(y);
+    epigraph variable y( size(x) ) nonnegative_
+    { linearize_abs( x ), 1, y } == rotated_lorentz( size(x), 0 ); %#ok
 cvx_end
     
 % Copyright 2005-2014 CVX Research, Inc.

@@ -27,9 +27,9 @@ function z = times( x, y, oper )
 %   For vectors, matrices, and arrays, these rules are verified 
 %   indepdently for each element.
 
-persistent mparam rparam lparam
-if isempty( mparam ),
-    mparam.map = max( 0, cvx_remap( ...
+persistent params
+if isempty( params ),
+    params.map = cvx_remap( ...
         { { 'negative' },   { 'l_concave_' } }, ... % negative of log-concave
         { { 'l_concave_' }, { 'negative' }   }, ... % negative of log-concave
         { { 'constant' },   { 'affine' }     }, ... % constant * affine/constant
@@ -37,91 +37,26 @@ if isempty( mparam ),
         { { 'affine' },     { 'constant' }   }, ... % affine * constant
         { { 'valid' },      { 'real'  }      }, ... % valid * real
         { { 'affine' }                       }, ... % potential quadratic form
-        { { 'p_convex', 'n_concave' }        }, ... % potential quadratic form
+        { { 'p_convex' }                     }, ... % potential quadratic form
         { { 'l_convex' }                     }, ... % log-convex
-        { { 'l_concave' }                    }, ... % log-concave
-        [ -1, -1, 1, 1, 2, 2, 3, 3, 4, 4 ] ) );
-    rparam.map = max( 0, cvx_remap( ...
-        { { 'valid' },      { 'zero' }      }, ... % division by zero
-        { { 'l_concave_' }, { 'negative' }  }, ... % negative of log-concave
-        { { 'negative' },   { 'l_convex_' } }, ... % negative of 1/log-convex
-        { { 'positive' },   { 'l_valid' }   }, ... % constant / non-constant
-        { { 'real' },       { 'p_concave' } }, ... % constant / non-constant
-        { { 'real' },       { 'n_convex' }  }, ... % constant / non-constant
-        { { 'affine' },     { 'constant' }  }, ... % non-constant / constant
-        { { 'valid' },      { 'real' }      }, ... % non-constant / constant
-        { { 'l_convex' },   { 'l_concave' } }, ... % log-convex / log-concave
-        { { 'l_concave' },  { 'l_convex' }  }, ... % log-concave / log-convex
-        [ -1, -1, -1, 1, 1, 1, 2, 2, 4, 4 ] ) );
-    lparam.map = rparam.map';
-    mparam.funcs = { @times_1m, @times_2m, @times_3, @times_4m };
-    rparam.funcs = { @times_1l, @times_2l, [], @times_4l };
-    lparam.funcs = { @times_1r, @times_2r, [], @times_4r };
+        { { 'l_concave', 'concave' }         }, ... % log-concave
+        [ 0, 0, 1, 1, 2, 2, 3, 3, 4, 4 ] );
+    params.funcs = { @times_12, @times_12, @times_3, @times_4 };
 end
 
 try
-    if nargin < 3,
-        oper = '.*';
-    end
-    switch oper,
-        case { '*', '.*' },
-            mparam.name = oper;
-            param = mparam;
-        case { '/', './' },
-            rparam.name = oper;
-            param = rparam;
-        case { '\', '.\' },
-            lparam.name = oper;
-            param = lparam;
-    end
-    z = binary_op( param, x, y );
+    if nargin < 3, oper = '.*'; end
+    params.name = oper;
+    z = cvx_binary_op( params, x, y );
 catch exc
     if isequal( exc.identifier, 'CVX:DCPError' ), throw( exc ); 
     else rethrow( exc ); end
 end
 
-function z = times_1m( x, y )
-% constant .* something
-if isa( x, 'cvx' ), x = x.basis_;
-else x = x'; end
-z = bsxfun( @times, x, y.basis_ );
-z = cvx( [size(z,2),1], z );
-
-function z = times_1r( x, y )
-% constant ./ something
-if isa( x, 'cvx' ), x = x.basis_;
-else x = x'; end
-y = recip( y );
-z = bsxfun( @times, x', y.basis_ );
-z = cvx( [size(z,2),1], z );
-
-function z = times_1l( x, y )
-% something .\ constant
-x = recip( x );
-if isa( y, 'cvx' ), y = y.basis_;
-else y = y'; end
-z = bsxfun( @ldivide, x.basis_, y );
-z = cvx( [size(z,2),1], z );
-
-function z = times_2m( x, y )
-% something .* constant
-if isa( y, 'cvx' ), y = y.basis_;
-else y = y'; end
-z = bsxfun( @times, x.basis_, y );
-z = cvx( [size(z,2),1], z );
-
-function z = times_2r( x, y )
-% something ./ constant
-if isa( y, 'cvx' ), y = y.basis_;
-else y = y'; end
-z = bsxfun( @rdivide, x.basis_, y );
-z = cvx( [size(z,2),1], z );
-
-function z = times_2l( x, y )
-% constant .\ something
-if isa( x, 'cvx' ), x = x.basis_;
-else x = x'; end
-z = bsxfun( @ldivide, x, y.basis_ );
+function z = times_12( x, y )
+% constant .* something OR something .* constant
+% assumption: size(cvx_basis(x),1) == 1 OR size(cvx_basis(y),1)==1
+z = bsxfun( @times, cvx_basis( x ), cvx_basis( y ) );
 z = cvx( [size(z,2),1], z );
 
 function z = times_3( x, y )
@@ -155,17 +90,9 @@ else
     end
 end
 
-function z = times_4m( x, y )
+function z = times_4( x, y )
 % geom .* geom
-z = exp( log( x ) + log( y ) );
-
-function z = times_4r( x, y )
-% geom ./ geom
-z = exp( log( x ) - log( y ) );
-
-function z = times_4l( x, y )
-% geom .\ geom
-z = exp( log( y ) - log( x ) );
+z = exp( plus_nc( log( x ), log( y ) ) );
 
 % Copyright 2005-2014 CVX Research, Inc.
 % See the file LICENSE.tx for full copyright information.

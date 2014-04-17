@@ -26,11 +26,14 @@ persistent params
 if isempty( params ),
     params.map = cvx_remap( ...
         { { 'negative' }, { 'any' } }, ...
-        { { 'nonnegative' }, { 'real' } }, ...
-        { { 'r_affine' }, { 'concave' } }, [0,1,2] );
+        { { 'any' }, { 'nonpositive' } }, ...
+        { { 'real' } }, ...
+        { { 'r_affine' }, { 'concave' } }, ...
+        [0,0,1,2] );
     params.funcs = { @rel_entr_1, @rel_entr_2 };
     params.constant = 1;
     params.name = 'rel_entr';
+    params.test = @rel_entr_test;
 end
 
 try
@@ -41,19 +44,12 @@ catch exc
 end
 
 function z = rel_entr_1( x, y )            
-t1 = x < 0  | y <= 0;
-t2 = x == 0 & y >= 0;
-x  = max( x, realmin );
-y  = max( y, realmin );
 z  = x .* log( x ./ y );
-z( t1 ) = +Inf;
-z( t2 ) = 0;
 
-function z = rel_entr_2( x, y )
-z = [];
+function z = rel_entr_2( x, y ) %#ok
 sz = max( numel(y), numel(x) );
 cvx_begin
-    epigraph variable z( sz );
+    epigraph variable z( sz )
     { -z, x, y } == exponential( sz ); %#ok
 cvx_end
 

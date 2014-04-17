@@ -1,4 +1,4 @@
-function y = lambda_sum_largest( X, k )
+function y = lambda_sum_largest( varargin )
 
 % LAMBDA_SUM_LARGEST   Sum of the k largest eigenvalues of a symmetric matrix.
 %
@@ -13,56 +13,44 @@ function y = lambda_sum_largest( X, k )
 
 persistent params
 if isempty( params ),
-    params.funcs  = { @lambda_sum_largest_cnst, @lambda_sum_largest_aff };
-    params.square = true;
-    params.name   = 'lambda_sum_largest';
+    params.nargs     = 2;
+    params.args      = @lambda_sum_largest_args;
+    params.empty     = 0;
+    params.constant  = @lambda_sum_largest_diag;
+    params.diagonal  = @lambda_sum_largest_diag;
+    params.structure = 'eig';
+    params.name      = 'lambda_sum_largest';
 end
 
 try
-	if ~isnumeric(k) || numel(k) ~= 1 || ~isreal(k),
-	    error( 'CVX:ArgError', 'Second input must be a constant real scalar.' );
-	end
-    y = matrix_op( params, X );
+    y = cvx_matrix_op( params, varargin );
 catch exc
     if strncmp( exc.identifier, 'CVX:', 4 ), throw(exc);
     else rethrow(exc); end
 end
 
-function y = lambda_sum_largest_cnst( X, k )
-[ psd, X ] = cvx_check_psd( X, 'sym' );
-if ~psd,
-	y = Inf;
-elseif k <= 0,
-	y = 0;
-elseif k >= size(X,1),
-	y = trace(X);
-else
-	y = eig( full( X ) );
-	y = sum(y(1:floor(k))) + (k-floor(k)) * y(ceil(k));
+function [ X, k ] = lambda_sum_largest_args( X, k )
+if ~( isnumeric(k) && numel(k)==1 && isreal(k) ),
+    error( 'CVX:ArgError', 'Second input must be a constant real scalar.' );
 end
 
-function cvx_optval = lambda_sum_largest_aff( X, k )
-n = size(X,1);
+function y = lambda_sum_largest_diag( D, k )
+y = sum_largest( D, k );
+
+function y = lambda_sum_largest_aff( X, k )
 if k <= 0,
-	cvx_begin
-		X == X'; %#ok
-	cvx_end	
-elseif k >= n,
-	cvx_begin
-		X == X'; %#ok
-	cvx_end
-	cvx_optval = trace( X );
+    y = 0;
+elseif k <= 1,
+    y = k * lambda_max( X );
+elseif k >= size(X,1),
+    y = trace(X);
 else
     cvx_begin sdp
     	variable z
-    	if isreal(X),
-    		variable S(n,n) symmetric
-    	else
-    		variable S(n,n) hermitian
-    	end
-    	S >= 0; %#ok
+        epigraph variable y
+        variable S(size(X)) hermitian_if(X) semidefinite
     	z * eye(n) + S >= X; %#ok
-        minimize( k * z + trace( S ) );
+        k * z + trace( S ) <= y; %#ok
     cvx_end
 end
 

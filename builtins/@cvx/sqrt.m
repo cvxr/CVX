@@ -8,34 +8,30 @@ function y = sqrt( x )
 %      SQRT(X) is log-log-affine and nondecreasing in X. Therefore, when
 %      used in DGPs, X may be log-affine, log-convex, or log-concave.
 
-persistent remap funcs
-if isempty( remap ),
-    remap = cvx_remap( ...
-        { 'constant' }, ...
-        { 'l_valid' }, ...
+persistent P
+if isempty( P ),
+    P.map = cvx_remap( { 'nonnegative' }, { 'l_valid' }, ...
         { 'r_affine', 'concave' } );
-    funcs = { @sqrt_1, @sqrt_2, @sqrt_3 };
+    P.funcs = { @sqrt_cnst, @sqrt_logv, @sqrt_affn };
 end
 
 try
-     y = unary_op( 'sqrt', funcs, remap, x );
+     y = cvx_unary_op( P, x );
 catch exc
     if strncmp( exc.identifier, 'CVX:', 4 ), throw( exc ); 
     else rethrow( exc ); end
 end
 
-function y = sqrt_1( x )
-y = cvx( builtin( 'sqrt', cvx_constant( x ) ) );
+function y = sqrt_cnst( x )
+y = builtin( 'sqrt', x );
 
-function y = sqrt_2( x )
+function y = sqrt_logv( x )
 y = exp( 0.5 * log( x ) );
 
-function y = sqrt_3( x )
-sx = x.size_;
+function y = sqrt_affn( x ) %#ok
 cvx_begin
-    hypograph variable y( sx );
-    square( x ) <= y; %#ok
-    cvx_setnneg( y )
+    hypograph variable y( size(x) ) nonnegative_
+    { y, 1, linearize( x ) } == rotated_lorentz( size(x), 0 );
 cvx_end
 
 % Copyright 2005-2014 CVX Research, Inc.

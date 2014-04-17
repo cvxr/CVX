@@ -8,35 +8,32 @@ function y = norm_nuc( X )
 
 persistent params
 if isempty( params ),
-    params.funcs  = { @norm_nu_cnst, @norm_nuc_real, @norm_nuc_cplx };
-    params.square = false;
-    params.name   = 'norm_nuc';
+	params.nargs     = 1;
+	params.args      = [];
+	params.empty     = 0;
+	params.constant  = @norm_nuc_diag;
+	params.diagonal  = @norm_nuc_diag;
+	params.affine    = @norm_nuc_aff;
+    params.structure = 'svd';
+    params.name      = 'norm_nuc';
 end
 
 try
-    y = matrix_op( params, X );
+    y = cvx_matrix_op( params, X );
 catch exc
     if strncmp( exc.identifier, 'CVX:', 4 ), throw(exc);
     else rethrow(exc); end
 end        
 
-function y = norm_nuc_cnst( X )
-y = sum(svd(X));
+function y = norm_nuc_diag( D )
+y = sum(abs(D));
 
-function cvx_optval = norm_nuc_real( X ) %#ok
+function cvx_optval = norm_nuc_aff( X ) %#ok
 [ m, n ] = size( X ); %#ok
 cvx_begin
-	variable W(m+n,m+n) semidefinite
+	variable W(m+n,m+n) hermitian_if(X) semidefinite
 	minimize(0.5*trace(W))
 	W(1:m,m+1:end) == X;
-cvx_end
-
-function cvx_optval = norm_nuc_cplx( X ) %#ok
-[ m, n ] = size( X ); %#ok
-cvx_begin
-	variable W(m+n,m+n) hermitian semidefinite
-	minimize(0.5*trace(W))
-	W(1:m,m+1:m+n) == X;
 cvx_end
 
 % Copyright 2005-2014 CVX Research, Inc. 

@@ -15,7 +15,7 @@ function z = mrdivide( x, y )
 try
     sz = size( y );
     if all( sz == 1 ),
-        z = times( x, y, '/' );
+        z = rdivide( x, y, '/' );
     elseif length( sz ) > 2,
         error( 'Inputs must be 2-D, or at least one input must be scalar.' );
     elseif sz( 1 ) ~= sz( 2 ) && length( sz ) == 2,

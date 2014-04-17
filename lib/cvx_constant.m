@@ -1,6 +1,6 @@
 function y = cvx_constant( x )
 error( nargchk( 1, 1, nargin ) ); %#ok
-y = x;
+y = double( x );
 
 % Copyright 2005-2014 CVX Research, Inc. 
 % See the file LICENSE.txt for full copyright information.

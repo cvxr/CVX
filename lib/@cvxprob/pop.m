@@ -72,22 +72,22 @@ if ~isequal( clearmode, 'none' ),
         end
     end
     if nf <= 2 || ne <= 1,
-        cvx___.equalities = cvx( [ 0, 1 ], [] );
-        cvx___.needslack = false( 0, 1 );
-    elseif length( cvx___.equalities ) >= ne,
-        cvx___.equalities( ne : end ) = [];
+        cvx___.equalities = cvx;
+        cvx___.needslack = true( 0, 1 );
+    elseif cvx___.n_equality >= ne,
+        cvx___.equalities( ne: end ) = [];
         cvx___.needslack( ne : end ) = [];
     end
     if nf <= 2 || nl <= 1,
-        cvx___.linforms = cvx( [ 0, 1 ], [] );
-        cvx___.linrepls = cvx( [ 0, 1 ], [] );
+        cvx___.linforms = cvx;
+        cvx___.linrepls = cvx;
     elseif length( cvx___.linforms ) >= nl,
         cvx___.linforms( nl : end ) = [];
         cvx___.linrepls( nl : end ) = [];
     end
     if nf <= 2 || nu <= 1,
-        cvx___.uniforms = cvx( [ 0, 1 ], [] );
-        cvx___.unirepls = cvx( [ 0, 1 ], [] );
+        cvx___.uniforms = cvx;
+        cvx___.unirepls = cvx;
     elseif length( cvx___.uniforms ) >= nu,
         cvx___.uniforms( nu : end ) = [];
         cvx___.unirepls( nu : end ) = [];

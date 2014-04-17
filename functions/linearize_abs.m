@@ -1,17 +1,17 @@
-function y = linearize( x )
+function y = linearize_abs( x )
 
-% LINEARIZE    Linearize.
+% LINEARIZE_ABS    Linearize w/ absolute value.
 %    For real affine X, Y = X. 
-%    For convex X, Y is linear, and satisfies Y >= X.
-%    For concave X, Y is linear, and satisfies Y <= X.
+%    For nonneagtive convex X, Y is linear, and satisfies Y >= X.
+%    For nonpositive concave X, Y is linear, and satisfies Y >= -X.
 % This is used primarily within CVX functions to efficiently implement
 % certain monotonic functions.
 
 persistent P
 if isempty( P ),
     P.map = cvx_remap( { 'real' }, { 'r_affine' }, ...
-        { 'convex' }, { 'concave' } );
-    P.funcs = { @lin_affn, @lin_affn, @lin_cnvx, @lin_cncv };
+        { 'p_convex', 'n_concave' } );
+    P.funcs = { @lin_abs_affn, @lin_abs_affn, @lin_abs_nonl };
 end
 
 try
@@ -21,19 +21,13 @@ catch exc
     else rethrow( exc ); end
 end
 
-function y = lin_affn( x )
+function y = lin_abs_affn( x )
 y = x;
 
-function y = lin_cnvx( x ) %#ok
+function y = lin_abs_nonl( x ) %#ok
 cvx_begin
     variable y(size(x))
-    x <= y; %#ok
-cvx_end
-
-function y = lin_cncv( x ) %#ok
-cvx_begin
-    variable y(size(x))
-    x >= y; %#ok
+    abs(x) <= y; %#ok
 cvx_end
 
 % Copyright 2005-2014 CVX Research, Inc.

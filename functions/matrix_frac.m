@@ -1,4 +1,4 @@
-function z = matrix_frac( X, Y )
+function z = matrix_frac( varargin )
 
 %MATRIX_FRAC   Matrix fractional function.
 %     MATRIX_FRAC(X,Y), where Y is a square matrix and X is a vector of the
@@ -18,33 +18,43 @@ function z = matrix_frac( X, Y )
 
 persistent params
 if isempty( params ),
-    params.funcs  = { @matrix_frac_cnst, @matrix_frac_aff };
-    params.square = [false,true];
-    params.name   = 'trace_sqrtm';
+    params.nargs     = 2;
+    params.args      = [];
+    params.empty     = 0;
+    params.args      = @matrix_frac_args;
+    params.constant  = @matrix_frac_cnst;
+    params.diagonal  = [];
+    params.affine    = @matrix_frac_aff;
+    params.structure = 'chol';
 end
 
 try
-	if size( X, 1 ) ~= size( Y, 1 ),
-    	error( 'The number of rows in X and Y must match.' );
-    end
-    z = matrix_op( params, X, Y );
+    z = cvx_matrix_op( params, varargin );
 catch exc
     if strncmp( exc.identifier, 'CVX:', 4 ), throw(exc);
     else rethrow(exc); end
 end
 
-function z = matrix_frac_cnst( X, Y )
-[ psd, Y, Z ] = cvx_check_psd( Y, 'chol' ); %#ok
-if psd, z = norm( Z' \ X, 'fro' ) .^ 2;
-else z = Inf; end
+function [ Y, X ] = matrix_frac_args( X, Y )
+if size( X, 1 ) ~= size( Y, 1 ),
+    error( 'CVX:ArgError', 'The number of rows in X and Y must match.' );
+end
 
-function cvx_optval = matrix_frac_aff( X, Y ) %#ok
-n = size(X,1); %#ok
-cvx_begin sdp
-    variable z(n) assert_nonnegative
-    minimize(sum(z))
-    [ Y, X ; X', diag(z) ] >= 0; %#ok
-cvx_end
+function z = matrix_frac_cnst( Z, X )
+z = norm( Z' \ X, 'fro' ) .^ 2;
+
+function cvx_optval = matrix_frac_aff( Y, X )
+[m,n] = size(X);
+if n == 1,
+    cvx_optval = quad_over_lin( X, Y );
+else
+    cvx_begin sdp
+        Q = [ Y, X ];
+        variable Z(m+n,m+n) hermitian_if(Q) semidefinite
+        minimize(trace(Z(m+1:end,m+1:end))) %#ok
+        Z(1:m,:) == Q; %#ok
+    cvx_end
+end
 
 % Copyright 2005-2014 CVX Research, Inc.
 % See the file LICENSE.txt for full copyright information.

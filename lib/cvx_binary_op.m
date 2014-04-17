@@ -8,21 +8,15 @@ if isfield( p, 'sdp' ),
 else
     sdp_mode = false;
 end
-if isfield( p, 'constant' ),
-    cnst = p.constant;
-else
-    cnst = [];
+
+if ~isempty( p.map ),
+    vy = cvx_classify( y );
+    vx = cvx_classify( x );
 end
-
-cx = isa( x, 'cvx' );
-cy = isa( y, 'cvx' );
-vy = cvx_classify( y );
-vx = cvx_classify( x );
-sx = size( x ); 
+sx = size( x );
 sy = size( y );
-oz = cx || cy;
 
-% Determine if sizes are compatible
+% Determine if sizes are compatible or broadcastable
 if all( sx == 1 ),
     sz = sy;
     if all( sy == 1 ),
@@ -41,15 +35,18 @@ elseif isequal( sx, sy );
     sz = sx;
     xs = false;
     ys = false;
+elseif ~cvx___.broadcast,
+    if length( sx ) < 2 && length( sy ) < 2,
+        error( 'CVX:DimError', 'Matrix dimensions must agree.' );
+    else
+        error( 'CVX:DimError', 'Array dimensions must match for binary array op.' );
+    end
 else
     nd = max( length( sx ), length( sy ) );
     sx( end + 1 : nd ) = 1;
     sy( end + 1 : nd ) = 1;
     if any( sx ~= sy & sx ~= 1 & sy ~= 1 ),
-        error( 'CVX:DimError', 'Matrix dimensions must agree.' );
-    elseif ~cvx___.broadcast,
-        % Put a warning in here at some point
-        error( 'CVX:DimError', 'Matrix dimensions must agree.' );
+        error( 'CVX:DimError', 'Non-singleton dimensions of the two input arrays must match each other.' );
     end
     bx = ones( 1, nd ); by = bx;
     tx = sx == 1; bx( tx ) = sy( tx );
@@ -81,57 +78,73 @@ if sdp_mode,
 end
 
 % Normal expression maps
-if sdp_mode,
+cnst = [];
+if sdp_mode || isempty( p.map ),
     vu = 1;
 else
+    if isfield( p, 'constant' ), cnst = p.constant; end
     vz = bsxfun( @plus, int32(vx), size(p.map,1) * int32(vy-1) );
     vz = p.map( vz );
     vu = sort( vz(:)' ); %#ok
     vu = vu( [ true, diff(vu) ~= 0 ] );
-    if vu( 1 ) == 0,
-        if ~xs, x = cvx_subsref( x, vz == 0 ); end
-        if ~ys, y = cvx_subsref( y, vz == 0 ); end
-        cvx_dcp_error( p.name, 'binary', x, y );
-    end
 end
 
-if length( vu ) == 1,
-    if any( cnst == vu ),
-    	x = cvx_constant( x ); 
-        y = cvx_constant( y ); 
-    end
-    z = reshape( p.funcs{vu(1)}( x(:), y(:), varargin{:} ), sz );
-    if oz,
-        z = cvx( z ); 
-    end
-else
-    if oz,
-        z = cvx( sz, [] );
+if vu(1) ~= 0,
+
+    ox = isa( x, 'cvx' );
+    oy = isa( y, 'cvx' );
+    oz = ox || oy;
+    if length( vu ) == 1,
+
+        % Homogenous input (single compute mode)
+        cz = any( cnst == vu );
+        if cz && ox, x = cvx_constant( x ); end
+        if cz && oy, y = cvx_constant( y ); end
+        z = p.funcs{vu(1)}( vec(x), vec(y), varargin{:} );
+        
+        % Post-op check, if necessary
+        if isempty( p.map ),
+            vu = cvx_isvalid( z );
+            if vu == 0, 
+                vz = cvx_isvalid( z, true ); 
+            end
+        end
+
+        % Output CVX object even for constant data, if requested
+        z = reshape( z, sz );
+        if cz && oz, 
+            z = cvx( z ); 
+        end
+
     else
-        z = zeros( sz );
+
+        % Heterogeneous input (multiple compute modes)
+        if oz, z = cvx( sz, [] );
+        else z = zeros( sz ); end
+        if xs, xt = x; end
+        if ys, yt = y; end
+        for vk = vu,
+            tt = vz == vk;
+            if ~xs, x = cvx_fastref( x, tt ); end
+            if ~ys, y = cvx_fastref( y, tt ); end
+            cz = any( cnst == vk );
+            if cz && ox, xt = cvx_constant( xt ); end
+            if cz && oy, yt = cvx_constant( yt ); end
+            zt = p.funcs{vk}( xt, yt, varargin{:} );
+            z = cvx_fastasgn( z, tt, zt );
+        end
+
     end
-    if xs, xt = x; end
-    if ys, yt = y; end
-    for vk = vu,
-        tt = vz == vk;
-        if ~xs,
-            x = cvx_subsref( x, tt ); 
-            x = x(:);
-        end
-        if ~ys,
-            y = cvx_subsref( y, tt ); 
-            y = y(:);
-        end
-        if any( cnst == vu ),
-            xt = cvx_constant( xt );
-            yt = cvx_constant( yt );
-        end
-        zt = p.funcs{vk}( xt, yt, varargin{:} );
-        if oz,
-            b = cvx_basis( zt );
-            z.basis_(1:size(b,1),tt) = b;
-        else
-            z(tt) = zt;
-        end
-    end
+    
 end
+
+% Errors found
+if vu(1) == 0,
+    if ~xs, x = cvx_fastref( x, vz == 0 ); end
+    if ~ys, y = cvx_fastref( y, vz == 0 ); end
+    cvx_dcp_error( p.name, 'binary', x, y );
+end
+
+
+
+    

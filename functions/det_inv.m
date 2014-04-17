@@ -1,4 +1,4 @@
-function y = det_inv( X, p )
+function y = det_inv( varargin )
 
 %DET_INV determinant of the inverse of an SPD matrix.
 %   For a square matrix X, DET_INV(X) returns 1.0./DET(X) if X is symmetric
@@ -19,45 +19,39 @@ function y = det_inv( X, p )
 
 persistent params
 if isempty( params ),
-    params.funcs  = { @det_inv_cnst, @det_inv_aff };
-    params.square = true;
-    params.name   = 'det_inv';
+    params.nargs     = 2;
+    params.args      = @det_inv_args;
+    params.empty     = 1;
+    params.constant  = @det_inv_diag;
+    params.diag      = @det_inv_diag;
+    params.affine    = @det_inv_aff;
+    params.structure = 'psdeig';
 end
 
 try
-	if nargin < 2,
-	    p = 1;
-	elseif ~isnumeric( p ) || ~isreal( p ) || numel( p ) ~=  1 || p <= 0,
-	    error( 'Second argument must be a positive scalar.' );
-	end
-    y = matrix_op( params, X, p );
+    y = cvx_matrix_op( params, varargin );
 catch exc
     if strncmp( exc.identifier, 'CVX:', 4 ), throw(exc);
     else rethrow(exc); end
 end
 
-function y = det_inv_cnst( X, p )
-[psd,X,Z] = check_psd( X, 'chol' );	
-if ~psd,
-	y = Inf;
-else
-	y = prod( diag(Z) .^ ( -2 * p ) );
+function [ X, p ] = det_inv_args( X, p )
+if isempty( p ),
+    p = 1;
+elseif ~( isnumeric(p) && isreal(p) && numel(p)==1 && p>=0 ),
+    error( 'CVX:ArgError', 'Second argument must be a positive scalar.' );
 end
 
+function y = det_inv_diag( D, p )
+y = prod_inv( D, p );
+
 function y = det_inv_aff( X, p )
-if nnz( X ) <= n && nnz( diag( X ) ) == nnz( X ),
-	y = prod_inv( diag(X), p );
-else
-    cvx_begin sdp
-        if isreal( X ),
-	        variable Z(n,n) lower_triangular
-        else
-	        variable Z(n,n) lower_triangular complex
-	    end
-	    minimize(prod_inv(real(diag(Z)),2*p))
-        [ diag( D ), Z' ; Z, X ] >= 0;
-    cvx_end
-end
+cvx_begin sdp
+    epigraph variable z nonnegative_
+    variable Y(n,n) lower_triangular complex_if(X)
+    prod_inv( real(diag(Y)), 2*p ) <= z;
+    [ diag( D ), Y' ; Y, X ] >= 0;
+cvx_end
 
 % Copyright 2005-2014 CVX Research, Inc. 
 % See the file LICENSE.txt for full copyright information.

@@ -22,7 +22,7 @@ warning( 'CVX:StrictInequalities', cvx_error( 'The use of strict inequalities in
 try
     b = newcnstr( evalin( 'caller', 'cvx_problem', '[]' ), x, y, '<' );
 catch exc
-	if isequal( exc.identifier, 'CVX:DCPError' ), throw( exc ); 
+	if strncmp( exc.identifier, 'CVX:', 4 ), throw( exc ); 
 	else rethrow( exc ); end
 end
 if nargout, a = b; end

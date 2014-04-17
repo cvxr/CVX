@@ -13,7 +13,7 @@ end
 
 try
     bparam.name = op;
-    z = binary_op( bparam, x, y );
+    z = cvx_binary_op( bparam, x, y );
 catch exc
     if strncmp( exc.identifier, 'CVX:', 4 ), throw( exc ); 
     else rethrow( exc ); end

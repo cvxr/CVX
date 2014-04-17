@@ -15,10 +15,18 @@ function v = cvx( v, b, d )
 %      cvx_where
 %   at the command prompt.
 
-if isa( v, 'cvx' ), 
-    return; 
-end
 switch nargin,
+    case 0,
+        s = [ 0, 1 ];
+        b = sparse( 1, 0 );
+        d = 0;
+    case 1,
+        if isa( v, 'cvx' ), 
+            return; 
+        end
+        s = size( v );
+        d = prod( s );
+        b = sparse( reshape( v, 1, d ) );
     case { 2, 3 },
         switch numel( v ),
             case 2,
@@ -26,7 +34,7 @@ switch nargin,
             case 1,
                 s = [ v, 1 ];
             case 0,
-                s = [ 0, 0 ];
+                s = [ 0, 1 ];
             otherwise,
                 s = v;
                 if s(end) == 1,
@@ -41,14 +49,6 @@ switch nargin,
         if nargin < 3,
             d = prod( s );
         end
-    case 1,
-        b = sparse( v(:).' );
-        s = size( v );
-        d = prod( s );
-    case 0,
-        s = [ 0, 0 ];
-        b = sparse( 1, 0 );
-        d = 0;
 end
 v = class( struct( 'size_', s, 'basis_', b, 'dof_', d, 'dual_', '' ), 'cvx', cvxobj );
     

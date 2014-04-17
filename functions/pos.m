@@ -7,35 +7,30 @@ function y = pos( x )
 %        POS(X) is convex and nondecreasing in X. Thus when used in CVX
 %        expressions, X must be convex (or affine).
 
-persistent params
-if isempty( params ),
-    params.map = cvx_remap( ...
-        { 'real' }, ...
-        { 'p_nonconst' }, ...
-        { 'n_nonconst' }, ...
+persistent P
+if isempty( P ),
+    P.map = cvx_remap( { 'real' }, { 'p_nonconst' }, { 'n_nonconst' }, ...
         { 'r_affine', 'convex' } );
-    params.constant = 1;
-    params.funcs = { @pos_1, @pos_2, @pos_3, @pos_4 };
-    params.name = 'pos';
+    P.funcs = { @pos_real, @pos_posn, @pos_negn, @pos_cnvx };
 end
 
 try
-    y = cvx_unary_op( params, x );
+    y = cvx_unary_op( P, x );
 catch exc
     if strncmp( exc.identifier, 'CVX:', 4 ), throw( exc ); 
     else rethrow( exc ); end
 end
 
-function y = pos_1( x )
+function y = pos_real( x )
 y = max( x, 0 );
 
-function y = pos_2( x )
+function y = pos_posn( x )
 y = x;
 
-function y = pos_3( x )
-y = zeros(size(x));
+function y = pos_negn( x )
+y = zeros( size(x) );
 
-function y = pos_4( x ) %#ok
+function y = pos_cnvx( x ) %#ok
 cvx_begin
     epigraph variable y(size(x)) nonnegative
     x <= y; %#ok

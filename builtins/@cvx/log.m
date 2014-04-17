@@ -13,28 +13,25 @@ function y = log( x )
 
 cvx_expert_check( 'log', x );
 
-persistent remap funcs
-if isempty( remap ),
-    remap = cvx_remap( ...
-        { 'positive' }, ...
-        { 'l_concave', 'l_affine', 'monomial' }, ...
-        { 'l_convex' }, ...
+persistent P
+if isempty( P ),
+    P.map = cvx_remap( { 'positive' }, ...
+        { 'l_concave_', 'l_affine', 'monomial' }, { 'l_convex' }, ...
         { 'r_affine', 'concave' } );
-    funcs = { @log_1, @log_2, @log_3, @log_4 };
+    P.funcs = { @log_cnst, @log_mono, @log_posy, @log_cncv };
 end
 
 try
-    y = unary_op( 'log', funcs, remap, x );
+    y = cvx_unary_op( P, x );
 catch exc
     if strncmp( exc.identifier, 'CVX:', 4 ), throw( exc ); 
     else rethrow( exc ); end
 end
 
-function y = log_1( x )
-% Positive constant
-y = cvx( log( cvx_constant( x ) ) );
+function y = log_cnst( x )
+y = builtin( 'log', x );
 
-function y = log_2( x )
+function y = log_mono( x )
 % Monomial
 global cvx___
 nb = prod( x.size_ );
@@ -45,7 +42,7 @@ bx = sparse( [ ones( nt, 1 ) ; logs ], [ cx( tt ) ; cx ], [ log( vx( tt ) ) ; on
     full( max( logs ) ), size( x.basis_, 2 ) );
 y = cvx( x.size_, bx );
 
-function y = log_3( x )
+function y = log_posy( x )
 % Posynomial
 global cvx___
 x = x.basis_;
@@ -81,12 +78,9 @@ for kk = 1 : nu,
     end
 end
 
-function y = log_4( x )
-% Affine, concave
-y = [];
-sx = x.size_; %#ok
+function y = log_cncv( x ) %#ok
 cvx_begin
-    hypograph variable y( sx )
+    hypograph variable y( size(x) )
     exp( y ) <= x; %#ok
 cvx_end
 

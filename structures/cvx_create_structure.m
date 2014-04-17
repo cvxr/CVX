@@ -94,6 +94,15 @@ for k = 2 : nargs,
         case 'complex',        
                               do_comp = true;
             if do_semi, do_conj = true; end
+        case 'complex_if',
+            amin = 1; amax = 1;
+            if length(args{k}) == 1,
+                arg = args{k}{1};
+                if isa(arg,'logical') && arg || ~isreal(arg),
+                    do_comp = true;
+                    if do_semi, do_conj = true; end
+                end
+            end
         case 'symmetric',
             sflags(k) = true;                 do_symm = true;
         case 'symmetric_ut',
@@ -101,6 +110,15 @@ for k = 2 : nargs,
             pflags(k) = true;
         case 'hermitian',      
             sflags(k) = true; do_comp = true; do_symm = true; do_conj = true;
+        case 'hermitian_if',
+            amin = 1; amax = 1;
+            sflags(k) = true; do_symm = true;
+            if length(args{k}) == 1,
+                arg = args{k}{1};
+                if isa(arg,'logical') && arg || ~isreal(arg),
+                    do_comp = true; do_conj = true;
+                end
+            end
         case { 'skew_symmetric', 'skew-symmetric' },
             sflags(k) = true;                 do_symm = true;                 do_skew = true;
         case { 'skew_hermitian', 'skew-hermitian' }
