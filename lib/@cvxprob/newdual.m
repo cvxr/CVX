@@ -5,12 +5,9 @@ error( nargchk( 2, 3, nargin ) );
 % Check problem
 %
 
-if ~isa( prob, 'cvxprob' ),
-    error( 'First argument must be a cvxprob object.' );
-end
 global cvx___
-p = prob.index_;
-vars = cvx___.problems( p ).duals;
+[ p, pstr ] = verify( prob );
+vars = pstr.duals;
 
 %
 % Check name
@@ -26,7 +23,7 @@ elseif ischar( name ),
             error( 'Invalid dual variable name: %s', name );
         elseif isfield( vars, name ),
             error( 'Dual variable name conflict: %s', name );
-        elseif isfield( cvx___.problems( p ).variables,name ),
+        elseif isfield( pstr.variables,name ),
             error( 'Primal/dual variable name conflict: %s', name );
         end
     end
@@ -68,14 +65,13 @@ else
     y = [];
     z = cvxdual( p, nstr );
 end
-vars = cvx___.problems( p ).dvars;
+vars = pstr.dvars;
 vars = builtin( 'subsasgn', vars, nstr(1), z );
-cvx___.problems( p ).dvars = vars;
-vars = cvx___.problems( p ).duals;
+pstr.dvars = vars;
+vars = pstr.duals;
 vars = builtin( 'subsasgn', vars, nstr(1), y );
-cvx___.problems( p ).duals = vars;
-cvx___.x = [];
-cvx___.y = [];
+pstr.duals = vars;
+cvx___.problems(p) = pstr;
 
 % Copyright 2005-2014 CVX Research, Inc.
 % See the file LICENSE.txt for full copyright information.

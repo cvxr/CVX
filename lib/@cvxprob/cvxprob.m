@@ -16,15 +16,9 @@ if length(st) <= 2,
 else
     name = st(3).name;
 end
-if ~isempty( cvx___.problems ),
-    ndx = find( [ cvx___.problems.depth ] >= depth );
-    if ~isempty( ndx ),
-        temp = cvx___.problems(ndx(1));
-        if temp.depth == depth && ( ~isempty(temp.objective) || ~isempty(temp.variables) || ~isempty(temp.duals) || nnz(temp.t_variable) > 1 );
-            warning( 'CVX:Empty', 'A non-empty cvx problem already exists in this scope.\n   It is being overwritten.', 1 ); %#ok
-        end
-        pop( temp.self, 'reset' );
-    end
+if ~isempty( cvx___.problems ) && cvx___.problems(end).depth >= depth,
+    ndx = find( [ cvx___.problems.depth ] >= depth, 1, 'first' );
+    cvx_pop( ndx, true, true );
 end
 
 %
@@ -32,11 +26,12 @@ end
 %
 
 if ~isempty( cvx___.problems ),
-    nprec  = cvx___.problems( end ).precision;
-    npflag = cvx___.problems( end ).precflag;
-    nrprec = cvx___.problems( end ).rat_growth;
-    nsolv  = cvx___.problems( end ).solver;
-    nquiet = cvx___.problems( end ).quiet;
+    temp = cvx___.problems( end );
+    nprec  = temp.precision;
+    npflag = temp.precflag;
+    nrprec = temp.rat_growth;
+    nsolv  = temp.solver;
+    nquiet = temp.quiet;
 else
     nprec  = cvx___.precision;
     npflag = cvx___.precflag;
@@ -84,6 +79,7 @@ temp = struct( ...
     'iters',         Inf,        ...
     'tol',           Inf,        ...
     'cleared',       false,      ...
+    'clearmode',     'clear',    ...
     'depth',         depth, ...
     'self',          z );
 temp.t_variable( 1 ) = true;

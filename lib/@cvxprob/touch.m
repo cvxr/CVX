@@ -3,13 +3,13 @@ global cvx___
 if nargin < 3, iseq = false; end
 
 if isa( x, 'cvx' ),
-    p  = p.index_;
+    [ p, pstr ] = verify( p );
     b  = cvx_basis( x );
     y  = any( b, 2 );
     if iseq,
     	cvx___.canslack( y ) = false;
     end
-    v  = cvx___.problems( p ).t_variable;
+    v  = pstr.t_variable;
     nv = size( v, 1 );
     ny = length( y );
     if ny < nv, 

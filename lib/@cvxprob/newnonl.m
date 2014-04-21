@@ -1,5 +1,6 @@
-function newnonl( prob, ncones, arg ) %#ok
+function newnonl( prob, ncones, arg )
 global cvx___
+verify( prob );
 cones = cvx___.cones;
 if nargin == 3,
     ncones = struct( 'type', ncones, 'indices', arg );

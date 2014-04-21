@@ -3,11 +3,11 @@ if nargin < 3 || nargout < 6, doineqs = true; end
 if nargin < 2 || nargout < 5, destructive = false; end
 
 global cvx___
+[ pn, p ] = verify( pp ); %#ok
 persistent vex
 if isempty( vex ),
     vex = [0,0,0,NaN,-1,-1,-1,0,0,0,1,1,1,NaN,NaN,1,1,1,1,NaN]';
 end
-p = cvx___.problems( pp.index_ );
 n = length( cvx___.classes );
 
 %

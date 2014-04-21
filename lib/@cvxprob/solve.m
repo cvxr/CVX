@@ -1,8 +1,7 @@
 function solve( prob )
 
 global cvx___
-p     = prob.index_;
-pr    = cvx___.problems( p );
+[p,pr] = verify( prob );
 quiet = pr.quiet;
 obj   = pr.objective;
 gobj  = pr.geometric;

@@ -38,6 +38,9 @@ function cvx_begin( varargin )
 %   ignored for sets and incomplete specifications.
 
 try
+    if isa( evalin( 'caller', 'cvx_problem', '[]' ), 'cvxprob' ),
+        evalin( 'caller', 'cvx_pop( cvx_problem, true, true )' );
+    end
     assignin( 'caller', 'cvx_problem', cvxprob( varargin{:} ) );
 catch exc
     if strncmp( exc.identifier, 'CVX:', 4 ), throw( exc );

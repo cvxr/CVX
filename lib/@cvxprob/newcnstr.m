@@ -1,18 +1,12 @@
 function [ outp, sdp_mode ] = newcnstr( prob, x, y, op, sdp_mode )
-    
+
+global cvx___
+[ p, pstr ] = verify( prob );
+
 %
 % Check problem
 %
 
-if ~isa( prob, 'cvxprob' ),
-    error( 'A cvx problem must be created first.' );
-end
-global cvx___
-p = prob.index_;
-if length( cvx___.problems ) > p,
-    % Some cruft left over from a previous interrupted problem.
-    pop( cvx___.problems(p+1).self, 'reset' );
-end
 y_orig = y;
 if isa( x, 'cvxcnst' ),
     x = rhs( x );
@@ -30,7 +24,7 @@ elseif ~isempty( dy ),
     error( [ 'Two dual variable references found: "', dx, '","', dy, '"' ] );
 end
 if ~isempty( dx ),
-    duals = cvx___.problems( p ).duals;
+    duals = pstr.duals;
     try
         dual = builtin( 'subsref', duals, dx );
     catch
@@ -66,9 +60,8 @@ if ~cx || ~cy,
         error( 'The left- and right-hand sides have incompatible sizes.' );
     else
         if ~isempty( dx ),
-            duals = cvx___.problems( p ).duals;
-            duals = builtin( 'subsasgn', duals, dx, cell(sx) );
-            cvx___.problems( p ).duals = duals;
+            pstr.duals = builtin( 'subsasgn', pstr.duals, dx, cell(sx) );
+            cvx___.problems( p ) = pstr;
         end
         for k = 1 : prod( sx ),
             newcnstr( prob, x{k}, y{k}, op );
@@ -113,7 +106,7 @@ end
 
 try
     if nargin < 5,
-        sdp_mode = cvx___.problems( p ).sdp;
+        sdp_mode = pstr.sdp;
     end
     switch op(1),
     case '=',
@@ -206,8 +199,8 @@ if ~isempty( dx )
         zI = cvx_invert_structure( zR )';
         zI = sparse( mO + 1 : mO + mN, 1 : mN, 1 ) * zI;
         zI = cvx( sz, zI );
-        duals = builtin( 'subsasgn', duals, dx, zI );
-        cvx___.problems( p ).duals = duals;
+        pstr.duals = builtin( 'subsasgn', pstr.duals, dx, zI );
+        cvx___.problems( p ) = pstr;
     else
         warning( 'CVX:NoDualVariables', 'Dual variables are not availble for log-convex constraints.' )
     end

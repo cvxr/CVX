@@ -1,26 +1,12 @@
 function finish( prob )
 
 global cvx___
+[ p, pstr ] = verify( prob );
+
 try
 
-p = prob.index_;
-np = length( cvx___.problems );
-if np < p,
-    if np > 1, prob = cvx___.problems(1).self; mode = 'reset'; end
-    error( 'CVX:InternalError', 'Internal CVX data corruption. Please CLEAR ALL and rebuild your model.' );
-end
-pstr = cvx___.problems( p );
-if pstr.self ~= prob,
-    prob = cvx___.problems(1).self; mode = 'reset';
-    error( 'CVX:InternalError', 'Internal CVX data corruption. Please CLEAR ALL and rebuild your model.' );
-elseif np > p,
-    % Cruft left over from an interrupted model.
-    pop( cvx___.problems(p+1).self, 'reset' );
-end
+if isempty( pstr.objective ) && isempty( pstr.variables ) && nnz( pstr.t_variable ) == 1,
 
-if isempty( pstr.objective ) && isempty( pstr.variables ) && isempty( pstr.duals ) && nnz( pstr.t_variable ) == 1,
-
-    pop( prob, 'none' );
     warning( 'CVX:EmptyModel', 'Empty cvx model; no action taken.' );
 
 elseif pstr.complete && nnz( pstr.t_variable ) == 1,
@@ -66,6 +52,7 @@ elseif pstr.complete && nnz( pstr.t_variable ) == 1,
         end
     end
     if any( i1 ~= i2 ),
+        cvx_pop( p, true );
         temp = sprintf( ' %s', fn1{ i1 ~= i2 } );
         error( 'CVX:CorruptModel', 'The following cvx variable(s) have been cleared or overwritten:\n  %s\nThis is often an indication that an equality constraint was\nwritten with one equals ''='' instead of two ''==''. The model\nmust be rewritten before CVX can solve it.', temp );
     end
@@ -74,7 +61,7 @@ elseif pstr.complete && nnz( pstr.t_variable ) == 1,
     solve( prob );
     pstr = cvx___.problems( p );
     
-    if numel( pstr.objective ) > 1 && ~isempty(pstr.result),
+    if numel( pstr.objective ) > 1 && ~isempty( pstr.result ),
         if strfind( pstr.status, 'Solved' ),
             pstr.result = value( pstr.objective );
             if pstr.geometric, pstr.result = exp( pstr.result ); end
@@ -89,11 +76,10 @@ elseif pstr.complete && nnz( pstr.t_variable ) == 1,
     assignin( 'caller', 'cvx_slvitr',  pstr.iters );
     assignin( 'caller', 'cvx_slvtol',  pstr.tol );
     assignin( 'caller', 'cvx_cputime', cputime - pstr.cputime );
-    evalin( 'caller', 'pop( cvx_problem, ''value'' )' );
     
-elseif np < 2,
+elseif length( cvx___.problems ) < 2,
 
-    prob = cvx___.problems(1).self; mode = 'reset';
+    cvx_pop( 0, true );
     error( 'CVX:InternalError', 'Internal CVX data corruption. Please CLEAR ALL and rebuild your model.' );
 
 else
@@ -146,13 +132,13 @@ else
     else
 
         switch pstr.direction,
-            case 'minimize',
+            case { 'minimize', 'minimise' },
                 force = false;
                 os = +1;
             case 'epigraph',
                 force = true;
                 os = +1;
-            case 'maximize',
+            case { 'maximize', 'maximise' },
                 force = false;
                 os = -1;
             case 'hypograph',
@@ -189,17 +175,14 @@ else
         end
 
         assignin( 'caller', 'cvx_optval', x );
-        pop( prob, 'none' );
     end
 
 end
 
-evalin( 'caller', 'clear cvx_problem' );
+evalin( 'caller', 'cvx_pop( cvx_problem )' );
 
 catch exc
 
-    if ~isempty( mode ), pop( prob, 'reset' ); end
-    evalin( 'caller', 'clear cvx_problem' );
     rethrow( exc );
     
 end

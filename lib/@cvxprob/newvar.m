@@ -1,5 +1,8 @@
 function y = newvar( prob, name, siz, str, geo )
 
+global cvx___
+[ p, pstr ] = verify( prob );
+
 %
 % Check name
 %
@@ -18,13 +21,6 @@ end
 % Retrieve an existing variable, and check for conflicts
 %
 
-global cvx___
-p = prob.index_;
-if length( cvx___.problems ) > p,
-    % Some cruft left over from a previous interrupted problem.
-    pop( cvx___.problems(p+1).self, 'reset' );
-end
-pstr = cvx___.problems( p );
 vars = pstr.variables;
 if ~isempty( nstr ),
     try

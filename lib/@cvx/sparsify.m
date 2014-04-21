@@ -28,7 +28,7 @@ if at,
     % linear replacement and leave it at that.
     %
     
-    if ~isequal( mode, 'exponential' ),
+    if ~isobj && ~isequal( mode, 'exponential' ),
         if isempty( remap ),
             remap = cvx_remap( 'posynomial' );
         end

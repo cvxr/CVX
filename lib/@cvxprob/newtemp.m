@@ -3,7 +3,8 @@ function z = newtemp( prob, siz )
 % NEWTEMP Creates a temporary variable.
 
 global cvx___
-vstr = cvx___.problems( prob.index_ ).variables;
+[ p, pstr ] = verify( prob ); %#ok
+vstr = pstr.variables;
 if isfield( vstr, 'temp_' ),
     ndx = length( vstr.temp_ );
 else

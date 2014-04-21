@@ -6,8 +6,13 @@ function cvx_clear
 %    over. Typing this before entering another CVX_BEGIN again avoids the 
 %    warning message that occurs if CVX_BEGIN detects a model in progress.
 
-if isa( evalin( 'caller', 'cvx_problem', '[]' ), 'cvxprob' ),
-	evalin( 'caller', 'pop( cvx_problem, ''clear'' )' );
+try
+    if isa( evalin( 'caller', 'cvx_problem', '[]' ), 'cvxprob' ),
+        evalin( 'caller', 'cvx_pop( cvx_problem, true )' );
+    end
+catch exc
+    if strcmp( exc.identifier, 'CVX:', 4 ), throw( exc );
+    else rethrow( exc ); end
 end
 
 % Copyright 2005-2014 CVX Research, Inc.

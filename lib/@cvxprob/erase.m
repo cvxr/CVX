@@ -1,8 +1,7 @@
 function erase( p )
 
 global cvx___
-p = p.index_;
-prob = cvx___.problems( p );
+[ p, prob ] = verify( p );
 if prob.cleared, return; end
 
 nf = length( prob.t_variable ) + 1;
@@ -58,6 +57,7 @@ elseif length( cvx___.uniforms ) >= nu,
     cvx___.uniforms( nu : end ) = [];
     cvx___.unirepls( nu : end ) = [];
 end
+
 cvx___.problems( p ).cleared = true;
 
 % Copyright 2005-2014 CVX Research, Inc.
