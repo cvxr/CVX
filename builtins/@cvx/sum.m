@@ -35,7 +35,8 @@ if dim > length( s ) || s( dim ) == 1,
 
 elseif s( dim ) == 0,
 
-    s( dim ) = 1;
+    if ~any( s ), s = [1,1];
+    else s( dim ) = 1; end
     y = cvx( s, sparse( 1, prod( s ) ) );
 
 else

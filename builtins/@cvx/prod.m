@@ -33,7 +33,8 @@ end
 %
 
 if isempty( x ),
-    y = ones( zy );
+    if ~any( zy ), zy = 1; end
+    y = cvx( ones( zy ) );
     return
 elseif nx == 1,
     y = ox;
