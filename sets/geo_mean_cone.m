@@ -1,4 +1,4 @@
-function [ cvx_optpnt, mode ] = geo_mean_cone( sx, dim, w, mode )
+function [ cvx_optpnt, mode ] = geo_mean_cone( varargin )
 
 %GEO_MEAN_CONE    Cones involving the geometric mean.
 %   GEO_MEAN_CONE(N), where N is a positive integer, creates a column vector
@@ -62,35 +62,10 @@ function [ cvx_optpnt, mode ] = geo_mean_cone( sx, dim, w, mode )
 % Check size vector
 %
 
-[ temp, sx ] = cvx_check_dimlist( sx, true );
-if ~temp,
-    error( 'First argument must be a dimension vector.' );
-end
-
-%
-% Check dimension
-%
-
-if nargin < 4,
-    mode = '';
-end
-if nargin == 2 && ischar( dim ),
-    mode = dim;
-    dim = cvx_default_dimension( sx );
-elseif nargin < 2 || isempty( dim ),
-    dim = cvx_default_dimension( sx );
-elseif ~cvx_check_dimension( dim, true ),
-    error( 'Second argument must be a nonnegative integer.' );
-end
+[ sx, dim, w, mode ] = cvx_get_dimension( varargin, 2, 'nox', true );
 sy = sx;
-nd = length( sx );
-if dim <= 0 || dim > nd || sx( dim ) == 1,
-    nx  = 1;
-    dim = 0;
-else
-    nx = sx( dim );
-    sy( dim ) = 1;
-end
+nx = sx( dim );
+sy( dim ) = 1;
 
 %
 % Check weight vector

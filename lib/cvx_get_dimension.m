@@ -1,13 +1,13 @@
-function [ sx, x, dim, varargout ] = cvx_get_dimension( darg, args, vec ) %#ok
-
+function [ sx, varargout ] = cvx_get_dimension( args, darg, varargin )
+opts = struct( 'zero', false, 'vec', false, 'nox', false ); 
+if nargin > 2,
+    for k = 1 : 2 : nargin - 2,
+        opts.(varargin{k}) = varargin{k+1};
+    end
+end
 narg = length( args );
-oarg = nargout - 1;
 if narg < 1, 
     error( 'CVX:ArgError', 'Not enough input arguments.' );
-end
-zero_ok = darg < 0;
-if zero_ok,
-    darg = -darg;
 end
 if narg < darg,
     dim = [];
@@ -15,23 +15,36 @@ else
     dim = args{darg};
 end
 x = args{1};
-sx = size( x );
+if opts.nox,
+    sx = x;
+    if ~( isnumeric(sx) && numel(sx)==length(sx) && isreal(sx) && all(sx>=0) && sx==floor(sx) ),
+        error( 'CVX:ArgError', 'Size argument must be a vector of nonnegative integers.' );
+    end
+else
+    sx = size( x );
+end
 if isempty( dim ),
     dim = find( sx ~= 1, 1, 'first' );
     if isempty( dim ), dim = 1; end
-elseif ~( isnumeric(dim) && numel(dim)==1 && isreal(dim) && dim > -zero_ok && dim==floor(dim) ),
+elseif ~( isnumeric(dim) && numel(dim)==1 && isreal(dim) && dim > -opts.zero && dim==floor(dim) ),
     error( 'CVX:ArgError', 'Dimension argument must be a positive integer.' );
 end
 if dim == 0,
     dim = find( sx == 1, 1, 'first' );
-    if isempty( dim ), dim = length(sx)+1; end
+    if isempty( dim ), dim = length(sx) + 1; end
 end
 sx(end+1:dim) = 1;
 args{darg} = dim;
-if nargin < 3,
-    args{oarg+1} = [];
-    varargout = args(3:end);
-else
+if opts.vec,
     args([1,darg]) = [];
-    varargout{1} = args;
+    if opts.nox,
+        varargout = { dim, args };
+    else
+        varargout = { x, dim, args };
+    end
+else
+    no = nargout - 1;
+    if opts.nox, args(1) = []; end
+    if no > length(args), args{no} = []; end
+    varargout = args;
 end

@@ -1,4 +1,4 @@
-function cvx_optpnt = nonnegative( sx ) %#ok
+function cvx_optpnt = nonnegative( varargin ) %#ok
 
 %NONNEGATIVE   The nonnegative orthant.
 %   NONNEGATIVE(SX), where SX is a valid size vector, creates an array
@@ -16,21 +16,11 @@ function cvx_optpnt = nonnegative( sx ) %#ok
 %       NONNEGATIVE is a cvx set specification. See the user guide for
 %       details on how to use sets.
 
-global cvx___
-error( nargchk( 1, 1, nargin ) ); %#ok
-
-[ temp, sx ] = cvx_check_dimlist( sx, true );
-if ~temp,
-    error( 'Argument must be a non-empty dimension vector.' );
-end
-    
+sx = cvx_get_dimlist( varargin );
 cvx_begin set
-    variables x( sx )
-    if all( sx ~= 0 ),
-        [ tx, dummy ] = find( cvx_basis( x ) ); %#ok
-        newnonl( cvx_problem, 'nonnegative', tx(:) );
-        cvx___.sign(tx) = 1;
-    end
+    variables x( sx ) nonnegative_
+    [ tx, dummy ] = find( cvx_basis( x ) ); %#ok
+    newnonl( cvx_problem, 'nonnegative', tx(:) );
 cvx_end
 
 % Copyright 2005-2014 CVX Research, Inc. 

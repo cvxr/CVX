@@ -22,9 +22,9 @@ cvx_expert_check( 'sum_log', varargin{1} );
 
 persistent params
 if isempty( params ),
-    params.map = cvx_remap( { 'real' ; 'l_convex' ; { 'p_convex', 'n_concave', 'r_affine' } } );
+    params.map = cvx_remap( { 'real' ; 'l_convex' ; 'concave' ; 'l_concave' } );
     params.map = bsxfun( @and, params.map, ~cvx_remap( 'nonpositive' ) );
-    params.funcs = { @sum_log_1, @sum_log_1, @sum_log_2 };
+    params.funcs = { @sum_log_1, @sum_log_1, @sum_log_2, @sum_log_1 };
     params.zero = 0;
     params.constant = 1;
     params.reduce = true;

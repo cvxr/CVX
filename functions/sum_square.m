@@ -18,7 +18,8 @@ function y = sum_square( varargin )
 
 persistent params
 if isempty( params ),
-    params.map = cvx_remap( { 'real' ; 'l_convex' ; { 'p_convex', 'n_concave', 'r_affine' } } );
+    params.map = cvx_remap( { 'real' ; 'l_convex' ; ...
+         { 'p_convex', 'n_concave', 'r_affine' } } );
     params.funcs = { @ssq_1, @ssq_2, @ssq_3 };
     params.zero = 0;
     params.constant = 1;
@@ -41,14 +42,11 @@ x = sum( x .^ 2, 1 );
 function x = ssq_2( x )
 x = sum( exp( 2 * log( x ), 1 ) );
 
-function y = ssq_3( x )
+function y = ssq_3( x ) %#ok
 [ nx, nv ] = size(x);
-y = [];
-x = cvx_accept_cvxccv( x );
 cvx_begin
-    epigraph variable y( 1, nv )
-    { x, y, 1 } == rotated_lorentz( [ nx, nv ], 1, ~isreal( x ) ); %#ok
-    cvx_setnneg(y);
+    epigraph variable y( 1, nv ) nonnegative_
+    { linearize_abs(x), y, 1 } == rotated_lorentz( [ nx, nv ], 1 ); %#ok
 cvx_end
 
 % Copyright 2005-2014 CVX Research, Inc.

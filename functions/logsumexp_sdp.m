@@ -1,4 +1,4 @@
-function cvx_optval = logsumexp_sdp( x, dim, tol )
+function cvx_optval = logsumexp_sdp( varargin )
 
 %LOGSUMEXP_SDP    SDP-based approximation of log(sum(exp(x))).
 %   LOGSUMEXP_SDP(X) computes an approximation of the function
@@ -43,32 +43,22 @@ function cvx_optval = logsumexp_sdp( x, dim, tol )
 %       LOGSUMEXP_SDP(X) is convex an nondecreasing in X; therefore, X
 %       must be convex (or affine).
 
+[ sx, x, dim, tol ] = cvx_get_dimension( varargin, 2 );
 if ~isreal( x ),
     error( 'Input must be real.' );
 end
-sx = size( x );
 
-if nargin < 2 || isempty( dim ),
-    dim = cvx_default_dimension( sx );
-elseif ~cvx_check_dimension( dim, true ),
-    error( 'Second argument must be a valid dimension.' );
-end
-
-if nargin < 3 || isempty( tol ),
+if isempty( tol ),
     tol = 0.01;
 elseif ~isnumeric( tol ) || length( tol ) ~= 1 || ~isreal( tol ) || tol <= 0 || tol >= 1,
     error( 'tol must be a number between 0 and 1, exclusuve.' );
 end
 
-if length( sx ) < dim,
-    sx( end + 1 : dim ) = 1;
-end
-nx = sx( dim );
-if nx == 0,
-    sx( dim ) = 1;
+if ~all( sx ),
+    if ~any( sx ), sx = [ 1, 1 ];
+    else sx( dim ) = 1; end
     cvx_optval = -Inf * ones( sx );
-elseif any( sx == 0 ),
-    cvx_optval = zeros( sx );
+    return
 end
 
 persistent polynomials tolerances offsets tols_lse2 xmax_lse2 poly_lse2;
@@ -155,19 +145,6 @@ else
 end
 
 %
-% Quick exits
-%
-
-if nx == 1,
-    cvx_optval = x;
-    return;
-elseif any( sx == 0 ),
-    sx( dim ) = 1;
-    cvx_optval = -Inf * ones( sx );
-    return
-end
-
-%
 % Permute the matrix, if needed, so the geometric mean can be taken
 % along the first dimension.
 %
@@ -198,7 +175,7 @@ cvx_begin sdp separable
         yq = y;
     end
     if use_lse2,
-        xq = cvx_accept_convex( xq );
+        xq = linearize( xq );
         variables w( 1, npairs * nv ) v( 1, npairs * nv )
         abs( [0.5,-0.5]*xq ) <= w + v; %#ok
         w <= xoff; %#ok
@@ -207,7 +184,7 @@ cvx_begin sdp separable
     else
         xy = xq - ones(size(xq,1),1) * yq;
         xy = max( xy, - xoff );
-        xy = cvx_accept_convex( xy );
+        xy = linearize( xy );
         sum( poly_env( p, xy / ( 0.5 * xoff ) + 1 ), 1 ) <= 1; %#ok
     end
 cvx_end

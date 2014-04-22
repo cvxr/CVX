@@ -31,12 +31,10 @@ function hypograph( varargin )
 %
 %   See also VARIABLE, EPIGRAPH.
 
-if nargin < 2,
+if nargin < 2 || ~isequal( varargin{1}, 'variable' ),
     error( 'Incorrect syntax for HYPOGRAPH VARIABLE. Type HELP HYPOGRAPH for details.' );
 elseif ~iscellstr( varargin ),
     error( 'All arguments must be strings.' );
-elseif ~strcmp( varargin{1}, 'variable' ),
-    error( 'Incorrect syntax for HYPOGRAPH VARIABLE. Type HELP HYPOGRAPH for details.' );
 end
 evalin( 'caller', sprintf( '%s ', 'variable', varargin{2:end}, ' hypograph_' ) );
 

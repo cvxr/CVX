@@ -1,4 +1,4 @@
-function cvx_optpnt = rotated_lorentz( sx, dim, iscplx )
+function cvx_optpnt = rotated_lorentz( varargin )
 
 %ROTATED_LORENTZ   Rotated real second-order cone.
 %   ROTATED_LORENTZ(N), where N is a positive integer, creates a column
@@ -32,49 +32,8 @@ function cvx_optpnt = rotated_lorentz( sx, dim, iscplx )
 %       ROTATED_LORENTZ is a cvx set specification. See the user guide for
 %       details on how to use sets.
 
-%
-% Check size vector
-%
-
-error( nargchk( 1, 3, nargin ) ); %#ok
-[ temp, sx ] = cvx_check_dimlist( sx, true );
-if ~temp,
-    error( 'First argument must be a dimension vector.' );
-end
-
-%
-% Check dimension
-%
-
-nd = length( sx );
-if nargin < 2 || isempty( dim ),
-    dim = cvx_default_dimension( sx );
-elseif ~cvx_check_dimension( dim, true ),
-    error( 'Second argument must be a dimension (or zero).' );
-elseif dim == 0 || dim > nd || sx( dim ) == 1,
-    dim = find( sx == 1 );
-    if isempty( dim ),
-        dim = nd + 1;
-    else
-        dim = dim( 1 );
-    end
-end
-if dim > nd,
-    sx( end + 1 : dim ) = 1;
-    nd = dim;
-end
-
-%
-% Check complex flag
-%
-
-if nargin < 3 || isempty( iscplx ),
-    iscplx = false;
-elseif length( iscplx ) ~= 1,
-    error( 'Third argument must be a scalar.' );
-else
-    iscplx = logical( iscplx );
-end
+[ sx, dim, iscplx ] = cvx_get_dimension( varargin, 2, 'nox', 'true', 'zero', 'true' );
+iscplx = ~isempty(iscplx) && iscplx;
 
 %
 % Build the cvx module
@@ -108,7 +67,10 @@ else
 end
 
 if iscplx,
-    cvx_optpnt.x = cvx_r2c( cvx_optpnt.x, dim );
+    x = cvx_basis( cvx_optpnt.x );
+    x = x(:,1:2:end) + 1j * x(:,2:2:end);
+    sx(dim) = sx(dim) * 0.5;
+    cvx_optpnt.x = cvx( sx, x );
 end
 
 cvx_optpnt = cvxtuple( cvx_optpnt );

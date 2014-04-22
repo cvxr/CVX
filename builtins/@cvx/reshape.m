@@ -3,53 +3,49 @@ function x = reshape( x, varargin )
 %   Disciplined convex/geometric programming information for RESHAPE:
 %       RESHAPE imposes no convexity restrictions on its arguments.
 
-%
-% Check size arguments
-%
-
 switch nargin,
 case {0,1},
-    error( 'Not enough input arguments.' );
+    error( 'CVX:ArgError', 'Not enough input arguments.' );
 case 2,
-    [ temp, sz ] = cvx_check_dimlist( varargin{1}, true );
+    fnan = 0;
+    sz = varargin{1};
+    if ~( isnumeric(sz) && numel(sz) == length(sz) && all(sz>=0) && all(sz==floor(sz)) )
+        error( 'CVX:ArgError', 'Size argument must be a vector of nonnegative integers.' );
+    end
 otherwise,
-    [ temp, sz ] = cvx_check_dimlist( varargin, true );
+    nel = nargin - 1;
+    sz = zeros( 1, nel );
+    fnan = 0;
+    for k = 1 : nel,
+        s = varargin{k};
+        if isempty( s ),
+            if ~fnan,
+                error( 'CVX:ArgError', 'Size can only have one unknown dimension.' );
+            end
+            sz(k) = 1;
+            fnan = k;
+        elseif isnumeric( s ) && length( s ) == 1,
+            sz(k) = s;
+        else
+            error( 'CVX:ArgError', 'Size arguments must be nonnegative integers.' );
+        end
+    end
 end
-if ~temp,
-    error( 'Second argument must be a valid dimension list.' );
-end
-
-%
-% Quick exit if the size remains the same
-%
 
 sx = x.size_;
+px = prod(sx);
+if fnan,
+    s = px / prod(sz);
+    if isnan(s) || s ~= floor(s),
+        error( 'Product of known dimensions, %d, not divisible into total number of elements, %d.', prod(sz), prod(sx) );
+    end
+    sz(fnan) = s;
+end
 if isequal( sx, sz ),
     return;
-end
-
-%
-% Confirm compatible reshape
-%
-
-px = prod( sx );
-tt = isnan( sz );
-if any( tt ),
-    if nnz( tt ) > 1,
-        error( 'Size can only have one unknown dimension.' );
-    end
-    tmp = px / prod( sz( ~tt ) );
-    if isnan( tmp ) || tmp ~= floor( tmp ),
-        error( 'Product of known dimensions, %d, not divisible into total number of elements, %d.', prod( sz( ~tt ) ), px );
-    end
-    sz( tt ) = tmp;
 elseif px ~= prod( sz ),
     error( 'To RESHAPE the number of elements must not change.' );
 end
-
-%
-% Perform the resize
-%
 
 x = cvx( sz, x.basis_ );
 

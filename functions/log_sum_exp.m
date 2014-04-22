@@ -48,7 +48,7 @@ function y = lse_2( x ) %#ok
 cvx_begin
     variable w( nx, nv )
     epigraph variable y( 1, nv )
-    { cvx_accept_convex( x ) - repmat( y, [nx,1] ), 1, w } == exponential( [nx,nv] ); %#ok
+    { linearize( x ) - repmat( y, [nx,1] ), 1, w } == exponential( [nx,nv] ); %#ok
     sum( w, 1 ) == 1; %#ok
 cvx_end
 

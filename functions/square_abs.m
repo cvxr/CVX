@@ -10,8 +10,7 @@ function y = square_abs( x )
 %       SQUARE_ABS(X) is convex and nonmonotonic in X. Thus when used in 
 %       CVX expressions, X must be affine.
 
-if ~isreal( x ), x = abs( x ); end
-y = square( x );
+y = square( linearize_cabs( x ) );
 
 % Copyright 2005-2014 CVX Research, Inc. 
 % See the file LICENSE.txt for full copyright information.

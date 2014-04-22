@@ -35,11 +35,11 @@ if isempty( params ),
     params.reverse = false;
     params.name = 'geo_mean';
     params.errargs = [];
-    params.dimarg = [];
+    params.dimarg = 2;
 end
 
 try
-    [ sx, x, dim, w ] = cvx_get_dimension( 2, varargin );
+    [ sx, x, dim, w ] = cvx_get_dimension( varargin, 2 );
     if ~isempty( w ),
         if ~( numel(w)==length(w) && isnumeric(w) && isreal(w) && all(w>=0) ),
             error( 'CVX:ArgError', 'Third argument must be a vector of nonnegative numbers.' );
@@ -70,7 +70,7 @@ function y = geo_mean_2( x, w ) %#ok
 [ nx, nv ] = size( x );
 cvx_begin
     hypograph variable y(1,nv);
-    { cvx_accept_concave(x), y } == geo_mean_cone( [nx,nv], 1, w, 'func' ); %#ok
+    { linearize(x), y } == geo_mean_cone( [nx,nv], 1, w, 'func' ); %#ok
     cvx_setnneg(y);
 cvx_end
 

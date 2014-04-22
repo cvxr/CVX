@@ -2,13 +2,8 @@ function maximize( varargin )
 
 %MAXIMIZE Specifiies a concave (or affine) objective to be maximized.
 
-global cvx___
-prob = evalin( 'caller', 'cvx_problem', '[]' );
-if ~isa( prob, 'cvxprob' ),
-    error( 'No CVX model exists in this scope.' );
-elseif isempty( cvx___.problems ) || cvx___.problems( end ).self ~= prob,
-    error( 'Internal CVX data corruption. Please CLEAR ALL and rebuild your model.' );
-elseif nargin < 1,
+prob = evalin( 'caller', 'cvx_verify' );
+if nargin < 1,
     error( 'Objective expression missing.' );
 elseif iscellstr( varargin ),
     x = evalin( 'caller', sprintf( '%s ', varargin{:} ) );

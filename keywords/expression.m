@@ -23,11 +23,11 @@ function varargout = expression( nm, varargin )
 global cvx___
 prob = evalin( 'caller', 'cvx_problem', '[]' );
 if ~isa( prob, 'cvxprob' ),
-    error( 'No CVX model exists in this scope.' );
+    error( 'CVX:Expression', 'No CVX model exists in this scope.' );
 elseif isempty( cvx___.problems ) || cvx___.problems( end ).self ~= prob,
-    error( 'Internal CVX data corruption. Please CLEAR ALL and rebuild your model.' );
+    error( 'CVX:Expression', 'Internal CVX data corruption. Please CLEAR ALL and rebuild your model.' );
 elseif nargin > 1,
-    error( 'Too many input arguments.\nTrying to declare multiple expression holders? Use the EXPRESSIONS keyword instead.', 1 ); %#ok
+    error( 'CVX:Expression', 'Too many input arguments.\nTrying to declare multiple expression holders? Use the EXPRESSIONS keyword instead.', 1 ); %#ok
 end
 
 %
@@ -36,13 +36,13 @@ end
 
 toks = regexp( nm, '^\s*([a-zA-Z]\w*)\s*(\(.*\))?\s*$', 'tokens' );
 if isempty( toks ),
-    error( 'Invalid variable specification: %s', nm );
+    error( 'CVX:Expression', 'Invalid variable specification: %s', nm );
 end
 toks = toks{1};
 x.name = toks{1};
 x.size = toks{2};
 if x.name(end) == '_',
-    error( 'Invalid expression specification: %s\n   Names ending in underscores are reserved for internal use.', nm );
+    error( 'CVX:Expression', 'Invalid expression specification: %s\n   Names ending in underscores are reserved for internal use.', nm );
 end
 
 %
@@ -60,10 +60,7 @@ else
     catch exc
         error( exc.identifier, exc.message );
     end
-    [ temp, x.size ] = cvx_check_dimlist( x.size, true );
-    if ~temp,
-        error( 'Invalid expression specification: %s\n   Dimension list must be a vector of finite nonnegative integers.', nm );
-    end
+    x.size = cvx_get_dimlist( { x.size } );
 end
 
 %

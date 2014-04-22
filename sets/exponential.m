@@ -18,26 +18,7 @@ function cvx_optpnt = exponential( sx )
 %   satisfy EXP_P(X,Y) <= Z. If SX is empty, then SX=[1,1] is assumed.
 
 cvx_expert_check( 'exponential' );
-error( nargchk( 0, 1, nargin ) ); %#ok
-
-%
-% Check size vector
-%
-
-if nargin == 0 || isempty( sx ),
-    sx = [1,1]; %#ok
-else
-    [ temp, sx ] = cvx_check_dimlist( sx, true ); %#ok
-    if ~temp,
-        error( 'First argument must be a dimension vector.' );
-    end
-end
-
-
-%
-% Build the cone
-%
-
+sx = cvx_get_dimlist( varargin, 'default', [1,1] );
 cvx_begin set
     variable x( sx )
     variable y( sx ) nonnegative_

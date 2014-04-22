@@ -1,4 +1,4 @@
-function cvx_optval = norms_largest( x, k, dim )
+function cvx_optval = norms_largest( varargin )
 
 %NORMS_LARGEST Computation of multiple norm_largest() norms.
 %   NORMS_LARGEST( X, K, DIM ) provides a means to compute the largest-k
@@ -13,30 +13,11 @@ function cvx_optval = norms_largest( x, k, dim )
 %   Disciplined convex programming information:
 %       NORMS_LARGEST is convex and non-monotonic, so its input must be affine.
 
-error( nargchk( 2, 3, nargin ) ); %#ok
-sx = size( x );
-
-%
-% Check second argument
-%
+[ sx, x, k, dim ] = cvx_get_dimension( varargin, 3 );
 
 if ~isnumeric( k ) || ~isreal( k ) || length( k ) ~= 1,
-    error( 'Second argument must be a real scalar.' );
+    error( 'CVX:ArgError', 'Second argument must be a real scalar.' );
 end
-
-%
-% Check third argument
-%
-
-if nargin < 3 || isempty( dim ),
-    dim = cvx_default_dimension( sx );
-elseif ~cvx_check_dimension( dim, false ),
-    error( 'Third argument must be a valid dimension.' );
-end
-
-%
-% Perform computation
-%
 
 cvx_optval = sum_largest( abs( x ), k, dim );
 

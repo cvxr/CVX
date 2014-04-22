@@ -188,8 +188,7 @@ while true,
     end
     if ~valid && spQ,
         [ R, DD, prm ] = ldl( sparse( Q ), 'upper', 'vector' );
-        if nnz( R ) > 0.2 * sx * ( sx + 1 ) / 2, spQ = false; end %#ok
-        spQ = cvx_use_sparse( R );
+        if nnz( R ) > max( sx, 0.1 * sx * ( sx + 1 ) / 2 ), spQ = false; end
         tt = diag(DD,1) == 0;
         tt = [ tt ; true ] & [ true ; tt ] & ( diag(DD) > tolLDL * trQ );
         DD = diag(DD);
@@ -199,9 +198,7 @@ while true,
     end
     if ~valid && ~spQ,
         [ V, D ] = eig( full( Q ) );
-        if cvx_use_sparse( V ), 
-            V = sparse( V ); 
-        end
+        if nnz( V ) <= max( length(V), 0.1 * numel(V) ), V = sparse(V); end
         D = diag( D );
         if any( D(2:end) < D(1:end-1) ),
             [D,ndxs] = sort(D);
@@ -226,7 +223,7 @@ while true,
     %
    
     alpha = trQ / size(R,1);
-    cvx_optval = cvx_optval + alpha * sum_square_abs( ( R * x ) / sqrt(alpha) ) + real( v' * x );
+    w = w + alpha * sum_square_abs( ( R * x ) / sqrt(alpha) ) + real( v' * x );
     break;
     
 end

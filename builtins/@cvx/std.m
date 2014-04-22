@@ -1,4 +1,4 @@
-function y = std( x, w, dim, square_it )
+function y = std( varargin )
 
 %STD    Internal cvx version.
 %This actually implements VAR and STD, controlled by the square_it flag.
@@ -15,7 +15,7 @@ if isempty( remap ),
 end
 
 try
-    [ sx, x, w, dim, square_it ] = cvx_get_dimension( 3, varargin );
+    [ sx, x, w, dim, square_it ] = cvx_get_dimension( varargin, 3 );
     if ~isempty( w ),
         w = false;
     elseif ~( isnumeric(w) && numel(w) ~= length(w) && isreal(w) ), 

@@ -1,9 +1,8 @@
 function y = cvx_isnonzero( x, full )
-y = any( x.basis_, 1 );
-if nargin < 2,
-    y = all( y );
+if nargin < 2 || ~full,
+    y = nnz( x.basis_ ) ~= 0;
 else
-    y = cvx_reshape( y, x.size_ );
+    y = reshape( full( any( x.basis_, 1 ) ), x.size_ );
 end
 
 % Copyright 2005-2014 CVX Research, Inc.

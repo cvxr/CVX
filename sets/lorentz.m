@@ -1,4 +1,4 @@
-function cvx_optpnt = lorentz( sx, dim, iscplx )
+function cvx_optpnt = lorentz( varargin )
 
 %LORENTZ   Real second-order cone.
 %   LORENTZ(N), where N is a positive integer, creates a column
@@ -36,41 +36,22 @@ function cvx_optpnt = lorentz( sx, dim, iscplx )
 %       details on how to use sets.
 
 global cvx___
-error( nargchk( 1, 3, nargin ) ); %#ok
 
 %
-% Check size vector
+% Get size and dimension
 %
 
-[ temp, sx ] = cvx_check_dimlist( sx, true );
-if ~temp,
-    error( 'First argument must be a dimension vector.' );
-end
-
-%
-% Check dimension
-%
-
-if nargin < 2 || isempty( dim ),
-    dim = cvx_default_dimension( sx );
-elseif ~cvx_check_dimension( dim, true ),
-    error( 'Second argument must be a dimension (or zero).' );
-end
+[ sx, dim, iscplx ] = cvx_get_dimension( varargin, 2, 'nox', true, 'zero', true ); %#ok
 sy = sx;
 nd = length( sx );
-if dim <= 0 || dim > nd || sx( dim ) == 1,
-    nv  = 1;
-    dim = 0;
-else
-    nv = sx( dim );
-    sy( dim ) = 1;
-end
+nv = sx( dim );
+sy( dim ) = 1;
 
 %
 % Check complex flag
 %
 
-if nargin < 3 || isempty( iscplx ),
+if isempty( iscplx ),
     iscplx = false;
 elseif length( iscplx ) ~= 1,
     error( 'Third argument must be a scalar.' );
@@ -106,15 +87,19 @@ cvx_end
 %
 
 if iscplx,
-    x = cvx_r2c( x, 1 );
+    x = cvx_basis( x );
+    x = x(:,1:2:end) + 1j * x(:,2:2:end);
     nv = nv * 0.5;
+    x = cvx( [nv,ny], x );
 end
-nleft = prod( sx( 1 : dim - 1 ) );
-if nleft > 1,
-    x = reshape( x, [ nv, nleft, ny / nleft ] );
-    y = reshape( y, [ 1,  nleft, ny / nleft ] );
-    x = permute( x, [ 2, 1, 3 ] );
-    y = permute( y, [ 2, 1, 3 ] );
+if sx( dim ) > 1,
+    nleft = prod( sx( 1 : dim - 1 ) );
+    if nleft > 1,
+        x = reshape( x, [ nv, nleft, ny / nleft ] );
+        y = reshape( y, [ 1,  nleft, ny / nleft ] );
+        x = permute( x, [ 2, 1, 3 ] );
+        y = permute( y, [ 2, 1, 3 ] );
+    end
 end
 x = reshape( x, sx );
 y = reshape( y, sy );

@@ -25,7 +25,7 @@ function integer( varargin )
 %
 %   See also BINARY, VARIABLE, VARIABLES.
 
-if nargin < 2,
+if nargin < 2
     error( 'Incorrect syntax for INTEGER VARIABLE(S). Type HELP INTEGER for details.' );
 elseif ~iscellstr( varargin ),
     error( 'All arguments must be strings.' );

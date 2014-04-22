@@ -32,16 +32,18 @@ if isempty( params ),
         { { 'constant' }, { 'positive' } }, ...
         { { 'l_convex' },  { 'l_concave' } }, ...
         { { 'l_concave' }, { 'l_convex' } }, ...
+        { { 'r_affine', 'p_convex', 'n_concave' }, { 'positive' } }, ...
+        { { 'r_affine', 'p_convex', 'n_concave' }, { 'concave' } }, ...
         { { 'affine', 'p_convex', 'n_concave' }, { 'positive' } }, ...
         { { 'affine', 'p_convex', 'n_concave' }, { 'concave' } }, ...
-        [ 0, 1, 2, 2, 3, 4 ] );
-    params.funcs = { @qol_cnst, @qol_log, @qol_sqr, @qol_lin };
+        [ 0, 1, 2, 2, 3, 4, 5, 6 ] );
+    params.funcs = { @qol_cnst, @qol_log, @qol_sqr, @qol_lin, @qol_sqa, @qol_lin, @qol_cpx };
     params.constant = 1;
     params.name = 'quad_over_lin';
 end
 
 try
-    [ sx, x, y, dim ] = cvx_get_dimension( -3, varargin );
+    [ sx, x, y, dim ] = cvx_get_dimension( varargin, 3, 'zero', true );
     if sx(dim) > 1, x = norms( x, 2, dim ); end
     z = cvx_binary_op( params, x, y );
 catch exc
@@ -62,9 +64,17 @@ function z = qol_lin( x, y ) %#ok
 sz = max( size(x), size(y) );
 cvx_begin
     epigraph variable z( sz ) nonnegative_
-    y = cvx_accept_concave( y );
-    x = cvx_accept_cvxccv( x );
-    { x, y, z } == rotated_lorentz( sz, length(sz)+1, ~isreal(x) ); %#ok
+    { linearize(x), linearize(y), z } == rotated_lorentz( sz, 0 ); %#ok
+cvx_end
+
+function z = qol_sqa( x, y )
+z = square( abs( x ) ) ./ y;
+
+function z = qol_cpx( x, y ) %#ok
+sz = max( size(x), size(y) );
+cvx_begin
+    epigraph variable z( sz ) nonnegative_
+    { linearize(x), linearize(y), z } == rotated_complex_lorentz( sz, 0 ); %#ok
 cvx_end
 
 % Copyright 2005-2014 CVX Research, Inc.

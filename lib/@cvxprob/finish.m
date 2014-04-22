@@ -15,15 +15,15 @@ elseif pstr.complete && nnz( pstr.t_variable ) == 1,
     % Check the integrity of the variables
     %
 
-    if isempty( pstr.variables ),
+    vars = pstr.variables;
+    if isempty( vars ),
         fn1 = cell( 0, 1 );
         vv1 = fn1;
     else
-        fn1  = fieldnames( pstr.variables );
-        ndxs = horzcat( fn1{:} );
-        ndxs = ndxs( cumsum( cellfun( 'length', fn1 ) ) ) ~= '_';
+        fn1  = fieldnames( vars );
+        ndxs = cellfun( @(x)x(end)~='_', fn1 );
         fn1  = fn1( ndxs );
-        vv1  = struct2cell( pstr.variables );
+        vv1  = struct2cell( vars );
         vv1  = vv1(ndxs);
     end
     if isempty( pstr.duals ),
@@ -31,26 +31,15 @@ elseif pstr.complete && nnz( pstr.t_variable ) == 1,
         vv2 = fn2;
     else
         fn2  = fieldnames( pstr.duals );
-        ndxs = horzcat( fn2{:} );
-        ndxs = ndxs( cumsum( cellfun( 'length', fn2 ) ) ) ~= '_';
+        ndxs = cellfun( @(x)x(end)~='_', fn2 );
         fn2  = fn2( ndxs );
         vv2  = struct2cell( pstr.dvars );
         vv2  = vv2( ndxs );
     end
     fn1 = [ fn1 ; fn2 ];
-    i1  = cvx_ids( vv1{:}, vv2{:} );
+    i1  = cellfun( @cvx_id, [ vv1 ; vv2 ] )';
     i2  = sprintf( '%s,', fn1{:} );
-    try
-        i2 = evalin( 'caller', sprintf( 'cvx_ids( %s )', i2(1:end-1) ) );
-    catch
-        i2 = zeros(1,numel(fn1));
-        for k = 1 : length(fn1),
-            try
-                i2(k) = evalin( 'caller', sprintf( 'cvx_ids( %s )', fn1{k} ) );
-            catch
-            end
-        end
-    end
+    i2  = evalin( 'caller', sprintf( 'cellfun( @cvx_id, { %s } )', i2(1:end-1) ) );
     if any( i1 ~= i2 ),
         cvx_pop( p, true );
         temp = sprintf( ' %s', fn1{ i1 ~= i2 } );
@@ -112,10 +101,12 @@ else
     %
     % Merge the touch information
     %
-
+    
     v = cvx___.problems( np ).t_variable;
     v = v | pstr.t_variable( 1 : size( v, 1 ), : );
     cvx___.problems( np ).t_variable = v;
+    % Signal to cvx_pop that we have no variables to remove
+    cvx___.problems( p ).t_variable = [];
 
     %
     % Process the objective and optimal point, converting to pure
@@ -179,6 +170,7 @@ else
 
 end
 
+assignin( 'caller', 'cvx_optpnt', cvxtuple( cvx_collapse( vars, false, false ) ) );
 evalin( 'caller', 'cvx_pop( cvx_problem )' );
 
 catch exc

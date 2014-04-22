@@ -14,17 +14,17 @@ vars = pstr.duals;
 %
 
 if isempty( name ),
-    error( 'Anonymous dual variables are not allowed.' );
+    error( 'CVX:Dual', 'Anonymous dual variables are not allowed.' );
 elseif ischar( name ),
     if ~isempty( name ),
         if size( name, 1 ) ~= 1,
-            error( 'Second argument must be a string or a subscript structure array.' );
+            error( 'CVX:Dual', 'Second argument must be a string or a subscript structure array.' );
         elseif ~isvarname( name ),
-            error( 'Invalid dual variable name: %s', name );
+            error( 'CVX:Dual', 'Invalid dual variable name: %s', name );
         elseif isfield( vars, name ),
-            error( 'Dual variable name conflict: %s', name );
+            error( 'CVX:Dual', 'Dual variable name conflict: %s', name );
         elseif isfield( pstr.variables,name ),
-            error( 'Primal/dual variable name conflict: %s', name );
+            error( 'CVX:Dual', 'Primal/dual variable name conflict: %s', name );
         end
     end
 end
@@ -36,10 +36,7 @@ end
 if nargin < 3,
     reps = [];
 elseif ~isempty( reps ),
-    [ temp, reps ] = cvx_check_dimlist( reps, true );
-    if ~temp,
-        error( 'Third argument must be a dimension list.' );
-    end
+    reps = cvx_get_dimlist( { reps } );
 end
 
 %

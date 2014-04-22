@@ -315,12 +315,12 @@ if ~isempty( tt ),
     end
     blk{end,2} = horzcat( blk{end,2}{:} );
     Avec{end}  = vertcat( Avec{end}{:} );
-    Cvec{end}  = cvx_blkdiag( Cvec{end}{:} );
+    Cvec{end}  = blkdiag( Cvec{end}{:} );
     tvec{end}  = vertcat( tvec{end}{:} );
-    xvec{end}  = cvx_blkdiag( xvec{end}{:} );
+    xvec{end}  = blkdiag( xvec{end}{:} );
     xvec{end}(nnn*nnn+1:end,:) = [];
     if need_z,
-        zvec{end} = cvx_blkdiag( zvec{end}{:} );
+        zvec{end} = blkdiag( zvec{end}{:} );
         zvec{end}(nnn*nnn+1:end,:) = [];
     end
     found(tt)  = true;

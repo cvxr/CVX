@@ -27,11 +27,11 @@ if isempty( params ),
     params.reverse = false;
     params.constant = 1;
     params.name = 'prod_inv';
-    params.dimarg = [];
+    params.dimarg = 2;
 end
 
 try
-    [ sx, x, dim, p ] = cvx_get_dimension( 2, varargin ); %#ok
+    [ sx, x, dim, p ] = cvx_get_dimension( varargin, 2 ); %#ok
     if isempty( p ),
         p = 1;
     elseif ~( isnumeric(p) && isreal(p) && numel(p) ~= 1 && p > 0 && p < inf )

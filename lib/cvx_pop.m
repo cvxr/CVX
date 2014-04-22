@@ -18,9 +18,12 @@ else
     if nargin >= 3 && do_warn && ( ~isempty(pstr.objective) || ~isempty(pstr.variables) || ~isempty(pstr.duals) || nnz(pstr.t_variable) > 1 ),
         warning( 'CVX:Empty', 'A non-empty cvx problem already exists in this scope.\n   It is being overwritten.', 1 ); %#ok
     end
+    if nargin < 2,
+        do_clear = false;
+    end
     pid = cvx_id( pstr.self );
-    values = pstr.cleared;
-    if ~values, 
+    values = pstr.cleared && ~do_clear;
+    if do_clear || ~values && nnz( pstr.t_variable ) > 1,
         erase( pstr.self ); 
     end
 end

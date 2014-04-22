@@ -12,7 +12,7 @@ end
 try
     evalin( 'caller', 'finish( cvx_problem )' );
 catch exc
-    if strcmp( exc.identifier, 'CVX:', 4 ), throw( exc );
+    if strncmp( exc.identifier, 'CVX:', 4 ), throw( exc );
     else rethrow( exc ); end
 end
 

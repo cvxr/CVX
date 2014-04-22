@@ -18,9 +18,9 @@ function variables( varargin )
 %   See also VARIABLE, DUAL, DUALS.
 
 if nargin < 1,
-    error( 'Incorrect syntax for VARIABLES. Type HELP VARIABLES for details.' );
+    error( 'CVX:ArgError', 'Incorrect syntax for VARIABLES. Type HELP VARIABLES for details.' );
 elseif ~iscellstr( varargin ),
-    error( 'All arguments must be strings.' );
+    error( 'CVX:ArgError', 'All arguments must be strings.' );
 end
 for k = 1 : nargin,
 	evalin( 'caller', [ 'variable ', varargin{k} ] );

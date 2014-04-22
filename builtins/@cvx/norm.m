@@ -20,14 +20,13 @@ end
 % Check arguments
 %
 
-error( nargchk( 1, 2, nargin ) ); %#ok
-if nargin < 2,
+if nargin < 2 || isempty( p ),
     p = 2;
 elseif ~isequal( p, 'fro' ) && ( ~isnumeric( p ) || ~isreal( p ) || p < 1 ),
-    error( 'Second argument must be a real number between 1 and Inf, or ''fro''.' );
+    error( 'CVX:ArgError', 'Second argument must be a real number between 1 and Inf, or ''fro''.' );
 end
 if ndims( x ) > 2, %#ok
-    error( 'norm is not defined for N-D arrays.' );
+    error( 'CVX:ArgError', 'norm is not defined for N-D arrays.' );
 end
 
 [ m, n ] = size(x);
@@ -69,8 +68,7 @@ if m == 1 || n == 1 || isequal( p, 'fro' ),
                     x  = [ cvx_subsref( x, ~tt ) ; xx ];
                 end
                 if ~all( remap2( xc ) ),
-                    x = cvx_accept_convex( x );
-                    x = cvx_accept_concave( x );
+                    x = linearize( x );
                 end
                 n = length( x );
                 if p == 2,

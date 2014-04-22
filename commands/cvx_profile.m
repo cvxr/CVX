@@ -14,12 +14,12 @@ if nargin == 1,
         ns = double(flag) ~= 0;
     elseif ischar(flag) && size(flag,1) == 1,
         switch lower(flag),
-            case 'true',
+            case { 'true', 'on' },
                 ns = true;
-            case 'false',
+            case { 'false', 'off' },
                 ns = false;
             otherwise,
-                error( 'String arugment must be ''true'' or ''false''.' );
+                error( 'String arugment must be ''true''/''on'' or ''false''/''off''.' );
         end
     else
         error( 'Argument must be a numeric scalar or a string.' );

@@ -116,7 +116,7 @@ function [ x, forms, repls ] = replcols( x, tt, mode, forms, repls, isobj )
 %
 
 global cvx___
-bN = vec( cvx_subsref( x, tt ) );
+bN = cvx_fastref( x, tt );
 nO = length( forms );
 nN = length( bN );
 if nO ~= 0,
@@ -155,7 +155,7 @@ end
 % Re-expand the structure
 %
 
-x = cvx_subsasgn( x, tt, buncompress( bNR, repls, nN ) );
+x = cvx_fastasgn( x, tt, cvx( nN, cvx_basis( repls ) * bNR ) );
 
 % Copyright 2005-2014 CVX Research, Inc.
 % See the file LICENSE.txt for full copyright information.

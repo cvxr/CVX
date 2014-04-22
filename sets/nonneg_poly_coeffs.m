@@ -42,7 +42,7 @@ error( nargchk( 1, 3, nargin ) ); %#ok
 % Check degree argument
 %
 
-if ~cvx_check_dimension( deg, true ),
+if ~( isnumeric(deg) && numel(deg)==1 && isreal(deg) && deg>=0 && deg~=floor(deg) ),
     error( 'Argument must be a nonnegative integer.' );
 end
 

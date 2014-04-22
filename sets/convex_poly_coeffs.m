@@ -28,15 +28,7 @@ function cvx_optpnt = convex_poly_coeffs( deg, mm ) %#ok
 %       CONVEX_POLY_COEFFS is a cvx set specification. See the user guide
 %       for details on how to use sets.
 
-error( nargchk( 1, 2, nargin ) ); %#ok
-
-%
-% Check argument
-%
-
-if ~cvx_check_dimension( deg, true ),
-    error( 'Argument must be a nonnegative integer.' );
-elseif rem( deg, 2 ) ~= 0 && deg ~= 1,
+if ~( isnumeric(deg) && numel(deg)==1 && deg>=0 && ( rem(deg,2)==0 || deg==1 ) ),
     error( 'Degree must be 0, 1, or even.' );
 end
 

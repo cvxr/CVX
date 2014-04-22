@@ -2,7 +2,6 @@ function erase( p )
 
 global cvx___
 [ p, prob ] = verify( p );
-if prob.cleared, return; end
 
 nf = length( prob.t_variable ) + 1;
 ne = prob.n_equality + 1;
@@ -39,7 +38,7 @@ end
 if nf <= 2 || ne <= 1,
     cvx___.equalities = cvx;
     cvx___.needslack = true( 0, 1 );
-elseif cvx___.n_equality >= ne,
+elseif length( cvx___.equalities ) >= ne,
     cvx___.equalities( ne: end ) = [];
     cvx___.needslack( ne : end ) = [];
 end

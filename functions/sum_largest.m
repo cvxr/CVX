@@ -38,11 +38,11 @@ if isempty( params ),
     params.reduce = true;
     params.reverse = false;
     params.name = 'sum_largest';
-    params.dimarg = [];
+    params.dimarg = 3;
 end
 
 try
-    [ sx, x, k, dim ] = cvx_get_dimension( 3, varargin );
+    [ sx, x, k, dim ] = cvx_get_dimension( varargin, 3 );
     if ~isnumeric( k ) || numel(k) ~= 1 || ~isreal( k ),
         error( 'Second argument must be real.' );
     elseif k <= 0,
@@ -54,7 +54,7 @@ try
     elseif k <= 1,
         y = k * max( x, [], dim );
     else
-        y = cvx_reduce_op( params, x, dim, k );
+        y = cvx_reduce_op( params, x, k, dim );
     end
 catch exc
     if strncmp( exc.identifier, 'CVX:', 4 ), throw(exc);

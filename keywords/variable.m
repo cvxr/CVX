@@ -32,16 +32,9 @@ function varargout = variable( varargin )
 %   See also VARIABLES, DUAL, DUALS.
 
 global cvx___
-prob = evalin( 'caller', 'cvx_problem', '[]' );
-if ~isa( prob, 'cvxprob' ),
-    error( 'No CVX model exists in this scope.' );
-elseif isempty( cvx___.problems ),
-    error( 'Internal CVX data corruption. Please CLEAR ALL and rebuild your model.' );
-end
-pstr = cvx___.problems( end );
-if pstr.self ~= prob,
-    error( 'Internal CVX data corruption. Please CLEAR ALL and rebuild your model.' );
-end
+try
+    
+[ prob, pstr ] = evalin( 'caller', 'cvx_verify' ); 
 
 %
 % Parse the text
@@ -54,7 +47,7 @@ for k = 1 : nargin,
     tok = toks{k};
     if isempty( tok ),
         if k == 1, type = 'Variable'; else type = 'Structure'; end
-        error( sprintf('CVX:Invalid%sSpec',type), 'Invalid %s specification: %s', lower(type), varargin{k} );
+        error( sprintf('CVX:%s',type), 'Invalid %s specification: %s', lower(type), varargin{k} );
     end
     tok = tok{1};
     name{k} = tok{1};
@@ -63,8 +56,9 @@ for k = 1 : nargin,
     else
         try
             args{k} = evalin( 'caller', [ '{', tok{2}(2:end-1), '};' ] );
+            if k == 1, args{1} = [ args{1}{:} ]; end
         catch exc
-            error( exc.identifier, exc.message );
+            error( exc.identifier, 'Error attempting to evaluate arguments of: %s\n   %s', varargin{k}, exc.message );
         end
     end
 end
@@ -75,47 +69,37 @@ end
 
 xname = name{1};
 if ~isvarname( xname ),
-    error( 'CVX:InvalidVariableSpec', 'Invalid variable name: %s', xname );
+    error( 'CVX:Variable', 'Invalid variable name: %s', xname );
 elseif xname(end) == '_',
-    error( 'CVX:InvalidVariableSpec', 'Invalid variable name: %s\n   Variables ending in underscores are reserved for internal use.', xname );
+    error( 'CVX:Variable', 'Invalid variable name: %s\n   Variables ending in underscores are reserved for internal use.', xname );
 elseif isfield( cvx___.reswords, xname ),
     if cvx___.reswords.(xname) == 'S',
-        error( 'CVX:InvalidVariableSpec', 'Invalid variable name: %s\n   This is a reserved word in CVX.\n   Trying to declare a structured matrix? Use the VARIABLE keyword instead.', xname );
+        error( 'CVX:Variable', 'Invalid variable name: %s\n   This is a reserved word in CVX.\n   Trying to declare a structured matrix? Use the VARIABLE keyword instead.', xname );
     else
-        error( 'CVX:InvalidVariableSpec', 'Invalid variable name: %s\n   This is a reserved word in CVX.', xname );
+        error( 'CVX:Variable', 'Invalid variable name: %s\n   This is a reserved word in CVX.', xname );
     end
 elseif isfield( pstr.variables, xname ),
-    error( 'CVX:InvalidVariableSpec', 'Duplicate variable name: %s', xname );
+    error( 'CVX:Variable', 'Duplicate variable name: %s', xname );
 end
 switch evalin('caller',['exist(''',xname,''')']),
     case {0,1},
     case 5,
-        error( 'CVX:InvalidVariableSpec', 'Variable name "%s" is the name of a built-in MATLAB function.\nPlease choose a different name.', xname );
+        error( 'CVX:Variable', 'Variable name "%s" is the name of a built-in MATLAB function.\nPlease choose a different name.', xname );
     case 8,
-        error( 'CVX:InvalidVariableSpec', 'Variable name "%s" is the name of an existing MATLAB class.\nPlease choose a different name.', xname );
+        error( 'CVX:Variable', 'Variable name "%s" is the name of an existing MATLAB class.\nPlease choose a different name.', xname );
     otherwise,
         mpath = which( xname );
         if ~isempty( mpath ),
             if strncmp( mpath, matlabroot, length(matlabroot) ),
-                error( 'CVX:InvalidVariableSpec', 'Variable name "%s" is the name of an existing MATLAB function or directory:\n    %s\nPlease choose a different name.', xname, mpath );
+                error( 'CVX:Variable', 'Variable name "%s" is the name of an existing MATLAB function or directory:\n    %s\nPlease choose a different name.', xname, mpath );
             elseif strncmp( mpath, cvx___.where, length(cvx___.where) ),
-                error( 'CVX:InvalidVariableSpec', 'Variable name "%s" matches the name of a CVX function or directory:\n    %s\nPlease choose a different name.', xname, mpath );
+                error( 'CVX:Variable', 'Variable name "%s" matches the name of a CVX function or directory:\n    %s\nPlease choose a different name.', xname, mpath );
             else
                 warning( 'Variable name "%s" matches the name of an function or directory:\n    %s\nThis may cause unintended behavior with CVX models.\nPlease consider moving this file or choosing a different variable name.', xname, mpath );
             end
         end
 end
-try
-    xsize = [ args{1}{:} ];
-catch exc
-    error( exc.identifier, exc.message );
-end
-if ~isempty( xsize ),
-    [ temp, xsize ] = cvx_check_dimlist( xsize, true );
-    if ~temp,
-        error( 'CVX:InvalidDimensions', 'Invalid dimension list: %s\n   Dimension list must be a vector of finite nonnegative integers.', varargin{1} );
-    end
-end
+xsize = cvx_get_dimlist( args, 'default', [1,1] );
 
 %
 % Parse the structure
@@ -147,18 +131,18 @@ if nargin > 1,
         end
     end
     if isepi && ishypo,
-        error( 'EPIGRAPH and HYPOGRAPH keywords cannot be used simultaneously.' );
+        error( 'CVX:Structure', 'EPIGRAPH and HYPOGRAPH keywords cannot be used simultaneously.' );
     end
     if issemi && pstr.gp,
-        error( 'SEMIDEFINITE keywords cannot be used in geometric programs.' );
+        error( 'CVX:Structure', 'SEMIDEFINITE keywords cannot be used in geometric programs.' );
     end
     if n_itypes,
         if pstr.gp,
-            error( 'Integer variables cannot be used in geometric programs.' );
+            error( 'CVX:Structure', 'Integer variables cannot be used in geometric programs.' );
         elseif isepi || ishypo,
-            error( 'Integer variables cannot be used as epigraphs or hypograph variables.' );
+            error( 'CVX:Structure', 'Integer variables cannot be used as epigraphs or hypograph variables.' );
         elseif n_itypes > 1,
-            error( 'At most one integer keyword may be specified.' );
+            error( 'CVX:Structure', 'At most one integer keyword may be specified.' );
         end
     end
 else
@@ -170,11 +154,7 @@ end
 %
 
 tx = [];
-try
-    v = newvar( prob, xname, xsize, str, pstr.gp );
-catch exc
-    error( exc.message );
-end
+v = newvar( prob, xname, xsize, str, pstr.gp );
 if isepi || ishypo,
     if pstr.gp, vv = log( v ); else vv = v; end
     if isepi, dir = 'epigraph'; else dir = 'hypograph'; end
@@ -218,6 +198,11 @@ if nargout > 0,
     varargout{1} = v;
 else
     assignin( 'caller', xname, v );
+end
+
+catch exc
+    if strncmp( exc.identifier, 'CVX:', 4 ), throw( exc );
+    else rethrow( exc ); end
 end
 
 % Copyright 2005-2014 CVX Research, Inc.

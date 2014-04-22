@@ -1,4 +1,4 @@
-function cvx_optpnt = simplex( sx, dim ) %#ok
+function cvx_optpnt = simplex( varargin ) %#ok
 
 %SIMPLEX   The unit simplex.
 %    SIMPLEX(N), where N is a positive integer, creates a column vector
@@ -28,34 +28,12 @@ function cvx_optpnt = simplex( sx, dim ) %#ok
 %       SIMPLEX is a cvx set specification. See the user guide for
 %       details on how to use sets.
 
-%
-% Check size vector
-%
-
-error( nargchk( 1, 2, nargin ) ); %#ok
-[ temp, sx ] = cvx_check_dimlist( sx, false );
-if ~temp,
-    error( 'First argument must be a dimension vector.' );
+try
+    [ sx, dim ] = cvx_get_dimension( varargin, 2, 'nox', true ); %#ok
+catch exc
+    if strncmp( exc.identifier, 'CVX:', 4 ), throw( exc );
+    else rethrow( exc ); end
 end
-nd = length( sx );
-
-%
-% Check dimension
-%
-
-if nargin < 2 || isempty( dim ),
-    dim = [ find( sx > 1 ), 1 ];
-    dim = dim( 1 );
-elseif ~isnumeric( dim ) || dim < 0 || dim ~= floor( dim ),
-    error( 'Second argument must be a dimension.' );
-elseif dim > nd,
-    sx( end + 1 : dim ) = 1; %#ok
-    nd = dim; %#ok
-end
-
-%
-% Construct set
-%
 
 cvx_begin set
    variable x( sx ) nonnegative

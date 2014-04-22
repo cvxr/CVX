@@ -46,35 +46,26 @@ function varargout = dual( varargin )
 %
 %   See also VARIABLE, VARIABLES.
 
+prob = evalin( 'caller', 'cvx_verify' );
 if nargin < 2,
-    error( 'Incorrect syntax for DUAL VARIABLE(S). Type HELP DUAL for details.' );
+    error( 'CVX:ArgError', 'Incorrect syntax for DUAL VARIABLE(S). Type HELP DUAL for details.' );
 elseif nargout && nargout ~= length( varargin ) - 1,
-    error( 'Incorrect number of output arguments.' );
+    error( 'CVX:ArgError', 'Incorrect number of output arguments.' );
 elseif ~iscellstr( varargin ),
-    error( 'All arguments must be strings.' );
-end
-
-global cvx___
-prob = evalin( 'caller', 'cvx_problem', '[]' );
-if ~isa( prob, 'cvxprob' ),
-    error( 'No CVX model exists in this scope.' );
-elseif isempty( cvx___.problems ) || cvx___.problems( end ).self ~= prob,
-    error( 'Internal CVX data corruption. Please CLEAR ALL and rebuild your model.' );
-end
-
-if strcmp( varargin{1}, 'variable' ),
+    error( 'CVX:ArgError', 'All arguments must be strings.' );
+elseif strcmp( varargin{1}, 'variable' ),
     if nargin > 2,
-        error( 'Too many input arguments.\nTrying to declare multiple dual variables? Use the DUAL VARIABLES command instead.', 1 ); %#ok
+        error( 'CVX:Dual', 'Too many input arguments.\nTrying to declare multiple dual variables? Use the DUAL VARIABLES command instead.', 1 ); %#ok
     end
 elseif ~strcmp( varargin{1}, 'variables' ),
-    error( 'Incorrect syntax for DUAL VARIABLE(S). Type HELP DUAL for details.' );
+    error( 'CVX:Dual', 'Incorrect syntax for DUAL VARIABLE(S). Type HELP DUAL for details.' );
 end
 
 for k = 2 : nargin,
     arg = varargin{k};
     toks = regexp( arg, '^\s*([a-zA-Z]\w*)\s*({.*})?\s*$', 'tokens' );
     if isempty( toks ),
-        error( 'Invalid dual variable specification: %s', arg );
+        error( 'CVX:Dual', 'Invalid dual variable specification: %s', arg );
     end
     tok = toks{1};
     nam = tok{1};
@@ -84,7 +75,7 @@ for k = 2 : nargin,
         siz = tok{2};
     end
     if nam(end) == '_',
-        error( 'Invalid dual variable specification: %s\n   Variables ending in underscores are reserved for internal use.', arg );
+        error( 'CVX:Dual', 'Invalid dual variable specification: %s\n   Variables ending in underscores are reserved for internal use.', arg );
     end
     if ~isempty( siz ),
         try
@@ -92,10 +83,7 @@ for k = 2 : nargin,
         catch exc
             error( exc.identifier, 'Error attempting to determine size of: %s\n   %s', arg, exc.message );
         end
-        [ temp, siz ] = cvx_check_dimlist( siz, true );
-        if ~temp,
-            error( 'Invalid dual variable specification: %s\n   Dimension list must be a vector of finite nonnegative integers.', arg );
-        end
+        siz = cvx_get_dimlist( { siz } );
     end
     temp = newdual( prob, nam, siz );
     if nargout,

@@ -1,8 +1,9 @@
 function [ xR, x ] = cvx_bcompress( x, mode, num_sorted )
-error( nargchk( 1, 3, nargin ) ); %#ok
+
 if nargin < 3 || isempty( num_sorted ),
     num_sorted = 0;
 end
+
 if nargin < 2 || isempty( mode ),
     mode = 0;
 else
@@ -14,15 +15,15 @@ else
     end
 end
 
-%
-% Separate the real and imaginary parts. But while we're at it, we need to
-% make sure we we're at it, 
-%
-
 [ m, n ] = size( x ); %#ok
 iscplx = ~isreal( x );
 if iscplx,
-    x = cvx_c2r( x, 2, 8 * eps );
+    xR = real( x );
+    xI = imag( x );
+    xB = xR & xI;
+    xB(xB) = abs(xI(xB)) < 8 * eps * abs(xR(xB));
+    xI(xB) = 0;
+    x = [ xR, xI ];
     n = n * 2;
 end
 
@@ -36,7 +37,7 @@ if nargout > 1 && ~all( t2 ),
 end
 
 if iscplx,
-    xR = cvx_r2c( xR, 2 );
+    xR = xR(:,1:2:end) + 1j * xR(:,2:2:end);
 end
 
 % Copyright 2005-2014 CVX Research, Inc.

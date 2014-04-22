@@ -30,12 +30,12 @@ if ~isempty( nstr ),
     end
     if nargin == 2,
         if ~isempty( y ), return; end
-        error( [ 'Unknown variable: ', name ] );
+        error( 'CVX:Variable', [ 'Unknown variable: ', name ] );
     elseif ~isempty( y ),
-        error( [ 'Duplicate variable name: ', name ] );
+        error( 'CVX:Variable', [ 'Duplicate variable name: ', name ] );
     end
 elseif nargin == 2,
-    error( 'Second argument must be a non-empty string or subscript structure array.' );
+    error( 'CVX:Variable', 'Second argument must be a non-empty string or subscript structure array.' );
 else
     y = []; %#ok
 end
@@ -45,7 +45,7 @@ end
 %
 
 if ~isempty( nstr ) && isfield( pstr.duals, nstr(1).subs ),
-    error( 'Primal/dual variable name conflict: %s', nstr(1).subs );
+    error( 'CVX:Variable', 'Primal/dual variable name conflict: %s', nstr(1).subs );
 end
 
 %
@@ -58,7 +58,7 @@ if nargin == 2,
         y = subsref( y, name );
         return
     catch
-        error( [ 'Unknown variable: ', nstr ] );
+        error( 'CVX:Variable', [ 'Unknown variable: ', nstr ] );
     end
 end
 
@@ -77,26 +77,18 @@ if isa( siz, 'cvx' ),
 else
 
     %
-    % Check size
-    %
-
-    [ temp, siz ] = cvx_check_dimlist( siz, true );
-    if ~temp,
-        error( 'Invalid size vector.' );
-    end
-
-    %
     % Check structure
     %
 
+    siz = cvx_get_dimlist( { siz }, 'default', [ 1, 1 ] );
     len = prod( siz );
     if nargin < 4 || isempty( str ),
         dof = len;
         str = [];
     elseif ~isnumeric( str ) || ndims( str ) > 2 || size( str, 2 ) ~= len, %#ok
-        error( 'Fourth argument must be a valid structure matrix.' );
+        error( 'CVX:Variable', 'Fourth argument must be a valid structure matrix.' );
     elseif nnz( str ) == 0,
-        error( 'Structure matrix cannot be identically zero.' );
+        error( 'CVX:Variable', 'Structure matrix cannot be identically zero.' );
     else
         temp = any( str, 2 );
         dof = full( sum( temp ) );
@@ -112,7 +104,7 @@ else
     if nargin < 5 || isempty( geo ),
         geo = false;
     elseif ~isnumeric( geo ) && ~islogical( geo ) || length( geo ) ~= 1,
-        error( 'Fifth argument must be true or false.' );
+        error( 'CVX:Variable', 'Fifth argument must be true or false.' );
     end
 
     %
@@ -163,7 +155,7 @@ if ~isempty( nstr ),
     try
         cvx___.problems( p ).variables = builtin( 'subsasgn', vars, nstr, y );
     catch
-        error( [ 'Invalid variable name: ', name ] );
+        error( 'CVX:Variable', [ 'Invalid variable name: ', name ] );
     end
 end
 

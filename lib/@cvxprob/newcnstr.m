@@ -130,9 +130,9 @@ end
 %
 
 sz = size( z );
+zr = isreal( z );
 if sdp_mode,
     z  = cvx_basis( z );
-    zr = isreal( z );
     dg = false;
     if zr,
         n  = sz(1);
@@ -170,24 +170,19 @@ if sdp_mode,
 end
 
 %
-% Eliminate lexical redundancies
-%
-
-if op( 1 ) == '=',
-    cmode = 'full';
-else
-    cmode = 'magnitude';
-end
-[ zR, zL ] = bcompress( z, cmode );
-
-%
 % Add the (in)equalities
 %
 
-touch( prob, zL, op(1) == '=' );
+touch( prob, z, op(1) == '=' );
+z = z( : );
+mN = numel( z );
 mO = length( cvx___.equalities );
-mN = length( zL );
-cvx___.equalities = vertcat( cvx___.equalities, zL );
+if zr,
+    cvx___.equalities = vertcat( cvx___.equalities, z );
+else
+    cvx___.equalities = vertcat( cvx___.equalities, real(z), imag(z) );
+    mN = mN * 2;
+end
 cvx___.needslack( end + 1 : end + mN, : ) = op( 1 ) ~= '=';
 
 %
@@ -196,10 +191,12 @@ cvx___.needslack( end + 1 : end + mN, : ) = op( 1 ) ~= '=';
 
 if ~isempty( dx )
     if isempty( cvx_getdual( z ) ),
-        zI = cvx_invert_structure( zR )';
-        zI = sparse( mO + 1 : mO + mN, 1 : mN, 1 ) * zI;
-        zI = cvx( sz, zI );
-        pstr.duals = builtin( 'subsasgn', pstr.duals, dx, zI );
+        zD = sparse( mO + 1 : mO + mN, 1 : mN, 1 );
+        if ~zr,
+            m = mN / 2;
+            zD = zD * sparse( 1:mN, [1:m,1:m], [ones(1,m),1j*ones(1,m)] );
+        end
+        pstr.duals = builtin( 'subsasgn', pstr.duals, dx, cvx( sz, zD ) );
         cvx___.problems( p ) = pstr;
     else
         warning( 'CVX:NoDualVariables', 'Dual variables are not availble for log-convex constraints.' )

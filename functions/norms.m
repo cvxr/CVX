@@ -27,18 +27,19 @@ function y = norms( varargin )
 
 persistent params
 if isempty( params ),
-    params.map = cvx_remap( { 'constant' ; 'l_convex' ; { 'p_convex', 'p_concave', 'affine' } } );
+    params.map = cvx_remap( { 'constant' ; 'l_convex' ; ...
+        { 'p_convex', 'n_concave', 'affine' } } );
     params.funcs = { @norms_1, @norms_1, @norms_2 };
     params.zero = 0;
     params.reduce = true;
     params.reverse = false;
     params.constant = 1;
     params.fname = 'norms';
-    params.dimarg = [];
+    params.dimarg = 3;
 end
 
 try
-    [ sx, x, p, dim ] = cvx_get_dimension( 3, varargin );
+    [ sx, x, p, dim ] = cvx_get_dimension( varargin, 3 );
     if nargin < 2 || isempty(p),
         p = 2;
     elseif ~( isnumeric(p) && numel(p)==1 && isreal(p) && p >= 1 ),
@@ -55,7 +56,7 @@ try
     elseif p == Inf,
         y = max( abs( x ), [], dim );
     else
-        y = cvx_reduce_op( params, x, dim, p );
+        y = cvx_reduce_op( params, x, p, dim );
     end
 catch exc
     if strncmp( exc.identifier, 'CVX:', 4 ), throw( exc ); 
@@ -65,23 +66,20 @@ end
 function y = norms_1( x, p )
 y = sum( abs( x ) .^ p, 1 ) .^ ( 1 / p );
 
-function y = norms_2( x, p )
+function y = norms_2( x, p ) %#ok
 [nx,nv] = size(x);
-y = [];
-x = cvx_accept_cvxccv( x );
 if p == 2,
     cvx_begin
         epigraph variable y( 1, nv )
-        { x, y } == lorentz( [ nx, nv ], 1, ~isreal( x ) ); %#ok
+        { linearize(x), y } == lorentz( [ nx, nv ], 1, ~isreal( x ) ); %#ok
         cvx_setnneg(y);
     cvx_end
 else
-    z = []; y = [];
     cvx_begin
         variable z( nx, nv )
         epigraph variable y( 1, nv ) nonnegative_
         if isreal(x), cmode = 'abs'; else cmode = 'cabs'; end
-        { cat( 3, z, repmat(y,[nx,1]) ), x } ...
+        { cat( 3, z, repmat(y,[nx,1]) ), linearize(x) } ...
             == geo_mean_cone( [nx,nv,2], 3, [1/p,1-1/p], cmode ); %#ok
         sum( z ) == y; %#ok
     cvx_end

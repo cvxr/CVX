@@ -12,7 +12,7 @@ function y = trace_inv( varargin )
 
 persistent params
 if isempty( params ),
-    params.narg      = 1;
+    params.nargs     = 1;
     params.args      = [];
     params.empty     = 0;
     params.constant  = @trace_inv_diag;

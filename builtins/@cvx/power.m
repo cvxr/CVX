@@ -119,7 +119,7 @@ if ~isempty( v ),
         return
     end
     v = 1 - 2 * ( v == 3 );
-    x = cvx_accept_convex( v .* x );
+    x = linearize( v .* x );
 else
     isint = false;
 end
@@ -199,7 +199,7 @@ if ~all( v ),
     return
 end
 nx = numel(x);
-z  = cvx_accept_concave( v .* x );
+z  = linearize( v .* x );
 cvx_begin
     epigraph variable y(nx)
     if p == 1,

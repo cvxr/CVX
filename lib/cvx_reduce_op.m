@@ -1,14 +1,7 @@
 function y = cvx_reduce_op( p, varargin )
 
 % Get dimension and main argument
-if isempty( p.dimarg ),
-    x = varargin{1};
-    dim = varargin{2};
-    zx = size( x );
-    varargin([1,2]) = [];
-else
-    [ zx, x, dim, varargin ] = cvx_get_dimension( p.dimarg, varargin, 1 );
-end
+[ zx, x, dim, args ] = cvx_get_dimension( varargin, p.dimarg, 'vec', true );
 ox = isa( x, 'cvx' );
 nd = length( zx );
 
@@ -19,6 +12,7 @@ if p.reduce && ( nx || ~isempty( p.zero ) ),
     zy( dim ) = 1; 
 end
 if ~all( zy ),
+    if ~any( zy ), zy = [ 1, 1 ]; end
     y = cvx( repmat( p.zero ), zy );
     return
 end
@@ -82,7 +76,7 @@ if length(mu) == 1,
     if mu ~= 0,
         sx = any( mu == p.constant );
         if sx, x = cvx_constant( x ); end
-        y = p.funcs{mu}( x, varargin{:} );
+        y = p.funcs{mu}( x, args{:} );
         if sx && ox, y = cvx( y ); end
     end
     
@@ -102,8 +96,8 @@ if length(mu) == 1,
         if ~p.reverse, mmm = mmm'; end
         x = reshape( cvx_subsref( x, mmm ), sx );
         if p.reverse, x = x'; end
-        if isfield( p, 'errargs' ), varargin = varargin(p.errargs); end
-        cvx_dcp_error( p.name, 'reduce', x, varargin{:} );
+        if isfield( p, 'errargs' ), args = args(p.errargs); end
+        cvx_dcp_error( p.name, 'reduce', x, args{:} );
     end
 
 else
@@ -127,7 +121,7 @@ else
         b = reshape( cvx_subsref( x, t2 ), sz );
         sx = any( mu == p.constant );
         if sx, b = cvx_constant( b ); end
-        b = p.funcs{kk}( b, varargin{:} );
+        b = p.funcs{kk}( b, args{:} );
         if sx && ox, b = cvx( b ); end
         if ~p.reduce, tt = t2; end
         if ox,
