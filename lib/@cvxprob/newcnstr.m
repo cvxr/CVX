@@ -67,7 +67,7 @@ if ~cx || ~cy,
             newcnstr( prob, x{k}, y{k}, op );
         end
         if nargout,
-            outp = cvxcnst( prob, y_orig );
+            outp = cvxcnst( y_orig );
         end
         return
     end
@@ -208,7 +208,7 @@ end
 %
 
 if nargout,
-    outp = cvxcnst( prob, y_orig );
+    outp = cvxcnst( y_orig );
 end
 
 function z = eq_2( x, y )

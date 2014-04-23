@@ -1,5 +1,5 @@
-function v = cvxcnst( p, rhs )
-v = class( struct( 'problem', p, 'rhs', rhs ), 'cvxcnst' );
+function v = cvxcnst( rhs )
+v = class( struct( 'rhs', rhs ), 'cvxcnst', cvxobj );
 
 % Copyright 2005-2014 CVX Research, Inc.
 % See the file LICENSE.txt for full copyright information.

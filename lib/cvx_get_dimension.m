@@ -17,7 +17,7 @@ end
 x = args{1};
 if opts.nox,
     sx = x;
-    if ~( isnumeric(sx) && numel(sx)==length(sx) && isreal(sx) && all(sx>=0) && sx==floor(sx) ),
+    if ~( isnumeric(sx) && numel(sx)==length(sx) && isreal(sx) && all(sx>=0) && all(sx==floor(sx)) ),
         error( 'CVX:ArgError', 'Size argument must be a vector of nonnegative integers.' );
     end
 else

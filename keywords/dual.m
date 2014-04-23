@@ -46,50 +46,31 @@ function varargout = dual( varargin )
 %
 %   See also VARIABLE, VARIABLES.
 
-prob = evalin( 'caller', 'cvx_verify' );
 if nargin < 2,
     error( 'CVX:ArgError', 'Incorrect syntax for DUAL VARIABLE(S). Type HELP DUAL for details.' );
-elseif nargout && nargout ~= length( varargin ) - 1,
+elseif nargout && nargout ~= nargin - 1,
     error( 'CVX:ArgError', 'Incorrect number of output arguments.' );
 elseif ~iscellstr( varargin ),
     error( 'CVX:ArgError', 'All arguments must be strings.' );
 elseif strcmp( varargin{1}, 'variable' ),
     if nargin > 2,
-        error( 'CVX:Dual', 'Too many input arguments.\nTrying to declare multiple dual variables? Use the DUAL VARIABLES command instead.', 1 ); %#ok
+        error( 'CVX:ArgError', 'Too many input arguments.\nTrying to declare multiple dual variables? Use the DUAL VARIABLES command instead.', 1 ); %#ok
     end
 elseif ~strcmp( varargin{1}, 'variables' ),
-    error( 'CVX:Dual', 'Incorrect syntax for DUAL VARIABLE(S). Type HELP DUAL for details.' );
+    error( 'CVX:ArgError', 'Incorrect syntax for DUAL VARIABLE(S). Type HELP DUAL for details.' );
 end
-
-for k = 2 : nargin,
-    arg = varargin{k};
-    toks = regexp( arg, '^\s*([a-zA-Z]\w*)\s*({.*})?\s*$', 'tokens' );
-    if isempty( toks ),
-        error( 'CVX:Dual', 'Invalid dual variable specification: %s', arg );
+try
+    global cvx___ %#ok
+    cvx___.args = { varargin(2:end), 'dual' };
+    [ prob, name, args ] = evalin( 'caller', 'cvx_parse' );
+    for k = 1 : length(args),
+        temp = newdual( prob, name{k}, args{k} );
+        if nargout, varargout{k} = temp; end %#ok
+        assignin( 'caller', name{k}, temp );
     end
-    tok = toks{1};
-    nam = tok{1};
-    if length(tok) < 2,
-        siz = {};
-    else
-        siz = tok{2};
-    end
-    if nam(end) == '_',
-        error( 'CVX:Dual', 'Invalid dual variable specification: %s\n   Variables ending in underscores are reserved for internal use.', arg );
-    end
-    if ~isempty( siz ),
-        try
-            siz = evalin( 'caller', [ '[', siz(2:end-1), ']' ] );
-        catch exc
-            error( exc.identifier, 'Error attempting to determine size of: %s\n   %s', arg, exc.message );
-        end
-        siz = cvx_get_dimlist( { siz } );
-    end
-    temp = newdual( prob, nam, siz );
-    if nargout,
-        varargout{k-1} = temp; %#ok
-    end
-    assignin( 'caller', nam, temp );
+catch exc
+    if strncmp( exc.identifier, 'CVX:', 4 ), throw( exc );
+    else rethrow( exc ); end
 end
 
 % Copyright 2005-2014 CVX Research, Inc.

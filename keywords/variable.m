@@ -34,72 +34,9 @@ function varargout = variable( varargin )
 global cvx___
 try
     
-[ prob, pstr ] = evalin( 'caller', 'cvx_verify' ); 
-
-%
-% Parse the text
-%
-
-name = cell( 1, nargin );
-args = cell( 1, nargin );
-toks = regexp( varargin, '^([a-zA-Z]\w*)(\(.*\))?$', 'tokens' );
-for k = 1 : nargin,
-    tok = toks{k};
-    if isempty( tok ),
-        if k == 1, type = 'Variable'; else type = 'Structure'; end
-        error( sprintf('CVX:%s',type), 'Invalid %s specification: %s', lower(type), varargin{k} );
-    end
-    tok = tok{1};
-    name{k} = tok{1};
-    if length(tok) < 2 || isempty( tok{2} ),
-        args{k} = {};
-    else
-        try
-            args{k} = evalin( 'caller', [ '{', tok{2}(2:end-1), '};' ] );
-            if k == 1, args{1} = [ args{1}{:} ]; end
-        catch exc
-            error( exc.identifier, 'Error attempting to evaluate arguments of: %s\n   %s', varargin{k}, exc.message );
-        end
-    end
-end
-
-%
-% Get the variable name and size
-%
-
-xname = name{1};
-if ~isvarname( xname ),
-    error( 'CVX:Variable', 'Invalid variable name: %s', xname );
-elseif xname(end) == '_',
-    error( 'CVX:Variable', 'Invalid variable name: %s\n   Variables ending in underscores are reserved for internal use.', xname );
-elseif isfield( cvx___.reswords, xname ),
-    if cvx___.reswords.(xname) == 'S',
-        error( 'CVX:Variable', 'Invalid variable name: %s\n   This is a reserved word in CVX.\n   Trying to declare a structured matrix? Use the VARIABLE keyword instead.', xname );
-    else
-        error( 'CVX:Variable', 'Invalid variable name: %s\n   This is a reserved word in CVX.', xname );
-    end
-elseif isfield( pstr.variables, xname ),
-    error( 'CVX:Variable', 'Duplicate variable name: %s', xname );
-end
-switch evalin('caller',['exist(''',xname,''')']),
-    case {0,1},
-    case 5,
-        error( 'CVX:Variable', 'Variable name "%s" is the name of a built-in MATLAB function.\nPlease choose a different name.', xname );
-    case 8,
-        error( 'CVX:Variable', 'Variable name "%s" is the name of an existing MATLAB class.\nPlease choose a different name.', xname );
-    otherwise,
-        mpath = which( xname );
-        if ~isempty( mpath ),
-            if strncmp( mpath, matlabroot, length(matlabroot) ),
-                error( 'CVX:Variable', 'Variable name "%s" is the name of an existing MATLAB function or directory:\n    %s\nPlease choose a different name.', xname, mpath );
-            elseif strncmp( mpath, cvx___.where, length(cvx___.where) ),
-                error( 'CVX:Variable', 'Variable name "%s" matches the name of a CVX function or directory:\n    %s\nPlease choose a different name.', xname, mpath );
-            else
-                warning( 'Variable name "%s" matches the name of an function or directory:\n    %s\nThis may cause unintended behavior with CVX models.\nPlease consider moving this file or choosing a different variable name.', xname, mpath );
-            end
-        end
-end
-xsize = cvx_get_dimlist( args, 'default', [1,1] );
+cvx___.args = { varargin, 1, [] };
+[ prob, name, args ] = evalin( 'caller', 'cvx_parse' );
+[ p, pstr ] = verify( prob );
 
 %
 % Parse the structure
@@ -154,13 +91,13 @@ end
 %
 
 tx = [];
-v = newvar( prob, xname, xsize, str, pstr.gp );
+v = newvar( prob, name{1}, args{1}, str, pstr.gp );
 if isepi || ishypo,
     if pstr.gp, vv = log( v ); else vv = v; end
     if isepi, dir = 'epigraph'; else dir = 'hypograph'; end
-    cvx___.problems( end ).objective = vv;
-    cvx___.problems( end ).direction = dir;
-    cvx___.problems( end ).geometric = pstr.gp;
+    cvx___.problems( p ).objective = vv;
+    cvx___.problems( p ).direction = dir;
+    cvx___.problems( p ).geometric = pstr.gp;
 end
 if itype,
     [ tx, dummy ] = find( cvx_basis( v ) ); %#ok
@@ -197,7 +134,7 @@ end
 if nargout > 0,
     varargout{1} = v;
 else
-    assignin( 'caller', xname, v );
+    assignin( 'caller', name{1}, v );
 end
 
 catch exc

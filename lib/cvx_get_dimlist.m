@@ -5,14 +5,18 @@ if nargin > 2,
         opts.(varargin{k}) = varargin{k+1};
     end
 end
-narg = length( args );
-if narg < 1,
-    if isempty( opts.default ),
-        error( 'CVX:ArgError', 'Not enough input arguments.' );
+if iscell( args ),
+    narg = length( args );
+    if narg < 1,
+        if isempty( opts.default ),
+            error( 'CVX:ArgError', 'Not enough input arguments.' );
+        end
+        sx = [];
+    else
+        sx = args{1};
     end
-    sx = [];
 else
-    sx = args{1};
+    sx = args;
 end
 if isempty( sx ),
     sx = opts.default;
@@ -31,6 +35,13 @@ if length( sx ) > 2,
 else
     sx(end+1:2) = 1;
 end
-args{1} = sx;
-if nargout > length(args), args{nargout} = []; end
+if iscell( args ),
+    args{1} = sx;
+else
+    args = { sx };
+end
+if nargout > length(args), 
+    args{nargout} = []; 
+end
 varargout = args;
+

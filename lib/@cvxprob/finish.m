@@ -38,8 +38,7 @@ elseif pstr.complete && nnz( pstr.t_variable ) == 1,
     end
     fn1 = [ fn1 ; fn2 ];
     i1  = cellfun( @cvx_id, [ vv1 ; vv2 ] )';
-    i2  = sprintf( '%s,', fn1{:} );
-    i2  = evalin( 'caller', sprintf( 'cellfun( @cvx_id, { %s } )', i2(1:end-1) ) );
+    i2  = evalin( 'caller', [ 'cellfun( @cvx_id, {', sprintf( '%s ', fn1{:} ), '} )' ] );
     if any( i1 ~= i2 ),
         cvx_pop( p, true );
         temp = sprintf( ' %s', fn1{ i1 ~= i2 } );

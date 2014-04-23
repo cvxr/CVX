@@ -1,5 +1,4 @@
 function z = newdual( prob, name, reps )
-error( nargchk( 2, 3, nargin ) );
 
 %
 % Check problem
@@ -30,16 +29,6 @@ elseif ischar( name ),
 end
 
 %
-% Check repetition
-%
-
-if nargin < 3,
-    reps = [];
-elseif ~isempty( reps ),
-    reps = cvx_get_dimlist( { reps } );
-end
-
-%
 % Add the variable to the problem
 %
 
@@ -48,7 +37,6 @@ if ~isempty( reps ),
     y = cell( reps );
     [ y{:} ] = deal( cvx );
     z = cell( reps );
-    q = cell( reps );
     ndxs = cell( 1, length( reps ) - ( reps(end) == 1 ) );
     [ ndxs{:} ] = ind2sub( reps, 1 : prod( reps ) );
     ndxs = vertcat( ndxs{:} );

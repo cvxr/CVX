@@ -33,7 +33,7 @@ s2 = cellfun( @cvx_id, evalin( 'caller', 'cellfun(@eval,who,''UniformOutput'',fa
 if values,
     temp = sprintf( '%s,', s1{s2>pid} );
     if ~isempty( temp ),
-        temp(end) = [];
+        temp = temp(1:end-1);
         evalin( 'caller', sprintf( '[%s]=cvx_values(%s);', temp, temp ) );
     end
     tt = s2 == pid;

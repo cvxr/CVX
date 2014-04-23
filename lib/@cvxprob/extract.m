@@ -227,7 +227,7 @@ exps = cvx___.exponential;
 if ~isempty( exps ),
     esrc = find( exps );
     edst = exps( esrc );
-    tt   = any(dbcA(esrc,:),2) & any(dbcA(edst,:,2));
+    tt   = any(dbcA(esrc,:),2) & any(dbcA(edst,:),2);
     tn   = ~tt;
     exps = [ esrc(tn), esrc(tn) ];
     if any( tt ),
