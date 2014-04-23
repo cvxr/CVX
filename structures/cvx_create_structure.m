@@ -31,7 +31,7 @@ else
         tok = toks{k};
         if isempty( tok ),
             if k == 1, type = 'Variable'; else type = 'Structure'; end
-            error( sprintf('CVX:Invalid%sSpec',type), 'Invalid %s specification: %s', lb(type), varargin{k} );
+            error( sprintf('CVX:Invalid%sSpec',type), 'Invalid %s specification: %s', lower(type), varargin{k} );
         end
         tok = tok{1};
         name{k} = tok{1};
