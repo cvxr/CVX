@@ -26,7 +26,7 @@ function y = sqrt_cnst( x )
 y = builtin( 'sqrt', x );
 
 function y = sqrt_logv( x )
-y = exp( 0.5 * log( x ) );
+y = exp_nc( 0.5 * log( x ) );
 
 function y = sqrt_affn( x ) %#ok
 cvx_begin

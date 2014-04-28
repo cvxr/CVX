@@ -29,9 +29,6 @@ function y = huber( x, varargin )
 %       nonincreasing in T. Therefore, when used in CVX specifications, X
 %       must be affine and T must be concave (or affine). T must be real.
 
-if ~cvx_isaffnnc( x ),
-    error( 'Disciplined convex programming error:\n    X must be affine or nonnegative convex.' );
-end
 y = huber_pos( abs( x ), varargin{:} );
 
 % Copyright 2005-2014 CVX Research, Inc. 

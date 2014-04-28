@@ -4,7 +4,7 @@ global cvx___
 b = x.basis_;
 s = size( b );
 [ r, c ] = find( b );
-y = max( sparse( r, c, cvx___.readonly( r ), s(1), s(2) ), [], 1 );
+y = max( sparse( r, c, double( cvx___.readonly( r ) ), s(1), s(2) ), [], 1 );
 y = reshape( full( y ), x.size_ );
 
 % Copyright 2005-2014 CVX Research, Inc.

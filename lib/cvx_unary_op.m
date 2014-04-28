@@ -55,7 +55,7 @@ end
 
 if vu(1) == 0,
     x = cvx_fastref( x, ~vx );
-    if isfield( p.name ) && ~empty( p.name ),
+    if isfield( p, 'name' ) && ~isempty( p.name ),
         name = p.name;
     else
         dd = dbstack;

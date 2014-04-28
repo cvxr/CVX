@@ -27,7 +27,7 @@ function y = square_cnst( x )
 y = builtin( 'power', x, 2 );
 
 function y = square_logv( x )
-y = exp( 2 * log( x ) );
+y = exp_nc( 2 * log( x ) );
 
 function y = square_affn( x ) %#ok
 cvx_begin

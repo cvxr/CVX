@@ -16,7 +16,10 @@ else
     v = varargin;
 end
 
-v = class( struct( 'value_', { v }, 'dual_', { [] } ), 'cvxtuple', cvxobj );
+global cvx___
+id = cvx___.id + 1;
+cvx___.id = id;
+v = class( struct( 'value_', { v }, 'dual_', { [] }, 'id_', id ), 'cvxtuple' );
 
 % Copyright 2005-2014 CVX Research, Inc.
 % See the file LICENSE.txt for full copyright information.

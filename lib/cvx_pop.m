@@ -52,9 +52,6 @@ if p > 1,
 else
     cvx___.problems = [];
     cvx_clearpath( 1 );
-    if cvx___.profile,
-        profile off;
-    end
 end
 cvx___.x = [];
 cvx___.y = [];

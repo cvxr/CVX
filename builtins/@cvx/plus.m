@@ -21,9 +21,10 @@ function z = plus( x, y )
 
 persistent params
 if isempty( params ),
-    params.map   = {};
-    params.funcs = { @plus_nc };
-    params.name  = '+';
+    params.map      = {};
+    params.funcs    = { @plus_nc };
+    params.constant = [];
+    params.name     = '+';
 end
 
 try

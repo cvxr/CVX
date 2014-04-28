@@ -22,6 +22,7 @@ if nargin == 2,
             { { 'concave' } } );
         bparam.constant = 1;
         bparam.funcs = { @min_b1, @min_b2, @min_b3, @min_b4, @min_b5 };
+        bparam.constant = [];
         bparam.name = 'min';
     end
     
@@ -125,15 +126,14 @@ if isempty( nneg ),
     nneg = cvx_remap( 'nonnegative', 'p_nonconst' );
     npos = cvx_remap( 'nonpositive', 'n_nonconst' );
 end
-nx = x.size_(1);
-if nx > 1,
-    nv = x.size_(2); %#ok
+s = size( x );
+if s(1) > 1,
     vx = cvx_classify( x );
-    nn = all(nneg(vx),1);
-    np = any(npos(vx),1);
+    nn = all(reshape(nneg(vx),s),1);
+    np = any(reshape(npos(vx),s),1);
     cvx_begin
-        hypograph variable zt( 1, nv )
-        xt >= repmat( zt, nx, 1 ); %#ok
+        hypograph variable zt( 1, s(2) )
+        xt >= repmat( zt, s(1), 1 ); %#ok
         cvx_setnneg( cvx_subsref( z, nn ) );
         cvx_setnpos( cvx_subsref( z, np ) );
     cvx_end

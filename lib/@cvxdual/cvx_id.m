@@ -1,5 +1,5 @@
-function y = isempty( x )
-y = any( size( x ) == 0 );
+function y = cvx_id( x )
+y = x.id_;
 
 % Copyright 2005-2014 CVX Research, Inc.
 % See the file LICENSE.txt for full copyright information.

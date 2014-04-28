@@ -43,13 +43,24 @@ if m == 1 || n == 1 || isequal( p, 'fro' ),
     if isequal( p, 'fro' ),
         p = 2;
     end
-    x = svec( x, p );
-    if length( x ) == 1,
-        p = 1;
+    if ~isreal( x ) && p ~= 2,
+        x = x( : );
+    else
+        [ xR, x ] = bcompress( x );
+        if isempty( x ),
+            cvx_optval = cvx( 0 );
+            return;
+        end
+        x = x .* norms( xR, p, 2 );
     end
+    n = length( x );
     xc = cvx_classify( x );
     if ~all( remap3( xc ) ),
         error( 'Disciplined convex programming error:\n    Cannot perform the operation norm( {%s}, %g )', cvx_class( x ), p );
+    end
+    if n == 1,
+        cvx_optval = abs( x );
+        return
     end
     switch p,
         case 1,
@@ -70,7 +81,6 @@ if m == 1 || n == 1 || isequal( p, 'fro' ),
                 if ~all( remap2( xc ) ),
                     x = linearize( x );
                 end
-                n = length( x );
                 if p == 2,
                     z = [];
                     cvx_begin

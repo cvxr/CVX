@@ -73,6 +73,9 @@ if nargin > 1,
     if issemi && pstr.gp,
         error( 'CVX:Structure', 'SEMIDEFINITE keywords cannot be used in geometric programs.' );
     end
+    if asnneg && ~isreal( str ),
+        error( 'CVX:Structure', 'Complex variables cannot also be nonnegative.' );
+    end
     if n_itypes,
         if pstr.gp,
             error( 'CVX:Structure', 'Integer variables cannot be used in geometric programs.' );
@@ -125,11 +128,7 @@ if asnneg,
     [ tx, dummy ] = find( cvx_basis( v ) ); %#ok
 end
 if ~isempty( tx ),
-    persistent mpos; %#ok
-    if isempty( mpos ),
-        mpos = int8([2,2,3,19,2,7,7,2,10,10,2,13,13,19,15,16,17,18,19]);
-    end
-    cvx___.classes( tx ) = mpos( cvx___.classes( tx ) );
+    cvx_setnneg( cvx( numel(tx), sparse(tx,1:numel(tx),1) ) );
 end
 if nargout > 0,
     varargout{1} = v;

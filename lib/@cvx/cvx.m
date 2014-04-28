@@ -15,6 +15,7 @@ function v = cvx( v, b, d )
 %      cvx_where
 %   at the command prompt.
 
+global cvx___
 switch nargin,
     case 0,
         s = [ 0, 1 ];
@@ -50,7 +51,9 @@ switch nargin,
             d = prod( s );
         end
 end
-v = class( struct( 'size_', s, 'basis_', b, 'dof_', d, 'dual_', '' ), 'cvx', cvxobj );
+id = cvx___.id + 1; 
+cvx___.id = id; 
+v = class( struct( 'size_', s, 'basis_', b, 'dof_', d, 'dual_', '', 'id_', id ), 'cvx' );
     
 % Copyright 2005-2014 CVX Research, Inc.
 % See the file LICENSE.txt for full copyright information.

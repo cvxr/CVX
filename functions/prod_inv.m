@@ -47,7 +47,7 @@ function y = prod_inv_1( x, p )
 y = prod( x .^ -p, 1 );
 
 function y = prod_inv_2( x, p )
-y = exp( sum( -p * log( x ) ) );
+y = exp_nc( sum( -p * log( x ) ) );
 
 function y = prod_inv_3( x, p ) %#ok
 [ nx, nv ] = size( x ); %#ok

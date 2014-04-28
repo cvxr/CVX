@@ -59,9 +59,10 @@ z = min( y, M );
 z = t .* z .* ( 2 * y - z );
 
 function cvx_optval = huber_pos_nc( x, t, M ) %#ok
+sz = max(numel(x),numel(t)); %#ok
 cvx_begin
-    variable w( sz ) nonnegative
-    variable v( sz ) nonnegative
+    variable w(sz) nonnegative
+    variable v(sz) nonnegative
     minimize( quad_over_lin( w, t, 0 ) + ( 2 * M ) * v )
     x <= w + v; %#ok
     w <= M * t; %#ok

@@ -70,7 +70,8 @@ elseif iscplx,
     nv = nv * 2;
 end
 cvx_begin set
-    variables x( nv, ny ) y( 1, ny )
+    variable x( nv, ny ) 
+    variable y( 1, ny ) nonnegative_
     [ ty, dummy ] = find( cvx_basis( y ) ); %#ok
     if nv > 0,
         [ tx, dummy ] = find( cvx_basis( x ) ); %#ok
@@ -79,7 +80,6 @@ cvx_begin set
     else
         newnonl( cvx_problem, 'nonnegative', ty );
     end
-    cvx___.sign( ty ) = 1;
 cvx_end
 
 %

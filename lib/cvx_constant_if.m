@@ -1,5 +1,5 @@
-function y = cvx_isconstant( x )
-y = testall( @cvx_isconstant, x );
+function y = cvx_constant_if( x )
+y = double( x );
 
 % Copyright 2005-2014 CVX Research, Inc. 
 % See the file LICENSE.txt for full copyright information.

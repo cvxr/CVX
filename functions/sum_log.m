@@ -24,7 +24,7 @@ persistent params
 if isempty( params ),
     params.map = cvx_remap( { 'real' ; 'l_convex' ; 'concave' ; 'l_concave' } );
     params.map = bsxfun( @and, params.map, ~cvx_remap( 'nonpositive' ) );
-    params.funcs = { @sum_log_1, @sum_log_1, @sum_log_2, @sum_log_1 };
+    params.funcs = { @sum_log_c, @sum_log_1, @sum_log_2, @sum_log_1 };
     params.zero = 0;
     params.constant = 1;
     params.reduce = true;
@@ -40,8 +40,11 @@ catch exc
     else rethrow( exc ); end
 end
 
+function y = sum_log_c(x)
+y = sum(builtin('log',x),1)
+
 function y = sum_log_1(x)
-y = sum(log(x));
+y = sum(log(x),1);
 
 function y = sum_log_2( x )
 y = size(x,1) * log(geo_mean(x,1));	

@@ -19,8 +19,8 @@ function y = avg_abs_dev( varargin )
 
 persistent params
 if isempty( params ),
-	params.map = cvx_remap( { 'real' }, { 'r_affine' } );
-	params.funcs = { @avg_abs_dev_cnst, @avg_abs_dev_aff };
+	params.map = cvx_remap( { 'real' ; 'r_affine' } );
+    params.funcs = { @avg_abs_dev_cnst, @avg_abs_dev_aff };
     params.constant = 1;
 	params.zero = NaN;
 	params.reduce = true;

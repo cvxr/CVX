@@ -4,9 +4,12 @@ function y = recip( x )
 
 persistent P
 if isempty( P ),
-    P.map = cvx_remap( { 'positive', 'negative' }, { 'l_valid' }, ...
-        { 'p_concave' }, { 'n_convex' } );
+    P.map = cvx_remap( ...
+        { 'g_posynomial', 'gg_monomial' }, ...
+        { 'positive', 'negative' }, { 'l_valid' }, ...
+        { 'p_concave' }, { 'n_convex' }, [0,1,2,3,4] );
     P.funcs = { @recip_cnst, @recip_logv, @recip_posc, @recip_negc };
+    P.name = '1.0 ./';
 end
 
 try
@@ -20,7 +23,7 @@ function y = recip_cnst( x )
 y = 1.0 ./ x;
 
 function y = recip_logv( x )
-y = exp( -log( x ) );
+y = exp_nc( -log( x ) );
 
 function y = recip_posc( x ) %#ok
 % Positive concave
@@ -30,7 +33,7 @@ cvx_begin
     { 1, linearize(x), y } == rotated_lorentz( sx, 0 ); %#ok
 cvx_end
 
-function y = recip_negc( x ) %#ok
+function y = recip_negc( x )
 % Negative convex    
 y = -recip_posc( -x );
 

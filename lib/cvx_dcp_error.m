@@ -54,7 +54,7 @@ if op(1) >= 'a' && op(1) <= 'z',
     strx = strcat( { [ op, '( ' ] }, strx );
     strx = strcat( strx, ' )' );
 elseif ~isequal( mode, 'binary' ),
-    strx = strcat( [ op, ' ' ], strx );
+    strx = strcat( { [ op, ' ' ] }, strx );
 end
 if length( strx ) == 1,
     plural = '';
@@ -74,7 +74,8 @@ switch op,
         type = 'operation';
 end
 try
-    error( 'CVX:DCPError', 'Disciplined convex programming error:\n   Invalid %s%s: %s', type, plural, strx );
+    if any(strfind(strx,'nomial')), gtype = 'geometric'; else gtype = 'convex'; end
+    error( 'CVX:DCPError', 'Disciplined %s programming error:\n   Invalid %s%s: %s', gtype, type, plural, strx );
 catch estr
     if nargout == 0,
         rethrow( estr );
@@ -94,7 +95,7 @@ elseif cvx_isconstant( x ),
     x = cvx_constant( x );
 end
 if isa( x, 'cvx' ) || isnumeric( x ) && numel( x ) > 1,
-    strx = [ '{', cvx_class( x, true, true, true ); ];
+    strx = [ '{', cvx_class( x, true, true, true ) ];
     if numel( x ) > 1, 
         sx = size( x );
         if length(sx) > 2, tp = 'array';
@@ -107,7 +108,7 @@ if isa( x, 'cvx' ) || isnumeric( x ) && numel( x ) > 1,
 elseif ~isnumeric( x ),
     strx = [ '{', class( x ), '}' ];
 elseif isreal( x ),
-    strx = sprintf( '%g', x );
+    strx = sprintf( '{%g}', x );
 else
-    strx = sprintf( '%g+1j*%g', real(x), imag(x) );
+    strx = sprintf( '{%g+1j*%g}', real(x), imag(x) );
 end

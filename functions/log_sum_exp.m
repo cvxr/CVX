@@ -18,8 +18,6 @@ function y = log_sum_exp( varargin )
 %       LOG_SUM_EXP(X) is convex and nondecreasing in X; therefore, X
 %       must be convex (or affine).
 
-cvx_expert_check( 'log_sum_exp', x );
-
 persistent params
 if isempty( params ),
     params.map = cvx_remap( { 'real' ; 'convex' } );
@@ -33,8 +31,9 @@ if isempty( params ),
 end
 
 try
+    cvx_expert_check( 'log_sum_exp', varargin{1} );
     y = cvx_reduce_op( params, varargin{:} );
-scatch exc
+catch exc
     if strncmp( exc.identifier, 'CVX:', 4 ), throw( exc ); 
     else rethrow( exc ); end
 end
@@ -43,7 +42,8 @@ function x = lse_1( x )
 xmid = 0.5 * ( max( x, [], 1 ) + min( x, [], 1 ) );
 x = log( sum( exp( bsxfun( @minus, x, xmid ) ), 1 ) ) + xmid;
 
-function y = lse_2( x ) %#ok
+function y = lse_2( x )
+y = [];
 [nx,nv] = size(x);
 cvx_begin
     variable w( nx, nv )

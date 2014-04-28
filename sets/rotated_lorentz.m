@@ -32,7 +32,7 @@ function cvx_optpnt = rotated_lorentz( varargin )
 %       ROTATED_LORENTZ is a cvx set specification. See the user guide for
 %       details on how to use sets.
 
-[ sx, dim, iscplx ] = cvx_get_dimension( varargin, 2, 'nox', 'true', 'zero', 'true' );
+[ sx, dim, iscplx ] = cvx_get_dimension( varargin, 2, 'nox', true, 'zero', true );
 iscplx = ~isempty(iscplx) && iscplx;
 
 %

@@ -9,7 +9,7 @@ tt = ( xc <= 0 ) & ( sum( x ~= 0 ) == 1 );
 tx = tx + 1;
 persistent mpos;
 if isempty( mpos ),
-    mpos = int8([2,2,3,19,2,7,7,2,10,10,2,13,13,19,15,16,17,18,19]);
+	mpos = int8([2,2,3,22,6,7,7,9,10,10,12,13,13,22,15,16,17,18,19,20,21,22]);
 end
 cvx___.classes(tx) = mpos(cvx___.classes(tx));
 

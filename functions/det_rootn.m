@@ -21,7 +21,7 @@ if isempty( params ),
     params.args      = [];
     params.empty     = 1;
     params.constant  = @det_rootn_diag;
-    params.diag      = @det_rootn_diag;
+    params.diagonal  = @det_rootn_diag;
     params.affine    = @det_rootn_aff;
     params.structure = 'psdeig';
 end
@@ -33,10 +33,10 @@ catch exc
     else rethrow(exc); end
 end
 
-function y = det_rootn_diag( D ) %#ok
+function y = det_rootn_diag( D )
 y = geo_mean( D ) .^ 2;
 
-function cvx_optval = det_rootn_aff( X )
+function cvx_optval = det_rootn_aff( X ) %#ok
 cvx_begin sdp
     hypograph variable z nonnegative_
     variable Z(size(X)) lower_triangular complex_if(X)

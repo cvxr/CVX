@@ -60,9 +60,13 @@ end
 % Construct the cone
 %
 
+persistent apos
+if isempty( apos ),
+  apos = int8(find(cvx_remap('p_affine_')));
+end
 cvx_begin set
    if any( sz == 0 ) || sz(1) == 1,
-       variable x( sz )
+       variable x( sz ) nonnegative_
        s = 'nonnegative';
    elseif iscplx,
        variable x( sz ) hermitian
@@ -82,11 +86,9 @@ cvx_begin set
            else
                ndxs = cumsum( [ 1, sz(1) : -1 : 2 ] );
            end
-           cvx___.sign( tx(ndxs) ) = 1;
+           cvx___.classes(tx(ndxs)) = apos;
            tx( ndxs, : ) = [];
            cvx___.canslack( tx ) = false;
-       else
-           cvx___.sign( tx ) = 1; %#ok
        end
    end
 cvx_end

@@ -43,20 +43,19 @@ cvx___.problems    = [];
 cvx___.pause       = false;
 cvx___.quiet       = false;
 cvx___.profile     = false;
-cvx___.logarithm   = zeros( 0, 1, 'int32' );
-cvx___.exponential = zeros( 0, 1, 'int32' );
+cvx___.logarithm   = zeros( 0, 1 );
+cvx___.exponential = zeros( 0, 1 );
 cvx___.classes     = int8(3);
 cvx___.canslack    = false;
-cvx___.readonly    = 0;
+cvx___.readonly    = zeros( 1, 1, 'int32' );
 cvx___.cones       = struct( 'type', {}, 'indices', {} );
-cvx___.equalities  = cvx;
+cvx___.equalities  = {};
+cvx___.n_equality  = 0;
+cvx___.geometric   = false;
 cvx___.needslack   = false(0,1);
-cvx___.linforms    = cvx;
-cvx___.linrepls    = cvx;
-cvx___.uniforms    = cvx;
-cvx___.unirepls    = cvx;
 cvx___.x           = zeros( 0, 1 );
 cvx___.y           = zeros( 0, 1 );
+cvx___.id          = int32(0);
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Run each shim to connect/reconnect the solvers %

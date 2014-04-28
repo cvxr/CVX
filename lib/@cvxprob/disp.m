@@ -20,13 +20,11 @@ if isempty( naff ),
     naff = ~cvx_remap( 'affine' );
     ylog = cvx_remap( 'l_valid_' );
 end
-neqns = ( length( cvx___.equalities ) - p.n_equality ) + ...
-        ( length( cvx___.linforms )   - p.n_linform  ) + ...
-        ( length( cvx___.uniforms )   - p.n_uniform  );
-nineqs = nnz( cvx___.needslack( p.n_equality + 1 : end ) ) + ...
-         nnz( naff(cvx_classify( cvx___.linrepls( p.n_linform + 1 : end ) )) ) + ...
-         nnz( naff(cvx_classify( cvx___.unirepls( p.n_uniform + 1 : end ) )) );
-neqns = neqns - nineqs;     
+neqns = cellfun( @(z)size(z,2), cvx___.equalities );
+neqns = neqns(p.n_equality+1:end);
+nineqs = cvx___.needslack(p.n_equality+1:end);
+nineqs = sum( neqns(:) .* nineqs(:) );
+neqns = sum( neqns ) - nineqs;
 if isempty( p.name ) || strcmp( p.name, 'cvx_' ),
     nm = '';
 else
@@ -50,7 +48,7 @@ for k = 1 : length( cvx___.cones ),
 end
 
 if all( [ numel( p.objective ), nv, nvars, nduls, neqns, nineqs, cfound, gfound ] == 0 ),
-    disp( [ prefix, nm, 'cvx problem object' ] );
+    disp( [ prefix, nm, 'empty CVX model' ] );
 else
     if ( p.gp ),
         ptype =' geometric ';
@@ -73,7 +71,7 @@ else
             tp = [ sz(1:end-1), '-objective ', tp ];
         end
     end
-    disp( [ prefix, nm, 'cvx', ptype, tp, ' problem' ] );
+    disp( [ prefix, nm, 'CVX', ptype, tp, ' model' ] );
     if nvars > 0,
         disp( [ prefix, 'variables: ' ] );
         [ vnam, vsiz ] = dispvar( p.variables, '' );

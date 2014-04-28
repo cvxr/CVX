@@ -1,5 +1,5 @@
 function x = rhs( y )
-x = y.rhs;
+x = y.rhs_;
 
 % Copyright 2005-2014 CVX Research, Inc. 
 % See the file LICENSE.txt for full copyright information.

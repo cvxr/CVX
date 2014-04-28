@@ -1,7 +1,8 @@
 function [ outp, sdp_mode ] = newcnstr( prob, x, y, op, sdp_mode )
 
 global cvx___
-[ p, pstr ] = verify( prob );
+p = prob.index_;
+pstr = cvx___.problems( p );
 
 %
 % Check problem
@@ -92,6 +93,7 @@ if isempty( param_eq ),
             { { 'l_affine' } } );
     param_eq.funcs = { @minus_nc, @eq_2 };
     param_eq.name = '=';
+    param_eq.constant = [];
     param_ge.map = cvx_remap( ...
             { { 'constant' } }, ...
             { { 'l_concave' }, { 'l_convex' } }, ...
@@ -99,9 +101,11 @@ if isempty( param_eq ),
             [ 1, 2, 1 ] );
     param_ge.funcs = { @minus_nc, @ge_2 };
     param_ge.name = '>=';
+    param_ge.constant = false;
     param_le.map = param_ge.map';
     param_le.funcs = { @le_1, @le_2 };
     param_le.name = '<=';
+    param_le.constant = false;
 end
 
 try
@@ -148,42 +152,37 @@ if sdp_mode,
         end
     end
     if ~dg,
-        zt = z(:,permute(reshape(1:prod(sz),sz),[2,1,sz(3:end)]));
+        zt = z(:,permute(reshape(1:prod(sz),sz),[2,1,3:length(sz)]));
         if ~zr, zt = conj( zt ); end
         err = z - zt;
-        z   = 0.5 * ( z + zt );
-        err = max( sum(abs(err),1) ./ max(realmin,sum(abs(z),1)) );
-        if err > 8 * eps,
-            if isreal(z), str = 'symmetric'; else str = 'Hermitian'; end
-            error( 'CVX:ArgError', [ ...
-                'SDP constraints are expected to be %s (deviation: %g).\n', ...
-                '--- If this number is small (<1e-6), it may simply be due to roundoff error.\n', ...
-                '    This can be corrected by applying the SYM(X) function.\n', ...
-                '--- Otherwise, this is likely due to a modeling error. Did you declare the\n', ...
-                '    relevant matrix variables to be "symmetric" or "hermitian"?' ], str, full(err) );
+        if nnz(err),
+            z   = 0.5 * ( z + zt );
+            err = max( sum(abs(err),1) ./ max(realmin,sum(abs(z),1)) );
+            if err > 8 * eps,
+                if isreal(z), str = 'symmetric'; else str = 'Hermitian'; end
+                error( 'CVX:ArgError', [ ...
+                    'SDP constraints are expected to be %s (deviation: %g).\n', ...
+                    '--- If this number is small (<1e-6), it may simply be due to roundoff error.\n', ...
+                    '    This can be corrected by applying the SYM(X) function.\n', ...
+                    '--- Otherwise, this is likely due to a modeling error. Did you declare the\n', ...
+                    '    relevant matrix variables to be "symmetric" or "hermitian"?' ], str, full(err) );
+            end
         end
         zz = cvx_basis( semidefinite( sz, ~zr ) );
     end
     z(size(zz,1),:) = 0;
     z = cvx( sz, z - zz );
-    op = '==';
-end
+    iseq = true;
+else
+    iseq = op(1) == '=';
+end    
 
 %
 % Add the (in)equalities
 %
 
-touch( prob, z, op(1) == '=' );
-z = z( : );
-mN = numel( z );
-mO = length( cvx___.equalities );
-if zr,
-    cvx___.equalities = vertcat( cvx___.equalities, z );
-else
-    cvx___.equalities = vertcat( cvx___.equalities, real(z), imag(z) );
-    mN = mN * 2;
-end
-cvx___.needslack( end + 1 : end + mN, : ) = op( 1 ) ~= '=';
+touch( prob, z, iseq );
+zD = cvx_pushcnstr( cvx_basis( z ), iseq );
 
 %
 % Create the dual
@@ -191,11 +190,6 @@ cvx___.needslack( end + 1 : end + mN, : ) = op( 1 ) ~= '=';
 
 if ~isempty( dx )
     if isempty( cvx_getdual( z ) ),
-        zD = sparse( mO + 1 : mO + mN, 1 : mN, 1 );
-        if ~zr,
-            m = mN / 2;
-            zD = zD * sparse( 1:mN, [1:m,1:m], [ones(1,m),1j*ones(1,m)] );
-        end
         pstr.duals = builtin( 'subsasgn', pstr.duals, dx, cvx( sz, zD ) );
         cvx___.problems( p ) = pstr;
     else

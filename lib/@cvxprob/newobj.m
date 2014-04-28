@@ -1,10 +1,11 @@
 function newobj( prob, dir, x )
 
-persistent remap_min remap_max remap_log
+persistent remap_min remap_max remap_log remap_gp
 if isempty( remap_max ),
     remap_min = cvx_remap( 'convex', 'l_convex' );
     remap_max = cvx_remap( 'concave', 'l_concave' );
     remap_log = cvx_remap( 'l_valid' ) & ~cvx_remap( 'constant' );
+    remap_gp  = cvx_remap( 'g_valid' );
 end
 
 %
@@ -12,7 +13,8 @@ end
 %
 
 global cvx___
-[ p, pstr ] = verify( prob );
+p = prob.index_;
+pstr = cvx___.problems( p );
 if ~isempty( pstr.direction ),
 	if isequal( dir, 'find' ),
         error( 'CVX:ArgError', 'Objective functions cannot be added to sets.' );
@@ -54,18 +56,19 @@ end
 % Store the objective
 %
 
-vx = remap_log( cx );
-if any( vx ),
-    if all( vx ),
-        x = log( x );
-    else
-        x( vx ) = log( x( vx ) );
+vx = remap_log( cx ) + remap_gp( cx );
+if any( vx(:) ),
+    if any( diff( vx(:) ) ),
+        error( 'CVX:LogMix', 'Invalid mix of logarithm and non-logarithmic objectives.' );
     end
+    x = log( x );
+    vx = vx(1);
 end
 if isa( x, 'cvx' ),
-    zndx = any( cvx_basis( x ), 2 );
     v = pstr.t_variable;
-    pstr.t_variable = v | zndx( 1 : size( v, 1 ), : );
+    zndx = any( cvx_basis( x ), 2 );
+    v = v | zndx( 1 : length( v ), : );
+    pstr.t_variable = v;
 end
 pstr.objective = x;
 pstr.direction = dir;

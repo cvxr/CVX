@@ -1,13 +1,6 @@
 function [ z, sdp_mode ] = cvx_binary_op( p, x, y, varargin )
 
 global cvx___
-persistent sdpmap
-
-if isfield( p, 'sdp' ),
-    sdp_mode = p.sdp;
-else
-    sdp_mode = false;
-end
 
 if ~isempty( p.map ),
     vy = cvx_classify( y );
@@ -22,7 +15,6 @@ if all( sx == 1 ),
     if all( sy == 1 ),
         xs = false;
         ys = false;
-        sdp_mode = false;
     else
         xs = true;
         ys = false;
@@ -57,9 +49,10 @@ else
 end
 
 % Special size checks for SDP mode
-if sdp_mode,
-    sdp_mode = false;
+sdp_mode = false;
+if isfield( p, 'sdp' ) && p.sdp && ~( xs && ys ),
     if all( sz( 1 : 2 ) > 1 ),
+        persistent sdpmap %#ok
         if isempty( sdpmap ),
             sdpmap = cvx_remap( 'affine' );
         end
@@ -78,11 +71,9 @@ if sdp_mode,
 end
 
 % Normal expression maps
-cnst = [];
 if sdp_mode || isempty( p.map ),
     vu = 1;
 else
-    if isfield( p, 'constant' ), cnst = p.constant; end
     vz = bsxfun( @plus, int32(vx), size(p.map,1) * int32(vy-1) );
     vz = p.map( vz );
     vu = sort( vz(:)' ); %#ok
@@ -90,18 +81,14 @@ else
 end
 
 if vu(1) ~= 0,
-
-    ox = isa( x, 'cvx' );
-    oy = isa( y, 'cvx' );
-    oz = ox || oy;
+    oz = isempty( p.constant ) || isa( x, 'cvx' ) || isa( y, 'cvx' );
     if length( vu ) == 1,
-
         % Homogenous input (single compute mode)
-        cz = any( cnst == vu );
-        if cz && ox, x = cvx_constant( x ); end
-        if cz && oy, y = cvx_constant( y ); end
+        if any( vu == p.constant ),
+            x = cvx_constant( x );
+            y = cvx_constant( y );
+        end
         z = p.funcs{vu(1)}( vec(x), vec(y), varargin{:} );
-        
         % Post-op check, if necessary
         if isempty( p.map ),
             vu = cvx_isvalid( z );
@@ -109,15 +96,12 @@ if vu(1) ~= 0,
                 vz = cvx_isvalid( z, true ); 
             end
         end
-
         % Output CVX object even for constant data, if requested
         z = reshape( z, sz );
-        if cz && oz, 
+        if oz, 
             z = cvx( z ); 
         end
-
     else
-
         % Heterogeneous input (multiple compute modes)
         if oz, z = cvx( sz, [] );
         else z = zeros( sz ); end
@@ -125,17 +109,16 @@ if vu(1) ~= 0,
         if ys, yt = y; end
         for vk = vu,
             tt = vz == vk;
-            if ~xs, x = cvx_fastref( x, tt ); end
-            if ~ys, y = cvx_fastref( y, tt ); end
-            cz = any( cnst == vk );
-            if cz && ox, xt = cvx_constant( xt ); end
-            if cz && oy, yt = cvx_constant( yt ); end
+            if ~xs, xt = cvx_fastref( x, tt ); end
+            if ~ys, yt = cvx_fastref( y, tt ); end
+            if any( vk == p.constant ),
+                xt = cvx_constant( x );
+                yt = cvx_constant( y );
+            end
             zt = p.funcs{vk}( xt, yt, varargin{:} );
             z = cvx_fastasgn( z, tt, zt );
         end
-
     end
-    
 end
 
 % Errors found

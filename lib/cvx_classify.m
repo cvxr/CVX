@@ -1,8 +1,9 @@
 function v = cvx_classify( x )
 
 % Classifications:
+% 0  - zero (unused in MATLAB)
 % 1  - negative constant
-% 2  - zero
+% 2  - real constant (zero in MATLAB)
 % 3  - positive constant
 % 4  - complex constant
 % 5  - negative concave
@@ -19,15 +20,18 @@ function v = cvx_classify( x )
 % 16 - log affine
 % 17 - log convex monomial
 % 18 - log convex posynomial
-% 19 - invalid
+% 19 - gp monomial (log affine)
+% 20 - gp posynomial (log convex)
+% 21 - ggp monomial (log convex)
+% 22 - invalid
 
 if isnumeric( x ),
     v = full(sign(real(x))+2);
     if ~isreal( x ), v(imag(x)~=0) = 4; end
-    v(isnan(x)) = 19;
+    v(isnan(x)) = 22;
     v = int8(v);
 else
-    v = int8(19);
+    v = int8(22);
 end
 
 % Copyright 2005-2014 CVX Research, Inc.

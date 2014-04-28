@@ -21,6 +21,7 @@ persistent params
 if isempty( params ),
     params.map = {};
     params.funcs = { @minus_nc };
+    params.constant = [];
     params.name = '-';
 end
 

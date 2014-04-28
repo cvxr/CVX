@@ -1,5 +1,5 @@
 function y = cvx_id( x ) %#ok
-y = -Inf;
+y = int32(-1);
 
 % Copyright 2005-2014 CVX Research, Inc.
 % See the file LICENSE.txt for full copyright information.

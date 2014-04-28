@@ -9,7 +9,7 @@ tt = ( xc <= 0 ) & ( sum( x ~= 0 ) == 1 );
 tx = tx + 1;
 persistent mneg;
 if isempty( mneg ),
-    mneg = int8([1,2,2,19,4,4,2,8,8,2,11,11,2,19,19,19,19,19,19]);
+    mneg = int8([1,2,2,22,5,5,6,8,8,9,11,11,12,22,22,22,22,22,22,22,22,22]);
 end
 cvx___.classes(tx) = mneg(cvx___.classes(tx));
 

@@ -5,13 +5,17 @@ function z = power( x, y, op )
 persistent bparam
 if isempty( bparam ),
     bparam.map = cvx_remap( ...
+        { { 'g_posynomial', 'gg_monomial' }, { 'negative' } }, ...
         { { 'constant' } }, ...
         { { 'positive' }, { 'convex', 'concave' } }, ...
-        { { 'valid' }, { 'real' } }, [1,2,3] );
-    bparam.funcs = { @power_1, @power_2, @power_3 };
+        { { 'l_valid_' }, { 'real' } }, ...
+        { { 'valid' }, { 'real' } }, [0,1,2,3,4] );
+    bparam.funcs = { @power_1, @power_2, @power_3, @power_4 };
+    bparam.constant = [];
 end
 
 try
+    if nargin < 3, op = '.^'; end
     bparam.name = op;
     z = cvx_binary_op( bparam, x, y );
 catch exc
@@ -19,13 +23,16 @@ catch exc
     else rethrow( exc ); end
 end
 
-function z = @power_1( x, y )
+function z = power_1( x, y )
 z = cvx( power( cvx_constant( x ), cvx_constant( y ) ) );
 
-function z = @power_2( x, y )
-z = exp( log( cvx_constant( x ) ) .* y );
+function z = power_2( x, y )
+z = exp_nc( log( cvx_constant( x ) ) .* y );
 
-function z = @power_3( x, y )
+function z = power_3( x, y )
+z = exp_nc( log( x ) .* y );
+
+function z = power_4( x, y )
 nx = x.size_(1);
 ny = numel( y );
 if ny == 1

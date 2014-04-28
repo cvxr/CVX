@@ -30,8 +30,8 @@ function z = times( x, y, oper )
 persistent params
 if isempty( params ),
     params.map = cvx_remap( ...
-        { { 'negative' },   { 'l_concave_' } }, ... % negative of log-concave
-        { { 'l_concave_' }, { 'negative' }   }, ... % negative of log-concave
+        { { 'negative' },   { 'l_concave_', 'g_valid' } }, ... % negative of log-concave, monomial, posynomial
+        { { 'l_concave_', 'g_valid' }, { 'negative' }   }, ... % negative of log-concave, monomial, posynomial
         { { 'constant' },   { 'affine' }     }, ... % constant * affine/constant
         { { 'real' },       { 'valid'  }     }, ... % real * valid
         { { 'affine' },     { 'constant' }   }, ... % affine * constant
@@ -42,6 +42,7 @@ if isempty( params ),
         { { 'l_concave', 'concave' }         }, ... % log-concave
         [ 0, 0, 1, 1, 2, 2, 3, 3, 4, 4 ] );
     params.funcs = { @times_12, @times_12, @times_3, @times_4 };
+    params.constant = [];
 end
 
 try
@@ -92,7 +93,7 @@ end
 
 function z = times_4( x, y )
 % geom .* geom
-z = exp( plus_nc( log( x ), log( y ) ) );
+z = exp_nc( plus_nc( log( x ), log( y ) ) );
 
 % Copyright 2005-2014 CVX Research, Inc.
 % See the file LICENSE.tx for full copyright information.

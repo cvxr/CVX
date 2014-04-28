@@ -6,7 +6,7 @@ global cvx___
 [ pn, p ] = verify( pp ); %#ok
 persistent vex
 if isempty( vex ),
-    vex = [0,0,0,NaN,-1,-1,-1,0,0,0,1,1,1,NaN,NaN,1,1,1,1,NaN]';
+    vex = [0,0,0,NaN,-1,-1,-1,0,0,0,1,1,1,NaN,NaN,-1,-1,NaN,NaN,-1,NaN,NaN,NaN]';
 end
 n = length( cvx___.classes );
 
@@ -27,97 +27,31 @@ else
     dbcA = -dbcA;
     dir = -1;
 end
+dbcA = cvx_basis( dbcA );
+dbcA( end + 1 : n, : ) = 0;
 
 %
 % Equality constraints
 %
 
-AA = cvx___.equalities;
+AA    = cvx___.equalities;
+ntot  = cvx___.n_equality;
 ineqs = cvx___.needslack;
-npre = p.n_equality;
-ntot = length( AA );
+szs   = cellfun( @(x)size(x,2), AA );
 if p.n_equality > 0,
-    AA = AA( p.n_equality + 1 : end, : );
+    npre  = sum( szs( 1: p.n_equality ) );
+    szs   =    szs( p.n_equality + 1 : end );
+    AA    =    AA( p.n_equality + 1 : end, : );
     ineqs = ineqs( p.n_equality + 1 : end, : );
-    if destructive,
-        cvx___.equalities( p.n_equality + 1 : end ) = [];
-        cvx___.needslack( p.n_equality + 1 : end ) = [];
-    end
-elseif destructive,
-    cvx___.equalities = cvx;
-    cvx___.needslack =  false( 0, 1 ) ;
-end
-if ~isempty( AA ),
-    ineqs = [ false ; ineqs ];
-    dbcA = [ dbcA ; AA ];
-    clear AA
-end
-
-%
-% Linear forms
-%
-
-if p.n_linform > 0,
-    A1 = cvx___.linforms( p.n_linform + 1 : end, : );
-    A2 = cvx___.linrepls( p.n_linform + 1 : end, : );
-    if destructive,
-        cvx___.linforms( p.n_linform + 1 : end ) = [];
-        cvx___.linrepls( p.n_linform + 1 : end ) = [];
-    end
 else
-    A1 = cvx___.linforms;
-    A2 = cvx___.linrepls;
-    if destructive,
-        cvx___.linforms = cvx;
-        cvx___.linrepls = cvx;
-    end
+    npre  = 0;
 end
-if ~isempty( A1 ),
-    zV = vex( cvx_classify( A2 ) );
-    zQ = ( zV == 0 ) - zV;
-    dbcA = [ dbcA ; minus_nc( zQ .* A1, zQ .* A2 ) ];
-    ineqs( end + 1 : end + length( A1 ), : ) = zV ~= 0;
-    clear A1 A2 zV zQ
-end
-
-%
-% Univariable forms
-%
-
-if p.n_uniform > 0,
-    A1 = cvx___.uniforms( p.n_uniform + 1 : end, : );
-    A2 = cvx___.unirepls( p.n_uniform + 1 : end, : );
-    if destructive,
-        cvx___.uniforms( p.n_uniform + 1 : end ) = [];
-        cvx___.unirepls( p.n_uniform + 1 : end ) = [];
-    end
-else
-    A1 = cvx___.uniforms;
-    A2 = cvx___.unirepls;
-    if destructive,
-        cvx___.uniforms = cvx;
-        cvx___.unirepls = cvx;
-    end
-end
-if ~isempty( A2 ),
-    zV = vex( cvx_classify( A2 ) );
-    zQ = ( zV == 0 ) - zV;
-    dbcA = [ dbcA ; minus_nc( zQ .* A1, zQ .* A2 ) ];
-    ineqs( end + 1 : end + length( A1 ), : ) = zV ~= 0;
-    clear A1 A2 zV zQ
-end
-
-%
-% Convert to basis
-%
-
-dbcA = cvx_basis( dbcA );
-nA = size( dbcA, 1 );
-if nA < n,
-    dbcA( n, end ) = 0;
-elseif n < nA,
-    dbcA = dbcA( 1 : n, : );
-end
+AA   = cellfun( @(x)vertcat(x,sparse(n-size(x,1),size(x,2))), AA, 'UniformOutput', false );
+dbcA = horzcat( dbcA, AA{:} );
+ndxs = zeros(1,ntot);
+ndxs(cumsum([1,szs(1:end-1)])) = 1;
+ineqs = [false;ineqs(cumsum(ndxs),:)];
+clear ndxs AA
 
 %
 % Determine which inequalities need slack variables. Not all of them do,
@@ -154,7 +88,6 @@ end
 % Select the cones used
 %
 
-ocones = [];
 used = full( any( dbcA, 2 ) );
 if all( used ),
     cones = cvx___.cones;
@@ -172,18 +105,7 @@ else
                 cones = [ cones, ncone ];
             end
         end
-        if destructive && ~all( temp ),
-            cone.indices( :, temp ) = [];
-            if isempty( ocones ),
-                ocones = cone;
-            else
-                ocones = [ ocones, cone ];
-            end
-        end
     end
-end
-if destructive,
-    cvx___.cones = ocones;
 end
 
 %
@@ -229,20 +151,20 @@ if ~isempty( exps ),
     edst = exps( esrc );
     tt   = any(dbcA(esrc,:),2) & any(dbcA(edst,:),2);
     tn   = ~tt;
-    exps = [ esrc(tn), esrc(tn) ];
+    exps = [ esrc(tn), edst(tn) ];
     if any( tt ),
         % Determine the indices of the exponentials
         esrc = esrc(tt);
         edst = edst(tt);
         nexp = length(esrc);
-        lvar = n + nsl + 3 * nexp;
+        nexp3 = 3 * nexp;
         % Create the exponential cones
         ncone.type = 'exponential';
-        ncone.indices = reshape( n+nsl+1:lvar, 3, nexp );
+        ncone.indices = reshape( n+nsl+(1:nexp3), 3, nexp );
         % Expand Q, P, dbCA
-        Q(end,lvar) = 0;
-        P(end,lvar) = 0;
-        dbcA(lvar,end) = 0;
+        Q(end,end+nexp3) = 0;
+        P(end,end+nexp3) = 0;
+        dbcA(end+nexp3,end) = 0;
         % Add equality consraints to tie the exponential cones to esrc and edst
         % and set the exponential perspective variable to 1
         ndxc = reshape( 1 : 3 * nexp, 3, nexp );

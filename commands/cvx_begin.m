@@ -41,7 +41,8 @@ try
     if isa( evalin( 'caller', 'cvx_problem', '[]' ), 'cvxprob' ),
         evalin( 'caller', 'cvx_pop( cvx_problem, true, true )' );
     end
-    assignin( 'caller', 'cvx_problem', cvxprob( varargin{:} ) );
+    prob = cvxprob( varargin{:} );
+    assignin( 'caller', 'cvx_problem', prob );
 catch exc
     if strncmp( exc.identifier, 'CVX:', 4 ), throw( exc );
     else rethrow( exc ); end

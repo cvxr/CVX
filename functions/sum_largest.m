@@ -43,7 +43,9 @@ end
 
 try
     [ sx, x, k, dim ] = cvx_get_dimension( varargin, 3 );
-    if ~isnumeric( k ) || numel(k) ~= 1 || ~isreal( k ),
+    if nargin < 2,
+        error( 'Not enough arguments.' );
+    elseif ~isnumeric( k ) || numel(k) ~= 1 || ~isreal( k ),
         error( 'Second argument must be real.' );
     elseif k <= 0,
         sx( dim ) = 1;
@@ -66,21 +68,21 @@ y = sort( x, 1, 'descend' );
 y = sum( y(1:floor(k),:), 1 ) + (k-floor(k)) * y(ceil(k),:);
 
 function z = sum_largest_cvx( x, k )
-[ nx, nv ] = size( x ); %#ok
 persistent nneg npos
 if isempty( nneg ),
     nneg = cvx_remap( 'nonnegative', 'p_nonconst' );
     npos = cvx_remap( 'nonpositive', 'n_nonconst' );
 end
+s = size(x);
 vx = cvx_classify(x);
-nn = any(nneg(vx),1);
-np = all(npos(vx),1);
+nn = any(reshape(nneg(vx),s),1);
+np = all(reshape(npos(vx),s),1);
 z = []; xp = []; yp = [];
 cvx_begin
-    epigraph variable z( 1, nv )
-    variables xp( nx, nv ) yp( 1, nv )
+    epigraph variable z( 1, s(2) )
+    variables xp( s ) yp( 1, s(2) )
     z == sum( xp, 1 ) - k * yp; %#ok
-    xp >= repmat( yp, [nx,1] ) + x; %#ok
+    xp >= repmat( yp, [s(1),1] ) + x; %#ok
     xp >= 0; %#ok
     cvx_setnneg( cvx_subsref( z, nn ) );
     cvx_setnpos( cvx_subsref( z, np ) );

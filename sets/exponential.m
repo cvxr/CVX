@@ -1,4 +1,4 @@
-function cvx_optpnt = exponential( sx )
+function cvx_optpnt = exponential( varargin )
 
 %EXPONENTIAL   Exponential cone.
 %   EXPONENTIAL, called with no arguments, creates three scalar variables X,
@@ -18,7 +18,7 @@ function cvx_optpnt = exponential( sx )
 %   satisfy EXP_P(X,Y) <= Z. If SX is empty, then SX=[1,1] is assumed.
 
 cvx_expert_check( 'exponential' );
-sx = cvx_get_dimlist( varargin, 'default', [1,1] );
+sx = cvx_get_dimlist( varargin, 'default', [1,1] ); %#ok
 cvx_begin set
     variable x( sx )
     variable y( sx ) nonnegative_

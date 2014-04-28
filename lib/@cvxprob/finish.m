@@ -64,6 +64,7 @@ elseif pstr.complete && nnz( pstr.t_variable ) == 1,
     assignin( 'caller', 'cvx_slvitr',  pstr.iters );
     assignin( 'caller', 'cvx_slvtol',  pstr.tol );
     assignin( 'caller', 'cvx_cputime', cputime - pstr.cputime );
+    assignin( 'caller', 'cvx_optpnt',  cvxtuple( cvx_collapse( vars, true, false ) ) );
     
 elseif length( cvx___.problems ) < 2,
 
@@ -135,41 +136,46 @@ else
                 force = true;
                 os = -1;
         end
+
         
-        if ~force,
-            x = sparsify( x, 'objective' );
+        persistent map mapgp mapsgn %#ok
+        if isempty( map ),
+            map = ( cvx_remap( 'r_affine' ) &  ~cvx_remap( 'constant' ) )';
+            mapgp = cvx_remap( 'convex' ) & ~cvx_remap( 'affine' );
+            mapsgn = ( cvx_remap( 'positive', 'p_nonconst' ) - cvx_remap( 'negative', 'n_nonconst' ) )';
         end
-        xB = cvx_basis( x );
-        [ r, c ] = find( xB ); %#ok
-        t = r ~= 1; r = r( t );
+        
+        cx = cvx_classify( x );
+        bx = cvx_basis( x );
+        if ~force,
+            bx = cvx_sparsify( bx, [], 'magnitude' );
+            x = cvx( size( x ), bx );
+        end
+        [ r, c ] = find( bx ); %#ok
 
         %
         % Set the vexity flags
         %
 
-        cvx___.canslack( r, : ) = true;
+        cx = cx(:);
+        cx = int8( 9 + mapsgn(cx) + os * ( 3 + ( cx == 2 ) ) );
         cvx___.readonly( r, : ) = np;
-        cvx___.classes( r, : ) = int8( cvx___.classes( r, : ) + 3 * os );
+        cvx___.classes( r, : ) = cx;
         
         %
         % Convert to geometric form if necessary
         %
 
-        tt = pstr.geometric;
-        if any( tt ),
-            if all( tt ),
-                x = exp( x );
-            else
-                x( tt ) = exp( x( tt ) );
-            end
+        if pstr.geometric,
+            x = exp( x );
         end
 
         assignin( 'caller', 'cvx_optval', x );
     end
+    assignin( 'caller', 'cvx_optpnt', cvxtuple( cvx_collapse( vars, false, false ) ) );
 
 end
 
-assignin( 'caller', 'cvx_optpnt', cvxtuple( cvx_collapse( vars, false, false ) ) );
 evalin( 'caller', 'cvx_pop( cvx_problem )' );
 
 catch exc

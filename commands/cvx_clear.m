@@ -11,7 +11,7 @@ try
         evalin( 'caller', 'cvx_pop( cvx_problem, true )' );
     end
 catch exc
-    if strcmp( exc.identifier, 'CVX:', 4 ), throw( exc );
+    if strncmp( exc.identifier, 'CVX:', 4 ), throw( exc );
     else rethrow( exc ); end
 end
 

@@ -15,7 +15,8 @@ end
 try
     newobj( prob, 'minimize', x );
 catch exc
-    rethrow( exc )
+    if strncmp( exc.identifier, 'CVX:', 4 ), throw( exc );
+    else rethrow( exc ); end
 end
 
 % Copyright 2005-2014 CVX Research, Inc.

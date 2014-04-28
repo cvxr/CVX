@@ -6,7 +6,7 @@ switch class( x ),
     case 'struct',
         y = cell2struct( do_apply( func, struct2cell( x ) ), fieldnames( x ), 1 );
     case 'cell',
-        y = cellfun( func, x, 'UniformOutput', false );
+        y = cellfun( @(z)do_apply( func, z ), x, 'UniformOutput', false );
     otherwise,
         y = feval( func, x );
 end

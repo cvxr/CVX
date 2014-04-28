@@ -42,7 +42,7 @@ if s(2) ~= 1,
 	x = log( x );
     b = reshape( x.basis_, [], s(2) );
     b = cumsum( b, 2 );
-    x = exp( cvx( s, reshape( b, [], prod(s) ) ) );
+    x = exp_nc( cvx( s, reshape( b, [], prod(s) ) ) );
 end
 
 % Copyright 2005-2014 CVX Research, Inc.

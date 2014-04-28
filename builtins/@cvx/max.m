@@ -22,7 +22,7 @@ if nargin == 2,
             { { 'convex' } } );
         bparam.funcs = { @max_b1, @max_b2, @max_b3, @max_b4, @max_b5 };
         bparam.name = 'max';
-        bparam.constant = 1;
+        bparam.constant = [];
     end
     
     try
@@ -126,15 +126,14 @@ if isempty( nneg ),
     nneg = cvx_remap( 'nonnegative', 'p_nonconst' );
     npos = cvx_remap( 'nonpositive', 'n_nonconst' );
 end
-nx = x.size_(1);
-if nx > 1,
-    nv = x.size_(2); %#ok
+s = size( x );
+if s(1) > 1,
     vx = cvx_classify(x);
-    nn = any(nneg(vx),1);
-    np = all(npos(vx),1);
+    nn = any(reshape(nneg(vx),s),1);
+    np = all(reshape(npos(vx),s),1);
     cvx_begin
-        epigraph variable z( 1, nv )
-        x <= repmat( z, nx, 1 ); %#ok
+        epigraph variable z( 1, s(2) )
+        x <= repmat( z, s(1), 1 ); %#ok
         cvx_setnneg( cvx_subsref( z, nn ) );
         cvx_setnpos( cvx_subsref( z, np ) );
     cvx_end

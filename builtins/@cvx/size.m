@@ -1,33 +1,28 @@
-function varargout = size( x, dim )
+function [ s, varargout ] = size( x, dim )
 
 %   Disciplined convex/geometric programming information for SIZE:
 %       SIZE imposes no convexity restrictions on its first argument.
 %       The second argument, if supplied, must be a positive integer.
 
 s = x.size_;
-if nargin <= 1 && nargout <= 1,
-    varargout{1} = s;
-elseif nargin > 1,
+if nargin > 1,
     if nargout > 1,
         error( 'Too many output arguments.' );
     elseif ~isnumeric( dim ) || length( dim ) ~= 1 || dim <= 0 || dim ~= floor( dim ),
         error( 'Dimension argument must be a positive integer scalar.' );
     elseif dim > length( s ),
-        varargout{1} = 1;
+        s = 1;
     else
-        varargout{1} = s(dim);
+        s = s(dim);
     end
-else % nargout > 1,
-    ns = length( s );
+elseif nargout > 1,
     no = nargout;
-    if no > ns,
-        s( end+1:no ) = 1;
-    elseif no < ns,
-        s( no ) = prod( s( no : end ) );
+    s( end + 1 : no ) = 1;
+    s( no ) = prod( s( no : end ) );
+    for k = 2 : no,
+        varargout{k-1} = s(k); %#ok
     end
-    for k = 1 : no,
-        varargout{k} = s(k); %#ok
-    end
+    s = s(1);
 end
 
 % Copyright 2005-2014 CVX Research, Inc.

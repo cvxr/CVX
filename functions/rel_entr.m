@@ -43,8 +43,8 @@ catch exc
 	else rethrow( exc ); end
 end
 
-function z = rel_entr_1( x, y )            
-z  = x .* log( x ./ y );
+function z = rel_entr_1( x, y )   
+z  = x .* builtin( 'log', x ./ y );
 
 function z = rel_entr_2( x, y ) %#ok
 sz = max( numel(y), numel(x) );

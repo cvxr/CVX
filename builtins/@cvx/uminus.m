@@ -10,15 +10,11 @@ function z = uminus( x )
 %      Negation of non-constant values may not be used in disciplined
 %      geometric programs.
 
-persistent remap
-if isempty( remap ),
-    remap = cvx_remap( 'invalid', 'l_concave_' );
-end
-tt = remap( cvx_classify(x) );
-if any( tt ),
-    throw( cvx_unary_error( x, tt, '-' ) );
-end
 z = cvx( x.size_, -x.basis_ );
+tt = cvx_isvalid( z, true );
+if ~all( tt ),
+    throw( cvx_dcp_error( '-', 'unary', cvx_subsref( x, ~tt ) ) );
+end
 
 % Copyright 2005-2014 CVX Research, Inc.
 % See the file LICENSE.txt for full copyright information.

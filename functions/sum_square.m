@@ -40,7 +40,7 @@ function x = ssq_1( x )
 x = sum( x .^ 2, 1 );
 
 function x = ssq_2( x )
-x = sum( exp( 2 * log( x ), 1 ) );
+x = sum( exp_nc( 2 * log( x ), 1 ) );
 
 function y = ssq_3( x ) %#ok
 [ nx, nv ] = size(x);

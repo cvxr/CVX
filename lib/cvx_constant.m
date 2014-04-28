@@ -1,5 +1,4 @@
 function y = cvx_constant( x )
-error( nargchk( 1, 1, nargin ) ); %#ok
 y = double( x );
 
 % Copyright 2005-2014 CVX Research, Inc. 

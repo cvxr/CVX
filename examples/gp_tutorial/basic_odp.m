@@ -16,8 +16,11 @@
 % where variables are v_i, y_i, and w_i.
 
 % discretization size
-M = 50;
-% M = 1000; % takes a few minutes to process constraints
+% M = 50;
+% The old version of this example took a long time to build because it used
+% for loops to construct the y/v/w constraints. This new version vectorizes
+% the construction, so 1000 points are handled in a couple of seconds.
+M = 1000; 
 
 % problem constants
 g1 = 0.42;
@@ -44,17 +47,11 @@ cvx_begin gp
   minimize( tau_B )
   subject to
     % problem constraints
-    v >= Nmin;
-    v <= Nmax;
-
-    for i = 1:M-1
-      if( mod(i,100) == 0 ), fprintf(1,'progress counter: %d\n',i), end;
-      y(i+1) + v(i)^pwj <= y(i);
-      w(i+1) + y(i)*v(i)^pwi <= w(i);
-    end
-
-    y(M) == v(M)^pwj;
-    w(M) == y(M)*v(M)^pwi;
+    Nmin <= v <= Nmax;
+    y(2:end) + v(1:end-1) .^ pwj <= y(1:end-1);
+               v(end)     .^ pwj == y(end);
+    w(2:end) + y(1:end-1) .* v(1:end-1) .^ pwi <= w(1:end-1);
+               y(end)     .* v(end)     .^ pwi == w(end);
 cvx_end
 
 % plot the basic optimal doping profile

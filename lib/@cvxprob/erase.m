@@ -5,15 +5,12 @@ global cvx___
 
 nf = length( prob.t_variable ) + 1;
 ne = prob.n_equality + 1;
-nl = prob.n_linform + 1;
-nu = prob.n_uniform + 1;
 if nf <= 2,
-    cvx___.classes = int8(3);
-    cvx___.canslack = false;
-    cvx___.readonly = 0;
-    cvx___.cones = struct( 'type', {}, 'indices', {} );
+    cvx___.classes     = int8(3);
+    cvx___.canslack    = false;
+    cvx___.readonly    = int32(0);
+    cvx___.cones       = struct( 'type', {}, 'indices', {} );
     cvx___.exponential = [];
-    cvx___.logarithm   = [];
 elseif length( cvx___.classes ) >= nf,
     cvx___.classes( nf : end ) = [];
     cvx___.canslack( nf : end ) = [];
@@ -29,32 +26,20 @@ elseif length( cvx___.classes ) >= nf,
     if ~isempty( cvx___.exponential ),
         cvx___.exponential( nf : end ) = [];
         cvx___.logarithm( nf : end ) = [];
-        if ~any( cvx___.exponential ),
-            cvx___.exponential = [];
-            cvx___.logarithm = [];
-        end
     end
 end
-if nf <= 2 || ne <= 1,
-    cvx___.equalities = cvx;
-    cvx___.needslack = true( 0, 1 );
+if ~any( cvx___.exponential ),
+    cvx___.exponential = zeros(0,1);
+    cvx___.logarithm = zeros(0,1);
+end
+if ne <= 1,
+    cvx___.equalities = {};
+    cvx___.needslack  = false(0,1);
+    cvx___.n_equality = 0;
 elseif length( cvx___.equalities ) >= ne,
-    cvx___.equalities( ne: end ) = [];
+    cvx___.equalities( ne : end ) = [];
     cvx___.needslack( ne : end ) = [];
-end
-if nf <= 2 || nl <= 1,
-    cvx___.linforms = cvx;
-    cvx___.linrepls = cvx;
-elseif length( cvx___.linforms ) >= nl,
-    cvx___.linforms( nl : end ) = [];
-    cvx___.linrepls( nl : end ) = [];
-end
-if nf <= 2 || nu <= 1,
-    cvx___.uniforms = cvx;
-    cvx___.unirepls = cvx;
-elseif length( cvx___.uniforms ) >= nu,
-    cvx___.uniforms( nu : end ) = [];
-    cvx___.unirepls( nu : end ) = [];
+    cvx___.n_equality = sum( cellfun( @(x)size(x,2), cvx___.equalities ) );
 end
 
 cvx___.problems( p ).cleared = true;
