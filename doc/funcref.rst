@@ -509,7 +509,7 @@ positive integer constant.
 ``hermitian_semidefinite(n)``
     .. math:: 
     
-    	\mathbf{H}^n_+ \triangleq \left\{\,Z\in\mathbf{C}^{n\times n}\,~|~\,Z=Z^H,~X\succeq 0\,\right\}
+    	\mathbf{H}^n_+ \triangleq \left\{\,Z\in\mathbf{C}^{n\times n}\,~|~\,Z=Z^H,~Z\succeq 0\,\right\}
 
 ``nonneg_poly_coeffs(n)``
     The cone of all coefficients of nonnegative polynomials of degree :math:`n`; :math:`n` must be even: 
