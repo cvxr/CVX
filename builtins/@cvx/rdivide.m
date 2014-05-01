@@ -49,12 +49,12 @@ end
 
 function z = rdivide_c( x, y )
 % something ./ constant
-z = bsxfun( @rdivide, cvx_basis( x ), 1.0 ./ cvx_basis( y ) );
+z = bsxfun( @rdivide, cvx_basis( x ), cvx_constant( y ).' );
 z = cvx( size(z,2), z );
 
 function z = rdivide_g( x, y )
 % geom ./ geom
-z = exp_nc( minus_nc( log( x ), log( y ) ) );
+z = exp( minus_nc( log( x ), log( y ) ) );
 
 function z = rdivide_n( x, y )
 % constant ./ something

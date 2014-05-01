@@ -1,6 +1,10 @@
-function by = cvx_getexp( bx )
+function by = cvx_getexp( bx, check )
 
 global cvx___
+persistent nval
+if isempty( nval ),
+    nval = cvx_remap( 'invalid' );
+end
 nb = size( bx, 2 );
 if nb == 0,
     by = bx;
@@ -30,6 +34,12 @@ if nnz( bx ),
     end
 end
 by = sparse( ry, 1:nb, cc );
+if nargin > 1 && check,
+    tt = nval( cvx___.classes( ry ) );
+    if any( tt ),
+        cvx_dcp_error( 'exp', 'unary', cvx( nnz(tt), bx(:,tt) ) );
+    end
+end
 
 % Copyright 2005-2014 CVX Research, Inc.
 % See the file LICENSE.tx for full copyright information.

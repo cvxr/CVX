@@ -62,7 +62,7 @@ if cvx_isconstant( p ),
             % Affine
             y = p(1) * x + p(2);
         otherwise,
-            vu = remap(cvx_classify(x));
+            vu = remap( cvx_classify( x ) );
             p = reshape( p, n, 1 );
             t0 = vu == 0;
             if any( t0 ),

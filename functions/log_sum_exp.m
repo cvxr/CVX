@@ -42,13 +42,12 @@ function x = lse_1( x )
 xmid = 0.5 * ( max( x, [], 1 ) + min( x, [], 1 ) );
 x = log( sum( exp( bsxfun( @minus, x, xmid ) ), 1 ) ) + xmid;
 
-function y = lse_2( x )
-y = [];
-[nx,nv] = size(x);
+function y = lse_2( x ) %#ok
+[nx,nv] = size(x); %#ok
 cvx_begin
     variable w( nx, nv )
     epigraph variable y( 1, nv )
-    { linearize( x ) - repmat( y, [nx,1] ), 1, w } == exponential( [nx,nv] ); %#ok
+    exp( x - repmat( y, [ nx, 1 ] ) ) <= w; %#ok
     sum( w, 1 ) == 1; %#ok
 cvx_end
 

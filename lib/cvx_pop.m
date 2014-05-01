@@ -3,7 +3,7 @@ function cvx_pop( p, do_clear, do_warn )
 global cvx___
 
 if isa( p, 'cvxprob' ),
-    [ p, pstr ] = verify( p );
+    [ p, pstr ] = verify( p, false );
 elseif p > length( cvx___.problems ),
     p = 0;
 else
@@ -29,7 +29,8 @@ else
 end
 
 s1 = evalin( 'caller', 'who' );
-s2 = cellfun( @cvx_id, evalin( 'caller', 'cellfun(@eval,who,''UniformOutput'',false)' ) );
+s2 = evalin( 'caller', 'cellfun(@eval,who,''UniformOutput'',false)' );
+s2 = cellfun( @cvx_id, s2 );
 if values,
     temp = sprintf( '%s,', s1{s2>pid} );
     if ~isempty( temp ),

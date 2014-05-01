@@ -12,20 +12,13 @@ function y = exp( x )
 %       geometric programs wherever a posynomial would be appropriate.
 
 cvx_expert_check( 'exp', x );
-
-persistent P
-if isempty( P ),
-    P.map = cvx_remap( { 'convex', 'concave' }, 2 );
-    P.funcs = { [], @exp_nc };
-end
-
 try
-    y = cvx_unary_op( P, x );
+    y = cvx( x.size_, cvx_getexp( x.basis_, true ) );
 catch exc
-    if strncmp( exc.identifier, 'CVX:', 4 ), throw( exc ); 
+    if strncmp( exc.identifier, 'CVX:', 4 ) throw( exc );
     else rethrow( exc ); end
 end
-
+        
 % Copyright 2005-2014 CVX Research, Inc.
 % See the file LICENSE.tx for full copyright information.
 % The command 'cvx_where' will show where this file is located.

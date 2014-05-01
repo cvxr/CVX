@@ -19,7 +19,7 @@ if isempty( P ),
         { 'nonpositive', 'n_nonconst' }, ...
         { 'positive', 'monomial' }, { 'posynomial' }, ...
         { 'concave' }, [0,2,3,4] );
-    P.funcs = { [], @log_lkup, @log_lse, @log_gen };
+    P.funcs = { [], @log_lkup, @log_posy, @log_gen };
 end
 
 try
@@ -32,23 +32,24 @@ end
 function y = log_lkup( x )
 y = cvx( size( x ), cvx_getlog( cvx_basis( x ) ) );
 
-function y = log_lse( x ) %#ok
+function y = log_posy( x )
 nx = numel( x );
 x = cvx_basis( x );
 [ rx, cx, vx ] = find( x );
-nq = numel( vx );
-x = cvx( nq, cvx_getlog( nq, rx, 1 : nq, vx ) );
-cvx_begin
+nq = length( vx );
+x = cvx( nq, sparse( rx, 1 : nq, vx ) );
+cvx_begin gp
     variables w( nq )
     epigraph variable y( nx )
-    { linearize( x ) - cvx_fastref( y, cx ), 1, w } == exponential( nq ); %#ok
-    sparse( cx, 1 : nq, 1, nx, nq ) * w == 1; %#ok
+    exp( x ./ cvx_fastref( y, cx ) ) <= w; %#ok
+    sparse( cx, 1 : nq, 1, nx, nq ) * log( w ) == 1; %#ok
 cvx_end
+y = log( y );
 
 function y = log_gen( x ) %#ok
 cvx_begin
     hypograph variable y(size(x))
-    exp_nc(y) <= x; %#ok
+    exp(y) <= x; %#ok
 cvx_end
 
 % Copyright 2005-2014 CVX Research, Inc.

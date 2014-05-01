@@ -34,7 +34,7 @@ function x = sum_1( x )
 s = x.size_;
 b = reshape( x.basis_, [], s(2) );
 b = sum( b, 2 );
-x = cvx( [ s(1), 1 ], reshape( b, [], s(1) ) );
+x = cvx( s(1), reshape( b, [], s(1) ) );
 
 % Copyright 2005-2014 CVX Research, Inc.
 % See the file LICENSE.txt for full copyright information.

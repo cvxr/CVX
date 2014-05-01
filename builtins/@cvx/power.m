@@ -5,16 +5,29 @@ function z = power( x, y, op )
 persistent bparam
 if isempty( bparam ),
     bparam.map = cvx_remap( ...
-        { { 'g_posynomial', 'gg_monomial' }, { 'negative' } }, ...
+        ... % Invalid combinations: zero ^ negative, posynomial ^ negative
+        { { 'zero', 'g_posynomial', 'gg_monomial' }, { 'negative' } }, ...
+        ... % Constant
         { { 'constant' } }, ...
+        ... % constant ^ convex/concave
         { { 'positive' }, { 'convex', 'concave' } }, ...
+        ... % geometric ^ real
         { { 'l_valid_' }, { 'real' } }, ...
+        ... % other non-constant ^ real
         { { 'valid' }, { 'real' } }, [0,1,2,3,4] );
-    bparam.funcs = { @power_1, @power_2, @power_3, @power_4 };
-    bparam.constant = [];
+    bparam.funcs = { @power_c, @power_e, @power_g, @power_p };
+    bparam.constant = 1;
 end
 
 try
+    if isnumeric( y ) && numel( y ) == 1,
+        switch y,
+            case   1, z = x;           return
+            case   2, z = square( x ); return
+            case 0.5, z = sqrt( x );   return 
+            case  -1, z = recip( x );  return
+        end
+    end
     if nargin < 3, op = '.^'; end
     bparam.name = op;
     z = cvx_binary_op( bparam, x, y );
@@ -23,18 +36,21 @@ catch exc
     else rethrow( exc ); end
 end
 
-function z = power_1( x, y )
-z = cvx( power( cvx_constant( x ), cvx_constant( y ) ) );
+function z = power_c( x, y )
+z = builtin( 'power', x, y );
 
-function z = power_2( x, y )
-z = exp_nc( log( cvx_constant( x ) ) .* y );
+function z = power_e( x, y )
+z = exp( log( cvx_constant( x ) ) .* y );
 
-function z = power_3( x, y )
-z = exp_nc( log( x ) .* y );
+function z = power_g( x, y )
+z = exp( log( x ) .* y );
 
-function z = power_4( x, y )
-nx = x.size_(1);
+function z = power_p( x, y )
+nx = numel( x );
 ny = numel( y );
+y  = cvx_constant( y );
+vx = cvx_classify( x );
+nz = max( nx, ny );
 if ny == 1
     pu = y;
     multp = false;
@@ -44,16 +60,17 @@ else
     multp = length( pu ) ~= 1;
 end
 if multp,
-    zp = cvx( sz, [] );
+    zp = cvx( nz, [] );
     vp = vx;
     xp = x;
     yp = y;
 end
+errs = {};
 for pk = pu,
     if multp,
         tp = yp == pk;
         if nx > 1, 
-            x = xp.basis_( :, tp );
+            x = cvx_fastref( xp, tp );
             x = cvx( [size(x,2),1], x );
             vx = vp( tp ); 
         end
@@ -61,9 +78,10 @@ for pk = pu,
             y = yp( tp ); 
         end
     end
-    np = numel(y);
     y1 = y(1);
-    if y1 > 1,
+    if y == 2,
+        z = square( x );
+    elseif y1 > 1,
         z = power_cvx( x, vx, y1 );
     elseif y1 == 1,
         z = x;
@@ -78,12 +96,11 @@ for pk = pu,
         errs(end+1,:) = { cvx_subsref( x, z ), y }; %#ok
         continue
     end
-    if nx == 1 && np > 1,
-        z.size_(1) = np;
-        z.basis_ = repmat( z.basis_, [1,np] );
+    if nx ~= nz,
+        z = repmat( z, [nz,1] );
     end
     if multp,
-        zp.basis_(1:size(z.basis_,1),tp) = z.basis_;
+        zp = cvx_fastasgn( zp, tp, z );
     end
 end
 if multp
@@ -91,10 +108,8 @@ if multp
 end
 if ~isempty( errs ),
     throw( cvx_dcp_error( errs, op ) );
-elseif mult
+elseif multp
     z = zm;
-else
-    z.size_ = sz;
 end
 
 %
@@ -102,11 +117,36 @@ end
 % P > 1, non-integer: X affine, p-convex
 %
 
+function y = power_cvx_fast( x, p ) %#ok
+ne = 0;
+nx = numel( x );
+while rem(p,2) == 0,
+    ne = ne + 1;
+    p = p * 0.5;
+end
+cvx_begin
+    epigraph variable y(nx) nonnegative_
+    if ne > 0,
+        variables z2(nx,ne-1)
+        if p == 1,
+            w = y;
+        else
+            variable w(nx)
+        end
+        { [x,z2], 1, [z2,w] } == rotated_lorentz( [ nx, ne ], 3 ); %#ok
+    else
+        w = x;
+    end
+    if p > 1,
+        { [y,ones(nx,1)], w } == geo_mean_cone( [ nx, 2 ], 2, [1/p,1-1/p], 'func' );  %#ok
+    end
+cvx_end
+
 function y = power_cvx( x, v, p )
 persistent remap remap_i remap_e
 if isempty( remap_e ),
     remap   = cvx_remap( 'affine', 'p_convex' );
-    remap_i = cvx_remap( 'p_convex', 'n_concave' );
+    remap_i = cvx_remap( 'p_convex' ) - cvx_remap( 'n_concave' );
     remap_e = remap_i | remap;
 end
 if ~isempty( v ),
@@ -125,35 +165,12 @@ if ~isempty( v ),
         y = v == 0;
         return
     end
-    v = 1 - 2 * ( v == 3 );
+    v = 1 - 2 * ( v(:) == 3 );
     x = linearize( v .* x );
 else
     isint = false;
 end
-ne = 0;
-nx = numel( x );
-while rem(p,2) == 0,
-    ne = ne + 1;
-    p = p * 0.5;
-end
-cvx_begin
-    epigraph variable y(nx)
-    if ne > 0,
-        variables z2(nx,ne-1)
-        if p == 1,
-            w = y; %#ok
-        else
-            variable w(nx)
-        end
-        { [x,z2], 1, [z2,w] } == rotated_lorentz( [ nx, ne ], 3 ); %#ok
-    else
-        w = x;
-    end
-    if p > 1,
-        { [y,ones(nx,1)], w } == geo_mean_cone( [ nx, 2 ], 2, [1/p,1-1/p], 'func' );  %#ok
-    end
-    cvx_setnneg(y)
-cvx_end
+y = power_cvx_fast( x, p );
 if isint,
     y = v .* y; 
 end
@@ -168,19 +185,13 @@ if isempty( remap ),
     remap = ~cvx_remap( 'concave' );
 end
 v = remap( v );
-if any( v ), 
+if any( v ),
     y = v;
     return
 end
-p = 1.0 / p;
-if p ~= floor( p ),
-    [ nn, dd ] = rat( p );
-    p = nn / dd;
-end    
 cvx_begin
-    hypograph variable y(numel(x))
-    power_cvx( y, [], p ) <= x; %#ok
-    cvx_setnneg(y);
+    hypograph variable y(numel(x)) nonnegative_
+    power_cvx_fast( y, 1.0 / p ) <= x; %#ok
 cvx_end
 
 %
@@ -192,7 +203,7 @@ function y = power_neg( x, v, p )
 persistent remap remap_i
 if isempty( remap_i ),
     remap   = cvx_remap( 'p_concave' );
-    remap_i = cvx_remap( { 'p_concave' }, { 'n_convex' }, [1,-1] );
+    remap_i = remap - cvx_remap( 'n_convex' );
 end
 if rem( p, 1 ) == 0,
     % Integer: positive and negative lobes

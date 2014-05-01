@@ -30,18 +30,22 @@ function z = times( x, y, oper )
 persistent params
 if isempty( params ),
     params.map = cvx_remap( ...
-        { { 'negative' },   { 'l_concave_', 'g_valid' } }, ... % negative of log-concave, monomial, posynomial
-        { { 'l_concave_', 'g_valid' }, { 'negative' }   }, ... % negative of log-concave, monomial, posynomial
-        { { 'constant' },   { 'affine' }     }, ... % constant * affine/constant
-        { { 'real' },       { 'valid'  }     }, ... % real * valid
-        { { 'affine' },     { 'constant' }   }, ... % affine * constant
-        { { 'valid' },      { 'real'  }      }, ... % valid * real
-        { { 'affine' }                       }, ... % potential quadratic form
-        { { 'p_convex' }                     }, ... % potential quadratic form
-        { { 'l_convex' }                     }, ... % log-convex
-        { { 'l_concave', 'concave' }         }, ... % log-concave
-        [ 0, 0, 1, 1, 2, 2, 3, 3, 4, 4 ] );
-    params.funcs = { @times_12, @times_12, @times_3, @times_4 };
+        ... % Invalid combinations: negative of log-concave, gp term
+        { { 'negative' },   { 'l_concave_', 'g_valid' } }, ...
+        { { 'l_concave_', 'g_valid' }, { 'negative' }   }, ...
+        ... % Left-multiply by constant
+        { { 'constant' },   { 'affine' }     }, ...
+        { { 'real' },       { 'valid'  }     }, ...
+        ... % Right-multiply by constant
+        { { 'affine' },     { 'constant' }   }, ...
+        { { 'valid' },      { 'real'  }      }, ...
+        ... % Geometric
+        { { 'l_convex' } }, ...
+        { { 'l_concave' } }, ...
+        ... % Potential quadratic form
+        { { 'affine', 'p_convex', 'n_concave' } }, ...
+        [ 0, 0, 1, 1, 2, 2, 3, 3, 4 ] );
+    params.funcs = { @times_l, @times_r, @times_g, @times_q };
     params.constant = [];
 end
 
@@ -54,13 +58,21 @@ catch exc
     else rethrow( exc ); end
 end
 
-function z = times_12( x, y )
-% constant .* something OR something .* constant
-% assumption: size(cvx_basis(x),1) == 1 OR size(cvx_basis(y),1)==1
-z = bsxfun( @times, cvx_basis( x ), cvx_basis( y ) );
-z = cvx( [size(z,2),1], z );
+function z = times_l( x, y )
+% constant .* something
+z = bsxfun( @times, cvx_constant( x ).', cvx_basis( y ) );
+z = cvx( size(z,2), z );
 
-function z = times_3( x, y )
+function z = times_r( x, y )
+% constant .* something
+z = bsxfun( @times, cvx_basis( x ), cvx_constant( y ).' );
+z = cvx( size(z,2), z );
+
+function z = times_g( x, y )
+% geom .* geom
+z = exp( plus_nc( log( x ), log( y ) ) );
+
+function z = times_q( x, y )
 % affine .* affine
 % p_convex .* p_convex
 % n_concave .* n_concave
@@ -90,10 +102,6 @@ else
         z = z + offset.' .* y;
     end
 end
-
-function z = times_4( x, y )
-% geom .* geom
-z = exp_nc( plus_nc( log( x ), log( y ) ) );
 
 % Copyright 2005-2014 CVX Research, Inc.
 % See the file LICENSE.tx for full copyright information.

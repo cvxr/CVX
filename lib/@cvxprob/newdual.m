@@ -33,29 +33,17 @@ end
 %
 
 nstr = struct( 'type', '.', 'subs', name );
+duals = pstr.duals;
 if ~isempty( reps ),
-    y = cell( reps );
-    [ y{:} ] = deal( cvx );
-    z = cell( reps );
-    ndxs = cell( 1, length( reps ) - ( reps(end) == 1 ) );
-    [ ndxs{:} ] = ind2sub( reps, 1 : prod( reps ) );
-    ndxs = vertcat( ndxs{:} );
-    nstr(2).type = '{}';
-    for k = 1 : prod( reps ),
-        nstr(2).subs = sprintf( '%d,', ndxs(:,k) );
-        nstr(2).subs = eval( [ '{', nstr(2).subs(1:end-1), '}' ] );
-        z{k} = cvxdual( p, nstr );
-    end
+    duals.(name) = cell( reps );
 else
-    y = [];
-    z = cvxdual( p, nstr );
+    duals.(name) = [];
 end
-vars = pstr.dvars;
-vars = builtin( 'subsasgn', vars, nstr(1), z );
-pstr.dvars = vars;
-vars = pstr.duals;
-vars = builtin( 'subsasgn', vars, nstr(1), y );
-pstr.duals = vars;
+pstr.duals = duals;
+dvars = pstr.dvars;
+z = cvxdual( p, nstr );
+dvars.(name) = z;
+pstr.dvars = dvars;
 cvx___.problems(p) = pstr;
 
 % Copyright 2005-2014 CVX Research, Inc.

@@ -49,9 +49,7 @@ end
 % Construct the object
 %
 
-id = cvx___.id + 1;
-z = class( struct( 'index_', length( cvx___.problems ) + 1, 'id_', id ), 'cvxprob' );
-cvx___.id = id;
+z = class( struct( 'index_', length( cvx___.problems ) + 1, 'id_', cvx_id( cvx ) ), 'cvxprob' );
 temp = struct( ...
     'name',          name,   ...
     'complete',      true,   ...
@@ -106,8 +104,6 @@ for k = 1 : nargin,
         case 'gp',
             if temp.sdp,
                 error( 'CVX:ArgError', 'The GP and SDP modifiers cannot be used together.' );
-            elseif ~cvx___.geometric && ~isempty( cvx___.problems ),
-                error( 'CVX:ArgError', 'Cannot embed a GP-based function in a non-geometric model.' );
             end
             temp.gp = true;
             cvx___.geometric = true;

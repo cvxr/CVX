@@ -3,14 +3,16 @@ function gdim = cvx_pushexp( ndim )
 global cvx___
 persistent expv geov
 if isempty( expv ),
-    expv = int8([3,3,3,22,15,15,15,16,16,16,17,17,17,22,22,17,17,17,21,21,21,22])';
-    geov = int8([3,3,3,22,22,22,22,19,19,19,21,21,21,22,22,19,19,19,21,21,21,22])';
+    expv = int8([3,3,3,4,15,15,15,16,16,16,17,17,17,22,22,17,17,17,17,17,17,22])';
+    geov = int8([3,3,3,4,22,22,22,19,19,19,20,20,20,22,22,20,20,20,20,20,20,22])';
 end
-if cvx___.geometric,
+if cvx___.problems(end).gp,
     map = geov;
 else
     map = expv;
 end
-gdim = cvx_pushvar( numel(ndim), map(cvx___.classes(ndim)) );
+cx = cvx___.classes(ndim);
+cy = map(cx);
+gdim = cvx_pushvar( numel(ndim), cy );
 cvx___.logarithm( gdim, 1 ) = ndim(:);
 cvx___.exponential( ndim, 1 ) = gdim(:);

@@ -2,6 +2,7 @@ function finish( prob )
 
 global cvx___
 [ p, pstr ] = verify( prob );
+cleared = false;
 
 try
 
@@ -40,7 +41,6 @@ elseif pstr.complete && nnz( pstr.t_variable ) == 1,
     i1  = cellfun( @cvx_id, [ vv1 ; vv2 ] )';
     i2  = evalin( 'caller', [ 'cellfun( @cvx_id, {', sprintf( '%s ', fn1{:} ), '} )' ] );
     if any( i1 ~= i2 ),
-        cvx_pop( p, true );
         temp = sprintf( ' %s', fn1{ i1 ~= i2 } );
         error( 'CVX:CorruptModel', 'The following cvx variable(s) have been cleared or overwritten:\n  %s\nThis is often an indication that an equality constraint was\nwritten with one equals ''='' instead of two ''==''. The model\nmust be rewritten before CVX can solve it.', temp );
     end
@@ -68,12 +68,16 @@ elseif pstr.complete && nnz( pstr.t_variable ) == 1,
     
 elseif length( cvx___.problems ) < 2,
 
+    cleared = true;
     cvx_pop( 0, true );
     error( 'CVX:InternalError', 'Internal CVX data corruption. Please CLEAR ALL and rebuild your model.' );
 
 else
     
     np = p - 1;
+    if cvx___.problems( np ).gp ~= pstr.gp,
+        error( 'CVX:MixedGP', 'Cannot embed a convex model into a geometric model, nor vice versa.' );
+    end
     vars = cvx_collapse( pstr.variables, true, false );
     dvars = cvx_collapse( pstr.duals, true, false );
     if ~isempty( vars ) || ~isempty( dvars ),
@@ -157,7 +161,6 @@ else
         % Set the vexity flags
         %
 
-        cx = cx(:);
         cx = int8( 9 + mapsgn(cx) + os * ( 3 + ( cx == 2 ) ) );
         cvx___.readonly( r, : ) = np;
         cvx___.classes( r, : ) = cx;
@@ -176,10 +179,14 @@ else
 
 end
 
+cleared = true;
 evalin( 'caller', 'cvx_pop( cvx_problem )' );
 
 catch exc
-
+    
+    if ~cleared,
+        evalin( 'caller', 'cvx_pop( cvx_problem, true )' );
+    end
     rethrow( exc );
     
 end

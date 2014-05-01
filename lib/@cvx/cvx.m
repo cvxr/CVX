@@ -15,7 +15,6 @@ function v = cvx( v, b, d )
 %      cvx_where
 %   at the command prompt.
 
-global cvx___
 switch nargin,
     case 0,
         s = [ 0, 1 ];
@@ -39,7 +38,7 @@ switch nargin,
             otherwise,
                 s = v;
                 if s(end) == 1,
-                    s = s( 1 : max( 2, find( s > 1, 1, 'last' ) ) );
+                    s = s( 1 : max( 2, sum( find( s > 1, 1, 'last' ) ) ) );
                 end
         end
         if isempty( b ),
@@ -51,8 +50,9 @@ switch nargin,
             d = prod( s );
         end
 end
-id = cvx___.id + 1; 
-cvx___.id = id; 
+persistent id
+if isempty( id ), id = 1;
+else id = id + 1; end
 v = class( struct( 'size_', s, 'basis_', b, 'dof_', d, 'dual_', '', 'id_', id ), 'cvx' );
     
 % Copyright 2005-2014 CVX Research, Inc.

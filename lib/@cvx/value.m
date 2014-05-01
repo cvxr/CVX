@@ -1,16 +1,9 @@
 function v = value( x, data )
-global cvx___
 b = x.basis_;
 nb = size( b, 1 );
-if nargin == 1, 
-    data = cvx___.x; 
-end
 nx = size( data, 1 );
 if nx < nb, 
     data( end + 1 : nb, : ) = NaN;
-    if nargin == 1,
-        cvx___.x = data;
-    end
 elseif nx > nb,
     data = data( 1 : nb, : );
 end

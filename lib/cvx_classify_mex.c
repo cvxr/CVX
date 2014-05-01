@@ -80,7 +80,7 @@ void mexFunction(
     if ( !mxIsSparse( prhs[0] ) )
         mexErrMsgTxt( "Requires a sparse argument" );
     mwIndex n = mxGetN( prhs[0] );
-    plhs[0] = mxCreateNumericMatrix( (mwSize)1, n, mxINT8_CLASS, mxREAL );
+    plhs[0] = mxCreateNumericMatrix( n, (mwSize)1, mxINT8_CLASS, mxREAL );
     if ( plhs[0] == 0 )
         mexErrMsgTxt( "Unable to allocate output argument" );
     mwIndex  mB   = mxGetNumberOfElements( prhs[1] );

@@ -1,6 +1,9 @@
 function y = cvx_readlevel( x )
 
 global cvx___
+if numel( x.size_ ) < 2,
+    keyboard
+end
 b = x.basis_;
 s = size( b );
 [ r, c ] = find( b );

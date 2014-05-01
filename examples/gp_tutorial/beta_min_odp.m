@@ -20,15 +20,15 @@
 M = 20;
 
 % problem constants
-g1 = 0.42;
-g2 = 0.69;
+g1   = 0.42;
+g2   = 0.69;
 Nmax = 5*10^18;
 Nmin = 5*10^16;
 Nref = 10^17;
-Dn0 = 20.72;
-ni0 = 1.4*(10^10);
-WB = 10^(-5);
-C =  WB^2/((M^2)*(Nref^g1)*Dn0);
+Dn0  = 20.72;
+ni0  = 1.4*(10^10);
+WB   = 10^(-5);
+C    =  WB^2/((M^2)*(Nref^g1)*Dn0);
 
 % minimum current gain values
 beta_min_GE = [1 1.4 1.8 2.2 2.6 3.0 3.4 3.43]*(1e-11);
@@ -41,28 +41,16 @@ v_array = [];
 for k = 1:length(beta_min_GE)
     fprintf( 'beta_min_GE = %g: ', beta_min_GE(k) );
     cvx_begin gp quiet
-        % optimization variables
+        cvx_solver sedumi
         variables v(M) y(M) w(M)
-
         % objective function is the base transmit time
         tau_B = C*w(1);
-
         minimize( tau_B )
         subject to
-        % fixed problem constraints
-        Nmin <= v <= Nmax;
-
-        for i=1:M-1
-            y(i+1) + v(i)^pwj <= y(i);
-            w(i+1) + y(i)*v(i)^pwi <= w(i);
-        end
-
-        % equalities
-        y(M) == v(M)^pwj;
-        w(M) == y(M)*v(M)^pwi;
-
-        % changing constraint
-        (WB*beta_min_GE(k)/(M*Nref^(g1-g2)*Dn0))*y(1) <= 1;
+            Nmin <= v <= Nmax;
+            y >= [ y(2:end) ; 0 ] + v .^ pwj;
+            w >= [ w(2:end) ; 0 ] + y .* v .^ pwi;
+            (WB*beta_min_GE(k)/(M*Nref^(g1-g2)*Dn0))*y(1) <= 1;
     cvx_end
     fprintf( '%s\n', cvx_status );
     % keep the optimal solution

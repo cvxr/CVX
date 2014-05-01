@@ -101,10 +101,10 @@ persistent affnnc lvalid affine
 if isempty( affnnc ),
     affnnc = cvx_remap( 'affine', 'n_concave', 'p_convex' );
     affine = cvx_remap( 'affine' );
-    lvalid = cvx_remap( 'l_valid' );
+    lvalid = cvx_remap( 'l_valid', 'nonnegative' );
 end
 
-if all(affnnc(vx(:))) && all(affnnc(vy(:))),
+if all(affnnc(vx)) && all(affnnc(vy)),
     if nz ~= 1,
         error( 'CVX:DCPError', 'Disciplined convex programming error:\n    Invalid quadratic form: not a scalar.\n' );
     end
@@ -153,7 +153,7 @@ if all(affnnc(vx(:))) && all(affnnc(vy(:))),
         R   = x.basis_(1,:) * y.basis_(1,:).';
         if ~isreal( R ) || ~isreal( Q ) || ~isreal( P ),
             error( 'CVX:DCPError', 'Disciplined convex programming error:\n   Invalid quadratic form: not real.' );
-        elseif ~all(affine(vx(:))) && ~all(affine(vy(:))),
+        elseif ~all(affine(vx)) && ~all(affine(vy)),
             xx = cvx( zb, sparse( dx, 1 : zb, 1 ) );
             [ z, success ] = quad_form( xx, P, Q, R );
             if ~success,
@@ -164,7 +164,7 @@ if all(affnnc(vx(:))) && all(affnnc(vy(:))),
     end
 end
 
-if all( lvalid(vx(:)) ) && all( lvalid(vy(:)) ),
+if all( lvalid(vx) ) && all( lvalid(vy) ),
     z = bsxfun( @times, x, reshape( y, [ 1, size(y) ] ) );
     z = sum( z, 2 );
     z = reshape( z, sz );

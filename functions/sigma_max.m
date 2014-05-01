@@ -1,4 +1,4 @@
-function y = sigma_max( X )
+function y = sigma_max( varargin )
 
 %SIGMA_MAX    Maximum singular value.
 %   SIGMA_MAX(X) returns the maximum singular value of X. X must be a 2-D
@@ -19,7 +19,7 @@ if isempty( params ),
 end
 
 try
-    y = cvx_matrix_op( params, X );
+    y = cvx_matrix_op( params, varargin );
 catch exc
     if strncmp( exc.identifier, 'CVX:', 4 ), throw(exc);
     else rethrow(exc); end

@@ -55,7 +55,6 @@ cvx___.geometric   = false;
 cvx___.needslack   = false(0,1);
 cvx___.x           = zeros( 0, 1 );
 cvx___.y           = zeros( 0, 1 );
-cvx___.id          = int32(0);
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Run each shim to connect/reconnect the solvers %

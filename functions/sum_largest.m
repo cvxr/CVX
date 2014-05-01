@@ -74,7 +74,7 @@ if isempty( nneg ),
     npos = cvx_remap( 'nonpositive', 'n_nonconst' );
 end
 s = size(x);
-vx = cvx_classify(x);
+vx = cvx_classify( x );
 nn = any(reshape(nneg(vx),s),1);
 np = all(reshape(npos(vx),s),1);
 z = []; xp = []; yp = [];
@@ -84,8 +84,8 @@ cvx_begin
     z == sum( xp, 1 ) - k * yp; %#ok
     xp >= repmat( yp, [s(1),1] ) + x; %#ok
     xp >= 0; %#ok
-    cvx_setnneg( cvx_subsref( z, nn ) );
-    cvx_setnpos( cvx_subsref( z, np ) );
+    cvx_setnneg( cvx_fastref( z, nn ) );
+    cvx_setnpos( cvx_fastref( z, np ) );
 cvx_end
 
 % Copyright 2005-2014 CVX Research, Inc.

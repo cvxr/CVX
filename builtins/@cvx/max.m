@@ -102,8 +102,8 @@ cvx_begin
     epigraph variable z( sz );
     x <= z; %#ok
     y <= z; %#ok
-    cvx_setnneg( cvx_subsref( z, nn ) );
-    cvx_setnpos( cvx_subsref( z, np ) );
+    cvx_setnneg( cvx_fastref( z, nn ) );
+    cvx_setnpos( cvx_fastref( z, np ) );
 cvx_end
 
 function x = max_r1( x, y ) %#ok
@@ -128,14 +128,14 @@ if isempty( nneg ),
 end
 s = size( x );
 if s(1) > 1,
-    vx = cvx_classify(x);
+    vx = cvx_classify( x );
     nn = any(reshape(nneg(vx),s),1);
     np = all(reshape(npos(vx),s),1);
     cvx_begin
         epigraph variable z( 1, s(2) )
         x <= repmat( z, s(1), 1 ); %#ok
-        cvx_setnneg( cvx_subsref( z, nn ) );
-        cvx_setnpos( cvx_subsref( z, np ) );
+        cvx_setnneg( cvx_fastref( z, nn ) );
+        cvx_setnpos( cvx_fastref( z, np ) );
     cvx_end
     x = cvx_optval;
 end

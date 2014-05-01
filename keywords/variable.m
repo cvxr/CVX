@@ -109,6 +109,7 @@ if itype,
     if ~asnneg && ~strcmp( itype, 'i_binary' ), tx = []; end
 end
 if issemi,
+    xsize = size(v);
     if xsize(1) > 1,
         isnneg = false;
         newcnstr( prob, v, 0, '>=', true );

@@ -1,7 +1,7 @@
 function v = cvx_classify( x )
 
 global cvx___
-v = reshape( cvx_classify_mex( x.basis_, cvx___.classes ), x.size_ );
+v = cvx_classify_mex( x.basis_, cvx___.classes );
 
 % Copyright 2005-2014 CVX Research, Inc.
 % See the file LICENSE.txt for full copyright information.

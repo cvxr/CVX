@@ -18,11 +18,18 @@ function cvx_optpnt = exponential( varargin )
 %   satisfy EXP_P(X,Y) <= Z. If SX is empty, then SX=[1,1] is assumed.
 
 cvx_expert_check( 'exponential' );
-sx = cvx_get_dimlist( varargin, 'default', [1,1] ); %#ok
-cvx_begin set
-    variable x( sx )
-    variable y( sx ) nonnegative_
-    variable z( sx ) nonnegative_
+[ sx, gp ] = cvx_get_dimlist( varargin, 'default', [1,1] ); %#ok
+gp = ~isempty(gp) && gp;
+if gp,
+    cvx_begin gp set
+        variables ex( sx ) ey( sx ) ez( sx )
+        x = log( ex ); y = log( ey ); z = log( ez );
+else
+    cvx_begin set
+        variable x( sx )
+        variable y( sx ) nonnegative_
+        variable z( sx ) nonnegative_
+end
     [ tx, dummy ] = find( cvx_basis( x ) ); %#ok
     [ ty, dummy ] = find( cvx_basis( y ) ); %#ok
     [ tz, dummy ] = find( cvx_basis( z ) ); %#ok
@@ -30,8 +37,11 @@ cvx_begin set
     cvx___.canslack( tx ) = false;
     cvx___.canslack( ty ) = false;
 cvx_end
-
-cvx_optpnt = cvxtuple( struct( 'x', x, 'y', y, 'z', z ) );
+if gp,
+    cvx_optpnt = cvxtuple( struct( 'x', ex, 'y', ey, 'z', ez ) );
+else
+    cvx_optpnt = cvxtuple( struct( 'x', x, 'y', y, 'z', z ) );
+end
 
 % Copyright 2005-2014 CVX Research, Inc.
 % See the file LICENSE.txt for full copyright information.

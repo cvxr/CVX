@@ -4,18 +4,15 @@ if ~isa( x, 'cvxdual' ),
 end
 global cvx___
 try
-    dvars = cvx___.problems( x.problem_ ).dvars;
-    q = builtin( 'subsref', dvars, x.name_ );
+    duals = cvx___.problems( x.problem_ ).duals;
+    q = builtin( 'subsref', duals, x.name_ );
 catch
     error( 'CVX:Corrupt', 'Internal CVX data corruption. Please CLEAR ALL and rebuild your model.' );
 end
-if q.attached_,
+if isa( q, 'cvx' ),
     nm = cvx_subs2str( x.name_ );
     error( 'CVX:DualInUse', 'Dual variable "%s" has already been assigned.', nm(2:end) );
 end
-q.attached_ = true;
-dvars = builtin( 'subsasgn', dvars, x.name_, q );
-cvx___.problems( x.problem_ ).dvars = dvars;
 try
     z = cvx_setdual( y, x.name_ );
 catch

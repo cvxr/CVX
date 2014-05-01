@@ -1,5 +1,6 @@
 function v = cvx_value( x )
-v = value( x );
+global cvx___
+v = value( x, cvx___.x );
 
 % Copyright 2005-2014 CVX Research, Inc.
 % See the file LICENSE.txt for full copyright information.

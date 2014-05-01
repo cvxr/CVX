@@ -460,7 +460,10 @@ while ~feof( fidr ) && ( ~founddata || isempty( title ) || lasttitle ),
 end
 if runonly,
     fclose( fidr );
-    if isfunc, return; end
+    if isfunc, 
+        fprintf( 1, '\n' );
+        return; 
+    end
 end
 hfile = [ name(1:end-1), 'html' ];
 odir = pwd;

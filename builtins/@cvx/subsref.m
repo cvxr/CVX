@@ -6,16 +6,19 @@ function x = subsref( x, S )
 %      conventions are preserved, including the colon ':' and 'end'.
 
 sx = x.size_;
-nx = prod( sx );
-if ~isequal( S.subs, {':'} ),
+if numel( S ) == 1 && isequal( S.type, '()' ) && all( strcmp( S.subs, ':' ) ),
+    ns = numel(S.subs);
+    sx( end + 1 : numel(ns) ) = 1;
+    sx = [ sx(1:ns-1), prod(sx(ns:end)) ];
+    x = cvx( sx, x.basis_ );
+else
     try
+        nx = prod( sx );
         ndxs = builtin( 'subsref', reshape( 1 : nx, sx ), S );
     catch errmsg
         throw( errmsg );
     end
     x = cvx( size( ndxs ), x.basis_( :, ndxs ) );
-elseif sx(1) ~= nx,
-    x = cvx( [ nx, 1 ], x.basis_ );
 end
 
 % Copyright 2005-2014 CVX Research, Inc.

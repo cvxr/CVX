@@ -72,22 +72,27 @@ else
         end
     end
     disp( [ prefix, nm, 'CVX', ptype, tp, ' model' ] );
+    mlen = 0;
+    if nvars > 0
+        [ namep, sizep ] = cvx_dispvar( p.variables, '', false );
+        mlen = max([mlen,max(cellfun(@numel,namep))]);
+    end
+    if nduls > 0
+        [ named, sized ] = cvx_dispvar( p.duals, '', true );
+        mlen = max([mlen,max(cellfun(@numel,named))]);
+    end
+    mlen = mlen + 3;
+    spc = ' '; spc(1,2:mlen) = ' ';
     if nvars > 0,
         disp( [ prefix, 'variables: ' ] );
-        [ vnam, vsiz ] = dispvar( p.variables, '' );
-        vnam = strvcat( vnam ); %#ok
-        vsiz = strvcat( vsiz ); %#ok
-        for k = 1 : size( vnam ),
-            disp( [ prefix, '   ', vnam( k, : ), '  ', vsiz( k, : ) ] );
+        for k = 1 : numel( namep ),
+            disp( [ prefix, '   ', namep{k}, spc(1:mlen-length(namep{k})), sizep{k} ] );
         end
     end
     if nduls > 0,
         disp( [ prefix, 'dual variables: ' ] );
-        [ vnam, vsiz ] = dispvar( p.duals, '' );
-        vnam = strvcat( vnam ); %#ok
-        vsiz = strvcat( vsiz ); %#ok
-        for k = 1 : size( vnam ),
-            disp( [ prefix, '   ', vnam( k, : ), '  ', vsiz( k, : ) ] );
+        for k = 1 : numel( named ),
+            disp( [ prefix, '   ', named{k}, spc(1:mlen-length(named{k})), sized{k} ] );
         end
     end
     if neqns > 0 || nineqs > 0,
@@ -124,35 +129,6 @@ else
             end
         end
     end
-end
-
-function [ names, sizes ] = dispvar( v, name )
-
-switch class( v ),
-    case 'struct',
-        fn = fieldnames( v );
-        if ~isempty( name ), name( end + 1 ) = '.'; end
-        names = {}; sizes = {};
-        for k = 1 : length( fn ),
-            [ name2, size2 ] = dispvar( subsref(v,struct('type','.','subs',fn{k})), [ name, fn{k} ] );
-            names( end + 1 : end + length( name2 ) ) = name2;
-            sizes( end + 1 : end + length( size2 ) ) = size2;
-            if k == 1 && ~isempty( name ), name( 1 : end - 1 ) = ' '; end
-        end
-    case 'cell',
-        names = {}; sizes = {};
-        for k = 1 : length( v ),
-            [ name2, size2 ] = dispvar( v{k}, sprintf( '%s{%d}', name, k ) );
-            names( end + 1 : end + length( name2 ) ) = name2;
-            sizes( end + 1 : end + length( size2 ) ) = size2;
-            if k == 1, name( 1 : end ) = ' '; end
-        end
-    case 'double',
-        names = { name };
-        sizes = { '(constant)' };
-    otherwise,
-        names = { name };
-        sizes = { [ '(', type( v ), ')' ] };
 end
 
 % Copyright 2005-2014 CVX Research, Inc.

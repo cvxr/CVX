@@ -2,12 +2,12 @@ function [ z, sdp_mode ] = cvx_binary_op( p, x, y, varargin )
 
 global cvx___
 
-if ~isempty( p.map ),
-    vy = cvx_classify( y );
-    vx = cvx_classify( x );
-end
 sx = size( x );
 sy = size( y );
+if ~isempty( p.map ),
+    vx = reshape( cvx_classify( x ), sx );
+    vy = reshape( cvx_classify( y ), sy );
+end
 
 % Determine if sizes are compatible or broadcastable
 if all( sx == 1 ),
@@ -46,6 +46,8 @@ else
     x = repmat( x, bx );
     y = repmat( y, by );
     sz = size( x );
+    xs = false;
+    ys = false;
 end
 
 % Special size checks for SDP mode

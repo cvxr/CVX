@@ -15,11 +15,7 @@ if nargin == 1,
 else
     v = varargin;
 end
-
-global cvx___
-id = cvx___.id + 1;
-cvx___.id = id;
-v = class( struct( 'value_', { v }, 'dual_', { [] }, 'id_', id ), 'cvxtuple' );
+v = class( struct( 'value_', { v }, 'dual_', { [] } ), 'cvxtuple' );
 
 % Copyright 2005-2014 CVX Research, Inc.
 % See the file LICENSE.txt for full copyright information.

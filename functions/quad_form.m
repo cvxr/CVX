@@ -165,7 +165,7 @@ while true,
     % decomposition, the most expensive but the most accurate.
     %
 
-    spQ = nnz(Q) <= 0.1 * sx * sx;
+    spQ = nnz(Q) <= 0.1 * nx * nx;
     if spQ,
         Q = sparse( Q );
         [ R, p, prm ] = chol( Q, 'upper', 'vector' );

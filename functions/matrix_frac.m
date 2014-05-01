@@ -44,8 +44,8 @@ function z = matrix_frac_cnst( Z, X )
 z = norm( Z' \ X, 'fro' ) .^ 2;
 
 function cvx_optval = matrix_frac_aff( Y, X )
-[m,n] = size(X);
-if n == 1,
+[m,n] = size(X); %#ok
+if m == 1,
     cvx_optval = quad_over_lin( X, Y );
 else
     cvx_begin sdp

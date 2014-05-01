@@ -26,7 +26,7 @@ function v = cvx_classify( x )
 % 22 - invalid
 
 if isnumeric( x ),
-    v = full(sign(real(x))+2);
+    v = full(sign(real(x(:)))+2);
     if ~isreal( x ), v(imag(x)~=0) = 4; end
     v(isnan(x)) = 22;
     v = int8(v);

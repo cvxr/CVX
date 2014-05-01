@@ -34,16 +34,10 @@ catch exc
 end
 
 function x = cumprod_1( x )
-x = builtin( 'prod', x, 1 );
+x = builtin( 'cumprod', x, 2 );
 
 function x = cumprod_2( x )
-s = x.size_;
-if s(2) ~= 1,
-	x = log( x );
-    b = reshape( x.basis_, [], s(2) );
-    b = cumsum( b, 2 );
-    x = exp_nc( cvx( s, reshape( b, [], prod(s) ) ) );
-end
+x = exp( cumsum( log( x ), 2 ) );
 
 % Copyright 2005-2014 CVX Research, Inc.
 % See the file LICENSE.txt for full copyright information.

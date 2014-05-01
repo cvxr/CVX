@@ -42,14 +42,14 @@ elseif ~isreal( x ),
 elseif isempty( x ),
     warning( 'CVX:EmptyObjective', 'Empty objective.' );
 end
-cx = cvx_classify( x(:) );
+cx = cvx_classify( x );
 switch dir,
     case { 'minimize', 'minimise' }, vx = remap_min( cx ); dir = 'minimize';
     case { 'maximize', 'maximise' }, vx = remap_max( cx ); dir = 'maximize';
     otherwise, error( 'CVX:ArgError', 'Invalid objective type: %s', dir );
 end
 if ~all( vx ),
-    cvx_dcp_error( dir, 'unary', cvx_subsref( x, vx == 0 ) );
+    cvx_dcp_error( dir, 'unary', cvx_fastref( x, vx == 0 ) );
 end
 
 %
@@ -57,8 +57,8 @@ end
 %
 
 vx = remap_log( cx ) + remap_gp( cx );
-if any( vx(:) ),
-    if any( diff( vx(:) ) ),
+if any( vx ),
+    if any( diff( vx ) ),
         error( 'CVX:LogMix', 'Invalid mix of logarithm and non-logarithmic objectives.' );
     end
     x = log( x );

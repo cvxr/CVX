@@ -102,8 +102,8 @@ cvx_begin
     hypograph variable z( sz )
     x >= z; %#ok
     y >= z; %#ok
-    cvx_setnneg( cvx_subsref( z, nn ) );
-    cvx_setnpos( cvx_subsref( z, np ) );
+    cvx_setnneg( cvx_fastref( z, nn ) );
+    cvx_setnpos( cvx_fastref( z, np ) );
 cvx_end
 
 function x =  min_r1( x, y ) %#ok
@@ -132,10 +132,10 @@ if s(1) > 1,
     nn = all(reshape(nneg(vx),s),1);
     np = any(reshape(npos(vx),s),1);
     cvx_begin
-        hypograph variable zt( 1, s(2) )
-        xt >= repmat( zt, s(1), 1 ); %#ok
-        cvx_setnneg( cvx_subsref( z, nn ) );
-        cvx_setnpos( cvx_subsref( z, np ) );
+        hypograph variable z( 1, s(2) )
+        x >= repmat( z, s(1), 1 ); %#ok
+        cvx_setnneg( cvx_fastref( z, nn ) );
+        cvx_setnpos( cvx_fastref( z, np ) );
     cvx_end
     x = cvx_optval;
 end

@@ -9,9 +9,9 @@ function y = linearize( x )
 
 persistent P
 if isempty( P ),
-    P.map = cvx_remap( { 'real' }, { 'r_affine' }, ...
-        { 'convex' }, { 'concave' } );
-    P.funcs = { @lin_affn, @lin_affn, @lin_cnvx, @lin_cncv };
+    P.map = cvx_remap( { 'r_affine' }, ...
+        { 'convex' }, { 'concave' }, [2,3,4] );
+    P.funcs = { [], @lin_affn, @lin_cnvx, @lin_cncv };
 end
 
 try

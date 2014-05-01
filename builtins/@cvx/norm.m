@@ -118,7 +118,7 @@ else
     else
         map = remap3;
     end
-    if ~all( map( xc( : ) ) ),
+    if ~all( map( xc ) ),
         error( 'Disciplined convex programming error:\n    Cannot perform the operation norm( {%s}, %g )\n   when the first argument is a matrix.', cvx_class( xt ), p );
     end
     switch p,

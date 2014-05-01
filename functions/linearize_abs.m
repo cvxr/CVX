@@ -9,9 +9,8 @@ function y = linearize_abs( x )
 
 persistent P
 if isempty( P ),
-    P.map = cvx_remap( { 'real', 'complex' }, { 'affine' }, ...
-        { 'p_convex', 'n_concave' } );
-    P.funcs = { @lin_abs_affn, @lin_abs_affn, @lin_abs_nonl };
+    P.map = cvx_remap( {'affine'}, {'p_convex','n_concave'}, [2,3] );
+    P.funcs = { [], @lin_abs_affn, @lin_abs_nonl };
 end
 
 try

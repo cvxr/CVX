@@ -1,14 +1,12 @@
-function by = cvx_getlog( nb, rx, cx, vx )
+function by = cvx_getlog( bx )
 
 % WARNING: This assumes that there is exactly one non-zero element per
 % column, that all non-zeros are positive, and that any element appearing
 % in rows greater than 1 has a non-zero entry in cvx___.logarithm.
 
 global cvx___
-if nargin == 1,
-    [ rx, cx, vx ] = find( nb );
-    nb = size( nb, 2 );
-end
+nb = size( bx, 2 );
+[ rx, cx, vx ] = find( bx );
 tt = rx > 1;
 ry = rx(tt);
 cy = cx(tt);

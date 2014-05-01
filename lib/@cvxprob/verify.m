@@ -2,15 +2,14 @@ function [ p, pstr ] = verify( prob, clean )
 global cvx___
 p = prob.index_;
 np = length( cvx___.problems );
-if p == np,
+if p <= np,
     pstr = cvx___.problems( p );
-    if cvx_id( pstr.self ) == cvx_id( prob ), return; end
-elseif p < np,
-    pstr = cvx___.problems( p );
-    if cvx_id( pstr.self ) == cvx_id( prob ),
-        if nargin < 2 || clean, cvx_pop( p + 1, true ); end
-        return; 
+    if cvx_id( pstr.self ) == cvx_id( prob ), 
+        if p > np && ( nargin < 2 || clean ),
+            cvx_pop( p + 1, true );
+        end
+        return
     end
 end
-cvx_pop( 0 );
+cvx_pop( 0, true );
 error( 'CVX:InternalError', 'Internal CVX data corruption. Please CLEAR ALL and rebuild your model.' );

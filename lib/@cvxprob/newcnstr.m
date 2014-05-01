@@ -181,7 +181,6 @@ end
 % Add the (in)equalities
 %
 
-touch( prob, z, iseq );
 zD = cvx_pushcnstr( cvx_basis( z ), iseq );
 
 %

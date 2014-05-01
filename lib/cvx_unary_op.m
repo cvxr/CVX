@@ -11,7 +11,7 @@ if isempty( p.map ),
     vu = -1;
 else
     vx = p.map( cvx_classify( x ) );
-    vu = sort( vx(:)' ); %#ok
+    vu = sort( vx );
     vu = vu( [ true, diff(vu) ~= 0 ] );
 end
 
@@ -22,7 +22,7 @@ if vu( 1 ) ~= 0,
 
         % Homogeneous input (single compute mode)
         if ox && vu == 1, x = cvx_constant( x ); end
-        y = p.funcs{vu(1)}( vec(x), varargin{:} );
+        y = p.funcs{abs(vu)}( vec(x), varargin{:} );
 
         % Post-op check, if necessary
         if isempty( p.map ),

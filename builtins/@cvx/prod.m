@@ -1,4 +1,4 @@
-function y = prod( x, dim )
+function y = prod( varargin )
 
 %   Disciplined geometric programming information for PROD:
 %      PROD(X) and PROD(X,DIM) are vectorized versions of multiplication
@@ -34,16 +34,10 @@ catch exc
 end
 
 function x = prod_1( x )
-x = prod( x, 2 );
+x = builtin( 'prod', x, 2 );
 
 function x = prod_2( x )
-s = x.size_;
-if s(2) ~= 1,
-	x = log( x );
-    b = reshape( x.basis_, [], s(2) );
-    b = sum( b, 2 );
-    x = exp_nc( cvx( s, reshape( b, [], s(1) ) ) );
-end
+x = exp( sum( log( x ), 2 ) );
 
 % Copyright 2005-2014 CVX Research, Inc.
 % See the file LICENSE.txt for full copyright information.

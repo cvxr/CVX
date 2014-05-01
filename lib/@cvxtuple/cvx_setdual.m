@@ -1,31 +1,35 @@
-function x = setdual( x, y )
+function x = cvx_setdual( x, y )
 x.dual_ = y;
 x.value_ = do_setdual( x.value_, y );
-
 function x = do_setdual( x, y )
 switch class( x ),
     case 'struct',
         nx = numel( x );
         if nx > 1,
-            error( 'Dual variables may not be attached to struct arrays.' );
-        end
-        f = fieldnames(x);
-        y(end+1).type = '{}';
-        for k = 1 : length(f),
-            y(end).subs = {1,k};
-            x.(f{k}) = do_setdual( x.(f{k}), y );
+            y(end+1) = struct( 'type', '()', 'subs', {{}} );
+            for k = 1 : numel(x),
+                y(end).subs{1} = k;
+                x(k) = do_setdual( x(k), y );
+            end
+        else
+            y(end+1) = struct( 'type', '{}', 'subs', '' );
+            for k = 1 : length(f),
+                y(end).subs = {1,k};
+                x.(f{k}) = do_setdual( x.(f{k}), y );
+            end
         end
     case 'cell',
-        y(end+1).type = '{}';
-        y(end+1).subs = cell(1,ndims(x));
-        for k = 1 : numel(nx),
-            [ y(end).subs{:} ] = { 1, k };
+        y(end+1) = struct( 'type', '{}', 'subs', {{}} );
+        for k = 1 : numel(x),
+            y(end).subs{1} = k;
             x{k} = do_setdual( x{k}, y );
         end
     case 'cvx',
-        x = setdual( x, y );
+        x = cvx_setdual( x, y );
     case 'double',
-        x = setdual( cvx( x ), y );
+        x = cvx_setdual( cvx( x ), y );
+    otherwise,
+        error( 'CVX:NoDual', 'Cannot attach a dual variable to an object of type %s.\n', class( x ) );
 end
 
 

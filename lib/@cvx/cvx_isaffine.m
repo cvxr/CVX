@@ -5,7 +5,9 @@ if isempty( remap ),
 end
 y = remap( cvx_classify( x ) );
 if nargin < 2 || ~full,
-	y = all( y(:) );
+	y = all( y );
+else
+	y = reshape( y, x.size_ );
 end
 
 % Copyright 2005-2014 CVX Research, Inc.

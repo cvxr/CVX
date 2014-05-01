@@ -42,7 +42,7 @@ function x = ssqa_1( x )
 x = sum( x .* conj(x), 1 );
 
 function x = ssqa_2( x )
-x = sum( exp_nc( 2 * log( x ), 1 ) );
+x = sum( exp( 2 * log( x ), 1 ) );
 
 function y = ssqa_3( x ) %#ok
 [ nx, nv ] = size(x);

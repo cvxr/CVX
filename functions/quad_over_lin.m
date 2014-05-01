@@ -55,7 +55,7 @@ function z = qol_cnst( x, y )
 z = x .^ 2 / y;
 
 function z = qol_log( x, y )
-z = exp_nc( 2 * log( x ) - log( y ) );
+z = exp( 2 * log( x ) - log( y ) );
 
 function z = qol_sqr( x, y )
 z = square( x ) ./ y;
