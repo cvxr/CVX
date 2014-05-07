@@ -17,39 +17,13 @@ function y = sum_square_abs( varargin )
 %       concave. Thus, when used in CVX expressions, X must be affine. DIM
 %       must be constant.
 
-persistent params
-if isempty( params ),
-    params.map = cvx_remap( { ...
-        { 'real', 'complex' } ; 'l_convex' ; 'c_affine' ;
-        { 'p_convex', 'n_concave', 'r_affine' } } );
-    params.funcs = { @ssqa_1, @ssqa_2, @ssqa_3, @ssqa_3 };
-    params.zero = 0;
-    params.constant = 1;
-    params.reduce = true;
-    params.reverse = false;
-    params.name = 'sum_square_abs';
-    params.dimarg = 2;
-end
-
 try
-    y = cvx_reduce_op( params, varargin{:} );
+    varargin{end+1:2} = [];
+    y = sum_square( varargin{:}, true );
 catch exc
     if strncmp( exc.identifier, 'CVX:', 4 ), throw( exc ); a
     else rethrow( exc ); end
 end
-
-function x = ssqa_1( x )
-x = sum( x .* conj(x), 1 );
-
-function x = ssqa_2( x )
-x = sum( exp( 2 * log( x ), 1 ) );
-
-function y = ssqa_3( x ) %#ok
-[ nx, nv ] = size(x);
-cvx_begin
-    epigraph variable y( 1, nv ) nonnegative_
-    { linearize_abs(x), y, 1 } == rotated_lorentz( [ nx, nv ], 1, ~isreal(x) ); %#ok
-cvx_end
 
 % Copyright 2005-2014 CVX Research, Inc.
 % See the file LICENSE.txt for full copyright information.

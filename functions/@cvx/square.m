@@ -27,7 +27,7 @@ y = exp( 2 * log( x ) );
 function y = square_affn( x ) %#ok
 cvx_begin
     epigraph variable y( size(x) ) nonnegative_
-    { linearize_abs( x ), 1, y } == rotated_lorentz( size(x), 0 ); %#ok
+    { linearize_abs( x ), 0.5, y } == rotated_lorentz( size(x), 0 ); %#ok
 cvx_end
     
 % Copyright 2005-2014 CVX Research, Inc.

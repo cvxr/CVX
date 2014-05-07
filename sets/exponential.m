@@ -30,12 +30,7 @@ else
         variable y( sx ) nonnegative_
         variable z( sx ) nonnegative_
 end
-    [ tx, dummy ] = find( cvx_basis( x ) ); %#ok
-    [ ty, dummy ] = find( cvx_basis( y ) ); %#ok
-    [ tz, dummy ] = find( cvx_basis( z ) ); %#ok
-    newnonl( cvx_problem, 'exponential', [ tx(:)' ; ty(:)' ; tz(:)' ] );
-    cvx___.canslack( tx ) = false;
-    cvx___.canslack( ty ) = false;
+    cvx_pushcone( 'exponential', [ vec(x)' ; vec(y)' ; vec(z)' ] );
 cvx_end
 if gp,
     cvx_optpnt = cvxtuple( struct( 'x', ex, 'y', ey, 'z', ez ) );

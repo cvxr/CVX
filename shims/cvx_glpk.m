@@ -11,7 +11,8 @@ if isempty( shim.name ),
     fname = 'glpk.m';
     ps = pathsep;
     shim.name = 'GLPK';
-    shim.dualize = true;
+    shim.config.dualize = true;
+    shim.config.capableINT = true;
     flen = length(fname);
     fpaths = which( fname, '-all' );
     if ~iscell(fpaths),
@@ -32,9 +33,7 @@ if isempty( shim.name ),
         tshim.version = 'unknown';
         tshim.location = new_dir;
         if isempty( tshim.error ),
-            tshim.check = @check;
             tshim.solve = @solve;
-            tshim.eargs = {};
             if k ~= 1,
                 tshim.path = [ new_dir, ps ];
             end
@@ -47,13 +46,9 @@ if isempty( shim.name ),
         shim.error = 'Could not find a GLPK installation.';
     end
 else
-    shim.check = @check;
     shim.solve = @solve;
 end
     
-function found_bad = check( nonls ) %#ok
-found_bad = false;
-
 function [ x, status, tol, iters, y, z ] = solve( At, b, c, nonls, quiet, prec, settings )
 
 n  = length( c );
@@ -71,30 +66,16 @@ zinv = rr;
 is_ip = false;
 for k = 1 : length( nonls ),
     temp = nonls( k ).indices;
-    nn = size( temp, 1 );
-    nv = size( temp, 2 );
     tt = nonls( k ).type;
     if strncmp( tt, 'i_', 2 ),
       is_ip = true;
-      vartype(temp) = 'I';
+      vtype(temp) = 'I';
       if strcmp(tt,'i_binary'),
         lb(temp) = 0;
         ub(temp) = 1;
       end
-    elseif nn == 1 || isequal( tt, 'nonnegative' ),
+    elseif isequal( tt, 'nonnegative' ),
         lb(temp) = 0;
-    elseif isequal( tt, 'lorentz' ),
-        if nn == 2,
-            rr2  = [ temp ; temp ];
-            cc2  = reshape( floor( 1 : 0.5 : 2 * nv + 0.5 ), 4, nv );
-            vv2  = [1;1;-1;1]; vv = vv(:,ones(1,nv));
-            rr   = [ rr ; rr(:) ];
-            cc   = [ cc ; cc(:) ];
-            vv   = [ vv ; vv(:) ];
-            zinv = [ zinv ; temp(:) ];
-        else
-            error('GLPK does not support nonlinear constraints.' );
-        end
     else
       error('GLPK does not support nonlinear constraints.' );
     end
@@ -118,8 +99,7 @@ param.scale = 128;
 param.tolbnd = prec(1);
 param.toldj = prec(1);
 param.tolobj = prec(1);
-[ xx, fmin, errnum, extra ] = cvx_run_solver( @glpk, c, At', b, lb, ub, ctype, vtype, 1, param, 'xx', 'fmin', 'errnum', 'extra', settings, 9 );
-tol   = [];
+[ xx, fmin, errnum, extra ] = cvx_run_solver( @glpk, c, At', b, lb, ub, ctype, vtype, 1, param, 'xx', 'fmin', 'errnum', 'extra', settings, 9 ); %#ok
 iters = [];
 x = full( xx );
 y = full( extra.lambda );

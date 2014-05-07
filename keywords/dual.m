@@ -46,31 +46,44 @@ function varargout = dual( varargin )
 %
 %   See also VARIABLE, VARIABLES.
 
-if nargin < 2,
+if nargin < 2
     error( 'CVX:ArgError', 'Incorrect syntax for DUAL VARIABLE(S). Type HELP DUAL for details.' );
-elseif nargout && nargout ~= nargin - 1,
+elseif nargout && nargout ~= nargin - 1
     error( 'CVX:ArgError', 'Incorrect number of output arguments.' );
-elseif ~iscellstr( varargin ),
-    error( 'CVX:ArgError', 'All arguments must be strings.' );
-elseif strcmp( varargin{1}, 'variable' ),
-    if nargin > 2,
+elseif isequal( varargin{1}, 'variable' )
+    if nargin > 2
         error( 'CVX:ArgError', 'Too many input arguments.\nTrying to declare multiple dual variables? Use the DUAL VARIABLES command instead.', 1 ); %#ok
     end
-elseif ~strcmp( varargin{1}, 'variables' ),
+elseif ~isequal( varargin{1}, 'variables' )
     error( 'CVX:ArgError', 'Incorrect syntax for DUAL VARIABLE(S). Type HELP DUAL for details.' );
 end
+
+global cvx___
+prob = evalin( 'caller', 'cvx_problem', '[]' );
+if ~isa( prob, 'cvxprob' ),
+    error( 'CVX:NoProblem', 'No CVX model exists in this scope.' );
+end
+
 try
-    global cvx___ %#ok
+    
+    [ p, pstr ] = verify( prob ); %#ok
     cvx___.args = { varargin(2:end), 'dual' };
-    [ prob, name, args ] = evalin( 'caller', 'cvx_parse' );
+    args = evalin( 'caller', 'cvx_parse' );
+    
     for k = 1 : length(args),
-        temp = newdual( prob, name{k}, args{k} );
-        if nargout, varargout{k} = temp; end %#ok
-        assignin( 'caller', name{k}, temp );
+        temp = newdual( prob, args(k).name, args(k).args );
+        if nargout, 
+            varargout{k} = temp; %#ok
+        else
+            assignin( 'caller', args(k).name, temp );
+        end
     end
+    
 catch exc
+    
     if strncmp( exc.identifier, 'CVX:', 4 ), throw( exc );
     else rethrow( exc ); end
+    
 end
 
 % Copyright 2005-2014 CVX Research, Inc.

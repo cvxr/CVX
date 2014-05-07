@@ -121,8 +121,6 @@ else
     if isempty( x ),
 
         assignin( 'caller', 'cvx_optval', 0 );
-        temp = length( pstr.t_variable ) + 1 : length( cvx___.readonly );
-        cvx___.readonly( temp ) = cvx___.readonly( temp ) - 1;
 
     else
 
@@ -162,7 +160,6 @@ else
         %
 
         cx = int8( 9 + mapsgn(cx) + os * ( 3 + ( cx == 2 ) ) );
-        cvx___.readonly( r, : ) = np;
         cvx___.classes( r, : ) = cx;
         
         %
@@ -184,7 +181,7 @@ evalin( 'caller', 'cvx_pop( cvx_problem )' );
 
 catch exc
     
-    if ~cleared,
+    if ~cleared && ~strcmp( exc.identifier, 'CVX:IncompatibleSolver' ),
         evalin( 'caller', 'cvx_pop( cvx_problem, true )' );
     end
     rethrow( exc );

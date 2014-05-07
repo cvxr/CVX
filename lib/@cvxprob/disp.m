@@ -20,11 +20,10 @@ if isempty( naff ),
     naff = ~cvx_remap( 'affine' );
     ylog = cvx_remap( 'l_valid_' );
 end
-neqns = cellfun( @(z)size(z,2), cvx___.equalities );
-neqns = neqns(p.n_equality+1:end);
-nineqs = cvx___.needslack(p.n_equality+1:end);
-nineqs = sum( neqns(:) .* nineqs(:) );
-neqns = sum( neqns ) - nineqs;
+neqns  = cellfun( @(z)size(z,2), cvx___.equalities );
+nineqs = neqns .* ~cvx___.inequality;
+neqns  = sum( neqns - nineqs );
+nineqs = sum( nineqs );
 if isempty( p.name ) || strcmp( p.name, 'cvx_' ),
     nm = '';
 else
@@ -114,17 +113,25 @@ else
         end
         if cfound,
             for k = 1 : length( cvx___.cones ),
+                ctyp = cvx___.cones( k ).type;
                 ndxs = cvx___.cones( k ).indices;
                 ndxs = ndxs( :, any( reshape( tt( ndxs ), size( ndxs ) ), 1 ) );
                 if ~isempty( ndxs ),
-                    if isequal( cvx___.cones( k ).type, 'nonnegative' ),
+                    isint = isequal( ctyp(1:2), 'i_' );
+                    if isint,
+                        ncones = numel( ndxs );
+                    elseif isequal( cvx___.cones( k ).type, 'nonnegative' ),
                         ncones = 1;
                         csize = numel(  ndxs  );
                     else
                         [ csize, ncones ] = size( ndxs );
                     end
                     if ncones == 1, plural = ''; else plural = 's'; end
-                    fprintf( 1, '%s   %d order-%d %s cone%s\n', prefix, ncones, csize, cvx___.cones( k ).type, plural );
+                    if isint,
+                        fprintf( 1, '%s   %d %s variable%s\n', prefix, ncones, ctyp(3:end), plural );
+                    else
+                        fprintf( 1, '%s   %d order-%d %s cone%s\n', prefix, ncones, csize, ctyp, plural );
+                    end
                 end
             end
         end

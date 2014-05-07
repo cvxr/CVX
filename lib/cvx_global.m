@@ -43,16 +43,13 @@ cvx___.problems    = [];
 cvx___.pause       = false;
 cvx___.quiet       = false;
 cvx___.profile     = false;
-cvx___.logarithm   = zeros( 0, 1 );
-cvx___.exponential = zeros( 0, 1 );
+cvx___.logarithm   = sparse(1,1);
+cvx___.exponential = sparse(1,1);
 cvx___.classes     = int8(3);
-cvx___.canslack    = false;
-cvx___.readonly    = zeros( 1, 1, 'int32' );
 cvx___.cones       = struct( 'type', {}, 'indices', {} );
 cvx___.equalities  = {};
+cvx___.inequality  = false(0,1);
 cvx___.n_equality  = 0;
-cvx___.geometric   = false;
-cvx___.needslack   = false(0,1);
 cvx___.x           = zeros( 0, 1 );
 cvx___.y           = zeros( 0, 1 );
 
@@ -62,10 +59,6 @@ cvx___.y           = zeros( 0, 1 );
 
 cur_d = pwd;
 osolvers = cvx___.solvers.list;
-solvers = struct( 'name', {}, 'version', {}, 'location', {}, ...
-    'fullpath', {}, 'error', {}, 'warning', {}, 'dualize', {}, ...
-    'path', {}, 'check', {}, 'solve', {}, 'settings', {}, ...
-    'sname', {}, 'spath', {}, 'params', {}, 'eargs', {} );
 nsolv = length(osolvers);
 nrej = 0;
 for k = 1 : length(osolvers),
@@ -85,7 +78,8 @@ for k = 1 : length(osolvers),
         nrej = nrej + 1;
     end
     try
-        solvers(k) = tsolv;
+        if k == 1, solvers = tsolv;
+        else solvers = [ solvers, tsolv ]; end %#ok
     catch
         for ff = fieldnames(tsolv)',
             solvers(k).(ff{1}) = tsolv.(ff{1});

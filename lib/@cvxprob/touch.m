@@ -1,4 +1,4 @@
-function x = touch( prob, x, iseq )
+function x = touch( prob, x, iseq ) %#ok
 if ~isa( x, 'cvx' ), return; end
 global cvx___
 p = prob.index_;
@@ -8,9 +8,6 @@ nv = numel( v );
 if nv <= 1, return; end
 b  = cvx_basis( x );
 y  = any( b, 2 );
-if nargin == 3 && iseq,
-    cvx___.canslack( y ) = false;
-end
 ny = numel( y );
 if ny < nv,
     v( find( y ) ) = 1; %#ok

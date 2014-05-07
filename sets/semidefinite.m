@@ -45,52 +45,30 @@ elseif length( sz ) == 1,
 elseif sz( 1 ) ~= sz( 2 ),
     error( 'If a size vector is supplied, the first two dimensions must be equal.' );
 end
+if sz( 1 ) == 1,
+    str = { 'nonnegative' };
+else
+    str = { 'semidefinite' };
+end
 
 %
 % Check iscplx flag
 %
 
-if nargin < 2,
-    iscplx = false;
-elseif ( ~isnumeric( iscplx ) && ~islogical( iscplx ) ) || length( iscplx ) ~= 1,
-    error( 'Second argument must be a numeric or logical scalar.' );
+if nargin > 1,
+    if ( ~isnumeric( iscplx ) && ~islogical( iscplx ) ) || length( iscplx ) ~= 1,
+        error( 'Second argument must be a numeric or logical scalar.' );
+    elseif iscplx && sz(1) > 1,
+        str{end+1} = 'hermitian';
+    end
 end
 
 %
 % Construct the cone
 %
 
-persistent apos
-if isempty( apos ),
-  apos = int8(find(cvx_remap('p_affine_')));
-end
 cvx_begin set
-   if any( sz == 0 ) || sz(1) == 1,
-       variable x( sz ) nonnegative_
-       s = 'nonnegative';
-   elseif iscplx,
-       variable x( sz ) hermitian
-       s = 'hermitian-semidefinite';
-   else
-       variable x( sz ) symmetric
-       s = 'semidefinite';
-   end
-   if all( sz ),
-       tx = find( any( cvx_basis( x ), 2 ) );
-       nv = prod( sz( 3 : end ) );
-       tx = reshape( tx, numel( tx ) / nv, nv );
-       newnonl( cvx_problem, s, tx );
-       if sz(1) > 1,
-           if iscplx,
-               ndxs = cumsum( [ 1, 2*sz(1)-1 : -2 : 3 ] );
-           else
-               ndxs = cumsum( [ 1, sz(1) : -1 : 2 ] );
-           end
-           cvx___.classes(tx(ndxs)) = apos;
-           tx( ndxs, : ) = [];
-           cvx___.canslack( tx ) = false;
-       end
-   end
+    variable( 'x(sz)', str{:} );
 cvx_end
 
 % Copyright 2005-2014 CVX Research, Inc.

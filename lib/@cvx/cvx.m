@@ -41,13 +41,16 @@ switch nargin,
                     s = s( 1 : max( 2, sum( find( s > 1, 1, 'last' ) ) ) );
                 end
         end
+        ps = prod( s );
         if isempty( b ),
             b = sparse( 1, prod( s ) );
+        elseif size( b, 2 ) ~= ps,
+            error( 'CVX:Corrupt', 'Size/data mismatch.' );
         else
             b = sparse( b );
         end
         if nargin < 3,
-            d = prod( s );
+            d = ps;
         end
 end
 persistent id

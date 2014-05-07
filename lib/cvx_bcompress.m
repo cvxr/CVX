@@ -37,7 +37,7 @@ if nargout > 1 && ~all( t2 ),
 end
 
 if iscplx,
-    xR = xR(:,1:2:end) + 1j * xR(:,2:2:end);
+    xR = xR(:,1:end/2) + 1j * xR(:,end/2+1:end);
 end
 
 % Copyright 2005-2014 CVX Research, Inc.

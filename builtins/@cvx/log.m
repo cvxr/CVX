@@ -17,9 +17,10 @@ persistent P
 if isempty( P ),
     P.map = cvx_remap( ...
         { 'nonpositive', 'n_nonconst' }, ...
-        { 'positive', 'monomial' }, { 'posynomial' }, ...
-        { 'concave' }, [0,2,3,4] );
-    P.funcs = { [], @log_lkup, @log_posy, @log_gen };
+        { 'positive', 'monomial' }, ...
+        { 'g_posynomial' }, { 'l_convex' }, ...
+        { 'concave' }, [0,2,3,4,5] );
+    P.funcs = { [], @log_lkup, @log_posy, @log_lcvx, @log_gen };
 end
 
 try
@@ -45,6 +46,19 @@ cvx_begin gp
     sparse( cx, 1 : nq, 1, nx, nq ) * log( w ) == 1; %#ok
 cvx_end
 y = log( y );
+
+function y = log_lcvx( x ) %#ok
+nx = numel( x );
+x = cvx_basis( x );
+[ rx, cx, vx ] = find( x );
+nq = length( vx );
+x = cvx( nq, sparse( rx, 1 : nq, vx ) );
+cvx_begin
+    variables w( nq )
+    epigraph variable y( nx )
+    exp( x - cvx_fastref( y, cx ) ) <= w; %#ok
+    sparse( cx, 1 : nq, 1, nx, nq ) * w == 1; %#ok
+cvx_end
 
 function y = log_gen( x ) %#ok
 cvx_begin

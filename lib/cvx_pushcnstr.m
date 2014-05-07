@@ -1,21 +1,34 @@
-function zD = cvx_pushcnstr( zb, iseq )
+function zD = cvx_pushcnstr( zb, iseq, need_dual )
 
 global cvx___
+if isa( zb, 'cvx' ),
+    zb = cvx_basis( zb );
+end
 mO = cvx___.n_equality;
-zi = ~isreal( zb );
-if zi, zb = [ real(zb), imag(zb) ]; end
+if iseq,
+    cmode = 'full';
+else
+    cmode = 'magnitude';
+end
+[ zR, zb ] = cvx_bcompress( zb, cmode );
 mN = size( zb, 2 );
+if ~iseq,
+    ndim = cvx_pushnneg( mN );
+    zb(ndim(end),1) = 0;
+    zb = zb + sparse( ndim, 1:mN, -1 );
+end
 cvx___.equalities{end+1} = zb;
-cvx___.needslack(end+1,1) = ~iseq;
+cvx___.inequality(end+1) = ~iseq;
 cvx___.n_equality = cvx___.n_equality + mN;
-if nargout,
-    zD = sparse( mO + 1 : mO + mN, 1 : mN, 1 );
-    if zi, zD = zD(:,1:end/2) + 1j * zD(:,end/2+1:end); end
+if nargout
+    if nargin == 3 && need_dual
+        zD = cvx_invert_structure( zR )';
+        zD = sparse( mO + 1 : mO + mN, 1 : mN, 1 ) * zD;
+    else
+        zD = [];
+    end
 end
 y = any( zb, 2 );
-if iseq,
-    cvx___.canslack( y ) = false;
-end
 pstr = cvx___.problems( end );
 v  = pstr.t_variable;
 nv = numel( v );

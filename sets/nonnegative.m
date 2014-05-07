@@ -16,11 +16,9 @@ function cvx_optpnt = nonnegative( varargin ) %#ok
 %       NONNEGATIVE is a cvx set specification. See the user guide for
 %       details on how to use sets.
 
-sx = cvx_get_dimlist( varargin );
+sx = cvx_get_dimlist( varargin ); %#ok
 cvx_begin set
-    variables x( sx ) nonnegative_
-    [ tx, dummy ] = find( cvx_basis( x ) ); %#ok
-    newnonl( cvx_problem, 'nonnegative', tx(:) );
+    variable x( sx ) nonnegative
 cvx_end
 
 % Copyright 2005-2014 CVX Research, Inc. 

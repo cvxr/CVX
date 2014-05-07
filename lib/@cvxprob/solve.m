@@ -14,7 +14,7 @@ nobj  = numel( obj );
 if nobj > 1 && ~pr.separable,
     error( 'CVX:NonScalarObjective', 'Your objective function is not a scalar.' );
 end
-[ At, cones, sgn, Q, P, exps, dualized ] = eliminate( prob, true, shim.dualize );
+[ At, cones, sgn, Q, P, exps, dualized ] = eliminate( prob, true, shim.config );
 
 if ndual && any( strncmp( {cones.type}, 'i_', 2 ) ),
     idual_error = true;
@@ -93,7 +93,7 @@ elseif n ~= 0 && ~infeas && ( any( b ) || any( c ) ),
     else
         texp = find( strcmp( { cones.type }, 'exponential' ) );
     end
-    need_iter = ~isempty( texp ) && shim.dualize;
+    need_iter = ~isempty( texp ) && shim.config.dualize;
     cvx_setspath;
     if ~quiet,
         disp( ' ' );
@@ -132,99 +132,45 @@ elseif n ~= 0 && ~infeas && ( any( b ) || any( c ) ),
         %     cl { (x,y,z) | y*exp(x/y) <= z, y > 0 }
         %   = cl { (x,y,z) | x <= -y*log(y/z), z > 0 }
         % Approximation: given a shift point x0,
-        %    { (x,y,z) | y*exp(x0)*pos(1+(x/y-x0)/16)^16 <= z, y > 0 }
-        %    { (x,y,z) | y+(x-x0*y)/16 <= exp(-x0/16)*geo_mean([z,y],[],[1,15])
+        %    { (x,y,z) | y*exp(x0)*pos(1+(x/y-x0)/8)^8 <= z, y > 0 }
         % Transformed cone:
-        %   4 semidefinite cones, 1 free, 1 slack
-        %   [ w1    ][ w4    ] [ w7    ] [ w10     ] w13
-        %   [ w2 w3 ][ w5 w6 ] [ w8 w9 ] [ w11 w12 ] w14
-        %   w2 = w4, w5 = w7, w8 = w10
-        %   w3 = w6, w6 = w9, w9 = w12,
-        %   exp(-x0/16) * w11 = w3 ( 1 - x0 / 16 ) + w13 / 16 + w14
-        % Recovery:
-        %   x = w13
-        %   y = w3
-        %   z = w1
+        %   3 lorentz cones, 1 slack
         %
         
         ndxs  = cat( 2, cones(texp).indices );
         nc    = size(ndxs,2);
-        xndxs = ndxs(1,:);
-        yndxs = ndxs(2,:);
-        zndxs = ndxs(3,:);
+        new_n = n + 7 * nc;
+        new_m = m + 4 * nc;
         x0    = realmin * ones(nc,1);
         maxw  = log(realmax);
+        ndx2  = [ ndxs ; reshape(n+1:n+7*nc,7,nc) ];
+        ndx3  = 1 : n; 
+        ndx3(ndxs) = [];
         
-        epow = 8;
-        switch epow,
-            case 16,
-                QAi  = [ 2, 4, 3, 6, 5, 7, 6, 9, 8,10, 9,12,3,        11,  13, 14 ]';
-                QAj  = [ 1, 1, 2, 2, 3, 3, 4, 4, 5, 5, 6, 6,7,         7,   7,  7 ]';
-                QAv  = [+1,-1,+1,-1,+1,-1,+1,-1,+1,-1,+1,-1,1.001,-1.002,1/16,  1 ]';
-                QAr  = [3,4,2,5,6,7,8,9,10,11,12,13,1,14];
-                % ewid = 1.75;
-            case 8,
-                QAi  = [ 2, 4, 3, 6, 5, 7, 6, 9,3,         8,  10, 11 ]';
-                QAj  = [ 1, 1, 2, 2, 3, 3, 4, 4,5,         5,   5,  5 ]';
-                QAv  = [+1,-1,+1,-1,+1,-1,+1,-1,1.001,-1.002, 1/8,  1 ]';
-                QAr  = [3,4,2,5,6,7,8,9,10,1,11];
-                % ewid = 1.22;
-            case 4,
-                QAi  = [ 2, 4, 3, 6,3,         5,   7,  8 ]';
-                QAj  = [ 1, 1, 2, 2,3,         3,   3,  3 ]';
-                QAv  = [+1,-1,+1,-1,1.001,-1.002, 1/4,  1 ]';
-                QAr  = [3,4,2,5,6,7,1,8];
-                % ewid = 0.84;
-        end
+        epow = 8; epow_i = 0.125; g = 0.123; h = 0.345;
+        Pr = [ 2, 3, 7,10, 2, 3, 2, 3]; Qr = [ 1, 5, 6, 2, 3, 5, 6, 2, 3, 8, 9, 4, 8, 9];
+        Pc = [ 1, 1, 1, 1, 2, 2, 3, 3]; Qc = [ 1, 1, 1, 2, 2, 2, 2, 3, 3, 3, 3, 4, 4, 4];
+        Pv = [ g,-g,+h,-1,-1, 1, 1, 1]; Qv = [-1, 1, 1,-1, 1, 1,-1,-1, 1, 1,-1,-1, 1, 1];
         
-        nQA     = max(QAi);
-        mQA     = max(QAj);
-        nc      = size(ndxs,2);
-        new_n   = n + (nQA-3) * nc; % + 1;
-        new_m   = m + mQA * nc;
-        n_ndxs  = [ ndxs ; reshape( n + 1 : new_n, nQA-3, nc  ) ];
-        n_ndxs  = n_ndxs(QAr,:);
+        Pr = [vec(ndx2(Pr,:));ndx3'];
+        Pc = [vec(ndx2(Pc,:));ndx3'];
+        Pv = Pv' * ones(1,nc);
+        Pw = ones(n-3*nc,1);
+        QQ = sparse(ndx2(Qr,:),bsxfun(@plus,Qc',0:4:4*nc-1),Qv'*ones(1,nc),new_n,4*nc);
+        b(new_m) = 0;
+        
         if ~quiet,
             fprintf( '   %d exponentials add %d variables, %d equality constraints\n', nc, new_n - n, new_m - m );
             disp( spacer );
         end
-
-        % Stuff free variables into a lorentz cone to preserve warm start
-        % tfree = ones( 1, n );
-        % for k = 1 : length(cones),
-        %     tfree(cones(k).indices) = 0;
-        % end
-        % tfree(xndxs) = 1;
-        % tfree = find(tfree);
         
-        % Perform (x,y,z) ==> w transformation on A and C
-        c (new_n,end) = 0;
-        At(new_n,end) = 0;
-        
-        % Add new cone constraints
-        lQA   = length(QAi);
-        nc0   = 0:mQA:mQA*(nc-1);
-        nc1   = ones(1,nc);
-        Anew  = sparse( n_ndxs(QAi,:), ...
-                 QAj(:,nc1) + nc0(ones(lQA,1),:), ...
-                 QAv(:,nc1), new_n, mQA * nc );
-        bnew  = zeros( new_m - m, 1 );
-        
-        endxs = n_ndxs(nQA-3,:) + (mQA-1+nc0) * new_n;
-        fndxs = n_ndxs(3,:)     + (mQA-1+nc0) * new_n;
-        
-        ncone.type       = 'semidefinite';
-        ncone.indices    = reshape(n_ndxs(1:nQA-2,:),3,(nQA-2)*nc/3);
+        ncone.type       = 'lorentz';
+        ncone.indices    = reshape(ndx2(1:9,:),3,3*nc);
         ncone(2).type    = 'nonnegative';
-        ncone(2).indices = n_ndxs(nQA,:);
+        ncone(2).indices = ndx2(end,:);
         cones(texp) = [];
         cones = [ cones, ncone ];
         
-        arow = size(Anew,2) / nc;
-        orow = ones(arow,1);
-        amult = ones(1,nc);
-        epow_i = 1 / epow;
-
         oprec = prec;
         best_x = NaN * ones(n,1);
         best_y = NaN * ones(m,1);
@@ -241,15 +187,16 @@ elseif n ~= 0 && ~infeas && ( any( b ) || any( c ) ),
         last_solved = 0;
         max_eiters = 25;
         for iter = 1 : max_eiters,
-            % Insert the current centerpoints into the constraints
-            x0e = x0 * epow_i;
-            ex0e = exp( -x0e );
-            Anew(endxs) = - ex0e; %#ok
-            Anew(fndxs) = 1 - x0e; %#ok
-            Anew2 = Anew * diag(sparse(vec(amult(orow,:))));
+            
+            ex0e = exp( - x0 * epow_i );
+            ax = epow * ex0e;
+            az = epow - x0;
+            Pv(1,:) = +az; Pv(2,:) = -az;
+            Pv(3,:) = +ax;
+            PP = sparse(Pr,Pc,[Pv(:);Pw]);
             
             % Solve the approximation
-            [ x, status, tprec, iters2, y, z ] = shim.solve( [ At, Anew2 ], [ b ; bnew ], c, cones, true, prec, solv.settings, eargs{:} );
+            [ x, status, tprec, iters2, y ] = shim.solve( [ PP*At, QQ ], b, PP*c, cones, true, prec, solv.settings, eargs{:} );
             iters = iters + iters2;
             x_valid = ~any(isnan(x));
             y_valid = ~any(isnan(y));
@@ -265,9 +212,10 @@ elseif n ~= 0 && ~infeas && ( any( b ) || any( c ) ),
             % Exact:  y .* exp( x ./ y ) <= z
             % Approx: exp(x0) .* y .* max(0,1+(x./y-x0)/p).^p <= z
             if x_valid,
-                xxx = x( xndxs, : );
-                yyy = max( realmin, x( yndxs, : ) );
-                zzz = max( realmin, x( zndxs, : ) );
+                x = PP' * x;
+                xxx = x(ndxs(1,:));
+                yyy = max( realmin, x(ndxs(2,:)) );
+                zzz = max( realmin, x(ndxs(3,:)) );
                 nmX = sqrt( xxx .^ 2 + yyy .^ 2 + zzz .^ 2 );
                 xxy = xxx ./ yyy - x0;
                 zzy = zzz ./ yyy;
@@ -294,10 +242,10 @@ elseif n ~= 0 && ~infeas && ( any( b ) || any( c ) ),
             % Exact:  -u.*exp(v/u-1)<=w
             % Approx: -exp(-x0).*u.*(1-(v./u-1+x0)/(p-1)).^(1-p)<=w
             if y_valid,
-                z = z + Anew2 * y(m+1:end);
-                uuu = min( -realmin, z( xndxs, : ) );
-                vvv = z( yndxs, : );
-                www = max( +realmin, z( zndxs, : ) );
+                z   = c - At * y(1:m);
+                uuu = min( -realmin, z(ndxs(1,:),:) );
+                vvv = z(ndxs(2,:),:);
+                www = max( +realmin, z(ndxs(3,:),:) );
                 nmY = sqrt( uuu .^ 2 + vvv .^ 2 + www .^ 2 );
                 wwu = - www ./ uuu;
                 xxu = 1 - vvv ./ uuu - x0;
@@ -583,7 +531,10 @@ else
     cvx___.y = y(2:end);
 end
 if ~isempty( exps ),
-    cvx___.x( exps(:,2) ) = min( 1e300, exp( cvx___.x( exps(:,1) ) ) );
+    tt = exps(:,3) == 1;
+    cvx___.x( exps(tt,2) ) = min( 1e300, exp( cvx___.x( exps(tt,1) ) ) );
+    tt = exps(:,3) ~= 1;
+    cvx___.x( exps(tt,1) ) = log( cvx___.x( exps(tt,2) ) );
 end
 
 %

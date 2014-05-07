@@ -1,4 +1,5 @@
 function newobj( prob, dir, x )
+if nargin < 4, epi = false; end
 
 persistent remap_min remap_max remap_log remap_gp
 if isempty( remap_max ),
@@ -49,7 +50,10 @@ switch dir,
     otherwise, error( 'CVX:ArgError', 'Invalid objective type: %s', dir );
 end
 if ~all( vx ),
-    cvx_dcp_error( dir, 'unary', cvx_fastref( x, vx == 0 ) );
+    if ~epi, type = 'dir'; %#ok
+    elseif dir > 0, type = 'epigraph';
+    else type = 'hypograph'; end
+    cvx_dcp_error( type, 'unary', cvx_fastref( x, vx == 0 ) );
 end
 
 %

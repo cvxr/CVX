@@ -35,22 +35,7 @@ function cvx_optpnt = lorentz( varargin )
 %       LORENTZ is a cvx set specification. See the user guide for
 %       details on how to use sets.
 
-global cvx___
-
-%
-% Get size and dimension
-%
-
-[ sx, dim, iscplx ] = cvx_get_dimension( varargin, 2, 'nox', true, 'zero', true ); %#ok
-sy = sx;
-nd = length( sx );
-nv = sx( dim );
-sy( dim ) = 1;
-
-%
-% Check complex flag
-%
-
+[ sx, dim, iscplx ] = cvx_get_dimension( varargin, 2, 'nox', true, 'zero', true );
 if isempty( iscplx ),
     iscplx = false;
 elseif length( iscplx ) ~= 1,
@@ -58,51 +43,40 @@ elseif length( iscplx ) ~= 1,
 else
     iscplx = logical( iscplx );
 end
-
-%
-% Build the cone
-%
-
+sy = sx;
+nv = sx( dim );
+sy( dim ) = 1;
 ny = prod( sy );
-if nv == 0,
-    iscplx = false;
-elseif iscplx,
-    nv = nv * 2;
-end
-cvx_begin set
-    variable x( nv, ny ) 
-    variable y( 1, ny ) nonnegative_
-    [ ty, dummy ] = find( cvx_basis( y ) ); %#ok
-    if nv > 0,
-        [ tx, dummy ] = find( cvx_basis( x ) ); %#ok
-        newnonl( cvx_problem, 'lorentz', [ reshape( tx, nv, ny ) ; reshape( ty, 1, ny ) ] );
-        cvx___.canslack( tx ) = false;
+if nv == 0 || ny == 0,
+    x = cvx( sx, [] );
+    if ny == 0,
+        y = cvx( sy, [] );
     else
-        newnonl( cvx_problem, 'nonnegative', ty );
+        y = nonnegative( sy );
     end
-cvx_end
-
-%
-% Permute and reshape as needed
-%
-
-if iscplx,
-    x = cvx_basis( x );
-    x = x(:,1:2:end) + 1j * x(:,2:2:end);
-    nv = nv * 0.5;
-    x = cvx( [nv,ny], x );
-end
-if sx( dim ) > 1,
-    nleft = prod( sx( 1 : dim - 1 ) );
-    if nleft > 1,
-        x = reshape( x, [ nv, nleft, ny / nleft ] );
-        y = reshape( y, [ 1,  nleft, ny / nleft ] );
-        x = permute( x, [ 2, 1, 3 ] );
-        y = permute( y, [ 2, 1, 3 ] );
+else
+    if iscplx, 
+        nv = nv * 2; 
     end
+    cvx_begin set
+        variable x( nv, ny ) 
+        variable y( 1,  ny ) nonnegative_
+        cvx_pushcone( 'lorentz', [ x ; y ] ); %#ok
+    cvx_end
+    if iscplx,
+        x = x(1:2:end-1,:) + 1j * x(2:2:end-1,:);
+        nv = nv * 0.5;
+    end
+    if sx( dim ) > 1,
+        nleft = prod( sx( 1 : dim - 1 ) );
+        if nleft > 1,
+            x = reshape( x, [ nv, nleft, ny / nleft ] );
+            x = permute( x, [ 2, 1, 3 ] );
+        end
+    end
+    x = reshape( x, sx );
+    y = reshape( y, sy );
 end
-x = reshape( x, sx );
-y = reshape( y, sy );
 cvx_optpnt = cvxtuple( struct( 'x', x, 'y', y ) );
 
 % Copyright 2005-2014 CVX Research, Inc.

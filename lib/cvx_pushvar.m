@@ -15,5 +15,3 @@ end
 nO = length( cvx___.classes );
 ndim = nO + 1 : nO + nx;
 cvx___.classes ( ndim, 1 ) = type(:);
-cvx___.canslack( ndim, 1 ) = true;
-cvx___.readonly( ndim, 1 ) = length( cvx___.problems );

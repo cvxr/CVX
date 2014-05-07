@@ -133,7 +133,7 @@ cvx_begin
         else
             variable w(nx)
         end
-        { [x,z2], 1, [z2,w] } == rotated_lorentz( [ nx, ne ], 3 ); %#ok
+        { [x,z2], 0.5, [z2,w] } == rotated_lorentz( [ nx, ne ], 3 ); %#ok
     else
         w = x;
     end
@@ -221,7 +221,7 @@ z  = linearize( v .* x );
 cvx_begin
     epigraph variable y(nx)
     if p == 1,
-        { 1, z, y } == rotated_lorentz( [nx,1], 2, 0 ); %#ok
+        { 2, z, y } == rotated_lorentz( [nx,1], 2, 0 ); %#ok
     else
         { [z,y], 1 } == geo_mean_cone( [nx,2], 2, [-p,1], 'func' ); %#ok
     end

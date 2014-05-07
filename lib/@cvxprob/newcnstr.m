@@ -171,23 +171,20 @@ if sdp_mode,
         zz = cvx_basis( semidefinite( sz, ~zr ) );
     end
     z(size(zz,1),:) = 0;
-    z = cvx( sz, z - zz );
+    z = z - zz;
     iseq = true;
 else
     iseq = op(1) == '=';
+    z = cvx_basis( z );
 end    
 
 %
-% Add the (in)equalities
+% Add the (in)equalities, create the dual variable if request
 %
 
-zD = cvx_pushcnstr( cvx_basis( z ), iseq );
-
-%
-% Create the dual
-%
-
-if ~isempty( dx )
+need_dual = ~isempty( dx );
+zD = cvx_pushcnstr( z, iseq, need_dual );
+if need_dual
     if isempty( cvx_getdual( z ) ),
         pstr.duals = builtin( 'subsasgn', pstr.duals, dx, cvx( sz, zD ) );
         cvx___.problems( p ) = pstr;

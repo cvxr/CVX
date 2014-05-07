@@ -15,7 +15,9 @@ if isempty( shim.name ),
     int_path = [ cvx___.where, fs ];
     int_plen = length( int_path );
     shim.name = 'SDPT3';
-    shim.dualize = true;
+    shim.config.dualize = true;
+    shim.config.capableSOCP = true;
+    shim.config.capableSDP = true;
     flen = length(fname);
     fpaths = { [ int_path, 'sdpt3', fs, fname ] };
     fpaths = [ fpaths ; which( fname, '-all' ) ];
@@ -56,9 +58,7 @@ if isempty( shim.name ),
                 tpath = sprintf( [ '%s', ps ], tpath{:} ) ;
                 tshim.path = tpath;
             end
-            tshim.check = @check;
             tshim.solve = @solve;
-            tshim.eargs = {};
         end
         shim = [ shim, tshim ]; %#ok
     end
@@ -68,15 +68,13 @@ if isempty( shim.name ),
         shim.error = 'Could not find a SDPT3 installation.';
     end
 else
-    shim.check = @check;
     shim.solve = @solve;
-    shim.eargs = {};
 end
 
 function found_bad = check( nonls ) %#ok
 found_bad = false;
 
-function [ x, status, tol, iters, y, z ] = solve( At, b, c, nonls, quiet, prec, settings )
+function [ x, status, tol, iters, y ] = solve( At, b, c, nonls, quiet, prec, settings )
 [n,m] = size(At);
 
 % SDPT3 cannot handle empty equality constraints or square systems. So
@@ -106,41 +104,23 @@ else
     azero = false;
 end
 
-types = { nonls.type };
-indices = { nonls.indices };
-found = false(1,length(types));
-used = false(1,n);
-
 blk  = cell( 0, 2 );
 Avec = cell( 0, 1 );
 Cvec = cell( 0, 1 );
 xvec = cell( 0, 1 );
 tvec = cell( 0, 1 );
-if nargout > 3,
-    need_z = true;
-    zvec = cell( 0, 1 );
-else
-    need_z = false;
-end
 
-%
-% Reject integer variables
-%
-
-if any( strncmp( types, 'i_', 2 ) ),
-    error( 'SDTP3 does not support integer variables.' );
-end
+used = false(1,n);
+types = { nonls.type };
+indices = { nonls.indices };
+found = false(1,length(types));
 
 %
 % Nonnegative variables preserved as-is
 %
 
-tt = find( strcmp( types, 'nonnegative' ) );
-if ~isempty( tt ),
-    for k = tt,
-        ti = indices{k};
-        indices{k} = reshape(ti,1,numel(ti));
-    end
+tt = strcmp( types, 'nonnegative' );
+if any( tt ),
     ti = cat( 2, indices{tt} );
     ni = length(ti);
     blk {end+1,1} = 'l';
@@ -149,11 +129,8 @@ if ~isempty( tt ),
     Cvec{end+1,1} = c(ti);
     tvec{end+1,1} = ti;
     xvec{end+1,1} = 1;
-    if need_z,
-        zvec{end+1,1} = 1;
-    end
-    found(tt) = true;
     used(ti) = true;
+    found(tt) = true;
 end
 
 %
@@ -162,117 +139,74 @@ end
 % reverse our ordering here.
 %
 
-tt = find( strcmp( types, 'lorentz' ) );
-if ~isempty( tt ),
+tt = strcmp( types, 'lorentz' );
+if any( tt ),
     blk{end+1,1} = 'q';
     blk{end,2}   = zeros(1,0);
-    for k = tt,
+    for k = find(tt),
         ti = indices{k};
+        [nn,nv] = size(ti);
         ti = ti([end,1:end-1],:);
-        blk{end,2} = [ blk{end,2}, size(ti,1) * ones(1,size(ti,2)) ];
-        indices{k} = reshape(ti,1,numel(ti));
+        blk{end,2} = [ blk{end,2}, nn*ones(1,nv) ];
+        indices{k} = reshape(ti,1,nn*nv);
     end
     ti = cat( 2, indices{tt} );
     Avec{end+1,1} = At(ti,:);
     Cvec{end+1,1} = c(ti);
     tvec{end+1,1} = ti;
     xvec{end+1,1} = 1;
-    if need_z,
-        zvec{end+1,1} = 1;
-    end
-    found(tt) = true;
     used(ti) = true;
+    found(tt) = true;
 end
 
-tt = find( strcmp( types, 'semidefinite' ) | strcmp( types, 'hermitian-semidefinite' ) );
-if ~isempty( tt ),
+tt = strcmp( types, 'semidefinite' );
+if any( tt ),
+    tt = find(tt);
     blk{end+1,1}  = 's';
     blk{end,2}    = {};
     Avec{end+1,1} = {};
     Cvec{end+1,1} = {};
     tvec{end+1,1} = {};
     xvec{end+1,1} = {};
-    if need_z,
-        zvec{end+1,1} = {};
-    end
     nnn = 0;
     for k = tt,
         ti = indices{k};
         [nt,nv] = size(ti);
-        if types{k}(1) == 's',
-            nn = 0.5*(sqrt(8*nt+1)-1);
-        else
-            nn = 2*sqrt(nt);
-        end
+        nn = 0.5*(sqrt(8*nt+1)-1);
         nnn = nnn + nn*nv;
     end
     for k = tt,
         ti = indices{k};
         [nt,nv] = size(ti);
-        if types{k}(1) == 's',
-            nn = 0.5 * ( sqrt(8*nt+1) - 1 );
-            nt2 = nt;
-            n2 = nn;
-        else
-            nn = sqrt(nt);
-            n2 = 2 * nn;
-            nt2 = 0.5 * n2 * ( n2 + 1 );
-        end
+        nn = 0.5 * ( sqrt(8*nt+1) - 1 );
+        nt2 = nt;
+        n2 = nn;
         blk{end,2}{end+1} = n2 * ones(1,nv);
         tvec{end}{end+1} = vec(ti);
-        
-        if types{k}(1) == 's',
-            
-            %
-            % CVX stores symmetric matrix variables in packed lower triangle
-            % form; and str_1 is the adjoint of the mapping from packed form to
-            % unpacked form. That is, if x is an n(n+1)/2 by 1 vector, then
-            % str_1' * x is the n x n symmetric matrix. To preserve inner
-            % products we need the inverse operator as well:
-            % <a,x> = <a,str_2'*str_1'*x> = <str_2*a,str_1'*x>
-            %
-
-            str_1 = cvx_create_structure( [nn,nn], 'symmetric' );
-            
-        else
-            
-            %
-            % SDPT3 does not do complex SDP natively. To convert to real SDPs
-            % there are two approaches;
-            %   X >= 0 <==> [ real(X), -imag(X) ; imag(X), real(X) ] >= 0
-            %   X >= 0 <==> exists [ Y1, Y2^T ; Y2, Y3 ] >= 0 s.t.
-            %                        Y1 + Y3 == real(X), Y2 - Y2^T == imag(X)
-            % For primal standard form, this second form is the best choice,
-            % and what we end up using here.
-            %
-        
-            str_1 = cvx_create_structure( [nn,nn], 'hermitian' );
-            [rr,cr,vr] = find(real(str_1));
-            cr = cr + floor((cr-1)/nn)*nn;
-            [ri,ci,vi] = find(imag(str_1));
-            ci = ci + floor((ci-1)/nn)*nn;
-            str_1 = sparse( [rr;ri;ri;rr], [cr;ci+nn;ci+n2*nn;cr+nn*(n2+1)], [vr;vi;-vi;vr], nt, n2^2 );
-            
-        end
+        %
+        % CVX stores symmetric matrix variables in packed lower triangle
+        % form; and str_1 is the adjoint of the mapping from packed form to
+        % unpacked form. That is, if x is an n(n+1)/2 by 1 vector, then
+        % str_1' * x is the n x n symmetric matrix. To preserve inner
+        % products we need the inverse operator as well:
+        % <a,x> = <a,str_2'*str_1'*x> = <str_2*a,str_1'*x>
+        %
+        str_1 = cvx_create_structure( [nn,nn], 'symmetric' );
         str_2 = cvx_invert_structure( str_1 );
-        
         %
         % SDPT3, on the other hand, stores symmetric matrix variables in
         % packed upper triangle format, with off-diagonal elements scaled 
         % by sqrt(2) to preserve inner products. The operator is unitary:
         % <str_2*a,str_1'*x> = <str_3*str_2*a,str_3*str_1'*x>
         %
-        
         str_3 = sqrt(0.5) * ones(nt2,1); str_3(cumsum(1:n2)) = 1;
         str_3 = spdiags( str_3, 0, nt2, nt2 ) * cvx_s_symmetric_ut( n2, n2, true );
         Avec{end}{end+1} = reshape( ( str_3 * str_2 ) * reshape( At(ti,:), nt, nv * m ), nt2 * nv, m );
-        
         %
         % SDPT3 expects C to be in the form of a symmetric matrix, so we
         % only need to do half the work.
         % <c,x> == <str_2*c,str_1'*x>
         %
-        
         cc = reshape( str_2 * reshape( c(ti,:), nt, nv ), n2, n2 * nv );
         if nv > 1,
             % For multiple matrices, SDPT3 expects the blocks to be stacked
@@ -282,13 +216,11 @@ if ~isempty( tt ),
             cc = sparse( rr + floor((cc-1)/n2)*n2, cc, vv, n2 * nv, n2 * nv );
         end
         Cvec{end}{end+1} = cc;
-        
         %
         % SDPT3 presents X in symmetric form. We must extract the lower
         % triangle for CVX. No scaling is needed. For multiple blocks we
         % must add row offsets to handle the block diagonal form.
         %
-        
         [ rr, cc, vv ] = find( str_2' );
         cc = cc + floor((cc-1)/n2)*(nnn-n2);
         if nv > 1,
@@ -299,18 +231,6 @@ if ~isempty( tt ),
             vv = vv(:,ov);
         end
         xvec{end}{end+1} = sparse( cc, rr, vv, n2*nv*(nnn+1), nt*nv );
-        if need_z,
-            [ rr, cc, vv ] = find( str_1 );
-            cc = cc + floor((cc-1)/n2)*(nnn-n2);
-            if nv > 1,
-                ov = ones(1,nv); sv = 0:nv-1;
-                or = ones(length(rr),1);
-                rr = rr(:,ov) + or*(sv*nt);
-                cc = cc(:,ov) + or*(sv*(n2*(nnn+1)));
-                vv = vv(:,ov);
-            end
-            zvec{end}{end+1} = sparse( cc, rr, vv, n2*nv*(nnn+1), nt*nv );
-        end
         used(ti) = true;
     end
     blk{end,2} = horzcat( blk{end,2}{:} );
@@ -319,18 +239,12 @@ if ~isempty( tt ),
     tvec{end}  = vertcat( tvec{end}{:} );
     xvec{end}  = blkdiag( xvec{end}{:} );
     xvec{end}(nnn*nnn+1:end,:) = [];
-    if need_z,
-        zvec{end} = blkdiag( zvec{end}{:} );
-        zvec{end}(nnn*nnn+1:end,:) = [];
-    end
-    found(tt)  = true;
+    found(tt) = true;
 end
 
-ti = find(~found);
-if ~isempty(ti),
-    types = unique( types(ti) );
-    types = sprintf( ' %s', types{:} );
-    error( 'One or more unsupported nonlinearities detected: %s', types );
+if ~all(found),
+    types = sprintf( '%s, ', types{~found} );
+    error( 'Unsupported nonlinearities found: %s', types(1:end-2) );
 end
 
 ti = find(~used);
@@ -343,10 +257,6 @@ if ~isempty(ti),
     Cvec{end+1,1} = c(ti);
     tvec{end+1,1} = ti;
     xvec{end+1,1} = 1;
-    if need_z,
-        zvec{end+1,1} = 1;
-    end
-    % found(tt) = true;
     % used(ti) = true;
 end
 
@@ -428,25 +338,6 @@ end
 % Iteration count
 
 iters = info.iter;
-
-% Dual cone
-
-if need_z,
-    if y_good,
-        z = zeros(1,n);
-        for k = 1 : length(zz),
-            z(1,tvec{k}) = z(1,tvec{k}) + vec(zz{k})' * zvec{k};
-        end
-    end
-    if y_good && all(isfinite(z)),
-        z = full( z )';
-    else
-        z = NaN * ones(n,1);
-    end
-    if mzero,
-        z(end) = [];
-    end
-end
 
 % Copyright 2005-2014 CVX Research, Inc.
 % See the file LICENSE.txt for full copyright information.

@@ -26,6 +26,8 @@ opt_volumes = zeros(length(Awall),N);
 disp('Computing optimal box volume for:')
 
 % setup various GP problems with varying parameters
+cvx_setpath
+cvx_setspath
 for k = 1:length(Awall)
   Awall_k = Awall(k);
   fprintf( 'Awall = %d:\n', Awall(k) );
@@ -47,6 +49,8 @@ for k = 1:length(Awall)
     opt_volumes(k,n) = cvx_optval;
   end
 end
+cvx_clearspath
+cvx_clearpath
 
 % plot the tradeoff curve
 figure, clf

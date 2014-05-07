@@ -42,37 +42,25 @@ catch exc
     else rethrow( exc ); end
 end
 
-function y = std_1( x, w, square_it )
-y = [];
+function y = std_1( x, w, square_it ) %#ok
 [nx,nv] = size( x );
-nw = numel(w);
 if nx == 1,
     y = cvx( [nx,nv], [] );
-elseif nw <= 1,
-    denom = sqrt(nx - ~(nw&&w));
-    % In theory we could just say y = norm(x-mean(x))/denom. However, by
-    % adding an extra variable we preserve sparsity.
-    cvx_begin
-        variable xbar( 1, nv )
-        epigraph variable y( 1, nv );
-        nx * xbar == sum( x, 1 ); %#ok
-        if square_it
-            { x - repmat(xbar,[nx,1]), denom, denom * y } == rotated_lorentz( [ nx, nv ], 1, ~isreal( x ) ); %#ok
-        else
-            { x - repmat(xbar,[nx,1]), denom * y } == lorentz( [ nx, nv ], 1, ~isreal( x ) ); %#ok
-        end
-    cvx_end
-    y = cvx_optval;
 else
     cvx_begin
         variable xbar( 1, nv )
-        epigraph variable y( 1, nv );
-        xbar == sum( w' * x ); %#ok
-        w = sqrt( w );
-        if square_it
-            { repmat(w,[1,nv]) .* ( x - repmat(xbar,[nx-1]) ), 1, y } == rotated_lorentz( [ nx, nv ], 1, ~isreal( x ) ); %#ok
+        nw = numel(w);
+        if nw <= 1,
+            nx * xbar == sum( x, 1 ); %#ok
+            xmid = bsxfun( @minus, x, xbar ) / sqrt( nx - ~(nw&&w) );
         else
-            { repmat(w,[1,nv]) .* ( x - repmat(xbar,[nx-1]) ), y } == lorentz( [ nx, nv ], 1, ~isreal( x ) ); %#ok
+            xbar == sum( w' * x ); %#ok
+            xmid = bsxfun( @times, sqrt( w ), bsxfun( @minus, x, xbar ) );
+        end
+        if square_it
+            minimize( sum_square( xmid, 1 ) );
+        else
+            minimize( norms( xmid, 2, 1 ) );
         end
     cvx_end
     y = cvx_optval;

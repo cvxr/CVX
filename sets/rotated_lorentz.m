@@ -8,7 +8,7 @@ function cvx_optpnt = rotated_lorentz( varargin )
 %   the constraint
 %       {x,y,z} == rotated_lorentz(n)
 %   is equivalent to
-%       norm(x,2) <= geo_mean([y,z])
+%       norm(x,2) <= 2*geo_mean([y,z])
 %   except that using ROTATED_LORENTZ is more efficient.
 %
 %   ROTATED_LORENTZ(SX,DIM), where SX is a valid size vector and DIM is a
@@ -20,7 +20,7 @@ function cvx_optpnt = rotated_lorentz( varargin )
 %   the constraint
 %       {x,y,z} == rotated_lorentz(sx,dim)
 %   is equivalent to
-%       norms(x,2,dim) <= geo_mean(cat(dim,y,z),dim)
+%       norms(x,2,dim) <= 2*geo_mean(cat(dim,y,z),dim)
 %   except, again, ROTATED_LORENTZ is more efficient. DIM is optional; if
 %   it is omitted, the first non-singleton dimension is used.
 %
@@ -33,48 +33,53 @@ function cvx_optpnt = rotated_lorentz( varargin )
 %       details on how to use sets.
 
 [ sx, dim, iscplx ] = cvx_get_dimension( varargin, 2, 'nox', true, 'zero', true );
-iscplx = ~isempty(iscplx) && iscplx;
-
-%
-% Build the cvx module
-%
-
-sd = sx( dim );
-if iscplx, sd = 2 * sd; end
-
-if any( sx == 0 ),
-    cvx_optpnt.x = cvx( sx, [] );
-    sx( dim ) = 1;
-    cone = nonnegative( [ 2, sx ] );
-    cvx_optpnt.y = reshape( cone( 1, : ), sx );
-    cvx_optpnt.z = reshape( cone( 2, : ), sx );
-elseif sd == 1,
-    cone = semidefinite( [ 2, 2, sx ] );
-    cvx_optpnt.x = reshape( cone( 2, 1, : ), sx );
-    cvx_optpnt.y = reshape( cone( 1, 1, : ), sx );
-    cvx_optpnt.z = reshape( cone( 2, 2, : ), sx );
+if isempty( iscplx ),
+    iscplx = false;
+elseif length( iscplx ) ~= 1,
+    error( 'Third argument must be a scalar.' );
 else
-    sx( dim ) = sd + 1;
-    cone = lorentz( sx, dim );
-    ndxs = cell( 1, length(sx) );
-    [ ndxs{:} ] = deal( ':' );
-    if iscplx,
-        ndxs{ dim } = 1 : 2 : sd;
-        xR = cone.x( ndxs{:} );
-        ndxs{ dim } = 2 : 2 : sd;
-        xI = cone.x( ndxs{:} );
-        cvx_optpnt.x = xR + 1j * xI;
-    else
-        ndxs{ dim } = 1 : sd;
-        cvx_optpnt.x = cone.x( ndxs{:} );
-    end
-    ndxs{ dim } = sd + 1;
-    temp = cone.x( ndxs{:} );
-    cvx_optpnt.y = cone.y + temp;
-    cvx_optpnt.z = cone.y - temp;
+    iscplx = logical( iscplx );
 end
-
-cvx_optpnt = cvxtuple( cvx_optpnt );
+sy = sx;
+nv = sx( dim );
+sy( dim ) = 1;
+ny = prod( sy );
+if nv == 0 || ny == 0,
+    x = cvx( sx, [] );
+    if ny == 0,
+        y = cvx( sy, [] );
+        z = cvx( sy, [] );
+    else
+        cone = nonnegative( 2 * prod(sy) );
+        y = reshape( cone(1:2:end), sy );
+        z = reshape( cone(2:2:end), sy );
+    end
+else
+    if iscplx, 
+        nv = nv * 2; 
+    end
+    cvx_begin set
+        variable x( nv, ny ) 
+        variable y( 1,  ny ) nonnegative_
+        variable z( 1,  ny ) nonnegative_
+        cvx_pushcone( 'rotated-lorentz', [ x ; y ; z ] ); %#ok
+    cvx_end
+    if iscplx,
+        x = x(1:2:end,:) + 1j * x(2:2:end,:);
+        nv = nv * 0.5;
+    end
+    if sx( dim ) > 1,
+        nleft = prod( sx( 1 : dim - 1 ) );
+        if nleft > 1,
+            x = reshape( x, [ nv, nleft, ny / nleft ] );
+            x = permute( x, [ 2, 1, 3 ] );
+        end
+    end
+    x = reshape( x, sx );
+    y = reshape( y, sy );
+    z = reshape( z, sy );
+end
+cvx_optpnt = cvxtuple( struct( 'x', x, 'y', y, 'z', z ) );
 
 % Copyright 2005-2014 CVX Research, Inc.
 % See the file LICENSE.txt for full copyright information.

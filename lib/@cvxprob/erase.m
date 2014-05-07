@@ -7,14 +7,12 @@ nf = length( prob.t_variable ) + 1;
 ne = prob.n_equality + 1;
 if nf <= 2,
     cvx___.classes     = int8(3);
-    cvx___.canslack    = false;
-    cvx___.readonly    = int32(0);
+    cvx___.canslack    = false(1,0);
     cvx___.cones       = struct( 'type', {}, 'indices', {} );
     cvx___.exponential = [];
 elseif length( cvx___.classes ) >= nf,
-    cvx___.classes( nf : end ) = [];
-    cvx___.canslack( nf : end ) = [];
-    cvx___.readonly( nf : end ) = [];
+    cvx___.classes( nf : end, : ) = [];
+    cvx___.canslack( nf : end, : ) = [];
     if ~isempty( cvx___.cones ),
         tt = true( 1, length( cvx___.cones ) );
         for k = 1 : length( cvx___.cones ),
@@ -34,11 +32,11 @@ if ~any( cvx___.exponential ),
 end
 if ne <= 1,
     cvx___.equalities = {};
-    cvx___.needslack  = false(0,1);
+    cvx___.inequality = false(0,1);
     cvx___.n_equality = 0;
 elseif length( cvx___.equalities ) >= ne,
     cvx___.equalities( ne : end ) = [];
-    cvx___.needslack( ne : end ) = [];
+    cvx___.inequality( ne : end ) = [];
     cvx___.n_equality = sum( cellfun( @(x)size(x,2), cvx___.equalities ) );
 end
 

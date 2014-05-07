@@ -7,8 +7,8 @@
 %   nonneg_poly_coeffs      - Coefficients of nonnegative degree-n polynomials. {p: p(x)>=0 for all x}
 %   nonnegative             - The nonnegative orthant.                          {x: x>=0}
 %   norm_ball               - Norm ball.                                        {x: norm(x,p) <= 1}
-%   rotated_complex_lorentz - Rotated complex second-order cone.                {(x,y,z): norm(x)^2 <= y*z, y>=0, z>=0 }
-%   rotated_lorentz         - Rotated real second-order cone.                   {(x,y,z): norm(x)^2 <= y*z, y>=0, z>=0 }
+%   rotated_complex_lorentz - Rotated complex second-order cone.                {(x,y,z): norm(x)^2 <= 2*y*z, y>=0, z>=0 }
+%   rotated_lorentz         - Rotated real second-order cone.                   {(x,y,z): norm(x)^2 <= 2*y*z, y>=0, z>=0 }
 %   semidefinite            - Real symmetric positive semidefinite matrices     {X: X==X', min(eig(X))>=0}
 %   simplex                 - The unit simplex.                                 {x: x>=0, sum(x)==1}
 

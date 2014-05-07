@@ -1,5 +1,4 @@
-function [ dbcA, cones, dir, Q, P, exps, ineqs ] = extract( pp, destructive )
-if nargin < 3 || nargout < 6, doineqs = true; end
+function [ dbcA, cones, dir, Q, P, exps ] = extract( pp, destructive )
 if nargin < 2 || nargout < 5, destructive = false; end
 
 global cvx___
@@ -34,156 +33,112 @@ dbcA( end + 1 : n, : ) = 0;
 % Equality constraints
 %
 
-AA    = cvx___.equalities;
-ntot  = cvx___.n_equality;
-ineqs = cvx___.needslack;
-szs   = cellfun( @(x)size(x,2), AA );
+AA     = cvx___.equalities;
+ntot   = cvx___.n_equality;
+szs    = cellfun( @(x)size(x,2), AA );
 if p.n_equality > 0,
     npre  = sum( szs( 1: p.n_equality ) );
-    szs   =    szs( p.n_equality + 1 : end );
-    AA    =    AA( p.n_equality + 1 : end, : );
-    ineqs = ineqs( p.n_equality + 1 : end, : );
+    AA    =  AA( p.n_equality + 1 : end, : );
 else
     npre  = 0;
 end
-AA   = cellfun( @(x)vertcat(x,sparse(n-size(x,1),size(x,2))), AA, 'UniformOutput', false );
+AA   = cellfun( @(x)vertcat(sparse(x),sparse(n-size(x,1),size(x,2))), AA, 'UniformOutput', false );
 dbcA = horzcat( dbcA, AA{:} );
-ndxs = zeros(1,ntot);
-ndxs(cumsum([1,szs(1:end-1)])) = 1;
-ineqs = [false;ineqs(cumsum(ndxs),:)];
-clear ndxs AA
+clear AA
 
 %
-% Determine which inequalities need slack variables. Not all of them do,
-% because some may contain variables which themselves can absorb any slack,
-% and thus can be converted to equations without sacrificing equivalence.
-% We are somewhat conservative in our determinations here: the variable
-% must appear *only* in this inequality, and has been identified as free
-% to grow without further constraint in the direction of slack. For
-% example, consider the inequality
-%   x + y <= z
-% where y is an epigraph variable of a convex constraint f(w) <= y. If y
-% does not *also* appear in the objective coerced against growth, then we
-% are free to replace the inequality with the equation
-%   x + y == z
-% and equivalence is preserved. We attempt to be very conservative here,
-% so it is possible that we do not catch all of the cases where
-% inequalities may be converted to equations.
+% Nonlinearities
 %
 
-if any( ineqs ) && any( cvx___.canslack ),
-    slacks = find( cvx___.canslack );
-    sterms = dbcA( slacks, : );
-    oterms = sterms( :, 1 );
-    ecount = sum( sterms( :, ~ineqs ) ~= 0, 2 ) - ( oterms ~= 0 );
-    sterms = sterms( :, ineqs );
-    icount = sum( sterms ~= 0, 2 );
-    sterms = sum( sterms, 2 );
-    sdirec = vex(cvx___.classes(slacks));
-    nslack = icount == 1 & ecount == 0 & sterms .* sdirec <= 0 & sterms .* oterms >= 0;
-    ineqs( any( dbcA( slacks( nslack ), : ), 1 ) ) = false;
-end
-
-%
-% Select the cones used
-%
-
-used = full( any( dbcA, 2 ) );
-if all( used ),
-    cones = cvx___.cones;
-else
-    cones = [];
-    for k = 1 : length( cvx___.cones ),
-        cone = cvx___.cones( k );
-        temp = any( reshape( used( cone.indices ), size( cone.indices ) ), 1 );
-        if any( temp ),
-            ncone = cone;
-            ncone.indices = ncone.indices( :, temp );
-            if isempty( cones ),
-                cones = ncone;
-            else
-                cones = [ cones, ncone ];
-            end
+used  = full( any( dbcA, 2 ) );
+used(1) = true;
+cones = cvx___.cones;
+ncone = length(cones);
+allu  = all(used);
+if ~allu,
+    prune = false;
+    for k = 1 : ncone,
+        cone = cones(k);
+        ndxs = cone.indices;
+        temp = any( reshape( used( ndxs ), size( ndxs ) ), 1 );
+        if ~all( temp ),
+            ndxs = ndxs( :, temp );
+            used( ndxs ) = true;
+            if isempty( ndxs ), prune = true; end
+            cones( k ).indices = temp;
         end
     end
-end
-
-%
-% Add the slack variables
-%
-
-if doineqs,
-    nsl = nnz( ineqs );
-    if nsl ~= 0,
-        dbcA = [ dbcA ; sparse( 1 : nsl, find( ineqs ), -1, nsl, length( ineqs ) ) ];
-        ncone = struct( 'type', 'nonnegative', 'indices', n+1:n+nsl );
-        if isempty( cones ),
-            cones = ncone;
-        else
-            tt = find(strcmp({cones.type},'nonnnegative'));
-            if ~isempty( tt ),
-                cones(tt(1)).indices = [ cones(tt(1)).indices, ncone.indices ];
-            else
-                cones = [ ncone, cones ];
-            end
-        end
+    if prune,
+        cones = cones(cellfun(@(x)~isempty(x.indices),cones));
     end
-    ineqs = [];
-else
-    ineqs = find(ineqs);
+    allu = all( used );
 end
 
 %
-% Q and P matrices
-%
-
-used = find( used );
-Q = sparse( used, used, 1, n, n + nsl );
-P = sparse( [ 1, npre + 2 : ntot + 1 ], 1 : ntot - npre + 1, 1, ntot + 1, size( dbcA, 2 ) );
-
-%
-% Exponential and logarithm indices
+% Exponentials
 %
 
 exps = cvx___.exponential;
 if ~isempty( exps ),
     esrc = find( exps );
     edst = exps( esrc );
-    tt   = any(dbcA(esrc,:),2) & any(dbcA(edst,:),2);
-    tn   = ~tt;
-    exps = [ esrc(tn), edst(tn) ];
+    tt   = used(esrc) & used(edst);
+    tn   = used(esrc) - used(edst);
+    tq   = tn ~= 0;
+    exps = [ esrc(tq), edst(tq), tn(tq) ];
     if any( tt ),
         % Determine the indices of the exponentials
-        esrc = esrc(tt);
-        edst = edst(tt);
-        nexp = length(esrc);
+        esrc  = esrc(tt);
+        edst  = edst(tt);
+        nexp  = length(esrc);
         nexp3 = 3 * nexp;
         % Create the exponential cones
-        ncone.type = 'exponential';
-        ncone.indices = reshape( n+nsl+(1:nexp3), 3, nexp );
+        indices = reshape( n+1:n+nexp3, 3, nexp );
         % Expand Q, P, dbCA
-        Q(end,end+nexp3) = 0;
-        P(end,end+nexp3) = 0;
         dbcA(end+nexp3,end) = 0;
         % Add equality consraints to tie the exponential cones to esrc and edst
         % and set the exponential perspective variable to 1
         ndxc = reshape( 1 : 3 * nexp, 3, nexp );
         dbcA = [ dbcA, sparse( ...
-            [ esrc(:)' ; ones(1,nexp) ; edst(:)' ; ncone.indices ], ...
+            [ esrc(:)' ; ones(1,nexp) ; edst(:)' ; indices ], ...
             [ ndxc ; ndxc ], ... 
             [ ones(3,nexp) ; -ones(3,nexp) ] ) ];
-        if isempty( cones ),
-            cones = ncone;
-        else
-            tt = find(strcmp({cones.type},'exponential'));
+        done = false;
+        if ~isempty( cones )
+            tt = find( strcmp( { cones.type }, 'exponential' ) );
             if ~isempty( tt ),
-                cones(tt(1)).indices = [ cones(tt(1)).indices, ncone.indices ];
-            else
-                cones = [ cones, ncone ];
+                cones(tt(1)).indices = [ cones(tt(1)).indices, indices ];
+                done = true;
             end
+        end
+        if ~done,
+            cones = [ cones, struct( 'type', 'exponential', 'indices', indices ) ];
         end
     end
 end
+
+%
+% Q and P matrices
+%
+
+if allu,
+    Q = sparse( 1 : n, 1 : n, 1, n, size(dbcA,1) );
+else
+    nq = nnz(used);
+    nn = size(dbcA,1);
+    Q  = sparse( find(used), 1 : nq, 1, n, nq+(nn-n) );
+    used(end+1:nn) = true;
+    dbcA   = dbcA(used,:);
+    if ~isempty( cones ),
+        ndxi = zeros(1,nn);
+        used(n+1:nn) = true;
+        ndxi(used) = 1:nq+(nn-n);
+        for k = 1 : length(cones),
+            cones(k).indices = ndxi(cones(k).indices);
+        end
+    end
+end
+P = sparse( [ 1, npre + 2 : ntot + 1 ], 1 : ntot - npre + 1, 1, ntot + 1, size(dbcA,2) );
 
 %
 % Reserved flags

@@ -37,11 +37,7 @@ else
     npflag = cvx___.precflag;
     nrprec = cvx___.rat_growth;
     selected = cvx___.solvers.selected;
-    if isfield( cvx___.solvers.list, 'settings'  ),
-        nsolv  = struct( 'index', selected, 'settings', cvx___.solvers.list(selected).settings );
-    else
-        nsolv = struct( 'index', selected, 'settings', [] );
-    end
+    nsolv  = struct( 'index', selected, 'settings', { cvx___.solvers.list(selected).settings } );
     nquiet = cvx___.quiet;
 end
 

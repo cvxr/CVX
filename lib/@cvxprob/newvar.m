@@ -1,48 +1,51 @@
-function x = newvar( prob, name, siz, str, geo )
+function v = newvar( prob, args )
 
 global cvx___
 p = prob.index_;
 pstr = cvx___.problems( p );
 
-% Check for conflicts
-if ~isempty( name ),
-    if ~isvarname( name ),
-        error( 'CVX:Variable', 'Invalid variable name: %s', name );
-    elseif isfield( pstr.variables, name ),
-        error( 'CVX:Variable', 'Duplicate variable name: %s', name );
-    elseif isfield( pstr.duals, name ),
-        error( 'CVX:Variable', 'Primal/dual variable name conflict: %s', name );
+name = args(1).name;
+if ~isvarname( name ),
+    error( 'CVX:Variable', 'Invalid variable name: %s', name );
+elseif isfield( pstr.variables, name ),
+    error( 'CVX:Variable', 'Variable name conflict: %s', name );
+elseif isfield( pstr.duals,name ),
+    error( 'CVX:Variable', 'Primal/dual variable name conflict: %s', name );
+end
+
+switch args(end).name,
+    case 'epigraph_', iseh = +1; args(end) = [];
+    case 'hypograph_', iseh = -1; args(end) = [];
+    otherwise, iseh = 0;
+end
+if iseh,
+    if isequal( pstr.direction, 'find' ),
+        error( 'CVX:Variable', 'Epigraph/hypograph variables cannot be added to sets.' );
+    elseif ~isempty( pstr.objective ),
+        error( 'CVX:Variable', 'An objective has already been supplied for this problem.' );
     end
 end
+v = cvx_createvar( args, pstr.gp );
 
-% Determine structure
-len = prod( siz );
-siz(end+1:2) = 1;
-if nargin < 4 || isempty( str ),
-    dof = len;
-    str = [];
-else
-    temp = any( str, 2 );
-    dof = full( sum( temp ) );
-    if dof ~= length( temp ),
-        str = str( temp, : );
+%
+% Add variable to the problem structure
+%
+
+if iseh,
+    if pstr.gp,
+        vv = log( v );
+    else
+        vv = v;
     end
+    if iseh > 0,
+        dir = 'epigraph';
+    else
+        dir = 'hypograph';
+    end
+    pstr.objective = vv;
+    pstr.direction = dir;
+    pstr.geometric = pstr.gp;
 end
+pstr.variables.(name) = v;
+cvx___.problems( p ) = pstr;
 
-% Create the variable
-x = cvx_pushvar( dof );
-if nargin == 5 && ~isempty( geo ) && geo,
-    x = cvx_pushexp( x );
-end
-x = sparse( x, 1 : dof, 1 );
-if ~isempty( str ), x = x * str; end
-x = cvx( siz, x );
-
-% Save
-if ~isempty( name ),
-    cvx___.problems( p ).variables.(name) = x;
-end
-
-% Copyright 2005-2014 CVX Research, Inc.
-% See the file LICENSE.txt for full copyright information.
-% The command 'cvx_where' will show where this file is located.

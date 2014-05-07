@@ -1,10 +1,6 @@
-function [ prob, name, args ] = cvx_parse
+function args = cvx_parse
 try
     global cvx___ %#ok
-    prob = evalin( 'caller', 'cvx_problem', '[]' );
-    if ~isa( prob, 'cvxprob' ),
-        error( 'CVX:NoProblem', 'No CVX model exists in this scope.' );
-    end
     oargs = cvx___.args{1};
     nargs = length( oargs );
     if isequal( cvx___.args{2}, 'dual' ),
@@ -17,8 +13,7 @@ try
         rpat = '^([a-zA-Z]\w*)(\(.*\))?$';
         if nvars < 0, nvars = nargs; end
     end
-    name  = cell( 1, nargs );
-    args  = cell( 1, nargs );
+    args = struct( 'name', cell( 1, nargs ), 'args', cell( 1, nargs ) );
     for k = 1 : nargs,
         tok = regexp( oargs{k}, rpat, 'tokens' );
         if isempty( tok ),
@@ -73,8 +68,9 @@ try
                 error( exc.identifier, 'Error attempting to evaluate arguments of: %s\n   %s', oargs{k}, exc.message );
             end
         end
-        name{k} = nam;
-        args{k} = arg;
+        args(k).name = nam;
+        args(k).args = arg;
+        args(k).orig = oargs{k};
     end
     cvx___.args = {};
 catch exc
