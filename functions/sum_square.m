@@ -1,4 +1,4 @@
-function y = sum_square( varargin )
+function y = sum_square( X, dim, is_abs )
 
 %SUM_SQUARE   Sum of squares.
 %   For vectors, SUM_SQUARE(X) is the sum of the squares of the elements of
@@ -36,14 +36,15 @@ if isempty( params ),
 end
 
 try
-    if nargin < 3 || ~varargin{3},
+    if nargin < 3 || is_abs,
+        if nargin < 2, dim = []; end
         params.name = rname;
         params.map  = rmap;
     else
         params.name = cname;
         params.map  = cmap;
     end
-    y = cvx_reduce_op( params, varargin{:} );
+    y = cvx_reduce_op( params, X, dim );
 catch exc
     if strncmp( exc.identifier, 'CVX:', 4 ), throw( exc ); a
     else rethrow( exc ); end

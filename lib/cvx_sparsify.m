@@ -19,11 +19,11 @@ else
     [ xR, by ] = cvx_bcompress( by, mode, 0 );
 end
 nx = size( by, 2 );
-ndim = cvx_pushvar( nx, cvx_classify_mex( by, cvx___.classes ) );
+ndim = cvx_newvar( nx, cvx_classify_mex( by, cvx___.classes ) );
 bz = sparse( ndim, 1 : nx, 1 );
 nz = size(bz,1);
 by( nz, end ) = 0;
-cvx_pushcnstr( by - bz, true );
+cvx_newcnstr( by - bz, true );
 if ~isempty( mode ),
     bz = bz * xR;
 end

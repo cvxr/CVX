@@ -39,7 +39,10 @@ function cvx_begin( varargin )
 
 try
     if isa( evalin( 'caller', 'cvx_problem', '[]' ), 'cvxprob' ),
-        evalin( 'caller', 'cvx_pop( cvx_problem, true, true )' );
+        if ~evalin( 'caller', 'isempty( cvx_problem )' ),
+            warning( 'CVX:Empty', 'A non-empty cvx problem already exists in this scope.\n   It is being overwritten.', 1 ); %#ok
+        end
+        evalin( 'caller', 'cvx_pop' );
     end
     prob = cvxprob( varargin{:} );
     assignin( 'caller', 'cvx_problem', prob );

@@ -20,12 +20,13 @@ function a = gt( x, y )
 
 warning( 'CVX:StrictInequalities', cvx_error( 'The use of strict inequalities in CVX is strongly discouraged, because solvers treat them as non-strict inequalities. Please consider using ">=" instead.', [66,75], false, '' ) );
 try
-    b = newcnstr( evalin( 'caller', 'cvx_problem', '[]' ), x, y, '>' );
+    evalin( 'caller', 'cvx_verify' );
+	b = cvx_pushcnstr( x, y, '>' );
+	if nargout, a = b; end
 catch exc
 	if strncmp( exc.identifier, 'CVX:', 4 ), throw( exc ); 
 	else rethrow( exc ); end
 end
-if nargout, a = b; end
 
 % Copyright 2005-2014 CVX Research, Inc.
 % See the file LICENSE.txt for full copyright information.

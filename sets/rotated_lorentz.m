@@ -62,7 +62,7 @@ else
         variable x( nv, ny ) 
         variable y( 1,  ny ) nonnegative_
         variable z( 1,  ny ) nonnegative_
-        cvx_pushcone( 'rotated-lorentz', [ x ; y ; z ] ); %#ok
+        cvx_pushcone( true, 'rotated-lorentz', [ x ; y ; z ] ); %#ok
     cvx_end
     if iscplx,
         x = x(1:2:end,:) + 1j * x(2:2:end,:);

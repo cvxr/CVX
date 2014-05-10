@@ -1,9 +1,5 @@
-function z = eq( x, y )
-if ~isa( x, class( y ) )
-    error( 'cvxprob objects may only be compared to each other.' );
-else
-    z = cvx_id( x ) == cvx_id( y );
-end
+function cvx_pop( p, do_warn )
+evalin( 'caller', sprintf( 'cvx_pop(%d,%d,%d)', p.index_, p.id_, do_warn ) );
 
 % Copyright 2005-2014 CVX Research, Inc.
 % See the file LICENSE.txt for full copyright information.

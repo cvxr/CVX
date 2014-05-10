@@ -1,5 +1,9 @@
-function [ xR, x ] = cvx_bcompress( x, mode, num_sorted )
+function [ xR, x, elims ] = cvx_bcompress( x, mode, num_sorted, num_ended )
 
+[ m, n ] = size( x ); %#ok
+if nargin < 4 || isempty( num_ended ),
+    num_ended = n;
+end
 if nargin < 3 || isempty( num_sorted ),
     num_sorted = 0;
 end
@@ -15,7 +19,6 @@ else
     end
 end
 
-[ m, n ] = size( x ); %#ok
 iscplx = ~isreal( x );
 if iscplx,
     xR = real( x );
@@ -27,7 +30,7 @@ if iscplx,
     n = n * 2;
 end
 
-[ ndxs, scls ] = cvx_bcompress_mex( sparse( x ), mode, num_sorted );
+[ ndxs, scls ] = cvx_bcompress_mex( sparse( x ), mode, num_sorted, num_ended );
 xR = sparse( ndxs, 1 : n, scls, n, n );
 t2 = any( xR, 2 );
 xR = xR( t2, : );
@@ -38,6 +41,10 @@ end
 
 if iscplx,
     xR = xR(:,1:end/2) + 1j * xR(:,end/2+1:end);
+end
+
+if nargout == 3,
+    elims = find(ndxs~=(1:length(ndxs)));
 end
 
 % Copyright 2005-2014 CVX Research, Inc.

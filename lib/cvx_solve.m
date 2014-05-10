@@ -1,20 +1,25 @@
-function solve( prob )
+function cvx_solve
 
 global cvx___
-[p,pr] = verify( prob );
-quiet = pr.quiet;
-obj   = pr.objective;
-gobj  = pr.geometric;
-prec  = pr.precision;
-solv  = pr.solver;
-ndual = ~isempty( pr.duals );
+try
+    pstr = cvx___.problems(end);
+catch
+    error( 'CVX:NoModel', 'No CVX model is present.' );
+end
+
+quiet = pstr.quiet;
+obj   = pstr.objective;
+gobj  = pstr.geometric;
+prec  = pstr.precision;
+solv  = pstr.solver;
+ndual = ~isempty( pstr.duals );
 shim  = cvx___.solvers.list( solv.index );
 if isempty(shim.eargs), eargs = {}; else eargs = shim.eargs; end
 nobj  = numel( obj );
-if nobj > 1 && ~pr.separable,
+if nobj > 1 && ~pstr.separable,
     error( 'CVX:NonScalarObjective', 'Your objective function is not a scalar.' );
 end
-[ At, cones, sgn, Q, P, exps, dualized ] = eliminate( prob, true, shim.config );
+[ At, cones, sgn, Q, P, exps, dualized ] = cvx_extract( shim.config );
 
 if ndual && any( strncmp( {cones.type}, 'i_', 2 ) ),
     idual_error = true;
@@ -23,7 +28,10 @@ else
     idual_error = false;
 end
 
-c = At( :, 1 );
+% Yes, the negative sign is here. This is new. I decided to make the 
+% Lagrangian matrix in @cvxprob/eliminate fully consistent, which requires
+% either the objective or the constraints to be negated.
+c = - At( :, 1 );
 At( :, 1 ) = [];
 d = c( 1, : );
 c( 1, : ) = [];
@@ -154,9 +162,10 @@ elseif n ~= 0 && ~infeas && ( any( b ) || any( c ) ),
         
         Pr = [vec(ndx2(Pr,:));ndx3'];
         Pc = [vec(ndx2(Pc,:));ndx3'];
-        Pv = Pv' * ones(1,nc);
+        Pv = ones(nc,1) * Pv;
         Pw = ones(n-3*nc,1);
         QQ = sparse(ndx2(Qr,:),bsxfun(@plus,Qc',0:4:4*nc-1),Qv'*ones(1,nc),new_n,4*nc);
+        amult = 1;
         b(new_m) = 0;
         
         if ~quiet,
@@ -164,12 +173,9 @@ elseif n ~= 0 && ~infeas && ( any( b ) || any( c ) ),
             disp( spacer );
         end
         
-        ncone.type       = 'lorentz';
-        ncone.indices    = reshape(ndx2(1:9,:),3,3*nc);
-        ncone(2).type    = 'nonnegative';
-        ncone(2).indices = ndx2(end,:);
         cones(texp) = [];
-        cones = [ cones, ncone ];
+        cones = cvx_pushcone( cones, 'lorentz', reshape(ndx2(1:9,:),3,3*nc) );
+        cones = cvx_pushcone( cones, 'nonnegative', ndx2(end,:) );
         
         oprec = prec;
         best_x = NaN * ones(n,1);
@@ -191,12 +197,13 @@ elseif n ~= 0 && ~infeas && ( any( b ) || any( c ) ),
             ex0e = exp( - x0 * epow_i );
             ax = epow * ex0e;
             az = epow - x0;
-            Pv(1,:) = +az; Pv(2,:) = -az;
-            Pv(3,:) = +ax;
-            PP = sparse(Pr,Pc,[Pv(:);Pw]);
+            Pq = [az,-az,ax,Pv(:,4:end)]';
+            PP = sparse(Pr,Pc,[Pq(:);Pw]);
             
             % Solve the approximation
-            [ x, status, tprec, iters2, y ] = shim.solve( [ PP*At, QQ ], b, PP*c, cones, true, prec, solv.settings, eargs{:} );
+            [ x, status, tprec, iters2, y ] = shim.solve( ...
+                [ PP * At, bsxfun( @times, QQ, amult ) ], ...
+                b, PP*c, cones, true, prec, solv.settings, eargs{:} );
             iters = iters + iters2;
             x_valid = ~any(isnan(x));
             y_valid = ~any(isnan(y));
@@ -242,7 +249,7 @@ elseif n ~= 0 && ~infeas && ( any( b ) || any( c ) ),
             % Exact:  -u.*exp(v/u-1)<=w
             % Approx: -exp(-x0).*u.*(1-(v./u-1+x0)/(p-1)).^(1-p)<=w
             if y_valid,
-                z   = c - At * y(1:m);
+                z   = full(c - At * y(1:m));
                 uuu = min( -realmin, z(ndxs(1,:),:) );
                 vvv = z(ndxs(2,:),:);
                 www = max( +realmin, z(ndxs(3,:),:) );
@@ -294,13 +301,16 @@ elseif n ~= 0 && ~infeas && ( any( b ) || any( c ) ),
             end
             solved = x_valid * 2 + y_valid;
             found = nmov == 0 && solved;
-                
             
             % Check for stagnation
             stagc = ' '; stage = ' ';
             if ~found && last_solved == solved && last_act == nact,
-                if cer >= 0.9 * last_cer, stagc = 's'; end
-                if err >= 0.9 * last_err, stage = 's'; end
+                if cer >= 0.9 * last_cer, 
+                    stagc = 's'; 
+                end
+                if err >= 0.9 * last_err, 
+                    stage = 's'; 
+                end
             end
             if ~quiet,
                 fprintf( '%3d/%3d | %9.3e%c %9.3e%c %9.3e | %s\n', nmov, nact, cer, stagc, err, stage, tol, status );
@@ -342,7 +352,9 @@ elseif n ~= 0 && ~infeas && ( any( b ) || any( c ) ),
             elseif ~failed,
                 boost = ~cxX & erX;
                 if any( boost ),
-                    amult(boost) = min( amult(boost) * 10, 1e5 );
+                    if all( boost ), amult = amult * 10;
+                    else amult = amult .* repmat(9*boost+1,[1,4]); end
+                    amult = min( amult, 1e5 );
                 end
             end
             
@@ -423,7 +435,7 @@ elseif n ~= 0 && ~infeas && ( any( b ) || any( c ) ),
         case { 'Solved', 'Inaccurate/Solved', 'Suboptimal' },
             oval = sgn * ( c' * x + d' );
             if ndual || dualized,
-                bval = sgn * ( b' * y + d' );
+                bval = sgn * ( b(1:m,:)' * y + d' );
             elseif length(tprec) > 1,
                 bval = sgn * tprec(2) + d';
             else
@@ -511,9 +523,9 @@ if ~quiet,
     fprintf( 1, 'Status: %s\n', status );
 end
 
-cvx___.problems( p ).status = status;
-cvx___.problems( p ).iters = iters;
-cvx___.problems( p ).tol = tprec(1);
+pstr.status = status;
+pstr.iters = iters;
+pstr.tol = tprec(1);
 
 %
 % Push the results into the master CVX workspace
@@ -554,8 +566,8 @@ if ~isempty( obj ),
 end
 oval = full(oval);
 bval = full(bval);
-cvx___.problems( p ).result = oval;
-cvx___.problems( p ).bound = bval;
+pstr.result = oval;
+pstr.bound = bval;
 if ~quiet,
     if length( oval ) == 1,
         fprintf( 'Optimal value (cvx_optval): %+g\n', oval );
@@ -573,6 +585,8 @@ end
 if ~quiet,
     disp( ' '  );
 end
+
+cvx___.problems(end) = pstr;
 
 if ~isempty( estruc ),
     if strncmp( estruc.identifier, 'CVX:', 4 ),

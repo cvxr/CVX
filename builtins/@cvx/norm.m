@@ -84,9 +84,8 @@ if m == 1 || n == 1 || isequal( p, 'fro' ),
                 if p == 2,
                     z = [];
                     cvx_begin
-                        epigraph variable z
+                        epigraph variable z nonnegative_
                         { x, z } == lorentz( n, [], ~isreal( x ) ); %#ok
-                        cvx_setnneg(z);
                     cvx_end
                 else
                     if isreal( x ),
@@ -96,11 +95,10 @@ if m == 1 || n == 1 || isequal( p, 'fro' ),
                     end
                     y = []; z = [];
                     cvx_begin
-                        epigraph variable z
+                        epigraph variable z nonnegative_
                         variable y( n )
                         { [ y, z*ones(n,1) ], x } == geo_mean_cone( [n,2], 2, [1/p,1-1/p], cmode ); %#ok
                         sum( y ) == z; %#ok
-                        cvx_setnneg(z);
                     cvx_end
                 end
             end

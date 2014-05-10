@@ -13,6 +13,6 @@ else
 end
 cx = cvx___.classes(ndim);
 cy = map(cx);
-gdim = cvx_pushvar( numel(ndim), cy );
+gdim = cvx_newvar( numel(ndim), cy );
 cvx___.logarithm( gdim, 1 ) = ndim(:);
 cvx___.exponential( ndim, 1 ) = gdim(:);

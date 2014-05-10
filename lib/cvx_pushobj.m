@@ -1,21 +1,16 @@
-function newobj( prob, dir, x )
-if nargin < 4, epi = false; end
+function cvx_pushobj( dir, x )
 
-persistent remap_min remap_max remap_log remap_gp
-if isempty( remap_max ),
-    remap_min = cvx_remap( 'convex', 'l_convex' );
-    remap_max = cvx_remap( 'concave', 'l_concave' );
-    remap_log = cvx_remap( 'l_valid' ) & ~cvx_remap( 'constant' );
-    remap_gp  = cvx_remap( 'g_valid' );
+global cvx___
+try
+    pstr = cvx___.problems(end);
+catch
+    error( 'CVX:NoModel', 'No CVX model is present.' );
 end
 
 %
 % Check problem
 %
 
-global cvx___
-p = prob.index_;
-pstr = cvx___.problems( p );
 if ~isempty( pstr.direction ),
 	if isequal( dir, 'find' ),
         error( 'CVX:ArgError', 'Objective functions cannot be added to sets.' );
@@ -36,6 +31,13 @@ end
 % Check objective expression
 %
 
+persistent remap_min remap_max remap_log remap_gp
+if isempty( remap_max ),
+    remap_min = cvx_remap( 'convex', 'l_convex' );
+    remap_max = cvx_remap( 'concave', 'l_concave' );
+    remap_log = cvx_remap( 'l_valid' ) & ~cvx_remap( 'constant' );
+    remap_gp  = cvx_remap( 'g_valid' );
+end
 if ~isa( x, 'cvx' ) && ~isa( x, 'double' ) && ~isa( x, 'sparse' ),
     error( 'CVX:ArgError', 'Cannot accept an objective of type ''%s''.', class( arg ) );
 elseif ~isreal( x ),
@@ -68,16 +70,15 @@ if any( vx ),
     x = log( x );
     vx = vx(1);
 end
-if isa( x, 'cvx' ),
-    v = pstr.t_variable;
-    zndx = any( cvx_basis( x ), 2 );
-    v = v | zndx( 1 : length( v ), : );
-    pstr.t_variable = v;
-end
 pstr.objective = x;
 pstr.direction = dir;
 pstr.geometric = vx;
-cvx___.problems( p ) = pstr;
+if pstr.n_variable > 1 && pstr.complete,
+    x = cvx_basis( x );
+    nv = min(pstr.n_variable,size(x,1));
+    if nnz(x(2:nv,:)), pstr.complete = false; end
+end
+cvx___.problems( end ) = pstr;
 
 % Copyright 2005-2014 CVX Research, Inc.
 % See the file LICENSE.txt for full copyright information.

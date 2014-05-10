@@ -1,16 +1,20 @@
-function finish( prob )
+function cvx_finish
 
 global cvx___
-[ p, pstr ] = verify( prob );
-cleared = false;
-
 try
+    p = length(cvx___.problems);
+    pstr = cvx___.problems(p);
+catch
+    error( 'CVX:NoModel', 'No CVX model is present.' );
+end
 
-if isempty( pstr.objective ) && isempty( pstr.variables ) && nnz( pstr.t_variable ) == 1,
+if isempty( pstr.objective ) && ...
+   length(cvx___.classes) == pstr.n_variable && ....
+   length(cvx___.equalities) == pstr.n_equality,
 
-    warning( 'CVX:EmptyModel', 'Empty cvx model; no action taken.' );
+    warning( 'CVX:EmptyModel', 'Empty CVX model; no action taken.' );
 
-elseif pstr.complete && nnz( pstr.t_variable ) == 1,
+elseif pstr.complete,
 
     %
     % Check the integrity of the variables
@@ -45,10 +49,9 @@ elseif pstr.complete && nnz( pstr.t_variable ) == 1,
         error( 'CVX:CorruptModel', 'The following cvx variable(s) have been cleared or overwritten:\n  %s\nThis is often an indication that an equality constraint was\nwritten with one equals ''='' instead of two ''==''. The model\nmust be rewritten before CVX can solve it.', temp );
     end
 
-    clear pstr;
-    solve( prob );
-    pstr = cvx___.problems( p );
-    
+    cvx_solve;
+    pstr = cvx___.problems(p);
+
     if numel( pstr.objective ) > 1 && ~isempty( pstr.result ),
         if strfind( pstr.status, 'Solved' ),
             pstr.result = value( pstr.objective );
@@ -64,18 +67,17 @@ elseif pstr.complete && nnz( pstr.t_variable ) == 1,
     assignin( 'caller', 'cvx_slvitr',  pstr.iters );
     assignin( 'caller', 'cvx_slvtol',  pstr.tol );
     assignin( 'caller', 'cvx_cputime', cputime - pstr.cputime );
-    assignin( 'caller', 'cvx_optpnt',  cvxtuple( cvx_collapse( vars, true, false ) ) );
-    
-elseif length( cvx___.problems ) < 2,
 
-    cleared = true;
-    cvx_pop( 0, true );
+elseif p < 2,
+
+    cvx_pop( 0 );
     error( 'CVX:InternalError', 'Internal CVX data corruption. Please CLEAR ALL and rebuild your model.' );
 
 else
-    
+
     np = p - 1;
-    if cvx___.problems( np ).gp ~= pstr.gp,
+    nstr = cvx___.problems(np);
+    if nstr.gp ~= pstr.gp,
         error( 'CVX:MixedGP', 'Cannot embed a convex model into a geometric model, nor vice versa.' );
     end
     vars = cvx_collapse( pstr.variables, true, false );
@@ -84,46 +86,28 @@ else
         pname = [ pstr.name, '_' ];
         if ~isempty( vars ),
             try
-                ovars = cvx___.problems(np).variables.(pname);
+                ovars = nstr.variables.(pname);
             catch
                 ovars = {};
             end
             ovars{end+1} = vars;
-            cvx___.problems(np).variables.(pname) = ovars;
+            nstr.variables.(pname) = ovars;
         end
         if ~isempty( dvars ),
             try
-                ovars = cvx___.problems(np).duals.(name);
+                ovars = nstr.duals.(name);
             catch
                 ovars = {};
             end
             ovars{end+1} = dvars;
-            cvx___.problems(np).duals.(pname) = ovars;
+            nstr.(pname) = ovars;
         end
     end
 
-    %
-    % Merge the touch information
-    %
-    
-    v = cvx___.problems( np ).t_variable;
-    v = v | pstr.t_variable( 1 : size( v, 1 ), : );
-    cvx___.problems( np ).t_variable = v;
-    % Signal to cvx_pop that we have no variables to remove
-    cvx___.problems( p ).t_variable = [];
-
-    %
-    % Process the objective and optimal point, converting to pure
-    % epigraph/hypograph form if necessary
-    %
-
     x = pstr.objective;
     if isempty( x ),
-
         assignin( 'caller', 'cvx_optval', 0 );
-
     else
-
         switch pstr.direction,
             case { 'minimize', 'minimise' },
                 force = false;
@@ -138,15 +122,12 @@ else
                 force = true;
                 os = -1;
         end
-
-        
         persistent map mapgp mapsgn %#ok
         if isempty( map ),
             map = ( cvx_remap( 'r_affine' ) &  ~cvx_remap( 'constant' ) )';
             mapgp = cvx_remap( 'convex' ) & ~cvx_remap( 'affine' );
             mapsgn = ( cvx_remap( 'positive', 'p_nonconst' ) - cvx_remap( 'negative', 'n_nonconst' ) )';
         end
-        
         cx = cvx_classify( x );
         bx = cvx_basis( x );
         if ~force,
@@ -154,39 +135,18 @@ else
             x = cvx( size( x ), bx );
         end
         [ r, c ] = find( bx ); %#ok
-
-        %
-        % Set the vexity flags
-        %
-
         cx = int8( 9 + mapsgn(cx) + os * ( 3 + ( cx == 2 ) ) );
         cvx___.classes( r, : ) = cx;
-        
-        %
-        % Convert to geometric form if necessary
-        %
-
         if pstr.geometric,
             x = exp( x );
         end
-
         assignin( 'caller', 'cvx_optval', x );
     end
-    assignin( 'caller', 'cvx_optpnt', cvxtuple( cvx_collapse( vars, false, false ) ) );
 
 end
 
-cleared = true;
-evalin( 'caller', 'cvx_pop( cvx_problem )' );
-
-catch exc
-    
-    if ~cleared && ~strcmp( exc.identifier, 'CVX:IncompatibleSolver' ),
-        evalin( 'caller', 'cvx_pop( cvx_problem, true )' );
-    end
-    rethrow( exc );
-    
-end
+pstr.finished = true;
+cvx___.problems(end) = pstr;
 
 % Copyright 2005-2014 CVX Research, Inc.
 % See the file LICENSE.txt for full copyright information.

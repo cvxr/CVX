@@ -61,10 +61,10 @@ else
     cvx_begin set
         variable x( nv, ny ) 
         variable y( 1,  ny ) nonnegative_
-        cvx_pushcone( 'lorentz', [ x ; y ] ); %#ok
+        cvx_pushcone( true, 'lorentz', [ x ; y ] ); %#ok
     cvx_end
     if iscplx,
-        x = x(1:2:end-1,:) + 1j * x(2:2:end-1,:);
+        x = x(1:2:end,:) + 1j * x(2:2:end,:);
         nv = nv * 0.5;
     end
     if sx( dim ) > 1,

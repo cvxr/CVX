@@ -78,9 +78,8 @@ for PNSpec=0.7e-12:0.2e-12:1e-11
 
       % area, tank conductance, and inverse quality factor
       Area = (D+W)^2;
-      omL  = omega * L;
-      invQ = R / omL;
-      G    = invQ / omL; % R / ( omega * L ) ^ 2
+      G    = R / (omega * L)^2;
+      invQ = R / (omega * L);
 
       % loop constraints
       Area <= 0.25e-6;

@@ -1,4 +1,4 @@
-function y = exp( x )
+function y = exp( x, check, gp )
 
 %   Disciplined convex programming information:
 %       EXP(X) is convex and nondecreasing in X. When used in CVX
@@ -11,9 +11,11 @@ function y = exp( x )
 %       EXP(X), where X is a monomial or posynomial, can be included in 
 %       geometric programs wherever a posynomial would be appropriate.
 
-cvx_expert_check( 'exp', x );
+if nargin < 2, check = true; end
+if check, cvx_expert_check( 'exp', x ); end
 try
-    y = cvx( x.size_, cvx_getexp( x.basis_, true ) );
+    if nargin < 3, gp = false; end
+    y = cvx( x.size_, cvx_getexp( x.basis_, check, gp ) );
 catch exc
     if strncmp( exc.identifier, 'CVX:', 4 ) throw( exc );
     else rethrow( exc ); end

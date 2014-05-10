@@ -1,41 +1,70 @@
-function cvx_pushcone( ctype, indices, ndims )
-global cvx___
-isnneg = isequal( ctype, 'nonnegative' );
-if isa( indices, 'cvx' ),
-    sx = size( indices );
-    [ indices, cx ] = find( cvx_basis( indices ) ); %#ok
-    if ~isnneg
-        if nargin < 3, ndims = 1; end
-        indices = reshape( indices, [], prod(sx(ndims+1:end)) );
-    end
+function cones = cvx_pushcone( cones, ctype, indices )
+if isempty( indices ),
+    return
 end
-cones = cvx___.cones;
-if isnneg,
+gcone = islogical( cones );
+if gcone
+    global cvx___ %#ok
+    cones = cvx___.cones;
+end
+nn = size(indices,1);
+if nn == 1,
+    ctype = 'nonnegative';
+elseif isequal( ctype, 'nonnegative' ) || isequal( ctype(1:2), 'i_' ),
     indices = indices(:)';
-    if ~isempty(cones) && isequal( cones(1).type, 'nonnegative' ),
-        cones(1).indices = [ cones(1).indices, indices ];
-    else
-        ncone = struct( 'type', ctype, 'indices', indices );
-        if isempty( cones )
-            cones = ncone;
-        else
-            cones = [ ncone, cones ];
-        end
-    end
-elseif isempty( cones ),
-    cones = struct( 'type', ctype, 'indices', indices );
+    nn = 1;
+end
+if isempty( cones )
+    match = [];
 else
     match = find( strcmp( { cones.type }, ctype ) );
-    nlsiz = size( indices, 1 );
-    match = match( cellfun( 'size', { cones(match).indices }, 1 ) == nlsiz );
-    if isempty( match ),
-        cones = [ cones, struct( 'type', ctype, 'indices', indices ) ];
-    else
-        match = match(1);
-        cones(match).indices = [ cones(match).indices, indices ];
+    if nn > 1
+        match = match(cellfun('size',{cones(match).indices},1)==nn);
     end
 end
-cvx___.cones = cones;
+if ~isempty( match ),
+    cones(match(1)).indices = [ cones(match).indices, indices ];
+    if length(match) > 1, cones(match(2:end)) = []; end
+    cvx___.cones = cones;
+else
+    if nn == 1,
+        slacks = 1;
+    else
+        slacks = zeros(nn,1);
+        switch ctype,
+            case 'nonnegative',
+                slacks = 1;
+            case 'exponential', 
+                slacks = [-1;0;1];
+            case 'lorentz',         
+                slacks = [zeros(nn-1,1);1];
+            case 'rotated-lorentz',
+                if nn <= 2, 
+                    cones = cvx_pushcone( cones, 'nonnegative', indices(:)' );
+                    if gcone, cvx___.cones = cones; end
+                    return; 
+                end
+                slacks = [zeros(nn-2,1);1;1];
+            case 'semidefinite';
+                q = round(0.5*(sqrt(8*nn+1)-1));
+                slacks(cumsum([1,q:-1:2]),:) = 1;
+            case 'hermitian-semidefinite',
+                q = round(sqrt(nn));
+                slacks(cumsum([1,2*q-1:-2:2]),:) = 1;
+        end
+    end
+    ncone = struct( 'type', ctype, 'indices', indices, 'slacks', slacks );
+    if isempty( cones ), 
+        cones = ncone;
+    elseif nn == 1, 
+        cones = [ ncone, cones ];
+    else
+        cones = [ cones, ncone ];
+    end
+end
+if gcone,
+    cvx___.cones = cones;
+end
 
 % Copyright 2005-2014 CVX Research, Inc.
 % See the file LICENSE.txt for full copyright information.

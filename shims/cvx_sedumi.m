@@ -196,6 +196,7 @@ status = '';
 if info.pinf ~= 0,
     status = 'Infeasible';
     x = NaN * ones( n, 1 );
+    y = yy;
 elseif info.dinf ~= 0
     status = 'Unbounded';
     y = NaN * ones( m, 1 );

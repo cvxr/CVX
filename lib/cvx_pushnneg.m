@@ -16,7 +16,8 @@ cones = cvx___.cones;
 if ~isempty( cones ) && isequal( cones(1).type, 'nonnegative' ),
     cones(1).indices = [ cones(1).indices, ndim ];
 else
-    cones = [ struct( 'type', 'nonnegative', 'indices', ndim ), cones ];
+    ncone = struct( 'type', 'nonnegative', 'indices', ndim, 'slacks', 1 );
+    cones = [ ncone, cones ];
 end
 cvx___.cones = cones;
 

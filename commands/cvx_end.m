@@ -6,14 +6,19 @@ function cvx_end
 %   a transformed version of the problem to a solver to obtain numeric
 %   results, and replace references to cvx variables with numeric values.
 
-if ~isa( evalin( 'caller', 'cvx_problem', '[]' ), 'cvxprob' ), 
-    error( 'CVX:NoProblem', 'No model exists in this scope.' ); 
-end
 try
-    evalin( 'caller', 'finish( cvx_problem )' );
+    evalin( 'caller', 'cvx_verify' );
+    evalin( 'caller', 'cvx_finish' );
+    evalin( 'caller', 'cvx_pop' );
 catch exc
-    if strncmp( exc.identifier, 'CVX:', 4 ), throw( exc );
-    else rethrow( exc ); end
+    if strncmp( exc.identifier, 'CVX:', 4 ), 
+        if ~isequal( exc.identifier, 'CVX:IncompatibleSolver' ),
+            evalin( 'caller', 'cvx_pop' );
+        end
+        throw( exc );
+    else
+        rethrow( exc ); 
+    end
 end
 
 % Copyright 2005-2014 CVX Research, Inc.

@@ -35,7 +35,7 @@ disp('Computing the solution of the least-squares problem with variable weights.
 cvx_begin
     variable x2(n)
     variable w(m)
-    minimize( sum(quad_over_lin(diag(A*x2-b),w'+1)) + M^2*ones(1,m)*w)
+    minimize( sum(quad_over_lin(A*x2-b,w,0)) + M^2*ones(1,m)*w)
     w >= 0;
 cvx_end
 

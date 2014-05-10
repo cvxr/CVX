@@ -32,16 +32,13 @@ function vout = variable( varargin )
 %   See also VARIABLES, DUAL, DUALS.
 
 global cvx___
-prob = evalin( 'caller', 'cvx_problem', '[]' );
-if ~isa( prob, 'cvxprob' ),
-    error( 'CVX:NoProblem', 'No CVX model exists in this scope.' );
-end
+
 try
 
-    verify( prob );
+    evalin( 'caller', 'cvx_verify' );
     cvx___.args = { varargin, 1, [] };
     args = evalin( 'caller', 'cvx_parse' );
-    v = newvar( prob, args );
+    v = cvx_pushvar( args );
     if nargout,
         vout = v;
     else

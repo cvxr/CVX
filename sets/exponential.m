@@ -30,7 +30,7 @@ else
         variable y( sx ) nonnegative_
         variable z( sx ) nonnegative_
 end
-    cvx_pushcone( 'exponential', [ vec(x)' ; vec(y)' ; vec(z)' ] );
+    cvx_pushcone( true, 'exponential', [ vec(x)' ; vec(y)' ; vec(z)' ] );
 cvx_end
 if gp,
     cvx_optpnt = cvxtuple( struct( 'x', ex, 'y', ey, 'z', ez ) );

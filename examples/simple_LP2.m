@@ -9,7 +9,7 @@ c = randn(n,1);
 d = randn;
 cvx_begin
    variable x(n)
-   dual variables y z
+   dual variables y
    minimize( c' * x + d )
    subject to
       y : A * x <= b;

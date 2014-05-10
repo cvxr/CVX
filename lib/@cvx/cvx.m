@@ -1,4 +1,4 @@
-function v = cvx( v, b, d )
+function v = cvx( v, b )
 
 %CVX   The CVX disciplined convex programming system.
 %   CVX is a modeling framework for building, constructing, and solving
@@ -19,14 +19,12 @@ switch nargin,
     case 0,
         s = [ 0, 1 ];
         b = sparse( 1, 0 );
-        d = 0;
     case 1,
         if isa( v, 'cvx' ), 
             return; 
         end
         s = size( v );
-        d = prod( s );
-        b = sparse( reshape( v, 1, d ) );
+        b = sparse( v(:)' );
     case { 2, 3 },
         switch numel( v ),
             case 2,
@@ -43,20 +41,17 @@ switch nargin,
         end
         ps = prod( s );
         if isempty( b ),
-            b = sparse( 1, prod( s ) );
+            b = sparse( 1, ps );
         elseif size( b, 2 ) ~= ps,
             error( 'CVX:Corrupt', 'Size/data mismatch.' );
         else
             b = sparse( b );
         end
-        if nargin < 3,
-            d = ps;
-        end
 end
-persistent id
-if isempty( id ), id = 1;
-else id = id + 1; end
-v = class( struct( 'size_', s, 'basis_', b, 'dof_', d, 'dual_', '', 'id_', id ), 'cvx' );
+global cvx___
+id = cvx___.id + 1;
+cvx___.id = id;
+v = class( struct( 'size_', s, 'basis_', b, 'dual_', '', 'id_', id ), 'cvx' );
     
 % Copyright 2005-2014 CVX Research, Inc.
 % See the file LICENSE.txt for full copyright information.

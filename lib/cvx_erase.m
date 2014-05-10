@@ -1,18 +1,16 @@
-function erase( p )
+function cvx_erase( p )
 
 global cvx___
-[ p, prob ] = verify( p );
-
-nf = length( prob.t_variable ) + 1;
-ne = prob.n_equality + 1;
+pstr = cvx___.problems( p );
+nf = pstr.n_variable + 1;
+ne = pstr.n_equality + 1;
 if nf <= 2,
     cvx___.classes     = int8(3);
-    cvx___.canslack    = false(1,0);
-    cvx___.cones       = struct( 'type', {}, 'indices', {} );
+    cvx___.cones       = struct( 'type', {}, 'indices', {}, 'slacks', {} );
     cvx___.exponential = [];
+    pstr.n_variable    = 0;
 elseif length( cvx___.classes ) >= nf,
     cvx___.classes( nf : end, : ) = [];
-    cvx___.canslack( nf : end, : ) = [];
     if ~isempty( cvx___.cones ),
         tt = true( 1, length( cvx___.cones ) );
         for k = 1 : length( cvx___.cones ),
@@ -39,8 +37,6 @@ elseif length( cvx___.equalities ) >= ne,
     cvx___.inequality( ne : end ) = [];
     cvx___.n_equality = sum( cellfun( @(x)size(x,2), cvx___.equalities ) );
 end
-
-cvx___.problems( p ).cleared = true;
 
 % Copyright 2005-2014 CVX Research, Inc.
 % See the file LICENSE.txt for full copyright information.

@@ -46,12 +46,13 @@ cvx___.profile     = false;
 cvx___.logarithm   = sparse(1,1);
 cvx___.exponential = sparse(1,1);
 cvx___.classes     = int8(3);
-cvx___.cones       = struct( 'type', {}, 'indices', {} );
-cvx___.equalities  = {};
-cvx___.inequality  = false(0,1);
+cvx___.cones       = struct( 'type', {}, 'indices', {}, 'slacks', {} );
+cvx___.equalities  = cell(1,0);
+cvx___.inequality  = false(1,0);
 cvx___.n_equality  = 0;
 cvx___.x           = zeros( 0, 1 );
 cvx___.y           = zeros( 0, 1 );
+cvx___.id          = 0;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Run each shim to connect/reconnect the solvers %

@@ -1,4 +1,4 @@
-function by = cvx_getexp( bx, check )
+function by = cvx_getexp( bx, check, gp )
 
 global cvx___
 persistent nval

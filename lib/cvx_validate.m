@@ -1,11 +1,10 @@
-function [ p, pstr ] = verify( prob, clean )
+function [ p, pstr ] = cvx_validate( p, id, clean )
 global cvx___
-p = prob.index_;
 np = length( cvx___.problems );
 if p <= np,
     pstr = cvx___.problems( p );
-    if cvx_id( pstr.self ) == cvx_id( prob ), 
-        if p > np && ( nargin < 2 || clean ),
+    if pstr.id == id, 
+        if p > np && ( nargin < 3 || clean ),
             cvx_pop( p + 1, true );
         end
         return
@@ -13,3 +12,4 @@ if p <= np,
 end
 cvx_pop( 0, true );
 error( 'CVX:InternalError', 'Internal CVX data corruption. Please CLEAR ALL and rebuild your model.' );
+

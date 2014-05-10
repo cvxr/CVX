@@ -59,19 +59,14 @@ elseif ~isequal( varargin{1}, 'variables' )
 end
 
 global cvx___
-prob = evalin( 'caller', 'cvx_problem', '[]' );
-if ~isa( prob, 'cvxprob' ),
-    error( 'CVX:NoProblem', 'No CVX model exists in this scope.' );
-end
 
 try
     
-    [ p, pstr ] = verify( prob ); %#ok
+    evalin( 'caller', 'cvx_verify' );
     cvx___.args = { varargin(2:end), 'dual' };
     args = evalin( 'caller', 'cvx_parse' );
-    
     for k = 1 : length(args),
-        temp = newdual( prob, args(k).name, args(k).args );
+        temp = cvx_pushdual( args(k).name, args(k).args );
         if nargout, 
             varargout{k} = temp; %#ok
         else

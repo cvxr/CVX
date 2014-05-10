@@ -26,19 +26,14 @@ elseif ~iscellstr( varargin ),
 end
 
 global cvx___
-prob = evalin( 'caller', 'cvx_problem', '[]' );
-if ~isa( prob, 'cvxprob' ),
-    error( 'CVX:NoProblem', 'No CVX model exists in this scope.' );
-end
 
 try
 
-    verify( prob );
+    evalin( 'caller', 'cvx_verify' );
     cvx___.args = { varargin, nargin, [] };
     args = evalin( 'caller', 'cvx_parse' );
-
     for k = 1 : nargin,
-        v = newvar( prob, args(k) );
+        v = cvx_pushvar( args(k) );
         if nargout,
             varargout{k} = v; %#ok
         else

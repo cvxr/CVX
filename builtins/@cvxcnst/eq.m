@@ -9,8 +9,14 @@ function a = eq( x, y )
 %   Both the left- and right-hand sides of an equality constraint must
 %   be log-affine, which includes positive constants and monomials.
 
-b = newcnstr( evalin( 'caller', 'cvx_problem', '[]' ), x, y, '==' );
-if nargout, a = b; end
+try
+	evalin( 'caller', 'cvx_verify' );
+	b = cvx_pushcnstr( x, y, '==' );
+	if nargout, a = b; end
+catch exc
+	if strncmp( exc.identifier, 'CVX:', 4 ), throw( exc ); 
+	else rethrow( exc ); end
+end
 
 % Copyright 2005-2014 CVX Research, Inc.
 % See the file LICENSE.txt for full copyright information.

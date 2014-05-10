@@ -2,18 +2,18 @@ function minimize( varargin )
 
 %MINIMIZE Specifiies a convex (or affine) objective to be maximized.
 
-prob = evalin( 'caller', 'cvx_verify' );
 if nargin < 1,
-    error( 'Objective expression missing.' );
+    error( 'CVX:Objective', 'Objective expression missing.' );
 elseif iscellstr( varargin ),
     x = evalin( 'caller', sprintf( '%s ', varargin{:} ) );
 elseif nargin > 1,
-    error( 'Too many input arguments.' );
+    error( 'CVX:Objective', 'Too many input arguments.' );
 else
     x = varargin{1};
 end
 try
-    newobj( prob, 'minimize', x );
+    evalin( 'caller', 'cvx_verify' );
+    cvx_pushobj( 'minimize', x );
 catch exc
     if strncmp( exc.identifier, 'CVX:', 4 ), throw( exc );
     else rethrow( exc ); end

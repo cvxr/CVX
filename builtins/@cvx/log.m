@@ -40,9 +40,15 @@ x = cvx_basis( x );
 nq = length( vx );
 x = cvx( nq, sparse( rx, 1 : nq, vx ) );
 cvx_begin gp
-    variables w( nq )
+    variables v( nq ) w( nq )
     epigraph variable y( nx )
-    exp( x ./ cvx_fastref( y, cx ) ) <= w; %#ok
+    % These next two lines are equivalent to
+    % exp( x ./ cvx_fastref( y, cx ) ) <= w;
+    % But if we did this, then we might end up with a large dynamic range
+    % in coefficients. Breaking it apart like this ensures that we work
+    % only with the logarithms of the coefficients.
+    x <= v .* cvx_fastref( y, cx );
+    exp( v ) <= w;
     sparse( cx, 1 : nq, 1, nx, nq ) * log( w ) == 1; %#ok
 cvx_end
 y = log( y );
@@ -56,7 +62,7 @@ x = cvx( nq, sparse( rx, 1 : nq, vx ) );
 cvx_begin
     variables w( nq )
     epigraph variable y( nx )
-    exp( x - cvx_fastref( y, cx ) ) <= w; %#ok
+    exp( x - cvx_fastref( y, cx ), false ) <= w; %#ok
     sparse( cx, 1 : nq, 1, nx, nq ) * w == 1; %#ok
 cvx_end
 

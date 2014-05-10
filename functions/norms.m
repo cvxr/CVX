@@ -70,9 +70,8 @@ function y = norms_2( x, p ) %#ok
 [nx,nv] = size(x);
 if p == 2,
     cvx_begin
-        epigraph variable y( 1, nv )
+        epigraph variable y( 1, nv ) nonnegative_
         { linearize(x), y } == lorentz( [ nx, nv ], 1, ~isreal( x ) ); %#ok
-        cvx_setnneg(y);
     cvx_end
 else
     cvx_begin
