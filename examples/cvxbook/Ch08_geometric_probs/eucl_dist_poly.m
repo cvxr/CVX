@@ -24,8 +24,8 @@ b2 = rand(m2,1) + A2*randn(n,1);
 cvx_begin
     variables x(n) y(n)
     minimize (norm(x - y))
-    A1*x <= b1;
-    A2*y <= b2;
+    A1*x <= b1; %#ok
+    A2*y <= b2; %#ok
 cvx_end
 
 % Displaying results

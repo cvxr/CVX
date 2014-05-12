@@ -26,7 +26,7 @@ inds    = ones(n,1);
 next = 2;
 for i = 1 : nopts,
    PW = P * diag( [ 1 ; weights(i) ] );
-   [ maxvals, maxinds ] = max( PW' );  % max elt in each row
+   [ maxvals, maxinds ] = max( PW' );  %#ok max elt in each row
    if (~isequal(maxinds', inds(:,next-1)))
        inds(:,next) = maxinds';
        T = zeros(m,n);
@@ -49,9 +49,9 @@ cvx_begin
     variables T( m, n ) D( m, m )
     minimize max( D(1,2), D(2,1) )
     subject to
-        D == T * P;
-        sum( T, 1 ) == 1;
-        T >= 0;
+        D == T * P; %#ok
+        sum( T, 1 ) == 1; %#ok
+        T >= 0; %#ok
 cvx_end
 
 objmp = 1 - diag( D );

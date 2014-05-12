@@ -27,7 +27,7 @@ fprintf(1,'Computing the optimal solution by solving an SDP...');
 cvx_begin sdp quiet
     variable X(n,n) symmetric
     minimize ( norm(X-X0,'fro') )
-    X >= 0;
+    X >= 0; %#ok
 cvx_end
 
 fprintf(1,'Done! \n');
@@ -37,7 +37,7 @@ disp('-----------------------------------------------------------------');
 disp('Verifying that the analytical solution and the solution obtained ');
 disp('via CVX are equal by computing ||X_star - P_K(X0)||_F: ');
 norm(X-pk_X0,'fro')
-disp('Hence X_star and P_K(X0) are equal to working precision.');
+disp('X_star and P_K(X0) should be equal to working precision.');
 
 
 

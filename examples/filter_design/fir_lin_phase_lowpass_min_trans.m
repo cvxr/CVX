@@ -50,27 +50,25 @@ while( wstop_top - wstop_bot > TOL)
   wstop_cur = (wstop_top + wstop_bot)/2;
 
   % create optimization matrices (matrix of cosines)
-  A = [ones(m,1) 2*cos(kron(w',[1:n]))];
+  A = [ones(m,1) 2*cos(kron(w',1:n))];
 
   % passband 0 <= w <= w_pass
-  ind = find((0 <= w) & (w <= wpass));    % passband
-  Ap  = A(ind,:);
+  Ap  = A((0 <= w) & (w <= wpass),:);
 
   % transition band is not constrained (w_pass <= w <= w_stop)
 
   % stopband (w_stop <= w) (this is the changing constraint)
-  ind = find((wstop_cur <= w) & (w <= pi));   % stopband
-  As  = A(ind,:);
+  As  = A((wstop_cur <= w) & (w <= pi),:);
 
   % formulate and solve the feasibility linear-phase lp filter design
   cvx_begin quiet
     variable h_cur(n+1,1);
     % feasibility problem
     % passband bounds
-    Ap*h_cur <= 10^(delta/20);
-    Ap*h_cur >= 10^(-delta/20);
+    Ap*h_cur <= 10^(delta/20); %#ok
+    Ap*h_cur >= 10^(-delta/20); %#ok
     % stopband bounds
-    abs( As*h_cur ) <= 10^(atten_level/20);
+    abs( As*h_cur ) <= 10^(atten_level/20); %#ok
   cvx_end
 
   % bisection
@@ -96,12 +94,12 @@ fprintf(1,['\nOptimum stopband frequency for given specs is %3.4f*pi rads\n' ...
 %********************************************************************
 figure(1)
 % FIR impulse response
-plot([0:2*n],h','o',[0:2*n],h','b:')
+plot(0:2*n,h','o',0:2*n,h','b:')
 xlabel('t'), ylabel('h(t)')
 
 figure(2)
 % frequency response
-H = exp(-j*kron(w',[0:2*n]))*h;
+H = exp(-1j*kron(w',0:2*n))*h;
 % magnitude
 subplot(2,1,1)
 plot(w,20*log10(abs(H)),...

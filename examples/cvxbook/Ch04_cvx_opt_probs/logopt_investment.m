@@ -39,8 +39,8 @@ x_unif = ones(n,1)/n; % uniform resource allocation
 cvx_begin 
     variable x_opt(n)
     maximize sum(Pi.*log(P*x_opt))
-    sum(x_opt) == 1
-    x_opt >= 0
+    sum(x_opt) == 1; %#ok
+    x_opt >= 0; %#ok
 cvx_end
 
 % Long-term growth rates
@@ -59,8 +59,8 @@ w_opt = []; w_unif = [];
 for i = 1:N
     events = ceil(rand(1,T)*m);
     P_event = P(events,:);
-    w_opt = [w_opt [1; cumprod(P_event*x_opt)]];
-    w_unif = [w_unif [1; cumprod(P_event*x_unif)]];
+    w_opt = [w_opt [1; cumprod(P_event*x_opt)]]; %#ok
+    w_unif = [w_unif [1; cumprod(P_event*x_unif)]]; %#ok
 end
 
 % Plot wealth versus time

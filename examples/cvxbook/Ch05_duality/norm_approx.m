@@ -41,7 +41,7 @@ fprintf(1,'Computing the optimal solution of problem 2... ');
 cvx_begin quiet
     variables x(n) y(m)
     minimize ( norm ( y , p ) )
-    A*x - b == y;
+    A*x - b == y; %#ok
 cvx_end
 
 fprintf(1,'Done! \n');
@@ -53,8 +53,8 @@ fprintf(1,'Computing the optimal solution of problem 3... ');
 cvx_begin quiet
     variable nu(m)
     maximize ( b'*nu )
-    norm( nu , q ) <= 1;
-    A'*nu == 0;
+    norm( nu , q ) <= 1; %#ok
+    A'*nu == 0; %#ok
 cvx_end
 
 fprintf(1,'Done! \n');
@@ -66,7 +66,7 @@ fprintf(1,'Computing the optimal solution of problem 4... ');
 cvx_begin quiet
     variables x(n) y(m)
     minimize ( 0.5 * norm( y, p ) .^ 2 )
-    A*x - b == y;
+    A*x - b == y; %#ok
 cvx_end
 
 fprintf(1,'Done! \n');
@@ -78,7 +78,7 @@ fprintf(1,'Computing the optimal solution of problem 5... ');
 cvx_begin quiet
     variable nu(m)
     maximize ( -0.5 * norm ( nu , q ) .^ 2 + b'*nu )
-    A'*nu == 0;
+    A'*nu == 0; %#ok
 cvx_end
 
 fprintf(1,'Done! \n');
@@ -86,6 +86,6 @@ opt5 = (2*cvx_optval).^(0.5);
 
 % Displaying results
 disp('------------------------------------------------------------------------');
-disp('The optimal residual values for problems 1,2,3,4 and 5 are respectively:');
-[ opt1 opt2 opt3 opt4 opt5 ]'
-disp('They are equal as expected!');
+disp('The optimal residual values for problems 1,2,3,4 and 5 are, respectively:');
+disp([ opt1 opt2 opt3 opt4 opt5 ])
+disp('They should be equal!');

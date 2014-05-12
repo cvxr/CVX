@@ -31,10 +31,10 @@ g = 0.1;            % gamma
 cvx_begin
     variables a(n) b(1) u(N) v(M)
     minimize (norm(a) + g*(ones(1,N)*u + ones(1,M)*v))
-    X'*a - b >= 1 - u;
-    Y'*a - b <= -(1 - v);
-    u >= 0;
-    v >= 0;
+    X'*a - b >= 1 - u; %#ok
+    Y'*a - b <= -(1 - v); %#ok
+    u >= 0; %#ok
+    v >= 0; %#ok
 cvx_end
 
 % Displaying results

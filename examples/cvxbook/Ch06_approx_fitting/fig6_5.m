@@ -15,7 +15,7 @@
 randn('seed',1);
 rand('seed',1);
 
-m=40;  n=2;    A = randn(m,n);
+m=40;  n=2;
 xex = [5;1];
 pts = -10+20*rand(m,1);
 A = [ones(m,1) pts];

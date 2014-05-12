@@ -32,18 +32,16 @@ atten_level = -30;      % stopband attenuation level in dB
 %********************************************************************
 N = 30*n+1;                            % freq samples (rule-of-thumb)
 w = linspace(0,pi,N);
-A = [ones(N,1) 2*cos(kron(w',[1:n]))]; % matrix of cosines
+A = [ones(N,1) 2*cos(kron(w',1:n))]; % matrix of cosines
 
 % passband 0 <= w <= w_pass
-ind = find((0 <= w) & (w <= wpass));   % passband
-Ap  = A(ind,:);
+Ap  = A((0 <= w) & (w <= wpass),:);
 
 % transition band is not constrained (w_pass <= w <= w_stop)
 
 % stopband (w_stop <= w)
-ind = find((wstop <= w) & (w <= pi));  % stopband
-Us  = 10^(atten_level/20)*ones(length(ind),1);
-As  = A(ind,:);
+Us  = 10^(atten_level/20);
+As  = A((wstop <= w) & (w <= pi),:);
 
 %********************************************************************
 % optimization
@@ -56,11 +54,11 @@ cvx_begin
   minimize( delta )
   subject to
     % passband bounds
-    Ap*h <= delta;
-    inv_pos(Ap*h) <= delta;
+    Ap*h <= delta; %#ok
+    inv_pos(Ap*h) <= delta; %#ok
 
     % stopband bounds
-    abs( As*h ) <= Us;
+    abs( As*h ) <= Us; %#ok
 cvx_end
 
 % check if problem was successfully solved
@@ -79,12 +77,12 @@ end
 %********************************************************************
 figure(1)
 % FIR impulse response
-plot([0:2*n],h','o',[0:2*n],h','b:')
+plot(0:2*n,h','o',0:2*n,h','b:')
 xlabel('t'), ylabel('h(t)')
 
 figure(2)
 % frequency response
-H = exp(-j*kron(w',[0:2*n]))*h;
+H = exp(-1j*kron(w',0:2*n))*h;
 % magnitude
 subplot(2,1,1)
 plot(w,20*log10(abs(H)),[wstop pi],[atten_level atten_level],'r--');

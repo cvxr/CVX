@@ -9,11 +9,11 @@ function plot_four_tapers(w1,w2,w3,w4)
 n = size(w1,1);
 colormap(gray);
 width = zeros(2*n,4);
-width([1:2:2*n-1],:) =  [w1 w2 w3 w4];
-width([2:2:2*n],:)   =  [w1 w2 w3 w4];
+width(1:2:2*n-1,:) =  [w1 w2 w3 w4];
+width(2:2:2*n,:)   =  [w1 w2 w3 w4];
 x = zeros(2*n,1);
-x([1:2:2*n-1],:) = [0:n-1]';
-x([2:2:2*n],:)   = [1:n]';
+x(1:2:2*n-1,:) = (0:n-1)';
+x(2:2:2*n,:)   = (1:n)';
 
 % first solution
 subplot(411)

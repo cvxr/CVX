@@ -41,8 +41,8 @@ cvx_begin gp
     % inverse SINR
     inverseSINR = (sigma + Gtilde*P)./(Gdiag.*P);
     % constraints are power limits and minimum SINR level
-    Pmin <= P <= Pmax;
-    inverseSINR <= (1/SINR_min);
+    Pmin <= P <= Pmax; %#ok
+    inverseSINR <= (1/SINR_min); %#ok
 cvx_end
 
 fprintf(1,'\nThe minimum total transmitter power is %3.2f.\n',cvx_optval);

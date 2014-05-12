@@ -15,7 +15,8 @@
 
 % data generation
 n = 2;
-rand('state',0);  randn('state',0);
+rand('state',0);  
+randn('state',0);
 N=50;
 X = randn(2,N);  X = X*diag(0.99*rand(1,N)./sqrt(sum(X.^2)));
 Y = randn(2,N);  Y = Y*diag((1.02+rand(1,N))./sqrt(sum(Y.^2)));
@@ -27,20 +28,21 @@ fprintf(1,'Find the optimal ellipsoid that seperates the 2 classes...');
 cvx_begin sdp
     variable P(n,n) symmetric
     variables q(n) r(1)
-    P <= -eye(n);
-    sum((X'*P).*X',2) + X'*q + r >= +1;
-    sum((Y'*P).*Y',2) + Y'*q + r <= -1;
+    P <= -eye(n); %#ok
+    sum((X'*P).*X',2) + X'*q + r >= +1; %#ok
+    sum((Y'*P).*Y',2) + Y'*q + r <= -1; %#ok
 cvx_end
 
 fprintf(1,'Done! \n');
 
 % Displaying results
 r = -r; P = -P; q = -q;
-c = 0.25*q'*inv(P)*q - r;
-xc = -0.5*inv(P)*q;
+Pq = P \ q;
+c = 0.25*q'*Pq - r;
+xc = -0.5*Pq;
 nopts = 1000;
 angles = linspace(0,2*pi,nopts);
-ell = inv(sqrtm(P/c))*[cos(angles); sin(angles)] + repmat(xc,1,nopts);
+ell = sqrtm(P/c)\[cos(angles); sin(angles)] + repmat(xc,1,nopts);
 graph=plot(X(1,:),X(2,:),'o', Y(1,:), Y(2,:),'o', ell(1,:), ell(2,:),'-');
 set(graph(2),'MarkerFaceColor',[0 0.5 0]);
 set(gca,'XTick',[]); set(gca,'YTick',[]);

@@ -45,18 +45,18 @@ M = m + length( primary_inputs ) + length( primary_outputs );
 
 % fan-in cell array
 FI = cell(M,1);
-FI{1} = [8];
+FI{1} = 8;
 FI{2} = [8 9 10];
-FI{3} = [10];
+FI{3} = 10;
 FI{4} = [1 2];
 FI{5} = [2 3];
-FI{6} = [4];
+FI{6} = 4;
 FI{7} = [3 4 5];
 FI{8} = [];
 FI{9} = [];
 FI{10} = [];
-FI{11} = [6];
-FI{12} = [7];
+FI{11} = 6;
+FI{12} = 7;
 
 % primary output has Cin capacitance (but has no Cload)
 Cin_po = sparse(M,1);
@@ -145,20 +145,20 @@ for n = 1:N
     minimize( max( T(output_gates) ) )
     subject to
       % constraints
-      x >= 1;
-      area <= Amax;
-      power <= Pmax(n);
+      x >= 1; %#ok
+      area <= Amax; %#ok
+      power <= Pmax(n); %#ok
 
       % create timing constraints
       for gate = 1:m
         if ~ismember( FI{gate}, primary_inputs )
           for j = FI{gate}
             % enforce T_j + D_j <= T_i over all gates j that drive i
-            D(gate) + T(j) <= T(gate);
+            D(gate) + T(j) <= T(gate); %#ok
           end
         else
           % enforce D_i <= T_i for gates i connected to primary inputs
-          D(gate) <= T(gate);
+          D(gate) <= T(gate); %#ok
         end
       end
   cvx_end

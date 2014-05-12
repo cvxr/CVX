@@ -17,7 +17,7 @@ rand('state',29);
 noiseint=.05;
 
 % Generate the data set
-u = [0:0.04:2]';
+u = (0:0.04:2)';
 m=length(u);
 y = 5*(u-1).^4 + .6*(u-1).^2 + 0.5*u;
 v1=u>=.2;
@@ -38,7 +38,7 @@ cvx_begin
     variables yhat(m) g(m)
     minimize(norm(yns-yhat))
     subject to
-        yhat*ones(1,m) >= ones(m,1)*yhat' + (ones(m,1)*g').*(u*ones(1,m)-ones(m,1)*u');
+        yhat*ones(1,m) >= ones(m,1)*yhat' + (ones(m,1)*g').*(u*ones(1,m)-ones(m,1)*u'); %#ok
 cvx_end
 
 nopts =1000;

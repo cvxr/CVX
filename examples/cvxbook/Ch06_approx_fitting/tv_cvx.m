@@ -38,14 +38,14 @@ plot(t,exact,'-');
 axis([0 n+10 -2 2]);
 ylabel('ya');
 title('signal');
-exact_variation = sum(abs(exact(2:(n+1)) - exact(1:n)))
+exact_variation = sum(abs(exact(2:(n+1)) - exact(1:n))) %#ok
 
 subplot(212)
 noise = 0.1*randn(size(t));
 corrupt = exact+noise;
 plot(t,corrupt,'-');
 axis([0 n+10 -2 2]);
-noisy_variation = sum(abs(corrupt(2:(n+1)) - corrupt(1:n)))
+noisy_variation = sum(abs(corrupt(2:(n+1)) - corrupt(1:n))) %#ok
 ylabel('yb');
 xlabel('x');
 title('corrupted signal');
@@ -64,10 +64,10 @@ TVs = linspace(0.01,.9*noisy_variation,nopts);
         variable xrec(n+1)
         minimize(norm(xrec-corrupt))
         subject to
-            norm(xrec(2:(n+1))-xrec(1:n),1) <= TVs(i);
+            norm(xrec(2:(n+1))-xrec(1:n),1) <= TVs(i); %#ok
      cvx_end
-     obj1 = [obj1, TVs(i)];
-     obj2 = [obj2, norm(full(xrec-corrupt))];
+     obj1 = [obj1, TVs(i)]; %#ok
+     obj2 = [obj2, norm(full(xrec-corrupt))]; %#ok
    end;
    obj1 = [0 obj1 noisy_variation];
    obj2 = [norm(corrupt) obj2 0];
@@ -88,7 +88,7 @@ figure(3)
     variable xrec(n+1)
     minimize(norm(xrec-corrupt))
     subject to
-        norm(xrec(2:(n+1))-xrec(1:n),1) <= 10;
+        norm(xrec(2:(n+1))-xrec(1:n),1) <= 10; %#ok
    cvx_end
    plot(t,xrec','-');
    axis([0 n -2 2]);
@@ -100,7 +100,7 @@ figure(3)
     variable xrec(n+1)
     minimize(norm(xrec-corrupt))
     subject to
-        norm(xrec(2:(n+1))-xrec(1:n),1) <= 8;
+        norm(xrec(2:(n+1))-xrec(1:n),1) <= 8; %#ok
    cvx_end
    plot(t,xrec','-');
    axis([0 n -2 2]);
@@ -112,7 +112,7 @@ figure(3)
     variable xrec(n+1)
     minimize(norm(xrec-corrupt))
     subject to
-        norm(xrec(2:(n+1))-xrec(1:n),1) <= 5;
+        norm(xrec(2:(n+1))-xrec(1:n),1) <= 5; %#ok
    cvx_end
    plot(t,xrec','-');
    axis([0 n -2 2]);
@@ -137,8 +137,8 @@ for i=1:nopts
 
   lambda = lambdas(i);
   x = (A'*A+lambda*speye(n+1,n+1)) \ (lambda*corrupt);
-  obj1 = [obj1, norm(full(A*x))];
-  obj2 = [obj2, norm(full(x-corrupt))];
+  obj1 = [obj1, norm(full(A*x))]; %#ok
+  obj2 = [obj2, norm(full(x-corrupt))]; %#ok
 end;
 
 figure(4)
@@ -163,7 +163,7 @@ for i=1:3
       normx = norm(x-corrupt);
       if (normx > alpha), l = (u+l)/2; else u = (u+l)/2;  end;
    end;
-   xrecon = [xrecon, x];
+   xrecon = [xrecon, x]; %#ok
 
 end;
 

@@ -1,10 +1,5 @@
-function y = cvx_basis( x )
-
-if isempty( x )
-    y = sparse( 1, 0 );
-else
-    y = sparse( reshape( x, 1, numel(  x  ) ) );
-end
+function x = cvx_basis( x )
+x = reshape( x, 1, numel( x ) );
 
 % Copyright 2005-2014 CVX Research, Inc.
 % See the file LICENSE.txt for full copyright information.

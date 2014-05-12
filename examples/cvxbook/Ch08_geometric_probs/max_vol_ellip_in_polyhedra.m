@@ -42,7 +42,7 @@ cvx_begin
     maximize( det_rootn( B ) )
     subject to
        for i = 1:m
-           norm( B*A(i,:)', 2 ) + A(i,:)*d <= b(i);
+           norm( B*A(i,:)', 2 ) + A(i,:)*d <= b(i); %#ok
        end
 cvx_end
 

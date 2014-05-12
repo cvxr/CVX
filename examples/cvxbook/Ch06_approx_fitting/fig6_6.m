@@ -15,7 +15,7 @@
 
 % Input data
 m = 201;  n = 201;  N=200;
-t = [0:m-1]';
+t = (0:m-1)';
 h = (1/9)*((.9).^t) .* (1 - 0.4*cos(2*t));   % sum(h) is approx. 1
 
 H = toeplitz(h', [h(1) zeros(1,n-1)]);

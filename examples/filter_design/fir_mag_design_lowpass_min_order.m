@@ -60,17 +60,15 @@ while( n_top - n_bot > 1)
     % create optimization matrices
     % A is the matrix used to compute the power spectrum
     % A(w,:) = [1 2*cos(w) 2*cos(2*w) ... 2*cos(n*w)]
-    A = [ones(m,1) 2*cos(kron(w',[1:n_cur-1]))];
+    A = [ones(m,1) 2*cos(kron(w',1:n_cur-1))];
     
     % passband 0 <= w <= w_pass
-    ind = find((0 <= w) & (w <= wpass));    % passband
-    Ap  = A(ind,:);
+    Ap  = A((0 <= w) & (w <= wpass),:);
     
     % transition band is not constrained (w_pass <= w <= w_stop)
     
     % stopband (w_stop <= w)
-    ind = find((wstop <= w) & (w <= pi));   % stopband
-    As  = A(ind,:);
+    As  = A((wstop <= w) & (w <= pi),:);
     
     % This is the feasiblity problem:
     % cvx_begin quiet
@@ -86,8 +84,8 @@ while( n_top - n_bot > 1)
     cvx_begin quiet
         variables r_cur(n_cur,1);
         minimize( max( abs( As * r_cur ) ) );
-        10^(-delta/10) <= Ap * r_cur <= 10^(+delta/10);
-        A * r_cur >= 0;
+        10^(-delta/10) <= Ap * r_cur <= 10^(+delta/10); %#ok
+        A * r_cur >= 0; %#ok
     cvx_end
     
     % bisection
@@ -114,12 +112,12 @@ fprintf(1,'\nOptimum number of filter taps for given specs is %d.\n',n);
 %********************************************************************
 figure(1)
 % FIR impulse response
-plot([0:n-1],h','o',[0:n-1],h','b:')
+plot(0:n-1,h','o',0:n-1,h','b:')
 xlabel('t'), ylabel('h(t)')
 
 figure(2)
 % frequency response
-H = exp(-j*kron(w',[0:n-1]))*h;
+H = exp(-1j*kron(w',0:n-1))*h;
 % magnitude
 subplot(2,1,1)
 plot(w,20*log10(abs(H)),...

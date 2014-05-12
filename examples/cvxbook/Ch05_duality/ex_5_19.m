@@ -31,10 +31,10 @@ fprintf(1,'# using the original formulation ... ');
 cvx_begin
     variable x1(n)
     minimize ( quad_form(x1,sig) )
-    p_mean'*x1 >= r_min;
-    ones(1,n)*x1 == 1;
-    x1 >= 0;
-    sum_largest(x1,r) <= alpha;
+    p_mean'*x1 >= r_min; %#ok
+    ones(1,n)*x1 == 1; %#ok
+    x1 >= 0; %#ok
+    sum_largest(x1,r) <= alpha; %#ok
 cvx_end
 
 fprintf(1,'Done! \n');
@@ -47,12 +47,12 @@ fprintf(1,'  constraint by an equivalent set of linear constraints...');
 cvx_begin
     variables x2(n) u(n) t(1)
     minimize ( quad_form(x2,sig) )
-    p_mean'*x2 >= r_min;
-    sum(x2) == 1;
-    x2 >= 0;
-    r*t + sum(u) <= alpha;
-    t*ones(n,1) + u >= x2;
-    u >= 0;
+    p_mean'*x2 >= r_min; %#ok
+    sum(x2) == 1; %#ok
+    x2 >= 0; %#ok
+    r*t + sum(u) <= alpha; %#ok
+    t*ones(n,1) + u >= x2; %#ok
+    u >= 0; %#ok
 cvx_end
 
 fprintf(1,'Done! \n');
@@ -63,4 +63,4 @@ disp('------------------------------------------------------------------------')
 disp('The optimal portfolios obtained from the original problem formulation and');
 disp('from the equivalent formulation are respectively: ');
 disp([x1 x2])
-disp('They are equal as expected!');
+disp('They should be equal!');

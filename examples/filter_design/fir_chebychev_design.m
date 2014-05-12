@@ -28,7 +28,7 @@ w = linspace(0,pi,m)'; % omega
 %********************************************************************
 % fractional delay
 D = 8.25;            % delay value
-Hdes = exp(-j*D*w);  % desired frequency response
+Hdes = exp(-1j*D*w);  % desired frequency response
 
 % Gaussian filter with linear phase (uncomment lines below for this design)
 % var = 0.05;
@@ -40,7 +40,7 @@ Hdes = exp(-j*D*w);  % desired frequency response
 %*********************************************************************
 % A is the matrix used to compute the frequency response
 % A(w,:) = [1 exp(-j*w) exp(-j*2*w) ... exp(-j*n*w)]
-A = exp( -j*kron(w,[0:n-1]) );
+A = exp( -1j*kron(w,0:n-1) );
 
 % optimal Chebyshev filter formulation
 cvx_begin
@@ -59,12 +59,12 @@ end
 %*********************************************************************
 % plot the FIR impulse reponse
 figure(1)
-stem([0:n-1],h)
+stem(0:n-1,h)
 xlabel('n')
 ylabel('h(n)')
 
 % plot the frequency response
-H = [exp(-j*kron(w,[0:n-1]))]*h;
+H = exp(-1j*kron(w,0:n-1))*h;
 figure(2)
 % magnitude
 subplot(2,1,1);

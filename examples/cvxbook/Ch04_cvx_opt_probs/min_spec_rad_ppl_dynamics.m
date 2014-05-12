@@ -47,16 +47,16 @@ cvx_begin gp
   minimize( lambda )
   subject to
     % inequality constraints
-    b'*v      <= lambda*v(1);
-    s(1)*v(1) <= lambda*v(2);
-    s(2)*v(2) <= lambda*v(3);
-    s(3)*v(3) <= lambda*v(4);
-    [0.5; 0.5] <= c; c <= [2; 2];
+    b'*v      <= lambda*v(1); %#ok
+    s(1)*v(1) <= lambda*v(2); %#ok
+    s(2)*v(2) <= lambda*v(3); %#ok
+    s(3)*v(3) <= lambda*v(4); %#ok
+    [0.5; 0.5] <= c <= [2; 2]; %#ok
     % equality constraints
     b == b_nom.*((ones(4,1)*(c(1)/c_nom(1))).^alpha).*...
-                ((ones(4,1)*(c(2)/c_nom(2))).^beta);
+                ((ones(4,1)*(c(2)/c_nom(2))).^beta); %#ok
     s == s_nom.*((ones(3,1)*(c(1)/c_nom(1))).^gamma).*...
-                ((ones(3,1)*(c(2)/c_nom(2))).^delta);
+                ((ones(3,1)*(c(2)/c_nom(2))).^delta); %#ok
 cvx_end
 
 % displaying results
@@ -80,4 +80,4 @@ A(4,3) = s(3);
 
 % eigenvalues of matrix A
 disp('Eigenvalues of matrix A are: ')
-eigA = eig(A)
+disp(eig(A))

@@ -24,8 +24,8 @@ g = F*tmp + rand(p,1);
 cvx_begin
     variable x(n) 
     maximize sum(entr(x)) 
-    A*x == b 
-    F*x <= g
+    A*x == b %#ok
+    F*x <= g %#ok
 cvx_end
 
 % Results 

@@ -24,7 +24,7 @@ g = F*tmp;
 cvx_begin
     variable x(n)
     minimize -sum(log(b-A*x))
-    F*x == g
+    F*x == g; %#ok
 cvx_end
 
 disp(['The analytic center of the set of linear inequalities and ' ... 

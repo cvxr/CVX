@@ -86,10 +86,10 @@ for j = 1 : npts + xnpts,
     if j > npts,
         xj = j - npts;
         delay = xdelays(xj);
-        disp( sprintf( 'Particular solution %d of %d (Tmax = %g)', xj, xnpts, delay ) );
-    else,
+        fprintf( 'Particular solution %d of %d (Tmax = %g)\n', xj, xnpts, delay );
+    else
         delay = delays(j);
-        disp( sprintf( 'Point %d of %d on the tradeoff curve (Tmax = %g)', j, npts, delay ) );
+        fprintf( 'Point %d of %d on the tradeoff curve (Tmax = %g)\n', j, npts, delay );
     end
 
     %
@@ -102,20 +102,20 @@ for j = 1 : npts + xnpts,
         variable C(N,N) symmetric
         minimize( sum(s) )
         subject to
-            G == reshape( GG * [ 1 ; w(:) ], N, N );
-            C == reshape( CC * [ 1 ; w(:) ; t(:) ], N, N );
-            delay * G - C >= 0;
-            wmin <= w(:) <= wmax;
-            t( : ) <= 1 / smin;
-            s( : ) <= smax;
-            inv_pos( t(:,1) ) <= s(1) - w(:,1) - 0.5 * w(:,2);
-            inv_pos( t(:,2) ) <= s(2) - w(:,3) - 0.5 * w(:,2);
+            G == reshape( GG * [ 1 ; w(:) ], N, N ); %#ok
+            C == reshape( CC * [ 1 ; w(:) ; t(:) ], N, N ); %#ok
+            delay * G - C >= 0; %#ok
+            wmin <= w(:) <= wmax; %#ok
+            t( : ) <= 1 / smin; %#ok
+            s( : ) <= smax; %#ok
+            inv_pos( t(:,1) ) <= s(1) - w(:,1) - 0.5 * w(:,2); %#ok
+            inv_pos( t(:,2) ) <= s(2) - w(:,3) - 0.5 * w(:,2); %#ok
     cvx_end
     ss = cvx_optval;
 
     if j <= npts,
         areas(j) = ss;
-    else,
+    else
         xareas(xj) = ss;
 
         %

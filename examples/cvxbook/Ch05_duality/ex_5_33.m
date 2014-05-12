@@ -17,7 +17,7 @@ A = [-2  7  1; ...
       2 -5 -1];
 b = [-4 3 9 0 -11 5]';
 d = [-10 -13 -27 -10 -7 14]';
-epsilon = [-1:0.05:1];
+epsilon = -1:0.05:1;
 p_star = zeros(size(epsilon));
 
 fprintf(1,'Computing p*(epsilon) for -1 <= epsilon <= 1 ...');

@@ -48,22 +48,22 @@ cvx_begin gp
     % non-recursive formulation
     d = 6*F*ones(N,1)./(E*ones(N,1).*w.*h.^3);
     for i = 1:N
-      (2*i-1)*d(i) + v(i+1) <= v(i);
-      (i-1/3)*d(i) + v(i+1) + y(i+1) <= y(i);
+      (2*i-1)*d(i) + v(i+1) <= v(i); %#ok
+      (i-1/3)*d(i) + v(i+1) + y(i+1) <= y(i); %#ok
     end
 
     % constraint set
-    wmin <= w    <= wmax;
-    hmin <= h    <= hmax;
-    Smin <= h./w <= Smax;
-    6*F*[1:N]'./(w.*(h.^2)) <= sigma_max;
-    y(1) <= ymax;
+    wmin <= w    <= wmax; %#ok
+    hmin <= h    <= hmax; %#ok
+    Smin <= h./w <= Smax; %#ok
+    6*F*[1:N]'./(w.*(h.^2)) <= sigma_max; %#ok
+    y(1) <= ymax; %#ok
 cvx_end
 
 % display results
 disp('The optimal widths and heights are: ');
 w, h
-fprintf(1,'The optimal minimum volume of the beam is %3.4f.\n', sum(w.*h))
+fprintf('The optimal minimum volume of the beam is %3.4f.\n', sum(w.*h));
 
 % plot the 3D model of the optimal cantilever beam
 figure, clf

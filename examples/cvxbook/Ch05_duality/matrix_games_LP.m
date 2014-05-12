@@ -23,9 +23,9 @@ fprintf(1,'Computing the optimal strategy for player 1 ... ');
 cvx_begin
     variables u(n) t1
     minimize ( t1 )
-    u >= 0;
-    ones(1,n)*u == 1;
-    P'*u <= t1*ones(m,1);
+    u >= 0; %#ok
+    ones(1,n)*u == 1; %#ok
+    P'*u <= t1*ones(m,1); %#ok
 cvx_end
 
 fprintf(1,'Done! \n');
@@ -36,9 +36,9 @@ fprintf(1,'Computing the optimal strategy for player 2 ... ');
 cvx_begin
     variables v(m) t2
     maximize ( t2 )
-    v >= 0;
-    ones(1,m)*v == 1;
-    P*v >= t2*ones(n,1);
+    v >= 0; %#ok
+    ones(1,m)*v == 1; %#ok
+    P*v >= t2*ones(n,1); %#ok
 cvx_end
 
 fprintf(1,'Done! \n');
@@ -48,6 +48,6 @@ disp('------------------------------------------------------------------------')
 disp('The optimal strategies for players 1 and 2 are respectively: ');
 disp([u v]);
 disp('The expected payoffs for player 1 and player 2 respectively are: ');
-[t1 t2]
-disp('They are equal as expected!');
+disp([t1 t2]);
+disp('They should be equal!');
 

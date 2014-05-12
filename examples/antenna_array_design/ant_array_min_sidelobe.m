@@ -28,7 +28,7 @@ ARRAY_GEOMETRY = '2D_RANDOM';
 % ARRAY_GEOMETRY = '2D_UNIFORM_LATTICE';
 
 % select if the optimal array pattern should enforce nulls or not
-HAS_NULLS = 0; % HAS_NULLS = 1;
+HAS_NULLS = 1; % HAS_NULLS = 1;
 
 %********************************************************************
 % problem specs
@@ -39,7 +39,7 @@ half_beamwidth = 10;  % half beamwidth around the target direction
 
 % angles where we want nulls (optional)
 if HAS_NULLS
-  theta_nulls = [95 110 120 140 225];
+    theta_nulls = [95 110 120 140 225];
 end
 
 %********************************************************************
@@ -62,7 +62,7 @@ elseif strcmp( ARRAY_GEOMETRY, '1D_UNIFORM_LINE' )
   % (unifrom array on a line)
   n = 30;
   d = 0.45*lambda;
-  loc = [d*[0:n-1]' zeros(n,1)];
+  loc = [d*(0:n-1)' zeros(n,1)];
   angleRange = 180;
 
 %********************************************************************
@@ -89,9 +89,9 @@ end
 % construct optimization data
 %********************************************************************
 % build matrix A that relates w and y(theta), ie, y = A*w
-theta = [1:angleRange]';
+theta = (1:angleRange)';
 A = kron(cos(pi*theta/180), loc(:,1)') + kron(sin(pi*theta/180), loc(:,2)');
-A = exp(2*pi*i/lambda*A);
+A = exp(2*pi*1i/lambda*A);
 
 % target constraint matrix
 [diff_closest, ind_closest] = min( abs(theta - theta_tar) );
@@ -102,15 +102,17 @@ if HAS_NULLS
   Anull = []; ind_nulls = [];
   for k = 1:length(theta_nulls)
     [diff_closest, ind_closest] = min( abs(theta - theta_nulls(k)) );
-    Anull = [Anull; A(ind_closest,:)];
-    ind_nulls = [ind_nulls ind_closest];
+    Anull = [Anull; A(ind_closest,:)]; %#ok
+    ind_nulls = [ind_nulls ind_closest]; %#ok
   end
 end
 
 % stopband constraint matrix
 ind = find(theta <= (theta_tar-half_beamwidth) | ...
            theta >= (theta_tar+half_beamwidth) );
-if HAS_NULLS, ind = setdiff(ind,ind_nulls); end;
+if HAS_NULLS, 
+    ind = setdiff(ind,ind_nulls);
+end;
 As = A(ind,:);
 
 %********************************************************************
@@ -120,9 +122,9 @@ cvx_begin
   variable w(n) complex
   minimize( max( abs(As*w) ) )
   subject to
-    Atar*w == 1;   % target constraint
+    Atar*w == 1;   %#ok target constraint
     if HAS_NULLS   % nulls constraints
-      Anull*w == 0;
+      Anull*w == 0; %#ok
     end
 cvx_end
 
@@ -145,13 +147,13 @@ title('Antenna locations')
 
 % plot array pattern
 if angleRange == 180,
-    theta = [1:360]';
+    theta = (1:360)';
     A = [ A; -A ];
 end
 y = A*w;
 figure(2), clf
 ymin = floor(0.1*min_sidelobe_level)*10-10; ymax = 0;
-plot([1:360], 20*log10(abs(y)), ...
+plot(1:360, 20*log10(abs(y)), ...
      [theta_tar theta_tar],[ymin ymax],'r--',...
      [theta_tar+half_beamwidth theta_tar+half_beamwidth],[ymin ymax],'g--',...
      [theta_tar-half_beamwidth theta_tar-half_beamwidth],[ymin ymax],'g--');

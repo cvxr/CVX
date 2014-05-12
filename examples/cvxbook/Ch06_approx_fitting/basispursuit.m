@@ -106,7 +106,7 @@ hold on;
 for k = 1:length(t);
   if(abs(x((k-1)*M+1)) > 1e-5), plot(t(k),0,'o'); end;
   for j = 2:2:kmax*2
-    if((abs(x((k-1)*M+j)) > 1e-5) | (abs(x((k-1)*M+j+1)) > 1e-5)),
+    if((abs(x((k-1)*M+j)) > 1e-5) || (abs(x((k-1)*M+j+1)) > 1e-5)),
       plot(t(k),w0*j/2,'o');
     end;
   end;

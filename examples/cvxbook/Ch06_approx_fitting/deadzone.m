@@ -25,7 +25,7 @@ cvx_end
 fprintf(1,'Done! \n');
 
 % Compare
-disp( sprintf( '\nResults:\n--------\nsum(max(abs(A*x-b)-1,0)): %6.4f\ncvx_optval: %6.4f\ncvx_status: %s\n', sum(max(abs(A*x-b)-1,0)), cvx_optval, cvx_status ) );
+fprintf( '\nResults:\n--------\nsum(max(abs(A*x-b)-1,0)): %6.4f\ncvx_optval: %6.4f\ncvx_status: %s\n', sum(max(abs(A*x-b)-1,0)), cvx_optval, cvx_status );
 disp( 'Optimal vector:' );
 disp( [ '   x     = [ ', sprintf( '%7.4f ', x ), ']' ] );
 disp( 'Residual vector:' );

@@ -62,8 +62,8 @@ for i=1:nopts
     variable x(n)
     minimize(norm(x-corrupt)+lambda*norm(x(2:n)-x(1:n-1)))
   cvx_end
-  obj1 = [obj1, norm(full(A*x))];
-  obj2 = [obj2, norm(full(x-corrupt))];
+  obj1 = [obj1, norm(full(A*x))]; %#ok
+  obj2 = [obj2, norm(full(x-corrupt))]; %#ok
 
   fprintf('tradeoff point %d\n',i);
 end;
@@ -83,15 +83,15 @@ alphas = [8 3 1];
 xrecon = [];
 
 for i=1:3
-   fprintf(1,'Reconstructed Signals: %d of 3 \n',i)
+   fprintf(1,'Reconstructed Signals: %d of 3 \n',i);
    alpha = alphas(i);
    cvx_begin quiet
     variable x(n)
     minimize(norm(x(2:n)-x(1:n-1)))
     subject to
-        norm(x-corrupt) <= alpha;
+        norm(x-corrupt) <= alpha; %#ok
    cvx_end
-   xrecon = [xrecon, x];
+   xrecon = [xrecon, x]; %#ok
 
 end
 

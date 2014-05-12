@@ -1,4 +1,4 @@
-function [cvx_optval,P,q,r,X,lambda] = cheb(A,b,Sigma);
+function [cvx_optval,P,q,r,X,lambda] = cheb(A,b,Sigma) %#ok
 
 % Computes Chebyshev lower bounds on probability vectors
 %
@@ -26,7 +26,7 @@ function [cvx_optval,P,q,r,X,lambda] = cheb(A,b,Sigma);
 % variables P in Sn, q in Rn, r in R
 %
 
-[ m, n ] = size( A );
+[ m, n ] = size( A ); %#ok
 cvx_begin sdp quiet
     variable P(n,n) symmetric
     variables q(n) r tau(m)
@@ -36,10 +36,10 @@ cvx_begin sdp quiet
         for i = 1 : m,
             qadj = q - 0.5 * tau(i) * A(i,:)';
             radj = r - 1 + tau(i) * b(i);
-            [ P, qadj ; qadj', radj ] >= 0 : Z{i};
+            [ P, qadj ; qadj', radj ] >= 0 : Z{i}; %#ok
         end
-        [ P, q ; q', r ] >= 0;
-        tau >= 0;
+        [ P, q ; q', r ] >= 0; %#ok
+        tau >= 0; %#ok
 cvx_end
 
 if nargout < 4,
@@ -51,8 +51,8 @@ lambda = [];
 for i=1:m
    Zi = Z{i};
    if (abs(Zi(3,3)) > 1e-4)
-      lambda = [lambda; Zi(3,3)];
-      X = [X Zi(1:2,3)/Zi(3,3)];
+      lambda = [lambda; Zi(3,3)]; %#ok
+      X = [X Zi(1:2,3)/Zi(3,3)]; %#ok
    end;
 end;
 mu = 1-sum(lambda);

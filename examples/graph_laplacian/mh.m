@@ -18,7 +18,7 @@ function [w,rho] = mh(A)
 % Almir Mutapcic 08/29/06
 
 % degrees of the nodes
-[n,m] = size(A);
+n = size(A,1);
 Lunw = A*A';          % unweighted Laplacian matrix
 degs = diag(Lunw);
 

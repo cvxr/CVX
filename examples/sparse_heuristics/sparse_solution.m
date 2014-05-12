@@ -57,12 +57,12 @@ x0 = randn(n,1);
 b  = A*x0 + rand(m,1); 
 
 % l1-norm heuristic for finding a sparse solution
-fprintf(1, 'Finding a sparse feasible point using l1-norm heuristic ...')
+disp('Finding a sparse feasible point using l1-norm heuristic ...')
 cvx_begin
   variable x_l1(n)
   minimize( norm( x_l1, 1 ) )
   subject to
-    A*x_l1 <= b;
+    A*x_l1 <= b; %#ok
 cvx_end
 
 % number of nonzero elements in the solution (its cardinality or diversity)
@@ -81,12 +81,12 @@ for k = 1:NUM_RUNS
     variable x_log(n)
     minimize( sum( W.*abs(x_log) ) )
     subject to
-      A*x_log <= b;
+      A*x_log <= b; %#ok
   cvx_end
 
   % display new number of nonzeros in the solution vector
   nnz = length(find( abs(x_log) > delta ));
-  nnzs = [nnzs nnz];
+  nnzs = [nnzs nnz]; %#ok
   fprintf(1,'   found a solution with %d nonzeros...\n', nnz);
 
   % adjust the weights and re-iterate

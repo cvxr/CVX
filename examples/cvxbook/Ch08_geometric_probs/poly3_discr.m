@@ -44,8 +44,8 @@ fprintf(1,'Finding the optimal polynomial of order 4 that separates the 2 classe
 cvx_begin
     variables a(np) t(1)
     minimize ( t )
-    a'*monX <= t;
-    a'*monY >= -t;
+    a'*monX <= t; %#ok
+    a'*monY >= -t; %#ok
 cvx_end
 
 fprintf(1,'Done! \n');

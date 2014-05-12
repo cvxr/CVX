@@ -20,7 +20,7 @@ c = -1;
 cvx_begin sdp
     variable t
     minimize ( c*t )
-    A >= t * B;
+    A >= t * B; %#ok
 cvx_end
 
 % Display results

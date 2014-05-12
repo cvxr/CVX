@@ -94,16 +94,16 @@ for k = 1:length(Amax)
             area = a'*x;
 
             % scale size, power, and area constraints
-            x >= 1;
-            power <= Pmax(n);
-            area <= Amax(k);
+            x >= 1; %#ok
+            power <= Pmax(n); %#ok
+            area <= Amax(k); %#ok
 
             % create timing constraints
             % these constraints enforce t_j + d_j <= t_i over all gates j that drive gate i
-            Aout'*t + Ain'*d <= Ain'*t;
+            Aout'*t + Ain'*d <= Ain'*t; %#ok
 
             % for gates with inputs not connected to other gates we enforce d_i <= t_i
-            d(1:3) <= t(1:3);
+            d(1:3) <= t(1:3); %#ok
         cvx_end
         fprintf( 'delay = %3.2f\n', cvx_optval );
         min_delay(k,n) = cvx_optval;

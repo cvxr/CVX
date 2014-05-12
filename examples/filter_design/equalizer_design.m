@@ -44,11 +44,11 @@ D  = 10;              % overall delay
 m  = 15*(length(g) + n);
 
 w = linspace(0,pi,m)';
-G = exp( -j*kron(w,[0:length(g)-1]) )*g;
-A = exp( -j*kron(w,[0:n-1]) );
+G = exp( -1j*kron(w,0:length(g)-1) )*g;
+A = exp( -1j*kron(w,0:n-1) );
 
 % desired frequency response is a pure delay (equalized channel)
-Gdes = exp(-j*D*w);
+Gdes = exp(-1j*D*w);
 
 % formulate and solve the Chebyshev design problem
 cvx_begin
@@ -78,7 +78,7 @@ cvx_begin
 
   minimize( max( abs( Tconv(times_not_D,:)*ht ) ) )
   subject to
-    Tconv(D+1,:)*ht == 1;
+    Tconv(D+1,:)*ht == 1; %#ok
 cvx_end
 
 % check if problem was successfully solved
@@ -92,12 +92,12 @@ end
 %********************************************************************
 % plot g
 figure(1)
-plot([0:length(g)-1],g,'o',[0:length(g)-1],g,'b:')
+plot(0:length(g)-1,g,'o',0:length(g)-1,g,'b:')
 xlabel('t')
 ylabel('g(t)')
 
 figure(2)
-H = exp(-j*kron(w,[0:length(g)-1]))*g;
+H = exp(-1j*kron(w,(0:length(g)-1)))*g;
 % magnitude
 subplot(2,1,1);
 plot(w,20*log10(abs(H)))
@@ -113,20 +113,20 @@ ylabel('phase G(w)')
 
 % freq equalizer
 figure(3)
-plot([0:n-1],hf,'o',[0:n-1],hf,'b:')
+plot(0:n-1,hf,'o',0:n-1,hf,'b:')
 xlabel('t')
 ylabel('h(t)')
 
 % plot g_tilde
 figure(4)
 gt=conv(g,hf);
-plot([1:length(gt)]-1,gt,'o',[1:length(gt)]-1,gt,'b:')
+plot(0:length(gt)-1,gt,'o',0:length(gt)-1,gt,'b:')
 xlabel('t')
 ylabel('g tilde(t)')
 axis([0,length(gt)-1,-.2 1.2])
 
 figure(5)
-H = exp(-j*kron(w,[0:length(gt)-1]))*gt;
+H = exp(-1j*kron(w,0:length(gt)-1))*gt;
 % amplitude
 subplot(2,1,1)
 plot(w,20*log10(abs(H)))
@@ -142,19 +142,19 @@ ylabel('phase G tilde(w)')
 
 % time equalizer
 figure(6)
-plot([0:n-1],ht,'o',[0:n-1],ht,'b:')
+plot(0:n-1,ht,'o',0:n-1,ht,'b:')
 xlabel('t')
 ylabel('h(t)')
 
 % plot g_tilde
 figure(7)
 gt=conv(g,ht);
-plot([1:length(gt)]-1,gt,'o',[1:length(gt)]-1,gt,'b:')
+plot(0:length(gt)-1,gt,'o',0:length(gt)-1,gt,'b:')
 xlabel('t')
 ylabel('g tilde(t)')
 
 figure(8)
-H = exp(-j*kron(w,[0:length(gt)-1]))*gt;
+H = exp(-1j*kron(w,0:length(gt)-1))*gt;
 % magnitude
 subplot(2,1,1)
 plot(w,20*log10(abs(H)))

@@ -23,9 +23,9 @@ fprintf(1,'Finding a separating hyperplane between the 2 polyhedra...');
 cvx_begin quiet
     variables muu(n) lambda(m)
     maximize ( muu'*x0 - b'*lambda )
-    A'*lambda == muu;
-    norm(muu) <= 1;
-    lambda >= 0;
+    A'*lambda == muu; %#ok
+    norm(muu) <= 1; %#ok
+    lambda >= 0; %#ok
 cvx_end
 
 fprintf(1,'Done! \n');

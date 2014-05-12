@@ -49,9 +49,9 @@ cvx_begin
    variables lambda(m)
    minimize( sum( lambda ) )
    subject to
-     A'*lambda == 0;
-     b'*lambda == -1; 
-     lambda >= 0;
+     A'*lambda == 0; %#ok
+     b'*lambda == -1; %#ok
+     lambda >= 0; %#ok
 cvx_end
 
 % report the smaller set of mutually inconsistent inequalities
@@ -61,7 +61,8 @@ fprintf(1,'Found a smaller set of %d mutually inconsistent inequalities.\n',...
         length(infeas_set));
 disp(' ');
 disp('A smaller set of mutually inconsistent inequalities are the ones');
-disp('with row indices:'), infeas_set'
+disp('with row indices:');
+disp(infeas_set');
 
 % check that this set is infeasible
 % cvx_begin

@@ -25,8 +25,8 @@ m = mult_factor*n;
 % where alpha(w) = 1/2*ln(R(w)) and phi(w) = Hilbert_trans(alpha(w))
 
 % compute 1/2*ln(R(w))
-w = 2*pi*[0:m-1]/m;
-R = [ ones(m,1) 2*cos(kron(w',[1:n-1])) ]*r;
+w = 2*pi*((0:m-1)/m);
+R = [ ones(m,1) 2*cos(kron(w',1:n-1)) ]*r;
 alpha = 1/2*log(R);
 
 % find the Hilbert transform 
@@ -34,12 +34,12 @@ alphatmp = fft(alpha);
 alphatmp(floor(m/2)+1:m) = -alphatmp(floor(m/2)+1:m);
 alphatmp(1) = 0;
 alphatmp(floor(m/2)+1) = 0;
-phi = real(ifft(j*alphatmp));
+phi = real(ifft(1j*alphatmp));
 
 % now retrieve the original sampling 
-index  = find(rem([0:m-1],mult_factor)==0);
+index  = find(rem(0:m-1,mult_factor)==0);
 alpha1 = alpha(index);
 phi1   = phi(index);
 
 % compute the impulse response (inverse Fourier transform)
-h = real(ifft(exp(alpha1+j*phi1),n));
+h = real(ifft(exp(alpha1+1j*phi1),n));

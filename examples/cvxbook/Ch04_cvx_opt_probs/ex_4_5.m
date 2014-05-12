@@ -36,7 +36,7 @@ cvx_begin
     variable x2(n)
     variable w(m)
     minimize( sum(quad_over_lin(A*x2-b,w,0)) + M^2*ones(1,m)*w)
-    w >= 0;
+    w >= 0; %#ok
 cvx_end
 
 % (c) quadratic program
@@ -46,15 +46,15 @@ cvx_begin
     variable u(m)
     variable v(m)
     minimize( sum(square(u) +  2*M*v) )
-    A*x3 - b <= u + v;
-    A*x3 - b >= -u - v;
-    u >= 0;
-    u <= M;
-    v >= 0;
+    A*x3 - b <= u + v; %#ok
+    A*x3 - b >= -u - v; %#ok
+    u >= 0; %#ok
+    u <= M; %#ok
+    v >= 0; %#ok
 cvx_end
 
 % Display results
 disp('------------------------------------------------------------------------');
 disp('The optimal solutions for problem formulations 1, 2 and 3 are given');
 disp('respectively as follows (per column): ');
-[x1 x2 x3]
+disp([x1,x2,x3])

@@ -30,12 +30,12 @@ alpha = 50;
 cvx_begin sdp
     variable S(n,n) symmetric 
     maximize log_det(S) - trace(S*Y)
-    sum(sum(abs(S))) <= alpha
-    S >= 0
+    sum(sum(abs(S))) <= alpha; %#ok
+    S >= 0; %#ok
 cvx_end
 R_hat = inv(S);
 
-S(find(S<1e-4)) = 0; 
+S(S<1e-4) = 0; 
 figure; 
 subplot(121);
 spy(Strue); 

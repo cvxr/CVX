@@ -54,7 +54,7 @@ elseif strcmp( ARRAY_GEOMETRY, '1D_UNIFORM_LINE' )
   % (unifrom array on a line)
   n = 30;
   d = 0.45*lambda;
-  loc = [d*[0:n-1]' zeros(n,1)];
+  loc = [d*(0:n-1)' zeros(n,1)];
 
 %********************************************************************
 % uniform 2D array with m-by-m element with d spacing
@@ -79,18 +79,17 @@ end
 % construct optimization data
 %********************************************************************
 % build matrix A that relates w and y(theta), ie, y = A*w
-theta = [1:360]';
+theta = (1:360)';
 A = kron(cos(pi*theta/180), loc(:,1)') + kron(sin(pi*theta/180), loc(:,2)');
-A = exp(2*pi*i/lambda*A);
+A = exp(2*pi*1i/lambda*A);
 
 % target constraint matrix
 [diff_closest, ind_closest] = min( abs(theta - theta_tar) );
 Atar = A(ind_closest,:);
 
 % stopband constraint matrix
-ind = find(theta <= (theta_tar-half_beamwidth) | ...
-           theta >= (theta_tar+half_beamwidth) );
-As = A(ind,:);
+As = A(theta <= (theta_tar-half_beamwidth) | ...
+       theta >= (theta_tar+half_beamwidth),:);
 
 %********************************************************************
 % optimization problem
@@ -99,8 +98,8 @@ cvx_begin
   variable w(n) complex
   minimize( norm( w ) )
   subject to
-    Atar*w == 1;
-    abs(As*w) <= 10^(min_sidelobe/20);
+    Atar*w == 1; %#ok
+    abs(As*w) <= 10^(min_sidelobe/20); %#ok
 cvx_end
 
 % check if problem was successfully solved
@@ -123,7 +122,7 @@ y = A*w;
 
 figure(2), clf
 ymin = -30; ymax = 0;
-plot([1:360], 20*log10(abs(y)), ...
+plot(1:360, 20*log10(abs(y)), ...
      [theta_tar theta_tar],[ymin ymax],'r--',...
      [theta_tar+half_beamwidth theta_tar+half_beamwidth],[ymin ymax],'g--',...
      [theta_tar-half_beamwidth theta_tar-half_beamwidth],[ymin ymax],'g--',...

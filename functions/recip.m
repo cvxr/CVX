@@ -30,11 +30,11 @@ function y = recip_posc( x ) %#ok
 sx = size( x );
 cvx_begin
     epigraph variable y( sx ) nonnegative_
-    { 2, linearize(x), y } == rotated_lorentz( sx, 0 ); %#ok
+    { sqrt(2), linearize(x), y } == rotated_lorentz( sx, 0 ); %#ok
 cvx_end
 
 function y = recip_negc( x )
-% Negative convex    
+% Negative convex   
 y = -recip_posc( -x );
 
 % Copyright 2005-2014 CVX Research, Inc.

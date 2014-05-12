@@ -30,4 +30,4 @@ disp('The optimal point location is: ');
 disp(x);
 disp('The average location of the fixed points is');
 disp(sum(P,2)/K);
-disp('They are the same as expected!');
+disp('They should be equal!');

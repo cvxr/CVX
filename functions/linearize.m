@@ -25,13 +25,13 @@ function y = lin_affn( x )
 y = x;
 
 function y = lin_cnvx( x ) %#ok
-cvx_begin
+cvx_begin set
     variable y(size(x))
     x <= y; %#ok
 cvx_end
 
 function y = lin_cncv( x ) %#ok
-cvx_begin
+cvx_begin set
     variable y(size(x))
     x >= y; %#ok
 cvx_end

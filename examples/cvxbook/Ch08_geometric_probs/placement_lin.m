@@ -56,7 +56,7 @@ fprintf(1,'Computing the optimal locations of the 6 free points...');
 cvx_begin
     variable x(N+M,2)
     minimize ( sum(norms( A*x,2,2 )))
-    x(N+[1:M],:) == fixed;
+    x(N+[1:M],:) == fixed; %#ok
 cvx_end
 
 fprintf(1,'Done! \n');
@@ -82,7 +82,7 @@ title('Linear placement problem');
 figure(2)
 all = [free_sum; fixed];
 bins = 0.05:0.1:1.95;
-lengths = sqrt(sum((A*all).^2')');
+lengths = sqrt(sum((A*all).^2,2));
 [N2,hist2] = hist(lengths,bins);
 bar(hist2,N2);
 hold on;

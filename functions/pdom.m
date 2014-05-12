@@ -51,13 +51,13 @@ cvx_begin
 cvx_end
 
 function y = pdom_affn( x ) %#ok
-cvx_begin
+cvx_begin set
     variable y(size(x)) nonnegative
     y == x; %#ok
 cvx_end
 
 function y = pdom_cncv( x ) %#ok
-cvx_begin
+cvx_begin set
     hypograph variable y(size(x)) nonnegative
     y <= x; %#ok
 cvx_end

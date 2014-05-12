@@ -81,10 +81,10 @@ for i = 1 : npts + xnpts,
     if i > npts,
         xi = i - npts;
         delay = xdelays(xi);
-        disp( sprintf( 'Particular solution %d of %d (Tmax = %g)', xi, xnpts, delay ) );
-    else,
+        fprintf( 'Particular solution %d of %d (Tmax = %g)\n', xi, xnpts, delay );
+    else
         delay = delays(i);
-        disp( sprintf( 'Point %d of %d on the tradeoff curve (Tmax = %g)', i, npts, delay ) );
+        fprintf( 'Point %d of %d on the tradeoff curve (Tmax = %g)\n', i, npts, delay );
     end
 
     %
@@ -96,12 +96,12 @@ for i = 1 : npts + xnpts,
         variable G(n,n,2) symmetric
         variable C(n,n,2) symmetric
         minimize( L * sum(d) + sum(w(:)) );
-        G == reshape( GG * [ 1 ; w(:) ; d(:) ], n, n, 2 );
-        C == reshape( CC * [ 1 ; w(:) ; d(:) ], n, n, 2 );
+        G == reshape( GG * [ 1 ; w(:) ; d(:) ], n, n, 2 ); %#ok
+        C == reshape( CC * [ 1 ; w(:) ; d(:) ], n, n, 2 ); %#ok
         % This is actually two LMIs, one for each circuit
-        (delay/2) * G - C >= 0;
-        0 <= w(:) <= wmax;
-        d(:) >= 0;
+        (delay/2) * G - C >= 0; %#ok
+        0 <= w(:) <= wmax; %#ok
+        d(:) >= 0; %#ok
     cvx_end
 
     if i <= npts,
@@ -122,11 +122,11 @@ for i = 1 : npts + xnpts,
         y  = 0.5 * [ - w(x,:) ; w(x(end:-1:1),:) ; + w(1,:) ];
         yd = ( 0.5 * L / os ) * [ -d ; -d ; +d ; +d ; -d ];
         x   = reshape( [ 0 : m - 1 ; 1 : m ], m2, 1 );
-        x   = [ x ; x(end:-1:1,:) ; 0 ];
+        x   = [ x ; x(end:-1:1,:) ; 0 ]; %#ok
         xd  = [ 0 ; os ; os ; 0 ; 0 ];
         x   = x + os + 0.5;
-        xd  = [ xd, xd + os + m + 1 ];
-        x   = [ x, x + os + m + 1 ];
+        xd  = [ xd, xd + os + m + 1 ]; %#ok
+        x   = [ x, x + os + m + 1 ]; %#ok
         fill( x, y, 0.9 * ones(size(y)), xd, yd, 0.9 * ones(size(yd)) );
         hold on
         plot( x, y, '-', xd, yd, '-' );
@@ -145,13 +145,14 @@ for i = 1 : npts + xnpts,
         T = linspace(0,1000,1000);
         tdom = []; telm = []; tthresh = []; Y = {};
         for k = 1 : 2,
-            A = -inv(C(:,:,k))*G(:,:,k);
+            A = -C(:,:,k)\G(:,:,k);
             B = -A* ones(n,1);
-            tdom(k) = max(eig(inv(G(:,:,k))*C(:,:,k)));
-            telm(k) = max(sum((inv(G(:,:,k))*C(:,:,k))'));
-            Y{k} = simple_step(A,B,T(2),length(T));
-            Y{k} = Y{k}(n,:);
-            tthresh(k) = min(find(Y{k}>=0.5));
+            GC = G(:,:,k)\C(:,:,k);
+            tdom(k) = max(eig(GC)); %#ok
+            telm(k) = max(sum(GC,2)); %#ok
+            Y{k} = simple_step(A,B,T(2),length(T)); %#ok
+            Y{k} = Y{k}(n,:); %#ok
+            tthresh(k) = find(Y{k}>=0.5,1,'first'); %#ok
         end
         plot( T, Y{1}, '-', T, Y{2}, '-' );
         axis([0 T(500) 0 1]);

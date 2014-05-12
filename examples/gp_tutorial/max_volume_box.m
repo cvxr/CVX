@@ -40,10 +40,10 @@ for k = 1:length(Awall)
       % objective function is the box volume
       maximize( h*w*d )
       subject to
-        2*(h*w + h*d) <= Awall_k;
-        w*d <= Afloor_n;
-        alpha <= h/w <= beta;
-        gamma <= d/w <= delta;
+        2*(h*w + h*d) <= Awall_k; %#ok
+        w*d <= Afloor_n; %#ok
+        alpha <= h/w <= beta; %#ok
+        gamma <= d/w <= delta; %#ok
     cvx_end
     fprintf( 'max_volume = %3.2f\n', cvx_optval );
     opt_volumes(k,n) = cvx_optval;

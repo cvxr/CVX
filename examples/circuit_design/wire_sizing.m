@@ -72,10 +72,10 @@ for i = 1 : npts + xnpts,
     if i > npts,
         xi = i - npts;
         delay = xdelays(xi);
-        disp( sprintf( 'Particular solution %d of %d (Tmax = %g)', xi, xnpts, delay ) );
-    else,
+        fprintf( 'Particular solution %d of %d (Tmax = %g)\n', xi, xnpts, delay );
+    else
         delay = delays(i);
-        disp( sprintf( 'Point %d of %d on the tradeoff curve (Tmax = %g)', i, npts, delay ) );
+        fprintf( 'Point %d of %d on the tradeoff curve (Tmax = %g)\n', i, npts, delay );
     end
 
     %
@@ -87,15 +87,15 @@ for i = 1 : npts + xnpts,
         variable G(n,n) symmetric
         variable C(n,n) symmetric
         minimize( sum(x) )
-        G == reshape( GG * [ 1 ; x ], n, n );
-        C == reshape( CC * [ 1 ; x ], n, n );
-        delay * G - C >= 0;
-        0 <= x <= wmax;
+        G == reshape( GG * [ 1 ; x ], n, n ); %#ok
+        C == reshape( CC * [ 1 ; x ], n, n ); %#ok
+        delay * G - C >= 0; %#ok
+        0 <= x <= wmax; %#ok
     cvx_end
 
     if i <= npts,
         areas(i) = cvx_optval;
-    else,
+    else
         xareas(xi) = cvx_optval;
         sizes(:,xi) = x;
 
@@ -113,10 +113,10 @@ for i = 1 : npts + xnpts,
         ylabel('v');
 
         % compute threshold delay, elmore delay, dominant time constant
-        tthres=T(min(find(Y(n,:)>0.5)));
+        tthres=T(find(Y(n,:)>0.5,1,'first'));
         GinvC=full(G\C);
         tdom=max(eig(GinvC));
-        telm=max(sum(GinvC'));
+        telm=max(sum(GinvC,2));
         plot(tdom*[1;1], [0;1], '--', telm*[1;1], [0;1],'--', ...
              tthres*[1;1], [0;1], '--');
         text(tdom,0,'d');
@@ -166,7 +166,7 @@ title('Solutions at points on the tradeoff curve');
 legends = {};
 for k = 1 : xnpts,
     set( h(k), 'EdgeColor', get( h2(k), 'Color' ) );
-    legends{k} = sprintf( 'Tmax=%g', xdelays(k) );
+    legends{k} = sprintf( 'Tmax=%g', xdelays(k) ); %#ok
 end
 legend(legends{:},4);
 

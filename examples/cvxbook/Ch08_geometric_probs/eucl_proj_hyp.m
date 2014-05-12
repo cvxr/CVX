@@ -25,7 +25,7 @@ fprintf(1,'Computing the optimal solution by solving a QP ...');
 cvx_begin quiet
     variable x(n)
     minimize ( norm(x-x0)^2 )
-    a'*x == b;
+    a'*x == b; %#ok
 cvx_end
 
 fprintf(1,'Done! \n');
@@ -39,4 +39,5 @@ disp('Computing the distance between x0 and the hyperplane in each case');
 disp(['||x0 - p_C(x0)|| = ' num2str(norm(x0 - pc_x0))]);
 disp(['||x0 - x_star || = ' num2str(norm(x0 - x))]);
 disp('Verifying that the analytical solution and the solution obtained via QP are equal: ');
-[pc_x0 x]
+disp([pc_x0 x])
+

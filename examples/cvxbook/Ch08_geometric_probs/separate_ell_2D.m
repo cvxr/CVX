@@ -25,9 +25,9 @@ cvx_begin
     dual variables lam muu z
     minimize ( norm(w,2) )
     subject to
-    lam:    norm (A*x + b).^2 <= 1;
-    muu:    norm (C*y + d).^2 <= 1;
-    z:      x - y == w;
+    lam:    norm(A*x + b)^2 <= 1; %#ok
+    muu:    norm(C*y + d)^2 <= 1; %#ok
+    z:      x - y == w; %#ok
 cvx_end
 
 
@@ -41,7 +41,7 @@ q = repmat(t,1,length(c)) +p*c;
 clf
 nopts = 1000;
 angles = linspace(0,2*pi,nopts);
-[u,v] = meshgrid([-2:0.01:4]);
+[u,v] = meshgrid(-2:0.01:4);
 z1 = (A(1,1)*u + A(1,2)*v + b(1)).^2 + (A(2,1)*u + A(2,2)*v + b(2)).^2;
 z2 = (C(1,1)*u + C(1,2)*v + d(1)).^2 + (C(2,1)*u + C(2,2)*v + d(2)).^2;
 contour(u,v,z1,[1 1]);

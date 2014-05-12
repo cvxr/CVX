@@ -24,8 +24,8 @@ fprintf('Finding a separating hyperplane...');
 
 cvx_begin
     variables a(n) b(1)
-    X'*a - b >= 1;
-    Y'*a - b <= -1;
+    X'*a - b >= 1; %#ok
+    Y'*a - b <= -1; %#ok
 cvx_end
 
 fprintf(1,'Done! \n');

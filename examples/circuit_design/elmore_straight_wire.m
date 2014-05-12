@@ -26,7 +26,7 @@ N = 10+1; % number of segments (including the root node which is labeled as 1)
 
 % parent node array for the straight wire
 % specifies which node is a unique parent for node i (always have a tree)
-parent = [0:N-1];
+parent = 0:N-1;
 
 % problem constants
 Rsource = 0.1;
@@ -41,7 +41,6 @@ Cload = [0; ones(N-1,1)];
 % minimum and maximum width and area specification
 Wmin = 1;
 Wmax = 10;
-Amax = 50;
 
 %********************************************************************
 % derived data (computed from user's data)
@@ -49,10 +48,10 @@ Amax = 50;
 % compute children cell array (evaluate who are children for each node)
 children = cell(N,1);
 leafs = [];
-for node = [1:N]
+for node = 1:N
   children{node} = find(parent == node);
   if isempty(children{node})
-    leafs(end+1) = node; % leafs have no children
+    leafs(end+1) = node; %#ok leafs have no children
   end
 end
 
@@ -75,15 +74,15 @@ for Amax = [10.05 10.5 11 12:2:20 22.5 25:5:60]
 
           % wire segment resistance is inversely proportional to widths
           R = alpha.*l./w;
-          R = [Rsource; R];
+          R = [Rsource; R]; %#ok
 
           % wire segment capacitance is an affine function of widths
           C_bar = beta.*l.*w + gamma.*l;
-          C_bar = [0; C_bar];
+          C_bar = [0; C_bar]; %#ok
 
           % compute common capacitances for each node (C_tilde in GP tutorial)
           C_tilde = cvx( zeros(N,1) );
-          for node = [1:N]
+          for node = 1:N
             C_tilde(node,1) = Cload(node);
             for k = parent(node)
               if k > 0; C_tilde(node,1) = C_tilde(node,1) + C_bar(k); end;
@@ -102,19 +101,19 @@ for Amax = [10.05 10.5 11 12:2:20 22.5 25:5:60]
           end
 
         % generate Elmore delay constraints
-        R(1)*C_total(1) <= T(1,1);
+        R(1)*C_total(1) <= T(1,1); %#ok
         for node = 2:N
-          R(node)*C_total(node) + T(parent(node),1) <= T(node,1);
+          R(node)*C_total(node) + T(parent(node),1) <= T(node,1); %#ok
         end
 
         % collect all the constraints
-        sum(w.*l) <= Amax;
-        Wmin <= w <= Wmax;
+        sum(w.*l) <= Amax; %#ok
+        Wmin <= w <= Wmax; %#ok
     cvx_end
     % display and store computed values
     fprintf('delay = %3.2f\n',cvx_optval);
-    Darray = [Darray cvx_optval];
-    widths = [widths w];
+    Darray = [Darray cvx_optval]; %#ok
+    widths = [widths w]; %#ok
 end
 
 % indices of four taper designs on the tradeoff curve

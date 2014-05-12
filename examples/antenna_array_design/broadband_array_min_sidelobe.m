@@ -81,7 +81,7 @@ freqs = linspace(500,3000,numfreqs)';
 clear Atotal;
 for k = 1:numfreqs
   % FIR portion of the main matrix
-  Afir = kron( ones(numtheta,n), -[0:P-1]/fs );
+  Afir = kron( ones(numtheta,n), -(0:P-1)/fs );
 
   % cos/sine part of the main matrix
   Alocx = kron( loc(:,1)', ones(1,P) );
@@ -89,7 +89,7 @@ for k = 1:numfreqs
   Aloc = kron( cos(pi*theta/180)/c, Alocx ) + kron( sin(pi*theta/180)/c, Alocy );
 
   % create the main matrix for each frequency sample
-  Atotal(:,:,k) = exp(2*pi*i*freqs(k)*(Afir+Aloc));
+  Atotal(:,:,k) = exp(2*pi*1i*freqs(k)*(Afir+Aloc)); %#ok
 end
 
 % single out indices so we can make equalities and inequalities
@@ -102,13 +102,13 @@ thetaStopInd = find( theta > (theta_tar+half_beamwidth) | ...
 % create target and stopband constraint matrices
 Atar = []; As = [];
 % inband frequencies constraints
-for k = [inbandInd]'
-  Atar = [Atar; Atotal(thetaTarInd,:,k)];
-  As = [As; Atotal(thetaStopInd,:,k)];
+for k = (inbandInd)'
+  Atar = [Atar; Atotal(thetaTarInd,:,k)]; %#ok
+  As = [As; Atotal(thetaStopInd,:,k)]; %#ok
 end
 % outband frequencies constraints
-for k = [outbandInd]'
-  As = [As; Atotal(:,:,k)];
+for k = (outbandInd)'
+  As = [As; Atotal(:,:,k)]; %#ok
 end
 
 %********************************************************************
@@ -119,7 +119,7 @@ cvx_begin
   minimize( max( abs( As*w ) ) )
   subject to
     % target direction equality constraint
-    Atar*w == 1;
+    Atar*w == 1; %#ok
 cvx_end
 
 % check if problem was successfully solved

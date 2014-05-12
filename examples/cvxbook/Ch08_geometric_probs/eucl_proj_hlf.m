@@ -29,7 +29,7 @@ fprintf(1,'Computing the solution of the QP for the case where a^T*x0 <=b...');
 cvx_begin quiet
     variable xs0(n)
     minimize ( norm(xs0 - x0).^2 )
-    a'*xs0 <= b;
+    a'*xs0 <= b; %#ok
 cvx_end
 fprintf(1,'Done! \n');
 
@@ -37,7 +37,7 @@ fprintf(1,'Computing the solution of the QP for the case where a^T*x0 > b...');
 cvx_begin quiet
     variable xs1(n)
     minimize ( norm(xs1 - x1).^2 )
-    a'*xs1 <= b;
+    a'*xs1 <= b; %#ok
 cvx_end
 fprintf(1,'Done! \n');
 
@@ -45,7 +45,7 @@ fprintf(1,'Done! \n');
 disp('-----------------------------------------------------------------');
 disp('Verifying that p_C(x0) and x0_star are equal in the case where a^T*x0 <=b');
 disp(['||p_C(x0) - x0_star|| = ' num2str(norm(xs0 - pc_x0))]);
-disp('Hence they are equal to working precision');
+disp('They should be equal to working precision');
 disp('Verifying that p_C(x1) and x1_star are equal in the case where a^T*x1 > b');
 disp(['||p_C(x1) - x1_star|| = ' num2str(norm(xs1 - pc_x1))]);
-disp('Hence they are equal to working precision');
+disp('They should be equal to working precision');

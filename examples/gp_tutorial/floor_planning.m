@@ -37,11 +37,11 @@ for n = 1:N
     minimize( max(wa+wb,wc+wd)*(max(ha,hb)+max(hc,hd)) )
     subject to
       % constraints (now impose the non-changing constraints)
-      ha*wa == a; hb*wb == b; hc*wc == c; hd*wd == d;
-      1/alpha(n) <= ha/wa <= alpha(n);
-      1/alpha(n) <= hb/wb <= alpha(n);
-      1/alpha(n) <= hc/wc <= alpha(n);
-      1/alpha(n) <= hd/wd <= alpha(n);
+      ha*wa == a; hb*wb == b; hc*wc == c; hd*wd == d; %#ok
+      1/alpha(n) <= ha/wa <= alpha(n); %#ok
+      1/alpha(n) <= hb/wb <= alpha(n); %#ok
+      1/alpha(n) <= hc/wc <= alpha(n); %#ok
+      1/alpha(n) <= hd/wd <= alpha(n); %#ok
   cvx_end
   fprintf( 'area = %.2f\n', cvx_optval );
   min_area(n) = cvx_optval;

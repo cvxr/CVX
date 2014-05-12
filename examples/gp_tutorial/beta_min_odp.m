@@ -47,14 +47,14 @@ for k = 1:length(beta_min_GE)
         tau_B = C*w(1);
         minimize( tau_B )
         subject to
-            Nmin <= v <= Nmax;
-            y >= [ y(2:end) ; 0 ] + v .^ pwj;
-            w >= [ w(2:end) ; 0 ] + y .* v .^ pwi;
-            (WB*beta_min_GE(k)/(M*Nref^(g1-g2)*Dn0))*y(1) <= 1;
+            Nmin <= v <= Nmax; %#ok
+            y >= [ y(2:end) ; 0 ] + v .^ pwj; %#ok
+            w >= [ w(2:end) ; 0 ] + y .* v .^ pwi; %#ok
+            (WB*beta_min_GE(k)/(M*Nref^(g1-g2)*Dn0))*y(1) <= 1; %#ok
     cvx_end
     fprintf( '%s\n', cvx_status );
     % keep the optimal solution
-    v_array = [v_array v];
+    v_array = [v_array v]; %#ok
 end
 
 % plot the basic optimal doping profile

@@ -11,7 +11,7 @@ function cantilever_beam_plot(values)
 
 N = length(values)/2;
 for k = 0:N-1
-  [X Y Z] = data_rect3(values(2*N-k),values(N-k),k);
+  [X,Y,Z] = data_rect3(values(2*N-k),values(N-k),k);
   plot3(X,Y,Z); hold on;
 end
 hold off;

@@ -25,7 +25,7 @@ v = 1./(5+40*u.^2) + 0.1*u.^3 + 0.01*randn(1,m);
 fprintf(1,'Computing optimal polynomial in the case of L2-norm...');
 
 A = vander(u');
-A = A(:,m-n+[1:n]);     % last n columns of A
+A = A(:,m-n+(1:n));     % last n columns of A
 x = A\(v');             % coefficients of the polynomial in the following
                         % order: x = [x_n x_(n-1) ... x_2 x_1]'
 

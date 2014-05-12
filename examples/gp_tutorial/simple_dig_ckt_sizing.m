@@ -87,9 +87,9 @@ for k = 1:length(Amax)
           minimize( circuit_delay )
           subject to
             % construct the constraints
-            x >= 1;             % all sizes greater than 1 (normalized)
-            power <= Pmax(n);   % power constraint
-            area <= Amax(k);    % area constraint
+            x >= 1;             %#ok all sizes greater than 1 (normalized)
+            power <= Pmax(n);   %#ok power constraint
+            area <= Amax(k);    %#ok area constraint
         cvx_end
         fprintf( 'delay = %3.2f\n', cvx_optval );
         min_delay(k,n) = cvx_optval;

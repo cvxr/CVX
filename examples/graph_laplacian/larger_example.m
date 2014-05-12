@@ -93,7 +93,7 @@ figure(2), clf
 v_fdla = [w_fdla; diag(eye(n) - A*diag(w_fdla)*A')];
 [ifdla, jfdla, neg_fdla] = find( v_fdla.*(v_fdla < -0.001 ) );
 v_fdla(ifdla) = [];
-wbins = [-0.6:0.012:0.6];
+wbins = -0.6:0.012:0.6;
 hist(neg_fdla,wbins); hold on,
 h = findobj(gca,'Type','patch');
 set(h,'FaceColor','r')

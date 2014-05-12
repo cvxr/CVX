@@ -1,4 +1,4 @@
-function [ w, cvx_optval ] = fdla( A )
+function [ w, cvx_optval ] = fdla( A ) %#ok
 
 % Computes the fastest distributed linear averaging (FDLA) edge weights
 %
@@ -22,7 +22,7 @@ function [ w, cvx_optval ] = fdla( A )
 %
 % Written for CVX by Almir Mutapcic 08/29/06
 
-[n,m] = size(A);
+[n,m] = size(A); %#ok
 I = eye(n,n);
 J = I - (1/n) * ones(n,n);
 cvx_begin sdp
@@ -31,6 +31,6 @@ cvx_begin sdp
     variable L(n,n) symmetric
     minimize( s )
     subject to
-        L == A * diag(w) * A';
-        -s * I <= J - L <= s * I;
+        L == A * diag(w) * A'; %#ok
+        -s * I <= J - L <= s * I; %#ok
 cvx_end

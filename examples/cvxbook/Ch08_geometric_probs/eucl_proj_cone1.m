@@ -25,7 +25,7 @@ fprintf(1,'Computing the solution via a QP...');
 cvx_begin quiet
     variable x(n)
     minimize ( norm(x - x0) )
-    x >= 0;
+    x >= 0; %#ok
 cvx_end
 
 fprintf(1,'Done! \n');
@@ -33,5 +33,5 @@ fprintf(1,'Done! \n');
 % Verification
 disp('-----------------------------------------------------------------');
 disp('Verifying that the analytical solution and the solution obtained via QP are equal: ');
-[pk_x0 x]
-disp('They are equal as expected!');
+disp([pk_x0 x])
+disp('They should be equal!');

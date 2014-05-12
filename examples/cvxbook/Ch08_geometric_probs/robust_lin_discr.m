@@ -25,9 +25,9 @@ Y = T*Y;  X = T*X;
 cvx_begin
     variables a(n) b(1) t(1)
     maximize (t)
-    X'*a - b >= t;
-    Y'*a - b <= -t;
-    norm(a) <= 1;
+    X'*a - b >= t; %#ok
+    Y'*a - b <= -t; %#ok
+    norm(a) <= 1; %#ok
 cvx_end
 
 % Displaying results

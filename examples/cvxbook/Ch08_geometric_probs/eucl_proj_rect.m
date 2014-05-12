@@ -18,8 +18,8 @@ x0 = randn(n,1);
 % Analytical solution
 fprintf(1,'Computing the analytical solution ...');
 pc_x0 = x0;
-pc_x0(find(x0<=l)) = l(find(x0<=l));
-pc_x0(find(x0>=u)) = u(find(x0>=u));
+pc_x0(x0<=l) = l(x0<=l);
+pc_x0(x0>=u) = u(x0>=u);
 fprintf(1,'Done! \n');
 
 % Solution via QP
@@ -28,8 +28,7 @@ fprintf(1,'Computing the optimal solution by solving a QP ...');
 cvx_begin quiet
     variable x(n)
     minimize ( norm(x-x0) )
-    x <= u;
-    x >= l;
+    l <= x <= u; %#ok
 cvx_end
 
 fprintf(1,'Done! \n');
@@ -37,4 +36,5 @@ fprintf(1,'Done! \n');
 % Verification
 disp('-----------------------------------------------------------------');
 disp('Verifying that the analytical solution and the solution obtained via QP are equal: ');
-[pc_x0 x]
+disp([pc_x0 x])
+

@@ -23,7 +23,7 @@ fprintf(1,'Solving the dual of the two-way partitioning problem...');
 cvx_begin sdp
     variable nu(n)
     maximize ( -sum(nu) )
-    W + diag(nu) >= 0;
+    W + diag(nu) >= 0; %#ok
 cvx_end
 
 fprintf(1,'Done! \n');
@@ -35,8 +35,8 @@ fprintf(1,'Solving the SDP relaxation of the two-way partitioning problem...');
 cvx_begin sdp
     variable X(n,n) symmetric
     minimize ( trace(W*X) )
-    diag(X) == 1;
-    X >= 0;
+    diag(X) == 1; %#ok
+    X >= 0; %#ok
 cvx_end
 
 fprintf(1,'Done! \n');
@@ -47,4 +47,4 @@ disp('------------------------------------------------------------------------')
 disp('The optimal value of the Lagrange dual and the SDP relaxation fo the    ');
 disp('two-way partitioning problem are, respectively, ');
 disp([opt1 opt2])
-disp('They are equal as expected!');
+disp('They should be equal!');

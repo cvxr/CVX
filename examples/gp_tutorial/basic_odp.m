@@ -45,9 +45,9 @@ cvx_begin gp
     tau_B = C*w(1);
     minimize( tau_B )
     subject to
-        Nmin <= v <= Nmax;
-        y >= [ y(2:end) ; 0 ] + v .^ pwj;
-        w >= [ w(2:end) ; 0 ] + y .* v .^ pwi;
+        Nmin <= v <= Nmax; %#ok
+        y >= [ y(2:end) ; 0 ] + v .^ pwj; %#ok
+        w >= [ w(2:end) ; 0 ] + y .* v .^ pwi; %#ok
 cvx_end
 
 % plot the basic optimal doping profile

@@ -71,7 +71,7 @@ elseif pstr.complete,
 elseif p < 2,
 
     cvx_pop( 0 );
-    error( 'CVX:InternalError', 'Internal CVX data corruption. Please CLEAR ALL and rebuild your model.' );
+    error( 'CVX:IncompleteModel', 'Cannot construct a set object outside of a CVX model.' );
 
 else
 
@@ -79,6 +79,11 @@ else
     nstr = cvx___.problems(np);
     if nstr.gp ~= pstr.gp,
         error( 'CVX:MixedGP', 'Cannot embed a convex model into a geometric model, nor vice versa.' );
+    end
+    cp = pstr.checkpoint(4);
+    if nstr.checkpoint(4) > cp
+        cvx___.problems(np).checkpoint(4) = cp;
+        cvx___.problems(np).complete = false;
     end
     vars = cvx_collapse( pstr.variables, true, false );
     dvars = cvx_collapse( pstr.duals, true, false );
@@ -103,41 +108,17 @@ else
             nstr.(pname) = ovars;
         end
     end
-
     x = pstr.objective;
     if isempty( x ),
         assignin( 'caller', 'cvx_optval', 0 );
     else
-        switch pstr.direction,
-            case { 'minimize', 'minimise' },
-                force = false;
-                os = +1;
-            case 'epigraph',
-                force = true;
-                os = +1;
-            case { 'maximize', 'maximise' },
-                force = false;
-                os = -1;
-            case 'hypograph',
-                force = true;
-                os = -1;
-        end
-        persistent map mapgp mapsgn %#ok
-        if isempty( map ),
-            map = ( cvx_remap( 'r_affine' ) &  ~cvx_remap( 'constant' ) )';
-            mapgp = cvx_remap( 'convex' ) & ~cvx_remap( 'affine' );
+        persistent mapsgn %#ok
+        if isempty(mapsgn),
             mapsgn = ( cvx_remap( 'positive', 'p_nonconst' ) - cvx_remap( 'negative', 'n_nonconst' ) )';
-        end
-        if ~force,
-            if pstr.geometric, x = log( x ); end
-            bx = cvx_sparsify( cvx_basis( x ), [], 'magnitude' );
-            x = cvx( size( x ), bx );
-            if pstr.geometric, x = exp( x ); end
-        else
-            bx = cvx_basis( x );
-        end
-        [ r, c ] = find( bx ); %#ok
-        if force && pstr.geometric,
+        end    
+        os = 1 - 2 * strcmp( pstr.direction, 'maximize' );
+        [ r, c ] = find( cvx_basis( x ) ); %#ok
+        if pstr.geometric,
             r = cvx___.logarithm( r, : );
         end
         cx = cvx___.classes( r, : );

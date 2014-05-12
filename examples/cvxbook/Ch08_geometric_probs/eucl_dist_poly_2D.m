@@ -24,8 +24,8 @@ fprintf(1,'Computing the distance between the 2 polyhedra...');
 cvx_begin
     variables x(n) y(n)
     minimize (norm(x - y))
-    norm(x,1) <= 2;
-    norm(y-[4;3],inf) <=1;
+    norm(x,1) <= 2; %#ok
+    norm(y-[4;3],inf) <=1; %#ok
 cvx_end
 
 fprintf(1,'Done! \n');

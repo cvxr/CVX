@@ -32,8 +32,6 @@ Li = inv(L); Li = 0.5*(Li+Li');
 cvx_begin sdp
     variable S(n,n) symmetric 
     maximize( log_det(S) - trace(S*Y) );
-    S >= Ui;
-    S <= Li;
+    Ui <= S <= Li;  %#ok
 cvx_end
 R_hat = inv(S);
-

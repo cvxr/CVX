@@ -25,10 +25,13 @@ cvx___.equalities{end+1} = zb;
 cvx___.inequality(end+1) = ~iseq;
 mO = cvx___.n_equality;
 cvx___.n_equality = mO + mN;
-if pstr.complete && pstr.checkpoint(1) > 1,
-    nv = min(pstr.checkpoint(1),size(zb,1));
-    if nnz(zb(2:nv,:)), 
-        cvx___.problems(end).complete = false;
+cp = pstr.checkpoint(4);
+if cp > 1,
+    x = find( any( zb, 2 ), 2, 'first' );
+    if any( x > 1 & x <= cp ),
+        pstr.checkpoint(4) = x(1+(x(1)==1)) - 1;
+        pstr.complete = false;
+        cvx___.problems(end) = pstr;
     end
 end
 if nargout

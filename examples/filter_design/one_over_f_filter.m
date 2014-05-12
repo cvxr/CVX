@@ -36,7 +36,7 @@ wl = logspace(log10(wa),log10(wb),m)';
 D = 1./sqrt(wl);
 
 % matrix of cosines to compute the power spectrum
-Al = [ones(m,1) 2*cos(kron(wl,[1:n-1]))];
+Al = [ones(m,1) 2*cos(kron(wl,1:n-1))];
 
 % solve the problem using cvx
 cvx_begin
@@ -44,10 +44,10 @@ cvx_begin
   variable R(m,1)   % power spectrum
 
   % log-chebychev minimax design
-  minimize( max( max( [R./(D.^2)  (D.^2).*inv_pos(R)]' ) ) )
+  minimize( max( max( [R./(D.^2)  (D.^2).*inv_pos(R)]' ) ) ) %#ok
   subject to
      % power spectrum constraint
-     R == Al*r;
+     R == Al*r; %#ok
 cvx_end
 
 % check if problem was successfully solved
@@ -61,7 +61,7 @@ h = spectral_fact(r);
 
 % figures
 figure(1)
-H = exp(-j*kron(wl,[0:n-1]))*h;
+H = exp(-1j*kron(wl,0:n-1))*h;
 loglog(wl,abs(H),wl,D,'r--')
 set(gca,'XLim',[wa pi])
 xlabel('freq w')

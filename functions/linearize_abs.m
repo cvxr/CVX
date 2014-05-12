@@ -24,7 +24,7 @@ function y = lin_abs_affn( x )
 y = x;
 
 function y = lin_abs_nonl( x ) %#ok
-cvx_begin
+cvx_begin set
     variable y(size(x))
     abs(x) <= y; %#ok
 cvx_end

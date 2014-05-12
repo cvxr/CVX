@@ -72,7 +72,7 @@ for iters = 1:50
 
    t = 1;
    newx = xlb + t*v;
-   while ((min(1-(A*newx +b)) < 0) | (min((A*newx +b)+1) < 0))
+   while ((min(1-(A*newx +b)) < 0) || (min((A*newx +b)+1) < 0))
        t = beta*t;
        newx = xlb + t*v;
    end;

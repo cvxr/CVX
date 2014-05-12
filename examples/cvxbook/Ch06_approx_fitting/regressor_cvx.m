@@ -19,6 +19,7 @@
 % is solved
 
 rand('state',0);
+randn('state',0);
 
 m = 10;
 n = 20;
@@ -34,13 +35,12 @@ if (1) %%%%%%%%%%%%
 % min.  ||Ax-b||_2
 % s.t.  ||x||_1 <= alpha
 
-residuals_heur = [norm(b)];
 xln = A'*((A*A')\b);
 lnorm = norm(xln,1);
 nopts = 100;
 alphas = linspace(0,lnorm,nopts);
-residuals_heur = [norm(b)];
-card_heur = [0];
+residuals_heur = norm(b);
+card_heur = 0;
 
 
 for k=2:(nopts-1)
@@ -50,26 +50,27 @@ for k=2:(nopts-1)
     variable x(n)
     minimize(norm(A*x-b))
     subject to
-        norm(x,1) <= alpha;
+        norm(x,1) <= alpha; %#ok
   cvx_end
 
-  x(find(abs(x) < 1e-3*max(abs(x)))) = 0;
+  x(abs(x) < 1e-3*max(abs(x))) = 0; %#ok
   ind = find(abs(x));
   sparsity = length(ind);
   fprintf(1,'Current sparsity pattern k = %d \n',sparsity);
   x = zeros(n,1);  x(ind) = A(:,ind)\b;
-  card_heur = [card_heur, sparsity];
-  residuals_heur = [residuals_heur, norm(A*x-b)];
+  card_heur = [card_heur, sparsity]; %#ok
+  residuals_heur = [residuals_heur, norm(A*x-b)]; %#ok
 end;
 
-obj1 = norm(b)
-obj2 = [0];
+obj1 = norm(b);
+obj2 = 0;
+obj1 %#ok
 
 i=1;
 for k=1:m-1
-  if ~isempty(find(card_heur == k))
-     obj2(i+1) = k;
-     obj1(i+1) = min(residuals_heur(find(card_heur ==k)));
+  if any(card_heur == k)
+     obj2(i+1) = k; %#ok
+     obj1(i+1) = min(residuals_heur(card_heur ==k));
      i=i+1;
   end;
 end;
@@ -87,17 +88,17 @@ bestx = zeros(n,m);
 bestres = zeros(1,m);
 
 for k=1:m-1
-  k
+  k %#ok
   % enumerate sparsity patterns with exactly k nonzeros
   bestres(k) = Inf;
-  ind = 1:k
+  ind = 1:k %#ok
   nocases = 1;
   done = 0;
   while ~done
      done = 1;
      for i=0:k-1
        if (ind(k-i) < n-i),
-          ind(k-i:k) = ind(k-i)+[1:i+1];
+          ind(k-i:k) = ind(k-i)+(1:i+1);
           done = 0;
           break;
        end;
@@ -111,8 +112,8 @@ for k=1:m-1
      end;
      nocases = nocases + 1;
   end;
-  nocases
-  factorial(n)/(factorial(n-k)*factorial(k))
+  nocases %#ok
+  factorial(n)/(factorial(n-k)*factorial(k)) %#ok
 end;
 
 x = A\b;
@@ -126,19 +127,19 @@ hold off
 obj1dbl =[];
 obj2dbl =[];
 for i=1:length(obj1)-1
-  obj1dbl = [obj1dbl, obj1(i), obj1(i)];
-  obj2dbl = [obj2dbl, obj2(i), obj2(i+1)];
+  obj1dbl = [obj1dbl, obj1(i), obj1(i)]; %#ok
+  obj2dbl = [obj2dbl, obj2(i), obj2(i+1)]; %#ok
 end;
 obj1dbl = [obj1dbl, obj1(length(obj1))];
 obj2dbl = [obj2dbl, obj2(length(obj1))];
 
 bestobj1 = bestres;
-bestobj2 = [0:1:m];
+bestobj2 = 0:m;
 bestobj1dbl =[];
 bestobj2dbl =[];
 for i=1:length(bestobj1)-1
-  bestobj1dbl = [bestobj1dbl, bestobj1(i), bestobj1(i)];
-  bestobj2dbl = [bestobj2dbl, bestobj2(i), bestobj2(i+1)];
+  bestobj1dbl = [bestobj1dbl, bestobj1(i), bestobj1(i)]; %#ok
+  bestobj2dbl = [bestobj2dbl, bestobj2(i), bestobj2(i+1)]; %#ok
 end;
 bestobj1dbl = [bestobj1dbl, bestobj1(length(bestobj1))];
 bestobj2dbl = [bestobj2dbl, bestobj2(length(bestobj1))];

@@ -35,7 +35,7 @@ for i=1:Nlambda
     cvx_begin sdp quiet
         variable S(n,n) symmetric
         maximize log_det(S) - trace(S*Y) - lambda(i)*sum(sum(abs(S)))
-        S >= 0
+        S >= 0; %#ok
     cvx_end
     nnz(i) = sum(S(:)>1e-4);
 end

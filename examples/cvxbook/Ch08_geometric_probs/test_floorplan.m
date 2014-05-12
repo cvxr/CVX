@@ -22,7 +22,7 @@ hold on
 for i=1:n
     fill([x(i); x(i)+w(i); x(i)+w(i); x(i)],[y(i);y(i);y(i)+h(i);y(i)+h(i)],0.90*[1 1 1]);
     hold on;
-    text(x(i)+w(i)/2, y(i)+h(i)/2,[int2str(i)]);
+    text(x(i)+w(i)/2, y(i)+h(i)/2,int2str(i));
 end
 axis([0 W 0 H]);
 axis equal; axis off;

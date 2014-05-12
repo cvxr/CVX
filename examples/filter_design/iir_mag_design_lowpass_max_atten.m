@@ -53,18 +53,18 @@ m = 15*(sample_order);
 w = linspace(0,pi,m)'; % omega
 
 % A's are matrices used to compute the power spectrum
-Anum = [ones(m,1) 2*cos(kron(w,[1:M-1]))];
-Aden = [ones(m,1) 2*cos(kron(w,[1:N-1]))];
+Anum = [ones(m,1) 2*cos(kron(w,1:M-1))];
+Aden = [ones(m,1) 2*cos(kron(w,1:N-1))];
 
 % passband 0 <= w <= w_pass
-ind = find((0 <= w) & (w <= wpass));    % passband
+ind = (0 <= w) & (w <= wpass);    % passband
 Ap_num  = Anum(ind,:);
 Ap_den  = Aden(ind,:);
 
 % transition band is not constrained (w_pass <= w <= w_stop)
 
 % stopband (w_stop <= w)
-ind = find((wstop <= w) & (w <= pi));   % stopband
+ind = (wstop <= w) & (w <= pi);   % stopband
 As_num  = Anum(ind,:);
 As_den  = Aden(ind,:);
 
@@ -87,13 +87,13 @@ while( 20*log10(Us_top/Us_bot) > 1)
 
     % feasibility problem
     % passband constraints
-    (Ap_num*c) <= (10^(+delta/20))^2*(Ap_den*[1;d]); % upper constr
-    (Ap_num*c) >= (10^(-delta/20))^2*(Ap_den*[1;d]); % lower constr
+    (Ap_num*c) <= (10^(+delta/20))^2*(Ap_den*[1;d]); %#ok upper constr
+    (Ap_num*c) >= (10^(-delta/20))^2*(Ap_den*[1;d]); %#ok lower constr
     % stopband constraint
-    (As_num*c) <= (Us_cur)*(As_den*[1;d]); % upper constr
+    (As_num*c) <= (Us_cur)*(As_den*[1;d]); %#ok upper constr
     % nonnegative-real constraint
-    Anum*c >= 0;
-    Aden*[1;d] >= 0;
+    Anum*c >= 0; %#ok
+    Aden*[1;d] >= 0; %#ok
   cvx_end
 
   % bisection
@@ -114,14 +114,14 @@ end
 fprintf(1,'\nOptimum min stopband atten is between %3.2f and %3.2f dB.\n',...
         10*log10(Us_bot),10*log10(Us_top));
 disp('Optimal IIR filter coefficients are: ')
-disp('Numerator: '), b
-disp('Denominator: '), a
+disp('Numerator: '); disp(b)
+disp('Denominator: '); disp(a)
 
 %*********************************************************************
 % plotting routines
 %*********************************************************************
 % frequency response of the designed filter, where j = sqrt(-1)
-H = ([exp(-j*kron(w,[0:M-1]))]*b)./([exp(-j*kron(w,[0:N-1]))]*a);
+H = (exp(-1j*kron(w,0:M-1))*b)./(exp(-1j*kron(w,0:N-1))*a);
 
 % magnitude plot
 figure(1)

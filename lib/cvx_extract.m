@@ -7,13 +7,6 @@ catch
     error( 'CVX:NoModel', 'No CVX model is present.' );
 end
 
-nold = length( cvx___.classes );
-dualized = false;
-if nold == 0,
-    dbcA  = []; cones = []; dir = 1; Q = []; P = []; exps = [];
-    return
-end
-
 %%%%%%%%%%%%%%
 % EXTRACTION %
 %%%%%%%%%%%%%%
@@ -25,6 +18,7 @@ end
 if numel( dbcA ) > 1,
     dbcA = cvx( [1,1], sum( cvx_basis( dbcA ), 2 ) );
 end
+nold = length( cvx___.classes );
 if isempty( dbcA ),
     dir = 1;
     dbcA = cvx( [ 1, 1 ], [] );
@@ -225,7 +219,7 @@ if ~all(used),
     used(end+1:nnew) = true;
     dbcA = dbcA(used,:);
 else
-    ndxs = 1 : nold;
+    ndxs = ( 1 : nold )';
 end
 nred = size(dbcA,1);
 Q = sparse( ndxs, 1 : length(ndxs), 1, nold, nred );
@@ -240,6 +234,7 @@ if isempty( dbcA ),
     return;
 end
 
+dualized = false;
 while true,
     
     last_success = 1;

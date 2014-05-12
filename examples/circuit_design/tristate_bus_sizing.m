@@ -85,10 +85,10 @@ for i = 1 : npts  + xnpts,
     if i > npts,
         xi = i - npts;
         delay = xdelays(xi);
-        disp( sprintf( 'Particular solution %d of %d (Tmax = %g)', xi, xnpts, delay ) );
+        fprintf( 'Particular solution %d of %d (Tmax = %g)\n', xi, xnpts, delay );
     else
         delay = delays(i);
-        disp( sprintf( 'Point %d of %d on the tradeoff curve (Tmax = %g)', i, npts, delay ) );
+        fprintf( 'Point %d of %d on the tradeoff curve (Tmax = %g)\n', i, npts, delay );
     end
 
     %
@@ -100,12 +100,12 @@ for i = 1 : npts  + xnpts,
         variable G(n,n) symmetric
         variable C(n,n) symmetric
         minimize( L'*x )
-        G == reshape( GG * [ 1 ; x ], n, n );
-        C == reshape( CC * [ 1 ; x ], n, n );
+        G == reshape( GG * [ 1 ; x ], n, n ); %#ok
+        C == reshape( CC * [ 1 ; x ], n, n ); %#ok
         for k = 1 : n,
-            delay * G - C + sparse(k,k,delay,n,n) >= 0;
+            delay * G - C + sparse(k,k,delay,n,n) >= 0; %#ok
         end
-        0 <= x <= wmax;
+        0 <= x <= wmax; %#ok
     cvx_end
 
     if i <= npts,
@@ -128,10 +128,11 @@ for i = 1 : npts  + xnpts,
             hold off; plot(T,Y,'-');  hold on;
             ind=0;
             for j=1:size(Y,1),
-                ind = max(min(find(Y(j,:)>=0.5)),ind);
+                ind = max(find(Y(j,:)>=0.5,1,'first'),ind);
             end
-            tdom   = max(eig(inv(GQ)*C));
-            elmore = max(sum((inv(GQ)*C)'));
+            GQC = GQ \ C;
+            tdom   = max(eig(GQC));
+            elmore = max(sum(GQC,2));
             tthres = T(ind);
             plot( tdom   * [1;1], [0;1], '--', ...
                   elmore * [1;1], [0;1], '--', ...

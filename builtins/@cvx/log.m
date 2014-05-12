@@ -47,8 +47,8 @@ cvx_begin gp
     % But if we did this, then we might end up with a large dynamic range
     % in coefficients. Breaking it apart like this ensures that we work
     % only with the logarithms of the coefficients.
-    x <= v .* cvx_fastref( y, cx );
-    exp( v ) <= w;
+    x <= v .* cvx_fastref( y, cx ); %#ok
+    exp( v ) <= w; %#ok
     sparse( cx, 1 : nq, 1, nx, nq ) * log( w ) == 1; %#ok
 cvx_end
 y = log( y );

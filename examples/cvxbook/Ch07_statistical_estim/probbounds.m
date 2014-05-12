@@ -59,8 +59,8 @@ for k = 1 : m,
     qk = Cs( :, k  ) * ones( 1, length( v2 ) );
     Ak = pk - qk;
     bk = 0.5 * sum( Ak .* Ak, 1 );
-    As{k} = Ak';
-    bs{k} = bk';
+    As{k} = Ak'; %#ok
+    bs{k} = bk'; %#ok
 end
 
 % For each polyhedron, compute lower bounds on the probability of
@@ -70,7 +70,7 @@ ints = 1 : m;
 % Uncomment to do only the first polyhedron, like the book does
 % ints = 1;
 for i = ints( : ).',
-    [ cd_cheb, P, q, r, X, lambda ] = cheb( As{i}, bs{i}, eye(2) );
+    [ cd_cheb, P, q, r, X, lambda ] = cheb( As{i}, bs{i}, eye(2) ); %#ok
     ellipse = sqrt(1-r+q'*(P\q)) * P^(-1/2) * crcpts + ...
         (-P\q + Cs(:,i)) * ones(1,noangles);
     plot( ellipse(1,:), ellipse(2,:), 'r-' );

@@ -1,4 +1,4 @@
-function [ w, cvx_optval ] = fmmc(A)
+function [ w, cvx_optval ] = fmmc(A) %#ok
 
 % Computes fastest mixing Markov chain (FMMC) edge weights
 %
@@ -23,7 +23,7 @@ function [ w, cvx_optval ] = fmmc(A)
 %
 % Written for CVX by Almir Mutapcic 08/29/06
 
-[n,m] = size(A);
+[n,m] = size(A); %#ok
 I = eye(n,n);
 J = I - (1/n)*ones(n,n);
 cvx_begin sdp
@@ -32,9 +32,9 @@ cvx_begin sdp
     variable L(n,n) symmetric
     minimize( s )
     subject to
-        L == A * diag(w) * A';
-        -s * I <= J - L <= +s * I;
-        w >= 0;
-        diag(L) <= 1;
+        L == A * diag(w) * A'; %#ok
+        -s * I <= J - L <= +s * I; %#ok
+        w >= 0; %#ok
+        diag(L) <= 1; %#ok
 cvx_end
 

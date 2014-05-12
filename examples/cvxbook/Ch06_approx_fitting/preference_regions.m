@@ -90,7 +90,7 @@ hold on;
 [X,Y] = meshgrid(0:.01:1,0:.01:1);
 Z=(1.1*X.^(1/2)+0.8*Y.^(1/2))/1.9;
 
-[C,h] = contour(X,Y,Z,[.1,.2,.3,.4,.5,.6,.7,.8,.9],'--');
+[C,h] = contour(X,Y,Z,[.1,.2,.3,.4,.5,.6,.7,.8,.9],'--'); %#ok
 clear X Y Z C
 hold off;
 xlabel('x_1');
@@ -103,7 +103,7 @@ m = size(data,1);  % number of baskets, including 0,1
 Pweak = zeros(m+1,m+1);
 for i=1:m,
    for j=1:m
-      if (i~=j) & (1.1*data(i,1).^(1/2)+0.8*data(i,2).^(1/2))/1.9 >= ...
+      if (i~=j) && (1.1*data(i,1).^(1/2)+0.8*data(i,2).^(1/2))/1.9 >= ...
              (1.1*data(j,1).^(1/2)+0.8*data(j,2).^(1/2))/1.9,
          Pweak(i,j) = 1;
       end;
@@ -121,12 +121,12 @@ for k = 1:m
         variables u(m+1) g_x(m+1) g_y(m+1)
         minimize(u(k)-u(m+1))
         subject to
-            g_x >= 0;
-            g_y >= 0;
+            g_x >= 0; %#ok
+            g_y >= 0; %#ok
             ones(m+1,1)*u' <= u*ones(1,m+1)+(g_x*ones(1,m+1)).*...
               (ones(m+1,1)*data(:,1)'-data(:,1)*ones(1,m+1))+...
-              (g_y*ones(1,m+1)).*(ones(m+1,1)*data(:,2)'-data(:,2)*ones(1,m+1));
-            (u*ones(1,m+1)).*Pweak >= (ones(m+1,1)*u').*Pweak;
+              (g_y*ones(1,m+1)).*(ones(m+1,1)*data(:,2)'-data(:,2)*ones(1,m+1)); %#ok
+            (u*ones(1,m+1)).*Pweak >= (ones(m+1,1)*u').*Pweak; %#ok
     cvx_end
     bounds(k,1) = cvx_optval;
     fprintf( 1,'%g', round(cvx_optval) );
@@ -136,12 +136,12 @@ for k = 1:m
         variables u(m+1) g_x(m+1) g_y(m+1)
         maximize(u(k)-u(m+1))
         subject to
-            g_x >= 0;
-            g_y >= 0;
+            g_x >= 0; %#ok
+            g_y >= 0; %#ok
             ones(m+1,1)*u' <= u*ones(1,m+1) + (g_x*ones(1,m+1)).*...
               (ones(m+1,1)*data(:,1)'-data(:,1)*ones(1,m+1))+...
-              (g_y*ones(1,m+1)).*(ones(m+1,1)*data(:,2)'-data(:,2)*ones(1,m+1));
-            (u*ones(1,m+1)).*Pweak >= (ones(m+1,1)*u').*Pweak;
+              (g_y*ones(1,m+1)).*(ones(m+1,1)*data(:,2)'-data(:,2)*ones(1,m+1)); %#ok
+            (u*ones(1,m+1)).*Pweak >= (ones(m+1,1)*u').*Pweak; %#ok
     cvx_end
     bounds(k,2) = cvx_optval;
     fprintf( 1,' %g\n', round(cvx_optval) );

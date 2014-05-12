@@ -49,7 +49,6 @@ Cload = [0 C1 C2 C3 C4 C5];
 % minimum and maximum width and area specification
 Wmin = 1;
 Wmax = 10;
-Amax = 15;
 
 %********************************************************************
 % derived data (computed from user's data)
@@ -57,10 +56,10 @@ Amax = 15;
 % compute children cell array (evaluate who are children for each node)
 children = cell(N,1);
 leafs = [];
-for node = [1:N]
+for node = 1:N
   children{node} = find(parent == node);
   if isempty(children{node})
-    leafs(end+1) = node; % leafs have no children
+    leafs(end+1) = node; %#ok leafs have no children
   end
 end
 
@@ -82,15 +81,15 @@ for Amax = [5.05 5.25 5.5 5.75 6:25]
 
     % wire segment resistance is inversely proportional to widths
     R = alpha.*l./w;
-    R = [Rsource; R];
+    R = [Rsource; R]; %#ok
 
     % wire segment capacitance is an affine function of widths
     C_bar = beta.*l.*w + gamma.*l;
-    C_bar = [0; C_bar];
+    C_bar = [0; C_bar]; %#ok
 
     % compute common capacitances for each node (C_tilde in GP tutorial)
     C_tilde = cvx( zeros(N,1) );
-    for node = [1:N]
+    for node = 1:N
       C_tilde(node,1) = Cload(node);
       for k = parent(node)
         if k > 0; C_tilde(node,1) = C_tilde(node,1) + C_bar(k); end;
@@ -112,20 +111,20 @@ for Amax = [5.05 5.25 5.5 5.75 6:25]
     minimize( max( T(leafs) ) )
     subject to
       % generate Elmore delay constraints
-      R(1)*C_total(1) <= T(1,1);
+      R(1)*C_total(1) <= T(1,1); %#ok
       for node = 2:N
-        R(node)*C_total(node) + T(parent(node),1) <= T(node,1);
+        R(node)*C_total(node) + T(parent(node),1) <= T(node,1); %#ok
       end
 
       % area and width constraints
-      area <= Amax;
-      w >= Wmin;
-      w <= Wmax;
+      area <= Amax; %#ok
+      w >= Wmin; %#ok
+      w <= Wmax; %#ok
   cvx_end
 
   % display and store computed values
   fprintf(1,'  Amax = %5.2f   delay = %3.2f\n',Amax,cvx_optval);
-  Darray = [Darray cvx_optval];
+  Darray = [Darray cvx_optval]; %#ok
 end
 
 % plot the tradeoff curve

@@ -30,8 +30,8 @@ cvx_begin
   variable lambda(p)
   maximize ( det_rootn( V*diag(lambda)*V' ) )
   subject to
-    sum(lambda) == 1;
-    lambda >= 0;
+    sum(lambda) == 1; %#ok
+    lambda >= 0; %#ok
 cvx_end
 lambdaD = lambda; % save the solution for confidence ellipsoids
 
@@ -46,7 +46,7 @@ d = plot(ellipsoid(1,:), ellipsoid(2,:), '--', 0,0,'+');
 set(d, 'Color', [0 0.5 0]); set(d(2),'MarkerFaceColor',[0 0.5 0]);
 hold on;
 
-dot=plot(V(1,:),V(2,:),'o');
+plot(V(1,:),V(2,:),'o');
 ind = find(lambda > 0.001);
 dots = plot(V(1,ind),V(2,ind),'o');
 set(dots,'MarkerFaceColor','blue');
@@ -79,10 +79,10 @@ cvx_begin sdp
   subject to
     for k = 1:n
       [ V*diag(lambda)*V'  e(:,k);
-        e(k,:)             u(k)   ] >= 0;
+        e(k,:)             u(k)   ] >= 0; %#ok
     end
-    sum(lambda) == 1;
-    lambda >= 0;
+    sum(lambda) == 1; %#ok
+    lambda >= 0; %#ok
 cvx_end
 lambdaA = lambda; % save the solution for confidence ellipsoids
 
@@ -100,7 +100,7 @@ set(d, 'Color', [0 0.5 0]);
 set(d(2), 'MarkerFaceColor', [0 0.5 0]);
 hold on
 
-dot = plot(V(1,:),V(2,:),'o');
+plot(V(1,:),V(2,:),'o');
 ind = find(lambda > 0.001);
 dots = plot(V(1,ind),V(2,ind),'o');
 set(dots,'MarkerFaceColor','blue');
@@ -128,9 +128,9 @@ cvx_begin sdp
   variables t lambda(p)
   maximize ( t )
   subject to
-    V*diag(lambda)*V' >= t*eye(n,n);
-    sum(lambda) == 1;
-    lambda >= 0;
+    V*diag(lambda)*V' >= t*eye(n,n); %#ok
+    sum(lambda) == 1; %#ok
+    lambda >= 0; %#ok
 cvx_end
 
 lambdaE = lambda; % save the solution for confidence ellipsoids

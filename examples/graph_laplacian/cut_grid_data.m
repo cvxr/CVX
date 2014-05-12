@@ -10,7 +10,7 @@ function [A,xy]= cut_grid_data
 
 n  = 8; 
 r1 = 2;
-y  = ones(n,1) * [1:n];
+y  = ones(n,1) * (1:n);
 x  = y';
 x  = x(:);
 y  = y(:);
@@ -40,7 +40,7 @@ Adj1(34,33) = 0;
 Adj1(26,25) = 0;
 
 % Build the incidence matrix
-[i,j,v] = find(Adj1);
+[i,j] = find(Adj1);
 m = length(i);
 A = sparse( [i;j], [1:m,1:m]', [ones(m,1);-ones(m,1)] );
 

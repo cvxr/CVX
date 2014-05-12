@@ -52,17 +52,17 @@ cvx_begin gp
   minimize( w'*h )
   subject to
     % constraint set
-    wmin <= w    <= wmax;
-    hmin <= h    <= hmax;
-    Smin <= h./w <= Smax;
-    6*F*[1:N]'./(w.*(h.^2)) <= sigma_max;
-    y(1) <= ymax;
+    wmin <= w    <= wmax; %#ok
+    hmin <= h    <= hmax; %#ok
+    Smin <= h./w <= Smax; %#ok
+    6*F*[1:N]'./(w.*(h.^2)) <= sigma_max; %#ok
+    y(1) <= ymax; %#ok
 cvx_end
 
 % display results
 disp('The optimal widths and heights are: ');
 w, h
-fprintf(1,'The optimal minimum volume of the beam is %3.4f.\n', sum(w.*h))
+fprintf(1,'The optimal minimum volume of the beam is %3.4f.\n', sum(w.*h));
 
 % plot the 3D model of the optimal cantilever beam
 figure, clf

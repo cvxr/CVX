@@ -1,4 +1,4 @@
-function [ outp, sdp_mode ] = cvx_newcnstr( x, y, op, sdp_mode )
+function [ outp, sdp_mode ] = cvx_pushcnstr( x, y, op, sdp_mode )
 
 global cvx___
 try

@@ -41,11 +41,11 @@ cvx_begin sdp
     variable t(m)
     maximize( det_rootn( Asqr ) )
     subject to
-        t >= 0;
+        t >= 0; %#ok
         for i = 1:m
             [ -(Asqr - t(i)*As{i}), -(btilde - t(i)*bs{i}), zeros(n,n);
               -(btilde - t(i)*bs{i})', -(- 1 - t(i)*cs{i}), -btilde';
-               zeros(n,n), -btilde, Asqr] >= 0;
+               zeros(n,n), -btilde, Asqr] >= 0; %#ok
         end
 cvx_end
 
@@ -60,7 +60,7 @@ angles   = linspace( 0, 2 * pi, noangles );
 clf
 for i=1:m
   Ai = sqrtm(As{i}); bi = Ai\bs{i};
-  alpha = bs{i}'*inv(As{i})*bs{i} - cs{i};
+  alpha = bs{i}'*(As{i}\bs{i}) - cs{i};
   ellipse  = Ai \ [ sqrt(alpha)*cos(angles)-bi(1) ; sqrt(alpha)*sin(angles)-bi(2) ];
   plot( ellipse(1,:), ellipse(2,:), 'b-' );
   hold on

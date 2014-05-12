@@ -60,7 +60,7 @@ omega_pi   = +2*pi*d/lambda;
 
 % build matrix A that relates R(omega) and r, ie, R = A*r
 omega = linspace(-pi,pi,m)';
-A = exp( -j*omega(:)*[1-n:n-1] );
+A = exp( -1j*omega(:)*(1-n:n-1) );
 
 % passband constraint matrix
 Ap = A(omega >= omega_zero & omega <= omega_pass,:);
@@ -77,13 +77,13 @@ cvx_begin
   minimize( max( real( As*r ) ) )
   subject to
     % passband ripple constraints
-    (10^(-ripple/20))^2 <= real( Ap*r ) <= (10^(+ripple/20))^2;
+    (10^(-ripple/20))^2 <= real( Ap*r ) <= (10^(+ripple/20))^2; %#ok
     % nonnegative-real constraint for all frequencies
     % a bit redundant: the passband frequencies are already constrained
-    real( A*r ) >= 0;
+    real( A*r ) >= 0; %#ok
     % auto-correlation symmetry constraints
-    imag(r(n)) == 0;
-    r(n-1:-1:1) == conj(r(n+1:end));
+    imag(r(n)) == 0; %#ok
+    r(n-1:-1:1) == conj(r(n+1:end)); %#ok
 cvx_end
 
 % check if problem was successfully solved
@@ -103,15 +103,15 @@ fprintf(1,'The minimum sidelobe level is %3.2f dB.\n\n',...
 % plots
 %********************************************************************
 % build matrix G that relates y(theta) and w, ie, y = G*w
-theta = [-180:180]';
-G = kron( cos(pi*theta/180), [0:n-1] );
-G = exp(2*pi*i*d/lambda*G);
+theta = (-180:180)';
+G = kron( cos(pi*theta/180), 0:n-1 );
+G = exp(2*pi*1i*d/lambda*G);
 y = G*w;
 
 % plot array pattern
 figure(1), clf
 ymin = -40; ymax = 5;
-plot([-180:180], 20*log10(abs(y)), ...
+plot(-180:180, 20*log10(abs(y)), ...
      [theta_stop theta_stop],[ymin ymax],'r--',...
      [-theta_pass -theta_pass],[ymin ymax],'r--',...
      [-theta_stop -theta_stop],[ymin ymax],'r--',...

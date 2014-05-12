@@ -82,11 +82,11 @@ for PNSpec=0.7e-12:0.2e-12:1e-11
       invQ = R / (omega * L);
 
       % loop constraints
-      Area <= 0.25e-6;
-      5e-6 <= W <= 30e-6;
-      10*W <= D <= 100*W;
-      SRFSpec <= SRF;
-      omegaSRF^2*L*C <= 1;
+      Area <= 0.25e-6; %#ok
+      5e-6 <= W <= 30e-6; %#ok
+      10*W <= D <= 100*W; %#ok
+      SRFSpec <= SRF; %#ok
+      omegaSRF^2*L*C <= 1; %#ok
 
       %****************************************%
       % transistor definitions and constraints %
@@ -99,9 +99,9 @@ for PNSpec=0.7e-12:0.2e-12:1e-11
       Cdb = 1e-9*w;
 
       % transistor constraints
-      2e-6 <= w;
-      0.13e-6 <= l;
-      l <= 1e-6;
+      2e-6 <= w; %#ok
+      0.13e-6 <= l; %#ok
+      l <= 1e-6; %#ok
 
       %***************************************************%
       % overall LC oscillator definitions and constraints %
@@ -122,20 +122,20 @@ for PNSpec=0.7e-12:0.2e-12:1e-11
       invLoopGain = (G+0.5*GD)/(0.5*GM);
 
       % LC oscillator constraints
-      PN <= PNSpec;
-      omega^2*L*CT == 1;
-      omega^2*(1+T)^2*L*CMaxFreq == 1;
-      4*T/((1-T^2)^2)*CT <= Csw*(1+CvarCswLSBOverlap/CswSegs);
-      Csw*CvarCswLSBOverlap/CswSegs <= 0.5*Cvar*(CvarRatio-1);
-      CDiffMaxFreq <= CMaxFreq;
-      VOsc+2*Vbias <= 2*Vdd;
-      VOsc*invVOsc <= 1;
-      invLoopGain*LoopGainSpec <= 1; % loop gain spec
-      Vbias+Vgs+IBias/2*R/2 <= Vdd;  % bias constraint spec
-      Imax == IBias;
+      PN <= PNSpec; %#ok
+      omega^2*L*CT == 1; %#ok
+      omega^2*(1+T)^2*L*CMaxFreq == 1; %#ok
+      4*T/((1-T^2)^2)*CT <= Csw*(1+CvarCswLSBOverlap/CswSegs); %#ok
+      Csw*CvarCswLSBOverlap/CswSegs <= 0.5*Cvar*(CvarRatio-1); %#ok
+      CDiffMaxFreq <= CMaxFreq; %#ok
+      VOsc+2*Vbias <= 2*Vdd; %#ok
+      VOsc*invVOsc <= 1; %#ok
+      invLoopGain*LoopGainSpec <= 1; %#ok loop gain spec
+      Vbias+Vgs+IBias/2*R/2 <= Vdd;  %#ok bias constraint spec
+      Imax == IBias; %#ok
   cvx_end
   fprintf('min_power = %3.2f mW\n', cvx_optval/1e-3);
-  powers = [powers cvx_optval];
+  powers = [powers cvx_optval]; %#ok
 end
 
 % plot the tradeoff curve

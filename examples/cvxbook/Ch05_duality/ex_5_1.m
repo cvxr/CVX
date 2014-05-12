@@ -18,7 +18,7 @@ for i = 1:length(u)
     cvx_begin quiet
         variable x(1)
         minimize ( quad_form(x,1) + 1 )
-        quad_form(x,1) - 6*x + 8 <= u(i);
+        quad_form(x,1) - 6*x + 8 <= u(i); %#ok
     cvx_end
     % optimal value
     p_star(i) = cvx_optval;

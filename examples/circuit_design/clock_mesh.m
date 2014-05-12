@@ -86,10 +86,10 @@ for i = 1 : npts  + xnpts,
     if i > npts,
         xi = i - npts;
         delay = xdelays(xi);
-        disp( sprintf( 'Particular solution %d of %d (Tmax = %g)', xi, xnpts, delay ) );
-    else,
+        fprintf( 'Particular solution %d of %d (Tmax = %g)\n', xi, xnpts, delay );
+    else
         delay = delays(i);
-        disp( sprintf( 'Point %d of %d on the tradeoff curve (Tmax = %g)', i, npts, delay ) );
+        fprintf( 'Point %d of %d on the tradeoff curve (Tmax = %g)\n', i, npts, delay );
     end
 
     %
@@ -103,26 +103,26 @@ for i = 1 : npts  + xnpts,
         dual variables Y1 Y2 Y3 Y4 Y5
         minimize( sum( C(:) ) )
         subject to
-            G == reshape( GG * [ 1 ; x ], n, n );
-            C == reshape( CC * [ 1 ; x ], n, n );
-            delay * G - C >= 0;
-            0 <= x <= wmax;
+            G == reshape( GG * [ 1 ; x ], n, n ); %#ok
+            C == reshape( CC * [ 1 ; x ], n, n ); %#ok
+            delay * G - C >= 0; %#ok
+            0 <= x <= wmax; %#ok
     cvx_end
 
     if i <= npts,
         areas(i) = sum(x);
-    else,
-        xareas(xi) = sum(x);
+    else
+        xareas(xi) = sum(x); %#ok
 
         %
         % Display sizes
         %
 
-        disp( sprintf( 'Solution %d:', xi ) );
+        fprintf( 'Solution %d:\n', xi );
         disp( 'Vertical segments:' );
-        reshape( x(1:dim*(dim+1),1), dim, dim+1 )
+        disp( reshape( x(1:dim*(dim+1),1), dim, dim+1 ) );
         disp( 'Horizontal segments:' );
-        reshape( x(dim*(dim+1)+1:end), dim, dim+1 )
+        disp( reshape( x(dim*(dim+1)+1:end), dim, dim+1 ) );
 
         %
         % Determine the step responses
@@ -136,7 +136,7 @@ for i = 1 : npts  + xnpts,
         indmax = 0;
         indmin = Inf;
         for j = 1 : size(Y,1),
-           inds = min(find(Y(j,:) >= 0.5));
+           inds = find(Y(j,:) >= 0.5,1,'first');
            if ( inds > indmax )
               indmax = inds;
               jmax = j;
@@ -149,7 +149,7 @@ for i = 1 : npts  + xnpts,
         tthres = T(indmax);
         GinvC  = full( G \ C );
         tdom   = max(eig(GinvC));
-        elmore = max(sum(GinvC'));
+        elmore = max(sum(GinvC,2));
         hold off; plot(T,Y(jmax,:),'-',T,Y(jmin,:));  hold on;
         plot( tdom   * [1;1], [0;1], '--', ...
               elmore * [1;1], [0;1], '--', ...

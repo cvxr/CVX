@@ -32,7 +32,7 @@ cvx_begin
     variable x(n);
     maximize(sum(log(x)))
     subject to
-        A*x <= c
+        A*x <= c;  %#ok
 cvx_end
 primal_obj = cvx_optval;
 
@@ -41,6 +41,6 @@ cvx_begin
     variable lambda(L);
     minimize(c'*lambda-sum(log(A'*lambda))-n)
     subject to
-        lambda >= 0
+        lambda >= 0;  %#ok
 cvx_end
 dual_obj = cvx_optval;

@@ -19,9 +19,9 @@ E = [0 1 0 1 1; ...
 cvx_begin
     variable P(n,n) symmetric
     minimize(norm(P - (1/n)*ones(n)))
-    P*ones(n,1) == ones(n,1);
-    P >= 0;
-    P(E==0) == 0;
+    P*ones(n,1) == ones(n,1); %#ok
+    P >= 0; %#ok
+    P(E==0) == 0; %#ok
 cvx_end
 e = flipud(eig(P));
 r = max(e(2), -e(n));

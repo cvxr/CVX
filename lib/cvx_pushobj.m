@@ -2,7 +2,8 @@ function cvx_pushobj( dir, x )
 
 global cvx___
 try
-    pstr = cvx___.problems(end);
+    np = length(cvx___.problems);
+    pstr = cvx___.problems(np);
 catch
     error( 'CVX:NoModel', 'No CVX model is present.' );
 end
@@ -56,9 +57,6 @@ switch dir,
 end
 avx = all( vx, 2 );
 if ~any( avx ),
-    if ~epi, type = 'dir'; %#ok
-    elseif dir > 0, type = 'epigraph';
-    else type = 'hypograph'; end
     vx = any( vx, 1 );
     if all( vx ),
         error( 'CVX:LogMix', 'Invalid mix of logarithmic and linear objectives.' );
@@ -71,13 +69,26 @@ end
 % Store the objective
 %
 
-pstr.objective = cvx( x );
-pstr.direction = dir;
 pstr.geometric = avx(2) & ( ~avx(1) | pstr.gp );
-if pstr.checkpoint(1) > 1 && pstr.complete,
-    x = cvx_basis( x );
-    nv = min(pstr.checkpoint(1),size(x,1));
-    if nnz(x(2:nv,:)), pstr.complete = false; end
+if pstr.geometric, 
+    x = log( x ); 
+end
+if np > 1,
+    bx = cvx_sparsify( cvx_basis( x ), [], 'magnitude' );
+    x = cvx( size( x ), bx );
+end
+if pstr.geometric,
+    x = exp( x ); 
+end
+pstr.objective = x;
+pstr.direction = dir;
+cp = pstr.checkpoint(4);
+if cp > 1,
+    x = find( any( cvx_basis( x ), 2 ), 2, 'first' );
+    if any( x > 1 & x < cp ),
+        pstr.checkpoint(4) = x(1+(x(1)==1)) - 1;
+        pstr.complete = false;
+    end
 end
 cvx___.problems( end ) = pstr;
 

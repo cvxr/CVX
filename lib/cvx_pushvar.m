@@ -140,9 +140,9 @@ end
 
 if iseh,
     if iseh > 0,
-        dir = 'epigraph';
+        dir = 'minimize';
     else
-        dir = 'hypograph';
+        dir = 'maximize';
     end
     pstr.objective = v;
     pstr.direction = dir;

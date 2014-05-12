@@ -34,7 +34,7 @@ cvx_begin
     variable b(n)
     maximize( det_rootn( A ) )
     subject to
-        norms( A * x + b * ones( 1, m ), 2 ) <= 1;
+        norms( A * x + b * ones( 1, m ), 2 ) <= 1; %#ok
 cvx_end
 
 % Plot the results

@@ -24,10 +24,10 @@ c = sum(P.*log2(P))';
 % Channel capacity 
 cvx_begin
     variable x(n) 
-    y = P*x; 
+    y = P*x;
     maximize (c'*x + sum(entr(y))/log(2))
-    x >= 0;
-    sum(x) == 1; 
+    x >= 0; %#ok
+    sum(x) == 1; %#ok
 cvx_end
 C = cvx_optval; 
 

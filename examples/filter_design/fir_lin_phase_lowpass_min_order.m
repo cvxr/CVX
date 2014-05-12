@@ -54,17 +54,15 @@ while( n_top - n_bot > 1)
     n_cur = ceil( (n_top + n_bot)/2 );
     
     % create optimization matrices (this is cosine matrix)
-    A = [ones(m,1) 2*cos(kron(w',[1:n_cur]))];
+    A = [ones(m,1) 2*cos(kron(w',1:n_cur))];
     
     % passband 0 <= w <= w_pass
-    ind = find((0 <= w) & (w <= wpass));    % passband
-    Ap  = A(ind,:);
+    Ap  = A((0 <= w) & (w <= wpass),:);
     
     % transition band is not constrained (w_pass <= w <= w_stop)
     
     % stopband (w_stop <= w)
-    ind = find((wstop <= w) & (w <= pi));   % stopband
-    As  = A(ind,:);
+    As  = A((wstop <= w) & (w <= pi),:);
     
     ptop = 10^(delta/20);
     
@@ -81,7 +79,7 @@ while( n_top - n_bot > 1)
     cvx_begin quiet
          variable h_cur(n_cur+1,1);
          minimize( max( abs( As * h_cur ) ) );
-         10^(-delta/20) <= Ap * h_cur <=  10^(+delta/20);
+         10^(-delta/20) <= Ap * h_cur <=  10^(+delta/20); %#ok
     cvx_end
     
     % bisection
@@ -109,12 +107,12 @@ fprintf(1,'\nOptimum number of filter taps for given specs is 2n+1 = %d.\n', len
 %********************************************************************
 figure(1)
 % FIR impulse response
-plot([-n:n],h','o',[-n:n],h','b:')
+plot(-n:n,h','o',-n:n,h','b:')
 xlabel('t'), ylabel('h(t)')
 
 figure(2)
 % frequency response
-H = exp(-j*kron(w',[0:2*n]))*h;
+H = exp(-1j*kron(w',0:2*n))*h;
 % magnitude
 subplot(2,1,1)
 plot(w,20*log10(abs(H)),...

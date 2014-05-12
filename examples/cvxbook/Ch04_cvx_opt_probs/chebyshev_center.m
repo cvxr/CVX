@@ -20,7 +20,7 @@ cvx_begin
     variable x_c(n)
     dual variable y
     maximize ( r )
-    y: A*x_c + r*norm_ai <= b;
+    y: A*x_c + r*norm_ai <= b; %#ok
 cvx_end
 fprintf(1,'Done! \n');
 

@@ -1,4 +1,4 @@
-function prob = montecarlo(A,b,Sigma,notrials);
+function prob = montecarlo(A,b,Sigma,notrials)
 
 % Probability estimate using Monte Carlo methods
 %

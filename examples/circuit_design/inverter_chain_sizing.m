@@ -34,16 +34,16 @@ x_max = 20;  % maximum scale factor
 % label inverters in the chain with 1,2,...,N based on their location
 
 % primary input and primary output labels (start with N+1)
-primary_inputs  = [N+1];
-primary_outputs = [N+2];
+primary_inputs  = N+1;
+primary_outputs = N+2;
 M = N + length( primary_inputs ) + length( primary_outputs );
 
 % fan-in cell array for a straight chain of inverters
-FI{1} = [N+1];   % fan-in of the first inverter is the primary input
+FI{1} = N+1;   % fan-in of the first inverter is the primary input
 for k = 2:N
-  FI{k} = [k-1]; % fan-in of other inverters is the inverter feeding into them
+  FI{k} = k-1; %#ok fan-in of other inverters is the inverter feeding into them
 end
-FI{N+2} = [N];   % fan-in of the primary output is the last inverter in the chain
+FI{N+2} = N;   % fan-in of the primary output is the last inverter in the chain
 
 % fan-out cell array
 % (will be computed from the fan-in cell array, no need to modify)
@@ -108,11 +108,11 @@ cvx_begin gp
       if ~ismember( FI{gate}, primary_inputs )
         for j = FI{gate}
           % enforce T_j + D_j <= T_i over all gates j that drive i
-          D(gate) + T(j) <= T(gate);
+          D(gate) + T(j) <= T(gate); %#ok
         end
       else
         % enforce D_i <= T_i for gates i connected to primary inputs
-        D(gate) <= T(gate);
+        D(gate) <= T(gate); %#ok
       end
     end
 
@@ -121,20 +121,21 @@ cvx_begin gp
     circuit_delay = max( T(output_gates) );
 
     % collect all the constraints
-    circuit_delay <= Dmax;
-    x_min <= x <= x_max;
+    circuit_delay <= Dmax; %#ok
+    x_min <= x <= x_max; %#ok
 cvx_end
 
 % message about extra capacitance and result display
 disp(' ')
 disp(['Note: there is an extra capacitance between the 4th and 5th inverter'...
      ' in the chain.'])
-fprintf(1,'\nOptimal scale factors are: \n'), x
+fprintf('\nOptimal scale factors are: \n');
+disp(x)
 
 % plot scale factors and maximum delay for inverter i
 close all;
-subplot(2,1,1); plot([1:N],T,'g--',[1:N],T,'bo');
+subplot(2,1,1); plot(1:N,T,'g--',1:N,T,'bo');
 ylabel('maximum delay T')
-subplot(2,1,2); stem([1:N],x);
+subplot(2,1,2); stem(1:N,x);
 ylabel('scale factor x')
 xlabel('inverter stage')

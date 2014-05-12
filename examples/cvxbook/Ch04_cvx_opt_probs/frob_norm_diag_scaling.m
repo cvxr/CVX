@@ -28,6 +28,6 @@ D = diag(d);
 disp('The matrix D that minimizes ||DMD^{-1}||_F is: ');
 disp(D);
 disp('The minimium Frobenius norm achieved is: ');
-disp(norm(D*M*inv(D),'fro'));
+disp(norm(D*M/D,'fro'));
 disp('while the Frobunius norm of the original matrix M is: ');
 disp(norm(M,'fro'));

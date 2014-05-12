@@ -45,11 +45,11 @@ cvx_begin gp
   minimize( prod(t)*prod(s) )
   subject to
     for k = 1:q
-      prod( z.^(X(k,:)') ) <= t(k);
+      prod( z.^(X(k,:)') ) <= t(k); %#ok
     end
 
     for k = 1:m
-      1 + prod( z.^(-X(k,:)') ) <= s(k);
+      1 + prod( z.^(-X(k,:)') ) <= s(k); %#ok
     end
 cvx_end
 

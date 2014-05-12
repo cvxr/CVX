@@ -22,7 +22,7 @@
 randn('seed',0);
 m=20;  n=10;
 A = randn(m,n);
-[U,S,V] = svd(A);
+[U,S,V] = svd(A); %#ok
 S = diag(logspace(-1,1,n));
 A = U(:,1:n)*S*V';
 
@@ -46,7 +46,7 @@ fprintf(1,'Done! \n');
 
 fprintf(1,'2) the stochastic robust approximation problem ... ');
 
-P = (1/3)*B'*B;
+P = (1/3)*(B'*B);
 cvx_begin quiet
     variable x_stoch(n)
     minimize (  norm(A*x_stoch-b).^2 + quad_form(x_stoch,P) )
@@ -73,9 +73,9 @@ errvals_ls = [];
 errvals_stoch = [];
 errvals_wc = [];
 for k=1:novals
-   errvals_ls = [errvals_ls, norm((A+parvals(k)*B)*x_nom - b)];
-   errvals_stoch = [errvals_stoch, norm((A+parvals(k)*B)*x_stoch - b)];
-   errvals_wc = [errvals_wc, norm((A+parvals(k)*B)*x_wc - b)];
+   errvals_ls = [errvals_ls, norm((A+parvals(k)*B)*x_nom - b)]; %#ok
+   errvals_stoch = [errvals_stoch, norm((A+parvals(k)*B)*x_stoch - b)]; %#ok
+   errvals_wc = [errvals_wc, norm((A+parvals(k)*B)*x_wc - b)]; %#ok
 end;
 
 plot(parvals, errvals_ls, '-', parvals, errvals_stoch, '-', ...

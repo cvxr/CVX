@@ -42,8 +42,8 @@ cvx_expert true
 cvx_begin 
     variables pent(n)
     maximize( sum(entr(pent)) )
-    sum(pent) == 1;
-    A * pent <= b;
+    sum(pent) == 1; %#ok
+    A * pent <= b; %#ok
 cvx_end
 
 %
@@ -56,20 +56,20 @@ for t = 1 : n,
     cvx_begin quiet
         variable p( n )
         minimize sum( p(1:t) )
-        p >= 0; 
-        sum( p ) == 1;
-        A * p <= b;
+        p >= 0; %#ok
+        sum( p ) == 1; %#ok
+        A * p <= b; %#ok
     cvx_end
     Lbnds(t) = cvx_optval;
     cvx_begin quiet
         variable p( n )
         maximize sum( p(1:t) )
-        p >= 0; 
-        sum( p ) == 1;
-        A * p <= b;
+        p >= 0; %#ok 
+        sum( p ) == 1; %#ok
+        A * p <= b; %#ok
     cvx_end
     Ubnds(t) = cvx_optval;
-    disp( sprintf( '%g <= Prob(x<=%g) <= %g', Lbnds(t), a(t), Ubnds(t) ) );
+    fprintf( '%g <= Prob(x<=%g) <= %g\n', Lbnds(t), a(t), Ubnds(t) );
 end
 
 %

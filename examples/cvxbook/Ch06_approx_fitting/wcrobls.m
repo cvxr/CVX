@@ -23,7 +23,7 @@ randn('state',0);
 rand('state',0);
 
 A0 = randn(m,n);
-[U,S,V] = svd(A0);
+[U,S,V] = svd(A0); %#ok
 S= diag(fliplr(logspace(-0.7,1,n)));
 A0 = U(:,1:n)*S*V';
 A1 = randn(m,n);  A1 = A1/norm(A1);
@@ -51,7 +51,7 @@ cvx_begin sdp quiet
     subject to
         [eye(m) A1*xrob A2*xrob A0*xrob-b; ...
          [A1*xrob A2*xrob]' lambda*eye(2) zeros(2,1); ...
-         [A0*xrob-b]' zeros(1,2) t] >= 0;
+         [A0*xrob-b]' zeros(1,2) t] >= 0; %#ok
 cvx_end
 
 % Generate Random Trials
@@ -77,7 +77,7 @@ end;
 % Plot histograms
 figure
 %subplot(211)
-[N1, hist1] = hist(ls_res,[min(ls_res):.1:max(ls_res)]);
+[N1, hist1] = hist(ls_res,min(ls_res):.1:max(ls_res));
 freq1 = N1/notrials;
 [N2, hist2] = hist(rob_res,hist1);
 freq2 = N2/notrials;

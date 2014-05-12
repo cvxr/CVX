@@ -32,17 +32,15 @@ ripple = 1;    % (delta) max allowed passband ripple in dB
 %********************************************************************
 N = 30*n;                              % freq samples (rule-of-thumb)
 w = linspace(0,pi,N);
-A = [ones(N,1) 2*cos(kron(w',[1:n]))]; % matrix of cosines
+A = [ones(N,1) 2*cos(kron(w',1:n))]; % matrix of cosines
 
 % passband 0 <= w <= w_pass
-ind = find((0 <= w) & (w <= wpass));    % passband
-Ap  = A(ind,:);
+Ap  = A((0 <= w) & (w <= wpass),:);
 
 % transition band is not constrained (w_pass <= w <= w_stop)
 
 % stopband (w_stop <= w)
-ind = find((wstop <= w) & (w <= pi));   % stopband
-As  = A(ind,:);
+As  = A((wstop <= w) & (w <= pi),:);
 
 %********************************************************************
 % optimization
@@ -52,7 +50,7 @@ cvx_begin
   variable h(n+1,1);
   minimize(norm(As*h,Inf))
   subject to
-    10^(-ripple/20) <= Ap*h <= 10^(ripple/20);
+    10^(-ripple/20) <= Ap*h <= 10^(ripple/20); %#ok
 cvx_end
 
 % check if problem was successfully solved
@@ -77,7 +75,7 @@ set(gca,'XLim',[-n-1,n+1])
 
 figure(2)
 % frequency response
-H = exp(-j*kron(w',[0:2*n]))*h;
+H = exp(-1j*kron(w',0:2*n))*h;
 % magnitude
 subplot(2,1,1)
 plot(w,20*log10(abs(H)),...
