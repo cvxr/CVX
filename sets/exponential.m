@@ -1,4 +1,4 @@
-function cvx_optpnt = exponential( varargin )
+function set = exponential( varargin )
 
 %EXPONENTIAL   Exponential cone.
 %   EXPONENTIAL, called with no arguments, creates three scalar variables X,
@@ -33,9 +33,9 @@ end
     cvx_pushcone( true, 'exponential', [ vec(x)' ; vec(y)' ; vec(z)' ] );
 cvx_end
 if gp,
-    cvx_optpnt = cvxtuple( struct( 'x', ex, 'y', ey, 'z', ez ) );
+    set = cvxtuple( struct( 'x', ex, 'y', ey, 'z', ez ) );
 else
-    cvx_optpnt = cvxtuple( struct( 'x', x, 'y', y, 'z', z ) );
+    set = cvxtuple( struct( 'x', x, 'y', y, 'z', z ) );
 end
 
 % Copyright 2005-2014 CVX Research, Inc.

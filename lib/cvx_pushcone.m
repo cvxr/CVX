@@ -14,9 +14,8 @@ elseif isequal( ctype, 'nonnegative' ) || isequal( ctype(1:2), 'i_' ),
     indices = indices(:)';
     nn = 1;
 end
-if isempty( cones )
-    match = [];
-else
+match = [];
+if ~gcone && ~isempty( cones ),
     match = find( strcmp( { cones.type }, ctype ) );
     if nn > 1
         match = match(cellfun('size',{cones(match).indices},1)==nn);
@@ -56,7 +55,7 @@ else
     ncone = struct( 'type', ctype, 'indices', indices, 'slacks', slacks );
     if isempty( cones ), 
         cones = ncone;
-    elseif nn == 1, 
+    elseif nn == 1 && ~gcone,
         cones = [ ncone, cones ];
     else
         cones = [ cones, ncone ];

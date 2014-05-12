@@ -1,4 +1,4 @@
-function [ cvx_optpnt, mode ] = geo_mean_cone( varargin )
+function [ set, mode ] = geo_mean_cone( varargin )
 
 %GEO_MEAN_CONE    Cones involving the geometric mean.
 %   GEO_MEAN_CONE(N), where N is a positive integer, creates a column vector
@@ -334,7 +334,7 @@ if nleft > 1,
 end
 x = reshape( x, sx );
 y = reshape( y, sy );
-cvx_optpnt = cvxtuple( struct( 'x', x, 'y', y ) );
+set = cvxtuple( struct( 'x', x, 'y', y ) );
 
 % Copyright 2005-2014 CVX Research, Inc.
 % See the file LICENSE.txt for full copyright information.

@@ -31,14 +31,12 @@ end
 % Check objective expression
 %
 
-persistent remap_min remap_max remap_log remap_gp
+persistent remap_min remap_max
 if isempty( remap_max ),
-    remap_min = cvx_remap( 'convex', 'l_convex' );
-    remap_max = cvx_remap( 'concave', 'l_concave' );
-    remap_log = cvx_remap( 'l_valid' ) & ~cvx_remap( 'constant' );
-    remap_gp  = cvx_remap( 'g_valid' );
+    remap_min = cvx_remap( { { 'constant' } ; { 'l_convex' } ; { 'convex' } } );
+    remap_max = cvx_remap( { { 'constant' } ; { 'l_concave' } ; { 'concave' } } );
 end
-if ~isa( x, 'cvx' ) && ~isa( x, 'double' ) && ~isa( x, 'sparse' ),
+if ~isa( x, 'cvx' ) && ~isnumeric( x ),
     error( 'CVX:ArgError', 'Cannot accept an objective of type ''%s''.', class( arg ) );
 elseif ~isreal( x ),
     error( 'CVX:ArgError', 'Expressions in objective functions must be real.' );
@@ -47,35 +45,38 @@ elseif isempty( x ),
 end
 cx = cvx_classify( x );
 switch dir,
-    case { 'minimize', 'minimise' }, vx = remap_min( cx ); dir = 'minimize';
-    case { 'maximize', 'maximise' }, vx = remap_max( cx ); dir = 'maximize';
-    otherwise, error( 'CVX:ArgError', 'Invalid objective type: %s', dir );
+    case { 'minimize', 'minimise' }, 
+        vx = remap_min( :, cx ); 
+        dir = 'minimize';
+    case { 'maximize', 'maximise' }, 
+        vx = remap_max( :, cx ); 
+        dir = 'maximize';
+    otherwise, 
+        error( 'CVX:ArgError', 'Invalid objective type: %s', dir );
 end
-if ~all( vx ),
+avx = all( vx, 2 );
+if ~any( avx ),
     if ~epi, type = 'dir'; %#ok
     elseif dir > 0, type = 'epigraph';
     else type = 'hypograph'; end
-    cvx_dcp_error( type, 'unary', cvx_fastref( x, vx == 0 ) );
+    vx = any( vx, 1 );
+    if all( vx ),
+        error( 'CVX:LogMix', 'Invalid mix of logarithmic and linear objectives.' );
+    else
+        cvx_dcp_error( type, 'unary', cvx_fastref( x, ~vx ) );
+    end
 end
 
 %
 % Store the objective
 %
 
-vx = remap_log( cx ) + remap_gp( cx );
-if any( vx ),
-    if any( diff( vx ) ),
-        error( 'CVX:LogMix', 'Invalid mix of logarithm and non-logarithmic objectives.' );
-    end
-    x = log( x );
-    vx = vx(1);
-end
-pstr.objective = x;
+pstr.objective = cvx( x );
 pstr.direction = dir;
-pstr.geometric = vx;
-if pstr.n_variable > 1 && pstr.complete,
+pstr.geometric = avx(2) & ( ~avx(1) | pstr.gp );
+if pstr.checkpoint(1) > 1 && pstr.complete,
     x = cvx_basis( x );
-    nv = min(pstr.n_variable,size(x,1));
+    nv = min(pstr.checkpoint(1),size(x,1));
     if nnz(x(2:nv,:)), pstr.complete = false; end
 end
 cvx___.problems( end ) = pstr;

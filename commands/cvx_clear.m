@@ -7,10 +7,7 @@ function cvx_clear
 %    warning message that occurs if CVX_BEGIN detects a model in progress.
 
 try
-    if isa( evalin( 'caller', 'cvx_problem', '[]' ), 'cvxprob' ),
-        evalin( 'caller', 'cvx_validate' );
-        evalin( 'caller', 'cvx_pop' );
-    end
+    evalin( 'caller', 'cvx_cleanup( false )' );
 catch exc
     if strncmp( exc.identifier, 'CVX:', 4 ), throw( exc );
     else rethrow( exc ); end

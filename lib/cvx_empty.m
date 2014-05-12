@@ -1,9 +1,0 @@
-function y = cvx_empty( p, id )
-global cvx___
-[ p, pstr ] = cvx_validate( p, id, false );
-y = p == length( cvx___.problems ) && ...
-    length(cvx___.classes) == pstr.n_variable && ...
-    length(cvx___.equalities) == pstr.n_equality && ...
-    isempty(pstr.objective);
-
-

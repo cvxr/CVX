@@ -2,40 +2,40 @@ function cvx_erase( p )
 
 global cvx___
 pstr = cvx___.problems( p );
-nf = pstr.n_variable + 1;
-ne = pstr.n_equality + 1;
+% n_variables, n_equalities, n_cones
+cp = pstr.checkpoint + 1;
+nf = cp(1);
 if nf <= 2,
     cvx___.classes     = int8(3);
-    cvx___.cones       = struct( 'type', {}, 'indices', {}, 'slacks', {} );
-    cvx___.exponential = [];
-    pstr.n_variable    = 0;
+    cvx___.cones       = zeros(0,1);
+    cvx___.exponential = zeros(0,1);
 elseif length( cvx___.classes ) >= nf,
     cvx___.classes( nf : end, : ) = [];
-    if ~isempty( cvx___.cones ),
-        tt = true( 1, length( cvx___.cones ) );
-        for k = 1 : length( cvx___.cones ),
-            cvx___.cones( k ).indices( :, any( cvx___.cones( k ).indices >= nf, 1 ) ) = [];
-            if isempty( cvx___.cones( k ).indices ), tt( k ) = false; end
-        end
-        cvx___.cones = cvx___.cones( 1, tt );
-    end
     if ~isempty( cvx___.exponential ),
-        cvx___.exponential( nf : end ) = [];
-        cvx___.logarithm( nf : end ) = [];
+        cvx___.exponential( nf : end, : ) = [];
+        cvx___.logarithm( nf : end, : ) = [];
+        if ~any( cvx___.exponential ),
+            cvx___.exponential = zeros(0,1);
+            cvx___.logarithm = zeros(0,1);
+        end
     end
 end
-if ~any( cvx___.exponential ),
-    cvx___.exponential = zeros(0,1);
-    cvx___.logarithm = zeros(0,1);
-end
+ne = cp(2);
 if ne <= 1,
     cvx___.equalities = {};
     cvx___.inequality = false(0,1);
     cvx___.n_equality = 0;
 elseif length( cvx___.equalities ) >= ne,
+    cvx___.n_equality = cvx___.n_equality - ...
+        sum( cellfun( @(x)size(x,2), cvx___.equalities( ne : end ) ) );
     cvx___.equalities( ne : end ) = [];
     cvx___.inequality( ne : end ) = [];
-    cvx___.n_equality = sum( cellfun( @(x)size(x,2), cvx___.equalities ) );
+end
+nc = cp(3);
+if nc <= 1,
+    cvx___.cones = [];
+else
+    cvx___.cones( nc : end ) = [];
 end
 
 % Copyright 2005-2014 CVX Research, Inc.

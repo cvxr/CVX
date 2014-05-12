@@ -1,4 +1,4 @@
-function cvx_optpnt = lorentz( varargin )
+function set = lorentz( varargin )
 
 %LORENTZ   Real second-order cone.
 %   LORENTZ(N), where N is a positive integer, creates a column
@@ -77,7 +77,7 @@ else
     x = reshape( x, sx );
     y = reshape( y, sy );
 end
-cvx_optpnt = cvxtuple( struct( 'x', x, 'y', y ) );
+set = cvxtuple( struct( 'x', x, 'y', y ) );
 
 % Copyright 2005-2014 CVX Research, Inc.
 % See the file LICENSE.txt for full copyright information.

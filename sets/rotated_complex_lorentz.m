@@ -1,4 +1,4 @@
-function cvx_optpnt = rotated_complex_lorentz( sx, dim )
+function set = rotated_complex_lorentz( sx, dim )
 
 %ROTATED_COMPLEX_LORENTZ   Rotated complex second-order cone.
 
@@ -36,9 +36,9 @@ function cvx_optpnt = rotated_complex_lorentz( sx, dim )
 
 error( nargchk( 1, 2, nargin ) ); %#ok
 if nargin == 1,
-    cvx_optpnt = rotated_lorentz( sx, [], true );
+    set = rotated_lorentz( sx, [], true );
 else
-    cvx_optpnt = rotated_lorentz( sx, dim, true );
+    set = rotated_lorentz( sx, dim, true );
 end
 
 % Copyright 2005-2014 CVX Research, Inc.

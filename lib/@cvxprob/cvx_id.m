@@ -1,5 +1,6 @@
-function y = cvx_id( x )
-y = x.id_;
+function [ id, index ] = cvx_id( x )
+id = x.id_;
+index = x.index_;
 
 % Copyright 2005-2014 CVX Research, Inc.
 % See the file LICENSE.txt for full copyright information.

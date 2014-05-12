@@ -8,10 +8,11 @@ catch
     error( 'CVX:NoModel', 'No CVX model is present.' );
 end
 
-if isempty( pstr.objective ) && ...
-   length(cvx___.classes) == pstr.n_variable && ....
-   length(cvx___.equalities) == pstr.n_equality,
-
+if length(cvx___.classes) == pstr.checkpoint(1) && ...
+   length(cvx___.equalities) == pstr.checkpoint(2) && ...
+   length(cvx___.cones) == pstr.checkpoint(3) && ...
+   isempty(pstr.objective),
+    
     warning( 'CVX:EmptyModel', 'Empty CVX model; no action taken.' );
 
 elseif pstr.complete,
@@ -55,7 +56,6 @@ elseif pstr.complete,
     if numel( pstr.objective ) > 1 && ~isempty( pstr.result ),
         if strfind( pstr.status, 'Solved' ),
             pstr.result = value( pstr.objective );
-            if pstr.geometric, pstr.result = exp( pstr.result ); end
         else
             pstr.result = pstr.result * ones(size(pstr.objective));
         end
@@ -128,17 +128,23 @@ else
             mapgp = cvx_remap( 'convex' ) & ~cvx_remap( 'affine' );
             mapsgn = ( cvx_remap( 'positive', 'p_nonconst' ) - cvx_remap( 'negative', 'n_nonconst' ) )';
         end
-        cx = cvx_classify( x );
-        bx = cvx_basis( x );
         if ~force,
-            bx = cvx_sparsify( bx, [], 'magnitude' );
+            if pstr.geometric, x = log( x ); end
+            bx = cvx_sparsify( cvx_basis( x ), [], 'magnitude' );
             x = cvx( size( x ), bx );
+            if pstr.geometric, x = exp( x ); end
+        else
+            bx = cvx_basis( x );
         end
         [ r, c ] = find( bx ); %#ok
+        if force && pstr.geometric,
+            r = cvx___.logarithm( r, : );
+        end
+        cx = cvx___.classes( r, : );
         cx = int8( 9 + mapsgn(cx) + os * ( 3 + ( cx == 2 ) ) );
         cvx___.classes( r, : ) = cx;
         if pstr.geometric,
-            x = exp( x );
+            cvx_pushexp( r, true );
         end
         assignin( 'caller', 'cvx_optval', x );
     end

@@ -25,11 +25,10 @@ cvx___.equalities{end+1} = zb;
 cvx___.inequality(end+1) = ~iseq;
 mO = cvx___.n_equality;
 cvx___.n_equality = mO + mN;
-if pstr.n_variable > 1 && pstr.complete,
-    nv = min(pstr.n_variable,size(zb,1));
+if pstr.complete && pstr.checkpoint(1) > 1,
+    nv = min(pstr.checkpoint(1),size(zb,1));
     if nnz(zb(2:nv,:)), 
-        pstr.complete = false; 
-        cvx___.problems(end) = pstr;
+        cvx___.problems(end).complete = false;
     end
 end
 if nargout

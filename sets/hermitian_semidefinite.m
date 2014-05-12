@@ -1,4 +1,4 @@
-function cvx_optpnt = hermitian_semidefinite( n )
+function x = hermitian_semidefinite( n )
 
 %HERMITIAN_SEMIDEFINITE   Complex Hermitian positive semidefinite matrices.
 %    HERMITIAN_SEMIDEFINITE(N), where N is an integer, creates a complex 
@@ -29,7 +29,7 @@ function cvx_optpnt = hermitian_semidefinite( n )
 %       details on how to use sets.
 
 error( nargchk( 1, 1, nargin ) ); %#ok
-cvx_optpnt = semidefinite( n, true );
+x = semidefinite( n, true );
 
 % Copyright 2005-2014 CVX Research, Inc. 
 % See the file LICENSE.txt for full copyright information.

@@ -1,4 +1,4 @@
-function cvx_optpnt = norm_ball( varargin ) %#ok
+function x = norm_ball( varargin ) %#ok
 
 %NORM_BALL   Norm ball.
 %   NORM_BALL( sz, ... ) returns a variable of size sz, say 'x', that is

@@ -20,23 +20,25 @@ if isempty( naff ),
     ylog = cvx_remap( 'l_valid_' );
 end
 nt = length( cvx___.classes );
-if isempty( cvx___.equalities ),
+ne = length( cvx___.equalities );
+if ne <= p.checkpoint(2),
     neqns = 0;
     nineqs = 0;
     touched = false(nt,1);
 else
     neqns  = cellfun( @(z)size(z,2), cvx___.equalities );
     nineqs = neqns(:) .* ~cvx___.inequality(:);
-    neqns  = neqns( p.n_equality + 1 : end );
-    nineqs = nineqs( p.n_equality + 1 : end );
+    neqns  = neqns( p.checkpoint(2) + 1 : end );
+    nineqs = nineqs( p.checkpoint(2) + 1 : end );
     touched = cellfun( @(z)[any(z,2);false(nt-size(z,1),1)], ...
-        cvx___.equalities(p.n_equality+1:end), 'UniformOutput', false );
+        cvx___.equalities(p.checkpoint(2)+1:end), 'UniformOutput', false );
     touched = any( [ touched{:} ], 2 );
 end
+touched( p.checkpoint(1) + 1 : end ) = true;
 nineqs = sum( nineqs );
 neqns  = sum( neqns ) - nineqs;
 cfound = false;
-for k = 1 : length( cvx___.cones ),
+for k = p.checkpoint(3) : length( cvx___.cones ),
     ndxs = cvx___.cones(k).indices;
     qq = any(reshape(touched(ndxs),size(ndxs)),1);
     if any( qq ),
@@ -46,7 +48,7 @@ for k = 1 : length( cvx___.cones ),
     end
 end
 nv = nnz(touched) - touched(1);
-np = nnz(touched(1:p.n_variable)) - touched(1);
+np = nnz(touched(1:p.c)) - touched(1);
 gfound = nnz(ylog(cvx___.classes(touched)));
 
 if isempty( p.name ) || strcmp( p.name, 'cvx_' ),

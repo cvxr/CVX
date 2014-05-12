@@ -1,4 +1,4 @@
-function cvx_optpnt = rotated_lorentz( varargin )
+function set = rotated_lorentz( varargin )
 
 %ROTATED_LORENTZ   Rotated real second-order cone.
 %   ROTATED_LORENTZ(N), where N is a positive integer, creates a column
@@ -79,7 +79,7 @@ else
     y = reshape( y, sy );
     z = reshape( z, sy );
 end
-cvx_optpnt = cvxtuple( struct( 'x', x, 'y', y, 'z', z ) );
+set = cvxtuple( struct( 'x', x, 'y', y, 'z', z ) );
 
 % Copyright 2005-2014 CVX Research, Inc.
 % See the file LICENSE.txt for full copyright information.

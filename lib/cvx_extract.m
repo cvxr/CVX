@@ -7,9 +7,9 @@ catch
     error( 'CVX:NoModel', 'No CVX model is present.' );
 end
 
-n = length( cvx___.classes );
+nold = length( cvx___.classes );
 dualized = false;
-if n == 0,
+if nold == 0,
     dbcA  = []; cones = []; dir = 1; Q = []; P = []; exps = [];
     return
 end
@@ -19,10 +19,13 @@ end
 %%%%%%%%%%%%%%
 
 dbcA = pstr.objective;
+if pstr.geometric,
+    dbcA = log( dbcA );
+end
 if numel( dbcA ) > 1,
     dbcA = cvx( [1,1], sum( cvx_basis( dbcA ), 2 ) );
 end
-if isempty(pstr.objective),
+if isempty( dbcA ),
     dir = 1;
     dbcA = cvx( [ 1, 1 ], [] );
 elseif strcmp( pstr.direction, 'minimize' ) || strcmp( pstr.direction, 'epigraph' ),
@@ -32,31 +35,31 @@ else
     dir = -1;
 end
 dbcA = cvx_basis( dbcA );
-dbcA( end + 1 : n, : ) = 0;
+dbcA( end + 1 : nold, : ) = 0;
 
 % Equality constraints
 AA = cvx___.equalities;
-if pstr.n_equality > 0,
-    npre = sum( cellfun( @(x)size(x,2), AA(1:pstr.n_equality) ) );
-    AA   =  AA( pstr.n_equality + 1 : end, : );
+if pstr.checkpoint(2) > 0,
+    npre = sum( cellfun( @(x)size(x,2), AA(1:pstr.checkpoint(2)) ) );
+    AA   =  AA( pstr.checkpoint(2) + 1 : end, : );
 else
     npre = 0;
 end
-AA   = cellfun( @(x)vertcat(sparse(x),sparse(n-size(x,1),size(x,2))), AA, 'UniformOutput', false );
+AA   = cellfun( @(x)vertcat(sparse(x),sparse(nold-size(x,1),size(x,2))), AA, 'UniformOutput', false );
 dbcA = horzcat( dbcA, AA{:} );
-m = size( dbcA, 2 );
+mold = size(dbcA,2) + npre;
 clear AA
 
 % Nonlinearities
 used    = full( any( dbcA, 2 ) );
 used(1) = true;
-rsv     = zeros( n, 1 ); 
+rsv     = zeros( nold, 1 ); 
 rsv(1)  = 1;
-nint    = 0;
+u_int   = false;
 nrsv    = 0;
-nexp    = 0;
+u_exp   = false;
 cones   = [];
-for k = 1 : length(cvx___.cones),
+for k = pstr.checkpoint(3)+1 : length(cvx___.cones),
     cone = cvx___.cones(k);
     ctyp = cone.type;
     ndxs = cone.indices;
@@ -67,7 +70,6 @@ for k = 1 : length(cvx___.cones),
     rsv( ndxs ) = 1;
     nnnv = numel(ndxs);
     nrsv = nrsv + nnnv;
-    nint = nint + nnnv * isequal( ctyp(1:2), 'i_' );
     if nargin == 3 && ~isempty( config ),
         switch ctyp,
             case 'exponential',
@@ -84,16 +86,20 @@ for k = 1 : length(cvx___.cones),
                     error( 'CVX:IncompatibleSolver', 'This solver does not support semidefinite cones.' );
                 end
             case { 'i_integer', 'i_binary' },
+                u_int = true;
                 if ~config.INTcapable,
                     error( 'CVX:IncompatibleSolver', 'This solver does not support integer constraints.' );
                 end
         end
+    else
+        if isequal( ctyp(1:2), 'i_' ), u_int = true; end
+        if isequal( ctyp, 'exponential' ), u_exp = true; end
     end
     cones = cvx_pushcone( cones, cone.type, ndxs );
 end
-ncones = length(cones);
 
 % Exponentials
+nadd = 0;
 exps = cvx___.exponential;
 if nnz( exps ),
     esrc = find( exps );
@@ -107,25 +113,25 @@ if nnz( exps ),
             error( 'CVX:IncompatibleSolver', 'This solver does not support exponential cones.' );
         end
         % Determine the indices of the exponentials
+        u_exp = true;
         esrc  = esrc(tt);
         edst  = edst(tt);
-        oexp  = nexp;
         nexp  = length(esrc);
         nexp3 = 3 * nexp;
+        nadd  = nadd + nexp3;
         nrsv  = nrsv + nexp3;
         % Create the exponential cones
-        indices = reshape( n+1:n+nexp3, 3, nexp );
+        ndim  = reshape( nold+1:nold+nexp3, 3, nexp );
         % Expand Q, P, dbcA
         dbcA(end+nexp3,end) = 0;
         % Add equality consraints to tie the exponential cones to esrc and edst
         % and set the exponential perspective variable to 1
         ndxc = reshape( 1 : 3 * nexp, 3, nexp );
         dbcA = [ dbcA, sparse( ...
-            [ esrc(:)' ; ones(1,nexp) ; edst(:)' ; indices ], ...
+            [ esrc(:)' ; ones(1,nexp) ; edst(:)' ; ndim ], ...
             [ ndxc ; ndxc ], ... 
             [ ones(3,nexp) ; -ones(3,nexp) ] ) ];
-        cones = cvx_pushcone( cones, 'exponential', indices );
-        nexp = nexp + oexp;
+        cones = cvx_pushcone( cones, 'exponential', ndim );
     end
     if ~isempty( exps ),
         % Look for variables where the exp is used but not the logarithm;
@@ -133,12 +139,13 @@ if nnz( exps ),
         tt = exps(:,3) < 0;
         if any( tt ),
             epos = exps(tt,2);
-            nexp = length(epos);
-            nrsv  = nrsv + nexp;
-            ndim = size(dbcA,1) + (1:nexp);
-            dbcA(end+nexp,end) = 0;
-            dbcA = [ dbcA, sparse( [epos(:)';ndim(:)'], [1:nexp;1:nexp], ...
-                [-ones(1,nexp);ones(1,nexp) ] ) ];
+            nlog = length(epos);
+            nrsv = nrsv + nlog;
+            nadd = nadd + nlog;
+            ndim = size(dbcA,1) + (1:nlog);
+            dbcA(end+nlog,end) = 0;
+            dbcA = [ dbcA, sparse( [epos,ndim']', repmat(1:nlog,[2,1]), ...
+                repmat([-1;1],[1,nlog]) ) ];
             cones = cvx_pushcone( cones, 'nonnegative', ndim );
         end
     end
@@ -146,7 +153,7 @@ else
     exps = [];
 end
 
-if nexp && nint,
+if u_exp && u_int,
     error( 'CVX:IncompatibleSolver', 'Exponential variables and integer variables cannot both be used.' );
 end
 
@@ -173,8 +180,10 @@ end
 % from the reduced xx and yy by Q*[1;xx] and P*[1;-yy], respectively.
 
 % Add Lagrangian term x'*z
+ncones = length(cones);
 if config.dualize,
     PP = cell( ncones, 1 );
+    nnew = size(dbcA,1);
     for k = 1 : ncones,
         ndxs    = cones(k).indices;
         [nn,nv] = size(ndxs);
@@ -196,7 +205,7 @@ if config.dualize,
                 end
                 SS = SS_exp;
         end
-        PP{k} = sparse(ndxs,1:nnnv,1,n,nnnv);
+        PP{k} = sparse(ndxs,1:nnnv,1,nnew,nnnv);
         if ~isempty( SS ),
             PP{k} = PP{k} * cvx_replicate_structure( SS, nv );
         end
@@ -209,17 +218,21 @@ end
 % Initial Q and P matrices
 %
 
-ndxs = 1 : n;
+[nnew,mnew] = size(dbcA);
 if ~all(used),
-    ndxs = ndxs(used);
-    dbcA = dbcA(used,:);
+    ndxs = find(used);
     rsv  = rsv(used,:);
+    used(end+1:nnew) = true;
+    dbcA = dbcA(used,:);
+else
+    ndxs = 1 : nold;
 end
-[nold,mold] = size(dbcA);
-Q = sparse( ndxs, 1 : size(dbcA,1), 1, n, nold );
-P = sparse( [ 1, npre + 2 : m ], 1 : m - npre, 1, m, mold );
-ineqs = zeros( 1, mold );
-ineqs(1) = 1;
+nred = size(dbcA,1);
+Q = sparse( ndxs, 1 : length(ndxs), 1, nold, nred );
+P = sparse( [ 1, npre + 2 : mold ], 1 : mold - npre, 1, mold, mnew );
+ndxs  = [ ndxs ; ( nold + 1 : nold + nadd )' ];
+rsv   = [ rsv  ; ones( nadd, 1 ) ];
+ineqs = zeros( 1, mnew );
 if config.dualize,
     ineqs(end-nrsv+1:end) = 1;
 end
@@ -228,7 +241,7 @@ if isempty( dbcA ),
 end
 
 while true,
-
+    
     last_success = 1;
     while true,
         %
@@ -320,10 +333,11 @@ while true,
         dbcA = -dbcA';
         dir  = -dir;
         tmp  = Q; Q = P; P = tmp;
+        nnew = size(dbcA,1);
         dualized = true;
-        n = size(dbcA,1) - nrsv;
+        n = nnew - nrsv;
         rsv = zeros(n,1); rsv(1) = 1;
-        for k = 1 : ncones,
+        for k = 1 : length(cones),
             [nn,nv] = size(cones(k).indices);
             nnnv = nn * nv;
             ndxs = n + 1 : n + nnnv;
@@ -331,7 +345,7 @@ while true,
             cones(k).indices = reshape(ndxs,nn,nv);
             n = n + nnnv;
         end
-        ndxs = 1 : size(dbcA,1);
+        ndxs = 1 : nnew;
     else
         dbcA = dbcA(:,1:end-nrsv);
         P = P(:,1:end-nrsv);
@@ -344,7 +358,7 @@ end
 % STEP 4: Look for redundant slack variables.
 %
 
-slacks = false(n,1);
+slacks = false(nnew,1);
 for k = 1 : ncones,
     slacks(cones(k).indices(cones(k).slacks>0,:)) = true;
 end
@@ -355,7 +369,7 @@ if nnz( t_slack ),
     c_slack = max(0,sum(t_slack>0,1)-1)-max(0,sum(t_slack<0,1)-1);
     c_slack(1) = 0;
     if nnz( c_slack ),
-        nneg = zeros(n,1);
+        nneg = zeros(nnew,1);
         if ncones > 1 && isequal( cones(1).type, 'nonnegative' ),
             nneg(cones(1).indices) = 1;
         end
@@ -376,11 +390,11 @@ end
 % Move the cone indices to their new locations and transform
 %
 
-nnew = size(dbcA,1);
-ndxi = zeros(n,1);
+nfin = size(dbcA,1);
+ndxi = zeros(nnew,1);
 ndxi(ndxs) = 1 : length(ndxs);
 cone2 = []; Pr = []; Pc = []; Pv = [];
-for k = 1 : ncones,
+for k = 1 : length(cones),
     cone    = cones(k);
     ctype   = cone.type;
     ndxs    = cone.indices;
@@ -462,18 +476,19 @@ for k = 1 : ncones,
                 id2 = rd(tt);
                 [dummy,tt] = sort(cc(tt)+n2*rr(tt)); %#ok
                 id2 = id2(tt);
-                ndxs = [ndxs;reshape(nnew+1:nnew+n2*(n2+1)*nv,[],nv)]; %#ok
+                ndxs = [ndxs;reshape(nfin+1:nfin+n2*(n2+1)*nv,[],nv)]; %#ok
                 Pr = [ Pr, vec( [ ndxs(rs,:)  ; ndxs(rs,:)  ; ndxs(is,:)  ; ndxs(is,:)  ] )' ]; %#ok
                 Pc = [ Pc, vec( [ ndxs(rd1,:) ; ndxs(rd2,:) ; ndxs(id1,:) ; ndxs(id2,:) ] )' ]; %#ok
                 Pv = [ Pv, vec( [ ones(2*numel(rs)+numel(is),nv) ; -ones(numel(is),nv) ] )' ]; %#ok
                 ctype = 'semidefinite';
+                nfin = ndxs(end);
             end
     end
     cone2 = cvx_pushcone( cone2, ctype, ndxs );
 end
 cones = cone2;
 if ~isempty(Pr),
-    Pd = true(1,nnew);
+    Pd = true(1,size(dbcA,1),1);
     Pd(Pr) = false;
     Pd = find(Pd);
     Pr = [Pr,Pd];

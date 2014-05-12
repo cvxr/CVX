@@ -38,14 +38,8 @@ function cvx_begin( varargin )
 %   ignored for sets and incomplete specifications.
 
 try
-    if isa( evalin( 'caller', 'cvx_problem', '[]' ), 'cvxprob' ),
-        if ~evalin( 'caller', 'isempty( cvx_problem )' ),
-            warning( 'CVX:Empty', 'A non-empty cvx problem already exists in this scope.\n   It is being overwritten.', 1 ); %#ok
-        end
-        evalin( 'caller', 'cvx_pop' );
-    end
-    prob = cvxprob( varargin{:} );
-    assignin( 'caller', 'cvx_problem', prob );
+    evalin( 'caller', 'cvx_cleanup( true )' );
+    assignin( 'caller', 'cvx_problem', cvxprob( varargin{:} ) );
 catch exc
     if strncmp( exc.identifier, 'CVX:', 4 ), throw( exc );
     else rethrow( exc ); end

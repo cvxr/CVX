@@ -1,4 +1,4 @@
-function cvx_optpnt = semidefinite( sz, iscplx ) %#ok
+function x = semidefinite( sz, iscplx ) %#ok
 
 %SEMIDEFINITE   Real symmetric positive semidefinite matrices.
 %    SEMIDEFINITE(N), where N is an integer, creates a symmetric matrix

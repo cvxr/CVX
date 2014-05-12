@@ -1,4 +1,4 @@
-function gdim = cvx_pushexp( ndim )
+function gdim = cvx_pushexp( ndim, nonew )
 
 global cvx___
 persistent expv geov
@@ -13,6 +13,12 @@ else
 end
 cx = cvx___.classes(ndim);
 cy = map(cx);
-gdim = cvx_newvar( numel(ndim), cy );
-cvx___.logarithm( gdim, 1 ) = ndim(:);
-cvx___.exponential( ndim, 1 ) = gdim(:);
+if nargin < 2 || ~nonew,
+    gdim = cvx_newvar( numel(ndim), cy );
+    cvx___.logarithm( gdim, 1 ) = ndim(:);
+    cvx___.exponential( ndim, 1 ) = gdim(:);
+else
+    gdim = cvx___.exponential( ndim );
+    cvx___.classes( gdim ) = cy;
+end
+

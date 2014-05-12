@@ -1,4 +1,4 @@
-function cvx_optpnt = nonnegative( varargin ) %#ok
+function x = nonnegative( varargin ) %#ok
 
 %NONNEGATIVE   The nonnegative orthant.
 %   NONNEGATIVE(SX), where SX is a valid size vector, creates an array

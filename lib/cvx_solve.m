@@ -559,10 +559,6 @@ if ~isempty( obj ),
     else
         oval = cvx_value( obj );
     end
-    if gobj,
-        oval = exp( oval );
-        bval = exp( bval );
-    end
 end
 oval = full(oval);
 bval = full(bval);

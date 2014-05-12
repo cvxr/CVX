@@ -18,6 +18,8 @@ if nargin == 0,
     end
 elseif p > np
     pid = 0;
+elseif p == 0
+    pid = -1;
 else
     pstr = cvx___.problems( p );
     if pstr.id ~= pid, pid = 0; end
@@ -25,10 +27,10 @@ end
 s1 = evalin( 'caller', 'who' );
 s2 = evalin( 'caller', 'cellfun(@eval,who,''UniformOutput'',false)' );
 s2 = cellfun( @cvx_id, s2 );
-if pid == 0,
-    p = 1;
+if pid <= 0,
+    do_erase = ~isempty( cvx___.problems );
+    p = +do_erase;
     tt = s2 >= 0;
-    do_erase = true;
 elseif ~pstr.finished
     tt = s2 >= pid;
     do_erase = true;

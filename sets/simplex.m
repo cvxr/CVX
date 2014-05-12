@@ -1,4 +1,4 @@
-function cvx_optpnt = simplex( varargin ) %#ok
+function x = simplex( varargin ) %#ok
 
 %SIMPLEX   The unit simplex.
 %    SIMPLEX(N), where N is a positive integer, creates a column vector

@@ -1,4 +1,4 @@
-function cvx_optpnt = complex_lorentz( sx, dim )
+function x = complex_lorentz( sx, dim )
 
 %COMPLEX_LORENTZ   Complex second-order cone.
 %   COMPLEX_LORENTZ(N), where N is a positive integer, creates a column
@@ -39,9 +39,9 @@ function cvx_optpnt = complex_lorentz( sx, dim )
 
 error( nargchk( 1, 2, nargin ) ); %#ok
 if nargin == 1,
-    cvx_optpnt = lorentz( sx, [], true );
+    x = lorentz( sx, [], true );
 else
-    cvx_optpnt = lorentz( sx, dim, true );
+    x = lorentz( sx, dim, true );
 end
 
 % Copyright 2005-2014 CVX Research, Inc.

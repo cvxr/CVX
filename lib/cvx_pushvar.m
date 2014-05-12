@@ -139,17 +139,12 @@ end
 %
 
 if iseh,
-    if pstr.gp,
-        vv = log( v );
-    else
-        vv = v;
-    end
     if iseh > 0,
         dir = 'epigraph';
     else
         dir = 'hypograph';
     end
-    pstr.objective = vv;
+    pstr.objective = v;
     pstr.direction = dir;
     pstr.geometric = pstr.gp;
 end
