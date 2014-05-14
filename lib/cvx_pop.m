@@ -64,6 +64,11 @@ end
 if p > 1
     cvx___.problems( p : end ) = [];
 else
+    if p == 1 && length(pstr.tictime) > 1,
+        tfin = tic;
+        cvx___.timers(2) = cvx___.timers(2) + ( tfin - pstr.tictime(1) );
+        cvx___.timers(3) = cvx___.timers(3) + ( tfin - pstr.tictime(2) );
+    end
     cvx___.problems = [];
     cvx_clearpath( 1 );
 end

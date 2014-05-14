@@ -8,6 +8,7 @@ global cvx___
 if isfield( cvx___, 'problems' ),
     return
 end
+tstart = tic;
     
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Initialize the global data structure %
@@ -54,6 +55,8 @@ cvx___.x           = zeros( 0, 1 );
 cvx___.y           = zeros( 0, 1 );
 cvx___.id          = 0;
 cvx___.obj         = cvx( struct( 'size_', [0,1], 'basis_', sparse(1,0), 'dual_', '', 'id_', 0 ) );
+cvx___.timers      = uint64([tstart,0,0,0]);
+cvx___.increment   = [];
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Run each shim to connect/reconnect the solvers %

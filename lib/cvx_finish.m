@@ -3,6 +3,7 @@ function cvx_finish
 global cvx___
 try
     p = length(cvx___.problems);
+    if p == 1, tstart = tic; end
     pstr = cvx___.problems(p);
 catch
     error( 'CVX:NoModel', 'No CVX model is present.' );
@@ -52,6 +53,7 @@ elseif pstr.complete,
 
     cvx_solve;
     pstr = cvx___.problems(p);
+    if p == 1, pstr.tictime(2) = tstart; end
 
     if numel( pstr.objective ) > 1 && ~isempty( pstr.result ),
         if strfind( pstr.status, 'Solved' ),

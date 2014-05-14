@@ -68,7 +68,7 @@ for k = pstr.checkpoint(3)+1 : length(cvx___.cones),
     if nargin == 3 && ~isempty( config ),
         switch ctyp,
             case 'nonnegative',
-                u_neg = true;
+                u_nneg = true;
             case 'exponential',
                 if ~config.dualize,
                     error( 'CVX:IncompatibleSolver', 'This solver does not support exponential cones.' );
@@ -371,21 +371,28 @@ for k = 1 : ncones,
     cones(k).indices = temp; %#ok
     if u_nneg,
         temp = temp(cones(k).slacks>0,:);
-        tmpv = (sum(dbcA(temp,:)~=0,2)==1) & (dbcA(temp,1)==0);
-        if any(tmpv),
-            slacks(temp) = tmpv;
-            if isequal(cones.type,'nonnegative'),
-                do_slack = true;
+        tmpv = sum(dbcA(temp,:)~=0,2)==1;
+        if isequal(cones(k).type,'nonnegative'),
+            tmpv = tmpv & (dbcA(temp,1)<=0);
+            if any(tmpv), 
+                do_slack = true; 
+                slacks(temp) = tmpv;
                 nneg(temp) = tmpv; 
+            end
+        else
+            tmpv = tmpv & (dbcA(temp,1)==0);
+            if any(tmpv),
+                slacks(temp) = tmpv;
             end
         end
     end
 end
 if do_slack,
     t_slack = dbcA( slacks, : );
-    c_slack = max(0,sum(t_slack>0,1)-1)-max(0,sum(t_slack<0,1)-1);
-    if nnz( c_slack ) > ( c_slack(1) ~=0 ),
-        c_slack(1) = 0;
+    d_slack = sum(t_slack<0,1);
+    c_slack = max(1,sum(t_slack>0,1))-max(1,d_slack);
+    c_slack(1) = -d_slack(1);
+    if any( c_slack ),
         cndxs = c_slack ~= 0;
         t_slack = dbcA(nneg,cndxs);
         if nnz( t_slack ),
@@ -393,7 +400,7 @@ if do_slack,
             if ~isempty( rx ),
                 rndxs = find(nneg);
                 cndxs = find(cndxs);
-                cx = cndxs(cx);
+                cx = cndxs(cx); cx = cx(:);
                 rx = rndxs(rx);
                 dx = diff([0;find(diff(cx))]);
                 dx = cumsum(1+sparse(1,cumsum(dx)+1,-dx,1,length(cx)));
@@ -409,8 +416,9 @@ if do_slack,
                     cone  = cones(k);
                     ctype = cone.type;
                     ndxs  = cone.indices;
+                    ndxs  = reshape(ndxi(ndxs),size(ndxs));
                     if isequal(ctype,'nonnegative'),
-                        ndxs = nonzeros(ndxi(ndxs))';
+                        ndxs = nonzeros(ndxs)';
                         if isempty(ndxs), continue; end
                     end
                     cone2 = cvx_pushcone( cone2, ctype, ndxs );
