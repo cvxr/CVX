@@ -42,16 +42,10 @@ if m == 1 || n == 1 || isequal( p, 'fro' ),
     end
     if isequal( p, 'fro' ),
         p = 2;
-    end
-    if ~isreal( x ) && p ~= 2,
-        x = x( : );
-    else
         [ xR, x ] = bcompress( x );
-        if isempty( x ),
-            cvx_optval = cvx( 0 );
-            return;
-        end
-        x = x .* norms( xR, p, 2 );
+        x = x .* sqrt(sum(xR.*conj(xR),2));
+    elseif ~isreal( x ) && p ~= 2,
+        x = x( : );
     end
     n = length( x );
     xc = cvx_classify( x );

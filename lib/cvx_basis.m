@@ -1,5 +1,5 @@
 function x = cvx_basis( x )
-x = reshape( x, 1, numel( x ) );
+x = sparse( reshape( x, 1, numel( x ) ) );
 
 % Copyright 2005-2014 CVX Research, Inc.
 % See the file LICENSE.txt for full copyright information.

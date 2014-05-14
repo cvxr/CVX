@@ -48,8 +48,7 @@ end
 % Assign data
 %
 
-x = cvx( x );
-bx = x.basis_;
+bx = cvx_basis( x );
 if any( szx_n < szx ),
     bx = bx( :, ndx_x );
 else
@@ -62,8 +61,7 @@ else
     ndx_x = builtin( 'subsref', temp, S );
     ndx_x = ndx_x( : );
     nlz = length( ndx_x );
-    y = cvx( y );
-    by = y.basis_;
+    by = cvx_basis( y );
     nx = size( bx, 1 );
     [ ny, my ] = size( by );
     if nx < ny,

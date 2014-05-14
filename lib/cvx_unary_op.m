@@ -17,11 +17,15 @@ end
 
 if vu( 1 ) ~= 0,
 
-    ox = isa( x, 'cvx' );
     if length( vu ) == 1,
 
         % Homogeneous input (single compute mode)
-        if ox && vu == 1, x = cvx_constant( x ); end
+        if vu == 1 && isa( x, 'cvx' ),
+            x = cvx_constant( x );
+            ox = true;
+        else
+            ox = false;
+        end
         y = p.funcs{abs(vu)}( vec(x), varargin{:} );
 
         % Post-op check, if necessary
@@ -34,13 +38,20 @@ if vu( 1 ) ~= 0,
 
         % Output CVX object even for constant data, if requested
         y = reshape( y, sx );
-        if ox, y = cvx( y ); end
+        if ox, 
+            y = cvx( y ); 
+        end
 
     else
 
         % Heterogeneous input (multiple compute modes)
-        if ox, y = cvx( sx, [] );
-        else y = zeros( sx ); end
+        if isa( x, 'cvx' ),
+            y = cvx( sx, [] );
+            ox = true;
+        else
+            y = zeros( sx ); 
+            ox = false;
+        end
         for vk = vu,
             tt = vx == vk;
             xt = cvx_fastref( x, tt );

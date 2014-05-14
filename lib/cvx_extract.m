@@ -52,6 +52,7 @@ rsv(1)  = 1;
 u_int   = false;
 nrsv    = 0;
 u_exp   = false;
+u_nneg  = false;
 cones   = [];
 for k = pstr.checkpoint(3)+1 : length(cvx___.cones),
     cone = cvx___.cones(k);
@@ -66,6 +67,8 @@ for k = pstr.checkpoint(3)+1 : length(cvx___.cones),
     nrsv = nrsv + nnnv;
     if nargin == 3 && ~isempty( config ),
         switch ctyp,
+            case 'nonnegative',
+                u_neg = true;
             case 'exponential',
                 if ~config.dualize,
                     error( 'CVX:IncompatibleSolver', 'This solver does not support exponential cones.' );
@@ -88,6 +91,7 @@ for k = pstr.checkpoint(3)+1 : length(cvx___.cones),
     else
         if isequal( ctyp(1:2), 'i_' ), u_int = true; end
         if isequal( ctyp, 'exponential' ), u_exp = true; end
+        if isequal( ctyp, 'nonnegative' ), u_nneg = true; end
     end
     cones = cvx_pushcone( cones, cone.type, ndxs );
 end
@@ -337,7 +341,7 @@ while true,
             nnnv = nn * nv;
             ndxs = n + 1 : n + nnnv;
             rsv(ndxs) = 1; 
-            cones(k).indices = reshape(ndxs,nn,nv);
+            cones(k).indices = reshape(ndxs,nn,nv); %#ok
             n = n + nnnv;
         end
         ndxs = 1 : nnew;
@@ -350,53 +354,83 @@ while true,
 end
 
 %
-% STEP 4: Look for redundant slack variables.
+% Look for redundant slack variables.
 %
 
-slacks = false(nnew,1);
-for k = 1 : ncones,
-    slacks(cones(k).indices(cones(k).slacks>0,:)) = true;
+nfin = length(ndxs);
+ndxi = zeros(nnew,1);
+ndxi(ndxs) = 1 : nfin;
+if u_nneg,
+    slacks = false(nfin,1);
+    nneg = false(nfin,1);
 end
-slacks = slacks(ndxs);
-t_slack = bsxfun( @times, dbcA, slacks );
-t_slack = bsxfun( @times, t_slack, ( sum( t_slack ~= 0, 2 ) == 1 ) & ( t_slack(:,1) == 0 ) );
-if nnz( t_slack ),
-    c_slack = max(0,sum(t_slack>0,1)-1)-max(0,sum(t_slack<0,1)-1);
-    c_slack(1) = 0;
-    if nnz( c_slack ),
-        nneg = zeros(nnew,1);
-        if ncones > 1 && isequal( cones(1).type, 'nonnegative' ),
-            nneg(cones(1).indices) = 1;
-        end
-        nneg = nneg(ndxs);
-        [ rx, cx ] = find( max( 0, bsxfun( @times, nneg, bsxfun( @times, t_slack, c_slack ) ) ) );
-        if ~isempty( rx ),
-            dx = diff([0;find(diff(cx))]);
-            dx = cumsum(1+sparse(1,cumsum(dx)+1,-dx,1,length(cx)));
-            rx = rx(dx<=abs(c_slack(cx)));
-            Q(:,rx) = [];
-            dbcA(rx,:) = [];
-            ndxs(rx) = [];
+do_slack = false;
+for k = 1 : ncones,
+    temp = cones(k).indices;
+    temp = reshape(ndxi(temp),size(temp));
+    cones(k).indices = temp; %#ok
+    if u_nneg,
+        temp = temp(cones(k).slacks>0,:);
+        tmpv = (sum(dbcA(temp,:)~=0,2)==1) & (dbcA(temp,1)==0);
+        if any(tmpv),
+            slacks(temp) = tmpv;
+            if isequal(cones.type,'nonnegative'),
+                do_slack = true;
+                nneg(temp) = tmpv; 
+            end
         end
     end
 end
-    
+if do_slack,
+    t_slack = dbcA( slacks, : );
+    c_slack = max(0,sum(t_slack>0,1)-1)-max(0,sum(t_slack<0,1)-1);
+    if nnz( c_slack ) > ( c_slack(1) ~=0 ),
+        c_slack(1) = 0;
+        cndxs = c_slack ~= 0;
+        t_slack = dbcA(nneg,cndxs);
+        if nnz( t_slack ),
+            [ rx, cx ] = find( max( 0, bsxfun( @times, t_slack, c_slack(:,cndxs) ) ) );
+            if ~isempty( rx ),
+                rndxs = find(nneg);
+                cndxs = find(cndxs);
+                cx = cndxs(cx);
+                rx = rndxs(rx);
+                dx = diff([0;find(diff(cx))]);
+                dx = cumsum(1+sparse(1,cumsum(dx)+1,-dx,1,length(cx)));
+                rx = rx(dx<=abs(c_slack(cx)));
+                Q(:,rx) = [];
+                dbcA(rx,:) = [];
+                ndxi = ones(nfin,1);
+                ndxi(rx) = 0;
+                ndxi = cumsum(ndxi);
+                ndxi(rx) = 0;
+                cone2 = [];
+                for k = 1 : ncones,
+                    cone  = cones(k);
+                    ctype = cone.type;
+                    ndxs  = cone.indices;
+                    if isequal(ctype,'nonnegative'),
+                        ndxs = nonzeros(ndxi(ndxs))';
+                        if isempty(ndxs), continue; end
+                    end
+                    cone2 = cvx_pushcone( cone2, ctype, ndxs );
+                end
+                cones = cone2;
+            end
+        end
+    end
+end
+
 %
 % Move the cone indices to their new locations and transform
 %
 
-nfin = size(dbcA,1);
-ndxi = zeros(nnew,1);
-ndxi(ndxs) = 1 : length(ndxs);
 cone2 = []; Pr = []; Pc = []; Pv = [];
 for k = 1 : length(cones),
-    cone    = cones(k);
-    ctype   = cone.type;
-    ndxs    = cone.indices;
-    nn      = size(ndxs,1);
-    ndxs    = nonzeros(ndxi(ndxs));
-    nv      = numel(ndxs) / nn;
-    ndxs    = reshape( ndxs, nn, nv );
+    cone  = cones(k);
+    ctype = cone.type;
+    ndxs  = cone.indices;
+    [nn,nv] = size(ndxs);
     switch cone.type,
         case 'lorentz',
             if nn == 2 && config.preferLP,
@@ -481,8 +515,8 @@ for k = 1 : length(cones),
     end
     cone2 = cvx_pushcone( cone2, ctype, ndxs );
 end
-cones = cone2;
 if ~isempty(Pr),
+    cones = cone2;
     Pd = true(1,size(dbcA,1),1);
     Pd(Pr) = false;
     Pd = find(Pd);

@@ -1,4 +1,4 @@
-function v = cvx( v, b )
+function w = cvx( v, b )
 
 %CVX   The CVX disciplined convex programming system.
 %   CVX is a modeling framework for building, constructing, and solving
@@ -15,43 +15,51 @@ function v = cvx( v, b )
 %      cvx_where
 %   at the command prompt.
 
-switch nargin,
-    case 0,
-        s = [ 0, 1 ];
-        b = sparse( 1, 0 );
-    case 1,
-        if isa( v, 'cvx' ), 
-            return; 
-        end
-        s = size( v );
-        b = sparse( v(:)' );
-    case { 2, 3 },
-        switch numel( v ),
-            case 2,
-                s = v;
-            case 1,
-                s = [ v, 1 ];
-            case 0,
-                s = [ 0, 1 ];
-            otherwise,
-                s = v;
-                if s(end) == 1,
-                    s = s( 1 : max( 2, sum( find( s > 1, 1, 'last' ) ) ) );
-                end
-        end
-        ps = prod( s );
-        if isempty( b ),
-            b = sparse( 1, ps );
-        elseif size( b, 2 ) ~= ps,
-            error( 'CVX:Corrupt', 'Size/data mismatch.' );
-        else
-            b = sparse( b );
-        end
-end
 global cvx___
-id = cvx___.id + 1;
-cvx___.id = id;
-v = class( struct( 'size_', s, 'basis_', b, 'dual_', '', 'id_', id ), 'cvx' );
+switch nargin,
+    case 2,
+        w = cvx___.obj;
+        switch numel( v ),
+            case 2, 
+                w.size_ = v;
+            case 1, 
+                w.size_ = [ v, 1 ];
+            case 0,
+                % w.size_ = [ 0, 1 ];
+            otherwise,
+                if v(end) == 1,
+                    v = v(1:find(v>1,1,'last'));
+                    v(1,end+1:2) = 1; 
+                end
+                w.size_ = v;
+        end
+        if issparse( b )
+            w.basis_ = b;
+        elseif isempty( b )
+            w.basis_ = sparse( 1, prod( v ) );
+        else
+            w.basis_ = sparse( b );
+        end
+    case 1,
+        if isnumeric( v ),
+            w = cvx___.obj;
+            w.size_ = size( v );
+            if issparse( v ),
+                w.basis_ = reshape( v, 1, prod(s) );
+            else
+                w.basis_ = sparse( v(:)' );
+            end
+        elseif isa( v, 'cvx' ),
+            w = v;
+            return
+        else
+            w = class( v, 'cvx' );
+        end
+    case 0,
+        w = cvx___.obj;
+end
+w.id_ = cvx___.id + 1;
+cvx___.id = w.id_;
     
 % Copyright 2005-2014 CVX Research, Inc.
 % See the file LICENSE.txt for full copyright information.

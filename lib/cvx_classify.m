@@ -25,14 +25,7 @@ function v = cvx_classify( x )
 % 21 - ggp monomial (log convex)
 % 22 - invalid
 
-if isnumeric( x ),
-    v = full(sign(real(x(:)))+2);
-    if ~isreal( x ), v(imag(x)~=0) = 4; end
-    v(isnan(x)) = 22;
-    v = int8(v);
-else
-    v = int8(22);
-end
+v = cvx_classify_mex( x );
 
 % Copyright 2005-2014 CVX Research, Inc.
 % See the file LICENSE.txt for full copyright information.

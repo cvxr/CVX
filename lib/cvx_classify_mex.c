@@ -77,54 +77,80 @@ void mexFunction(
         )
 
 {
-    if ( !mxIsSparse( prhs[0] ) )
-        mexErrMsgTxt( "Requires a sparse argument" );
-    mwIndex n = mxGetN( prhs[0] );
-    plhs[0] = mxCreateNumericMatrix( n, (mwSize)1, mxINT8_CLASS, mxREAL );
-    if ( plhs[0] == 0 )
-        mexErrMsgTxt( "Unable to allocate output argument" );
-    mwIndex  mB   = mxGetNumberOfElements( prhs[1] );
-    const mwIndex* ir   = mxGetIr( prhs[0] );
-    const mwIndex* jc   = mxGetJc( prhs[0] );
-    const double*  pr   = mxGetPr( prhs[0] );
-    const double*  pi   = mxGetPi( prhs[0] );
-    const char*    vexs = (char*)mxGetData( prhs[1] );
-    char*    ans  = (char*)mxGetData( plhs[0] );
-    double   ival = 0;
-    for ( mwIndex c = 0 ; c != n ; ++c, ++jc ) {
-        int vex = 0;
-        for ( mwIndex m = jc[0], mEnd = jc[1] ; m != mEnd ; ++m ) {
-            double p = pr[m];
-            if ( p == 0 ) continue;
-            mwIndex r = ir[m];
-            int nvex = r >= mB ? 9 : vexs[r];
-            if ( isnan(p) )
-                nvex = 22;
-            else if ( isinf(p) ) {
-                if ( nvex == 3 ) ival += p;
-                else if ( nvex == 1 ) ival -= p;
-                else nvex = 22;
-            } else if ( p < 0 )
-                nvex = negmap[nvex];
-            vex = addmap[vex][nvex];
-            if ( vex == 22 ) break;
-        }
-        if ( pi != 0 && vex != 22 ) {
+    if ( nrhs == 2 ) {
+        if ( !mxIsSparse( prhs[0] ) )
+            mexErrMsgTxt( "Requires a sparse argument" );
+        mwIndex n = mxGetN( prhs[0] );
+        plhs[0] = mxCreateNumericMatrix( n, (mwSize)1, mxINT8_CLASS, mxREAL );
+        if ( plhs[0] == 0 )
+            mexErrMsgTxt( "Unable to allocate output argument" );
+        mwIndex  mB   = mxGetNumberOfElements( prhs[1] );
+        const mwIndex* ir   = mxGetIr( prhs[0] );
+        const mwIndex* jc   = mxGetJc( prhs[0] );
+        const double*  pr   = mxGetPr( prhs[0] );
+        const double*  pi   = mxGetPi( prhs[0] );
+        const char*    vexs = (char*)mxGetData( prhs[1] );
+        char*    ans  = (char*)mxGetData( plhs[0] );
+        double   ival = 0;
+        for ( mwIndex c = 0 ; c != n ; ++c, ++jc ) {
+            int vex = 0;
             for ( mwIndex m = jc[0], mEnd = jc[1] ; m != mEnd ; ++m ) {
-                double p = pi[m];
+                double p = pr[m];
                 if ( p == 0 ) continue;
-                if ( isnan(p) || isinf(p) ) { vex = 22; break; }
                 mwIndex r = ir[m];
-                int nvex = r >= mB ? 14 : cplxmap[(int)vexs[r]];
+                int nvex = r >= mB ? 9 : vexs[r];
+                if ( isnan(p) )
+                    nvex = 22;
+                else if ( isinf(p) ) {
+                    if ( nvex == 3 ) ival += p;
+                    else if ( nvex == 1 ) ival -= p;
+                    else nvex = 22;
+                } else if ( p < 0 )
+                    nvex = negmap[nvex];
                 vex = addmap[vex][nvex];
                 if ( vex == 22 ) break;
             }
+            if ( pi != 0 && vex != 22 ) {
+                for ( mwIndex m = jc[0], mEnd = jc[1] ; m != mEnd ; ++m ) {
+                    double p = pi[m];
+                    if ( p == 0 ) continue;
+                    if ( isnan(p) || isinf(p) ) { vex = 22; break; }
+                    mwIndex r = ir[m];
+                    int nvex = r >= mB ? 14 : cplxmap[(int)vexs[r]];
+                    vex = addmap[vex][nvex];
+                    if ( vex == 22 ) break;
+                }
+            }
+            if ( ival != 0 && vex != 22 ) {
+                if ( isnan(ival) ) vex = 22;
+                else vex = ival < 0 ? 1 : 3;
+                ival = 0;
+            }
+            ans[c] = vex ? vex : 2;
         }
-        if ( ival != 0 && vex != 22 ) {
-            if ( isnan(ival) ) vex = 22;
-            else vex = ival < 0 ? 1 : 3;
-            ival = 0;
+    } else {
+        mwIndex n = mxGetNumberOfElements( prhs[0] );
+        plhs[0] = mxCreateNumericMatrix( n, (mwSize)1, mxINT8_CLASS, mxREAL );
+        const double*  pr = mxGetPr( prhs[0] );
+        const double*  pi = mxGetPi( prhs[0] );
+        char* ans = (char*)mxGetData( plhs[0] );
+        if ( mxIsSparse( prhs[0] ) ) {
+            n = mxGetN( prhs[0] );
+            mwIndex m = mxGetM( prhs[0] );
+            const mwIndex* ir = mxGetIr( prhs[0] );
+            const mwIndex* jc = mxGetJc( prhs[0] );
+            for ( mwIndex c = 0 ; c != n ; ++c, ++jc, ans += m ) {
+                for ( mwIndex r = 0 ; r != m ; ++r )
+                    ans[r] = 2;
+                for ( mwIndex p = jc[0], pEnd = jc[1] ; p != pEnd ; ++p )
+                    ans[ir[p]] = pi && pi[p] ? 4 : ( pr[p] ? ( pr[p] < 0 ? 1 : 3 ) : 2 );
+            }
+        } else if ( pi ) {
+            for ( mwIndex m = 0 ; m != n ; ++m )
+                ans[m] = pi[m] ? 4 : ( pr[m] ? ( pr[m] < 0 ? 1 : 3 ) : 2 );
+        } else {
+            for ( mwIndex m = 0 ; m != n ; ++m )
+                ans[m] = pr[m] ? ( pr[m] < 0 ? 1 : 3 ) : 2;
         }
-        ans[c] = vex ? vex : 2;
     }
 }

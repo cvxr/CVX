@@ -53,6 +53,7 @@ cvx___.n_equality  = 0;
 cvx___.x           = zeros( 0, 1 );
 cvx___.y           = zeros( 0, 1 );
 cvx___.id          = 0;
+cvx___.obj         = cvx( struct( 'size_', [0,1], 'basis_', sparse(1,0), 'dual_', '', 'id_', 0 ) );
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Run each shim to connect/reconnect the solvers %

@@ -58,8 +58,11 @@ x = reshape( x, sx );
 if isempty( p.map ),
     mu = 1;
 else
-    map = reshape( p.map( :, cvx_classify( x ) ), [], sx(1), sx(2) );
-    [ mmm, map ] = max( all( map, xdim + 1 ), [], 1 );
+    map = cvx_classify( x );
+    map = p.map( :, map );
+    map = reshape( map, [], sx(1), sx(2) );
+    map = all( map, xdim + 1 );
+    [ mmm, map ] = max( map, [], 1 );
     if ~all( mmm ),
         mu = 0;
     elseif length( mmm ) ~= 1,

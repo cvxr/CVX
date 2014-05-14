@@ -1,7 +1,12 @@
 function [ z, id ] = cvx_push( name, depth, varargin )
 
 global cvx___
-cvx_global
+try
+    np = length( cvx___.problems );
+catch
+    cvx_global
+    np = 0;
+end
 
 %
 % Clear out any old problems left at this depth. These will be here due to
@@ -9,11 +14,10 @@ cvx_global
 % start over when constructing a model
 %
 
-id = cvx___.id + 1;
-cvx___.id = id;
-if ~isempty( cvx___.problems ) && cvx___.problems(end).depth >= depth,
+if np && cvx___.problems(np).depth >= depth,
     ndx = find( [ cvx___.problems.depth ] >= depth, 1, 'first' );
-    cvx_pop( ndx, false );
+    cvx_pop( ndx, cvx___.problems(ndx).id );
+    np = ndx - 1;
 end
 
 %
@@ -40,6 +44,7 @@ end
 % Construct the object
 %
 
+id = cvx___.id + 1;
 temp = struct( ...
     'name',          name,   ...
     'complete',      true,   ...
@@ -111,14 +116,15 @@ end
 % Add the problem to the stack
 %
 
-if isempty( cvx___.problems ),
+cvx___.id = id;
+if np,
+    z = np + 1;
+    cvx___.problems( z ) = temp;
+else
     cvx___.problems = temp;
     cvx_setpath(1);
-else
-    cvx___.problems( end + 1 ) = temp;
+    z = 1;
 end
-
-z = length( cvx___.problems );
 
 % Copyright 2005-2014 CVX Research, Inc.
 % See the file LICENSE.txt for full copyright information.

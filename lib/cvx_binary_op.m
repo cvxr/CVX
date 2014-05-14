@@ -83,13 +83,15 @@ else
 end
 
 if vu(1) ~= 0,
-    oz = isempty( p.constant ) || isa( x, 'cvx' ) || isa( y, 'cvx' );
     if length( vu ) == 1,
         % Homogenous input (single compute mode)
         if any( vu == p.constant ),
             x = cvx_constant( x );
             y = cvx_constant( y );
-        end
+            oz = isa( x, 'cvx' ) || isa( y, 'cvx' );
+        else
+            oz = false;
+        end  
         z = p.funcs{vu(1)}( vec(x), vec(y), varargin{:} );
         % Post-op check, if necessary
         if isempty( p.map ),
@@ -105,8 +107,11 @@ if vu(1) ~= 0,
         end
     else
         % Heterogeneous input (multiple compute modes)
-        if oz, z = cvx( sz, [] );
-        else z = zeros( sz ); end
+        if isa( x, 'cvx' ) || isa( y, 'cvx' ),
+            z = cvx( sz, [] );
+        else
+            z = zeros( sz );
+        end
         if xs, xt = x; end
         if ys, yt = y; end
         for vk = vu,
