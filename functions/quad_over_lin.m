@@ -40,7 +40,7 @@ end
 % Perform calculation
 %
 
-z = sum_square( x, dim );
+z = sum_square_abs( x, dim );
 if length( y ) ~= 1 && ~isequal( size( z ), size( y ) ),
     error( 'Input size mismatch.' );
 end
