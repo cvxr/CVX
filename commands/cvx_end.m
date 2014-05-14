@@ -7,6 +7,7 @@ function cvx_end
 %   results, and replace references to cvx variables with numeric values.
 
 global cvx___
+tstart = tic;
 prob = evalin( 'caller', 'cvx_problem', '[]' );
 if ~isa( prob, 'cvxprob' ),
     error( 'No CVX model exists in this scope.' );
@@ -120,6 +121,7 @@ elseif pstr.complete && nnz( pstr.t_variable ) == 1,
     assignin( 'caller', 'cvx_optbnd',  pstr.bound );
     assignin( 'caller', 'cvx_slvitr',  pstr.iters );
     assignin( 'caller', 'cvx_slvtol',  pstr.tol );
+    assignin( 'caller', 'cvx_cputime', cputime - pstr.cputime );
     
     %
     % Compute the numerical values and clear out
@@ -245,9 +247,10 @@ else
 
 end
 
-assignin( 'caller', 'cvx_cputime', cputime - pstr.cputime );
-    
-if isempty( cvx___.problems ) && cvx___.profile,
+if isempty( cvx___.problems ),
+    tfin = tic;
+    cvx___.timers(2) = cvx___.timers(2) + ( tfin - pstr.tictime );
+    cvx___.timers(3) = cvx___.timers(3) + ( tfin - tstart );
     profile off;
 end
 

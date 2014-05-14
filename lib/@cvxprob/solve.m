@@ -119,6 +119,7 @@ elseif n ~= 0 && ~infeas && ( any( b ) || any( c ) ),
         end
     end
     if cvx___.profile, profile off; end
+    tstart = tic;
     if need_iter,
         
         %
@@ -430,6 +431,7 @@ elseif n ~= 0 && ~infeas && ( any( b ) || any( c ) ),
             status = 'Error';
         end
     end
+    cvx___.timers(4) = cvx___.timers(4) + ( tic - tstart );
     if cvx___.profile, 
         profile resume; 
     end
