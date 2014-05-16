@@ -1,39 +1,26 @@
-function varargout = cvx_get_dimlist( args, varargin )
-opts = struct( 'default', [], 'nd', true );
-if nargin > 2,
-    for k = 1 : 2 : nargin - 2,
-        opts.(varargin{k}) = varargin{k+1};
-    end
-end
-if iscell( args ),
-    narg = length( args );
-    if narg < 1,
-        if isempty( opts.default ),
-            error( 'CVX:ArgError', 'Not enough input arguments.' );
-        end
-        sx = [];
-    else
+function varargout = cvx_get_dimlist( args )
+if isempty( args ),
+	sx = [1,1];
+else
+    if iscell( args ),
         sx = args{1};
+    else
+        sx = args;
     end
-else
-    sx = args;
-end
-if isempty( sx ),
-    sx = opts.default;
-    if isempty( sx ),
-        error( 'CVX:ArgError', 'Size argument must be a vector of nonnegative integers.' );
+    nx = numel(sx);
+    if ~( isnumeric(sx) && nx==size(sx,2) && isreal(sx) && all(sx>=0) && all(sx==floor(sx)) ),
+        error( 'CVX:ArgError', 'Size argument must be a row vector of nonnegative integers.' );
     end
-elseif ~( isnumeric(sx) && numel(sx)==length(sx) && isreal(sx) && all(sx>=0) && all(sx==floor(sx)) ),
-    error( 'CVX:ArgError', 'Size argument must be a vector of nonnegative integers.' );
-end
-if length( sx ) > 2,
-    n = max( [2,find( sx > 1, 1, 'last' )]);
-    sx(n+1:end) = [];
-    if ~opts.nd && length( sx ) > 2,
-        error( 'CVX:ArgError', 'N-D arrays are not supported.' );
+    switch nx,
+    case 2,
+    case 1,
+        sx = [ sx ,1 ];
+    otherwise,
+        if sx(end) == 1,
+            nx = max([2,find(sx~=1,1,'last')]);
+            sx = sx(1:nx);
+        end
     end
-else
-    sx(end+1:2) = 1;
 end
 if iscell( args ),
     args{1} = sx;
@@ -44,4 +31,3 @@ if nargout > length(args),
     args{nargout} = []; 
 end
 varargout = args;
-

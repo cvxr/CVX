@@ -5,8 +5,8 @@ global cvx___
 sx = size( x );
 sy = size( y );
 if ~isempty( p.map ),
-    vx = reshape( cvx_classify( x ), sx );
-    vy = reshape( cvx_classify( y ), sy );
+    vx = cvx_classify( x );
+    vy = cvx_classify( y );
 end
 
 % Determine if sizes are compatible or broadcastable
@@ -45,6 +45,8 @@ else
     ty = sy == 1; by( ty ) = sx( ty );
     x = repmat( x, bx );
     y = repmat( y, by );
+    vx = repmat( reshape( vx, sx ), bx );
+    vy = repmat( reshape( vy, sy ), by );
     sz = size( x );
     xs = false;
     ys = false;
@@ -76,7 +78,7 @@ end
 if sdp_mode || isempty( p.map ),
     vu = 1;
 else
-    vz = bsxfun( @plus, int32(vx), size(p.map,1) * int32(vy-1) );
+    vz = int32(vx) + size(p.map,1) * int32(vy-1);
     vz = p.map( vz );
     vu = sort( vz(:)' ); %#ok
     vu = vu( [ true, diff(vu) ~= 0 ] );

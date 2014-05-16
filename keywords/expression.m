@@ -58,9 +58,9 @@ else
     try
         x.size = evalin( 'caller', [ '[', x.size(2:end-1), '];' ] );
     catch exc
-        error( exc.identifier, exc.message );
+        throw( exc );
     end
-    x.size = cvx_get_dimlist( { x.size } );
+    x.size = cvx_get_dimlist( x.size );
 end
 
 %

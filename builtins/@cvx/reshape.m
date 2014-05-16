@@ -3,15 +3,20 @@ function x = reshape( x, varargin )
 %   Disciplined convex/geometric programming information for RESHAPE:
 %       RESHAPE imposes no convexity restrictions on its arguments.
 
+sx = x.size_;
 switch nargin,
+case 2,
+    sz = varargin{1};
+    if isequal( sx, sz ), return; end
+    fnan = 0;
+    nel = numel(sz);
+    if ~( isnumeric(sz) && size(sz,2) == nel && all(sz>=0) && all(sz==floor(sz)) )
+        error( 'CVX:ArgError', 'Size argument must be a row vector with integer elements.' );
+    elseif nel < 2,
+        error( 'CVX:ArgError', 'Size vector must have at least two elements.' );
+    end
 case {0,1},
     error( 'CVX:ArgError', 'Not enough input arguments.' );
-case 2,
-    fnan = 0;
-    sz = varargin{1};
-    if ~( isnumeric(sz) && numel(sz) == length(sz) && all(sz>=0) && all(sz==floor(sz)) )
-        error( 'CVX:ArgError', 'Size argument must be a vector of nonnegative integers.' );
-    end
 otherwise,
     nel = nargin - 1;
     sz = zeros( 1, nel );
@@ -30,23 +35,21 @@ otherwise,
             error( 'CVX:ArgError', 'Size arguments must be nonnegative integers.' );
         end
     end
+    if isequal( sx, sz ), return; end
 end
-
-sx = x.size_;
 px = prod(sx);
-if fnan,
-    s = px / prod(sz);
-    if isnan(s) || s ~= floor(s),
+pz = prod(sz);
+if fnan
+    if rem( px, pz ) ~= 0,
         error( 'Product of known dimensions, %d, not divisible into total number of elements, %d.', prod(sz), prod(sx) );
     end
-    sz(fnan) = s;
-end
-if isequal( sx, sz ),
-    return;
-elseif px ~= prod( sz ),
+    sz(fnan) = px / pz;
+elseif px ~= pz
     error( 'To RESHAPE the number of elements must not change.' );
+elseif nel > 2 && sz(nel) == 1
+    nel = max([2,find(sz~=1,1,'last')]);
+    sz = sz(1:nel);
 end
-
 x = cvx( sz, x.basis_ );
 
 % Copyright 2005-2014 CVX Research, Inc.

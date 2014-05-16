@@ -18,7 +18,7 @@ function set = exponential( varargin )
 %   satisfy EXP_P(X,Y) <= Z. If SX is empty, then SX=[1,1] is assumed.
 
 cvx_expert_check( 'exponential' );
-[ sx, gp ] = cvx_get_dimlist( varargin, 'default', [1,1] ); %#ok
+[ sx, gp ] = cvx_get_dimlist( varargin ); %#ok
 gp = ~isempty(gp) && gp;
 if gp,
     cvx_begin gp set

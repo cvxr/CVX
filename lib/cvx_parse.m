@@ -22,7 +22,7 @@ try
         end
         tok = tok{1};
         nam = tok{1};
-        if nvars < 0 || k <= nvars,
+        if length(cvx___.problems) > 1 && ( nvars < 0 || k <= nvars ),
             if ~isvarname( nam ),
                 error( 'CVX:Variable', 'Invalid variable name: %s', nam );
             elseif nam(end) == '_',
@@ -34,7 +34,7 @@ try
                     error( 'CVX:Variable', 'Invalid variable name: %s\n   This is a reserved word in CVX.', nam );
                 end
             end
-            switch evalin('caller',['exist(''',nam,''')']),
+            switch exist( nam ), %#ok
                 case {0,1},
                 case 5,
                     error( 'CVX:Variable', 'Variable name "%s" is the name of a built-in MATLAB function.\nPlease choose a different name.', nam );
@@ -60,7 +60,7 @@ try
             try
                 if k <= nvars,
                     arg = evalin( 'caller', [ '[', tok{2}(2:end-1), ']' ] );
-                    arg = cvx_get_dimlist( arg, 'default', [1,1] );
+                    arg = cvx_get_dimlist( arg );
                 else
                     arg = evalin( 'caller', [ '{', tok{2}(2:end-1), '}' ] );
                 end
