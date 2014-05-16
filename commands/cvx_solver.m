@@ -52,8 +52,9 @@ if nargin,
         cvx___.solvers.selected = snumber;
     elseif ~isa( evalin( 'caller', 'cvx_problem', '[]' ), 'cvxprob' ),
         error( 'The global CVX solver selection cannot be changed while a model is being constructed.' );
-    else
-        cvx___.problems(end).solver.index = snumber;
+    elseif cvx___.problems(end).solver ~= snumber,
+        cvx___.problems(end).solver = snumber;
+        cvx___.problems(end).settings = cvx___.solvers.list.settings;
     end
     if cvx___.solvers.active,
         cvx_setspath;
@@ -64,7 +65,7 @@ elseif nargout == 0,
     statvec = [ 0, solvers.map.default, solvers.active ];
     statstr = { 'selected', 'default', 'active' };
     if ~isempty( cvx___.problems ),
-        statvec(1) = cvx___.problems(end).solver.index;
+        statvec(1) = cvx___.problems(end).solver;
     else
         statvec(1) = solvers.selected;
     end

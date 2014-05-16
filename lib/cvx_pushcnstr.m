@@ -124,6 +124,7 @@ end
 % Handle LMIs
 %
 
+zR = [];
 sz = size( z );
 zr = isreal( z );
 if sdp_mode,
@@ -164,6 +165,9 @@ if sdp_mode,
     z(size(zz,1),:) = 0;
     z = z - zz;
     iseq = true;
+    if ~dg,
+        [ zR, z ] = cvx_bcompress( z, 'full' );
+    end
 else
     iseq = op(1) == '=';
     z = cvx_basis( z );
@@ -177,6 +181,7 @@ need_dual = ~isempty( dx );
 zD = cvx_newcnstr( z, iseq, need_dual );
 if need_dual
     if isempty( cvx_getdual( z ) ),
+        if ~isempty( zR ), zD = zD * cvx_invert_structure( zR ); end
         pstr.duals = builtin( 'subsasgn', pstr.duals, dx, cvx( sz, zD ) );
         cvx___.problems( end ) = pstr;
     else

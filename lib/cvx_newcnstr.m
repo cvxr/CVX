@@ -9,13 +9,12 @@ end
 if isa( zb, 'cvx' ),
     zb = cvx_basis( zb );
 end
-if iseq,
-    cmode = 'full';
-else
-    cmode = 'magnitude';
+[nN,mN] = size( zb );
+isr = isreal( zb );
+if ~isr,
+    mN = 2 * mN;
+    zb = reshape( [ real(zb) ; imag(zb) ], nN, mN );
 end
-[ zR, zb ] = cvx_bcompress( zb, cmode );
-mN = size( zb, 2 );
 if ~iseq,
     ndim = cvx_pushnneg( mN );
     zb(ndim(end),1) = 0;
@@ -29,15 +28,13 @@ cp = pstr.checkpoint(4);
 if cp > 1,
     x = find( any( zb, 2 ), 2, 'first' );
     if any( x > 1 & x <= cp ),
-        pstr.checkpoint(4) = x(1+(x(1)==1)) - 1;
-        pstr.complete = false;
-        cvx___.problems(end) = pstr;
+        cvx___.problems(end).checkpoint(4) = x(1+(x(1)==1)) - 1;
     end
 end
 if nargout
     if nargin == 3 && need_dual
-        zD = cvx_invert_structure( zR )';
-        zD = sparse( mO + 1 : mO + mN, 1 : mN, 1 ) * zD;
+        zD = sparse( mO + 1 : mO + mN, 1 : mN, 1 );
+        if ~isr, zD = zD(:,1:2:end) + 1j * zD(:,2:2:end); end
     else
         zD = [];
     end

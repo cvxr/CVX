@@ -38,8 +38,13 @@ function cvx_begin( varargin )
 %   ignored for sets and incomplete specifications.
 
 try
+    st = dbstack;
+    depth = length( st );
+    if depth < 2, name = '';
+    else name = st(2).name; end
     evalin( 'caller', 'cvx_cleanup( true )' );
-    assignin( 'caller', 'cvx_problem', cvxprob( varargin{:} ) );
+    cvx_push( name, depth, varargin );
+    assignin( 'caller', 'cvx_problem', cvxprob );
 catch exc
     if strncmp( exc.identifier, 'CVX:', 4 ), throw( exc );
     else rethrow( exc ); end

@@ -3,11 +3,11 @@ function cvx_finish
 global cvx___
 try
     p = length(cvx___.problems);
-    if p == 1, tstart = tic; end
-    pstr = cvx___.problems(p);
 catch
     error( 'CVX:NoModel', 'No CVX model is present.' );
 end
+if p == 1, tstart = tic; end
+pstr = cvx___.problems(p);
 
 if length(cvx___.classes) == pstr.checkpoint(1) && ...
    length(cvx___.equalities) == pstr.checkpoint(2) && ...
@@ -16,12 +16,11 @@ if length(cvx___.classes) == pstr.checkpoint(1) && ...
     
     warning( 'CVX:EmptyModel', 'Empty CVX model; no action taken.' );
 
-elseif pstr.complete,
+elseif pstr.checkpoint(4) >= pstr.checkpoint(1) && ~isnan( pstr.direction ),
 
     %
     % Check the integrity of the variables
     %
-
     vars = pstr.variables;
     if isempty( vars ),
         fn1 = cell( 0, 1 );
@@ -45,29 +44,23 @@ elseif pstr.complete,
     end
     fn1 = [ fn1 ; fn2 ];
     i1  = cellfun( @cvx_id, [ vv1 ; vv2 ] )';
-    i2  = evalin( 'caller', [ 'cellfun( @cvx_id, {', sprintf( '%s ', fn1{:} ), '} )' ] );
+    try
+        i2 = evalin( 'caller', [ '{', sprintf('%s,',fn1{:}), '}' ] );
+    catch
+        i2 = cellfun( @(x)evalin('caller',x,'[]'), fn1, 'UniformOutput', false );
+    end
+    i2 = cellfun( @cvx_id, i2 );
     if any( i1 ~= i2 ),
         temp = sprintf( ' %s', fn1{ i1 ~= i2 } );
         error( 'CVX:CorruptModel', 'The following cvx variable(s) have been cleared or overwritten:\n  %s\nThis is often an indication that an equality constraint was\nwritten with one equals ''='' instead of two ''==''. The model\nmust be rewritten before CVX can solve it.', temp );
     end
-
-    cvx_solve;
-    pstr = cvx___.problems(p);
+    [ status, result, bound, iters, tol ] = cvx_solve;
     if p == 1, pstr.tictime(2) = tstart; end
-
-    if numel( pstr.objective ) > 1 && ~isempty( pstr.result ),
-        if strfind( pstr.status, 'Solved' ),
-            pstr.result = value( pstr.objective );
-        else
-            pstr.result = pstr.result * ones(size(pstr.objective));
-        end
-    end
-
-    assignin( 'caller', 'cvx_status',  pstr.status );
-    assignin( 'caller', 'cvx_optval',  pstr.result );
-    assignin( 'caller', 'cvx_optbnd',  pstr.bound );
-    assignin( 'caller', 'cvx_slvitr',  pstr.iters );
-    assignin( 'caller', 'cvx_slvtol',  pstr.tol );
+    assignin( 'caller', 'cvx_optval', result );
+    assignin( 'caller', 'cvx_status', status );
+    assignin( 'caller', 'cvx_bound',  bound );
+    assignin( 'caller', 'cvx_slvitr', iters );
+    assignin( 'caller', 'cvx_slvtol', tol );
     assignin( 'caller', 'cvx_cputime', cputime - pstr.cputime );
 
 elseif p < 2,
@@ -79,13 +72,9 @@ else
 
     np = p - 1;
     nstr = cvx___.problems(np);
-    if nstr.gp ~= pstr.gp,
-        error( 'CVX:MixedGP', 'Cannot embed a convex model into a geometric model, nor vice versa.' );
-    end
     cp = pstr.checkpoint(4);
     if nstr.checkpoint(4) > cp
         cvx___.problems(np).checkpoint(4) = cp;
-        cvx___.problems(np).complete = false;
     end
     vars = cvx_collapse( pstr.variables, true, false );
     dvars = cvx_collapse( pstr.duals, true, false );
@@ -118,15 +107,17 @@ else
         if isempty(mapsgn),
             mapsgn = ( cvx_remap( 'positive', 'p_nonconst' ) - cvx_remap( 'negative', 'n_nonconst' ) )';
         end    
-        os = 1 - 2 * strcmp( pstr.direction, 'maximize' );
         [ r, c ] = find( cvx_basis( x ) ); %#ok
-        if pstr.geometric,
+        os = pstr.direction;
+        isgeo = abs(os) > 1;
+        if isgeo,
+            os = os * 0.5;
             r = cvx___.logarithm( r, : );
         end
         cx = cvx___.classes( r, : );
         cx = int8( 9 + mapsgn(cx) + os * ( 3 + ( cx == 2 ) ) );
         cvx___.classes( r, : ) = cx;
-        if pstr.geometric,
+        if isgeo,
             cvx_pushexp( r, true );
         end
         assignin( 'caller', 'cvx_optval', x );

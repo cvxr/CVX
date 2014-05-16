@@ -359,32 +359,30 @@ catch errmsg
 end
 if ~isempty( outp ),
     try
-        cvx___.expert = outp.expert;
-        cvx___.precision = outp.precision;
-        cvx___.precflag = outp.precflag;
-        cvx___.rat_growth = outp.rat_growth;
-        cvx___.path = outp.path;
-        cvx___.solvers = outp.solvers;
-        cvx___.license = outp.license;
-        if isfield( outp, 'broadcast' ),
-            cvx___.broadcast = outp.broadcast;
-        else
-            cvx___.broadcast = cvx___.isoctave;
-        end
+        cvx___.path       = outp.path;
+        cvx___.license    = outp.license;
+        cvx___.solvers    = outp.solvers;
+        cvx___.broadcast  = outp.broadcast;
+        cvx___.expert     = outp.expert;
+        cvx___.precision  = outp.precision;
+        cvx___.precflag   = outp.precflag;
+        cvx___.quiet      = outp.quiet;
+        cvx___.profile    = outp.profile;
     catch
         outp = [];
         errmsg = 'Your CVX preferences file seems out of date; default preferences will be used.';
     end
 end
 if isempty( outp ),
-    cvx___.expert = false;
-    cvx___.precision = [eps^0.5,eps^0.5,eps^0.25];
-    cvx___.precflag = 'default';
-    cvx___.rat_growth = 10;
-    cvx___.broadcast = cvx___.isoctave;
-    cvx___.path = [];
-    cvx___.solvers = [];
-    cvx___.license = [];
+    cvx___.expert     = false;
+    cvx___.precision  = [eps^0.5,eps^0.5,eps^0.25];
+    cvx___.precflag   = 'default';
+    cvx___.broadcast  = cvx___.isoctave;
+    cvx___.quiet      = false;
+    cvx___.profile    = false;
+    cvx___.path       = [];
+    cvx___.solvers    = [];
+    cvx___.license    = [];
 end
 cvx___.pfile = pfile;
 if verbose,

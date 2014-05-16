@@ -28,7 +28,7 @@ ARRAY_GEOMETRY = '2D_RANDOM';
 % ARRAY_GEOMETRY = '2D_UNIFORM_LATTICE';
 
 % select if the optimal array pattern should enforce nulls or not
-HAS_NULLS = 1; % HAS_NULLS = 1;
+HAS_NULLS = 0; % HAS_NULLS = 1;
 
 %********************************************************************
 % problem specs

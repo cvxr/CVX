@@ -61,7 +61,7 @@ z = min( y, M );
 y = t .* ( y + ( y - z ).^2 ./ (2*M) );
 
 function cvx_optval = berhu_pos_nc( x, t, M ) %#ok
-cvx_begin separable
+cvx_begin
     variable v( sz ) nonnegative
     variable w( sz ) nonnegative
     minimize( quad_over_lin( w, t, 0 ) ./ ( 2 * M ) + w + v )

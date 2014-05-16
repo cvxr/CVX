@@ -11,25 +11,30 @@ end
 % EXTRACTION %
 %%%%%%%%%%%%%%
 
-dbcA = pstr.objective;
-if pstr.geometric,
-    dbcA = log( dbcA );
-end
-if numel( dbcA ) > 1,
-    dbcA = cvx( [1,1], sum( cvx_basis( dbcA ), 2 ) );
-end
 nold = length( cvx___.classes );
+dbcA = pstr.objective;
 if isempty( dbcA ),
-    dir = 1;
-    dbcA = cvx( [ 1, 1 ], [] );
-elseif strcmp( pstr.direction, 'minimize' ) || strcmp( pstr.direction, 'epigraph' ),
-    dbcA = -dbcA;
+    dbcA = sparse( nold, 1 );
     dir = 1;
 else
-    dir = -1;
+    if abs( pstr.direction ) > 1,
+        dbcA = log( dbcA );
+    end
+    if numel( dbcA ) > 1,
+        dbcA = cvx( [1,1], sum( cvx_basis( dbcA ), 2 ) );
+    end
+    if isempty( dbcA ),
+        dir = 1;
+        dbcA = cvx( [ 1, 1 ], [] );
+    elseif pstr.direction > 0,
+        dbcA = -dbcA;
+        dir = 1;
+    else
+        dir = -1;
+    end
+    dbcA = cvx_basis( dbcA );
+    dbcA( end + 1 : nold, : ) = 0;
 end
-dbcA = cvx_basis( dbcA );
-dbcA( end + 1 : nold, : ) = 0;
 
 % Equality constraints
 AA = cvx___.equalities;
@@ -231,6 +236,7 @@ P = sparse( [ 1, npre + 2 : mold ], 1 : mold - npre, 1, mold, mnew );
 ndxs  = [ ndxs ; ( nold + 1 : nold + nadd )' ];
 rsv   = [ rsv  ; ones( nadd, 1 ) ];
 ineqs = zeros( 1, mnew );
+ineqs(1) = 1;
 if config.dualize,
     ineqs(end-nrsv+1:end) = 1;
 end
@@ -238,80 +244,68 @@ if isempty( dbcA ),
     return;
 end
 
+%
+% STEP 1: Look for columns which differ only by a constant factor.
+% These correspond to redundant equality constraints. These occur
+% often enough as as consequence of our tranformation method, and
+% they cause problems in solvers, so we must eliminate them. Of
+% course, if there are more complex linear dependencies in the
+% equality constraints, we can't do anything about that.
+%
+mcur = size(dbcA,2);
+[ endx, scls ] = cvx_bcompress_mex( dbcA, 0, 1, mcur-nrsv );
+if ~all( diff( endx ) == 1 ),
+    mndx = 1 : mcur;
+    t2 = endx == mndx;
+    xR = sparse( endx, mndx, scls );
+    t2 = t2 & scls;
+    xR = xR(t2,:);
+    P = P * cvx_invert_structure( xR )';
+    dbcA = dbcA(:,t2);
+    ineqs = ineqs(t2);
+end
+
 dualized = false;
 while true,
-    
-    last_success = 1;
+    %
+    % STEP 2: Look for variables that we can eliminate without
+    % increasing fill-in. This means looking for rows or columns
+    % with only 1, 2, or (in some cases) 3 nonzeros.
+    %
     while true,
+        [ rows, cols ] = cvx_eliminate_mex( dbcA, 1, rsv, ineqs );
+        if ~any( rows ), break; end
+        rows = rows ~= 0;
+        cols = cols ~= 0;
+        rowX = ~rows;
+        colX = ~cols;
         %
-        % STEP 1: Look for columns which differ only by a constant factor.
-        % These correspond to redundant equality constraints. These occur
-        % often enough as as consequence of our tranformation method, and
-        % they cause problems in solvers, so we must eliminate them. Of
-        % course, if there are more complex linear dependencies in the
-        % equality constraints, we can't do anything about that.
+        % [ x1^T x2^T ] [ C1 A11 A12 ] [ 1  ]
+        %               [ C2 A21 A22 ] [ y1 ] = 0
+        %                              [ y2 ]
         %
-        mcur = size(dbcA,2);
-        [ endx, scls ] = cvx_bcompress_mex( dbcA, 0, 1, mcur-nrsv );
-        if ~all( diff( endx ) == 1 ),
-            last_success = 1;
-            mndx = 1 : mcur;
-            t2 = endx == mndx;
-            xR = sparse( endx, mndx, scls );
-            xR = xR(t2,:);
-            P = P * cvx_invert_structure( xR );
-            dbcA = dbcA(:,t2);
-            ineqs = ineqs(t2);
-        elseif last_success == 2,
-            break;
+        % [ x1^T x2^T ] = x1^T [ I -A12*A22i ]
+        %
+        % [ G Y1^T Y2^T ] = [ G Y1^T ] [ I  0  -C2'*A22i'  ]
+        %                              [ 0  I  -A21'*A22i' ]
+        %
+        A11  = dbcA( rowX, colX );
+        A12  = dbcA( rowX, cols );
+        A21  = dbcA( rows, colX );
+        A22  = dbcA( rows, cols );
+        if ( size( A22, 1 ) ~= size( A22, 2 ) || nnz( A22 ) ~= size( A22, 1 ) ),
+            error( 'There seems to be an error in the CVX presolver routine.\nPlease report this to the authors; and if possible, include the\ncvx model and data that gave you this error.', 1 ); %#ok
         end
-        %
-        % STEP 2: Look for variables that we can eliminate without
-        % increasing fill-in. This means looking for rows or columns
-        % with only 1, 2, or (in some cases) 3 nonzeros.
-        %
-        success = false;
-        while true,
-            [ rows, cols ] = cvx_eliminate_mex( dbcA, 1, rsv, ineqs );
-            if ~any( rows ), break; end
-            success = true;
-            rows = rows ~= 0;
-            cols = cols ~= 0;
-            rowX = ~rows;
-            colX = ~cols;
-            %
-            % [ x1^T x2^T ] [ C1 A11 A12 ] [ 1  ]
-            %               [ C2 A21 A22 ] [ y1 ] = 0
-            %                              [ y2 ]
-            %
-            % [ x1^T x2^T ] = x1^T [ I -A12*A22i ]
-            %
-            % [ G Y1^T Y2^T ] = [ G Y1^T ] [ I  0  -C2'*A22i'  ]
-            %                              [ 0  I  -A21'*A22i' ]
-            %
-            A11  = dbcA( rowX, colX );
-            A12  = dbcA( rowX, cols );
-            A21  = dbcA( rows, colX );
-            A22  = dbcA( rows, cols );
-            if ( size( A22, 1 ) ~= size( A22, 2 ) || nnz( A22 ) ~= size( A22, 1 ) ),
-                error( 'There seems to be an error in the CVX presolver routine.\nPlease report this to the authors; and if possible, include the\ncvx model and data that gave you this error.', 1 ); %#ok
-            end
-            [ ii, jj, vv ] = find( A22 );
-            A22i  = sparse( jj, ii, 1.0 ./ vv );
-            temp  = - A22i * A21;
-            P     = P( :, colX ) + P( :, cols ) * temp;
-            temp  = - A12 * A22i;
-            Q     = Q( :, rowX ) + Q( :, rows ) * temp';
-            dbcA  = A11 + temp * A21;
-            rsv   = rsv( rowX );
-            ndxs  = ndxs( rowX );
-            ineqs = ineqs( colX );
-        end
-        if success,
-            last_success = 2;
-        elseif last_success == 1,
-            break;
-        end
+        [ ii, jj, vv ] = find( A22 );
+        A22i  = sparse( jj, ii, 1.0 ./ vv );
+        temp  = - A22i * A21;
+        P     = P( :, colX ) + P( :, cols ) * temp;
+        temp  = - A12 * A22i;
+        Q     = Q( :, rowX ) + Q( :, rows ) * temp';
+        dbcA  = A11 + temp * A21;
+        rsv   = rsv( rowX );
+        ndxs  = ndxs( rowX );
+        ineqs = ineqs( colX );
     end
     %
     % STEP 3: Check to see if dualization will result in a smaller problem.
@@ -327,34 +321,39 @@ while true,
         break
     end
     rsv(2:end) = 0;
+    [ ncur, mcur ] = size(dbcA);
     [ rows, cols ] = cvx_eliminate_mex( dbcA, 1, rsv, ineqs ); %#ok
-    if size(dbcA,2) - nrsv > size(dbcA,1) - nnz(rows),
+    if mcur - nrsv > ncur - nnz(rows),
         dbcA = -dbcA';
         dir  = -dir;
         tmp  = Q; Q = P; P = tmp;
-        nnew = size(dbcA,1);
+        tmp  = ineqs; ineqs = rsv; rsv = tmp;
+        nnew = mcur;
         dualized = true;
         n = nnew - nrsv;
-        rsv = zeros(n,1); rsv(1) = 1;
         for k = 1 : length(cones),
             [nn,nv] = size(cones(k).indices);
             nnnv = nn * nv;
             ndxs = n + 1 : n + nnnv;
-            rsv(ndxs) = 1; 
             cones(k).indices = reshape(ndxs,nn,nv); %#ok
             n = n + nnnv;
         end
         ndxs = 1 : nnew;
     else
-        dbcA = dbcA(:,1:end-nrsv);
-        P = P(:,1:end-nrsv);
+        dbcA = dbcA(:,1:mcur-nrsv);
+        P = P(:,1:mcur-nrsv);
         break;
     end
-    
 end
 
 %
-% Look for redundant slack variables.
+% STEP 4: Look for redundant slack variables. Look for situations like
+%   minimize ( ... + x )
+%   s.t. x >= 0
+% or situations like
+%   a' * x + s1 + s2 <= b
+%   s1, s2 >= 0
+% And eliminate the redundancy analytically.
 %
 
 nfin = length(ndxs);
@@ -429,9 +428,10 @@ if do_slack,
     end
 end
 
-%
-% Move the cone indices to their new locations and transform
-%
+
+%%%%%%%%%%%%%%
+% CONVERSION %
+%%%%%%%%%%%%%%
 
 cone2 = []; Pr = []; Pc = []; Pv = [];
 for k = 1 : length(cones),
@@ -533,7 +533,7 @@ if ~isempty(Pr),
     Pv = [Pv,ones(size(Pd))];
     Pd = sparse(Pr,Pc,Pv);
     dbcA = Pd' * dbcA;
-    Q    = Q * Pd;
+    Q = Q * Pd;
 end
             
 % Copyright 2005-2014 CVX Research, Inc.

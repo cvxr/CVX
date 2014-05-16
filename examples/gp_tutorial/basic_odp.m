@@ -16,12 +16,12 @@
 % where variables are v_i, y_i, and w_i.
 
 % discretization size
-% M = 50;
+M = 50;
 % The old version of this example took a long time to build with M=1000,
 % because it used for loops to build the y/v/w constraints. This version
 % vectorizes these loops, so 1000 points are handled in a couple of 
 % seconds. I do recommend SeDuMi or MOSEK for this, however.
-M = 1000; 
+% M = 1000; 
 
 % problem constants
 g1 = 0.42;

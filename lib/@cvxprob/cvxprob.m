@@ -1,14 +1,12 @@
-function z = cvxprob( varargin )
-try
-    st = dbstack;
-    depth = length( st );
-    if depth <= 2, name = '';
-    else name = st(3).name; end
-    [ index, id ] = cvx_push( name, depth, varargin{:} );
-    z = class( struct( 'index_', index, 'id_', id ), 'cvxprob' );
-catch exc
-    if strncmp( exc.identifier, 'CVX:', 4 ), throw( exc );
-    else rethrow( exc ); end
+function w = cvxprob( w )
+global cvx___
+if nargin,
+    w = class( w, 'cvxprob' );
+else
+    w = cvx___.pobj;
+    np = length(cvx___.problems);
+    w.id_ = cvx___.problems(np).id;
+    w.index_ = np;
 end
 
 % Copyright 2005-2014 CVX Research, Inc.

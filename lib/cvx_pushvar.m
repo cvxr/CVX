@@ -50,7 +50,7 @@ if numel( args ) > 1,
     if isepi || ishypo,
         if ~isempty( pstr.objective ),
             error( 'CVX:Variable', 'An objective has already been supplied for this problem.' );
-        elseif isequal( pstr.direction, 'find' ),
+        elseif isnan( pstr.direction ),
             error( 'CVX:Variable', 'Epigraph/hypograph variables cannot be added to sets.' );
         elseif ~isreal( str ) || ~isempty( itype ),
             error( 'CVX:Variable', 'Epigraph/hypograph variables must be real and continuous.' );
@@ -139,14 +139,8 @@ end
 %
 
 if iseh,
-    if iseh > 0,
-        dir = 'minimize';
-    else
-        dir = 'maximize';
-    end
     pstr.objective = v;
-    pstr.direction = dir;
-    pstr.geometric = pstr.gp;
+    pstr.direction = iseh * ( 1 + pstr.gp );
 end
 pstr.variables.(name) = v;
 cvx___.problems( end ) = pstr;

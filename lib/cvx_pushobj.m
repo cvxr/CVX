@@ -12,12 +12,12 @@ end
 % Check problem
 %
 
-if ~isempty( pstr.direction ),
-	if isequal( dir, 'find' ),
+if ~isinf( pstr.direction )
+    if isnan( pstr.direction )
         error( 'CVX:ArgError', 'Objective functions cannot be added to sets.' );
     else
-	    error( 'CVX:ArgError', 'An objective has already been supplied for this problem.' );
-	end
+        error( 'CVX:ArgError', 'An objective has already been supplied for this problem.' );
+    end
 end
 
 %
@@ -48,10 +48,10 @@ cx = cvx_classify( x );
 switch dir,
     case { 'minimize', 'minimise' }, 
         vx = remap_min( :, cx ); 
-        dir = 'minimize';
+        dir = +1;
     case { 'maximize', 'maximise' }, 
         vx = remap_max( :, cx ); 
-        dir = 'maximize';
+        dir = -1;
     otherwise, 
         error( 'CVX:ArgError', 'Invalid objective type: %s', dir );
 end
@@ -59,7 +59,7 @@ avx = all( vx, 2 );
 if ~any( avx ),
     vx = any( vx, 1 );
     if all( vx ),
-        error( 'CVX:LogMix', 'Invalid mix of logarithmic and linear objectives.' );
+        error( 'CVX:LogMix', 'Cannot combine logarithmic and linear objectives.' );
     else
         cvx_dcp_error( type, 'unary', cvx_fastref( x, ~vx ) );
     end
@@ -69,15 +69,16 @@ end
 % Store the objective
 %
 
-pstr.geometric = avx(2) & ( ~avx(1) | pstr.gp );
-if pstr.geometric, 
-    x = log( x ); 
+isgeo = avx(2) & ( ~avx(1) | pstr.gp );
+if isgeo,
+    x = log( x );
+    dir = 2 * dir;
 end
 if np > 1,
     bx = cvx_sparsify( cvx_basis( x ), [], 'magnitude' );
     x = cvx( size( x ), bx );
 end
-if pstr.geometric,
+if isgeo,
     x = exp( x ); 
 end
 pstr.objective = x;
@@ -87,7 +88,6 @@ if cp > 1,
     x = find( any( cvx_basis( x ), 2 ), 2, 'first' );
     if any( x > 1 & x < cp ),
         pstr.checkpoint(4) = x(1+(x(1)==1)) - 1;
-        pstr.complete = false;
     end
 end
 cvx___.problems( end ) = pstr;

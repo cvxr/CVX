@@ -1,9 +1,10 @@
 function [ xR, x, elims ] = cvx_bcompress( x, mode, num_sorted, num_ended )
 
-[ m, n ] = size( x ); %#ok
+[ m, n ] = size( x );
 if nargin < 4 || isempty( num_ended ),
     num_ended = n;
 end
+
 if nargin < 3 || isempty( num_sorted ),
     num_sorted = 0;
 end
@@ -21,13 +22,23 @@ end
 
 iscplx = ~isreal( x );
 if iscplx,
-    xR = real( x );
-    xI = imag( x );
-    xB = xR & xI;
-    xB(xB) = abs(xI(xB)) < 8 * eps * abs(xR(xB));
-    xI(xB) = 0;
-    x = [ xR, xI ];
     n = n * 2;
+    num_sorted = num_sorted * 2;
+    num_ended = num_ended * 2;
+    if issparse( x ),
+        [rr,cc,vi] = find( x );
+        vr = real( vi );
+        vi = imag( vi );
+        vi(abs(vi)<8*eps*abs(vr)) = 0;
+        x = sparse( [ rr ; rr ], [ 2 * cc - 1 ; 2 * cc ], [ vr ; vi ], m, n );
+    else
+        xR = real( x );
+        xI = imag( x );
+        xB = xR & xI;
+        xB(xB) = abs(xI(xB)) < 8 * eps * abs(xR(xB));
+        xI(xB) = 0;
+        x = reshape( [ xR ; xI ], m, n );
+    end
 end
 
 [ ndxs, scls ] = cvx_bcompress_mex( sparse( x ), mode, num_sorted, num_ended );
@@ -40,7 +51,7 @@ if nargout > 1 && ~all( t2 ),
 end
 
 if iscplx,
-    xR = xR(:,1:end/2) + 1j * xR(:,end/2+1:end);
+    xR = xR(:,1:2:end) + 1j * xR(:,2:2:end);
 end
 
 if nargout == 3,

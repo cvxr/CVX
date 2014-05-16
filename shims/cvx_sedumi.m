@@ -116,7 +116,7 @@ for k = 1 : length( nonls ),
         nn = 0.5 * ( sqrt( 8 * nn + 1 ) - 1 );
         str = cvx_create_structure( [ nn, nn, nv ], 'symmetric' );
         K.s = [ K.s, nn * ones( 1, nv ) ];
-        [ cc, rr, vv ] = find( cvx_invert_structure( str, 'compact' ) );
+        [ rr, cc, vv ] = find( cvx_invert_structure( str, true ) );
         rr = temp( rr );
         reord.s.r = [ reord.s.r; rr( : ) ];
         reord.s.c = [ reord.s.c; cc( : ) + reord.s.n ];
@@ -128,13 +128,12 @@ for k = 1 : length( nonls ),
         nn = sqrt( nn );
         str = cvx_create_structure( [ nn, nn, nv ], 'hermitian' );
         K.s = [ K.s, nn * ones( 1, nv ) ];
-        stri = cvx_invert_structure( str, 'compact' )';
-        [ rr, cc, vv ] = find( stri );
+        [ rr, cc, vv ] = find( cvx_invert_structure( str, true ) );
         rr = temp( rr );
         reord.s.r = [ reord.s.r; rr( : ) ];
         reord.s.c = [ reord.s.c; cc( : ) + reord.s.n ];
         reord.s.v = [ reord.s.v; vv( : ) ];
-        reord.s.n = reord.s.n + size( stri, 2 );
+        reord.s.n = reord.s.n + nn * nn;
     else
         error( 'Unsupported nonlinearity: %s', tt );
     end

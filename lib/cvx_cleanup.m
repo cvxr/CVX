@@ -1,11 +1,8 @@
-function cvx_cleanup( do_warn )
+function cvx_cleanup( do_warn, depth )
 global cvx___
-try
-    np = length( cvx___.problems );
-    if np == 0; return; end
-catch
-    return
-end
+cvx_global
+np = length( cvx___.problems );
+if np == 0; return; end
 try
     prob = evalin( 'caller', 'cvx_problem', '[]' );
     if ~isa( prob, 'cvxprob' ), return; end

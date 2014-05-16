@@ -1,12 +1,10 @@
 % Examples from the CVX Users' guide
 
-has_quadprog = exist( 'quadprog' );
+has_quadprog = exist( 'quadprog', 'file' );
 has_quadprog = has_quadprog == 2 | has_quadprog == 3;
-has_linprog  = exist( 'linprog' );
+has_linprog  = exist( 'linprog', 'file' );
 has_linprog  = has_linprog == 2 | has_linprog == 3;
-rnstate = randn( 'state' ); randn( 'state', 1 );
-s_quiet = cvx_quiet(true);
-s_pause = cvx_pause(false);
+rnstate = randn( 'state' ); randn( 'state', 1 ); %#ok
 cvx_clear; echo on
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -30,7 +28,7 @@ cvx_end
 echo off
 
 % Compare
-disp( sprintf( '\nResults:\n--------\nnorm(A*x_ls-b): %6.4f\nnorm(A*x-b):    %6.4f\ncvx_optval:     %6.4f\ncvx_status:     %s\n', norm(A*x_ls-b), norm(A*x-b), cvx_optval, cvx_status ) );
+fprintf( '\nResults:\n--------\nnorm(A*x_ls-b): %6.4f\nnorm(A*x-b):    %6.4f\ncvx_optval:     %6.4f\ncvx_status:     %s\n\n', norm(A*x_ls-b), norm(A*x-b), cvx_optval, cvx_status );
 disp( 'Verify that x_ls == x:' );
 disp( [ '   x_ls  = [ ', sprintf( '%7.4f ', x_ls ), ']' ] );
 disp( [ '   x     = [ ', sprintf( '%7.4f ', x ), ']' ] );
@@ -52,7 +50,7 @@ u = max( bnds, [], 2 );
 
 if has_quadprog,
     % Quadprog version
-    x_qp = quadprog( 2*A'*A, -2*A'*b, [], [], [], [], l, u );
+    x_qp = quadprog( 2*(A'*A), -2*A'*b, [], [], [], [], l, u );
 else
     % quadprog not present on this system.
 end
@@ -62,21 +60,21 @@ cvx_begin
     variable x(n)
     minimize( norm(A*x-b) )
     subject to
-        l <= x <= u
+        l <= x <= u %#ok
 cvx_end
 
 echo off
 
 % Compare
 if has_quadprog,
-    disp( sprintf( '\nResults:\n--------\nnorm(A*x_qp-b): %6.4f\nnorm(A*x-b):    %6.4f\ncvx_optval:     %6.4f\ncvx_status:     %s\n', norm(A*x_qp-b), norm(A*x-b), cvx_optval, cvx_status ) );
+    fprintf( '\nResults:\n--------\nnorm(A*x_qp-b): %6.4f\nnorm(A*x-b):    %6.4f\ncvx_optval:     %6.4f\ncvx_status:     %s\n\n', norm(A*x_qp-b), norm(A*x-b), cvx_optval, cvx_status );
     disp( 'Verify that l <= x_qp == x <= u:' );
     disp( [ '   l     = [ ', sprintf( '%7.4f ', l ), ']' ] );
     disp( [ '   x_qp  = [ ', sprintf( '%7.4f ', x_qp ), ']' ] );
     disp( [ '   x     = [ ', sprintf( '%7.4f ', x ), ']' ] );
     disp( [ '   u     = [ ', sprintf( '%7.4f ', u ), ']' ] );
 else
-    disp( sprintf( '\nResults:\n--------\nnorm(A*x-b): %6.4f\ncvx_optval:  %6.4f\ncvx_status:  %s\n', norm(A*x-b), cvx_optval, cvx_status ) );
+    fprintf( '\nResults:\n--------\nnorm(A*x-b): %6.4f\ncvx_optval:  %6.4f\ncvx_status:  %s\n\n', norm(A*x-b), cvx_optval, cvx_status );
     disp( 'Verify that l <= x <= u:' );
     disp( [ '   l     = [ ', sprintf( '%7.4f ', l ), ']' ] );
     disp( [ '   x     = [ ', sprintf( '%7.4f ', x ), ']' ] );
@@ -115,16 +113,16 @@ echo off
 
 % Compare
 if has_linprog,
-    disp( sprintf( '\nResults:\n--------\nnorm(A*x_lp-b,Inf): %6.4f\nnorm(A*x-b,Inf):    %6.4f\ncvx_optval:         %6.4f\ncvx_status:         %s\n', norm(A*x_lp-b,Inf), norm(A*x-b,Inf), cvx_optval, cvx_status ) );
+    fprintf( '\nResults:\n--------\nnorm(A*x_lp-b,Inf): %6.4f\nnorm(A*x-b,Inf):    %6.4f\ncvx_optval:         %6.4f\ncvx_status:         %s\n\n', norm(A*x_lp-b,Inf), norm(A*x-b,Inf), cvx_optval, cvx_status );
     disp( 'Verify that x_lp == x:' );
     disp( [ '   x_lp  = [ ', sprintf( '%7.4f ', x_lp ), ']' ] );
     disp( [ '   x     = [ ', sprintf( '%7.4f ', x ), ']' ] );
 else
-    disp( sprintf( '\nResults:\n--------\nnorm(A*x-b,Inf): %6.4f\ncvx_optval:      %6.4f\ncvx_status:      %s\n', norm(A*x-b,Inf), cvx_optval, cvx_status ) );
+    fprintf( '\nResults:\n--------\nnorm(A*x-b,Inf): %6.4f\ncvx_optval:      %6.4f\ncvx_status:      %s\n\n', norm(A*x-b,Inf), cvx_optval, cvx_status );
     disp( 'Optimal vector:' );
     disp( [ '   x     = [ ', sprintf( '%7.4f ', x ), ']' ] );
 end
-disp( sprintf( 'Residual vector; verify that the peaks match the objective (%6.4f):', cvx_optval ) );
+fprintf( 'Residual vector; verify that the peaks match the objective (%6.4f):\n', cvx_optval );
 disp( [ '   A*x-b = [ ', sprintf( '%7.4f ', A*x-b ), ']' ] );
 disp( ' ' );
 
@@ -156,12 +154,12 @@ echo off
 
 % Compare
 if has_linprog,
-    disp( sprintf( '\nResults:\n--------\nnorm(A*x_lp-b,1): %6.4f\nnorm(A*x-b,1): %6.4f\ncvx_optval: %6.4f\ncvx_status: %s\n', norm(A*x_lp-b,1), norm(A*x-b,1), cvx_optval, cvx_status ) );
+    fprintf( '\nResults:\n--------\nnorm(A*x_lp-b,1): %6.4f\nnorm(A*x-b,1): %6.4f\ncvx_optval: %6.4f\ncvx_status: %s\n\n', norm(A*x_lp-b,1), norm(A*x-b,1), cvx_optval, cvx_status );
     disp( 'Verify that x_lp == x:' );
     disp( [ '   x_lp  = [ ', sprintf( '%7.4f ', x_lp ), ']' ] );
     disp( [ '   x     = [ ', sprintf( '%7.4f ', x ), ']' ] );
 else
-    disp( sprintf( '\nResults:\n--------\nnorm(A*x-b,1): %6.4f\ncvx_optval: %6.4f\ncvx_status: %s\n', norm(A*x-b,1), cvx_optval, cvx_status ) );
+    fprintf( '\nResults:\n--------\nnorm(A*x-b,1): %6.4f\ncvx_optval: %6.4f\ncvx_status: %s\n\n', norm(A*x-b,1), cvx_optval, cvx_status );
     disp( 'Optimal vector:' );
     disp( [ '   x     = [ ', sprintf( '%7.4f ', x ), ']' ] );
 end
@@ -187,10 +185,10 @@ echo off
 
 % Compare
 temp = sort(abs(A*x-b));
-disp( sprintf( '\nResults:\n--------\nnorm_largest(A*x-b,k): %6.4f\ncvx_optval: %6.4f\ncvx_status: %s\n', norm_largest(A*x-b,k), cvx_optval, cvx_status ) );
+fprintf( '\nResults:\n--------\nnorm_largest(A*x-b,k): %6.4f\ncvx_optval: %6.4f\ncvx_status: %s\n\n', norm_largest(A*x-b,k), cvx_optval, cvx_status );
 disp( 'Optimal vector:' );
 disp( [ '   x     = [ ', sprintf( '%7.4f ', x ), ']' ] );
-disp( sprintf( 'Residual vector; verify a tie for %d-th place (%7.4f):', k, temp(end-k+1) ) );
+fprintf( 'Residual vector; verify a tie for %d-th place (%7.4f):\n', k, temp(end-k+1) );
 disp( [ '   A*x-b = [ ', sprintf( '%7.4f ', A*x-b ), ']' ] );
 disp( ' ' );
 
@@ -210,7 +208,7 @@ cvx_end
 echo off
 
 % Compare
-disp( sprintf( '\nResults:\n--------\nsum(huber(A*x-b)): %6.4f\ncvx_optval: %6.4f\ncvx_status: %s\n', sum(huber(A*x-b)), cvx_optval, cvx_status ) );
+fprintf( '\nResults:\n--------\nsum(huber(A*x-b)): %6.4f\ncvx_optval: %6.4f\ncvx_status: %s\n\n', sum(huber(A*x-b)), cvx_optval, cvx_status );
 disp( 'Optimal vector:' );
 disp( [ '   x     = [ ', sprintf( '%7.4f ', x ), ']' ] );
 disp( 'Residual vector:' );
@@ -234,14 +232,14 @@ cvx_begin
     variable x(n);
     minimize( norm(A*x-b) )
     subject to
-        C*x == d
-        norm(x,Inf) <= 1
+        C*x == d %#ok
+        norm(x,Inf) <= 1 %#ok
 cvx_end
 
 echo off
 
 % Compare
-disp( sprintf( '\nResults:\n--------\nnorm(A*x-b): %6.4f\ncvx_optval: %6.4f\ncvx_status: %s\n', norm(A*x-b), cvx_optval, cvx_status ) );
+fprintf( '\nResults:\n--------\nnorm(A*x-b): %6.4f\ncvx_optval: %6.4f\ncvx_status: %s\n\n', norm(A*x-b), cvx_optval, cvx_status );
 disp( 'Optimal vector:' );
 disp( [ '   x     = [ ', sprintf( '%7.4f ', x ), ']' ] );
 disp( 'Residual vector:' );
@@ -258,7 +256,7 @@ echo on
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 % The basic problem:
-% cvx_begin
+% cvx_begin quiet
 %     variable x(n)
 %     minimize( norm(A*x-b)+gamma(k)*norm(x,1) )
 % cvx_end
@@ -266,7 +264,6 @@ echo on
 echo off
 disp( ' ' );
 disp( 'Generating tradeoff curve...' );
-cvx_pause(false);
 gamma = logspace( -2, 2, 20 );
 l2norm = zeros(size(gamma));
 l1norm = zeros(size(gamma));
@@ -274,7 +271,7 @@ fprintf( 1, '   gamma       norm(x,1)    norm(A*x-b)\n' );
 fprintf( 1, '---------------------------------------\n' );
 for k = 1:length(gamma),
     fprintf( 1, '%8.4e', gamma(k) );
-    cvx_begin
+    cvx_begin quiet
         variable x(n)
         minimize( norm(A*x-b)+gamma(k)*norm(x,1) )
     cvx_end
@@ -287,6 +284,4 @@ xlabel( 'norm(x,1)' );
 ylabel( 'norm(A*x-b)' );
 grid
 disp( 'Done. (Check out the graph!)' );
-randn( 'state', rnstate );
-cvx_quiet(s_quiet);
-cvx_pause(s_pause);
+randn( 'state', rnstate ); %#ok

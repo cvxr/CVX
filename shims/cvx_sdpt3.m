@@ -192,7 +192,7 @@ if any( tt ),
         % <a,x> = <a,str_2'*str_1'*x> = <str_2*a,str_1'*x>
         %
         str_1 = cvx_create_structure( [nn,nn], 'symmetric' );
-        str_2 = cvx_invert_structure( str_1 );
+        str_2 = cvx_invert_structure( str_1 )';
         %
         % SDPT3, on the other hand, stores symmetric matrix variables in
         % packed upper triangle format, with off-diagonal elements scaled 

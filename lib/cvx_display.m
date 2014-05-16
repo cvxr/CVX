@@ -38,7 +38,7 @@ touched( p.checkpoint(1) + 1 : end ) = true;
 nineqs = sum( nineqs );
 neqns  = sum( neqns ) - nineqs;
 cfound = false;
-for k = p.checkpoint(3) : length( cvx___.cones ),
+for k = p.checkpoint(3) + 1 : length( cvx___.cones ),
     ndxs = cvx___.cones(k).indices;
     qq = any(reshape(touched(ndxs),size(ndxs)),1);
     if any( qq ),
@@ -48,7 +48,7 @@ for k = p.checkpoint(3) : length( cvx___.cones ),
     end
 end
 nv = nnz(touched) - touched(1);
-np = nnz(touched(1:p.c)) - touched(1);
+np = nnz(touched(1:p.checkpoint(1))) - touched(1);
 gfound = nnz(ylog(cvx___.classes(touched)));
 
 if isempty( p.name ) || strcmp( p.name, 'cvx_' ),
@@ -56,97 +56,95 @@ if isempty( p.name ) || strcmp( p.name, 'cvx_' ),
 else
     nm = [ p.name, ': ' ];
 end
-if all( [ numel( p.objective ), nv, nvars, nduls, neqns, nineqs, cfound, gfound ] == 0 ),
-    disp( [ prefix, nm, 'Empty CVX model' ] );
+if ( p.gp ),
+    ptype =' geometric ';
+elseif ( p.sdp ),
+    ptype = ' semidefinite ';
+elseif abs( p.direction ) > 1,
+    if p.direction > 0, 'log-convex ';
+    else ptype = 'log-concave '; end
 else
-    if ( p.gp ),
-        ptype =' geometric ';
-    elseif ( p.sdp ),
-        ptype = ' semidefinite ';
+    ptype = ' ';
+end
+if isempty( p.objective ),
+    tp = 'feasibility';
+else
+    if p.direction < 0,
+        tp = 'maximization';
     else
-        ptype = ' ';
+        tp = 'minimization';
     end
-    if isempty( p.objective ),
-        tp = 'feasibility';
-    else
-        switch p.direction,
-            case 'minimize',  tp = 'minimization';
-            case 'epigraph',  tp = 'epigraph minimization';
-            case 'hypograph', tp = 'hypograph maximization';
-            case 'maximize',  tp = 'maximization';
-        end
-        if numel( p.objective ) > 1,
-            sz = sprintf( '%dx', size( p.objective ) );
-            tp = [ sz(1:end-1), '-objective ', tp ];
-        end
+    if numel( p.objective ) > 1,
+        sz = sprintf( '%dx', size( p.objective ) );
+        tp = [ sz(1:end-1), '-objective ', tp ];
     end
-    disp( [ prefix, nm, 'CVX', ptype, tp, ' model' ] );
-    mlen = 0;
-    if nvars > 0
-        [ namep, sizep ] = cvx_dispvar( p.variables, '', false );
-        mlen = max([mlen,max(cellfun(@numel,namep))]);
+end
+disp( [ prefix, nm, 'CVX', ptype, tp, ' model' ] );
+mlen = 0;
+if nvars > 0
+    [ namep, sizep ] = cvx_dispvar( p.variables, '', false );
+    mlen = max([mlen,max(cellfun(@numel,namep))]);
+end
+if nduls > 0
+    [ named, sized ] = cvx_dispvar( p.duals, '', true );
+    mlen = max([mlen,max(cellfun(@numel,named))]);
+end
+mlen = mlen + 3;
+spc = ' '; spc(1,2:mlen) = ' ';
+if nvars > 0,
+    disp( [ prefix, 'variables: ' ] );
+    for k = 1 : numel( namep ),
+        disp( [ prefix, '   ', namep{k}, spc(1:mlen-length(namep{k})), sizep{k} ] );
     end
-    if nduls > 0
-        [ named, sized ] = cvx_dispvar( p.duals, '', true );
-        mlen = max([mlen,max(cellfun(@numel,named))]);
+    if np,
+        disp( [ prefix, '    + ', sprintf( '%d parent variables', np ) ] );
     end
-    mlen = mlen + 3;
-    spc = ' '; spc(1,2:mlen) = ' ';
-    if nvars > 0,
-        disp( [ prefix, 'variables: ' ] );
-        for k = 1 : numel( namep ),
-            disp( [ prefix, '   ', namep{k}, spc(1:mlen-length(namep{k})), sizep{k} ] );
-        end
-        if np,
-            disp( [ prefix, '    + ', sprintf( '%d parent variables', np ) ] );
-        end
-    elseif np,
-        disp( [ prefix, sprintf( 'variables: %d parent variables', np ) ] );
+elseif np,
+    disp( [ prefix, sprintf( 'variables: %d parent variables', np ) ] );
+end
+if nduls > 0,
+    disp( [ prefix, 'dual variables: ' ] );
+    for k = 1 : numel( named ),
+        disp( [ prefix, '   ', named{k}, spc(1:mlen-length(named{k})), sized{k} ] );
     end
-    if nduls > 0,
-        disp( [ prefix, 'dual variables: ' ] );
-        for k = 1 : numel( named ),
-            disp( [ prefix, '   ', named{k}, spc(1:mlen-length(named{k})), sized{k} ] );
-        end
+end
+if neqns > 0 || nineqs > 0,
+    disp( [ prefix, 'linear constraints:' ] );
+    if neqns > 0,
+        if neqns > 1, plural = 'ies'; else plural = 'y'; end
+        fprintf( 1, '%s   %d equalit%s\n', prefix, neqns, plural );
     end
-    if neqns > 0 || nineqs > 0,
-        disp( [ prefix, 'linear constraints:' ] );
-        if neqns > 0,
-            if neqns > 1, plural = 'ies'; else plural = 'y'; end
-            fprintf( 1, '%s   %d equalit%s\n', prefix, neqns, plural );
-        end
-        if nineqs > 0,
-            if nineqs > 1, plural = 'ies'; else plural = 'y'; end
-            fprintf( 1, '%s   %d inequalit%s\n', prefix, nineqs, plural );
-        end
+    if nineqs > 0,
+        if nineqs > 1, plural = 'ies'; else plural = 'y'; end
+        fprintf( 1, '%s   %d inequalit%s\n', prefix, nineqs, plural );
     end
-    if cfound || gfound,
-        disp( [ prefix, 'nonlinearities:' ] );
-        if gfound > 0,
-            if gfound > 1, plural = 's'; else plural = ''; end
-            fprintf( 1, '%s   %d exponential pair%s\n', prefix, gfound, plural );
-        end
-        if cfound,
-            for k = 1 : length( cvx___.cones ),
-                ctyp = cvx___.cones( k ).type;
-                ndxs = cvx___.cones( k ).indices;
-                ndxs = ndxs( :, any( reshape( touched( ndxs ), size( ndxs ) ), 1 ) );
-                if ~isempty( ndxs ),
-                    isint = isequal( ctyp(1:2), 'i_' );
-                    if isint,
-                        ncones = numel( ndxs );
-                    elseif isequal( cvx___.cones( k ).type, 'nonnegative' ),
-                        ncones = 1;
-                        csize = numel(  ndxs  );
-                    else
-                        [ csize, ncones ] = size( ndxs );
-                    end
-                    if ncones == 1, plural = ''; else plural = 's'; end
-                    if isint,
-                        fprintf( 1, '%s   %d %s variable%s\n', prefix, ncones, ctyp(3:end), plural );
-                    else
-                        fprintf( 1, '%s   %d order-%d %s cone%s\n', prefix, ncones, csize, ctyp, plural );
-                    end
+end
+if cfound || gfound,
+    disp( [ prefix, 'nonlinearities:' ] );
+    if gfound > 0,
+        if gfound > 1, plural = 's'; else plural = ''; end
+        fprintf( 1, '%s   %d exponential pair%s\n', prefix, gfound, plural );
+    end
+    if cfound,
+        for k = 1 : length( cvx___.cones ),
+            ctyp = cvx___.cones( k ).type;
+            ndxs = cvx___.cones( k ).indices;
+            ndxs = ndxs( :, any( reshape( touched( ndxs ), size( ndxs ) ), 1 ) );
+            if ~isempty( ndxs ),
+                isint = isequal( ctyp(1:2), 'i_' );
+                if isint,
+                    ncones = numel( ndxs );
+                elseif isequal( cvx___.cones( k ).type, 'nonnegative' ),
+                    ncones = 1;
+                    csize = numel(  ndxs  );
+                else
+                    [ csize, ncones ] = size( ndxs );
+                end
+                if ncones == 1, plural = ''; else plural = 's'; end
+                if isint,
+                    fprintf( 1, '%s   %d %s variable%s\n', prefix, ncones, ctyp(3:end), plural );
+                else
+                    fprintf( 1, '%s   %d order-%d %s cone%s\n', prefix, ncones, csize, ctyp, plural );
                 end
             end
         end

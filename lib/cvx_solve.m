@@ -1,4 +1,4 @@
-function cvx_solve
+function [ status, result, bound, iters, tol ] = cvx_solve
 
 global cvx___
 try
@@ -9,14 +9,15 @@ end
 
 quiet = pstr.quiet;
 obj   = pstr.objective;
-gobj  = pstr.geometric;
 prec  = pstr.precision;
+gobj  = abs( pstr.direction ) > 1;
 solv  = pstr.solver;
+sset  = pstr.settings;
 ndual = ~isempty( pstr.duals );
-shim  = cvx___.solvers.list( solv.index );
+shim  = cvx___.solvers.list( solv );
 if isempty(shim.eargs), eargs = {}; else eargs = shim.eargs; end
 nobj  = numel( obj );
-if nobj > 1 && ~pstr.separable,
+if nobj > 1,
     error( 'CVX:NonScalarObjective', 'Your objective function is not a scalar.' );
 end
 [ At, cones, sgn, Q, P, exps, dualized ] = cvx_extract( shim.config );
@@ -126,12 +127,11 @@ elseif n ~= 0 && ~infeas && ( any( b ) || any( c ) ),
         end
     end
     if cvx___.profile, 
+        pstat = profile('status');
+        profon = isequal( pstat.ProfilerStatus, 'on' );
         profile off; 
-    end
-    if cvx___.pause,
-        disp( ' ' );
-        input( 'Press Enter/Return to call the solver:' );
-        disp( ' ' );
+    else
+        profon = false;
     end
     tstart = tic;
     if need_iter,
@@ -204,7 +204,7 @@ elseif n ~= 0 && ~infeas && ( any( b ) || any( c ) ),
             % Solve the approximation
             [ x, status, tprec, iters2, y ] = shim.solve( ...
                 [ PP * At, bsxfun( @times, QQ, amult ) ], ...
-                b, PP*c, cones, true, prec, solv.settings, eargs{:} );
+                b, PP*c, cones, true, prec, sset, eargs{:} );
             iters = iters + iters2;
             x_valid = ~any(isnan(x));
             y_valid = ~any(isnan(y));
@@ -386,24 +386,19 @@ elseif n ~= 0 && ~infeas && ( any( b ) || any( c ) ),
         c = c(1:n,:);
     elseif ndual || dualized,
         try
-            [ x, status, tprec, iters, y ] = shim.solve( At, b, c, cones, quiet, prec, solv.settings, eargs{:} );
+            [ x, status, tprec, iters, y ] = shim.solve( At, b, c, cones, quiet, prec, sset, eargs{:} );
         catch estruc
             status = 'Error';
         end
     else
         try
-            [ x, status, tprec, iters ] = shim.solve( At, b, c, cones, quiet, prec, solv.settings, eargs{:} );
+            [ x, status, tprec, iters ] = shim.solve( At, b, c, cones, quiet, prec, sset, eargs{:} );
         catch estruc
             status = 'Error';
         end
     end
     cvx___.timers(4) = cvx___.timers(4) + ( tic - tstart );
-    if cvx___.pause,
-        disp( ' ' );
-        input( 'Press Enter/Return to continue:' );
-        disp( ' ' );
-    end
-    if cvx___.profile, 
+    if profon,
         profile resume; 
     end
     if ~cvx___.path.hold, 
@@ -525,9 +520,7 @@ if ~quiet,
     fprintf( 1, 'Status: %s\n', status );
 end
 
-pstr.status = status;
-pstr.iters = iters;
-pstr.tol = tprec(1);
+tol = tprec(1);
 
 %
 % Push the results into the master CVX workspace
@@ -564,8 +557,8 @@ if ~isempty( obj ),
 end
 oval = full(oval);
 bval = full(bval);
-pstr.result = oval;
-pstr.bound = bval;
+result = oval;
+bound = bval;
 if ~quiet,
     if length( oval ) == 1,
         fprintf( 'Optimal value (cvx_optval): %+g\n', oval );
@@ -583,8 +576,6 @@ end
 if ~quiet,
     disp( ' '  );
 end
-
-cvx___.problems(end) = pstr;
 
 if ~isempty( estruc ),
     if strncmp( estruc.identifier, 'CVX:', 4 ),

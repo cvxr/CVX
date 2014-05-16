@@ -5,9 +5,7 @@ function cvx_global
 %   harmless for the user to call it, but it is also useless to do so.
 
 global cvx___ 
-if isfield( cvx___, 'problems' ),
-    return
-end
+if isfield( cvx___, 'problems' ), return; end
 tstart = tic;
     
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -18,7 +16,7 @@ cvx_version(1);
 
 commands = { 'cvx_begin', 'cvx_clear', 'cvx_end', 'cvx_expert', ...
     'cvx_pause', 'cvx_power_warning', 'cvx_precision', 'cvx_profile', ...
-    'cvx_quiet', 'cvx_save_prefs' };
+    'cvx_quiet', 'cvx_save_prefs', 'cvx_tic', 'cvx_toc' };
 c_type = cell(1,length(commands));
 [ c_type{:} ] = deal('C');
 keywords = { 'in', 'dual', 'epigraph', 'expression', 'expressions', ...
@@ -41,9 +39,6 @@ reserved = cell2struct( [ c_type, k_type, s_type ], ...
 
 cvx___.reswords    = reserved;
 cvx___.problems    = [];
-cvx___.pause       = false;
-cvx___.quiet       = false;
-cvx___.profile     = false;
 cvx___.logarithm   = sparse(1,1);
 cvx___.exponential = sparse(1,1);
 cvx___.classes     = int8(3);
@@ -55,6 +50,7 @@ cvx___.x           = zeros( 0, 1 );
 cvx___.y           = zeros( 0, 1 );
 cvx___.id          = 0;
 cvx___.obj         = cvx( struct( 'size_', [0,1], 'basis_', sparse(1,0), 'dual_', '', 'id_', 0 ) );
+cvx___.pobj        = cvxprob( struct( 'index_', 0, 'id_', 0 ) );
 cvx___.timers      = uint64([tstart,0,0,0]);
 cvx___.increment   = [];
 

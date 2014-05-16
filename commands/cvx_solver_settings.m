@@ -81,8 +81,8 @@ global cvx___
 cvx_global
 is_local = ~isempty( cvx___.problems );
 if is_local,
-    snumber = cvx___.problems(end).solver.index;
-    settings = cvx___.problems(end).solver.settings;
+    snumber = cvx___.problems(end).solver;
+    settings = cvx___.problems(end).settings;
 else
     snumber = cvx___.solvers.selected;
     if isfield( cvx___.solvers.list, 'settings' ),
@@ -190,7 +190,7 @@ switch nargin,
 end
 if update,
     if is_local,
-        cvx___.problems(end).solver.settings = settings;
+        cvx___.problems(end).settings = settings;
     else
         cvx___.solvers.list(snumber).settings = settings;
     end

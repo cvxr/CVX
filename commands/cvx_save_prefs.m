@@ -12,13 +12,15 @@ if ~isfield( cvx___, 'pfile' ),
 elseif nargin == 0,
     fprintf( 'Saving prefs...' );
 end
-outp.expert = cvx___.expert;
+outp.path      = cvx___.path;
+outp.license   = cvx___.license;
+outp.solvers   = cvx___.solvers;
+outp.broadcast = cvx___.broadcast;
+outp.expert    = cvx___.expert;
 outp.precision = cvx___.precision;
-outp.precflag = cvx___.precflag;
-outp.rat_growth = cvx___.rat_growth;
-outp.path = cvx___.path;
-outp.solvers = cvx___.solvers;
-outp.license = cvx___.license;
+outp.precflag  = cvx___.precflag;
+outp.quiet     = cvx___.quiet;
+outp.profile   = cvx___.profile;
 outp.solvers.map.default = cvx___.solvers.selected;
 [ outp.solvers.list.check, outp.solvers.list.solve, outp.solvers.list.eargs ] = deal( {} );
 outp.solvers.active = 0;

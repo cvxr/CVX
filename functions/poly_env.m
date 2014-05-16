@@ -103,9 +103,14 @@ deg2  = 0.5 * degr + 1;
 nv    = prod( sx );
 psign = sign(p(1));
 p     = psign * reshape( p, 1, n );
-cvx_begin sdp separable
-    epigraph variable y(sx);
+cvx_begin sdp
+    variable y(sx);
     variable P(deg2,deg2,sx) hankel;
+    if cvx_isconstant( x )
+        minimize(sum(y)); %#ok
+    else
+        minimize(y); %#ok
+    end
     P >= 0; %#ok
     1 == P(1,1,:); %#ok
     x == reshape( P(2,1,:), sx ); %#ok

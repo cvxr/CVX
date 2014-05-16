@@ -27,6 +27,7 @@ end
 s1 = evalin( 'caller', 'who' );
 s2 = evalin( 'caller', 'cellfun(@eval,who,''UniformOutput'',false)' );
 s2 = cellfun( @cvx_id, s2 );
+do_timer = false;
 if pid <= 0,
     do_erase = ~isempty( cvx___.problems );
     p = +do_erase;
@@ -34,18 +35,19 @@ if pid <= 0,
 elseif ~pstr.finished
     tt = s2 >= pid;
     do_erase = true;
-elseif pstr.complete
+elseif isnan( pstr.direction )
+    tt = s2 == pid;
+    do_erase = false;
+elseif pstr.checkpoint(4) >= pstr.checkpoint(1),
     tt = s2 > pid;
     temp = sprintf( '%s,', s1{tt} );
     if ~isempty( temp ),
         temp = temp(1:end-1);
         evalin( 'caller', sprintf( '[%s]=cvx_values(%s);', temp, temp ) );
     end
+    do_timer = true;
     tt = s2 == pid;
     do_erase = true;
-elseif strcmp( pstr.direction, 'find' )
-    tt = s2 == pid;
-    do_erase = false;
 else
     tt = s2 >= pid;
     do_erase = false;
@@ -64,16 +66,20 @@ end
 if p > 1
     cvx___.problems( p : end ) = [];
 else
-    if p == 1 && length(pstr.tictime) > 1,
-        tfin = tic;
-        cvx___.timers(2) = cvx___.timers(2) + ( tfin - pstr.tictime(1) );
-        cvx___.timers(3) = cvx___.timers(3) + ( tfin - pstr.tictime(2) );
-    end
     cvx___.problems = [];
     cvx_clearpath( 1 );
 end
 if pid == 0
     error( 'CVX:InternalError', 'Internal CVX data corruption. Please rebuild your model.' );
+end
+if do_timer
+    tfin = tic;
+    tval = tfin - pstr.tictime(1);
+    cvx___.timers(2) = cvx___.timers(2) + tval;
+    cvx___.timers(3) = cvx___.timers(3) + ( tfin - pstr.tictime(2) );
+    for q = 1 : p - 1,
+        cvx___.problems(q).tictime = cvx___.problems(q).tictime + tval;
+    end
 end
 
 % Copyright 2005-2014 CVX Research, Inc.

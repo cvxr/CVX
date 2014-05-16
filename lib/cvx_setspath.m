@@ -12,7 +12,7 @@ osolv = cvx___.solvers.active;
 if isempty( cvx___.problems ),
     nsolv = cvx___.solvers.selected;
 else
-    nsolv = cvx___.problems(end).solver.index;
+    nsolv = cvx___.problems(end).solver;
 end
 if osolv ~= nsolv,
     opath = [];

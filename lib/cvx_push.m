@@ -1,44 +1,24 @@
-function [ z, id ] = cvx_push( name, depth, varargin )
+function cvx_push( name, depth, args )
 
-global cvx___
-try
-    np = length( cvx___.problems );
-catch
-    cvx_global
-    np = 0;
-end
 tstart = tic;
-
-%
-% Clear out any old problems left at this depth. These will be here due to
-% an error while constructing a CVX model, or due to the user deciding to
-% start over when constructing a model
-%
-
-if np && cvx___.problems(np).depth >= depth,
-    ndx = find( [ cvx___.problems.depth ] >= depth, 1, 'first' );
-    cvx_pop( ndx, cvx___.problems(ndx).id );
-    np = ndx - 1;
-end
+cstart = cputime;
+global cvx___
+persistent tstruct
 
 %
 % Grab the latest defaults to place in the new problem
 %
 
-if ~isempty( cvx___.problems ),
-    temp = cvx___.problems( end );
-    nprec  = temp.precision;
-    npflag = temp.precflag;
-    nrprec = temp.rat_growth;
-    nsolv  = temp.solver;
-    nquiet = temp.quiet;
-else
-    nprec  = cvx___.precision;
-    npflag = cvx___.precflag;
-    nrprec = cvx___.rat_growth;
-    selected = cvx___.solvers.selected;
-    nsolv  = struct( 'index', selected, 'settings', { cvx___.solvers.list(selected).settings } );
-    nquiet = cvx___.quiet;
+np = length( cvx___.problems );
+if np
+    pstr = cvx___.problems( np );
+    if pstr.depth >= depth,
+        p = find( [ cvx___.problems.depth ] >= depth, 1, 'first' );
+        id = cvx___.problems( p ).id;
+        cvx_pop( p, id );
+        np = p - 1;
+        if np, pstr = cvx___.problems( np ); end
+    end
 end
 
 %
@@ -46,41 +26,59 @@ end
 %
 
 id = cvx___.id + 1;
-temp = struct( ...
-    'name',          name,   ...
-    'complete',      true,   ...
-    'finished',      false,  ...
-    'sdp',           false,  ...
-    'gp',            false,  ...
-    'separable',     false,  ...
-    'precision',     nprec,  ...
-    'precflag',      npflag, ...
-    'solver',        nsolv,  ...
-    'quiet',         nquiet, ... 
-    'cputime',       cputime, ...
-    'tictime',       tstart, ...
-    'rat_growth',    nrprec, ...
-    'checkpoint',    [ length( cvx___.classes ), length( cvx___.equalities ), length( cvx___.cones ), length( cvx___.classes ) ], ...
-    'variables',     [],         ...
-    'duals',         [],         ...
-    'dvars',         [],         ...
-    'direction',     '',         ...
-    'geometric',     [],         ...
-    'objective',     [],         ...
-    'status',        'unsolved', ...
-    'result',        [],         ...
-    'bound',         [],         ...
-    'iters',         Inf,        ...
-    'tol',           Inf,        ...
-    'depth',         depth,      ...
-    'id',            id );
+if isempty( tstruct ),
+    q = [];
+    tstruct = struct( ...
+        'name',          '',    ...
+        'finished',      false, ...
+        'sdp',           false, ...
+        'gp',            false, ...
+        'precision',     q,     ...
+        'precflag',      q,     ...
+        'solver',        q,     ...
+        'settings',      q,     ...
+        'quiet',         q,     ... 
+        'cputime',       q,     ...
+        'tictime',       q,     ...
+        'checkpoint',    q,     ...
+        'variables',     q,     ...
+        'duals',         q,     ...
+        'dvars',         q,     ...
+        'direction',     Inf,   ...
+        'objective',     q,     ...
+        'depth',         0,     ...
+        'id',            0 );
+end
+temp = tstruct;
+temp.name    = name;
+temp.id      = id;
+temp.depth   = depth;
+temp.cputime = cstart;
+temp.tictime = tstart;
+if np
+    temp.precision  = pstr.precision;
+    temp.precflag   = pstr.precflag;
+    temp.solver     = pstr.solver;
+    temp.settings   = pstr.settings;
+    temp.quiet      = pstr.quiet;
+    ncheck = length( cvx___.classes );
+    temp.checkpoint = [ ncheck, length( cvx___.equalities ), ...
+        length( cvx___.cones ), ncheck ];
+else
+    temp.precision  = cvx___.precision;
+    temp.precflag   = cvx___.precflag;
+    temp.solver     = cvx___.solvers.selected;
+    temp.settings   = cvx___.solvers.list(temp.solver).settings;
+    temp.quiet      = cvx___.quiet;
+    temp.checkpoint = [ 1, 0, 0, 1 ];
+end
 
 %
 % Process the argument strings
 %
 
-for k = 1 : nargin - 2,
-    mode = varargin{k};
+for k = 1 : length(args),
+    mode = args{k};
     if ~ischar( mode ),
         error( 'CVX:ArgError', 'Arguments must be strings.' );
     end
@@ -91,8 +89,7 @@ for k = 1 : nargin - 2,
             if isempty( cvx___.problems ),
                 error( 'CVX:ArgError', 'Cannot construct a set object outside of a CVX model.' );
             end
-            temp.complete  = false;
-            temp.direction = 'find';
+            temp.direction = NaN;
         case 'sdp',
             if temp.gp,
                 error( 'CVX:ArgError', 'The GP and SDP modifiers cannot be used together.' );
@@ -103,12 +100,9 @@ for k = 1 : nargin - 2,
                 error( 'CVX:ArgError', 'The GP and SDP modifiers cannot be used together.' );
             end
             temp.gp = true;
-            cvx___.geometric = true;
             if cvx___.expert == 0,
                 cvx___.expert = -1;
             end
-        case 'separable',
-            temp.separable = true;
         otherwise,
             error( 'CVX:ArgError', 'Invalid CVX problem modifier: %s', mode );
     end
@@ -120,12 +114,10 @@ end
 
 cvx___.id = id;
 if np,
-    z = np + 1;
-    cvx___.problems( z ) = temp;
+    cvx___.problems(np+1) = temp;
 else
     cvx___.problems = temp;
     cvx_setpath(1);
-    z = 1;
 end
 
 % Copyright 2005-2014 CVX Research, Inc.
