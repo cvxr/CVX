@@ -41,7 +41,6 @@ v_array = [];
 for k = 1:length(beta_min_GE)
     fprintf( 'beta_min_GE = %g: ', beta_min_GE(k) );
     cvx_begin gp quiet
-        cvx_solver sedumi
         variables v(M) y(M) w(M)
         % objective function is the base transmit time
         tau_B = C*w(1);

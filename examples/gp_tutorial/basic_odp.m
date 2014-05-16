@@ -39,7 +39,6 @@ pwi = g2 -1;
 pwj = 1+g1-g2;
 
 cvx_begin gp
-    cvx_solver sedumi
     variables v(M) y(M) w(M)
     % objective function is the base transmit time
     tau_B = C*w(1);
