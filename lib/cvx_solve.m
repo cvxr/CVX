@@ -397,7 +397,11 @@ elseif n ~= 0 && ~infeas && ( any( b ) || any( c ) ),
             status = 'Error';
         end
     end
-    cvx___.timers(4) = cvx___.timers(4) + ( tic - tstart );
+    try
+        cvx___.timers(4) = cvx___.timers(4) + ( tic - tstart );
+    catch
+        cvx___.timers(4) = double(cvx___.timers(4)) + ( double(tic) - double(tstart) );
+    end
     if profon,
         profile resume; 
     end

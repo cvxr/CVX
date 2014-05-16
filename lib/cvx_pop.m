@@ -74,11 +74,20 @@ if pid == 0
 end
 if do_timer
     tfin = tic;
-    tval = tfin - pstr.tictime(1);
-    cvx___.timers(2) = cvx___.timers(2) + tval;
-    cvx___.timers(3) = cvx___.timers(3) + ( tfin - pstr.tictime(2) );
-    for q = 1 : p - 1,
-        cvx___.problems(q).tictime = cvx___.problems(q).tictime + tval;
+    try
+        tval = tfin - pstr.tictime(1);
+        cvx___.timers(2) = cvx___.timers(2) + tval;
+        cvx___.timers(3) = cvx___.timers(3) + ( tfin - pstr.tictime(2) );
+        for q = 1 : p - 1,
+            cvx___.problems(q).tictime = cvx___.problems(q).tictime + tval;
+        end
+    catch
+        tval = double(tfin) - double(pstr.tictime(1));
+        cvx___.timers(2) = double(cvx___.timers(2)) + double(tval);
+        cvx___.timers(3) = double(cvx___.timers(3)) + ( double(tfin) - double(pstr.tictime(2)) );
+        for q = 1 : p - 1,
+            cvx___.problems(q).tictime = double(cvx___.problems(q).tictime) + tval;
+        end
     end
 end
 
