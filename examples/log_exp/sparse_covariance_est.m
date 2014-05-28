@@ -16,15 +16,16 @@
 % parameter to be chosen or tuned. 
 
 % Input data 
-rand('state',0);
-randn('state',0);
+rand('state',0); %#ok
+randn('state',0); %#ok
 n = 10; 
-N = 100; 
+N = 1000; 
 Strue = sprandsym(n,0.5,0.01,1);
+Strue(abs(Strue)<=1e-4) = 0;
 R = inv(full(Strue));
 y_sample = sqrtm(R)*randn(n,N); 
 Y = cov(y_sample'); 
-alpha = 50;
+alpha = 2;
 
 % Computing sparse estimate of R^{-1} 
 cvx_begin sdp
@@ -35,7 +36,7 @@ cvx_begin sdp
 cvx_end
 R_hat = inv(S);
 
-S(S<1e-4) = 0; 
+S(abs(S)<=1e-4) = 0; 
 figure; 
 subplot(121);
 spy(Strue); 

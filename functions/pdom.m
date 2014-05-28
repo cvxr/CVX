@@ -1,24 +1,35 @@
 function y = pdom( x )
 
 % PDOM    Positive domain.
-%    For constant X, S, PDOM(X,S)=X if X>=0, and S*Inf if X<0. If S is not
-%    supplied, then S=+1 is assumed.
+%    PDOM(X)=X, with a domain constraint that X >= 0. X must be real.
+%
+%    Like POS, PDOM can be useful as an argument to functions that require
+%    a positive argument. For instance, for affine X, PDOM(X)^3 is X^3 when
+%    X is positive, and constrains X to be positive as well. In contrast,
+%    POS(X)^3=MAX(X,0)^3 is also X^3 when X is positive; but it does not
+%    constrain X, and instead returns 0 when X is negative. 
+%
+%    One useful application of PDOM(X) is to implement 1/X for positive X:
+%    that is, 1/PDOM(X) = INV_POS(X) = POW_P(X,-1).
 %
 %    Disciplined convex programming information:
-%        PDOM(X) is intended to be used primarily as a helper function for
-%        other CVX functions, and it has some strange behavior.
-%        --- For arguments known to be nonnegative, PDOM(X)=X. That is,
-%            PDOM(X) has no effect.
-%        --- For affine and concave arguments, PDOM(X)=X, with the added
-%            constraints that X is nonnegative. If X is known to be 
-%            nonpositive, a warning is issued, since this means that the
-%            only feasible value of X is X=0.
-%        --- Complex affine and unsigned convex X are rejected.
-%        This last rule makes sense if you consider that PDOM(X,-1) is 
-%        concave and increasing and PDOM(X,1) is convex and sign-monotonic.
-%        Thus PDOM(X) is, in a sense, a "permissive" fusion of PDOM(X,-1)
-%        and PDOM(X,1), accepting any argument that would be accepted by
-%        either specific form of the function.
+%        From a strict mathematical standpoint, PDOM(X) is best interpreted
+%        as a concave increasing function of X. A simple, sign-independent
+%        application of the DCP ruleset, therefore, requires that X be 
+%        concave or real affine; convex arguments are rejected. Under
+%        sign-sensitive analysis, however, PDOM(X) is best understood as
+%        an *identify* function PDOM(X)=X that also adds the constraint
+%        that X >= 0. So, for instance:
+%        --- If X is nonnegative, then PDOM(X)=X, and even convex arguments
+%            are accepted. So, for instance, PDOM(SQUARE(X))=SQUARE(X).
+%        --- If X is convex with unknown or negative sign, then PDOM(X) 
+%            returns a DCP error, as expected.
+%        --- Otherwise, PDOM(X)=X, and a constraint X>=0 is added to the 
+%            model. The curvature of PDOM(X) is the same as X: that is, if
+%            X is affine, then PDOM(X) is nonnegative affine; if X is
+%            concave, then PDOM(X) is nonnegative concave.
+%        If X is nonpositive, then a warning will be issued, since the only
+%        potentially feasible value of X will be X == 0.
 
 persistent P
 if isempty( P ),
@@ -41,11 +52,11 @@ y = x;
 
 function y = pdom_npos( x )
 % Nonpositive
-y = x;
 warning( 'CVX:Warning', ...
     [ 'Disciplined convex programming warning:\n', ...
       'Almost certainly infeasible: pdom( {%s} ).' ], ...
     cvx_class( x, true, true, true ) );
+y = cvx( size(x), [] );
 cvx_begin
     x >= 0; %#ok
 cvx_end

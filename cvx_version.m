@@ -136,14 +136,14 @@ end
 % Verbose output (cvx_setup, cvx_version plain) %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-cvx_ver = '2.1';
+cvx_ver = '3.0 (beta)';
 cvx_bld = '****';
 cvx_bdate = '<undated>';
 cvx_bcomm = '*******';
 line = '---------------------------------------------------------------------------';
 fprintf( '\n%s\n', line );
 fprintf( 'CVX: Software for Disciplined Convex Programming       (c)2014 CVX Research\n' );
-fprintf( 'Version %3s, Build %4s (%7s)%42s\n', cvx_ver, cvx_bld, cvx_bcomm, cvx_bdate );
+fprintf( 'Version %10s, Build %4s (%7s)%35s\n', cvx_ver, cvx_bld, cvx_bcomm, cvx_bdate );
 fprintf( '%s\n', line );
 fprintf( 'Installation info:\n    Path: %s\n', cvx___.where );
 if isoctave,

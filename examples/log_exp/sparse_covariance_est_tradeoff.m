@@ -17,17 +17,19 @@
 % is generated.
 
 % Input data 
-randn('state',0);
+rand('state',0); %#ok
+randn('state',0); %#ok
 n = 10; 
 N = 100; 
 Strue = sprandsym(n,0.5,0.01,1);
-nnz_true = sum(Strue(:)>1e-4);
+Strue(abs(Strue(:))<=1e-4) = 0;
+nnz_true = nnz(Strue);
 R = inv(full(Strue));
 y_sample = sqrtm(R)*randn(n,N); 
 Y = cov(y_sample'); 
 Nlambda = 20;
 lambda = logspace(-2, 3, Nlambda);
-nnz = zeros(1,Nlambda);
+nnz_i = zeros(1,Nlambda);
 
 for i=1:Nlambda
     disp(['i = ' num2str(i) ', lambda(i) = ' num2str(lambda(i))]);        
@@ -37,13 +39,12 @@ for i=1:Nlambda
         maximize log_det(S) - trace(S*Y) - lambda(i)*sum(sum(abs(S)))
         S >= 0; %#ok
     cvx_end
-    nnz(i) = sum(S(:)>1e-4);
+    nnz_i(i) = sum(abs(S(:))>1e-4);
 end
 
 figure; 
-semilogx(lambda, nnz); 
+semilogx(lambda, nnz_i); 
 hold on; 
 semilogx(lambda, nnz_true*ones(1,Nlambda),'r');
 xlabel('\lambda');
 legend('nonzeros in S', 'nonzeros in R^{-1}');  
-

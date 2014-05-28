@@ -28,7 +28,7 @@ function y = pos_posn( x )
 y = x;
 
 function y = pos_negn( x )
-y = zeros( size(x) );
+y = cvx( size(x), [] );
 
 function y = pos_cnvx( x ) %#ok
 cvx_begin
