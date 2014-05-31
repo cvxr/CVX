@@ -10,7 +10,6 @@ function z = lambda_min( Y )
 %         LAMBDA_MIN is concave and nonmonotonic (at least with respect to
 %         elementwise comparison), so its argument must be affine.
 
-error( nargchk( 1, 1, nargin ) ); %#ok
 z = - lambda_max( -Y );
 
 % Copyright 2005-2014 CVX Research, Inc.

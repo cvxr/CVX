@@ -3,17 +3,17 @@ function [ y, symm ] = cvx_s_sparse( m, n, symm, i, j )
 %CVX_S_SPARSE Matrices with a fixed sparsity pattern.
 
 if nargin < 5,
-    error( 'Sparsity structure missing.' );
+    cvx_throw( 'Sparsity structure missing.' );
 elseif ~isnumeric( i ) || ~isnumeric( j ),
-    error( 'Sparsity arguments must be vectors of nonnegative integers.' );
+    cvx_throw( 'Sparsity arguments must be vectors of nonnegative integers.' );
 elseif any( i <= 0 ) || any( j <= 0 ) || any( i ~= floor( i ) ) || any( j ~= floor( j ) ),
-    error( 'Sparsity arguments must be vectors nonnegative integers.' );
+    cvx_throw( 'Sparsity arguments must be vectors nonnegative integers.' );
 elseif numel( i ) ~= 1 && numel( j ) ~= 1 && numel( i ) ~= numel( j ),
-    error( 'Sparsity arguments have incompatible size.' );
+    cvx_throw( 'Sparsity arguments have incompatible size.' );
 elseif any( i > m ) || any( j > n ),
-    error( 'One or more indices are out of range.' );
+    cvx_throw( 'One or more indices are out of range.' );
 elseif symm && m ~= n,
-    error( 'Symmetric structure requires a square matrix.' );
+    cvx_throw( 'Symmetric structure requires a square matrix.' );
 end
 i = i(:); 
 j = j(:);

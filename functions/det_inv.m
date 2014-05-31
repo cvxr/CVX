@@ -17,29 +17,23 @@ function y = det_inv( varargin )
 %       DET_INV(X) is convex and nonmonotonic in X; therefore, when used in
 %       CVX specifications, its argument must be affine.
 
-persistent params
-if isempty( params ),
-    params.nargs     = 2;
-    params.args      = @det_inv_args;
-    params.empty     = 1;
-    params.constant  = @det_inv_diag;
-    params.diag      = @det_inv_diag;
-    params.affine    = @det_inv_aff;
-    params.structure = 'psdeig';
+persistent P
+if isempty( P ),
+    P.nargs     = 2;
+    P.args      = @det_inv_args;
+    P.empty     = 1;
+    P.constant  = @det_inv_diag;
+    P.diag      = @det_inv_diag;
+    P.affine    = @det_inv_aff;
+    P.structure = 'psdeig';
 end
-
-try
-    y = cvx_matrix_op( params, varargin );
-catch exc
-    if strncmp( exc.identifier, 'CVX:', 4 ), throw(exc);
-    else rethrow(exc); end
-end
+y = cvx_matrix_op( P, varargin );
 
 function [ X, p ] = det_inv_args( X, p )
 if isempty( p ),
     p = 1;
 elseif ~( isnumeric(p) && isreal(p) && numel(p)==1 && p>=0 ),
-    error( 'CVX:ArgError', 'Second argument must be a positive scalar.' );
+    cvx_throw( 'Second argument must be a positive scalar.' );
 end
 
 function y = det_inv_diag( D, p )

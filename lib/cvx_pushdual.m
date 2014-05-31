@@ -4,21 +4,21 @@ global cvx___
 try
     pstr = cvx___.problems(end);
 catch
-    error( 'CVX:NoModel', 'No CVX model is present.' );
+    cvx_throw( 'No CVX model is present.' );
 end
 
 if ~isvarname( name ),
     if isempty( name ),
-        error( 'CVX:Dual', 'Anonymous dual variables are not allowed.' );
+        cvx_throw( 'Anonymous dual variables are not allowed.' );
     elseif ~ischar( name ) || size( name, 1 ) ~= 1,
-        error( 'CVX:Dual', 'Second argument must be a string or a subscript structure array.' );
+        cvx_throw( 'Second argument must be a string or a subscript structure array.' );
     else
-        error( 'CVX:Dual', 'Invalid dual variable name: %s', name );
+        cvx_throw( 'Invalid dual variable name: %s', name );
     end
 elseif isfield( pstr.duals, name ),
-    error( 'CVX:Dual', 'Dual variable name conflict: %s', name );
+    cvx_throw( 'Dual variable name conflict: %s', name );
 elseif isfield( pstr.variables,name ),
-    error( 'CVX:Dual', 'Primal/dual variable name conflict: %s', name );
+    cvx_throw( 'Primal/dual variable name conflict: %s', name );
 end
 
 duals = pstr.duals;

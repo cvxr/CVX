@@ -5,7 +5,7 @@ if nargin == 1,
     switch class( v ),
         case 'struct',
             if numel( v ) ~= 1,
-                error( 'struct arrays not permitted in cvx tuple objects.' );
+                cvx_throw( 'struct arrays not permitted in cvx tuple objects.' );
             end
         case 'cell',
             v = reshape( v, 1, numel( v ) );

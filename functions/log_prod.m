@@ -17,7 +17,6 @@ function cvx_optval = log_prod( X, dim )
 %       LOG_PROD(X) is concave and nondecreasing in X. Therefore, when used
 %       in CVX expressions, X must be concave. X must be real.
 
-error( nargchk( 1, 2, nargin ) ); %#ok
 if nargin == 1,
 	cvx_optval = sum_log( X );
 else

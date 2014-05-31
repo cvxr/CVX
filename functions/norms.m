@@ -25,42 +25,36 @@ function y = norms( varargin )
 %       non-convex "norms" are used within CVX expressions. NORMS is
 %       nonmonotonic, so its input must be affine.
 
-persistent params
-if isempty( params ),
-    params.map = cvx_remap( { 'constant' ; 'l_convex' ; ...
+persistent P
+if isempty( P ),
+    P.map = cvx_remap( { 'constant' ; 'l_convex' ; ...
         { 'p_convex', 'n_concave', 'affine' } } );
-    params.funcs = { @norms_1, @norms_1, @norms_2 };
-    params.zero = 0;
-    params.reduce = true;
-    params.reverse = false;
-    params.constant = 1;
-    params.fname = 'norms';
-    params.dimarg = 3;
+    P.funcs = { @norms_1, @norms_1, @norms_2 };
+    P.zero = 0;
+    P.reduce = true;
+    P.reverse = false;
+    P.constant = 1;
+    P.fname = 'norms';
+    P.dimarg = 3;
 end
-
-try
-    [ sx, x, p, dim ] = cvx_get_dimension( varargin, 3 );
-    if nargin < 2 || isempty(p),
-        p = 2;
-    elseif ~( isnumeric(p) && numel(p)==1 && isreal(p) && p >= 1 ),
-        error( 'Second argument must be a scalar between 1 and +Inf, inclusive.' );
-    end
-    if sx(dim) == 0,
-        sx(dim) = 1;
-        y = zeros( sx, 1 );
-        if isa( x, 'cvx' ), y = cvx( y ); end
-    elseif sx(dim) == 1,
-        y = abs( x );
-    elseif p == 1,
-        y = sum( abs( x ), dim );
-    elseif p == Inf,
-        y = max( abs( x ), [], dim );
-    else
-        y = cvx_reduce_op( params, x, p, dim );
-    end
-catch exc
-    if strncmp( exc.identifier, 'CVX:', 4 ), throw( exc ); 
-    else rethrow( exc ); end
+[ sx, x, p, dim ] = cvx_get_dimension( varargin, 3 );
+if nargin < 2 || isempty(p),
+    p = 2;
+elseif ~( isnumeric(p) && numel(p)==1 && isreal(p) && p >= 1 ),
+    cvx_throw( 'Second argument must be a scalar between 1 and +Inf, inclusive.' );
+end
+if sx(dim) == 0,
+    sx(dim) = 1;
+    y = zeros( sx, 1 );
+    if isa( x, 'cvx' ), y = cvx( y ); end
+elseif sx(dim) == 1,
+    y = abs( x );
+elseif p == 1,
+    y = sum( abs( x ), dim );
+elseif p == Inf,
+    y = max( abs( x ), [], dim );
+else
+    y = cvx_reduce_op( P, x, p, dim );
 end
 
 function y = norms_1( x, p )

@@ -12,29 +12,23 @@ if nargin == 2,
     % max( X, Y )
     %
 
-    persistent bparam %#ok
-    if isempty( bparam ),
-        bparam.map = cvx_remap( ...
+    persistent BP %#ok
+    if isempty( BP ),
+        BP.map = cvx_remap( ...
             { { 'real' } }, ...
             { { 'nonnegative', 'p_nonconst' }, { 'nonpositive', 'n_nonconst' } }, ...
             { { 'nonpositive', 'n_nonconst' }, { 'nonnegative', 'p_nonconst' } }, ...
             { { 'l_convex', 'positive' } }, ...
             { { 'convex' } } );
-        bparam.funcs = { @max_b1, @max_b2, @max_b3, @max_b4, @max_b5 };
-        bparam.name = 'max';
-        bparam.constant = [];
+        BP.funcs = { @max_b1, @max_b2, @max_b3, @max_b4, @max_b5 };
+        BP.name = 'max';
+        BP.constant = [];
     end
-    
-    try
-        z = cvx_binary_op( bparam, varargin{:} );
-    catch exc
-        if strncmp( exc.identifier, 'CVX:', 4 ), throw( exc ); 
-        else rethrow( exc ); end
-    end
+    z = cvx_binary_op( BP, varargin{:} );
 
 elseif nargin > 1 && ~isempty( y ),
 
-    error( 'MAX with two matrices to compare and a working dimension is not supported.' );
+    cvx_throw( 'MAX with two matrices to compare and a working dimension is not supported.' );
         
 else
     
@@ -42,24 +36,18 @@ else
     % max( X, [], dim )
     %
 
-    persistent params %#ok
-    if isempty( params ),
-        params.map      = cvx_remap( { 'real' ; 'l_convex' ; 'convex' } );
-        params.funcs    = { @max_r1, @max_r2, @max_r3 };
-        params.constant = 1;
-        params.zero     = [];
-        params.reduce   = true;
-        params.reverse  = false;
-        params.dimarg   = 3;
-        params.name     = 'max';
+    persistent P %#ok
+    if isempty( P ),
+        P.map      = cvx_remap( { 'real' ; 'l_convex' ; 'convex' } );
+        P.funcs    = { @max_r1, @max_r2, @max_r3 };
+        P.constant = 1;
+        P.zero     = [];
+        P.reduce   = true;
+        P.reverse  = false;
+        P.dimarg   = 3;
+        P.name     = 'max';
     end
-
-    try
-        z = cvx_reduce_op( params, varargin{:} );
-    catch exc
-        if strncmp( exc.identifier, 'CVX:', 4 ), throw( exc ); 
-        else rethrow( exc ); end
-    end
+    z = cvx_reduce_op( P, varargin{:} );
    
 end    
 

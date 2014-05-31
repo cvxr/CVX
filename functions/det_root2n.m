@@ -14,7 +14,6 @@ function cvx_optval = det_root2n( X )
 %         DET_ROOT2N is concave and nonmonotonic; therefore, when used in
 %         CVX specifications, its argument must be affine.
 
-error( nargchk( 1, 1, nargin ) ); %#ok
 cvx_optval = sqrt(det_rootn(X));
 
 % Copyright 2005-2014 CVX Research, Inc.

@@ -13,7 +13,7 @@ function z = uminus( x )
 z = cvx( x.size_, -x.basis_ );
 tt = cvx_isvalid( z, true );
 if ~all( tt ),
-    throw( cvx_dcp_error( '-', 'unary', cvx_subsref( x, ~tt ) ) );
+    cvx_dcp_error( '-', 'unary', cvx_subsref( x, ~tt ) );
 end
 
 % Copyright 2005-2014 CVX Research, Inc.

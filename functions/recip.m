@@ -11,13 +11,7 @@ if isempty( P ),
     P.funcs = { @recip_cnst, @recip_logv, @recip_posc, @recip_negc };
     P.name = '1 /';
 end
-
-try
-    y = cvx_unary_op( P, x );
-catch exc
-    if strncmp( exc.identifier, 'CVX:', 4 ), throw( exc ); 
-    else rethrow( exc ); end
-end
+y = cvx_unary_op( P, x );
 
 function y = recip_cnst( x )
 y = 1.0 ./ x;

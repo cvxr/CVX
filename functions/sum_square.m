@@ -16,8 +16,8 @@ function y = sum_square( X, dim, is_abs )
 %       concave. Thus, when used in CVX expressions, X must be affine. DIM
 %       must be constant.
 
-persistent params cname rname cmap rmap
-if isempty( params ),
+persistent P cname rname cmap rmap
+if isempty( P ),
     cmap = cvx_remap( { ...
         { 'real', 'complex' } ; 'l_convex' ; ...
         { 'p_convex', 'n_concave', 'r_affine' } ; ...
@@ -27,28 +27,22 @@ if isempty( params ),
         { 'real'  } ; 'l_convex' ; ...
         { 'p_convex', 'n_concave', 'r_affine' } } );
     rname = 'sum_square';
-    params.funcs = { @ssqa_1, @ssqa_2, @ssqa_3, @ssqa_4 };
-    params.zero = 0;
-    params.constant = 1;
-    params.reduce = true;
-    params.reverse = false;
-    params.dimarg = 2;
+    P.funcs = { @ssqa_1, @ssqa_2, @ssqa_3, @ssqa_4 };
+    P.zero = 0;
+    P.constant = 1;
+    P.reduce = true;
+    P.reverse = false;
+    P.dimarg = 2;
 end
-
-try
-    if nargin < 3 || is_abs,
-        if nargin < 2, dim = []; end
-        params.name = rname;
-        params.map  = rmap;
-    else
-        params.name = cname;
-        params.map  = cmap;
-    end
-    y = cvx_reduce_op( params, X, dim );
-catch exc
-    if strncmp( exc.identifier, 'CVX:', 4 ), throw( exc ); a
-    else rethrow( exc ); end
+if nargin < 3 || is_abs,
+    if nargin < 2, dim = []; end
+    P.name = rname;
+    P.map  = rmap;
+else
+    P.name = cname;
+    P.map  = cmap;
 end
+y = cvx_reduce_op( P, X, dim );
 
 function x = ssqa_1( x )
 x = sum( x .* conj(x), 1 );

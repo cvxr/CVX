@@ -32,9 +32,9 @@ function epigraph( varargin )
 %   See also VARIABLE, HYPOGRAPH.
 
 if nargin < 2 || ~isequal( varargin{1}, 'variable' ),
-    error( 'Incorrect syntax for EPIGRAPH VARIABLE. Type HELP EPIGRAPH for details.' );
+    cvx_throw( 'Incorrect syntax for EPIGRAPH VARIABLE. Type HELP EPIGRAPH for details.' );
 elseif ~iscellstr( varargin ),
-    error( 'All arguments must be strings.' );
+    cvx_throw( 'All arguments must be strings.' );
 end
 evalin( 'caller', sprintf( '%s ', 'variable', varargin{2:end}, ' epigraph_' ) );
 

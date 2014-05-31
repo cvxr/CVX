@@ -22,13 +22,7 @@ if isempty( P ),
         { 'concave' }, [0,2,3,4,5] );
     P.funcs = { [], @log_lkup, @log_posy, @log_lcvx, @log_gen };
 end
-
-try
-    y = cvx_unary_op( P, x );
-catch exc
-    if strncmp( exc.identifier, 'CVX:', 4 ), throw( exc ); 
-    else rethrow( exc ); end
-end
+y = cvx_unary_op( P, x );
 
 function y = log_lkup( x )
 y = cvx( size( x ), cvx_getlog( cvx_basis( x ) ) );

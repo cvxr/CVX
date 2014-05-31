@@ -12,13 +12,7 @@ if isempty( P ),
         { 'r_affine' }, { 'c_affine' } );
     P.funcs = { @abs_cnst, @abs_posn, @abs_negn, @abs_affn, @abs_affn };
 end
-
-try
-    y = cvx_unary_op( P, x );
-catch exc
-    if strncmp( exc.identifier, 'CVX:', 4 ), throw( exc ); 
-    else rethrow( exc ); end
-end
+y = cvx_unary_op( P, x );
 
 function y = abs_cnst( x )
 % Constant

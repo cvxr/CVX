@@ -15,9 +15,7 @@ if isempty( shim.name ),
     int_path = [ cvx___.where, fs ];
     int_plen = length( int_path );
     shim.name = 'SDPT3';
-    shim.config.dualize = true;
-    shim.config.capableSOCP = true;
-    shim.config.capableSDP = true;
+    shim.config = struct( 'dualize', 1, 'lorentz', 1, 'semidefinite', -1 );
     flen = length(fname);
     fpaths = { [ int_path, 'sdpt3', fs, fname ] };
     fpaths = [ fpaths ; which( fname, '-all' ) ];
@@ -45,7 +43,7 @@ if isempty( shim.name ),
             otp = fread(fid,Inf,'uint8=>char')';
             fclose(fid);
         catch errmsg
-            tshim.error = sprintf( 'Unexpected error:\n%s\n', errmsg.message );
+            tshim.error = sprintf( 'Unexpected error reading %s:\n%s\n', fname, errmsg.message );
         end
         if isempty( tshim.error ),
             otp = regexp( otp, 'SDPT3: version \d+\.\d+', 'match' );
@@ -244,7 +242,7 @@ end
 
 if ~all(found),
     types = sprintf( '%s, ', types{~found} );
-    error( 'Unsupported nonlinearities found: %s', types(1:end-2) );
+    cvx_throw( 'Unsupported nonlinearities found: %s', types(1:end-2) );
 end
 
 ti = find(~used);

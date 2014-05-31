@@ -41,10 +41,10 @@ if nargin == 1,
             case 'false',
                 ns = false;
             otherwise,
-                error( 'String arugment must be ''true'' or ''false''.' );
+                cvx_throw( 'String arugment must be ''true'' or ''false''.' );
         end
     else
-        error( 'Argument must be a numeric scalar or a string.' );
+        cvx_throw( 'Argument must be a numeric scalar or a string.' );
     end
 end
 if isempty( cvx___.problems ),

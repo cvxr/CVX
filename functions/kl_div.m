@@ -17,7 +17,6 @@ function z = kl_div( x, y )
 %       constrain both X and Y to be nonnegative, hence there is no need to
 %       add additional constraints X >= 0 or Y >= 0 to enforce this.
 
-error(nargchk(2,2,nargin)); %#ok
 cvx_expert_check( 'kl_div', x, y );
 z = rel_entr( x, y ) - x + y;
 

@@ -1,9 +1,8 @@
 function v = subsref( x, S )
 try
     v = subsref( x.value_, S );
-catch exc    
-    tmp = cvx_subs2str( S );
-    error( 'CVX:Tuple', 'Invalid tuple reference: %s%s', inputname(1), tmp );
+catch
+    cvx_throw( 'Invalid tuple reference: %s%s', inputname(1), cvx_subs2str( S ) );
 end
 
 % Copyright 2005-2014 CVX Research, Inc.

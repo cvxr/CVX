@@ -38,13 +38,7 @@ if isempty( P ),
         { 'concave' }, [0,1,2,3,4,5] );
     P.funcs = { @pdom_nneg, @pdom_nneg, @pdom_npos, @pdom_affn, @pdom_cncv };
 end
-
-try
-    y = cvx_unary_op( P, x );
-catch exc
-    if strncmp( exc.identifier, 'CVX:', 4 ), throw( exc ); 
-    else rethrow( exc ); end
-end
+y = cvx_unary_op( P, x );
 
 function y = pdom_nneg( x )
 % Nonnegative

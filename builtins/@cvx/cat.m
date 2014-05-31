@@ -4,7 +4,7 @@ function y = cat( dim, varargin )
 %   CAT imposes no convexity restrictions on its arguments.
 
 if ~isnumeric( dim ) || any( size( dim ) ~= 1 ) || dim <= 0 || dim ~= floor( dim ),
-    error( 'First argument must be a dimension.' );
+    cvx_throw( 'First argument must be a dimension.' );
 end
 
 %
@@ -34,7 +34,7 @@ for k = 1 : nargin - 1,
         if isempty( sz ),
             sz = sx;
         elseif length( sx ) ~= length( sz ) || nnz( sx - sz ) > 1,
-            error( 'All dimensions but the one being concatenated (%d) must be equal.', dim );
+            cvx_throw( 'All dimensions but the one being concatenated (%d) must be equal.', dim );
         else
             sz( dim ) = sz( dim ) + sx( dim ); %#ok
         end

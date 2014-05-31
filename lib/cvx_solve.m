@@ -4,7 +4,7 @@ global cvx___
 try
     pstr = cvx___.problems(end);
 catch
-    error( 'CVX:NoModel', 'No CVX model is present.' );
+    cvx_throw( 'No CVX model is present.' );
 end
 
 quiet = pstr.quiet;
@@ -18,15 +18,16 @@ shim  = cvx___.solvers.list( solv );
 if isempty(shim.eargs), eargs = {}; else eargs = shim.eargs; end
 nobj  = numel( obj );
 if nobj > 1,
-    error( 'CVX:NonScalarObjective', 'Your objective function is not a scalar.' );
+    cvx_throw( 'Your objective function is not a scalar.' );
 end
-[ At, cones, sgn, Q, P, exps, dualized ] = cvx_extract( shim.config );
-
-if ndual && any( strncmp( {cones.type}, 'i_', 2 ) ),
-    idual_error = true;
-    ndual = false;
-else
-    idual_error = false;
+[ At, cones, sgn, Q, P, exps, dualized ] = cvx_extract( shim.config, shim.name );
+idual_error = false;
+if ndual,
+    ctype = { cones.type };
+    if any( strcmp( ctype, 'integer' ) ) || any( strcmp( ctype, 'binary' ) ),
+        idual_error = true;
+        ndual = false;
+    end
 end
 
 % Yes, the negative sign is here. This is new. I decided to make the 
@@ -582,11 +583,7 @@ if ~quiet,
 end
 
 if ~isempty( estruc ),
-    if strncmp( estruc.identifier, 'CVX:', 4 ),
-        error( estruc.identifier, estruc.message );
-    else
-        rethrow( estruc );
-    end
+    cvx_throw( estruc );
 end
 
 % Copyright 2005-2014 CVX Research, Inc.

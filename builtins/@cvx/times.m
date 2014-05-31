@@ -27,9 +27,9 @@ function z = times( x, y, oper )
 %   For vectors, matrices, and arrays, these rules are verified 
 %   indepdently for each element.
 
-persistent params
-if isempty( params ),
-    params.map = cvx_remap( ...
+persistent P
+if isempty( P ),
+    P.map = cvx_remap( ...
         ... % Invalid combinations: negative of log-concave, gp term
         { { 'negative' },   { 'l_concave_', 'g_valid' } }, ...
         { { 'l_concave_', 'g_valid' }, { 'negative' }   }, ...
@@ -45,18 +45,12 @@ if isempty( params ),
         ... % Potential quadratic form
         { { 'affine', 'p_convex', 'n_concave' } }, ...
         [ 0, 0, 1, 1, 2, 2, 3, 3, 4 ] );
-    params.funcs = { @times_l, @times_r, @times_g, @times_q };
-    params.constant = [];
+    P.funcs = { @times_l, @times_r, @times_g, @times_q };
+    P.constant = [];
 end
-
-try
-    if nargin < 3, oper = '.*'; end
-    params.name = oper;
-    z = cvx_binary_op( params, x, y );
-catch exc
-    if isequal( exc.identifier, 'CVX:DCPError' ), throw( exc ); 
-    else rethrow( exc ); end
-end
+if nargin < 3, oper = '.*'; end
+P.name = oper;
+z = cvx_binary_op( P, x, y );
 
 function z = times_l( x, y )
 % constant .* something
@@ -87,9 +81,9 @@ cyB = conj( yB );
 alpha = sum( yB .* cyB, 1 );
 alpha = sum( bsxfun( @times, xB, yB ), 1 ) ./ max( alpha, realmin );
 if nnz( xB - bsxfun( @times, alpha, cyB ) > 2 * eps * sqrt( conj( xB ) .* xB ) ),
-    error( 'Disciplined convex programming error:\n    Invalid quadratic form(s): not a square.\n', 1 ); %#ok
+    cvx_throw( 'Disciplined convex programming error:\n    Invalid quadratic form(s): not a square.' );
 elseif any( abs(imag(alpha)) > 2 * eps * abs(real(alpha)) ),
-    error( 'Disciplined convex programming error:\n    Invalid quadratic form(s): not real.\n', 1 ); %#ok
+    cvx_throw( 'Disciplined convex programming error:\n    Invalid quadratic form(s): not real.' );
 else
     if isreal( xB ),
         z = square( y );

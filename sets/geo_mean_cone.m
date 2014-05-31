@@ -77,11 +77,11 @@ if nargin == 3 && ischar( w ),
 elseif nargin < 3 || isempty( w ),
     w = [];
 elseif numel( w ) ~= length( w ) || ~isnumeric( w ) || ~isreal( w ) || any( w < 0 ),
-    error( 'Third argument must be a vector of nonnegative real numbers.' );
+    cvx_throw( 'Third argument must be a vector of nonnegative real numbers.' );
 elseif length( w ) ~= nx,
-    error( 'Third argument must be a vector of length %d', nx );
+    cvx_throw( 'Third argument must be a vector of length %d', nx );
 elseif nx ~= 0 && ~any( w ),
-    error( 'At least one of the weights must be nonzero.' );
+    cvx_throw( 'At least one of the weights must be nonzero.' );
 end
 if any( w ~= floor( w ) ),
     [ nn, dd ] = rat( w );
@@ -95,11 +95,11 @@ end
 if isempty( mode ),
     mode = 'hypo';
 elseif ~ischar( mode ) || size( mode, 1 ) > 1,
-    error( 'Mode must be a string.' );
+    cvx_throw( 'Mode must be a string.' );
 else
     lmode = lower(mode);
     if ~any( strcmp( lmode, { 'hypo', 'pos', 'abs', 'cabs', 'func' } ) ),
-        error( [ 'Invalid mode string: ', mode ] );
+        cvx_throw( [ 'Invalid mode string: ', mode ] );
     end
     mode = lmode;
 end

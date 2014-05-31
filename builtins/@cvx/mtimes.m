@@ -35,9 +35,9 @@ if all( sx == 1 ) || all( sy == 1 ),
     z = times( x, y, oper );
     return
 elseif length( sx ) > 2 || length( sy ) > 2,
-    error( 'CVX:ArgError', 'Input arguments must be 2-D, or at least one input must be scalar.' );
+    cvx_throw( 'Input arguments must be 2-D, or at least one input must be scalar.' );
 elseif sx( 2 ) ~= sy( 1 ),
-    error( 'CVX:ArgError', 'Inner matrix dimensions do not agree.' );
+    cvx_throw( 'Inner matrix dimensions do not agree.' );
 elseif sx( 2 ) == 1,
     z = bsxfun( @times, x, y, oper );
     return
@@ -106,7 +106,7 @@ end
 
 if all(affnnc(vx)) && all(affnnc(vy)),
     if nz ~= 1,
-        error( 'CVX:DCPError', 'Disciplined convex programming error:\n    Invalid quadratic form: not a scalar.\n' );
+        cvx_throw( 'Disciplined convex programming error:\n    Invalid quadratic form: not a scalar.\n' );
     end
     % quadratic form test 1: look for x' * y, x = D * conj( y ) + b
     % where D is diagonal psd or nsd, b is constant
@@ -122,16 +122,16 @@ if all(affnnc(vx)) && all(affnnc(vy)),
     alpha = sum( bsxfun( @times, xB, yB ), 1 ) ./ max( alpha, realmin );
     if ~nnz( xB - bsxfun( @times, alpha, cyB ) > 2 * eps * sqrt( conj( xB ) .* xB ) ),
         if any( abs(imag(alpha)) > 2 * eps * abs(real(alpha)) ),
-            error( 'CVX:DCPError', 'Disciplined convex programming error:\n    Invalid quadratic form: not real.\n' );
+            cvx_throw( 'Disciplined convex programming error:\n    Invalid quadratic form: not real.\n' );
         end
         alpha = real( alpha );
         neg = any( alpha < 0 );
         if neg && ~all( alpha <= 0 ),
-            error( 'CVX:DCPError', 'Disciplined convex programming error:\n    Invalid quadratic form: neither convex or concave.\n' );
+            cvx_throw( 'Disciplined convex programming error:\n    Invalid quadratic form: neither convex or concave.\n' );
         else
             offset = conj(x.basis_(1,:)-alpha.*y.basis_(1,:));
             if any( abs(imag(offset)) > 2*eps*abs(real(offset)) ),
-                error( 'CVX:DCPError', 'Disciplined convex programming error:\n    Invalid quadratic form: not real.\n' );
+                cvx_throw( 'Disciplined convex programming error:\n    Invalid quadratic form: not real.\n' );
             end
             z = y;
             if ~isreal( z ), z = abs(z); end
@@ -152,12 +152,12 @@ if all(affnnc(vx)) && all(affnnc(vy)),
         Q   = xA * y.basis_(1,:).' + yA * x.basis_(1,:).';
         R   = x.basis_(1,:) * y.basis_(1,:).';
         if ~isreal( R ) || ~isreal( Q ) || ~isreal( P ),
-            error( 'CVX:DCPError', 'Disciplined convex programming error:\n   Invalid quadratic form: not real.' );
+            cvx_throw( 'Disciplined convex programming error:\n   Invalid quadratic form: not real.' );
         elseif ~all(affine(vx)) && ~all(affine(vy)),
             xx = cvx( zb, sparse( dx, 1 : zb, 1 ) );
             [ z, success ] = quad_form( xx, P, Q, R );
             if ~success,
-                error( 'CVX:DCPError', 'Disciplined convex programming error:\n    Invalid quadratic form: neither convex or concave.\n' );
+                cvx_throw( 'Disciplined convex programming error:\n    Invalid quadratic form: neither convex or concave.\n' );
             end
             return
         end

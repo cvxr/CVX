@@ -6,12 +6,7 @@ function cvx_clear
 %    over. Typing this before entering another CVX_BEGIN again avoids the 
 %    warning message that occurs if CVX_BEGIN detects a model in progress.
 
-try
-    evalin( 'caller', 'cvx_cleanup( false )' );
-catch exc
-    if strncmp( exc.identifier, 'CVX:', 4 ), throw( exc );
-    else rethrow( exc ); end
-end
+evalin( 'caller', 'cvx_cleanup( false )' );
 
 % Copyright 2005-2014 CVX Research, Inc.
 % See the file LICENSE.txt for full copyright information.

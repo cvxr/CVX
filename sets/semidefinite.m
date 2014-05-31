@@ -37,13 +37,12 @@ function x = semidefinite( sz, iscplx ) %#ok
 % Check size vector
 %
 
-error( nargchk( 1, 2, nargin ) ); %#ok
 if ~isnumeric( sz ) || isempty( sz ) || any( sz < 0 ) || any( sz ~= floor( sz ) ),
-    error( 'First argument must be a nonnegative integer or a valid size vector.' );
+    cvx_throw( 'First argument must be a nonnegative integer or a valid size vector.' );
 elseif length( sz ) == 1,
     sz = [ sz, sz ];
 elseif sz( 1 ) ~= sz( 2 ),
-    error( 'If a size vector is supplied, the first two dimensions must be equal.' );
+    cvx_throw( 'If a size vector is supplied, the first two dimensions must be equal.' );
 end
 if sz( 1 ) == 1,
     str = { 'nonnegative' };
@@ -57,7 +56,7 @@ end
 
 if nargin > 1,
     if ( ~isnumeric( iscplx ) && ~islogical( iscplx ) ) || length( iscplx ) ~= 1,
-        error( 'Second argument must be a numeric or logical scalar.' );
+        cvx_throw( 'Second argument must be a numeric or logical scalar.' );
     elseif iscplx && sz(1) > 1,
         str{end+1} = 'hermitian';
     end

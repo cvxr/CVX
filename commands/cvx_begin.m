@@ -37,18 +37,13 @@ function cvx_begin( varargin )
 %   one or more of the subproblems is infeasible or unbounded. The keyword is
 %   ignored for sets and incomplete specifications.
 
-try
-    st = dbstack;
-    depth = length( st );
-    if depth < 2, name = '';
-    else name = st(2).name; end
-    evalin( 'caller', 'cvx_cleanup( true )' );
-    cvx_push( name, depth, varargin );
-    assignin( 'caller', 'cvx_problem', cvxprob );
-catch exc
-    if strncmp( exc.identifier, 'CVX:', 4 ), throw( exc );
-    else rethrow( exc ); end
-end
+st = dbstack;
+depth = length( st );
+if depth < 2, name = '';
+else name = st(2).name; end
+evalin( 'caller', 'cvx_cleanup( true )' );
+cvx_push( name, depth, varargin );
+assignin( 'caller', 'cvx_problem', cvxprob );
 
 % Copyright 2005-2014 CVX Research, Inc. 
 % See the file LICENSE.txt for full copyright information.

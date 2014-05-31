@@ -10,7 +10,6 @@ function t = toeplitz( c, r )
 % Check arguments
 %
 
-error( nargchk( 1, 2, nargin ) ); %#ok
 if nargin < 2,
     c    = vec( c );
     m    = length( c );

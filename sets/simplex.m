@@ -28,12 +28,7 @@ function x = simplex( varargin ) %#ok
 %       SIMPLEX is a cvx set specification. See the user guide for
 %       details on how to use sets.
 
-try
-    [ sx, dim ] = cvx_get_dimension( varargin, 2, 'nox', true ); %#ok
-catch exc
-    if strncmp( exc.identifier, 'CVX:', 4 ), throw( exc );
-    else rethrow( exc ); end
-end
+[ sx, dim ] = cvx_get_dimension( varargin, 2, 'nox', true ); %#ok
 
 cvx_begin set
    variable x( sx ) nonnegative

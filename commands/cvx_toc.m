@@ -14,7 +14,7 @@ function timers = cvx_toc
 
 global cvx___
 if isempty( cvx___ ),
-    error( 'CVX has not yet been used (or the global workspace has been cleared).' );
+    cvx_throw( 'CVX has not yet been used (or the global workspace has been cleared).' );
 end
 timers = cvx___.timers(1:4);
 tstart = tic;

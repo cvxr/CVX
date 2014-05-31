@@ -18,9 +18,9 @@ function expressions( varargin )
 %   See also EXPRESSION.
 
 if nargin < 1,
-    error( 'Incorrect syntax for EXPRESSIONS. Type HELP EXPRESSIONS for details.' );
+    cvx_throw( 'Incorrect syntax for EXPRESSIONS. Type HELP EXPRESSIONS for details.' );
 elseif ~iscellstr( varargin ),
-    error( 'All arguments must be strings.' );
+    cvx_throw( 'All arguments must be strings.' );
 end
 for k = 1 : nargin,
     evalin( 'caller', [ 'expression ', varargin{k} ] );

@@ -8,8 +8,7 @@ try
     cvx___.broadcast = oflag;
 catch exc
     cvx___.broadcast = oflag;
-    if strncmp( exc.identifier, 'CVX:', 4 ), throw( exc ); 
-    else rethrow( exc ); end
+    cvx_throw( exc );
 end
 
 

@@ -4,7 +4,7 @@ global cvx___
 try
     p = length(cvx___.problems);
 catch
-    error( 'CVX:NoModel', 'No CVX model is present.' );
+    cvx_throw( 'No CVX model is present.' );
 end
 if p == 1, tstart = tic; end
 pstr = cvx___.problems(p);
@@ -52,7 +52,7 @@ elseif pstr.checkpoint(4) >= pstr.checkpoint(1) && ~isnan( pstr.direction ),
     i2 = cellfun( @cvx_id, i2 );
     if any( i1 ~= i2 ),
         temp = sprintf( ' %s', fn1{ i1 ~= i2 } );
-        error( 'CVX:CorruptModel', 'The following cvx variable(s) have been cleared or overwritten:\n  %s\nThis is often an indication that an equality constraint was\nwritten with one equals ''='' instead of two ''==''. The model\nmust be rewritten before CVX can solve it.', temp );
+        cvx_throw( 'The following cvx variable(s) have been cleared or overwritten:\n  %s\nThis is often an indication that an equality constraint was\nwritten with one equals ''='' instead of two ''==''. The model\nmust be rewritten before CVX can solve it.', temp );
     end
     [ status, result, bound, iters, tol ] = cvx_solve;
     if p == 1, pstr.tictime(2) = tstart; end
@@ -66,7 +66,7 @@ elseif pstr.checkpoint(4) >= pstr.checkpoint(1) && ~isnan( pstr.direction ),
 elseif p < 2,
 
     cvx_pop( 0 );
-    error( 'CVX:IncompleteModel', 'Cannot construct a set object outside of a CVX model.' );
+    cvx_throw( 'Cannot construct a set object outside of a CVX model.' );
 
 else
 

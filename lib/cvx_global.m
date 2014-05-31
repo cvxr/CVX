@@ -31,7 +31,7 @@ structures = { 'banded', 'binary', 'complex', 'diagonal', 'hankel', ...
     'skew_symmetric', 'semidefinite', 'sparse', 'symmetric', ...
     'toeplitz', 'tridiagonal', 'upper_bidiagonal', 'upper_hankel', ...
     'upper_hessenberg', 'upper_triangular', 'nonnegative_', ...
-    'complex_if', 'hermitian_if' };
+    'complex_if', 'hermitian_if', 'semicontinuous', 'semiinteger' };
 s_type = cell(1,length(structures)); 
 [ s_type{:} ] = deal('S');
 reserved = cell2struct( [ c_type, k_type, s_type ], ...
@@ -67,13 +67,12 @@ for k = 1 : length(osolvers),
     try
         cd(tsolv.spath);
         tsolv.warning = '';
-        tsolv = feval(tsolv.sname,tsolv);
+        tsolv = feval( tsolv.sname, tsolv );
     catch errmsg
-        errmsg = cvx_error( errmsg, 63, false, '    ' );
         if isempty( tsolv.name ),
             tsolv.name = [ tsolv.spath, tsolv.sname ];
         end
-        tsolv.error = sprintf( 'unexpected error:\n%s', errmsg );
+        tsolv.error = errmsg;
     end
     if ~isempty(tsolv.error),
         nrej = nrej + 1;
@@ -97,36 +96,29 @@ cd( cur_d );
 
 if ~nrej, return; end
 reject = {};
-reject_lic = {};
-reject_java = {};
 ndefault = 0;
 for k = 1 : nsolv,
-    if isempty( solvers(k).error ),
-        if ~ndefault, ndefault = k; end
-    elseif isequal( solvers(k).error, 'Java support is required.' );
-        reject_java{end+1} = solvers.name; %#ok
-    elseif isequal( solvers(k).error, 'A CVX Professional license is required.' ),
-        reject_lic{end+1} = solvers(k).name; %#ok
-    else
-        errmsg = [ solvers(k).name, ': ', solvers(k).error ];
-        reject{end+1} = cvx_error( errmsg, 67, false, '    ' ); %#ok
+    tsolv = solvers(k);
+    terr = tsolv.error;
+    if isempty( terr )
+        temp = {};
+        if ndefault == 0, ndefault = k; end
+    elseif ~ischar( terr )
+        temp = cvx_error( terr, 67, [ tsolv.name, ': UNEXPECTED ERROR ' ] );
+    elseif any( regexp( terr, '\n' ) )
+        temp = cvx_error( terr, 67, [ tsolv.name, ': ' ] );
+    elseif ~isempty( terr ),
+        temp = { [ tsolv.name, ': ', terr ] };
     end
-end
-if ~isempty( reject_java ),
-    reject_java = sprintf( '%s ', reject_java{:} );
-    warning( 'CVX:SolverErrors', 'The following solvers were disabled due to the disabling of Java: %s', reject_java );
-end
-if ~isempty( reject_lic ),
-    reject_lic = sprintf( '%s ', reject_lic{:} );
-    warning( 'CVX:SolverErrors', 'The following solvers are are disabled due to licensing issues: %s', reject_lic );
+    reject = [ reject, temp(:)' ]; %#ok
 end
 if ~isempty( reject ),
-    reject = sprintf( '%s', reject{:} );
+    reject = sprintf( '    %s\n', reject{:} );
     warning( 'CVX:SolverErrors', 'The following errors were issued when initializing the solvers:\n%sPlease check your installation and re-run CVX_SETUP.\nThese solvers are unavailable for this session.%s', reject );
 end
 if nrej == length( solvers ),
     clear global cvx___
-    error( 'CVX:SolverErrors', 'All solvers were disabled due to various errors.\nPlease re-run CVX_SETUP and, if necessary, contact CVX Research for support.' );
+    cvx_throw( 'All solvers were disabled due to various errors.\nPlease re-run CVX_SETUP and, if necessary, contact CVX Research for support.' );
 elseif ~isempty(solvers(cvx___.solvers.map.default).error),
     cvx___.solvers.map.default = ndefault;
     cvx___.solvers.selected = ndefault;

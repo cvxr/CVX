@@ -13,7 +13,7 @@ function x = sym( x )
 
 sx = size(x);
 if sx(1) ~= sx(2),
-    error( 'Argument must be square in its first two dimensions.' );
+    cvx_throw( 'Argument must be square in its first two dimensions.' );
 elseif sx(1) > 1,
     x = 0.5 * ( x + conj( permute( x, [2,1,3:length(sx)] ) ) );
 end

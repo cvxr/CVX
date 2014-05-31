@@ -12,24 +12,18 @@ function y = cumsum( varargin )
 %   violation of the DCP ruleset. For DGPs, addition rules dictate that
 %   the elements of X must be log-convex or log-affine.
 
-persistent params
-if isempty( params ),
-    params.map      = cvx_remap( { 'constant' ; 'affine' ; 'convex' ; 'concave' } );
-    params.funcs    = { @cumsum_1, @cumsum_2, @cumsum_2 };
-    params.zero     = 0;
-    params.reduce   = false;
-    params.reverse  = true;
-    params.dimarg   = 2;
-    params.constant = 1;
-    params.name     = 'cumsum';
+persistent P
+if isempty( P ),
+    P.map      = cvx_remap( { 'constant' ; 'affine' ; 'convex' ; 'concave' } );
+    P.funcs    = { @cumsum_1, @cumsum_2, @cumsum_2 };
+    P.zero     = 0;
+    P.reduce   = false;
+    P.reverse  = true;
+    P.dimarg   = 2;
+    P.constant = 1;
+    P.name     = 'cumsum';
 end
-
-try
-    y = cvx_reduce_op( params, varargin{:} );
-catch exc
-    if strncmp( exc.identifier, 'CVX:', 4 ), throw( exc ); 
-    else rethrow( exc ); end
-end
+y = cvx_reduce_op( P, varargin{:} );
 
 function x = cumsum_1( x )
 x = builtin( 'cumsum', x, 2 );

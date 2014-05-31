@@ -36,7 +36,7 @@ function set = rotated_lorentz( varargin )
 if isempty( iscplx ),
     iscplx = false;
 elseif length( iscplx ) ~= 1,
-    error( 'Third argument must be a scalar.' );
+    cvx_throw( 'Third argument must be a scalar.' );
 else
     iscplx = logical( iscplx );
 end
@@ -62,7 +62,7 @@ else
         variable x( nv, ny ) 
         variable y( 1,  ny ) nonnegative_
         variable z( 1,  ny ) nonnegative_
-        cvx_pushcone( true, 'rotated-lorentz', [ x ; y ; z ] ); %#ok
+        cvx_pushcone( true, 'rotated_lorentz', [ x ; y ; z ] ); %#ok
     cvx_end
     if iscplx,
         x = x(1:2:end,:) + 1j * x(2:2:end,:);

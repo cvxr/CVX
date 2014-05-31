@@ -12,30 +12,24 @@ if nargin == 2,
     % min( X, Y )
     %
 
-    persistent bparam %#ok
-    if isempty( bparam ),
-        bparam.map = cvx_remap( ...
+    persistent BP %#ok
+    if isempty( BP ),
+        BP.map = cvx_remap( ...
             { { 'real' } }, ...
             { { 'nonpositive', 'n_nonconst' }, { 'nonnegative', 'p_nonconst' } }, ...
             { { 'nonnegative', 'p_nonconst' }, { 'nonpositive', 'n_nonconst' } }, ...
             { { 'l_concave', 'positive' } }, ...
             { { 'concave' } } );
-        bparam.constant = 1;
-        bparam.funcs = { @min_b1, @min_b2, @min_b3, @min_b4, @min_b5 };
-        bparam.constant = [];
-        bparam.name = 'min';
+        BP.constant = 1;
+        BP.funcs = { @min_b1, @min_b2, @min_b3, @min_b4, @min_b5 };
+        BP.constant = [];
+        BP.name = 'min';
     end
-    
-    try
-        z = cvx_binary_op( bparam, varargin{:} );
-    catch exc
-        if strncmp( exc.identifier, 'CVX:', 4 ), throw( exc ); 
-        else rethrow( exc ); end
-    end
+    z = cvx_binary_op( BP, varargin{:} );
 
 elseif nargin > 1 && ~isempty( varargin{2} ),
 
-    error( 'MIN with two matrices to compare and a working dimension is not supported.' );
+    cvx_throw( 'MIN with two matrices to compare and a working dimension is not supported.' );
         
 else
     
@@ -43,24 +37,18 @@ else
     % min( X, [], dim )
     %
 
-    persistent params %#ok
-    if isempty( params ),
-        params.map      = cvx_remap( { 'real' ; 'l_concave' ; 'concave' } );
-        params.funcs    = { @min_r1, @min_r2, @min_r3 };
-        params.constant = 1;
-        params.zero     = [];
-        params.reduce   = true;
-        params.reverse  = false;
-        params.name     = 'min';
-        params.dimarg   = 3;
+    persistent P %#ok
+    if isempty( P ),
+        P.map      = cvx_remap( { 'real' ; 'l_concave' ; 'concave' } );
+        P.funcs    = { @min_r1, @min_r2, @min_r3 };
+        P.constant = 1;
+        P.zero     = [];
+        P.reduce   = true;
+        P.reverse  = false;
+        P.name     = 'min';
+        P.dimarg   = 3;
     end
-
-    try
-        z = cvx_reduce_op( params, varargin{:} );
-    catch exc
-        if strncmp( exc.identifier, 'CVX:', 4 ), throw( exc ); 
-        else rethrow( exc ); end
-    end
+    z = cvx_reduce_op( P, varargin{:} );
    
 end 
 

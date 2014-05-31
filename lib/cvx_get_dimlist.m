@@ -9,7 +9,7 @@ else
     end
     nx = numel(sx);
     if ~( isnumeric(sx) && nx==size(sx,2) && isreal(sx) && all(sx>=0) && all(sx==floor(sx)) ),
-        error( 'CVX:ArgError', 'Size argument must be a row vector of nonnegative integers.' );
+        cvx_throw( 'Size argument must be a row vector of nonnegative integers.' );
     end
     switch nx,
     case 2,

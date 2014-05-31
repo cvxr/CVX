@@ -26,17 +26,17 @@ function integer( varargin )
 %   See also BINARY, VARIABLE, VARIABLES.
 
 if nargin < 2
-    error( 'Incorrect syntax for INTEGER VARIABLE(S). Type HELP INTEGER for details.' );
+    cvx_throw( 'Incorrect syntax for INTEGER VARIABLE(S). Type HELP INTEGER for details.' );
 elseif ~iscellstr( varargin ),
-    error( 'All arguments must be strings.' );
+    cvx_throw( 'All arguments must be strings.' );
 elseif strcmp( varargin{1}, 'variable' ),
-    evalin( 'caller', sprintf( '%s ', 'variable', varargin{2:end}, ' integer' ) );
+    cvx_throw( 'caller', sprintf( '%s ', 'variable', varargin{2:end}, ' integer' ) );
 elseif strcmp( varargin{1}, 'variables' ),
     for k = 2 : nargin,
         evalin( 'caller', sprintf( '%s ', 'variable', varargin{k}, ' integer' ) );
     end
 else    
-    error( 'Incorrect syntax for INTEGER VARIABLE(S). Type HELP INTEGER for details.' );
+    cvx_throw( 'Incorrect syntax for INTEGER VARIABLE(S). Type HELP INTEGER for details.' );
 end
 
 % Copyright 2005-2014 CVX Research, Inc.

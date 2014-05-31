@@ -29,31 +29,25 @@ function y = berhu_pos( x, M, t )
 %       nonincreasing in T. Therefore, when used in CVX specifications, X
 %       must be convex and T must be concave. T must be real.
 
-persistent params
-if isempty( params ),
-    params.map = cvx_remap( ...
+persistent P
+if isempty( P ),
+    P.map = cvx_remap( ...
         { { 'any' }, { 'nonpositive' } }, ...
         { { 'real' } }, ...
         { { 'convex' }, { 'concave' } }, [0,1,2] );
-    params.funcs = { @berhu_pos_c, @berhu_pos_nc };
-    params.constant = 1;
-    params.name = 'berhu_pos';
+    P.funcs = { @berhu_pos_c, @berhu_pos_nc };
+    P.constant = 1;
+    P.name = 'berhu_pos';
 end
-
-try
-    if nargin < 2,
-        M = 1;
-    elseif ~( isnumeric(M) && numel(M)==1 && isreal(M) && M>0 ),
-        error( 'Second argument must be a positive scalar.' );
-    end
-    if nargin < 3,
-        t = 1;
-    end
-    y = cvx_binary_op( params, x, t, M );
-catch exc
-    if strncmp( exc.identifier, 'CVX:', 4 ), throw( exc );
-    else rethrow( exc ); end
-end        
+if nargin < 2,
+    M = 1;
+elseif ~( isnumeric(M) && numel(M)==1 && isreal(M) && M>0 ),
+    cvx_throw( Second argument must be a positive scalar.' );
+end
+if nargin < 3,
+    t = 1;
+end
+y = cvx_binary_op( P, x, t, M );
 
 function y = berhu_pos_c( x, t, M )
 y = max( x, 0 ) ./ max(t,realmin);

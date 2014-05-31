@@ -13,13 +13,7 @@ if isempty( P ),
         { 'convex' }, { 'concave' }, [2,3,4] );
     P.funcs = { [], @lin_affn, @lin_cnvx, @lin_cncv };
 end
-
-try
-    y = cvx_unary_op( P, x );
-catch exc
-    if strncmp( exc.identifier, 'CVX:', 4 ), throw( exc ); 
-    else rethrow( exc ); end
-end
+y = cvx_unary_op( P, x );
 
 function y = lin_affn( x )
 y = x;

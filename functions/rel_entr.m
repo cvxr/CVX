@@ -22,26 +22,20 @@ function z = rel_entr( x, y )
 
 cvx_expert_check( 'rel_entr', x, y );
 
-persistent params
-if isempty( params ),
-    params.map = cvx_remap( ...
+persistent P
+if isempty( P ),
+    P.map = cvx_remap( ...
         { { 'negative' }, { 'any' } }, ...
         { { 'any' }, { 'nonpositive' } }, ...
         { { 'real' } }, ...
         { { 'r_affine' }, { 'concave' } }, ...
         [0,0,1,2] );
-    params.funcs = { @rel_entr_1, @rel_entr_2 };
-    params.constant = 1;
-    params.name = 'rel_entr';
-    params.test = @rel_entr_test;
+    P.funcs = { @rel_entr_1, @rel_entr_2 };
+    P.constant = 1;
+    P.name = 'rel_entr';
+    P.test = @rel_entr_test;
 end
-
-try
-    z = cvx_binary_op( params, x, y );
-catch exc
-	if strncmp( exc.identifier, 'CVX:', 4 ), throw( exc );
-	else rethrow( exc ); end
-end
+z = cvx_binary_op( P, x, y );
 
 function z = rel_entr_1( x, y )   
 z  = x .* builtin( 'log', x ./ y );

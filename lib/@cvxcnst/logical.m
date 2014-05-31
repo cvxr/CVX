@@ -1,5 +1,5 @@
 function x = logical( v ) %#ok
-error( 'Disciplined convex programming error:\n   Constraints may not appear in if/then statements.', 1 ); %#ok
+cvx_throw( 'Disciplined convex programming error:\n   Constraints may not appear in if/then statements.' );
 
 % Copyright 2005-2014 CVX Research, Inc. 
 % See the file LICENSE.txt for full copyright information.

@@ -21,8 +21,7 @@ try
     varargin{end+1:2} = [];
     y = sum_square( varargin{:}, true );
 catch exc
-    if strncmp( exc.identifier, 'CVX:', 4 ), throw( exc ); a
-    else rethrow( exc ); end
+	cvx_throw( exc );
 end
 
 % Copyright 2005-2014 CVX Research, Inc.

@@ -44,27 +44,27 @@ end
 
 sx = size( x );
 if length( sx ) ~= 2 || all( sx ~= 1 ),
-    error( 'The first argument must be a vector.' );
+    cvx_throw( 'The first argument must be a vector.' );
 end
 nx = prod( sx );
 
 sQ = size( Q );
 if length( sQ ) ~= 2 || sQ( 1 ) ~= sQ( 2 ),
-    error( 'The second argument must be a scalar or a square matrix.' );
+    cvx_throw( 'The second argument must be a scalar or a square matrix.' );
 elseif sQ( 1 ) ~= 1 && sQ( 1 ) ~= nx,
-    error( 'The size of Q is incompatible with the size of x.' );
+    cvx_throw( 'The size of Q is incompatible with the size of x.' );
 end
 
 if nargin < 3,
     v = sparse( sx(1), sx(2) );
 elseif ~isequal( size( v ), sx ),
-    error( 'The size of v is incompatible with the size of x.' );
+    cvx_throw( 'The size of v is incompatible with the size of x.' );
 end
 
 if nargin < 4,
     w = 0;
 elseif numel(w) ~= 1 || ~isreal(w),
-    error( 'The fourth argument must be a real scalar.' );
+    cvx_throw( 'The fourth argument must be a real scalar.' );
 end
 
 if sx(1) ~= nx,
@@ -79,9 +79,9 @@ if cvx_isconstant( x ),
     cvx_optval = real( x' * Q * x ) + sum( real( v' * x ) ) + w;
     return
 elseif ~cvx_isconstant( Q ) || ~cvx_isconstant( v ),
-    error( 'CVX:DCPError', 'Either x or (Q,v) must be constant.' );
+    cvx_throw( 'Either x or (Q,v) must be constant.' );
 elseif ~cvx_isaffine( x ),
-    error( 'CVX:DCPError', 'First argument must be affine.' );
+    cvx_throw( 'First argument must be affine.' );
 end
 
 Q = cvx_constant( Q );
@@ -229,7 +229,7 @@ while true,
 end
 
 if ~success && nargout == 1,
-    error( 'CVX:DCPError', 'The second argument must be positive or negative semidefinite.' );
+    cvx_throw( 'Disciplined convex programming error:\n    The second argument must be positive or negative semidefinite.' );
 end
 
 % Copyright 2005-2014 CVX Research, Inc.

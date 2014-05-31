@@ -32,8 +32,8 @@ else
     for k = amin : nargs,
         tok = toks{k};
         if isempty( tok ),
-            if k == 1, type = 'Variable'; else type = 'Structure'; end
-            error( sprintf('CVX:Invalid%sSpec',type), 'Invalid %s specification: %s', lower(type), varargin{k} );
+            if k == 1, type = 'variable'; else type = 'structure'; end
+            cvx_throw( 'Invalid %s specification: %s', type, varargin{k} );
         end
         tok = tok{1};
         name{k} = tok{1};
@@ -41,7 +41,7 @@ else
             try
                 args{k} = evalin( 'caller', [ '{', tok{2}(2:end-1), '};' ] );
             catch exc
-                error( exc.identifier, exc.message );
+                cvx_throw( 'Error evaluating structure type: %s\n    %s', orig{k}, exc.message );
             end
         else
             args{k} = {};
@@ -205,22 +205,22 @@ for k = 2 : nargs,
             bflags(k) = true;
             lb = args{k}{1};
             switch length(args{k}),
-                case 0, error( 'CVX:InvalidStructure', 'Not enough arguments for "banded()" structure.' );
+                case 0, cvx_throw( 'Not enough arguments for "banded()" structure.' );
                 case 1, ub = args{k}{1};
                 case 2, ub = args{k}{2};
-                otherwise, error( 'Too many arguments for "banded()" structure.' );
+                otherwise, cvx_throw( 'Too many arguments for "banded()" structure.' );
             end
             if ~isnumeric( lb ) || length( lb ) ~= 1 || lb < 0 || lb ~= floor( lb ),
-                error( 'Bandwidth arguments must be nonnegative integers.' );
+                cvx_throw( 'Bandwidth arguments must be nonnegative integers.' );
             elseif ~isnumeric( ub ) || length( ub ) ~= 1 || ub < 0 || ub ~= floor( ub ),
-                error( 'Bandwidth arguments must be nonnegative integers.' );
+                cvx_throw( 'Bandwidth arguments must be nonnegative integers.' );
             end
             bands = min(bands,[lb,ub]);
             do_strx = true;
         otherwise,
             pflags(k) = true;
             if ~exist( [ 'cvx_s_', nm ], 'file' ),
-                error( 'CVX:UnknownStructure', 'Undefined matrix structure type: %s\nTrying to declare multiple variables? Use the VARIABLES keyword instead.', orig{k} );
+                cvx_throw( 'Undefined matrix structure type: %s\nTrying to declare multiple variables? Use the VARIABLES keyword instead.', orig{k} );
             end
     end
     n_bflags = n_bflags + bflags(k);
@@ -229,13 +229,13 @@ for k = 2 : nargs,
     n_hflags = n_hflags + hflags(k);
     n_pflags = n_pflags + pflags(k);
     if length( args{k} ) < amin,
-        error( 'CVX:InvalidStructure', 'Not enough arguments: %s', orig{k} );
+        cvx_throw( 'Not enough arguments: %s', orig{k} );
     elseif length( args{k} ) > amax,
-        error( 'CVX:InvalidStructure', 'Too many arguments: %s', orig{k} );
+        cvx_throw( 'Too many arguments: %s', orig{k} );
     end
 end
 if ~isempty(uplo),
-    error( 'CVX:InvalidStructure', 'Invalid structure type: %s', orig{end} );
+    cvx_throw( 'Invalid structure type: %s', orig{end} );
 end    
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -244,10 +244,10 @@ end
 
 if n_iflags,
     if n_iflags > 1,
-        error( 'CVX:InvalidStructure', 'Multiple integer keywords used:\n   %s', sprintf(' %s', orig{iflags} ) );
+        cvx_throw( 'Multiple integer keywords used:\n   %s', sprintf(' %s', orig{iflags} ) );
     elseif do_comp,
         xflags = iflags | findstr( name, 'complex', 'hermitian', 'skew_hermitian' );
-        error( 'CVX:InvalidStructure', 'Integer variables must also be real:\n   %s', sprintf(' %s', orig{xflags}) );
+        cvx_throw( 'Integer variables must also be real:\n   %s', sprintf(' %s', orig{xflags}) );
     end
 end
 
@@ -282,11 +282,11 @@ if do_nneg && do_skew
     xflags = xflags | findstr( name, 'nonnegative', 'skew_symmetric' );
 end
 if any( xflags ),
-    error( 'CVX:InvalidStructure', 'These forms of structure may not be specified simultaneously:\n   %s', sprintf(' %s', orig{xflags} ) );
+    cvx_throw( 'These forms of structure may not be specified simultaneously:\n   %s', sprintf(' %s', orig{xflags} ) );
 end
 if do_symm && sz(1) ~= sz(2),
     xflags = sflags | findstr( name, 'semidefinite', 'doubly_nonnegative' );
-    error( 'CVX:InvalidStructure', 'This matrix structure requires square matrices:%s', sprintf(' %s', orig{xflags} ) );
+    cvx_throw( 'This matrix structure requires square matrices:%s', sprintf(' %s', orig{xflags} ) );
 end
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -303,7 +303,7 @@ if n_pflags,
         try
             [ strs{end+1}, do_symm ] = feval( [ 'cvx_s_', lower(name{k}) ], sz( 1 ), sz( 2 ), do_symm, args{k}{:} ); %#ok
         catch exc
-            error( exc.identifier, 'Error constructing structure: %s\n   %s', orig{k}, exc.message );
+            cvx_throw( 'Error constructing structure: %s\n   %s', orig{k}, exc.message );
         end
     end
 end
@@ -362,7 +362,7 @@ end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 if isempty( S ),
-    error( 'CVX:InvalidStructure', 'Incompatible structure modifiers:%s', sprintf( ' %s', args.orig ) );
+    cvx_throw( 'Incompatible structure modifiers:%s', sprintf( ' %s', args.orig ) );
 end 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

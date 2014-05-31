@@ -16,7 +16,6 @@ function cvx_expert( flag )
 
 global cvx___
 cvx_global
-error( nargchk( 1, 1, nargin ) );
 if nargin == 1,
     if isnumeric(flag) || islogical(flag),
         ns = double(flag) ~= 0;
@@ -27,10 +26,10 @@ if nargin == 1,
             case 'false',
                 ns = false;
             otherwise,
-                error( 'String arugment must be ''true'' or ''false''.' );
+                cvx_throw( 'String arugment must be ''true'' or ''false''.' );
         end
     else
-        error( 'Argument must be a numeric scalar or a string.' );
+        cvx_throw( 'Argument must be a numeric scalar or a string.' );
     end
 end
 cvx___.expert = ns;

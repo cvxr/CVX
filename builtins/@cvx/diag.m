@@ -5,18 +5,18 @@ function y = diag( v, k )
 
 switch nargin,
     case 0,
-        error( 'Not enough arguments.' );
+        cvx_throw( 'Not enough arguments.' );
     case 1,
         k = 0;
     case 2,
         if ~isnumeric( k ) || k ~= floor( k ),
-            error( 'Second argument must be an integer.' );
+            cvx_throw( 'Second argument must be an integer.' );
         end
 end
 
 s = size( v );
 if length( s ) ~= 2,
-    error( 'First input must be 2D.' );
+    cvx_throw( 'First input must be 2D.' );
 end
 
 if k < 0,

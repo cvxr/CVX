@@ -24,29 +24,29 @@ end
 lines = {};
 rndx = [ 0, regexp( errmsg, '\n' ), length(errmsg) + 1 ];
 for k = 1 : length(rndx) - 1,
-    line = errmsg( rndx(k)+1 : rndx(k+1) - 1 );
-    if ~isempty( line ),
-        width    = widths( min( k, length(widths) ) );
-        emax     = length( line );
-        n_indent = 0;
-        if emax > width,
-            f_indent = sum( regexp( line, '[^ ]', 'once' ) - 1 );
-            sndxs = find( line == ' ' );
+    line = errmsg( rndx(k) + 1 : rndx(k+1) - 1 );
+    line = regexprep( line, '\s*$', '' );
+    if isempty( line ), continue; end
+    width    = widths( min( k, length(widths) ) );
+    emax     = length( line );
+    n_indent = 0;
+    if emax > width,
+        f_indent = sum( regexp( line, '[^ ]', 'once' ) - 1 );
+        sndxs = find( line == ' ' );
+    end
+    while true,
+        if emax + n_indent <= width || isempty( sndxs ),
+            lines{end+1} = [ 32 * ones(1,n_indent), line ]; %#ok
+            break;
         end
-        while true,
-            if emax + n_indent <= width || isempty( sndxs ),
-                lines{end+1} = [ 32 * ones(1,n_indent), line ];
-                break;
-            end
-            sndx = sndxs( sndxs <= width - n_indent + 1 );
-            if isempty( sndx ), sndx = sndxs(1); end
-            chunk = line(1:sndx(end)-1);
-            lines{end+1} = [ 32*ones(1,n_indent), chunk ]; %#ok
-            line(1:sndx(end)) = [];
-            sndxs = sndxs(length(sndx)+1:end) - sndx(end);
-            emax = emax - sndx(end);
-            n_indent = f_indent + 4;
-        end
+        sndx = sndxs( sndxs <= width - n_indent + 1 );
+        if isempty( sndx ), sndx = sndxs(1); end
+        chunk = line(1:sndx(end)-1);
+        lines{end+1} = [ 32*ones(1,n_indent), chunk ]; %#ok
+        line(1:sndx(end)) = [];
+        sndxs = sndxs(length(sndx)+1:end) - sndx(end);
+        emax = emax - sndx(end);
+        n_indent = f_indent + 4;
     end
 end
 if nargin >= 3 && ( ischar(useline) || useline ),

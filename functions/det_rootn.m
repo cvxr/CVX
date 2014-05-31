@@ -15,23 +15,17 @@ function y = det_rootn( varargin )
 %       DET_ROOTN is concave and nonmonotonic; therefore, when used in
 %       CVX specifications, its argument must be affine.
 
-persistent params
-if isempty( params ),
-    params.nargs     = 1;
-    params.args      = [];
-    params.empty     = 1;
-    params.constant  = @det_rootn_diag;
-    params.diagonal  = @det_rootn_diag;
-    params.affine    = @det_rootn_aff;
-    params.structure = 'psdeig';
+persistent P
+if isempty( P )
+    P.nargs     = 1;
+    P.args      = [];
+    P.empty     = 1;
+    P.constant  = @det_rootn_diag;
+    P.diagonal  = @det_rootn_diag;
+    P.affine    = @det_rootn_aff;
+    P.structure = 'psdeig';
 end
-
-try
-    y = cvx_matrix_op( params, varargin );
-catch exc
-    if strncmp( exc.identifier, 'CVX:', 4 ), throw(exc);
-    else rethrow(exc); end
-end
+y = cvx_matrix_op( P, varargin );
 
 function y = det_rootn_diag( D )
 y = geo_mean( D ) .^ 2;

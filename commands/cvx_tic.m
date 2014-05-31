@@ -15,7 +15,7 @@ function cvx_tic
 global cvx___
 cvx_global
 if ~isempty( cvx___.problems ),
-    error( 'CVX_TIC can only be called when no models are in construction.' );
+    cvx_throw( 'CVX_TIC can only be called when no models are in construction.' );
 end
 cvx___.timers = zeros(1,5,'uint64');
 cvx___.timers(1) = tic;

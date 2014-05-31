@@ -10,23 +10,17 @@ function y = trace_sqrtm( varargin )
 %         TRACE_SQRTM is convex and nonmonotonic (at least with respect to
 %         elementwise comparison), so its argument must be affine.
 
-persistent params
-if isempty( params ),
-    params.nargs     = 1;
-    params.args      = [];
-    params.empty     = 0;
-    params.constant  = @trace_sqrtm_diag;
-    params.diagonal  = @trace_sqrtm_diag;
-    params.affine    = @trace_sqrtm_aff;
-    params.structure = 'psdeig';
+persistent P
+if isempty( P ),
+    P.nargs     = 1;
+    P.args      = [];
+    P.empty     = 0;
+    P.constant  = @trace_sqrtm_diag;
+    P.diagonal  = @trace_sqrtm_diag;
+    P.affine    = @trace_sqrtm_aff;
+    P.structure = 'psdeig';
 end
-
-try
-    y = cvx_matrix_op( params, varargin );
-catch exc
-    if strncmp( exc.identifier, 'CVX:', 4 ), throw(exc);
-    else rethrow(exc); end
-end
+y = cvx_matrix_op( P, varargin );
 
 function z = trace_sqrtm_diag( D )
 z = sum( sqrt(D) );

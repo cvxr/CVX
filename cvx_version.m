@@ -32,6 +32,7 @@ if isfield( cvx___, 'loaded' ),
     fs = cvx___.fs;
     mpath = cvx___.where;
     isoctave = cvx___.isoctave;
+    msub = cvx___.msub;
     
 else
     
@@ -136,14 +137,14 @@ end
 % Verbose output (cvx_setup, cvx_version plain) %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-cvx_ver = '3.0 (beta)';
+cvx_ver = '3.0beta';
 cvx_bld = '****';
 cvx_bdate = '<undated>';
 cvx_bcomm = '*******';
 line = '---------------------------------------------------------------------------';
 fprintf( '\n%s\n', line );
 fprintf( 'CVX: Software for Disciplined Convex Programming       (c)2014 CVX Research\n' );
-fprintf( 'Version %10s, Build %4s (%7s)%35s\n', cvx_ver, cvx_bld, cvx_bcomm, cvx_bdate );
+fprintf( 'Version %7s, Build %4s (%7s)%38s\n', cvx_ver, cvx_bld, cvx_bcomm, cvx_bdate );
 fprintf( '%s\n', line );
 fprintf( 'Installation info:\n    Path: %s\n', cvx___.where );
 if isoctave,
@@ -334,28 +335,25 @@ global cvx___
 fs = cvx___.fs;
 isoctave = cvx___.isoctave;
 errmsg = '';
-if verbose,
-    fprintf( 'Preferences: ' );
-end
 if isoctave,
     pfile = [ prefdir, fs, '.cvx_prefs.mat' ];
 else
     pfile = [ regexprep( prefdir(1), [ cvx___.fsre, 'R\d\d\d\d\w$' ], '' ), fs, 'cvx_prefs.mat' ];
 end
+if verbose,
+	fprintf( 'Preferences:\n    Path: %s\n', pfile );
+end
 outp = [];
-try
-    if exist( pfile, 'file' )
-        outp = load( pfile );
-        pfile2 = pfile;
-    elseif ~isoctave,
-        pfile2 = [ prefdir, fs, 'cvx_prefs.mat' ];
-        if exist( pfile2, 'file' ),
-            outp = load( pfile2 );
-        end
-    end
-catch errmsg
-    errmsg = cvx_error( errmsg, 67, false, '    ' );
-    errmsg = sprintf( 'CVX encountered the following error attempting to load your preferences:\n%sPlease attempt to diagnose this error and try again.\nYou may need to re-run CVX_SETUP as well.\nIn the meanwhile, preferences will be set to their defaults.\n', errmsg );
+if exist( pfile, 'file' ),
+	try
+		outp = load( pfile );
+    catch errmsg
+        errmsg = strcat( { '    ' }, cvx_error( errmsg, 67, true ) );
+        header = 'An unexpected error occurred loading the preferences:';
+    	errmsg = [ { header }, errmsg ];
+	end
+else
+	errmsg = 'No preference file was found.';
 end
 if ~isempty( outp ),
     try
@@ -370,10 +368,10 @@ if ~isempty( outp ),
         cvx___.profile    = outp.profile;
     catch
         outp = [];
-        errmsg = 'Your CVX preferences file seems out of date; default preferences will be used.';
+        errmsg = 'Preferences are outdated.';
     end
 end
-if isempty( outp ),
+if isempty( outp )
     cvx___.expert     = false;
     cvx___.precision  = [eps^0.5,eps^0.5,eps^0.25];
     cvx___.precflag   = 'default';
@@ -385,16 +383,19 @@ if isempty( outp ),
     cvx___.license    = [];
 end
 cvx___.pfile = pfile;
-if verbose,
-    if ~isempty( errmsg ),
-        fprintf( 'error during load:\n%s', cvx_error( errmsg, 70, false, '   ' ) );
-    elseif isempty( cvx___.path ),
-        fprintf( 'none found; defaults loaded.\n' );
-    else
-        fprintf( '\n    Path: %s\n', pfile2 );
+if ~isempty( errmsg ),
+    if ischar( errmsg ),
+        errmsg = { errmsg };
     end
-elseif ~isempty( errmsg ),
-    warning( 'CVX:BadPrefsLoad', errmsg );
+	if verbose,
+    	errmsg{end+1} = 'Default preferences will be used.';
+		fprintf( '    %s\n', errmsg{:} );
+    else
+        errmsg{end+1} = [ 'Path: ', pfile ];
+    	errmsg{end+1} = 'Please re-run CVX_SETUP.';
+        temp = sprintf( '%s\n', errmsg{:} );
+	    cvx_throw( temp(1:end-1) );
+	end
 end
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

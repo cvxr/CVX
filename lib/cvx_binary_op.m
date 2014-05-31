@@ -29,16 +29,16 @@ elseif isequal( sx, sy );
     ys = false;
 elseif ~cvx___.broadcast,
     if length( sx ) < 2 && length( sy ) < 2,
-        error( 'CVX:DimError', 'Matrix dimensions must agree.' );
+        cvx_throw( 'Matrix dimensions must agree.' );
     else
-        error( 'CVX:DimError', 'Array dimensions must match for binary array op.' );
+        cvx_throw( 'Array dimensions must match for binary array op.' );
     end
 else
     nd = max( length( sx ), length( sy ) );
     sx( end + 1 : nd ) = 1;
     sy( end + 1 : nd ) = 1;
     if any( sx ~= sy & sx ~= 1 & sy ~= 1 ),
-        error( 'CVX:DimError', 'Non-singleton dimensions of the two input arrays must match each other.' );
+        cvx_throw( 'Non-singleton dimensions of the two input arrays must match each other.' );
     end
     bx = ones( 1, nd ); by = bx;
     tx = sx == 1; bx( tx ) = sy( tx );
@@ -61,13 +61,13 @@ if isfield( p, 'sdp' ) && p.sdp && ~( xs && ys ),
             sdpmap = cvx_remap( 'affine' );
         end
         if sz( 1 ) ~= sz( 2 ),
-            error( 'CVX:DCPError', 'SDP constraints must be square.' );
+            cvx_throw( 'SDP constraints must be square.' );
         elseif xs && cvx_isnonzero( x ),
-            error( 'CVX:DCPError', 'SDP constraint {scalar} %s {matrix} valid only if the scalar is zero.', op );
+            cvx_throw( 'SDP constraint {scalar} %s {matrix} valid only if the scalar is zero.', op );
         elseif ys && cvx_isnonzero( y ), 
-            error( 'CVX:DCPError', 'SDP constraint {matrix} %s {scalar} valid only if the scalar is zero.', op );
+            cvx_throw( 'SDP constraint {matrix} %s {scalar} valid only if the scalar is zero.', op );
         elseif ~all(sdpmap(vx(:))) || ~all(sdpmap(vy(:))),
-            error( 'CVX:DCPError', 'SDP constraints must be affine.' );
+            cvx_throw( 'SDP constraints must be affine.' );
         else
             sdp_mode = true;
         end

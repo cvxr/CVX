@@ -11,14 +11,10 @@ try
     evalin( 'caller', 'cvx_finish' );
     evalin( 'caller', 'cvx_pop' );
 catch exc
-    if strncmp( exc.identifier, 'CVX:', 4 ), 
-        if ~isequal( exc.identifier, 'CVX:IncompatibleSolver' ),
-            evalin( 'caller', 'cvx_pop' );
-        end
-        throw( exc );
-    else
-        rethrow( exc ); 
+    if ~isequal( exc.identifier, 'CVX:IncompatibleSolver' ),
+        evalin( 'caller', 'cvx_pop' );
     end
+    rethrow( exc );
 end
 
 % Copyright 2005-2014 CVX Research, Inc.

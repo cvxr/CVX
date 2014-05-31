@@ -8,12 +8,12 @@ end
 narg = length(args);
 if narg < p.nargs(end),
     if narg < p.nargs(1),
-        error( 'CVX:ArgError', 'Not enough arguments.' );
+        cvx_throw( 'Not enough arguments.' );
     else
         args{end+1:p.nargs(end)} = [];
     end
 elseif narg > p.nargs(end),
-    error( 'CVX:ArgError', 'Too many arguments.' );
+    cvx_throw( 'Too many arguments.' );
 end
 if ~isempty(p.args),
     [ args{:} ] = p.args( args{:} );
@@ -40,7 +40,11 @@ for k = 1 : narg,
     end
     sx = size( xt );
     if ~cvx_isaffine( xt ),
-        error( 'CVX:ArgError', 'Input must be affine.' ) ;
+        if narg == 1,
+            cvx_dcp_error( p.name, 'unary', xt );
+        else
+            cvx_dcp_error( p.name, 'binary', args{1:2} );
+        end
     end
     sa = sx(3:end);
     na = prod( sa );
@@ -55,10 +59,10 @@ for k = 1 : narg,
                 sa(end+1:length(sm)) = 1;
                 sm(end+1:length(sa)) = 1;
                 if any(sa(sa~=sm)~=1),
-                    error( 'CVX:ArgError', 'N-D dimensions are not compatible.' );
+                    cvx_throw( 'N-D dimensions are not compatible.' );
                 end
             else
-                error( 'CVX:ArgError', 'N-D dimensions are not compatible.' );
+                cvx_throw( 'N-D dimensions are not compatible.' );
             end
         end
     end
@@ -70,7 +74,7 @@ sm(end+1:2) = 1;
 if ~all( sx ),
     if ~all( sx(1:2) ),
         if isempty( p.empty ),
-            error( 'CVX:ArgError', 'Matrix input must not be empty.' );
+            cvx_throw( 'Matrix input must not be empty.' );
         else
             y = repmat( p.empty, sm );
         end
@@ -84,7 +88,7 @@ if ~isempty( p.structure ),
     switch p.structure,
         case { 'square', 'symm', 'eig', 'chol', 'psdeig' },
             if sx(1) ~= sx(2),
-                error( 'CVX:ArgError', 'Matrix must be square.' );
+                cvx_throw( 'Matrix must be square.' );
             end
     end
     switch p.structure,
@@ -96,7 +100,7 @@ if ~isempty( p.structure ),
             xt  = 0.5 * ( xt + xtt );
             err = max( sum(abs(cvx_basis(err)),1) ./ max(sum(abs(cvx_basis(xt)),1)) );
             if err > 2 * eps,
-                error( 'CVX:ArgError', [ ...
+                cvx_throw( [ ...
                     'Matrix input %d expected to be symmetric (deviation: %g).\n', ...
                     '--- If this number is small (<1e-6), it may simply be due to roundoff error.\n', ...
                     '    This can be corrected by applying the SYM(X) function.\n', ...
@@ -140,7 +144,7 @@ if ~isempty( p.structure ),
                 args{1} = zt;
         end
         if ~success,
-            error( 'CVX:ArgError', [ ...
+            cvx_throw( [ ...
                 'Matrix input %d expected to be positive definite (deviation: %g).\n', ...
                 '--- If this number is small (<1e-8), it may simply be due to roundoff error,\n', ...
                 '    which can be rectified by adding a small positive value to the diagonal.' ], k, err );
@@ -208,7 +212,7 @@ end
 function err = run_test( p )
 if ~isfield( p, 'test' ) || isempty( p.test ),
     if max(p.nargs) ~= 1,
-        error( 'Explicit test generator required for this function.' );
+        cvx_throw( 'Explicit test generator required for this function.' );
     end
     err = zeros(1,10);
     for k = 1 : 10,

@@ -4,9 +4,8 @@ function [ y, symm ] = cvx_s_hermitian( m, n, symm ) %#ok
 %cvx_create_structure, but it is used by cvx_sdpt3.
 
 if m ~= n,
-    error( 'Hermitian structure requires square matrices.' );
+    cvx_throw( 'Hermitian structure requires square matrices.' );
 end
-
 nsq = n * n;
 c  = 0 : n - 1;
 c  = c( ones( 1, 2 * n ), : );

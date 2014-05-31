@@ -25,9 +25,9 @@ function z = quad_over_lin( varargin )
 % Check arguments
 %
 
-persistent params
-if isempty( params ),
-    params.map = cvx_remap( ...
+persistent P
+if isempty( P ),
+    P.map = cvx_remap( ...
         { { 'any' }, { 'nonpositive' } }, ...
         { { 'constant' }, { 'positive' } }, ...
         { { 'l_convex' },  { 'l_concave' } }, ...
@@ -37,19 +37,13 @@ if isempty( params ),
         { { 'affine', 'p_convex', 'n_concave' }, { 'positive' } }, ...
         { { 'affine', 'p_convex', 'n_concave' }, { 'concave' } }, ...
         [ 0, 1, 2, 2, 3, 4, 5, 6 ] );
-    params.funcs = { @qol_cnst, @qol_log, @qol_sqr, @qol_lin, @qol_sqa, @qol_lin, @qol_cpx };
-    params.constant = 1;
-    params.name = 'quad_over_lin';
+    P.funcs = { @qol_cnst, @qol_log, @qol_sqr, @qol_lin, @qol_sqa, @qol_lin, @qol_cpx };
+    P.constant = 1;
+    P.name = 'quad_over_lin';
 end
-
-try
-    [ sx, x, y, dim ] = cvx_get_dimension( varargin, 3, 'zero', true );
-    if sx(dim) > 1, x = norms( x, 2, dim ); end
-    z = cvx_binary_op( params, x, y );
-catch exc
-    if strncmp( exc.identifier, 'CVX:', 4 ), throw( exc );
-    else rethrow( exc ); end
-end
+[ sx, x, y, dim ] = cvx_get_dimension( varargin, 3, 'zero', true );
+if sx(dim) > 1, x = norms( x, 2, dim ); end
+z = cvx_binary_op( P, x, y );
 
 function z = qol_cnst( x, y )
 z = x .^ 2 / y;

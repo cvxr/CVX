@@ -14,13 +14,7 @@ if isempty( P ),
         { 'c_affine', 'p_convex', 'n_concave' } );
     P.funcs = { @lin_cabs_cplx, @lin_cabs_raff, @lin_cabs_nonl };
 end
-
-try
-    y = cvx_unary_op( P, x );
-catch exc
-    if strncmp( exc.identifier, 'CVX:', 4 ), throw( exc ); 
-    else rethrow( exc ); end
-end
+y = cvx_unary_op( P, x );
 
 function y = lin_cabs_cplx( x )
 y = abs(x);

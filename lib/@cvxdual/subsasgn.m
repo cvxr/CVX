@@ -1,5 +1,5 @@
 function v = subsref( x, S, y ) %ok
-error( 'CVX:Dual', 'Subscripting of dual variables is read only.' );
+cvx_throw( 'Subscripting of dual variables is read only.' );
 
 % Copyright 2005-2014 CVX Research, Inc.
 % See the file LICENSE.txt for full copyright information.

@@ -23,10 +23,9 @@ end
 if nargin < 2 || isempty( p ),
     p = 2;
 elseif ~isequal( p, 'fro' ) && ( ~isnumeric( p ) || ~isreal( p ) || p < 1 ),
-    error( 'CVX:ArgError', 'Second argument must be a real number between 1 and Inf, or ''fro''.' );
-end
-if ndims( x ) > 2, %#ok
-    error( 'CVX:ArgError', 'norm is not defined for N-D arrays.' );
+    cvx_throw( 'Second argument must be a real number between 1 and Inf, or ''fro''.' );
+elseif ndims( x ) > 2, %#ok
+    cvx_throw( 'norm is not defined for N-D arrays.' );
 end
 
 [ m, n ] = size(x);
@@ -50,7 +49,7 @@ if m == 1 || n == 1 || isequal( p, 'fro' ),
     n = length( x );
     xc = cvx_classify( x );
     if ~all( remap3( xc ) ),
-        error( 'Disciplined convex programming error:\n    Cannot perform the operation norm( {%s}, %g )', cvx_class( x ), p );
+        cvx_throw( 'Disciplined convex programming error:\n    Cannot perform the operation norm( {%s}, %g )', cvx_class( x ), p );
     end
     if n == 1,
         cvx_optval = abs( x );
@@ -111,7 +110,7 @@ else
         map = remap3;
     end
     if ~all( map( xc ) ),
-        error( 'Disciplined convex programming error:\n    Cannot perform the operation norm( {%s}, %g )\n   when the first argument is a matrix.', cvx_class( xt ), p );
+        cvx_throw( 'Disciplined convex programming error:\n    Cannot perform the operation norm( {%s}, %g )\n   when the first argument is a matrix.', cvx_class( xt ), p );
     end
     switch p,
         case 1,
@@ -121,7 +120,7 @@ else
         case 2,
             cvx_optval = sigma_max( x );
         otherwise,
-            error( 'The only matrix norms available are 1, 2, Inf, and ''fro''.' );
+            cvx_throw( 'The only matrix norms available are 1, 2, Inf, and ''fro''.' );
     end
     
 end

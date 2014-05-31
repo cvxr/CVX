@@ -20,25 +20,19 @@ function y = sum_log( varargin )
 
 cvx_expert_check( 'sum_log', varargin{1} );
 
-persistent params
-if isempty( params ),
-    params.map = cvx_remap( { 'real' ; 'l_convex' ; 'concave' ; 'l_concave' } );
-    params.map = bsxfun( @and, params.map, ~cvx_remap( 'nonpositive' ) );
-    params.funcs = { @sum_log_c, @sum_log_1, @sum_log_2, @sum_log_1 };
-    params.zero = 0;
-    params.constant = 1;
-    params.reduce = true;
-    params.reverse = false;
-    params.name = 'sum_log';
-    params.dimarg = 2;
+persistent P
+if isempty( P ),
+    P.map = cvx_remap( { 'real' ; 'l_convex' ; 'concave' ; 'l_concave' } );
+    P.map = bsxfun( @and, P.map, ~cvx_remap( 'nonpositive' ) );
+    P.funcs = { @sum_log_c, @sum_log_1, @sum_log_2, @sum_log_1 };
+    P.zero = 0;
+    P.constant = 1;
+    P.reduce = true;
+    P.reverse = false;
+    P.name = 'sum_log';
+    P.dimarg = 2;
 end
-
-try
-    y = cvx_reduce_op( params, varargin{:} );
-catch exc
-    if strncmp( exc.identifier, 'CVX:', 4 ), throw( exc ); 
-    else rethrow( exc ); end
-end
+y = cvx_reduce_op( P, varargin{:} );
 
 function y = sum_log_c(x)
 y = sum(builtin('log',x),1)

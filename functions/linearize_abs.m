@@ -12,13 +12,7 @@ if isempty( P ),
     P.map = cvx_remap( {'affine'}, {'p_convex','n_concave'}, [2,3] );
     P.funcs = { [], @lin_abs_affn, @lin_abs_nonl };
 end
-
-try
-    y = cvx_unary_op( P, x );
-catch exc
-    if strncmp( exc.identifier, 'CVX:', 4 ), throw( exc ); 
-    else rethrow( exc ); end
-end
+y = cvx_unary_op( P, x );
 
 function y = lin_abs_affn( x )
 y = x;

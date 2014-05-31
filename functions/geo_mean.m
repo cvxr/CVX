@@ -24,38 +24,32 @@ function y = geo_mean( varargin )
 % Check arguments
 %
 
-persistent params
-if isempty( params ),
-    params.map = cvx_remap( { 'real' ; 'concave' ; 'l_convex' ; 'l_concave' } );
-    params.map = bsxfun( @and, params.map, ~cvx_remap( 'negative' ) );
-    params.funcs = { @geo_mean_1, @geo_mean_2, @geo_mean_2, @geo_mean_2 };
-    params.zero = 1;
-    params.constant = 1;
-    params.reduce = true;
-    params.reverse = false;
-    params.name = 'geo_mean';
-    params.errargs = [];
-    params.dimarg = 2;
+persistent P
+if isempty( P ),
+    P.map = cvx_remap( { 'real' ; 'concave' ; 'l_convex' ; 'l_concave' } );
+    P.map = bsxfun( @and, P.map, ~cvx_remap( 'negative' ) );
+    P.funcs = { @geo_mean_1, @geo_mean_2, @geo_mean_2, @geo_mean_2 };
+    P.zero = 1;
+    P.constant = 1;
+    P.reduce = true;
+    P.reverse = false;
+    P.name = 'geo_mean';
+    P.errargs = [];
+    P.dimarg = 2;
 end
-
-try
-    [ sx, x, dim, w ] = cvx_get_dimension( varargin, 2 );
-    if ~isempty( w ),
-        if ~( numel(w)==length(w) && isnumeric(w) && isreal(w) && all(w>=0) ),
-            error( 'CVX:ArgError', 'Third argument must be a vector of nonnegative numbers.' );
-        elseif ~any( w ),
-            error( 'CVX:ArgError', 'The weight vector cannot be all zeros.')
-        elseif numel( w ) ~= sx(dim),
-            error( 'CVX:ArgError', 'Third argument must be a vector of length %d', sx(dim) );
-        else
-            w = w(:) / sum(w);
-        end
+[ sx, x, dim, w ] = cvx_get_dimension( varargin, 2 );
+if ~isempty( w ),
+    if ~( numel(w)==length(w) && isnumeric(w) && isreal(w) && all(w>=0) ),
+        cvx_throw( 'Third argument must be a vector of nonnegative numbers.' );
+    elseif ~any( w ),
+        cvx_throw( 'The weight vector cannot be all zeros.')
+    elseif numel( w ) ~= sx(dim),
+        cvx_throw( 'Third argument must be a vector of length %d', sx(dim) );
+    else
+        w = w(:) / sum(w);
     end
-    y = cvx_reduce_op( params, x, dim, w );
-catch exc
-    if strncmp( exc.identifier, 'CVX:', 4 ), throw( exc ); 
-    else rethrow( exc ); end
 end
+y = cvx_reduce_op( P, x, dim, w );
 
 function y = geo_mean_1( x, w )
 [ nx, nv ] = size( x );

@@ -18,30 +18,24 @@ function y = prod_inv( varargin )
 %       PROD_INV(X) is convex and nonincreasing in X; therefore, when used
 %       in CVX specifications, its argument must be concave or affine.
 
-persistent params
-if isempty( params ),
-    params.map = cvx_remap( { 'nonnegative' ; 'l_convex' ; 'l_concave' ; 'concave' } );
-    params.funcs = { @prod_inv_1, @prod_inv_2, @prod_inv_2, @prod_inv_3 };
-    params.zero = 1;
-    params.reduce = true;
-    params.reverse = false;
-    params.constant = 1;
-    params.name = 'prod_inv';
-    params.dimarg = 2;
+persistent P
+if isempty( P ),
+    P.map = cvx_remap( { 'nonnegative' ; 'l_convex' ; 'l_concave' ; 'concave' } );
+    P.funcs = { @prod_inv_1, @prod_inv_2, @prod_inv_2, @prod_inv_3 };
+    P.zero = 1;
+    P.reduce = true;
+    P.reverse = false;
+    P.constant = 1;
+    P.name = 'prod_inv';
+    P.dimarg = 2;
 end
-
-try
-    [ sx, x, dim, p ] = cvx_get_dimension( varargin, 2 ); %#ok
-    if isempty( p ),
-        p = 1;
-    elseif ~( isnumeric(p) && isreal(p) && numel(p) ~= 1 && p > 0 && p < inf )
-        error( 'Third argument must be a finite positive scalar.' );
-    end
-    y = cvx_reduce_op( params, x, dim, p );
-catch exc
-    if strncmp( exc.identifier, 'CVX:', 4 ), throw( exc ); 
-    else rethrow( exc ); end
+[ sx, x, dim, p ] = cvx_get_dimension( varargin, 2 ); %#ok
+if isempty( p ),
+    p = 1;
+elseif ~( isnumeric(p) && isreal(p) && numel(p) ~= 1 && p > 0 && p < inf )
+    cvx_throw( 'Third argument must be a finite positive scalar.' );
 end
+y = cvx_reduce_op( P, x, dim, p );
 
 function y = prod_inv_1( x, p )
 y = prod( x .^ -p, 1 );

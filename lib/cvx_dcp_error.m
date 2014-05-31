@@ -1,4 +1,4 @@
-function estr = cvx_dcp_error( op, mode, x, varargin )
+function cvx_dcp_error( op, mode, x, varargin )
 
 nargs = nargin - 3;
 y = [];
@@ -73,14 +73,12 @@ switch op,
     otherwise,
         type = 'operation';
 end
-try
-    if any(strfind(strx,'nomial')), gtype = 'geometric'; else gtype = 'convex'; end
-    error( 'CVX:DCPError', 'Disciplined %s programming error:\n   Invalid %s%s: %s', gtype, type, plural, strx );
-catch estr
-    if nargout == 0,
-        rethrow( estr );
-    end
+if any(strfind(strx,'nomial')), 
+    gtype = 'geometric'; 
+else
+    gtype = 'convex'; 
 end
+cvx_throw( 'Disciplined %s programming error:\n   Invalid %s%s: %s', gtype, type, plural, strx );
 
 function strx = get_arg( x, vk )
 if ~iscell( x ) || numel( x ) > 1,

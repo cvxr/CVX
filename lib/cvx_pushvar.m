@@ -4,16 +4,16 @@ global cvx___
 try
     pstr = cvx___.problems(end);
 catch
-    error( 'CVX:NoModel', 'No CVX model is present.' );
+    cvx_throw( 'No CVX model is present.' );
 end
 
 name = args(1).name;
 if ~isvarname( name ),
-    error( 'CVX:Variable', 'Invalid variable name: %s', name );
+    cvx_throw( 'Invalid variable name: %s', name );
 elseif isfield( pstr.variables, name ),
-    error( 'CVX:Variable', 'Variable name conflict: %s', name );
+    cvx_throw( 'Variable name conflict: %s', name );
 elseif isfield( pstr.duals,name ),
-    error( 'CVX:Variable', 'Primal/dual variable name conflict: %s', name );
+    cvx_throw( 'Primal/dual variable name conflict: %s', name );
 end
 
 %
@@ -32,11 +32,7 @@ asnneg = pstr.gp;
 itype  = '';
 iseh   = 0;
 if numel( args ) > 1,
-    try
-        [ str, itype, stypes ] = cvx_create_structure( args );
-    catch exc
-        error( exc.identifier, exc.message );
-    end
+    [ str, itype, stypes ] = cvx_create_structure( args );
     for k = 1 : length( stypes )
         strs = stypes{k};
         switch strs
@@ -49,22 +45,22 @@ if numel( args ) > 1,
     end
     if isepi || ishypo,
         if ~isempty( pstr.objective ),
-            error( 'CVX:Variable', 'An objective has already been supplied for this problem.' );
+            cvx_throw( 'An objective has already been supplied for this problem.' );
         elseif isnan( pstr.direction ),
-            error( 'CVX:Variable', 'Epigraph/hypograph variables cannot be added to sets.' );
+            cvx_throw( 'Epigraph/hypograph variables cannot be added to sets.' );
         elseif ~isreal( str ) || ~isempty( itype ),
-            error( 'CVX:Variable', 'Epigraph/hypograph variables must be real and continuous.' );
+            cvx_throw( 'Epigraph/hypograph variables must be real and continuous.' );
         elseif ~isempty( str ),
-            error( 'CVX:Variable', 'Epigraph/hypograph variables must not have matrix structure.' );
+            cvx_throw( 'Epigraph/hypograph variables must not have matrix structure.' );
         end
     end
     if pstr.gp
         if issemi
-            error( 'CVX:Variable', 'SEMIDEFINITE variables cannot be declared in geometric programs.' );
+            cvx_throw( 'SEMIDEFINITE variables cannot be declared in geometric programs.' );
         elseif ~isreal( str )
-            error( 'CVX:Variable', 'Complex variables cannot be declared in geometric programs.' );
+            cvx_throw( 'Complex variables cannot be declared in geometric programs.' );
         elseif any( nonzeros( str ) ~= 1 )
-            error( 'CVX:Variable', 'This matrix structure is incompatibile with geometric programs.' );
+            cvx_throw( 'This matrix structure is incompatibile with geometric programs.' );
         end
     end
 else
@@ -101,7 +97,7 @@ if issemi && s1 > 1,
         ctype = 'semidefinite';
         mdof = s1*(s1+1)/2;
     else
-        ctype = 'hermitian-semidefinite';
+        ctype = 'hermitian_semidefinite';
         mdof = s1 * s1;
     end
     mmat = prod(xsiz(3:end));
@@ -128,7 +124,7 @@ if asnneg
     tn = tx;
 end
 if ~isempty( itype )
-    cvx_pushcone( true, [ 'i_', itype ], tx' );
+    cvx_pushcone( true, itype, tx' );
 end
 if ~isempty( tn ),
     cvx_setnneg( tn );

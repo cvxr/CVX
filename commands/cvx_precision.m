@@ -86,11 +86,11 @@ if nargin > 0,
     end
     if ischar( flag ),
         if size( flag, 1 ) ~= 1,
-            error( 'Invalid precision string.' );
+            cvx_throw( 'Invalid precision string.' );
         else
             ndx = find( strcmpi( flag, prefnames ) );
             if isempty( ndx ),
-                error( [ 'Invalid precision mode: ', flag ] );
+                cvx_throw( [ 'Invalid precision mode: ', flag ] );
             else
                 flag = prefnames{ndx};
                 ns = prefvals{ndx};
@@ -98,15 +98,15 @@ if nargin > 0,
         end
     else
         if ~isnumeric( flag ) || numel( flag ) > 3 || length(flag) ~= numel(flag),
-            error( 'Argument must be a real number, a 2-vector, a 3-vector, or a string.' );
+            cvx_throw( 'Argument must be a real number, a 2-vector, a 3-vector, or a string.' );
         elseif any( flag < 0 ) || any( flag >= 1 ),
-            error( 'Each precision value must satisfy 0 <= P < 1.' );
+            cvx_throw( 'Each precision value must satisfy 0 <= P < 1.' );
         elseif numel( flag ) == 1,
             ns = [ max(flag,eps^0.5), flag, min(sqrt(flag),max(flag,eps^0.25)) ];
         elseif numel( flag ) == 2,
             ns = [ min(flag), min(flag), max(flag) ];
         elseif all( flag == 0 ),
-            error( 'At least one precision must be positive.' );
+            cvx_throw( 'At least one precision must be positive.' );
         else
             ns = reshape( sort(flag), 1, 3 );
         end

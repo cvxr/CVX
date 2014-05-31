@@ -4,7 +4,7 @@ global cvx___
 try
     pstr = cvx___.problems(end);
 catch
-    error( 'CVX:NoModel', 'No CVX model is present.' );
+    cvx_throw( 'No CVX model is present.' );
 end
 if isa( zb, 'cvx' ),
     zb = cvx_basis( zb );

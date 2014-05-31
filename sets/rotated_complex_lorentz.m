@@ -34,7 +34,6 @@ function set = rotated_complex_lorentz( sx, dim )
 %       ROTATED_COMPLEX_LORENTZ is a cvx set specification. See the user 
 %       guide for details on how to use sets.
 
-error( nargchk( 1, 2, nargin ) ); %#ok
 if nargin == 1,
     set = rotated_lorentz( sx, [], true );
 else

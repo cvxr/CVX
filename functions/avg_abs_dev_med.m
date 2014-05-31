@@ -17,24 +17,18 @@ function y = avg_abs_dev_med( varargin )
 %       Therefore, X must be affine.
 %      
 
-persistent params
-if isempty( params ),
-	params.map = cvx_remap( { 'real' ; 'r_affine' } );
-	params.funcs = { @avg_abs_dev_med_cnst, @avg_abs_dev_med_aff };
-    params.constant = 1;
-	params.zero = NaN;
-	params.reduce = true;
-	params.reverse = false;
-	params.name = 'avg_abs_dev_med';
-	params.dimarg = 2;
+persistent P
+if isempty( P ),
+	P.map = cvx_remap( { 'real' ; 'r_affine' } );
+	P.funcs = { @avg_abs_dev_med_cnst, @avg_abs_dev_med_aff };
+    P.constant = 1;
+	P.zero = NaN;
+	P.reduce = true;
+	P.reverse = false;
+	P.name = 'avg_abs_dev_med';
+	P.dimarg = 2;
 end
-
-try
-    y = cvx_reduce_op( params, varargin{:} );
-catch exc
-    if strncmp( exc.identifier, 'CVX:', 4 ), throw( exc ); 
-    else rethrow( exc ); end
-end
+y = cvx_reduce_op( P, varargin{:} );
 
 function y = avg_abs_dev_med_cnst( x )
 y = mean( abs( bsxfun( @minus, x, median( x, 1 ) ) ), 1 );

@@ -10,13 +10,7 @@ if isempty( P ),
         { 'r_affine', 'p_convex', 'n_concave' } );
     P.funcs = { @square_cnst, @square_logv, @square_affn };
 end
-
-try
-    y = cvx_unary_op( P, x );
-catch exc
-    if strncmp( exc.identifier, 'CVX:', 4 ), throw( exc );
-    else rethrow( exc ); end
-end
+y = cvx_unary_op( P, x );
 
 function y = square_cnst( x )
 y = builtin( 'power', x, 2 );

@@ -16,9 +16,9 @@ function z = rdivide( x, y, oper )
 %   For vectors, matrices, and arrays, these rules are verified 
 %   indepdently for each element.
 
-persistent params
-if isempty( params ),
-    params.map = cvx_remap( ...
+persistent P
+if isempty( P ),
+    P.map = cvx_remap( ...
         ... % Invalid combinations: division by zero, division by posynomial,
         ... % negative of log-concave / gp monomial/posynomial
         { { 'valid' }, { 'zero', 'g_lconvex' } }, ...
@@ -34,18 +34,12 @@ if isempty( params ),
         { { 'real' }, { 'p_concave' } }, ...
         { { 'real' }, { 'n_convex' }  }, ...
         [ 0, 0, 0, 1, 1, 2, 2, 3, 3 ] );
-    params.funcs = { @rdivide_c, @rdivide_g, @rdivide_n };
-    params.constant = [];
+    P.funcs = { @rdivide_c, @rdivide_g, @rdivide_n };
+    P.constant = [];
 end
-
-try
-    if nargin < 3, oper = './'; end
-    params.name = oper;
-    z = cvx_binary_op( params, x, y );
-catch exc
-    if isequal( exc.identifier, 'CVX:DCPError' ), throw( exc ); 
-    else rethrow( exc ); end
-end
+if nargin < 3, oper = './'; end
+P.name = oper;
+z = cvx_binary_op( P, x, y );
 
 function z = rdivide_c( x, y )
 % something ./ constant

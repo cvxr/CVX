@@ -13,13 +13,7 @@ if isempty( P ),
         { 'r_affine', 'convex' } );
     P.funcs = { @pos_real, @pos_posn, @pos_negn, @pos_cnvx };
 end
-
-try
-    y = cvx_unary_op( P, x );
-catch exc
-    if strncmp( exc.identifier, 'CVX:', 4 ), throw( exc ); 
-    else rethrow( exc ); end
-end
+y = cvx_unary_op( P, x );
 
 function y = pos_real( x )
 y = max( x, 0 );

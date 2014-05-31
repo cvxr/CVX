@@ -28,7 +28,6 @@ function x = hermitian_semidefinite( n )
 %       SEMIDEFINITE is a cvx set specification. See the user guide for
 %       details on how to use sets.
 
-error( nargchk( 1, 1, nargin ) ); %#ok
 x = semidefinite( n, true );
 
 % Copyright 2005-2014 CVX Research, Inc. 

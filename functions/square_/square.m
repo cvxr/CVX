@@ -10,7 +10,7 @@ function y = square( x )
 %       when use in CVX expressions, X must be real and affine.
 
 if ~isreal( x ),
-	error( 'Input must be real.' );
+	cvx_throw( 'Input must be real.' );
 end
 y = builtin( 'power', x, 2 );
     

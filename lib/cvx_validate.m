@@ -11,5 +11,5 @@ if p <= np,
     end
 end
 cvx_pop( 0, true );
-error( 'CVX:InternalError', 'Internal CVX data corruption. Please CLEAR ALL and rebuild your model.' );
+cvx_throw( 'Internal CVX data corruption. Please CLEAR ALL and rebuild your model.' );
 

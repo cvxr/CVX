@@ -6,7 +6,7 @@ function x = transpose( x )
 
 s = x.size_;
 if length( s ) > 2,
-    error( 'Transpose of an ND array is not defined.' );
+    cvx_throw( 'Transpose of an ND array is not defined.' );
 elseif any( s > 1 ),
     b = x.basis_;
     if all( s > 1 ),

@@ -13,13 +13,8 @@ function y = exp( x, check, gp )
 
 if nargin < 2, check = true; end
 if check, cvx_expert_check( 'exp', x ); end
-try
-    if nargin < 3, gp = false; end
-    y = cvx( x.size_, cvx_getexp( x.basis_, check, gp ) );
-catch exc
-    if strncmp( exc.identifier, 'CVX:', 4 ) throw( exc );
-    else rethrow( exc ); end
-end
+if nargin < 3, gp = false; end
+y = cvx( x.size_, cvx_getexp( x.basis_, check, gp ) );
         
 % Copyright 2005-2014 CVX Research, Inc.
 % See the file LICENSE.tx for full copyright information.

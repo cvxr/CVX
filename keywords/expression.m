@@ -23,11 +23,11 @@ function varargout = expression( nm, varargin )
 global cvx___
 prob = evalin( 'caller', 'cvx_problem', '[]' );
 if ~isa( prob, 'cvxprob' ),
-    error( 'CVX:Expression', 'No CVX model exists in this scope.' );
+    cvx_throw( 'No CVX model exists in this scope.' );
 elseif isempty( cvx___.problems ) || cvx___.problems( end ).self ~= prob,
-    error( 'CVX:Expression', 'Internal CVX data corruption. Please CLEAR ALL and rebuild your model.' );
+    cvx_throw( 'Internal CVX data corruption. Please CLEAR ALL and rebuild your model.' );
 elseif nargin > 1,
-    error( 'CVX:Expression', 'Too many input arguments.\nTrying to declare multiple expression holders? Use the EXPRESSIONS keyword instead.', 1 ); %#ok
+    cvx_throw( 'Too many input arguments.\nTrying to declare multiple expression holders? Use the EXPRESSIONS keyword instead.', 1 ); %#ok
 end
 
 %
@@ -36,13 +36,13 @@ end
 
 toks = regexp( nm, '^\s*([a-zA-Z]\w*)\s*(\(.*\))?\s*$', 'tokens' );
 if isempty( toks ),
-    error( 'CVX:Expression', 'Invalid variable specification: %s', nm );
+    cvx_throw( 'Invalid variable specification: %s', nm );
 end
 toks = toks{1};
 x.name = toks{1};
 x.size = toks{2};
 if x.name(end) == '_',
-    error( 'CVX:Expression', 'Invalid expression specification: %s\n   Names ending in underscores are reserved for internal use.', nm );
+    cvx_throw( 'Invalid expression specification: %s\n   Names ending in underscores are reserved for internal use.', nm );
 end
 
 %

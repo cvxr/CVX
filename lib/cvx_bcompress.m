@@ -16,7 +16,7 @@ else
         case 'full',      mode = 0;
         case 'magnitude', mode = 1;
         case 'none',      mode = 2;
-        otherwise,        error( [ 'Invalid normalization mode: ', mode ] );
+        otherwise,        cvx_throw( [ 'Invalid normalization mode: ', mode ] );
     end
 end
 

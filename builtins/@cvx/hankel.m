@@ -11,7 +11,6 @@ function H = hankel(c,r)
 % Check arguments
 %
 
-error( nargchk( 1, 2, nargin ) ); %#ok
 if nargin < 2,
     r = zeros(size(c));
 else

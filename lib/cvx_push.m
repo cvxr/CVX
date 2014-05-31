@@ -80,31 +80,31 @@ end
 for k = 1 : length(args),
     mode = args{k};
     if ~ischar( mode ),
-        error( 'CVX:ArgError', 'Arguments must be strings.' );
+        cvx_throw( 'Arguments must be strings.' );
     end
     switch lower( mode ),
         case 'quiet',
             temp.quiet = true;
         case 'set',
             if isempty( cvx___.problems ),
-                error( 'CVX:ArgError', 'Cannot construct a set object outside of a CVX model.' );
+                cvx_throw( 'Cannot construct a set object outside of a CVX model.' );
             end
             temp.direction = NaN;
         case 'sdp',
             if temp.gp,
-                error( 'CVX:ArgError', 'The GP and SDP modifiers cannot be used together.' );
+                cvx_throw( 'The GP and SDP modifiers cannot be used together.' );
             end
             temp.sdp = true;
         case 'gp',
             if temp.sdp,
-                error( 'CVX:ArgError', 'The GP and SDP modifiers cannot be used together.' );
+                cvx_throw( 'The GP and SDP modifiers cannot be used together.' );
             end
             temp.gp = true;
             if cvx___.expert == 0,
                 cvx___.expert = -1;
             end
         otherwise,
-            error( 'CVX:ArgError', 'Invalid CVX problem modifier: %s', mode );
+            cvx_throw( 'Invalid CVX problem modifier: %s', mode );
     end
 end
 

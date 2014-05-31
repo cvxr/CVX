@@ -5,7 +5,7 @@ try
     np = length(cvx___.problems);
     pstr = cvx___.problems(np);
 catch
-    error( 'CVX:NoModel', 'No CVX model is present.' );
+    cvx_throw( 'No CVX model is present.' );
 end
 
 %
@@ -14,9 +14,9 @@ end
 
 if ~isinf( pstr.direction )
     if isnan( pstr.direction )
-        error( 'CVX:ArgError', 'Objective functions cannot be added to sets.' );
+        cvx_throw( 'Objective functions cannot be added to sets.' );
     else
-        error( 'CVX:ArgError', 'An objective has already been supplied for this problem.' );
+        cvx_throw( 'An objective has already been supplied for this problem.' );
     end
 end
 
@@ -25,7 +25,7 @@ end
 %
 
 if ~ischar( dir ) || size( dir, 1 ) ~= 1,
-    error( 'CVX:ArgError', 'The second argument must be a string.' );
+    cvx_throw( 'The second argument must be a string.' );
 end
 
 %
@@ -38,9 +38,9 @@ if isempty( remap_max ),
     remap_max = cvx_remap( { { 'constant' } ; { 'l_concave' } ; { 'concave' } } );
 end
 if ~isa( x, 'cvx' ) && ~isnumeric( x ),
-    error( 'CVX:ArgError', 'Cannot accept an objective of type ''%s''.', class( arg ) );
+    cvx_throw( 'Cannot accept an objective of type ''%s''.', class( arg ) );
 elseif ~isreal( x ),
-    error( 'CVX:ArgError', 'Expressions in objective functions must be real.' );
+    cvx_throw( 'Expressions in objective functions must be real.' );
 elseif isempty( x ),
     warning( 'CVX:EmptyObjective', 'Empty objective.' );
 end
@@ -53,13 +53,13 @@ switch dir,
         vx = remap_max( :, cx ); 
         dir = -1;
     otherwise, 
-        error( 'CVX:ArgError', 'Invalid objective type: %s', dir );
+        cvx_throw( 'Invalid objective type: %s', dir );
 end
 avx = all( vx, 2 );
 if ~any( avx ),
     vx = any( vx, 1 );
     if all( vx ),
-        error( 'CVX:LogMix', 'Cannot combine logarithmic and linear objectives.' );
+        cvx_throw( 'Cannot combine logarithmic and linear objectives.' );
     else
         cvx_dcp_error( type, 'unary', cvx_fastref( x, ~vx ) );
     end

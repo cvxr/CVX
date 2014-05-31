@@ -110,14 +110,14 @@ switch nargin,
         if isstruct( t_setting ),
             update = true;
             if numel( t_setting ) > 1,
-                error( 'Argument must be a string or a scalar structure.' );
+                cvx_throw( 'Argument must be a string or a scalar structure.' );
             elseif isempty( fieldnames( settings ) ),
                 settings = [];
             else
                 settings = t_setting;
             end
         elseif ~ischar( t_setting ) || isempty( t_setting ) || size( t_setting, 1 ) > 1,
-            error( 'Argument must be a string or a scalar structure.' );
+            cvx_throw( 'Argument must be a string or a scalar structure.' );
         else
             switch t_setting,
                 case '-all',
@@ -148,38 +148,38 @@ switch nargin,
                     [ cvx___.solvers.list.settings ] = deal( [] );
                 otherwise,
                     if ~isvarname( t_setting ),
-                        error( 'CVX:InvalidField', 'Not a valid setting name: %s', t_setting );
+                        cvx_throw( 'Not a valid setting name: %s', t_setting );
                     elseif isfield( settings, t_setting ),
                         settings = settings.(t_setting);
                     else
-                        error( 'CVX:NoSetting', 'Setting %s is not set.', t_setting );
+                        cvx_throw( 'Setting %s is not set.', t_setting );
                     end
             end
         end
     otherwise,
         update = true;
         if rem( nargin, 2 ) ~= 0,
-            error( 'Number of arguments must be even.' );
+            cvx_throw( 'Number of arguments must be even.' );
         end
         for k = 1 : nargin/2,
             t_setting = varargin{2*k-1};
             t_value = varargin{2*k};
             if ~ischar( t_setting ) || isempty( t_setting ) || size( t_setting, 1 ) > 1,
-                error( 'CVX:InvalidField', 'Argument %d must be a string.', 2*k-1 );
+                cvx_throw( 'Argument %d must be a string.', 2*k-1 );
             else
                 switch t_setting,
                     case '-clear',
                         if ~isvarname( t_value ),
-                            error( 'CVX:InvalidField', 'Not a valid setting name: %s', t_value );
+                            cvx_throw( 'Not a valid setting name: %s', t_value );
                         elseif ~isfield( settings, t_value ),
-                            error( 'CVX:NoSetting', 'Setting %s is not set.', t_setting );
+                            cvx_throw( 'Setting %s is not set.', t_setting );
                         else
                             settings = rmfield( settings, t_value );
                             update = true;
                         end
                     otherwise,
                         if ~isvarname( t_setting ),
-                            error( 'CVX:InvalidField', 'Not a valid setting name: %s', t_setting );
+                            cvx_throw( 'Not a valid setting name: %s', t_setting );
                         else
                             settings.(t_setting) = t_value;
                             update = true;

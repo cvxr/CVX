@@ -11,8 +11,7 @@ if isempty( shim.name ),
     fname = 'glpk.m';
     ps = pathsep;
     shim.name = 'GLPK';
-    shim.config.dualize = true;
-    shim.config.capableINT = true;
+    shim.config = struct( 'dualize', 1, 'integer', 1, 'binary', 1 );
     flen = length(fname);
     fpaths = which( fname, '-all' );
     if ~iscell(fpaths),
@@ -67,17 +66,19 @@ is_ip = false;
 for k = 1 : length( nonls ),
     temp = nonls( k ).indices;
     tt = nonls( k ).type;
-    if strncmp( tt, 'i_', 2 ),
+    switch tt,
+    case 'nonnegative',
+      lb(temp) = 0;
+    case 'integer',
       is_ip = true;
       vtype(temp) = 'I';
-      if strcmp(tt,'i_binary'),
-        lb(temp) = 0;
-        ub(temp) = 1;
-      end
-    elseif isequal( tt, 'nonnegative' ),
-        lb(temp) = 0;
-    else
-      error('GLPK does not support nonlinear constraints.' );
+    case 'binary',
+      is_ip = true;
+      vtype(temp) = 'I';
+      lb(temp) = 0;
+      ub(temp) = 1;
+    otherwise,
+      cvx_throw( 'GLPK does not support nonlinear constraints.' );
     end
 end
 if ~isempty(rr),

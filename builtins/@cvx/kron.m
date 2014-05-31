@@ -10,11 +10,10 @@ function z = kron( x, y )
 % using non-Kronecker products
 %
 
-error( nargchk( 2, 2, nargin ) ); %#ok
 sx = size( x );
 sy = size( y );
 if length( sx ) > 2 || length( sy ) > 2,
-    error( 'N-D arrays not supported.' );
+    cvx_throw( 'N-D arrays not supported.' );
 elseif sx( 2 ) == 1 && ( sx( 1 ) == 1 || sy( 1 ) == 1 ),
     z = mtimes( x, y );
     return
@@ -40,12 +39,7 @@ else
     iz = t( ky, : ) + iy( :, kx );
     t  = sy(2) * ( jx - 1 )';
     jz = t( ky, : ) + jy( :, kx );
-    try
-        z = reshape( vy, ny, 1 ) * reshape( vx, 1, nx );
-    catch exc
-        if isequal( exc.identifier, 'CVX:DCPError' ), throw( exc ); 
-        else rethrow( exc ); end
-    end
+    z = reshape( vy, ny, 1 ) * reshape( vx, 1, nx );
     z = sparse( iz, jz, z, sz(1), sz(2) );
 end
 

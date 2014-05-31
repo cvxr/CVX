@@ -37,7 +37,6 @@ function x = complex_lorentz( sx, dim )
 %       LORENTZ is a cvx set specification. See the user guide for
 %       details on how to use sets.
 
-error( nargchk( 1, 2, nargin ) ); %#ok
 if nargin == 1,
     x = lorentz( sx, [], true );
 else

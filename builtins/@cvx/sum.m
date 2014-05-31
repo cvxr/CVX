@@ -12,23 +12,17 @@ function y = sum( varargin )
 %      in violation of the DCP ruleset. For DGPs, addition rules dictate
 %      that the elements of X must be log-convex or log-affine.
 
-persistent params
-if isempty( params ),
-    params.map      = {};
-    params.funcs    = { @sum_1 };
-    params.reduce   = true;
-    params.reverse  = true;
-    params.name     = 'sum';
-    params.constant = [];
-    params.dimarg   = 2;
+persistent P
+if isempty( P ),
+    P.map      = {};
+    P.funcs    = { @sum_1 };
+    P.reduce   = true;
+    P.reverse  = true;
+    P.name     = 'sum';
+    P.constant = [];
+    P.dimarg   = 2;
 end
-
-try
-    y = cvx_reduce_op( params, varargin{:} );
-catch exc
-    if strncmp( exc.identifier, 'CVX:', 4 ), throw( exc ); 
-    else rethrow( exc ); end
-end
+y = cvx_reduce_op( P, varargin{:} );
 
 function x = sum_1( x )
 s = x.size_;

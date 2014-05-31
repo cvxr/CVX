@@ -2,9 +2,9 @@ function z = power( x, y, op )
 
 %POWER   Internal cvx version.
 
-persistent bparam
-if isempty( bparam ),
-    bparam.map = cvx_remap( ...
+persistent BP
+if isempty( BP ),
+    BP.map = cvx_remap( ...
         ... % Invalid combinations: zero ^ negative, posynomial ^ negative
         { { 'zero', 'g_posynomial', 'gg_monomial' }, { 'negative' } }, ...
         ... % Constant
@@ -15,26 +15,20 @@ if isempty( bparam ),
         { { 'l_valid_' }, { 'real' } }, ...
         ... % other non-constant ^ real
         { { 'valid' }, { 'real' } }, [0,1,2,3,4] );
-    bparam.funcs = { @power_c, @power_e, @power_g, @power_p };
-    bparam.constant = 1;
+    BP.funcs = { @power_c, @power_e, @power_g, @power_p };
+    BP.constant = 1;
 end
-
-try
-    if isnumeric( y ) && numel( y ) == 1,
-        switch y,
-            case   1, z = x;           return
-            case   2, z = square( x ); return
-            case 0.5, z = sqrt( x );   return 
-            case  -1, z = recip( x );  return
-        end
+if isnumeric( y ) && numel( y ) == 1,
+    switch y,
+        case   1, z = x;           return
+        case   2, z = square( x ); return
+        case 0.5, z = sqrt( x );   return 
+        case  -1, z = recip( x );  return
     end
-    if nargin < 3, op = '.^'; end
-    bparam.name = op;
-    z = cvx_binary_op( bparam, x, y );
-catch exc
-    if strncmp( exc.identifier, 'CVX:', 4 ), throw( exc ); 
-    else rethrow( exc ); end
 end
+if nargin < 3, op = '.^'; end
+BP.name = op;
+z = cvx_binary_op( BP, x, y );
 
 function z = power_c( x, y )
 z = builtin( 'power', x, y );
@@ -107,7 +101,7 @@ if multp
     z = zp;
 end
 if ~isempty( errs ),
-    throw( cvx_dcp_error( errs, op ) );
+    cvx_dcp_error( errs, op );
 elseif multp
     z = zm;
 end

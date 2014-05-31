@@ -14,16 +14,15 @@ function z = conv(x,y)
 %   CONV(X,Y) where X and Y are both log-convex satisfies the DGP rulest,
 %   but this version does not support that scenario.
 
-error(nargchk(2,2,nargin)); %#ok
 sx = size(x);
 sy = size(y);
 if sum(sx~=1)>1 || sum(sy~=1)>1,
     
-    error( 'Arguments must be vectors.' );
+    cvx_throw( 'Arguments must be vectors.' );
     
 elseif any(sx==0) && any(sy==0),
     
-    error( 'At least one argument must be non-empty.' );
+    cvx_throw( 'At least one argument must be non-empty.' );
     
 elseif cvx_isconstant(x) || cvx_isconstant(y),    
     
@@ -50,12 +49,12 @@ elseif cvx_isconstant(x) || cvx_isconstant(y),
     z  = sparse( yi, yj, yv, size(yb,1), nz );
     z  = cvx( sz, z );
     if ~cvx_isvalid( z ),
-        error( 'Disciplined convex programming error:\n   Illegal affine combination of convex/concave terms in convolution.' );
+        cvx_throw( 'Disciplined convex programming error:\n   Illegal affine combination of convex/concave terms in convolution.' );
     end
     
 else
     
-    error( 'At least one argument must be constant.' );
+    cvx_throw( 'At least one argument must be constant.' );
     
 end
 

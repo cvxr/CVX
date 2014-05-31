@@ -28,18 +28,12 @@ if isempty( P ),
     P.map = cvx_remap( { 'real' }, { 'concave' } );
     P.funcs = { @log_normcdf_cnst, @log_normcdf_cncv };
 end
-
-try
-    if nargin == 2 && approx,
-        P.funcs{1} = @log_normcdf_cncv;
-    else
-        P.funcs{1} = @log_normcdf_cnst;
-    end
-    y = cvx_unary_op( P, x );
-catch exc
-    if strncmp( exc.identifier, 'CVX:', 4 ), throw( exc ); 
-    else rethrow( exc ); end
+if nargin == 2 && approx,
+    P.funcs{1} = @log_normcdf_cncv;
+else
+    P.funcs{1} = @log_normcdf_cnst;
 end
+y = cvx_unary_op( P, x );
 
 function y = log_normcdf_cnst( x )
 y = log(0.5*erfc(-x*sqrt(0.5)));

@@ -37,7 +37,7 @@ end
 
 function [ Y, X ] = matrix_frac_args( X, Y )
 if size( X, 1 ) ~= size( Y, 1 ),
-    error( 'CVX:ArgError', 'The number of rows in X and Y must match.' );
+    cvx_throw( 'The number of rows in X and Y must match.' );
 end
 
 function z = matrix_frac_cnst( Z, X )

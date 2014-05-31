@@ -31,7 +31,7 @@ function y = berhu( x, varargin )
 %       affine. T must be real.
 
 if ~cvx_isaffnnc( x ),
-    error( 'Disciplined convex programming error:\n    X must be affine or nonnegative convex.' );
+    cvx_throw( 'Disciplined convex programming error:\n    X must be affine or nonnegative convex.' );
 end
 y = berhu_pos( abs( x ), varargin{:} );
 

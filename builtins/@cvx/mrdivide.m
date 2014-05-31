@@ -12,22 +12,17 @@ function z = mrdivide( x, y )
 %      constant and nonsingular. The resulting matrix multiplication 
 %      must obey the same rules as outlined in the help for CVX/MTIMES.
 
-try
-    sz = size( y );
-    if all( sz == 1 ),
-        z = rdivide( x, y, '/' );
-    elseif length( sz ) > 2,
-        error( 'Inputs must be 2-D, or at least one input must be scalar.' );
-    elseif sz( 1 ) ~= sz( 2 ) && length( sz ) == 2,
-        error( 'Non-square matrix divisors are not supported in CVX.' );
-    elseif ~cvx_isconstant( y ),
-        error( 'Matrix divisors must be constant.' );
-    else
-        z = mtimes( x, cvx_constant( y ), '/' );
-    end
-catch exc
-	if isequal( exc.identifier, 'CVX:DCPError' ), throw( exc ); 
-	else rethrow( exc ); end
+sz = size( y );
+if all( sz == 1 ),
+    z = rdivide( x, y, '/' );
+elseif length( sz ) > 2,
+    cvx_throw( 'Inputs must be 2-D, or at least one input must be scalar.' );
+elseif sz( 1 ) ~= sz( 2 ) && length( sz ) == 2,
+    cvx_throw( 'Non-square matrix divisors are not supported in CVX.' );
+elseif ~cvx_isconstant( y ),
+    cvx_throw( 'Matrix divisors must be constant.' );
+else
+    z = mtimes( x, cvx_constant( y ), '/' );
 end
 
 % Copyright 2005-2014 CVX Research, Inc.

@@ -7,9 +7,9 @@ function [ s, varargout ] = size( x, dim )
 s = x.size_;
 if nargin > 1,
     if nargout > 1,
-        error( 'Too many output arguments.' );
+        cvx_throw( 'Too many output arguments.' );
     elseif ~isnumeric( dim ) || length( dim ) ~= 1 || dim <= 0 || dim ~= floor( dim ),
-        error( 'Dimension argument must be a positive integer scalar.' );
+        cvx_throw( 'Dimension argument must be a positive integer scalar.' );
     elseif dim > length( s ),
         s = 1;
     else

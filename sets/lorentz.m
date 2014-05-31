@@ -39,7 +39,7 @@ function set = lorentz( varargin )
 if isempty( iscplx ),
     iscplx = false;
 elseif length( iscplx ) ~= 1,
-    error( 'Third argument must be a scalar.' );
+    cvx_throw( 'Third argument must be a scalar.' );
 else
     iscplx = logical( iscplx );
 end

@@ -131,18 +131,20 @@ if cfound || gfound,
             ndxs = cvx___.cones( k ).indices;
             ndxs = ndxs( :, any( reshape( touched( ndxs ), size( ndxs ) ), 1 ) );
             if ~isempty( ndxs ),
-                isint = isequal( ctyp(1:2), 'i_' );
-                if isint,
+                if size( ndxs, 1 ) == 1,
+                    isvar = true;
                     ncones = numel( ndxs );
-                elseif isequal( cvx___.cones( k ).type, 'nonnegative' ),
-                    ncones = 1;
-                    csize = numel(  ndxs  );
                 else
+                    isvar = false;
                     [ csize, ncones ] = size( ndxs );
                 end
-                if ncones == 1, plural = ''; else plural = 's'; end
-                if isint,
-                    fprintf( 1, '%s   %d %s variable%s\n', prefix, ncones, ctyp(3:end), plural );
+                if ncones == 1, 
+                    plural = ''; 
+                else 
+                    plural = 's'; 
+                end
+                if isvar,
+                    fprintf( 1, '%s   %d %s variable%s\n', prefix, ncones, ctyp, plural );
                 else
                     fprintf( 1, '%s   %d order-%d %s cone%s\n', prefix, ncones, csize, ctyp, plural );
                 end

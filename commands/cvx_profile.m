@@ -19,10 +19,10 @@ if nargin == 1,
             case { 'false', 'off' },
                 ns = false;
             otherwise,
-                error( 'String arugment must be ''true''/''on'' or ''false''/''off''.' );
+                cvx_throw( 'String arugment must be ''true''/''on'' or ''false''/''off''.' );
         end
     else
-        error( 'Argument must be a numeric scalar or a string.' );
+        cvx_throw( 'Argument must be a numeric scalar or a string.' );
     end
     if cvx___.profile ~= ns,
         cvx___.profile = ns;

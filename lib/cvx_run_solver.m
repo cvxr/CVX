@@ -21,7 +21,7 @@ if custom_on,
 end
 if ~isempty( dumpfile ),
     if ~ischar( dumpfile ) || size( dumpfile, 1 ) > 1,
-        error( 'CVX:Dumpfile', 'Invalid filename for the dumpfile.' );
+        cvx_throw( 'Invalid filename for the dumpfile.' );
     elseif length(dumpfile) < 4 || ~strcmpi(dumpfile(end-3:end),'.mat'),
         dumpfile = [ dumpfile, '.mat' ];
     end

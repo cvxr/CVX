@@ -18,11 +18,11 @@ function varargout = variables( varargin )
 %   See also VARIABLE, DUAL, DUALS.
 
 if nargin < 1,
-    error( 'CVX:ArgError', 'Incorrect syntax for VARIABLES. Type HELP VARIABLES for details.' );
+    cvx_throw( 'Incorrect syntax for VARIABLES. Type HELP VARIABLES for details.' );
 elseif nargout && nargout ~= nargin,
-    error( 'CVX:ArgError', 'Incorrect number of output arguments.' );
+    cvx_throw( 'Incorrect number of output arguments.' );
 elseif ~iscellstr( varargin ),
-    error( 'CVX:ArgError', 'All arguments must be strings.' );
+    cvx_throw( 'All arguments must be strings.' );
 end
 
 global cvx___

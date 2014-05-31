@@ -70,7 +70,7 @@ else
     cvx_clearpath( 1 );
 end
 if pid == 0
-    error( 'CVX:InternalError', 'Internal CVX data corruption. Please rebuild your model.' );
+    cvx_throw( 'Internal CVX data corruption. Please rebuild your model.' );
 end
 if do_timer
     tfin = tic;

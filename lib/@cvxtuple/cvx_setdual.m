@@ -29,7 +29,7 @@ switch class( x ),
     case 'double',
         x = cvx_setdual( cvx( x ), y );
     otherwise,
-        error( 'CVX:NoDual', 'Cannot attach a dual variable to an object of type %s.\n', class( x ) );
+        cvx_throw( 'Cannot attach a dual variable to an object of type %s.\n', class( x ) );
 end
 
 

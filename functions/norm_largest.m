@@ -10,11 +10,10 @@ function cvx_optval = norm_largest( x, k )
 %       positive values of X. So when used in CVX expressions, X must be affine,
 %       monomial, or posynomial. k must be a real scalar constant.
 
-error( nargchk( 2, 2, nargin ) ); %#ok
 if ~any( size( x ) ~= 1 ),
-    error( 'The first argument must be a vector.' );
+    cvx_throw( 'The first argument must be a vector.' );
 elseif ~isnumeric( k ) || ~isreal( k ) || length( k ) ~= 1,
-    error( 'Third argument must be a scalar.' );
+    cvx_throw( 'Third argument must be a scalar.' );
 else
     cvx_optval = sum_largest( abs( x ), k );
 end

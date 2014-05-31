@@ -14,24 +14,18 @@ function y = cumprod( varargin )
 %      because the top row contains the product of log-convex and 
 %      log-concave terms, in violation of the DGP ruleset.
 
-persistent params
-if isempty( params ),
-	params.map      = cvx_remap( { 'constant' ; 'l_convex' ; 'l_concave' } );
-	params.funcs    = { @cumprod_1, @cumprod_2, @cumprod_2 };
-	params.constant = 1;
-	params.zero     = 1;
-	params.reduce   = false;
-	params.reverse  = true;
-	params.dimarg   = 2;
-	params.name     = 'cumprod';
+persistent P
+if isempty( P ),
+	P.map      = cvx_remap( { 'constant' ; 'l_convex' ; 'l_concave' } );
+	P.funcs    = { @cumprod_1, @cumprod_2, @cumprod_2 };
+	P.constant = 1;
+	P.zero     = 1;
+	P.reduce   = false;
+	P.reverse  = true;
+	P.dimarg   = 2;
+	P.name     = 'cumprod';
 end
-
-try
-    y = reduce_op( params, varargin );
-catch exc
-	if strncmp( exc.identifier, 'CVX:', 4 ), throw( exc ); 
-	else rethrow( exc ); end
-end
+y = reduce_op( P, varargin );
 
 function x = cumprod_1( x )
 x = builtin( 'cumprod', x, 2 );

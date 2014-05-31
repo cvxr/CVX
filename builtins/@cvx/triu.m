@@ -10,9 +10,9 @@ function x = triu( x, k )
 if nargin < 2, k = 0; end
 s = x.size_;
 if length( s ) > 2,
-    error( 'The first argument must be 2-D.' );
+    cvx_throw( 'The first argument must be 2-D.' );
 elseif ~isnumeric( k ) || length( k ) ~= 1,
-    error( 'The second argument must be an integer scalar.' );
+    cvx_throw( 'The second argument must be an integer scalar.' );
 end
 
 %

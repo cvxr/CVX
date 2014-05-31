@@ -16,7 +16,7 @@ function cvx_optval = norms_largest( varargin )
 [ sx, x, k, dim ] = cvx_get_dimension( varargin, 3 );
 
 if ~isnumeric( k ) || ~isreal( k ) || length( k ) ~= 1,
-    error( 'CVX:ArgError', 'Second argument must be a real scalar.' );
+    cvx_throw( 'Second argument must be a real scalar.' );
 end
 
 cvx_optval = sum_largest( abs( x ), k, dim );

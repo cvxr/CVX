@@ -36,13 +36,13 @@ sp = size( p );
 if isempty( p ),
     p = zeros( 1, 0 );
 elseif ~isa( p, 'double' ) || ~isreal( p ) || length( sp ) > 2 || ~any( sp == 1 ),
-    error( 'First argument must be a non-empty real vector.' );
+    cvx_throw( 'First argument must be a non-empty real vector.' );
 elseif any( isnan( p ) | isinf( p ) ),
-    error( 'First argument must not contain Inf or NaN.' );
+    cvx_throw( 'First argument must not contain Inf or NaN.' );
 end
 n = prod( sp );
 if n > 2 && rem( n, 2 ) == 0,
-    error( 'The length of the vector p must be odd.' );
+    cvx_throw( 'The length of the vector p must be odd.' );
 end
 
 %
@@ -50,7 +50,7 @@ end
 %
 
 if n > 1 && ( ~cvx_isaffine( x ) || ~isreal( x ) ),
-    error( 'The second argument must be real and affine.' );
+    cvx_throw( 'The second argument must be real and affine.' );
 end
 
 %

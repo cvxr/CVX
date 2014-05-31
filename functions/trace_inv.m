@@ -10,23 +10,17 @@ function y = trace_inv( varargin )
 %         TRACE_INV is convex and nonmonotonic (at least with respect to
 %         elementwise comparison), so its argument must be affine.
 
-persistent params
-if isempty( params ),
-    params.nargs     = 1;
-    params.args      = [];
-    params.empty     = 0;
-    params.constant  = @trace_inv_diag;
-    params.diagonal  = @trace_inv_diag;
-    params.affine    = @trace_inv_aff;
-    params.structure = 'psdeig';
+persistent P
+if isempty( P ),
+    P.nargs     = 1;
+    P.args      = [];
+    P.empty     = 0;
+    P.constant  = @trace_inv_diag;
+    P.diagonal  = @trace_inv_diag;
+    P.affine    = @trace_inv_aff;
+    P.structure = 'psdeig';
 end
-
-try
-    y = cvx_matrix_op( params, varargin );
-catch exc
-    if strncmp( exc.identifier, 'CVX:', 4 ), throw(exc);
-    else rethrow(exc); end
-end
+y = cvx_matrix_op( P, varargin );
 
 function z = trace_inv_diag( D )
 z = sum( 1.0 ./ D );

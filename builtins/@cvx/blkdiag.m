@@ -10,7 +10,7 @@ for k = 1 : nargin,
     x  = cvx( varargin{k} );
     sx = x.size_;
     if length( sx ) > 2,
-        error( 'N-D matrices not supported.' );
+        cvx_throw( 'N-D matrices not supported.' );
     end
     b  = x.basis_;
     sz = sz + sx;

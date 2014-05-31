@@ -10,7 +10,7 @@ end
 nn = size(indices,1);
 if nn == 1,
     ctype = 'nonnegative';
-elseif isequal( ctype, 'nonnegative' ) || isequal( ctype(1:2), 'i_' ),
+elseif any( strcmp( ctype, { 'nonnegative', 'integer', 'binary' } ) ),
     indices = indices(:)';
     nn = 1;
 end
@@ -37,7 +37,7 @@ else
                 slacks = [-1;0;1];
             case 'lorentz',         
                 slacks = [zeros(nn-1,1);1];
-            case 'rotated-lorentz',
+            case 'rotated_lorentz',
                 if nn <= 2, 
                     cones = cvx_pushcone( cones, 'nonnegative', indices(:)' );
                     if gcone, cvx___.cones = cones; end
@@ -47,7 +47,7 @@ else
             case 'semidefinite';
                 q = round(0.5*(sqrt(8*nn+1)-1));
                 slacks(cumsum([1,q:-1:2]),:) = 1;
-            case 'hermitian-semidefinite',
+            case 'hermitian_semidefinite',
                 q = round(sqrt(nn));
                 slacks(cumsum([1,2*q-1:-2:2]),:) = 1;
         end

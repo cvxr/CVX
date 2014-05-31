@@ -19,20 +19,14 @@ function z = plus( x, y )
 
 % Determine sizes
 
-persistent params
-if isempty( params ),
-    params.map      = {};
-    params.funcs    = { @plus_nc };
-    params.constant = [];
-    params.name     = '+';
+persistent P
+if isempty( P ),
+    P.map      = {};
+    P.funcs    = { @plus_nc };
+    P.constant = [];
+    P.name     = '+';
 end
-
-try
-    z = cvx_binary_op( params, x, y );
-catch exc
-    if strncmp( exc.identifier, 'CVX:', 4 ), throw( exc ); 
-    else rethrow( exc ); end
-end
+z = cvx_binary_op( P, x, y );
 
 % Copyright 2005-2014 CVX Research, Inc.
 % See the file LICENSE.txt for full copyright information.

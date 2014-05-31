@@ -29,38 +29,32 @@ function y = sum_largest( varargin )
 
 %SUM_LARGEST   Internal cvx version.
 
-persistent params
-if isempty( params ),
-    params.map = cvx_remap( { 'real' ; 'convex' } );
-    params.funcs = { @sum_largest_cnst, @sum_largest_cvx };
-    params.constant = 1;
-    params.zero = 0;
-    params.reduce = true;
-    params.reverse = false;
-    params.name = 'sum_largest';
-    params.dimarg = 3;
+persistent P
+if isempty( P ),
+    P.map = cvx_remap( { 'real' ; 'convex' } );
+    P.funcs = { @sum_largest_cnst, @sum_largest_cvx };
+    P.constant = 1;
+    P.zero = 0;
+    P.reduce = true;
+    P.reverse = false;
+    P.name = 'sum_largest';
+    P.dimarg = 3;
 end
-
-try
-    [ sx, x, k, dim ] = cvx_get_dimension( varargin, 3 );
-    if nargin < 2,
-        error( 'Not enough arguments.' );
-    elseif ~isnumeric( k ) || numel(k) ~= 1 || ~isreal( k ),
-        error( 'Second argument must be real.' );
-    elseif k <= 0,
-        sx( dim ) = 1;
-        y = zeros( sx );
-        if isa( x, 'cvx' ), y = cvx( x ); end
-    elseif k >= sx( dim ),
-        y = sum( x, dim );
-    elseif k <= 1,
-        y = k * max( x, [], dim );
-    else
-        y = cvx_reduce_op( params, x, k, dim );
-    end
-catch exc
-    if strncmp( exc.identifier, 'CVX:', 4 ), throw(exc);
-    else rethrow(exc); end
+[ sx, x, k, dim ] = cvx_get_dimension( varargin, 3 );
+if nargin < 2,
+    cvx_throw( 'Not enough arguments.' );
+elseif ~isnumeric( k ) || numel(k) ~= 1 || ~isreal( k ),
+    cvx_throw( 'Second argument must be real.' );
+elseif k <= 0,
+    sx( dim ) = 1;
+    y = zeros( sx );
+    if isa( x, 'cvx' ), y = cvx( x ); end
+elseif k >= sx( dim ),
+    y = sum( x, dim );
+elseif k <= 1,
+    y = k * max( x, [], dim );
+else
+    y = cvx_reduce_op( P, x, k, dim );
 end
 
 function y = sum_largest_cnst( x, k )

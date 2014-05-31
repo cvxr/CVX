@@ -1,16 +1,17 @@
-function [ dbcA, cones, dir, Q, P, exps, dualized ] = cvx_extract( config )
+function [ dbcA, cones, dir, Q, P, exps, dualized ] = cvx_extract( config, name )
 
 global cvx___
 try
     pstr = cvx___.problems(end);
 catch
-    error( 'CVX:NoModel', 'No CVX model is present.' );
+    cvx_throw( 'No CVX model is present.' );
 end
 
 %%%%%%%%%%%%%%
 % EXTRACTION %
 %%%%%%%%%%%%%%
 
+dualize = isempty( config ) || ( isfield( config, 'dualize' ) && config.dualize );
 nold = length( cvx___.classes );
 dbcA = pstr.objective;
 if isempty( dbcA ),
@@ -49,55 +50,29 @@ dbcA = horzcat( dbcA, AA{:} );
 mold = size(dbcA,2) + npre;
 clear AA
 
-% Nonlinearities
+% Nonlinearities: pass 1
 used    = full( any( dbcA, 2 ) );
 used(1) = true;
 rsv     = zeros( nold, 1 ); 
 rsv(1)  = 1;
-u_int   = false;
 nrsv    = 0;
+u_int   = false;
 u_exp   = false;
 u_nneg  = false;
 cones   = [];
 for k = pstr.checkpoint(3)+1 : length(cvx___.cones),
     cone = cvx___.cones(k);
-    ctyp = cone.type;
     ndxs = cone.indices;
     temp = any( reshape( used( ndxs ), size( ndxs ) ), 1 );
     if ~any( temp ), continue; end
+    switch cone.type,
+        case 'nonnegative', u_nneg = true;
+        case { 'integer', 'binary' }, u_int = true;
+    end
     ndxs = ndxs( :, temp );
+    nrsv = nrsv + numel( ndxs );
     used( ndxs ) = true;
     rsv( ndxs ) = 1;
-    nnnv = numel(ndxs);
-    nrsv = nrsv + nnnv;
-    if nargin == 3 && ~isempty( config ),
-        switch ctyp,
-            case 'nonnegative',
-                u_nneg = true;
-            case 'exponential',
-                if ~config.dualize,
-                    error( 'CVX:IncompatibleSolver', 'This solver does not support exponential cones.' );
-                end
-                nexp = nexp + nnnv / 3;
-            case 'semidefinite',
-                if ~config.capableSDP && ( size(cones(k).indices,1) > 3 || ~config.capableSOCP ),
-                    error( 'CVX:IncompatibleSolver', 'This solver does not support semidefinite cones.' );
-                end
-            case 'hermitian-semidefinite',
-                if ~config.capableSDP && ( size(cones(k).indices,1) > 4 || ~config.capableSOCP ),
-                    error( 'CVX:IncompatibleSolver', 'This solver does not support semidefinite cones.' );
-                end
-            case { 'i_integer', 'i_binary' },
-                u_int = true;
-                if ~config.INTcapable,
-                    error( 'CVX:IncompatibleSolver', 'This solver does not support integer constraints.' );
-                end
-        end
-    else
-        if isequal( ctyp(1:2), 'i_' ), u_int = true; end
-        if isequal( ctyp, 'exponential' ), u_exp = true; end
-        if isequal( ctyp, 'nonnegative' ), u_nneg = true; end
-    end
     cones = cvx_pushcone( cones, cone.type, ndxs );
 end
 
@@ -112,17 +87,14 @@ if nnz( exps ),
     tq   = tn ~= 0;
     exps = [ esrc(tq,:), edst(tq,:), tn(tq,:) ];
     if any( tt ),
-        if ~config.dualize,
-            error( 'CVX:IncompatibleSolver', 'This solver does not support exponential cones.' );
-        end
         % Determine the indices of the exponentials
-        u_exp = true;
         esrc  = esrc(tt);
         edst  = edst(tt);
         nexp  = length(esrc);
         nexp3 = 3 * nexp;
         nadd  = nadd + nexp3;
         nrsv  = nrsv + nexp3;
+        u_exp = true;
         % Create the exponential cones
         ndim  = reshape( nold+1:nold+nexp3, 3, nexp );
         % Expand Q, P, dbcA
@@ -143,9 +115,10 @@ if nnz( exps ),
         if any( tt ),
             epos = exps(tt,2);
             nlog = length(epos);
-            nrsv = nrsv + nlog;
             nadd = nadd + nlog;
+            nrsv = nrsv + nlog;
             ndim = size(dbcA,1) + (1:nlog);
+            u_nneg = true;
             dbcA(end+nlog,end) = 0;
             dbcA = [ dbcA, sparse( [epos,ndim']', repmat(1:nlog,[2,1]), ...
                 repmat([-1;1],[1,nlog]) ) ];
@@ -154,10 +127,6 @@ if nnz( exps ),
     end
 else
     exps = [];
-end
-
-if u_exp && u_int,
-    error( 'CVX:IncompatibleSolver', 'Exponential variables and integer variables cannot both be used.' );
 end
 
 %%%%%%%%%%%%
@@ -184,7 +153,7 @@ end
 
 % Add Lagrangian term x'*z
 ncones = length(cones);
-if config.dualize,
+if dualize,
     PP = cell( ncones, 1 );
     nnew = size(dbcA,1);
     for k = 1 : ncones,
@@ -197,7 +166,7 @@ if config.dualize,
                 SS = 2 * ones(nn,1);
                 SS(cumsum([1,round(0.5*(sqrt(8*nn+1)-1)):-1:2])) = 1;
                 SS = sparse(1:nn,1:nn,SS);
-            case 'hermitian-semidefinite',
+            case 'hermitian_semidefinite',
                 SS = 2 * ones(nn,1);
                 SS(cumsum([1,2*sqrt(nn)-1:-2:2])) = 1;
                 SS = sparse(1:nn,1:nn,SS);
@@ -237,7 +206,7 @@ ndxs  = [ ndxs ; ( nold + 1 : nold + nadd )' ];
 rsv   = [ rsv  ; ones( nadd, 1 ) ];
 ineqs = zeros( 1, mnew );
 ineqs(1) = 1;
-if config.dualize,
+if dualize,
     ineqs(end-nrsv+1:end) = 1;
 end
 if isempty( dbcA ),
@@ -294,7 +263,7 @@ while true,
         A21  = dbcA( rows, colX );
         A22  = dbcA( rows, cols );
         if ( size( A22, 1 ) ~= size( A22, 2 ) || nnz( A22 ) ~= size( A22, 1 ) ),
-            error( 'There seems to be an error in the CVX presolver routine.\nPlease report this to the authors; and if possible, include the\ncvx model and data that gave you this error.', 1 ); %#ok
+            cvx_throw( 'There seems to be an error in the CVX presolver routine.\nPlease report this to the authors; and if possible, include the\ncvx model and data that gave you this error.', 1 ); %#ok
         end
         [ ii, jj, vv ] = find( A22 );
         A22i  = sparse( jj, ii, 1.0 ./ vv );
@@ -317,7 +286,7 @@ while true,
     % should work most of the time. If we want to be very aggressive we
     % can safe off the primal formulation and bring it back in if needed.
     %
-    if dualized || ~config.dualize,
+    if dualized || ~dualize,
         break
     end
     rsv(2:end) = 0;
@@ -429,102 +398,152 @@ if do_slack,
 end
 
 
-%%%%%%%%%%%%%%
-% CONVERSION %
-%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% CONVERSION / COMPATIBILITY CHECK %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-cone2 = []; Pr = []; Pc = []; Pv = [];
-for k = 1 : length(cones),
-    cone  = cones(k);
-    ctype = cone.type;
-    ndxs  = cone.indices;
-    [nn,nv] = size(ndxs);
-    switch cone.type,
-        case 'lorentz',
-            if nn == 2 && config.preferLP,
-                beta = sqrt(0.5);
-                ndx1 = ndxs(1,:);
-                ndx2 = ndxs(2,:);
-                Pr = [Pr,ndx1,ndx1,ndx2,ndx2]; %#ok
-                Pc = [Pc,ndx1,ndx2,ndx1,ndx2]; %#ok
-                Pv = [Pv,beta*[-ones(1,nv),ones(1,3*nv)]]; %#ok
-                ctype = 'nonnegative';
-            end
-        case 'rotated-lorentz',
-            if config.unrotateSOCP,
-                ndx1 = ndxs(end-1,:);
-                ndx2 = ndxs(end,:);
-                beta = sqrt(0.5);
-                Pr = [Pr,ndx1,ndx1,ndx2,ndx2]; %#ok
-                Pc = [Pc,ndx1,ndx2,ndx1,ndx2]; %#ok
-                Pv = [Pv,beta*[-ones(1,nv),ones(1,3*nv)]]; %#ok
-                ctype = 'lorentz';
-            end
-        case 'semidefinite',
-            if nn == 3 && config.preferSOCP,
-                ndx1 = ndxs(1,:);
-                ndx2 = ndxs(2,:);
-                ndx3 = ndxs(3,:);
-                if config.unrotateSOCP,
-                    Pr = [Pr,ndx1,ndx1,ndx2,ndx3,ndx3]; %#ok
-                    Pc = [Pc,ndx2,ndx3,ndx1,ndx2,ndx3]; %#ok
-                    Pv = [Pv,-ones(1,nv),ones(1,4*nv)]; %#ok
-                    ctype = 'lorentz';
-                else
+if ~nargin || isempty( config )
+    return
+end
+Pr = []; Pc = []; Pv = [];
+rejected = {};
+if nargin && ~isempty( config ),
+    for k = 1 : length(cones),
+        cone = cones(k);
+        ctyp = cone.type;
+        if isfield( config, ctyp ), 
+            cmode = config.(ctyp);
+        else
+            cmode = 0; 
+        end
+        ndxs = cone.indices;
+        ordr = size( ndxs, 1 );
+        success = false;
+        switch ctyp,
+            case 'lorentz',
+                % Convert to nonnegative
+                if ordr == 2,
                     beta = sqrt(0.5);
-                    Pr = [Pr,ndx1,ndx2,ndx3]; %#ok
-                    Pc = [Pc,ndx2,ndx1,ndx3]; %#ok
-                    Pv = [Pv,ones(1,nv)/beta,ones(1,nv),ones(1,nv)/beta]; %#ok
-                    ctype = 'rotated-lorentz';
+                    ndx1 = ndxs(1,:);
+                    ndx2 = ndxs(2,:);
+                    Pr = [Pr,ndx1,ndx1,ndx2,ndx2]; %#ok
+                    Pc = [Pc,ndx1,ndx2,ndx1,ndx2]; %#ok
+                    Pv = [Pv,beta*[-ones(1,nv),ones(1,3*nv)]]; %#ok
+                    ctyp = 'nonnegative';
+                    success = true;
                 end
-            end
-        case 'hermitian-semidefinite',
-            if nn == 4 && config.preferSOCP,
-                ndx1 = ndxs(1,:);
-                ndx2 = ndxs(2,:);
-                ndx3 = ndxs(3,:);
-                ndx4 = ndxs(4,:);
-                if config.unrotateSOCP,
-                    Pr = [Pr,ndx1,ndx1,ndx2,ndx3,ndx4,ndx4]; %#ok
-                    Pc = [Pc,ndx3,ndx4,ndx1,ndx2,ndx3]; %#ok
-                    Pv = [Pv,-ones(1,nv),ones(1,4*nv)]; %#ok
-                    ctype = 'lorentz';
-                else
+            case 'rotated_lorentz',
+                if isfield( config, 'lorentz' ) && config.lorentz,
+                    % Convert to lorentz
+                    ndx1 = ndxs(end-1,:);
+                    ndx2 = ndxs(end,:);
                     beta = sqrt(0.5);
-                    Pr = [Pr,ndx1,ndx2,ndx3,ndx4]; %#ok
-                    Pc = [Pc,ndx3,ndx1,ndx2,ndx4]; %#ok
-                    Pv = [Pv,ones(1,nv)/beta,ones(1,2*nv),ones(1,nv)/beta]; %#ok
-                    ctype = 'rotated-lorentz';
+                    Pr = [Pr,ndx1,ndx1,ndx2,ndx2]; %#ok
+                    Pc = [Pc,ndx1,ndx2,ndx1,ndx2]; %#ok
+                    Pv = [Pv,beta*[-ones(1,nv),ones(1,3*nv)]]; %#ok
+                    ctype = 'lorentz';
+                    success = true;
                 end
-            elseif config.convertCSDP,
-                n2 = sqrt( nn );
-                [rs,cs,vs] = find(cvx_create_structure([n2,n2],'hermitian'));
-                tt = rem(cs-1,n2) >= floor((cs-1)/n2);
-                tr = real(vs) ~= 0;
-                is = rs(tt&~tr);
-                rs = rs(tt&tr);
-                [rd,cd] = find(cvx_create_structure(2*[n2,n2],'symmetric'));
-                cc  = floor((cd-1)/(n2*2));
-                rr  = rem(cd-1,n2*2);
-                rd1 = rd(rr<n2&cc<n2&rr>=cc);
-                rd2 = rd(rr>=n2&cc>=n2&rr>=cc);
-                id1 = rd(rr>=n2&rr>cc+n2);
-                tt  = rr>=n2&cc<n2&rr<cc+n2;
-                id2 = rd(tt);
-                [dummy,tt] = sort(cc(tt)+n2*rr(tt)); %#ok
-                id2 = id2(tt);
-                ndxs = [ndxs;reshape(nfin+1:nfin+n2*(n2+1)*nv,[],nv)]; %#ok
-                Pr = [ Pr, vec( [ ndxs(rs,:)  ; ndxs(rs,:)  ; ndxs(is,:)  ; ndxs(is,:)  ] )' ]; %#ok
-                Pc = [ Pc, vec( [ ndxs(rd1,:) ; ndxs(rd2,:) ; ndxs(id1,:) ; ndxs(id2,:) ] )' ]; %#ok
-                Pv = [ Pv, vec( [ ones(2*numel(rs)+numel(is),nv) ; -ones(numel(is),nv) ] )' ]; %#ok
-                ctype = 'semidefinite';
-                nfin = ndxs(end);
+            case 'semidefinite',
+                if ordr <= 3,
+                    % Convert to rotated_lorentz or lorentz
+                    ndx1 = ndxs(1,:);
+                    ndx2 = ndxs(2,:);
+                    ndx3 = ndxs(3,:);
+                    if isfield( config, 'rotated_lorentz' ) && config.rotated_lorentz,
+                        beta = sqrt(0.5);
+                        Pr = [Pr,ndx1,ndx2,ndx3]; %#ok
+                        Pc = [Pc,ndx2,ndx1,ndx3]; %#ok
+                        Pv = [Pv,ones(1,nv)/beta,ones(1,nv),ones(1,nv)/beta]; %#ok
+                        ctype = 'rotated_lorentz';
+                        success = true;
+                    elseif isfield( config, 'lorentz' ) && config.lorentz,
+                        Pr = [Pr,ndx1,ndx1,ndx2,ndx3,ndx3]; %#ok
+                        Pc = [Pc,ndx2,ndx3,ndx1,ndx2,ndx3]; %#ok
+                        Pv = [Pv,-ones(1,nv),ones(1,4*nv)]; %#ok
+                        ctype = 'lorentz';
+                        success = true;
+                    end
+                end
+            case 'hermitian_semidefinite',
+                if ordr <= 4,
+                    ndx1 = ndxs(1,:);
+                    ndx2 = ndxs(2,:);
+                    ndx3 = ndxs(3,:);
+                    ndx4 = ndxs(4,:);
+                    if isfield( config, 'rotated_lorentz' ) && config.rotated_lorentz,
+                        beta = sqrt(0.5);
+                        Pr = [Pr,ndx1,ndx2,ndx3,ndx4]; %#ok
+                        Pc = [Pc,ndx3,ndx1,ndx2,ndx4]; %#ok
+                        Pv = [Pv,ones(1,nv)/beta,ones(1,2*nv),ones(1,nv)/beta]; %#ok
+                        ctype = 'rotated_lorentz';
+                        success = true;
+                    elseif isfield( config, 'lorentz' ) && config.lorentz,
+                        Pr = [Pr,ndx1,ndx1,ndx2,ndx3,ndx4,ndx4]; %#ok
+                        Pc = [Pc,ndx3,ndx4,ndx1,ndx2,ndx3]; %#ok
+                        Pv = [Pv,-ones(1,nv),ones(1,4*nv)]; %#ok
+                        ctype = 'lorentz';
+                        success = true;
+                    end
+                end
+                if ~success && isfield( config, 'semidefinite' ) && config.semidefinite, 
+                    n2 = sqrt( nn );
+                    [rs,cs,vs] = find(cvx_create_structure([n2,n2],'hermitian'));
+                    tt = rem(cs-1,n2) >= floor((cs-1)/n2);
+                    tr = real(vs) ~= 0;
+                    is = rs(tt&~tr);
+                    rs = rs(tt&tr);
+                    [rd,cd] = find(cvx_create_structure(2*[n2,n2],'symmetric'));
+                    cc  = floor((cd-1)/(n2*2));
+                    rr  = rem(cd-1,n2*2);
+                    rd1 = rd(rr<n2&cc<n2&rr>=cc);
+                    rd2 = rd(rr>=n2&cc>=n2&rr>=cc);
+                    id1 = rd(rr>=n2&rr>cc+n2);
+                    tt  = rr>=n2&cc<n2&rr<cc+n2;
+                    id2 = rd(tt);
+                    [dummy,tt] = sort(cc(tt)+n2*rr(tt)); %#ok
+                    id2 = id2(tt);
+                    ndxs = [ndxs;reshape(nfin+1:nfin+n2*(n2+1)*nv,[],nv)]; %#ok
+                    Pr = [ Pr, vec( [ ndxs(rs,:)  ; ndxs(rs,:)  ; ndxs(is,:)  ; ndxs(is,:)  ] )' ]; %#ok
+                    Pc = [ Pc, vec( [ ndxs(rd1,:) ; ndxs(rd2,:) ; ndxs(id1,:) ; ndxs(id2,:) ] )' ]; %#ok
+                    Pv = [ Pv, vec( [ ones(2*numel(rs)+numel(is),nv) ; -ones(numel(is),nv) ] )' ]; %#ok
+                    ctype = 'semidefinite';
+                    nfin = ndxs(end);
+                    success = true;
+                end
+            case 'exponential',
+                if dualize && isfield( config, 'lorentz' ),
+                    success = true;
+                end
+        end
+        if success,
+            cones(k).type = ctype; %#ok
+            cones(k).indices = ndxs; %#ok
+        elseif ~cmode,
+            temp = cone.type;
+            temp(temp=='_') = ' ';
+            if ordr == 1, 
+                rejected{end+1} = sprintf( '%s variables', temp ); %#ok
+            else
+                rejected{end+1} = sprintf( 'order-%d %s cones', ordr, temp ); %#ok
             end
+        end
     end
-    cone2 = cvx_pushcone( cone2, ctype, ndxs );
+end
+if ~isempty( rejected ),
+    if nargin < 2 || isempty( name ),
+       name = 'The current solver';
+    end
+    if length( rejected ) == 1,
+        cvx_throw( 'CVX:IncompatibleSolver:%s does not support %s.\nPlease select a different solver.', name, rejected{1} );
+    else
+        temp = sprintf('\n    %s', rejected{:} );
+        cvx_throw( 'CVX:IncompatibleSolver:%s does not support the following nonlinearities:%s\nPlease select a different solver.', name, temp );
+    end
+elseif u_exp && u_int,
+    cvx_throw( 'Exponential variables and integer variables cannot both be used.' );
 end
 if ~isempty(Pr),
-    cones = cone2;
     Pd = true(1,size(dbcA,1),1);
     Pd(Pr) = false;
     Pd = find(Pd);

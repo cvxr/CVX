@@ -38,20 +38,20 @@ if nargin,
     if isempty( sname ),
         sname = 'default';
     elseif ~ischar( sname ) || size( sname, 1 ) ~= 1,
-        error( 'Argument must be a string.' );
+        cvx_throw( 'Argument must be a string.' );
     end
     try
         snumber = cvx___.solvers.map.(lower(sname));
     catch
-        error( 'Unknown, unusable, or missing solver: %s', sname );
+        cvx_throw( 'Unknown, unusable, or missing solver: %s', sname );
     end
     if ~isempty( cvx___.solvers.list(snumber).error ),
-        error( 'Solver unusable due to prior errors: %s', sname );
+        cvx_throw( 'Solver unusable due to prior errors: %s', sname );
     end
     if isempty( cvx___.problems ),
         cvx___.solvers.selected = snumber;
     elseif ~isa( evalin( 'caller', 'cvx_problem', '[]' ), 'cvxprob' ),
-        error( 'The global CVX solver selection cannot be changed while a model is being constructed.' );
+        cvx_throw( 'The global CVX solver selection cannot be changed while a model is being constructed.' );
     elseif cvx___.problems(end).solver ~= snumber,
         cvx___.problems(end).solver = snumber;
         cvx___.problems(end).settings = cvx___.solvers.list.settings;

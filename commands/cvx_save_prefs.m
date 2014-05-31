@@ -8,7 +8,7 @@ function cvx_save_prefs( varargin )
 
 global cvx___
 if ~isfield( cvx___, 'pfile' ),
-    error( 'CVX:BadPrefsSave', 'CVX is not currently loaded; there are no preferences to save.' );
+    cvx_throw( 'CVX is not currently loaded; there are no preferences to save.' );
 elseif nargin == 0,
     fprintf( 'Saving prefs...' );
 end

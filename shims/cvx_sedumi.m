@@ -15,11 +15,8 @@ if isempty( shim.name ),
     int_path = [ cvx___.where, fs ];
     int_plen = length( int_path );
     shim.name = 'SeDuMi';
-    shim.config.dualize = true;
-    shim.config.unrotateSOCP = true;
-    shim.config.capableSOCP = true;
-    shim.config.capableSDP = true;
-    shim.config.convertCSDP = false;
+    shim.config = struct( 'dualize', 1, 'lorentz', -1, ...
+        'semidefinite', -1, 'hermitian_semidefinite', -1 );
     flen = length(fname);
     fpaths = { [ int_path, 'sedumi', fs, fname ] };
     fpaths = [ fpaths ; which( fname, '-all' ) ];
@@ -47,7 +44,7 @@ if isempty( shim.name ),
             otp = fread(fid,Inf,'uint8=>char')';
             fclose(fid);
         catch errmsg
-            tshim.error = sprintf( 'Unexpected error:\n%s\n', errmsg.message );
+            tshim.error = sprintf( 'Unexpected error reading %s:\n%s\n', fname, errmsg.message );
         end
         if isempty( tshim.error ),
             otp = regexp( otp, 'SeDuMi \d\S+', 'match' );
@@ -82,7 +79,7 @@ n = length( c );
 m = length( b );
 K = struct( 'f', 0, 'l', 0, 'q', [], 'r', [], 's', [], 'scomplex', [], 'ycomplex', [] );
 reord = struct( 'n', 0, 'r', [], 'c', [], 'v', [] );
-reord = struct( 'f', reord, 'l', reord, 'a', reord, 'q', reord, 'r', reord, 's', reord, 'h', reord );
+reord = struct( 'f', reord, 'l', reord, 'a', reord, 'q', reord, 's', reord );
 reord.f.n = n;
 for k = 1 : length( nonls ),
     temp = nonls( k ).indices;
@@ -91,51 +88,43 @@ for k = 1 : length( nonls ),
     nnv = nn * nv;
     tt = nonls( k ).type;
     reord.f.n = reord.f.n - nnv;
-    if strncmp( tt, 'i_', 2 ),
-        error( 'SeDuMi does not support integer variables.' );
-    elseif nn == 1 || isequal( tt, 'nonnegative' ),
-        reord.l.r = [ reord.l.r ; temp(:) ];
-        reord.l.c = [ reord.l.c ; reord.l.n + ( 1 : nnv )' ];
-        reord.l.v = [ reord.l.v ; ones( nnv, 1 ) ];
-        reord.l.n = reord.l.n + nnv;
-    elseif isequal( tt, 'lorentz' ),
-        temp = temp( [ end, 1 : end - 1 ], : );
-        reord.q.r = [ reord.q.r ; temp(:) ];
-        reord.q.c = [ reord.q.c ; reord.q.n + ( 1 : nnv )' ];
-        reord.q.v = [ reord.q.v ; ones(nnv,1) ];
-        reord.q.n = reord.q.n + nnv;
-        K.q = [ K.q, nn * ones( 1, nv ) ];
-    elseif isequal( tt, 'rotated-lorentz' ),
-        temp = temp( [end-1:end,1:end-2], : );
-        reord.r.r = [ reord.r.r ; temp(:) ];
-        reord.r.c = [ reord.r.c ; reord.r.n + ( 1 : nnv )' ];
-        reord.r.v = [ reord.r.v ; ones(nnv,1) ];
-        reord.r.n = reord.r.n + nnv;
-        K.r = [ K.r, nn * ones( 1, nv ) ];
-    elseif isequal( tt, 'semidefinite' ),
-        nn = 0.5 * ( sqrt( 8 * nn + 1 ) - 1 );
-        str = cvx_create_structure( [ nn, nn, nv ], 'symmetric' );
-        K.s = [ K.s, nn * ones( 1, nv ) ];
-        [ rr, cc, vv ] = find( cvx_invert_structure( str, true ) );
-        rr = temp( rr );
-        reord.s.r = [ reord.s.r; rr( : ) ];
-        reord.s.c = [ reord.s.c; cc( : ) + reord.s.n ];
-        reord.s.v = [ reord.s.v; vv( : ) ];
-        reord.s.n = reord.s.n + nn * nn * nv;
-    elseif isequal( tt, 'hermitian-semidefinite' ),
-        % SeDuMi's complex SDP support was restored in v1.33.
-        K.scomplex = [ K.scomplex, length( K.s ) + ( 1 : nv ) ];
-        nn = sqrt( nn );
-        str = cvx_create_structure( [ nn, nn, nv ], 'hermitian' );
-        K.s = [ K.s, nn * ones( 1, nv ) ];
-        [ rr, cc, vv ] = find( cvx_invert_structure( str, true ) );
-        rr = temp( rr );
-        reord.s.r = [ reord.s.r; rr( : ) ];
-        reord.s.c = [ reord.s.c; cc( : ) + reord.s.n ];
-        reord.s.v = [ reord.s.v; vv( : ) ];
-        reord.s.n = reord.s.n + nn * nn;
-    else
-        error( 'Unsupported nonlinearity: %s', tt );
+    switch tt,
+        case 'nonnegative',
+            reord.l.r = [ reord.l.r ; temp(:) ];
+            reord.l.c = [ reord.l.c ; reord.l.n + ( 1 : nnv )' ];
+            reord.l.v = [ reord.l.v ; ones( nnv, 1 ) ];
+            reord.l.n = reord.l.n + nnv;
+        case 'lorentz',
+            temp = temp( [ end, 1 : end - 1 ], : );
+            reord.q.r = [ reord.q.r ; temp(:) ];
+            reord.q.c = [ reord.q.c ; reord.q.n + ( 1 : nnv )' ];
+            reord.q.v = [ reord.q.v ; ones(nnv,1) ];
+            reord.q.n = reord.q.n + nnv;
+            K.q = [ K.q, nn * ones( 1, nv ) ];
+        case 'semidefinite',
+            nn = 0.5 * ( sqrt( 8 * nn + 1 ) - 1 );
+            str = cvx_create_structure( [ nn, nn, nv ], 'symmetric' );
+            K.s = [ K.s, nn * ones( 1, nv ) ];
+            [ rr, cc, vv ] = find( cvx_invert_structure( str, true ) );
+            rr = temp( rr );
+            reord.s.r = [ reord.s.r; rr( : ) ];
+            reord.s.c = [ reord.s.c; cc( : ) + reord.s.n ];
+            reord.s.v = [ reord.s.v; vv( : ) ];
+            reord.s.n = reord.s.n + nn * nn * nv;
+        case 'hermitian_semidefinite',
+            % SeDuMi's complex SDP support was restored in v1.33.
+            K.scomplex = [ K.scomplex, length( K.s ) + ( 1 : nv ) ];
+            nn = sqrt( nn );
+            str = cvx_create_structure( [ nn, nn, nv ], 'hermitian' );
+            K.s = [ K.s, nn * ones( 1, nv ) ];
+            [ rr, cc, vv ] = find( cvx_invert_structure( str, true ) );
+            rr = temp( rr );
+            reord.s.r = [ reord.s.r; rr( : ) ];
+            reord.s.c = [ reord.s.c; cc( : ) + reord.s.n ];
+            reord.s.v = [ reord.s.v; vv( : ) ];
+            reord.s.n = reord.s.n + nn * nn;
+        otherwise,
+            cvx_throw( 'Unexpected nonlinearity: %s', tt );
     end
 end
 if reord.f.n > 0,
@@ -154,12 +143,11 @@ n_out = reord.f.n;
 reord.l.c = reord.l.c + n_out; n_out = n_out + reord.l.n;
 reord.a.c = reord.a.c + n_out; n_out = n_out + reord.a.n;
 reord.q.c = reord.q.c + n_out; n_out = n_out + reord.q.n;
-reord.r.c = reord.r.c + n_out; n_out = n_out + reord.r.n;
 reord.s.c = reord.s.c + n_out; n_out = n_out + reord.s.n;
 reord = sparse( ...
-    [ reord.f.r ; reord.l.r ; reord.a.r ; reord.q.r ; reord.r.r ; reord.s.r ], ...
-    [ reord.f.c ; reord.l.c ; reord.a.c ; reord.q.c ; reord.r.c ; reord.s.c ], ...
-    [ reord.f.v ; reord.l.v ; reord.a.v ; reord.q.v ; reord.r.v ; reord.s.v ], ...
+    [ reord.f.r ; reord.l.r ; reord.a.r ; reord.q.r ; reord.s.r ], ...
+    [ reord.f.c ; reord.l.c ; reord.a.c ; reord.q.c ; reord.s.c ], ...
+    [ reord.f.v ; reord.l.v ; reord.a.v ; reord.q.v ; reord.s.v ], ...
     n, n_out );
 
 At = reord' * At;
@@ -206,10 +194,6 @@ else
 end
 if info.numerr == 2,
     status = 'Failed';
-    if any( K.q == 2 ),
-        warning( 'CVX:SeDuMi', cvx_error_format( 'This solver failure may possibly be due to a known bug in the SeDuMi solver. Try switching to SDPT3 by inserting "cvx_solver sdpt3" into your model.', ...
-            [66,75], false, '' ) );
-    end
 else
     if isempty( status ),
         status = 'Solved';

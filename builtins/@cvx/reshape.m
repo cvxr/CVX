@@ -11,12 +11,12 @@ case 2,
     fnan = 0;
     nel = numel(sz);
     if ~( isnumeric(sz) && size(sz,2) == nel && all(sz>=0) && all(sz==floor(sz)) )
-        error( 'CVX:ArgError', 'Size argument must be a row vector with integer elements.' );
+        cvx_throw( 'Size argument must be a row vector with integer elements.' );
     elseif nel < 2,
-        error( 'CVX:ArgError', 'Size vector must have at least two elements.' );
+        cvx_throw( 'Size vector must have at least two elements.' );
     end
 case {0,1},
-    error( 'CVX:ArgError', 'Not enough input arguments.' );
+    cvx_throw( 'Not enough input arguments.' );
 otherwise,
     nel = nargin - 1;
     sz = zeros( 1, nel );
@@ -25,14 +25,14 @@ otherwise,
         s = varargin{k};
         if isempty( s ),
             if ~fnan,
-                error( 'CVX:ArgError', 'Size can only have one unknown dimension.' );
+                cvx_throw( 'Size can only have one unknown dimension.' );
             end
             sz(k) = 1;
             fnan = k;
         elseif isnumeric( s ) && length( s ) == 1,
             sz(k) = s;
         else
-            error( 'CVX:ArgError', 'Size arguments must be nonnegative integers.' );
+            cvx_throw( 'Size arguments must be nonnegative integers.' );
         end
     end
     if isequal( sx, sz ), return; end
@@ -41,11 +41,11 @@ px = prod(sx);
 pz = prod(sz);
 if fnan
     if rem( px, pz ) ~= 0,
-        error( 'Product of known dimensions, %d, not divisible into total number of elements, %d.', prod(sz), prod(sx) );
+        cvx_throw( 'Product of known dimensions, %d, not divisible into total number of elements, %d.', prod(sz), prod(sx) );
     end
     sz(fnan) = px / pz;
 elseif px ~= pz
-    error( 'To RESHAPE the number of elements must not change.' );
+    cvx_throw( 'To RESHAPE the number of elements must not change.' );
 elseif nel > 2 && sz(nel) == 1
     nel = max([2,find(sz~=1,1,'last')]);
     sz = sz(1:nel);

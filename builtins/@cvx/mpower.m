@@ -6,14 +6,9 @@ function z = mpower( x, y )
 %      are identical to those outlined in the help for CVX/POWER.
 
 if length( x ) > 1 && length( y ) > 1,
-    error( 'Disciplined convex programming error:\n    Matrix powers not permitted.', 1 ); %#ok
+    cvx_throw( 'Disciplined convex programming error:\n    Matrix powers not permitted.' );
 end
-try
-    z = power( x, y, '^' );
-catch exc
-	if isequal( exc.identifier, 'CVX:DCPError' ), throw( exc ); 
-	else rethrow( exc ); end
-end
+z = power( x, y, '^' );
 
 % Copyright 2005-2014 CVX Research, Inc.
 % See the file LICENSE.txt for full copyright information.

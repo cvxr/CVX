@@ -4,7 +4,7 @@ global cvx___
 try
     pstr = cvx___.problems(end);
 catch
-    error( 'CVX:NoModel', 'No CVX model is present.' );
+    cvx_throw( 'No CVX model is present.' );
 end
 
 %
@@ -25,7 +25,7 @@ dy = cvx_getdual( y );
 if isempty( dx ),
     dx = dy;
 elseif ~isempty( dy ),
-    error( [ 'Two dual variable references found: "', dx, '","', dy, '"' ] );
+    cvx_throw( 'Two dual variable references found: %s %s', dx, dy );
 end
 if ~isempty( dx ),
     duals = pstr.duals;
@@ -33,11 +33,11 @@ if ~isempty( dx ),
         dual = builtin( 'subsref', duals, dx );
     catch
         nm = cvx_subs2str( dx );
-        error( [ 'Dual variable "', nm(2:end), '" has not been declared.' ] );
+        cvx_throw( 'Dual variable "%s" has not been declared.', nm(2:end) );
     end
     if ~isempty( dual ),
         nm = cvx_subs2str( dx );
-        error( [ 'Dual variable "', nm(2:end), '" already in use.' ] );
+        cvx_throw( 'Dual variable "%s" is already in use.', nm(2:end) );
     end
 end
 
@@ -57,11 +57,11 @@ if ~cy,
 end
 if ~cx || ~cy,
     if cx || cy || op(1) ~= '=',
-        error( 'Invalid CVX constraint: {%s} %s {%s}', class( x ), op, class( y ) );
+        cvx_throw( 'Invalid CVX constraint: {%s} %s {%s}', class( x ), op, class( y ) );
     end
     sx = size( x );
     if ~isequal( sx, size( y ) ),
-        error( 'The left- and right-hand sides have incompatible sizes.' );
+        cvx_throw( 'The left- and right-hand sides have incompatible sizes.' );
     else
         if ~isempty( dx ),
             pstr.duals = builtin( 'subsasgn', pstr.duals, dx, cell(sx) );
@@ -99,26 +99,21 @@ if isempty( param_eq ),
     param_le.constant = false;
 end
 
-try
-    if nargin < 5,
-        sdp_mode = pstr.sdp;
-    end
-    switch op(1),
-    case '=',
-        params = param_eq;
-        sdp_mode = false;
-    case '<',
-        params = param_le;
-    case '>',
-        params = param_ge;
-    end
-    params.name = op;
-    params.sdp = sdp_mode;
-    [ z, sdp_mode ] = cvx_binary_op( params, x, y );
-catch exc
-    if strncmp( exc.identifier, 'CVX:', 4 ), throw( exc );
-    else rethrow( exc ); end
+if nargin < 5,
+    sdp_mode = pstr.sdp;
 end
+switch op(1),
+case '=',
+    P = param_eq;
+    sdp_mode = false;
+case '<',
+    P = param_le;
+case '>',
+    P = param_ge;
+end
+P.name = op;
+P.sdp = sdp_mode;
+[ z, sdp_mode ] = cvx_binary_op( P, x, y );
     
 %
 % Handle LMIs
@@ -152,7 +147,7 @@ if sdp_mode,
             err = max( sum(abs(err),1) ./ max(realmin,sum(abs(z),1)) );
             if err > 8 * eps,
                 if isreal(z), str = 'symmetric'; else str = 'Hermitian'; end
-                error( 'CVX:ArgError', [ ...
+                cvx_throw( [ ...
                     'SDP constraints are expected to be %s (deviation: %g).\n', ...
                     '--- If this number is small (<1e-6), it may simply be due to roundoff error.\n', ...
                     '    This can be corrected by applying the SYM(X) function.\n', ...

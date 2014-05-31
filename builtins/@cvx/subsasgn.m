@@ -23,8 +23,6 @@ function x = subsasgn( x, S, y )
 %         y = cvx(ones(3,1));
 %         y(2) = x;
 
-error( nargchk( 3, 3, nargin ) ); %#ok
-
 %
 % Test subscripts
 %

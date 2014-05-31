@@ -31,7 +31,7 @@ end
 
 function [ X, k ] = lambda_sum_largest_args( X, k )
 if ~( isnumeric(k) && numel(k)==1 && isreal(k) ),
-    error( 'CVX:ArgError', 'Second input must be a constant real scalar.' );
+    cvx_throw( 'Second input must be a constant real scalar.' );
 end
 
 function y = lambda_sum_largest_diag( D, k )

@@ -23,9 +23,9 @@ catch exc
     if isequal( exc.identifier, 'CVX:DCPError' ), %#ok
         nmessage = regexprep( exc.message, ...
             '({[^}]*}\s*)///(\s*{[^}]*})', ['$1',oper,'$2'] );
-        error( exc.identifier, nmessage );
-    elseif strncmp( exc.identifier, 'CVX:', 4 ), throw( exc );
-    else rethrow( exc ); end
+        cvx_throw( exc.identifier, nmessage );
+    end
+    cvx_throw( exc );
 end
 
 % Copyright 2005-2014 CVX Research, Inc.

@@ -7,7 +7,7 @@ if nargin > 2,
 end
 narg = length( args );
 if narg < 1, 
-    error( 'CVX:ArgError', 'Not enough input arguments.' );
+    cvx_throw( 'Not enough input arguments.' );
 end
 if narg < darg,
     dim = [];
@@ -19,7 +19,7 @@ if opts.nox,
     sx = x;
     nx = numel(sx);
     if ~( isnumeric(sx) && nx==length(sx) && isreal(sx) && all(sx>=0) && all(sx==floor(sx)) ),
-        error( 'CVX:ArgError', 'Size argument must be a vector of nonnegative integers.' );
+        cvx_throw( 'Size argument must be a vector of nonnegative integers.' );
     elseif nx < 2,
         sx(end+1:2) = 1;
     elseif nx > 2 && sx(nx) == 1,
@@ -32,7 +32,7 @@ if isempty( dim ),
     dim = find( sx ~= 1, 1, 'first' );
     if isempty( dim ), dim = 1; end
 elseif ~( isnumeric(dim) && numel(dim)==1 && isreal(dim) && dim > -opts.zero && dim==floor(dim) ),
-    error( 'CVX:ArgError', 'Dimension argument must be a positive integer.' );
+    cvx_throw( 'Dimension argument must be a positive integer.' );
 end
 if dim == 0,
     dim = find( sx == 1, 1, 'first' );

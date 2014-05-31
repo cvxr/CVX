@@ -47,15 +47,15 @@ function varargout = dual( varargin )
 %   See also VARIABLE, VARIABLES.
 
 if nargin < 2
-    error( 'CVX:ArgError', 'Incorrect syntax for DUAL VARIABLE(S). Type HELP DUAL for details.' );
+    cvx_throw( 'Incorrect syntax for DUAL VARIABLE(S). Type HELP DUAL for details.' );
 elseif nargout && nargout ~= nargin - 1
-    error( 'CVX:ArgError', 'Incorrect number of output arguments.' );
+    cvx_throw( 'Incorrect number of output arguments.' );
 elseif isequal( varargin{1}, 'variable' )
     if nargin > 2
-        error( 'CVX:ArgError', 'Too many input arguments.\nTrying to declare multiple dual variables? Use the DUAL VARIABLES command instead.', 1 ); %#ok
+        cvx_throw( 'Too many input arguments.\nTrying to declare multiple dual variables? Use the DUAL VARIABLES command instead.', 1 ); %#ok
     end
 elseif ~isequal( varargin{1}, 'variables' )
-    error( 'CVX:ArgError', 'Incorrect syntax for DUAL VARIABLE(S). Type HELP DUAL for details.' );
+    cvx_throw( 'Incorrect syntax for DUAL VARIABLE(S). Type HELP DUAL for details.' );
 end
 
 global cvx___

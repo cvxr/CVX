@@ -27,7 +27,6 @@ function cvx_optval = sum_smallest( x, varargin )
 %       used in CVX expressions, X must be concave (or affine). k and DIM
 %       must both be constant.
 
-error( nargchk( 2, 3, nargin ) ); %#ok
 cvx_optval = -sum_largest( -x, varargin{:} );
 
 % Copyright 2005-2014 CVX Research, Inc.

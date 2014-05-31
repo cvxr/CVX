@@ -1,7 +1,7 @@
 function [ y, symm ] = cvx_s_symmetric_ut( m, n, symm )
 %CVX_S_SYMMETRIC_UT Symmetric matrices (upper triangle storage).
 if m ~= n,
-    error( 'Symmetric structure requires square matrices.' );
+    cvx_throw( 'Symmetric structure requires square matrices.' );
 end
 symm = false;
 nsq = n * n;
