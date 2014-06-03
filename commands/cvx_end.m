@@ -249,8 +249,16 @@ end
 
 if isempty( cvx___.problems ),
     tfin = tic;
-    cvx___.timers(2) = cvx___.timers(2) + ( tfin - pstr.tictime );
-    cvx___.timers(3) = cvx___.timers(3) + ( tfin - tstart );
+    ptic = pstr.tictime;
+    timers = cvx___.timers;
+    if isa( timers, 'double' ),
+        tfin = double(tfin);
+        ptic = double(ptic);
+        tstart = double(tstart);
+    end
+    timers(2) = timers(2) + ( tfin - ptic );
+    timers(3) = timers(3) + ( tfin - tstart );
+    cvx___.timers = timers;
     profile off;
 end
 

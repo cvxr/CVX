@@ -16,8 +16,12 @@ global cvx___
 if isempty( cvx___ ),
     error( 'CVX has not yet been used (or the global workspace has been cleared).' );
 end
-timers = cvx___.timers(1:4);
 tstart = tic;
+timers = double(cvx___.timers);
+dbltim = isa( timers, 'double' );
+if dbltim,
+    tstart = double(tstart);
+end
 timers(1) = tstart - timers(1);
 if isempty(cvx___.increment),
     switch computer,
@@ -25,11 +29,16 @@ if isempty(cvx___.increment),
             cvx___.increment = 1e9;
         otherwise,
             t1 = tic; pause(0.25); t2 = tic; t3 = toc(t1); t4=toc(t2);
-            cvx___.increment = double(t2-t1)/(t3-0.5*t4);
+            if dbltim,
+                cvx___.increment = (double(t2)-double(t1))/(double(t3)-0.5*double(t4));
+            else
+                two = uint64(2);
+                cvx___.increment = double( two * ( t2 - t1 ) ) / ( two * t3 - t4 );
+            end
     end
 end
 timers = [ timers(1), timers(1:3) - timers(2:4), timers(4) ];
-timers = double(timers) / cvx___.increment;
+timers = timers / cvx___.increment;
 if nargout == 0,
     fprintf( 'Total time:      %g sec\n', timers(1) );
     fprintf( 'Outside of CVX:  %g sec\n', timers(2) );

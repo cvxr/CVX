@@ -431,7 +431,12 @@ elseif n ~= 0 && ~infeas && ( any( b ) || any( c ) ),
             status = 'Error';
         end
     end
-    cvx___.timers(4) = cvx___.timers(4) + ( tic - tstart );
+    tfin = tic;
+    if isa( cvx___.timers, 'double' ),
+        cvx___.timers(4) = cvx___.timers(4) + ( double(tfin) - double(tstart) );
+    else
+        cvx___.timers(4) = cvx___.timers(4) + ( tfin - tstart );
+    end
     if cvx___.profile, 
         profile resume; 
     end

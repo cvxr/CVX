@@ -60,7 +60,12 @@ cvx___.linforms    = temp;
 cvx___.linrepls    = temp;
 cvx___.uniforms    = temp;
 cvx___.unirepls    = temp;
-cvx___.timers      = uint64([tstart,0,0,0]);
+try
+    cvx___.timers = zeros(1,4,'uint64');
+    cvx___.timers(1) = cvx___.timers(1) + tstart;
+catch
+    cvx___.timers = [double(tstart),0,0,0];
+end
 cvx___.increment   = [];
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
