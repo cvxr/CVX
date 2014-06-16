@@ -11,7 +11,8 @@ if isempty( shim.name ),
     fname = 'glpk.m';
     ps = pathsep;
     shim.name = 'GLPK';
-    shim.config = struct( 'dualize', 1, 'integer', 1, 'binary', 1 );
+    shim.config = struct( 'dualize', 1, 'nonnegative', 1, ...
+    	'integer', 1, 'binary', 1 );
     flen = length(fname);
     fpaths = which( fname, '-all' );
     if ~iscell(fpaths),
@@ -42,7 +43,7 @@ if isempty( shim.name ),
     cd( old_dir );
     if isempty( shim ),
         shim = oshim;
-        shim.error = 'Could not find a GLPK installation.';
+        shim.error = 'http://glpkmex.sourceforge.net/';
     end
 else
     shim.solve = @solve;

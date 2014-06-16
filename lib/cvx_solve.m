@@ -103,7 +103,7 @@ elseif n ~= 0 && ~infeas && ( any( b ) || any( c ) ),
     else
         texp = find( strcmp( { cones.type }, 'exponential' ) );
     end
-    need_iter = ~isempty( texp ) && shim.config.dualize;
+    need_iter = ~isempty( texp ) && shim.config.dualize && ~isfield( shim.config, 'exponential' );
     cvx_setspath;
     if ~quiet,
         disp( ' ' );

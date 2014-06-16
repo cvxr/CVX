@@ -87,13 +87,18 @@ try
             cd(tsolv.spath);
             tsolv = feval( tsolv.sname, tsolv );
             nsolv = length(tsolv);
-            if nsolv > 1,
+            if nsolv == 1,
+                if ~isempty(tsolv.error), tsolv.solve = []; end
+            else
                sndx = 0;
-                for e = 0 : 1,
+               for e = 0 : 1,
                     for j = 1 : nsolv,
-                        if e ~= isempty( tsolv(j).error ),
+                        if e ~= ( isempty( tsolv(j).error ) && ~isempty( tsolv(j).solve ) ),
+                            if e, tsolv(j).solve = []; end
                             sndx = sndx + 1;
-                            if sndx > 1, tsolv(j).name = sprintf( '%s_%d', tsolv(j).name, sndx ); end
+                            if sndx > 1,
+                                tsolv(j).name = sprintf( '%s_%d', tsolv(j).name, sndx ); 
+                            end
                         end
                     end
                 end
@@ -104,8 +109,15 @@ try
                 tsolv.name = [ tsolv.spath, tsolv.sname ];
             end
             tsolv.error = sprintf( 'unexpected error:\n%s', errmsg );
+            tsolv.solve = [];
         end
-        nsolvers = [ nsolvers, tsolv ]; %#ok
+        try
+            nsolvers = [ nsolvers, tsolv ]; %#ok
+        catch
+            tsolv = solvers(k);
+            tsolv.error = 'This solver shim is not compatible with CVX 3.0. Please contact the authors for an update.';
+            nsolvers = [ nsolvers, tsolv ]; %#ok
+        end
     end
     solvers = nsolvers;
     cd( cur_d );
@@ -115,50 +127,62 @@ try
     %%%%%%%%%%%%%%%%%%%%%%%%%
     
     plurals = { 's', '', 's' };
-    nsolv = length(solvers);
-    nrej = sum(~cellfun(@isempty,{solvers.error}));
-    nwarn = sum(~cellfun(@isempty,{solvers.warning}));
-    fprintf( '%d shim%s found.\n', nshims, plurals{min(nshims+1,3)} ); nret = false;
+    nsolv   = length(solvers);
+    srej    = cellfun( @isempty, { solvers.solve } );
+    sgood   = ~srej;
+    fprintf( '%d shim%s found.\n', nshims, plurals{min(nshims+1,3)} );
     lens = [ 0, 0 ];
     for k = 1 : nsolv,
         lens = max( lens, [ length(solvers(k).name), length(solvers(k).version) ] );
     end
     fmt = sprintf( ' %%s  %%-%ds   %%-%ds    %%s\\n', lens(1), lens(2) );
-    if nsolv > nrej,
-        fprintf( '%d solver%s initialized (* = default):\n', nsolv-nrej, plurals{min(nsolv-nrej+1,3)} );
+    if any( sgood ),
+        ngood = nnz(sgood);
+        fprintf( '%d solver%s initialized (* = default):\n', ngood, plurals{min(ngood+1,3)} );
         stats =  { ' ', '*' };
-        for k = 1 : nsolv,
-            if isempty( solvers(k).error ),
-                fprintf( fmt, stats{1+strcmpi(solvers(k).name,selected)}, solvers(k).name, solvers(k).version, solvers(k).location );
+        for k = find(sgood),
+            fprintf( fmt, stats{1+strcmpi(solvers(k).name,selected)}, solvers(k).name, solvers(k).version, solvers(k).location );
+            if ~isempty(solvers(k).warning),
+                cvx_error( [ 'WARNING: ', solvers(k).warning ], 63, false, '        ' );
             end
         end
-    end
-    if nrej,
-        fprintf( '%d solver%s skipped:\n', nrej, plurals{min(nrej+1,3)} );
-        for k = 1 : nsolv,
-            if ~isempty( solvers(k).error ),
-                fprintf( fmt, ' ', solvers(k).name, solvers(k).version, solvers(k).location ); %#ok
-                cvx_error( solvers(k).error, 63, false, '        ' );
-            end
-        end
-    end
-    if nwarn,
-        fprintf( '%d solver%s issued warnings:\n', nwarn, plurals{min(nwarn+1,3)} );
-        for k = 1 : nsolv,
-            if ~isempty( solvers(k).warning ) && isempty( solvers(k).error ),
-                fprintf( fmt, ' ', solvers(k).name, solvers(k).version, solvers(k).location ); %#ok
-                cvx_error( solvers(k).warning, 63, false, '        ' );
-            end
-        end
-    end
-    if nrej == nsolv,
+    else
         fprintf( [ ... 
             'No valid solvers were found. This suggests a corrupt installation. Please\n', ...
             'try re-installing the files and re-running cvx_setup. If the same error\n', ...
             'occurs, please contact CVX support.\n' ] );
         error('CVX:Unexpected','No valid solvers were found.');
     end
-    solvers = solvers(cellfun(@isempty,{solvers.error}));
+    if any( srej ),
+        t1 = srej & ( cellfun( @(x)isempty(x)||strncmp(x,'http',4), {solvers.error} ) );
+        if any(t1),
+            nrej = nnz(t1);
+            fprintf( '%d solver%s not found:\n', nrej, plurals{min(nrej+1,3)} );
+            for k = find(t1),
+                err = solvers(k).error;
+                if isempty(err), err = ''; end
+                fprintf( fmt, ' ', solvers(k).name, err, '' ); %#ok
+            end
+        end
+        t2 = cellfun( @(x)isequal(x,'A CVX Professional license is required.'), {solvers.error} );
+        if any(t2),
+            nrej = nnz(t2);
+            fprintf( '%d solver%s require%s a CVX Professional license:\n', nrej, plurals{min(nrej+1,3)}, plurals{max(4-nrej,2)} );
+            for k = find(t2),
+                fprintf( fmt, ' ', solvers(k).name, solvers(k).version, solvers(k).location ); %#ok
+            end
+        end
+        t3 = srej & ( ~t1 & ~t2 );
+        if any(t3),
+            nrej = nnz(t3);
+            fprintf( '%d solver%s skipped due to errors:\n', nrej, plurals{min(nrej+1,3)} );
+            for k = find(t3),
+                fprintf( fmt, ' ', solvers(k).name, solvers(k).version, solvers(k).location ); %#ok
+                cvx_error( solvers(k).error, 63, false, '        ' );
+            end
+        end
+    end
+    solvers = solvers(sgood);
     cvx___.solvers.list  = solvers;
     cvx___.solvers.names = { solvers.name };
     cvx___.solvers.map   = struct( 'default', 0 );

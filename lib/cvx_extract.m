@@ -413,16 +413,16 @@ if nargin && ~isempty( config ),
         ctyp = cone.type;
         if isfield( config, ctyp ), 
             cmode = config.(ctyp);
+            if cmode > 0, continue; end
         else
-            cmode = 0; 
+            cmode = 0;
         end
         ndxs = cone.indices;
-        ordr = size( ndxs, 1 );
+        [nn,nv] = size(ndxs);
         success = false;
         switch ctyp,
-            case 'lorentz',
-                % Convert to nonnegative
-                if ordr == 2,
+            case 'absolute_value',
+                if isfield( config, 'nonnegative' ) && config.nonnegative,
                     beta = sqrt(0.5);
                     ndx1 = ndxs(1,:);
                     ndx2 = ndxs(2,:);
@@ -430,6 +430,7 @@ if nargin && ~isempty( config ),
                     Pc = [Pc,ndx1,ndx2,ndx1,ndx2]; %#ok
                     Pv = [Pv,beta*[-ones(1,nv),ones(1,3*nv)]]; %#ok
                     ctyp = 'nonnegative';
+                    ndxs = ndxs(:)';
                     success = true;
                 end
             case 'rotated_lorentz',
@@ -441,11 +442,11 @@ if nargin && ~isempty( config ),
                     Pr = [Pr,ndx1,ndx1,ndx2,ndx2]; %#ok
                     Pc = [Pc,ndx1,ndx2,ndx1,ndx2]; %#ok
                     Pv = [Pv,beta*[-ones(1,nv),ones(1,3*nv)]]; %#ok
-                    ctype = 'lorentz';
+                    ctyp = 'lorentz';
                     success = true;
                 end
             case 'semidefinite',
-                if ordr <= 3,
+                if size( ndxs, 1 ) <= 3,
                     % Convert to rotated_lorentz or lorentz
                     ndx1 = ndxs(1,:);
                     ndx2 = ndxs(2,:);
@@ -455,18 +456,18 @@ if nargin && ~isempty( config ),
                         Pr = [Pr,ndx1,ndx2,ndx3]; %#ok
                         Pc = [Pc,ndx2,ndx1,ndx3]; %#ok
                         Pv = [Pv,ones(1,nv)/beta,ones(1,nv),ones(1,nv)/beta]; %#ok
-                        ctype = 'rotated_lorentz';
+                        ctyp = 'rotated_lorentz';
                         success = true;
                     elseif isfield( config, 'lorentz' ) && config.lorentz,
                         Pr = [Pr,ndx1,ndx1,ndx2,ndx3,ndx3]; %#ok
                         Pc = [Pc,ndx2,ndx3,ndx1,ndx2,ndx3]; %#ok
                         Pv = [Pv,-ones(1,nv),ones(1,4*nv)]; %#ok
-                        ctype = 'lorentz';
+                        ctyp = 'lorentz';
                         success = true;
                     end
                 end
             case 'hermitian_semidefinite',
-                if ordr <= 4,
+                if size( ndxs, 1 ) <= 4,
                     ndx1 = ndxs(1,:);
                     ndx2 = ndxs(2,:);
                     ndx3 = ndxs(3,:);
@@ -476,13 +477,13 @@ if nargin && ~isempty( config ),
                         Pr = [Pr,ndx1,ndx2,ndx3,ndx4]; %#ok
                         Pc = [Pc,ndx3,ndx1,ndx2,ndx4]; %#ok
                         Pv = [Pv,ones(1,nv)/beta,ones(1,2*nv),ones(1,nv)/beta]; %#ok
-                        ctype = 'rotated_lorentz';
+                        ctyp = 'rotated_lorentz';
                         success = true;
                     elseif isfield( config, 'lorentz' ) && config.lorentz,
                         Pr = [Pr,ndx1,ndx1,ndx2,ndx3,ndx4,ndx4]; %#ok
                         Pc = [Pc,ndx3,ndx4,ndx1,ndx2,ndx3]; %#ok
                         Pv = [Pv,-ones(1,nv),ones(1,4*nv)]; %#ok
-                        ctype = 'lorentz';
+                        ctyp = 'lorentz';
                         success = true;
                     end
                 end
@@ -507,7 +508,7 @@ if nargin && ~isempty( config ),
                     Pr = [ Pr, vec( [ ndxs(rs,:)  ; ndxs(rs,:)  ; ndxs(is,:)  ; ndxs(is,:)  ] )' ]; %#ok
                     Pc = [ Pc, vec( [ ndxs(rd1,:) ; ndxs(rd2,:) ; ndxs(id1,:) ; ndxs(id2,:) ] )' ]; %#ok
                     Pv = [ Pv, vec( [ ones(2*numel(rs)+numel(is),nv) ; -ones(numel(is),nv) ] )' ]; %#ok
-                    ctype = 'semidefinite';
+                    ctyp = 'semidefinite';
                     nfin = ndxs(end);
                     success = true;
                 end
@@ -517,11 +518,12 @@ if nargin && ~isempty( config ),
                 end
         end
         if success,
-            cones(k).type = ctype; %#ok
+            cones(k).type = ctyp; %#ok
             cones(k).indices = ndxs; %#ok
         elseif ~cmode,
             temp = cone.type;
             temp(temp=='_') = ' ';
+            ordr = size( ndxs, 1 );
             if ordr == 1, 
                 rejected{end+1} = sprintf( '%s variables', temp ); %#ok
             else

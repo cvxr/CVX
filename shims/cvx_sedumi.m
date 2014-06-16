@@ -15,8 +15,9 @@ if isempty( shim.name ),
     int_path = [ cvx___.where, fs ];
     int_plen = length( int_path );
     shim.name = 'SeDuMi';
-    shim.config = struct( 'dualize', 1, 'lorentz', -1, ...
-        'semidefinite', -1, 'hermitian_semidefinite', -1 );
+    shim.config = struct( 'dualize', 1, 'nonnegative', 1, ...
+        'lorentz', -1, 'semidefinite', -1, ...
+        'hermitian_semidefinite', -1 );
     flen = length(fname);
     fpaths = { [ int_path, 'sedumi', fs, fname ] };
     fpaths = [ fpaths ; which( fname, '-all' ) ];
@@ -64,7 +65,6 @@ if isempty( shim.name ),
     cd( old_dir );
     if isempty( shim ),
         shim = oshim;
-        shim.error = 'Could not find a SeDuMi installation.';
     end
 else
     shim.solve = @solve;

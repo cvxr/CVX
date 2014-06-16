@@ -74,7 +74,7 @@ for k = 1 : length(osolvers),
         end
         tsolv.error = errmsg;
     end
-    if ~isempty(tsolv.error),
+    if ~isempty(tsolv.error) || isempty(tsolv.solve),
         nrej = nrej + 1;
     end
     try
@@ -100,9 +100,13 @@ ndefault = 0;
 for k = 1 : nsolv,
     tsolv = solvers(k);
     terr = tsolv.error;
-    if isempty( terr )
-        temp = {};
-        if ndefault == 0, ndefault = k; end
+    if isempty( terr ) 
+        if isempty( tsolv.solv ),
+            temp = { [ tsolv.name, ': not found' ] };
+        else
+            temp = {};
+            if ndefault == 0, ndefault = k; end
+        end
     elseif ~ischar( terr )
         temp = cvx_error( terr, 67, [ tsolv.name, ': UNEXPECTED ERROR ' ] );
     elseif any( regexp( terr, '\n' ) )

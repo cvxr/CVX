@@ -61,7 +61,8 @@ else
     cvx_begin set
         variable x( nv, ny ) 
         variable y( 1,  ny ) nonnegative_
-        cvx_pushcone( true, 'lorentz', [ x ; y ] ); %#ok
+	if nv == 1, ctyp = 'absolute_value'; else ctyp = 'lorentz'; end
+        cvx_pushcone( true, ctyp, [ x ; y ] ); %#ok
     cvx_end
     if iscplx,
         x = x(1:2:end,:) + 1j * x(2:2:end,:);
