@@ -101,7 +101,7 @@ for k = 1 : nsolv,
     tsolv = solvers(k);
     terr = tsolv.error;
     if isempty( terr ) 
-        if isempty( tsolv.solv ),
+        if isempty( tsolv.solve ),
             temp = { [ tsolv.name, ': not found' ] };
         else
             temp = {};
