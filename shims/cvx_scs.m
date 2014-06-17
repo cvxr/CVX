@@ -62,9 +62,9 @@ function [ x, status, tol, iters, y ] = solve( At, b, c, nonls, quiet, prec, set
 
 n = length( c );
 m = length( b );
-K = struct( 'f', 0, 'l', 0, 'q', [], 's', [], 'e', 0 );
+K = struct( 'f', 0, 'l', 0, 'e', 0, 'q', [], 's', [] );
 reord = struct( 'n', 0, 'r', [], 'c', [], 'v', [] );
-reord = struct( 'f', reord, 'l', reord, 'q', reord, 's', reord, 'e', reord );
+reord = struct( 'f', reord, 'l', reord, 'e', reord, 'q', reord, 's', reord );
 reord.f.n = n;
 for k = 1 : length( nonls ),
     temp = nonls( k ).indices;
@@ -97,10 +97,10 @@ for k = 1 : length( nonls ),
             reord.s.v = [ reord.s.v; vv( : ) ];
             reord.s.n = reord.s.n + nn * nn * nv;
         case 'exponential',
-            reord.e.r = [ reord.q.r ; temp(:) ];
-            reord.e.c = [ reord.q.c ; reord.q.n + ( 1 : nnv )' ];
-            reord.e.v = [ reord.q.v ; ones(nnv,1) ];
-            reord.e.n = reord.q.n + nnv;
+            reord.e.r = [ reord.e.r ; temp(:) ];
+            reord.e.c = [ reord.e.c ; reord.e.n + ( 1 : nnv )' ];
+            reord.e.v = [ reord.e.v ; ones(nnv,1) ];
+            reord.e.n = reord.e.n + nnv;
             K.e = K.e + nv;
     end
 end
@@ -118,9 +118,9 @@ K.f = reord.f.n;
 K.l = reord.l.n;
 n_out = reord.f.n;
 reord.l.c = reord.l.c + n_out; n_out = n_out + reord.l.n;
+reord.e.c = reord.e.c + n_out; n_out = n_out + reord.e.n;
 reord.q.c = reord.q.c + n_out; n_out = n_out + reord.q.n;
 reord.s.c = reord.s.c + n_out; n_out = n_out + reord.s.n;
-reord.e.c = reord.e.c + n_out; n_out = n_out + reord.e.n;
 reord = sparse( ...
     [ reord.f.r ; reord.l.r ; reord.e.r ; reord.q.r ; reord.s.r ], ...
     [ reord.f.c ; reord.l.c ; reord.e.c ; reord.q.c ; reord.s.c ], ...
