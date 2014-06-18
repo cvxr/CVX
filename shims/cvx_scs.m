@@ -79,6 +79,12 @@ for k = 1 : length( nonls ),
             reord.l.c = [ reord.l.c ; reord.l.n + ( 1 : nnv )' ];
             reord.l.v = [ reord.l.v ; ones( nnv, 1 ) ];
             reord.l.n = reord.l.n + nnv;
+        case 'exponential',
+            reord.e.r = [ reord.e.r ; temp(:) ];
+            reord.e.c = [ reord.e.c ; reord.e.n + ( 1 : nnv )' ];
+            reord.e.v = [ reord.e.v ; ones(nnv,1) ];
+            reord.e.n = reord.e.n + nnv;
+            K.e = K.e + nv;
         case 'lorentz',
             temp = temp( [ end, 1 : end - 1 ], : );
             reord.q.r = [ reord.q.r ; temp(:) ];
@@ -96,12 +102,6 @@ for k = 1 : length( nonls ),
             reord.s.c = [ reord.s.c; cc( : ) + reord.s.n ];
             reord.s.v = [ reord.s.v; vv( : ) ];
             reord.s.n = reord.s.n + nn * nn * nv;
-        case 'exponential',
-            reord.e.r = [ reord.e.r ; temp(:) ];
-            reord.e.c = [ reord.e.c ; reord.e.n + ( 1 : nnv )' ];
-            reord.e.v = [ reord.e.v ; ones(nnv,1) ];
-            reord.e.n = reord.e.n + nnv;
-            K.e = K.e + nv;
     end
 end
 if reord.f.n > 0,
@@ -116,15 +116,15 @@ if n_d,
 end
 K.f = reord.f.n;
 K.l = reord.l.n;
-n_out = reord.f.n;
+                               n_out =         reord.f.n;
 reord.l.c = reord.l.c + n_out; n_out = n_out + reord.l.n;
-reord.e.c = reord.e.c + n_out; n_out = n_out + reord.e.n;
 reord.q.c = reord.q.c + n_out; n_out = n_out + reord.q.n;
 reord.s.c = reord.s.c + n_out; n_out = n_out + reord.s.n;
+reord.e.c = reord.e.c + n_out; n_out = n_out + reord.e.n;
 reord = sparse( ...
-    [ reord.f.r ; reord.l.r ; reord.e.r ; reord.q.r ; reord.s.r ], ...
-    [ reord.f.c ; reord.l.c ; reord.e.c ; reord.q.c ; reord.s.c ], ...
-    [ reord.f.v ; reord.l.v ; reord.e.v ; reord.q.v ; reord.s.v ], ...
+    [ reord.f.r ; reord.l.r ; reord.q.r ; reord.s.r ; reord.e.r ], ...
+    [ reord.f.c ; reord.l.c ; reord.q.c ; reord.s.c ; reord.e.c ], ...
+    [ reord.f.v ; reord.l.v ; reord.q.v ; reord.s.v ; reord.e.v ], ...
     n, n_out );
 
 At = reord' * At;
