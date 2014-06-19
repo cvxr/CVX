@@ -9,54 +9,82 @@ Solvers
 Supported solvers
 -----------------
 
-This version of CVX supports four solvers, each with different capabilities:
+As of the writing of this document, CVX supports the following solvers:
 
-============================================================= ==== ==== ====== ===== ====  ========= ======== ========
- Solver name                                                   LP   QP   SOCP   SDP   GP    Integer   MATLAB   Octave 
-============================================================= ==== ==== ====== ===== ====  ========= ======== ========
-`SeDuMi <http://sedumi.ie.lehigh.edu>`_                        Y    Y    Y       Y    E     N         Y        *soon*     
-`SDPT3 <http://www.math.nus.edu.sg/~mattohkc/sdpt3.html>`_     Y    Y    Y       Y    E     N         Y        *soon*     
-`Gurobi <http://gurobi.com>`_                                  Y    Y    Y       N    N     Y         P        *soon*     
-`MOSEK <http://mosek.com>`_                                    Y    Y    Y       Y*   E     Y         P        *soon*     
-`GLPK <http://www.gnu.org/software/glpk/>`_                    Y    N    N       N    N     Y         N        *soon*     
-============================================================= ==== ==== ====== ===== ====  ========= ======== ========
+============================================================= ========== ==== ==== ====== ===== ====  ========= =========
+ Solver name                                                   Included  LP   QP   SOCP   SDP   GP    Integer   Notes 
+============================================================= ========== ==== ==== ====== ===== ====  ========= =========
+`SeDuMi <https://github.com/sqlp/sedumi/>`_                    Y          Y    Y    Y       Y    Y     N         1, 4          
+`SDPT3 <https://github.com/sqlp/sdpt3>`_                       Y          Y    Y    Y       Y    Y     N         1, 4          
+`Gurobi <http://gurobi.com>`_                                  Y          Y    Y    Y       N    N     Y         2          
+`MOSEK <http://mosek.com>`_                                    Y          Y    Y    Y       Y    Y     Y         2, 4, 5          
+`GLPK <http://www.gnu.org/software/glpk/>`_                    N          Y    N    N       N    N     Y         3         
+`ECOS <https://github.com/ifa-ethz/ecos/>`_                    N          Y    N    Y       N    Y     N         3, 4     
+`SCS <https://github.com/cvxgrp/scs/>`_                        N          Y    Y    Y       Y    Y     N         3, 6
+============================================================= ========== ==== ==== ====== ===== ====  ========= =========
 
-(key: Y = Yes, N = No, E = Experimental, P = CVX Professional license required, * = Mosek 7 or later is required.)
+As you can see from the chart, each solver has different capabilities. No 
+solver *natively* supports all of the models that CVX generates. Furthermore, 
+the solvers differ greatly in performance. Most users will need to learn to
+switch between solvers, and experiment to determine which is best for their 
+application; see :ref:`solver-selection` below.
 
-Each solver has different capabilities and different levels of performance. For instance,
-SeDuMi [Stu99]_, SDPT3 [TTT03]_, and MOSEK 7 support all of the continuous (non-integer) models 
-that CVX itself supports, while Gurobi is more limited, in that it does not support semidefinite
-constraints; and GLPK is limited even further. On the other hand, Gurobi, GLPK, and
-MOSEK support integer consraints, while SeDuMi and SDPT3 do not.
+Solver-specific notes:
 
-SeDuMi and SDPT3 are included with the standard CVX distribution, so you do not need
-to download an additional solver to start using CVX. We have also entered into contractual
-arrangements with the developers of Gurobi and MOSEK that allow us to ship their binaries
-with CVX as well, but using those solvers requires a CVX Professional license. Due to
-license differences, we are *not* able to supply GLPK with CVX. However,
-	
-If you are having difficulty with one solver, *please try another*. No one solver performs
-better than the others on *every* model CVX can generate---including commercial solvers.
-That said, if you encounter a problem that one solver can handle well and another 
-cannot, please send us a bug report (see :ref:`support`) and we will forward the
-results to the solver's authors.
+1. SeDuMi [Stu99]_, and SDPT3 [TTT03]_ are included with all CVX packages.
+   They are drawn directly from the source links offered above. If you wish to
+   use them outside of CVX, simply run their respective installation scripts
+   `sdpt3/install_sdpt3` and `sedumi/install_sedumi` to add the necessary
+   subdirectories to your MATLAB path; then save your path to preserve that
+   configuration for future MATLAB sessions. You can do this before or after
+   running ``cvx_setup``.
 
-We have created special sections in this user guide for using Gurobi and MOSEK with CVX:
+2. Special, "CVX-locked" versions of Gurobi and MOSEK have been included with
+   the non-redistributable CVX packages. These solvers must be unlocked with a
+   :ref:`CVX Professional license <licensing>`, and they work *only* with CVX.
+   If you wish to use them outside of CVX, you will need to download their full
+   versions from their respective vendors. We have created special sections in 
+   this user guide for using Gurobi and MOSEK with CVX:
 
-* Gurobi: :ref:`gurobi`
-* Mosek:  :ref:`mosek`
+   * Gurobi: :ref:`gurobi`
+   * Mosek:  :ref:`mosek`
 
-Support for GLPK should be considered experimental, and has been provided primarly to support
-upcoming Octave capability (that is *not* ready yet.)
+3. GLPK, ECOS, and SCS are *not* included with CVX, and must be installed and
+   compiled separately. We have included links to their home pages above. Once
+   you have installed them, and added their MEX files to your MATLAB path, 
+   simply re-run ``cvx_setup`` and they will be connected to CVX.
+
+4. SeDuMi, SDPT3, MOSEK, and ECOS rely upon CVX's experimental
+   :ref:`successive approximation method <successive>` to support geometric
+   problems and models using functions from the exponential, logarithm, and
+   entropy families. SCS is the only solver in the list above that handles
+   these problems "natively".
+
+5. SDP support for MOSEK requires version 7 or later, which is the version
+   bundled with CVX. We strongly encourage users of an external Mosek solver
+   to ugprade to the latest version.
+
+6. SCS is an experimental solver designed to solve larger problems than other
+   CVX solvers typically handle, but to more modest levels of accuracy.
+   You may need to reduce CVX's precision targets with the ``cvx_precision`` 
+   command to achieve good performance.
 
 .. _solver-selection:
 
 Selecting a solver
 ------------------
 
-The default solver is currently SDPT3. We have found that SeDuMi is faster for most
-problems, but unfortunately not as reliable. None of the solvers are perfect, however,
-and you may find for your application that another solver is preferred.
+The default solver is currently SDPT3. Of the two free, bundled solvers, we
+have found that SeDuMi is faster for most problems, but unfortunately not as
+reliable, which is why SDPT3 is selected as the default. In fact, *none* of
+the solvers---including the commercial solvers---are perfect, though we do
+find that the commercial solvers tend to be faster and more reliable. No one
+solver performs better than the others on *every* model that CVX can generate.
+
+Therefore, if you are having difficulty with one solver, *please try another*.
+That said, if you encounter a problem that one solver can handle well and another 
+cannot, please send us a bug report (see :ref:`support`) and we will forward the
+results to the solver's authors.
 
 To see which solver is currently selected, simply type
 
