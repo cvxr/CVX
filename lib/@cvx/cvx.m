@@ -33,10 +33,10 @@ switch nargin,
                 end
                 w.size_ = v;
         end
-        if issparse( b )
-            w.basis_ = b;
-        elseif isempty( b )
+        if isempty( b )
             w.basis_ = sparse( 1, prod( v ) );
+        elseif issparse( b )
+            w.basis_ = b;
         else
             w.basis_ = sparse( b );
         end
@@ -45,7 +45,7 @@ switch nargin,
             w = cvx___.obj;
             w.size_ = size( v );
             if issparse( v ),
-                w.basis_ = reshape( v, 1, prod(s) );
+                w.basis_ = reshape( v, 1, prod(w.size_) );
             else
                 w.basis_ = sparse( v(:)' );
             end

@@ -40,9 +40,9 @@ Solver-specific notes:
    running ``cvx_setup``.
 
 2. Special, "CVX-locked" versions of Gurobi and MOSEK have been included with
-   the non-redistributable CVX packages. These solvers must be unlocked with a
+   the non-redistributable CVX packages. These solvers require a
    :ref:`CVX Professional license <licensing>`, and they work *only* with CVX.
-   If you wish to use them outside of CVX, you will need to download their full
+   If you wish to use them outside of CVX, you will need to license their full
    versions from their respective vendors. We have created special sections in 
    this user guide for using Gurobi and MOSEK with CVX:
 

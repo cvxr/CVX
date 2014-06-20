@@ -76,14 +76,18 @@ if isempty( str ),
 else
     dof = size( str, 1 );
 end
-tx = cvx_newvar( dof );
-if pstr.gp
-    tx = cvx_pushexp( tx );
-    isnneg = false;
-    asnneg = false;
+if dof,
+    tx = cvx_newvar( dof );
+    if pstr.gp
+        tx = cvx_pushexp( tx );
+        isnneg = false;
+        asnneg = false;
+    end
+    v = sparse( tx, 1 : dof, 1 );
+    if ~isempty( str ), v = v * str; end
+else
+    v = sparse( 1, 0 );
 end
-v = sparse( tx, 1 : dof, 1 );
-if ~isempty( str ), v = v * str; end
 v = cvx( xsiz, v );
 s1 = xsiz(1);
 tn = [];

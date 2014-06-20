@@ -15,20 +15,22 @@ if ~isr,
     mN = 2 * mN;
     zb = reshape( [ real(zb) ; imag(zb) ], nN, mN );
 end
-if ~iseq,
-    ndim = cvx_pushnneg( mN );
-    zb(ndim(end),1) = 0;
-    zb = zb + sparse( ndim, 1:mN, -1 );
-end
-cvx___.equalities{end+1} = zb;
-cvx___.inequality(end+1) = ~iseq;
-mO = cvx___.n_equality;
-cvx___.n_equality = mO + mN;
-cp = pstr.checkpoint(4);
-if cp > 1,
-    x = find( any( zb, 2 ), 2, 'first' );
-    if any( x > 1 & x <= cp ),
-        cvx___.problems(end).checkpoint(4) = x(1+(x(1)==1)) - 1;
+if mN,
+    if ~iseq,
+        ndim = cvx_pushnneg( mN );
+        zb(ndim(end),1) = 0;
+        zb = zb + sparse( ndim, 1:mN, -1 );
+    end
+    cvx___.equalities{end+1} = zb;
+    cvx___.inequality(end+1) = ~iseq;
+    mO = cvx___.n_equality;
+    cvx___.n_equality = mO + mN;
+    cp = pstr.checkpoint(4);
+    if cp > 1,
+        x = find( any( zb, 2 ), 2, 'first' );
+        if any( x > 1 & x <= cp ),
+            cvx___.problems(end).checkpoint(4) = x(1+(x(1)==1)) - 1;
+        end
     end
 end
 if nargout

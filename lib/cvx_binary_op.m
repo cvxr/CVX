@@ -74,6 +74,16 @@ if isfield( p, 'sdp' ) && p.sdp && ~( xs && ys ),
     end
 end
 
+% Empty arguments
+if ~all( sz ),
+    if isa( x, 'cvx' ) || isa( y, 'cvx' ),
+        z = cvx( sz, [] );
+    else
+        z = zeros( sz );
+    end
+    return
+end
+
 % Normal expression maps
 if sdp_mode || isempty( p.map ),
     vu = 1;
