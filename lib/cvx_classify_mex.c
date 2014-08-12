@@ -92,9 +92,10 @@ void mexFunction(
         const char*    vexs = (char*)mxGetData( prhs[1] );
         char*    ans  = (char*)mxGetData( plhs[0] );
         double   ival = 0;
-        for ( mwIndex c = 0 ; c != n ; ++c, ++jc ) {
+        mwIndex m, c, mEnd;
+        for ( c = 0 ; c != n ; ++c, ++jc ) {
             int vex = 0;
-            for ( mwIndex m = jc[0], mEnd = jc[1] ; m != mEnd ; ++m ) {
+            for ( m = jc[0], mEnd = jc[1] ; m != mEnd ; ++m ) {
                 double p = pr[m];
                 if ( p == 0 ) continue;
                 mwIndex r = ir[m];
@@ -111,7 +112,7 @@ void mexFunction(
                 if ( vex == 22 ) break;
             }
             if ( pi != 0 && vex != 22 ) {
-                for ( mwIndex m = jc[0], mEnd = jc[1] ; m != mEnd ; ++m ) {
+                for ( m = jc[0], mEnd = jc[1] ; m != mEnd ; ++m ) {
                     double p = pi[m];
                     if ( p == 0 ) continue;
                     if ( isnan(p) || isinf(p) ) { vex = 22; break; }
@@ -129,27 +130,28 @@ void mexFunction(
             ans[c] = vex ? vex : 2;
         }
     } else {
-        mwIndex n = mxGetNumberOfElements( prhs[0] );
+        mwIndex n = mxGetNumberOfElements( prhs[0] ), m, c;
         plhs[0] = mxCreateNumericMatrix( n, (mwSize)1, mxINT8_CLASS, mxREAL );
         const double*  pr = mxGetPr( prhs[0] );
         const double*  pi = mxGetPi( prhs[0] );
         char* ans = (char*)mxGetData( plhs[0] );
         if ( mxIsSparse( prhs[0] ) ) {
             n = mxGetN( prhs[0] );
-            mwIndex m = mxGetM( prhs[0] );
+            m = mxGetM( prhs[0] );
             const mwIndex* ir = mxGetIr( prhs[0] );
             const mwIndex* jc = mxGetJc( prhs[0] );
-            for ( mwIndex c = 0 ; c != n ; ++c, ++jc, ans += m ) {
-                for ( mwIndex r = 0 ; r != m ; ++r )
+            for ( c = 0 ; c != n ; ++c, ++jc, ans += m ) {
+                mwIndex r, p, pEnd;
+                for ( r = 0 ; r != m ; ++r )
                     ans[r] = 2;
-                for ( mwIndex p = jc[0], pEnd = jc[1] ; p != pEnd ; ++p )
+                for ( p = jc[0], pEnd = jc[1] ; p != pEnd ; ++p )
                     ans[ir[p]] = pi && pi[p] ? 4 : ( pr[p] ? ( pr[p] < 0 ? 1 : 3 ) : 2 );
             }
         } else if ( pi ) {
-            for ( mwIndex m = 0 ; m != n ; ++m )
+            for ( m = 0 ; m != n ; ++m )
                 ans[m] = pi[m] ? 4 : ( pr[m] ? ( pr[m] < 0 ? 1 : 3 ) : 2 );
         } else {
-            for ( mwIndex m = 0 ; m != n ; ++m )
+            for ( m = 0 ; m != n ; ++m )
                 ans[m] = pr[m] ? ( pr[m] < 0 ? 1 : 3 ) : 2;
         }
     }
