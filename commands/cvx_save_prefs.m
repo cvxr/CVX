@@ -22,7 +22,7 @@ outp.precflag  = cvx___.precflag;
 outp.quiet     = cvx___.quiet;
 outp.profile   = cvx___.profile;
 outp.solvers.map.default = cvx___.solvers.selected;
-[ outp.solvers.list.check, outp.solvers.list.solve, outp.solvers.list.eargs ] = deal( {} );
+[ outp.solvers.list.solve, outp.solvers.list.eargs ] = deal( {} );
 outp.solvers.active = 0;
 save(cvx___.pfile,'-struct','outp');
 if nargin == 0,

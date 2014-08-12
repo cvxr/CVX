@@ -69,9 +69,6 @@ if isempty( shim.name ),
 else
     shim.solve = @solve;
 end
-    
-function found_bad = check( nonls ) %#ok
-found_bad = false;
 
 function [ x, status, tol, iters, y ] = solve( At, b, c, nonls, quiet, prec, settings )
 
@@ -129,7 +126,7 @@ for k = 1 : length( nonls ),
 end
 if reord.f.n > 0,
     reord.f.r = ( 1 : n )';
-    reord.f.r( [ reord.l.r ; reord.a.r ; reord.q.r ; reord.r.r ; reord.s.r ] ) = [];
+    reord.f.r( [ reord.l.r ; reord.a.r ; reord.q.r ; reord.s.r ] ) = [];
     reord.f.c = ( 1 : reord.f.n )';
     reord.f.v = ones(reord.f.n,1);
 end

@@ -1,4 +1,4 @@
-function varargout = expression( nm, varargin )
+function vout = expression( varargin )
 
 %EXPRESSION Declares a single CVX object for storing subexpressions.
 %   EXPRESSION x
@@ -20,58 +20,29 @@ function varargout = expression( nm, varargin )
 %
 %   See also EXPRESSIONS.
 
+if nargin > 1,
+    cvx_throw( 'Too many input arguments.\nTrying to declare multiple expression holders? Use the EXPRESSIONS keyword instead.', 1 );
+end
+
 global cvx___
-prob = evalin( 'caller', 'cvx_problem', '[]' );
-if ~isa( prob, 'cvxprob' ),
-    cvx_throw( 'No CVX model exists in this scope.' );
-elseif isempty( cvx___.problems ) || cvx___.problems( end ).self ~= prob,
-    cvx_throw( 'Internal CVX data corruption. Please CLEAR ALL and rebuild your model.' );
-elseif nargin > 1,
-    cvx_throw( 'Too many input arguments.\nTrying to declare multiple expression holders? Use the EXPRESSIONS keyword instead.', 1 ); %#ok
-end
 
-%
-% Step 1: separate the name from the parenthetical, verify the name
-%
+try
 
-toks = regexp( nm, '^\s*([a-zA-Z]\w*)\s*(\(.*\))?\s*$', 'tokens' );
-if isempty( toks ),
-    cvx_throw( 'Invalid variable specification: %s', nm );
-end
-toks = toks{1};
-x.name = toks{1};
-x.size = toks{2};
-if x.name(end) == '_',
-    cvx_throw( 'Invalid expression specification: %s\n   Names ending in underscores are reserved for internal use.', nm );
-end
-
-%
-% Step 2: Parse the size. In effect, all we do here is surround what is
-% replace the surrounding parentheses with square braces and evaluate. All
-% that matters is the result is a valid size vector. In particular, it
-% need to be a simple comma-delimited list.
-%
-
-if isempty( x.size ),
-	x.size = [1,1];
-else
-    try
-        x.size = evalin( 'caller', [ '[', x.size(2:end-1), '];' ] );
-    catch exc
-        throw( exc );
+    evalin( 'caller', 'cvx_verify' );
+    cvx___.args = { varargin, 1, [] }; %#ok
+    args = evalin( 'caller', 'cvx_parse' );
+    v = cvx_pushexpr( args );
+    if nargout,
+        vout = v;
+    else
+        assignin( 'caller', args(1).name, v );
     end
-    x.size = cvx_get_dimlist( x.size );
-end
-
-%
-% Step 3. Initialize
-%
-
-v = cvx( x.size, [] );
-if nargout > 0,
-    varargout{1} = v;
-else
-    assignin( 'caller', x.name, v );
+        
+catch exc
+    
+    if strncmp( exc.identifier, 'CVX:', 4 ), throw( exc );
+    else rethrow( exc ); end
+    
 end
 
 % Copyright 2005-2014 CVX Research, Inc.

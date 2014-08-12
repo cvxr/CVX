@@ -69,9 +69,6 @@ else
     shim.solve = @solve;
 end
 
-function found_bad = check( nonls ) %#ok
-found_bad = false;
-
 function [ x, status, tol, iters, y ] = solve( At, b, c, nonls, quiet, prec, settings )
 [n,m] = size(At);
 

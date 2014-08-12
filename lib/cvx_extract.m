@@ -481,8 +481,8 @@ if nargin && ~isempty( config ),
                         success = true;
                     elseif isfield( config, 'lorentz' ) && config.lorentz,
                         Pr = [Pr,ndx1,ndx1,ndx2,ndx3,ndx4,ndx4]; %#ok
-                        Pc = [Pc,ndx3,ndx4,ndx1,ndx2,ndx3]; %#ok
-                        Pv = [Pv,-ones(1,nv),ones(1,4*nv)]; %#ok
+                        Pc = [Pc,ndx3,ndx4,ndx1,ndx2,ndx3,ndx4]; %#ok
+                        Pv = [Pv,-ones(1,nv),ones(1,5*nv)]; %#ok
                         ctyp = 'lorentz';
                         success = true;
                     end

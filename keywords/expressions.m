@@ -1,4 +1,4 @@
-function expressions( varargin )
+function varargout = expressions( varargin )
 
 %EXPRESSIONS Declares one or more CVX expression holders.
 %   EXPRESSIONS x1 x2 x3 ..., where x1, x2, x3, etc. are valid
@@ -19,11 +19,33 @@ function expressions( varargin )
 
 if nargin < 1,
     cvx_throw( 'Incorrect syntax for EXPRESSIONS. Type HELP EXPRESSIONS for details.' );
+elseif nargout && nargout ~= nargin,
+    cvx_throw( 'Incorrect number of output arguments.' );
 elseif ~iscellstr( varargin ),
     cvx_throw( 'All arguments must be strings.' );
 end
-for k = 1 : nargin,
-    evalin( 'caller', [ 'expression ', varargin{k} ] );
+
+global cvx___
+
+try
+
+    evalin( 'caller', 'cvx_verify' );
+    cvx___.args = { varargin, nargin, [] };
+    args = evalin( 'caller', 'cvx_parse' );
+    for k = 1 : nargin,
+        v = cvx_pushexpr( args(k) );
+        if nargout,
+            varargout{k} = v; %#ok
+        else
+            assignin( 'caller', args(k).name, v );
+        end
+    end
+    
+catch exc
+    
+    if strncmp( exc.identifier, 'CVX:', 4 ), throw( exc );
+    else rethrow( exc ); end
+    
 end
 
 % Copyright 2005-2014 CVX Research, Inc. 
