@@ -267,6 +267,7 @@ warn_save = warning;
 [ obj, xx, y, zz, info ] = cvx_run_solver( @sqlp, blk, Avec, Cvec, b, OPTIONS, 'obj', 'x', 'y', 'z', 'info', settings, 5 ); %#ok
 warning( warn_save );
 tol = max( [ info.relgap, info.pinfeas, info.dinfeas ] );
+if ~quiet, disp(' '); end
 
 %
 % Interpret status codes
