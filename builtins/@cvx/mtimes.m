@@ -143,8 +143,8 @@ if all(affnnc(vx)) && all(affnnc(vy)),
             return
         end
     end
-    dx = find( any( xA, 2 ) | any( yA, 2 ) );
-    if all(affine(cvx___.classes(dx))),
+    if all(affine(vx)) && all(affine(vy))
+        dx = find( any( xA, 2 ) | any( yA, 2 ) );
         zb  = length( dx );
         xA  = xA( dx, : );
         yA  = yA( dx, : );
@@ -153,14 +153,13 @@ if all(affnnc(vx)) && all(affnnc(vy)),
         R   = x.basis_(1,:) * y.basis_(1,:).';
         if ~isreal( R ) || ~isreal( Q ) || ~isreal( P ),
             cvx_throw( 'Disciplined convex programming error:\n   Invalid quadratic form: not real.' );
-        elseif ~all(affine(vx)) && ~all(affine(vy)),
-            xx = cvx( zb, sparse( dx, 1 : zb, 1 ) );
-            [ z, success ] = quad_form( xx, P, Q, R );
-            if ~success,
-                cvx_throw( 'Disciplined convex programming error:\n    Invalid quadratic form: neither convex or concave.\n' );
-            end
-            return
         end
+        xx = cvx( zb, sparse( dx, 1 : zb, 1 ) );
+        [ z, success ] = quad_form( xx, P, Q, R );
+        if ~success,
+            cvx_throw( 'Disciplined convex programming error:\n    Invalid quadratic form: neither convex or concave.\n' );
+        end
+        return
     end
 end
 
