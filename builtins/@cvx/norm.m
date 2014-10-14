@@ -39,12 +39,12 @@ if m == 1 || n == 1 || isequal( p, 'fro' ),
         cvx_optval = cvx( 0 );
         return
     end
-    if isequal( p, 'fro' ),
+    if isequal( p, 'fro' ) || ~isreal(x) && p == 2
         p = 2;
         [ xR, x ] = bcompress( x );
         x = x .* sqrt(sum(xR.*conj(xR),2));
-    elseif ~isreal( x ) && p ~= 2,
-        x = x( : );
+    else
+        x = vec( x );
     end
     n = length( x );
     xc = cvx_classify( x );

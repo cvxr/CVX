@@ -291,9 +291,11 @@ while true,
     end
     rsv(2:end) = 0;
     [ ncur, mcur ] = size(dbcA);
-    [ rows, cols ] = cvx_eliminate_mex( dbcA, 1, rsv, ineqs ); %#ok
-    if mcur - nrsv > ncur - nnz(rows),
-        dbcA = -dbcA';
+    dbcAT = dbcA';
+    [ rows, cols ] = cvx_eliminate_mex( dbcAT, 1, ineqs, rsv ); %#ok
+    do_it = mcur - nrsv > ncur - nnz(rows);
+    if do_it,
+        dbcA = -dbcAT;
         dir  = -dir;
         tmp  = Q; Q = P; P = tmp;
         tmp  = ineqs; ineqs = rsv; rsv = tmp;
@@ -309,6 +311,7 @@ while true,
         end
         ndxs = 1 : nnew;
     else
+        clear dbcAT
         dbcA = dbcA(:,1:mcur-nrsv);
         P = P(:,1:mcur-nrsv);
         break;

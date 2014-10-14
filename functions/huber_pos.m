@@ -40,7 +40,7 @@ end
 if nargin < 2,
     M = 1;
 elseif ~( isnumeric(M) && numel(M)==1 && isreal(M) && M>0 ),
-    cvx_throw( Second argument must be a positive scalar.' );
+    cvx_throw( 'Second argument must be a positive scalar.' );
 end
 if nargin < 3,
     t = 1;

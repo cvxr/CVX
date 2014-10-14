@@ -112,6 +112,7 @@ opts.abstol_inacc = prec(3);
 opts.reltol_inacc = prec(3);
 opts.feastol_inacc = prec(3);
 opts.verbose = 1;
+opts.maxit = 100;
 if quiet,
     opts.verbose = 0;
 end
