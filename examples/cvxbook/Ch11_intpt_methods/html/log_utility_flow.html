@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <title>Section 11.8.4: Network rate optimization</title>
-<link rel="canonical" href="http://cvxr.com/cvx/examples/cvxbook/Ch11_intpt_methods/html/log_utility_flow.html">
+<link rel="canonical" href="/Users/mcgrant/Projects/CVX/examples/cvxbook/Ch11_intpt_methods/html/log_utility_flow.html">
 <link rel="stylesheet" href="../../../examples.css" type="text/css">
 </head>
 <body>
@@ -69,19 +69,20 @@ dual_obj = cvx_optval;
 <pre class="codeoutput">
  
 Successive approximation method to be employed.
+   For improved efficiency, SDPT3 is solving the dual problem.
    SDPT3 will be called several times to refine the solution.
-   Original size: 50 variables, 30 equality constraints
+   Original size: 50 variables, 20 equality constraints
    10 exponentials add 80 variables, 50 equality constraints
 -----------------------------------------------------------------
  Cones  |             Errors              |
 Mov/Act | Centering  Exp cone   Poly cone | Status
 --------+---------------------------------+---------
- 10/ 10 | 2.835e+00  8.576e-01  0.000e+00 | Solved
- 10/ 10 | 9.542e-01  7.939e-02  0.000e+00 | Solved
- 10/ 10 | 1.666e-01  2.253e-03  0.000e+00 | Solved
- 10/ 10 | 2.204e-02  3.875e-05  0.000e+00 | Solved
-  9/ 10 | 2.601e-03  5.374e-07  0.000e+00 | Solved
-  0/  7 | 3.015e-04  6.607e-09  0.000e+00 | Solved
+ 10/ 10 | 6.939e+00  2.563e+00  1.722e-09 | Solved
+ 10/ 10 | 2.082e+00  2.863e-01  0.000e+00 | Solved
+ 10/ 10 | 1.575e-01  1.558e-03  0.000e+00 | Solved
+ 10/ 10 | 2.021e-02  2.577e-05  0.000e+00 | Solved
+ 10/ 10 | 2.787e-03  4.880e-07  0.000e+00 | Solved
+  0/ 10 | 3.880e-04  7.421e-09  0.000e+00 | Solved
 -----------------------------------------------------------------
 Status: Solved
 Optimal value (cvx_optval): -31.5685
@@ -95,12 +96,12 @@ Successive approximation method to be employed.
  Cones  |             Errors              |
 Mov/Act | Centering  Exp cone   Poly cone | Status
 --------+---------------------------------+---------
- 10/ 10 | 5.283e+00  1.547e+00  1.450e-09 | Solved
- 10/ 10 | 1.412e+00  1.312e-01  2.806e-09 | Solved
- 10/ 10 | 1.306e-01  1.080e-03  2.898e-09 | Solved
- 10/ 10 | 1.689e-02  1.815e-05  2.609e-09 | Solved
+ 10/ 10 | 5.283e+00  1.547e+00  1.451e-09 | Solved
+ 10/ 10 | 1.412e+00  1.312e-01  2.742e-09 | Solved
+ 10/ 10 | 1.306e-01  1.080e-03  2.910e-09 | Solved
+ 10/ 10 | 1.689e-02  1.815e-05  2.610e-09 | Solved
  10/ 10 | 2.271e-03  3.237e-07  2.635e-09 | Solved
-  0/  7 | 3.067e-04  4.624e-09  2.633e-09 | Solved
+  0/  7 | 3.067e-04  4.651e-09  2.659e-09 | Solved
 -----------------------------------------------------------------
 Status: Solved
 Optimal value (cvx_optval): -31.5685

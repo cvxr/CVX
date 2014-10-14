@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <title>Figure 8.10: Approximate linear discrimination via linear programming</title>
-<link rel="canonical" href="http://cvxr.com/cvx/examples/cvxbook/Ch08_geometric_probs/html/svm_1.html">
+<link rel="canonical" href="/Users/mcgrant/Projects/CVX/examples/cvxbook/Ch08_geometric_probs/html/svm_1.html">
 <link rel="stylesheet" href="../../../examples.css" type="text/css">
 </head>
 <body>
@@ -76,7 +76,7 @@ title(<span class="string">'Approximate linear discrimination via linear program
 <a id="output"></a>
 <pre class="codeoutput">
  
-Calling SDPT3: 203 variables, 100 equality constraints
+Calling SDPT3 4.0: 203 variables, 100 equality constraints
 ------------------------------------------------------------
 
  num. of constraints = 100
@@ -101,32 +101,35 @@ it pstep dstep pinfeas dinfeas  gap      prim-obj      dual-obj    cputime
  9|0.921|0.455|8.2e-08|4.2e-04|2.4e+00| 7.197481e+00  5.289285e+00| 0:0:00| chol  1  1 
 10|1.000|0.524|2.6e-08|2.0e-04|1.4e+00| 6.805736e+00  5.594202e+00| 0:0:00| chol  1  1 
 11|1.000|0.299|1.3e-08|1.4e-04|1.0e+00| 6.562960e+00  5.719608e+00| 0:0:00| chol  1  1 
-12|1.000|0.516|5.4e-09|6.8e-05|6.2e-01| 6.439207e+00  5.882265e+00| 0:0:00| chol  1  1 
-13|0.755|0.303|2.5e-09|4.7e-05|4.0e-01| 6.292514e+00  5.919046e+00| 0:0:00| chol  1  1 
-14|1.000|0.303|5.3e-10|3.3e-05|4.1e-01| 6.372321e+00  5.996720e+00| 0:0:00| chol  2  1 
-15|0.983|0.306|1.1e-09|2.3e-05|2.4e-01| 6.245623e+00  6.016152e+00| 0:0:00| chol  1  1 
-16|1.000|0.679|1.4e-10|7.3e-06|7.8e-02| 6.169151e+00  6.095341e+00| 0:0:00| chol  1  1 
-17|0.993|0.899|7.8e-11|7.4e-07|6.7e-03| 6.149220e+00  6.142910e+00| 0:0:00| chol  1  1 
-18|0.987|0.986|1.1e-10|3.1e-06|1.4e-04| 6.148578e+00  6.148492e+00| 0:0:00| chol  1  1 
-19|0.996|0.989|3.9e-13|6.5e-08|3.5e-06| 6.148570e+00  6.148568e+00| 0:0:00| chol  1  1 
-20|1.000|0.989|5.3e-14|1.6e-09|7.9e-08| 6.148569e+00  6.148569e+00| 0:0:00|
+12|1.000|0.516|6.2e-09|6.8e-05|6.2e-01| 6.439207e+00  5.882265e+00| 0:0:00| chol  1  1 
+13|0.755|0.303|2.4e-09|4.7e-05|4.0e-01| 6.292514e+00  5.919046e+00| 0:0:00| chol  1  1 
+14|1.000|0.303|3.4e-10|3.3e-05|4.1e-01| 6.372321e+00  5.996721e+00| 0:0:00| chol  1  1 
+15|0.983|0.306|2.6e-10|2.3e-05|2.4e-01| 6.245623e+00  6.016152e+00| 0:0:00| chol  1  1 
+16|1.000|0.679|1.3e-09|7.3e-06|7.8e-02| 6.169151e+00  6.095341e+00| 0:0:00| chol  1  1 
+17|0.993|0.899|5.9e-11|7.4e-07|6.7e-03| 6.149220e+00  6.142910e+00| 0:0:00| chol  1  1 
+18|0.987|0.986|2.5e-10|3.1e-06|1.4e-04| 6.148578e+00  6.148492e+00| 0:0:00| chol  1  1 
+19|0.996|0.989|1.1e-12|6.5e-08|3.5e-06| 6.148570e+00  6.148568e+00| 0:0:00| chol  1  1 
+20|1.000|0.989|7.9e-14|1.6e-09|7.9e-08| 6.148569e+00  6.148569e+00| 0:0:00|
   stop: max(relative gap, infeasibilities) &lt; 1.49e-08
 -------------------------------------------------------------------
  number of iterations   = 20
  primal objective value =  6.14856945e+00
  dual   objective value =  6.14856940e+00
- gap := trace(XZ)       = 7.92e-08
- relative gap           = 5.96e-09
+ gap := trace(XZ)       = 7.91e-08
+ relative gap           = 5.95e-09
  actual relative gap    = 4.14e-09
- rel. primal infeas     = 5.30e-14
- rel. dual   infeas     = 1.60e-09
+ rel. primal infeas (scaled problem)   = 7.87e-14
+ rel. dual     "        "       "      = 1.60e-09
+ rel. primal infeas (unscaled problem) = 0.00e+00
+ rel. dual     "        "       "      = 0.00e+00
  norm(X), norm(y), norm(Z) = 8.9e+01, 2.4e+00, 1.0e+01
  norm(A), norm(b), norm(C) = 7.3e+01, 1.1e+01, 1.1e+01
- Total CPU time (secs)  = 0.22  
+ Total CPU time (secs)  = 0.21  
  CPU time per iteration = 0.01  
  termination code       =  0
- DIMACS: 2.9e-13  0.0e+00  8.8e-09  0.0e+00  4.1e-09  6.0e-09
+ DIMACS: 4.3e-13  0.0e+00  8.8e-09  0.0e+00  4.1e-09  6.0e-09
 -------------------------------------------------------------------
+ 
 ------------------------------------------------------------
 Status: Solved
 Optimal value (cvx_optval): +6.14857

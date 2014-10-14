@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <title>Section 4.5.4: Frobenius norm diagonal scaling (GP)</title>
-<link rel="canonical" href="http://cvxr.com/cvx/examples/cvxbook/Ch04_cvx_opt_probs/html/frob_norm_diag_scaling.html">
+<link rel="canonical" href="/Users/mcgrant/Projects/CVX/examples/cvxbook/Ch04_cvx_opt_probs/html/frob_norm_diag_scaling.html">
 <link rel="stylesheet" href="../../../examples.css" type="text/css">
 </head>
 <body>
@@ -57,7 +57,7 @@ disp(norm(M,<span class="string">'fro'</span>));
  
 Successive approximation method to be employed.
    SDPT3 will be called several times to refine the solution.
-   Original size: 55 variables, 34 equality constraints
+   Original size: 82 variables, 32 equality constraints
    16 exponentials add 128 variables, 80 equality constraints
 -----------------------------------------------------------------
  Cones  |             Errors              |
@@ -65,17 +65,18 @@ Mov/Act | Centering  Exp cone   Poly cone | Status
 --------+---------------------------------+---------
  16/ 16 | 8.000e+00  1.276e+01  0.000e+00 | Solved
  16/ 16 | 1.590e+00  1.546e-01  0.000e+00 | Solved
- 15/ 15 | 7.950e-02  4.017e-04  0.000e+00 | Solved
-  0/  3 | 1.053e-03  6.705e-09  0.000e+00 | Solved
+ 15/ 15 | 7.950e-02  4.018e-04  0.000e+00 | Solved
+  2/  9 | 1.198e-03  7.548e-08  0.000e+00 | Solved
+  0/  0 | 2.616e-05  0.000e+00  0.000e+00 | Solved
 -----------------------------------------------------------------
 Status: Solved
 Optimal value (cvx_optval): +3.25231
  
 The matrix D that minimizes ||DMD^{-1}||_F is: 
-    1.0864         0         0         0
-         0    0.9120         0         0
-         0         0    0.9735         0
-         0         0         0    1.6263
+    1.0885         0         0         0
+         0    0.9138         0         0
+         0         0    0.9754         0
+         0         0         0    1.6294
 
 The minimium Frobenius norm achieved is: 
     3.2523

@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <title>Builds a norm minimization tradeoff curve</title>
-<link rel="canonical" href="http://cvxr.com/cvx/examples/html/regularized_norm_tradeoff.html">
+<link rel="canonical" href="/Users/mcgrant/Projects/CVX/examples/html/regularized_norm_tradeoff.html">
 <link rel="stylesheet" href="../examples.css" type="text/css">
 </head>
 <body>
@@ -34,7 +34,7 @@ nrms = zeros( size( gamma ) );
 xnrms = zeros( size( gamma ) );
 fprintf( 1, <span class="string">'Gamma: '</span> );
 <span class="keyword">for</span> k = 1 : length( gamma ),
-   <span class="keyword">if</span> k &gt; 1 &amp; rem( k, 10 ) == 1, fprintf( 1, <span class="string">'\n       '</span> ); <span class="keyword">end</span>
+   <span class="keyword">if</span> k &gt; 1 &amp;&amp; rem( k, 10 ) == 1, fprintf( 1, <span class="string">'\n       '</span> ); <span class="keyword">end</span>
    fprintf( 1, <span class="string">'%g '</span>, gamma( k ) );
    cvx_begin <span class="string">quiet</span>
       variable <span class="string">x(n)</span>

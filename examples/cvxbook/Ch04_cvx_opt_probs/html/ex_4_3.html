@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <title>Exercise 4.3: Solve a simple QP with inequality constraints</title>
-<link rel="canonical" href="http://cvxr.com/cvx/examples/cvxbook/Ch04_cvx_opt_probs/html/ex_4_3.html">
+<link rel="canonical" href="/Users/mcgrant/Projects/CVX/examples/cvxbook/Ch04_cvx_opt_probs/html/ex_4_3.html">
 <link rel="stylesheet" href="../../../examples.css" type="text/css">
 </head>
 <body>
@@ -54,7 +54,7 @@ disp(x_star);
 <a id="output"></a>
 <pre class="codeoutput">
 Computing the optimal solution ... 
-Calling SDPT3: 11 variables, 4 equality constraints
+Calling SDPT3 4.0: 11 variables, 4 equality constraints
    For improved efficiency, SDPT3 is solving the dual problem.
 ------------------------------------------------------------
 
@@ -77,7 +77,7 @@ it pstep dstep pinfeas dinfeas  gap      prim-obj      dual-obj    cputime
  6|1.000|0.983|2.6e-09|5.8e-07|1.6e-02| 3.913463e+01  3.911827e+01| 0:0:00| chol  1  1 
  7|0.977|0.972|3.3e-10|6.5e-08|4.2e-04| 3.912522e+01  3.912480e+01| 0:0:00| chol  1  1 
  8|0.988|0.988|8.6e-12|8.7e-10|5.2e-06| 3.912500e+01  3.912500e+01| 0:0:00| chol  1  1 
- 9|0.996|0.994|1.2e-12|6.9e-12|7.3e-08| 3.912500e+01  3.912500e+01| 0:0:00|
+ 9|0.996|0.994|6.5e-12|6.9e-12|7.3e-08| 3.912500e+01  3.912500e+01| 0:0:00|
   stop: max(relative gap, infeasibilities) &lt; 1.49e-08
 -------------------------------------------------------------------
  number of iterations   =  9
@@ -85,16 +85,19 @@ it pstep dstep pinfeas dinfeas  gap      prim-obj      dual-obj    cputime
  dual   objective value =  3.91250000e+01
  gap := trace(XZ)       = 7.33e-08
  relative gap           = 9.25e-10
- actual relative gap    = 9.20e-10
- rel. primal infeas     = 1.19e-12
- rel. dual   infeas     = 6.87e-12
+ actual relative gap    = 9.24e-10
+ rel. primal infeas (scaled problem)   = 6.53e-12
+ rel. dual     "        "       "      = 6.87e-12
+ rel. primal infeas (unscaled problem) = 0.00e+00
+ rel. dual     "        "       "      = 0.00e+00
  norm(X), norm(y), norm(Z) = 3.8e+01, 3.1e+00, 4.2e+00
  norm(A), norm(b), norm(C) = 4.3e+00, 3.4e+01, 5.3e+00
- Total CPU time (secs)  = 0.11  
+ Total CPU time (secs)  = 0.12  
  CPU time per iteration = 0.01  
  termination code       =  0
- DIMACS: 1.7e-12  0.0e+00  1.2e-11  0.0e+00  9.2e-10  9.3e-10
+ DIMACS: 9.5e-12  0.0e+00  1.2e-11  0.0e+00  9.2e-10  9.3e-10
 -------------------------------------------------------------------
+ 
 ------------------------------------------------------------
 Status: Solved
 Optimal value (cvx_optval): -21.625

@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <title>One free point localization</title>
-<link rel="canonical" href="http://cvxr.com/cvx/examples/cvxbook/Ch08_geometric_probs/html/ex_8_5.html">
+<link rel="canonical" href="/Users/mcgrant/Projects/CVX/examples/cvxbook/Ch08_geometric_probs/html/ex_8_5.html">
 <link rel="stylesheet" href="../../../examples.css" type="text/css">
 </head>
 <body>
@@ -55,11 +55,10 @@ disp(<span class="string">'They are the same as expected!'</span>);
 <a id="output"></a>
 <pre class="codeoutput">
 Minimizing the sum of the squares the distances to fixed points... 
-Calling SDPT3: 88 variables, 46 equality constraints
-   For improved efficiency, SDPT3 is solving the dual problem.
+Calling SDPT3 4.0: 88 variables, 42 equality constraints
 ------------------------------------------------------------
 
- num. of constraints = 46
+ num. of constraints = 42
  dim. of sdp    var  = 22,   num. of sdp  blk  = 11
  dim. of socp   var  = 33,   num. of socp blk  = 11
  dim. of linear var  = 22
@@ -70,34 +69,40 @@ Calling SDPT3: 88 variables, 46 equality constraints
    HKM      1      0.000   1        0    
 it pstep dstep pinfeas dinfeas  gap      prim-obj      dual-obj    cputime
 -------------------------------------------------------------------
- 0|0.000|0.000|1.0e+01|1.1e+01|4.6e+03| 1.100000e+02  0.000000e+00| 0:0:00| chol  1  1 
- 1|0.854|0.860|1.5e+00|1.6e+00|9.5e+02| 8.596987e+01 -1.058415e+02| 0:0:00| chol  1  1 
- 2|1.000|1.000|1.9e-06|1.0e-02|1.3e+02| 4.110764e+01 -8.490538e+01| 0:0:00| chol  1  1 
- 3|0.978|0.982|9.4e-07|1.2e-03|2.4e+01|-7.230670e+00 -3.138282e+01| 0:0:00| chol  1  1 
- 4|1.000|1.000|2.2e-07|1.0e-04|8.5e+00|-1.347951e+01 -2.199622e+01| 0:0:00| chol  1  1 
- 5|0.912|0.910|3.5e-08|1.8e-05|1.1e+00|-1.633531e+01 -1.742632e+01| 0:0:00| chol  1  1 
- 6|1.000|1.000|9.6e-09|1.0e-06|3.3e-01|-1.657765e+01 -1.691125e+01| 0:0:00| chol  1  1 
- 7|0.956|0.956|3.9e-09|1.4e-07|1.7e-02|-1.667823e+01 -1.669482e+01| 0:0:00| chol  1  1 
- 8|0.984|0.984|1.7e-09|1.3e-08|2.7e-04|-1.668304e+01 -1.668331e+01| 0:0:00| chol  1  1 
- 9|0.989|0.989|3.3e-11|4.9e-10|3.1e-06|-1.668312e+01 -1.668312e+01| 0:0:00| chol  1  1 
-10|0.996|0.995|2.0e-13|9.4e-12|4.0e-08|-1.668312e+01 -1.668312e+01| 0:0:00|
+ 0|0.000|0.000|1.8e+01|1.5e+01|7.3e+03| 1.100000e+02  0.000000e+00| 0:0:00| chol  1  1 
+ 1|0.637|0.756|6.7e+00|3.8e+00|3.5e+03| 1.418911e+02 -6.667195e+01| 0:0:00| chol  1  1 
+ 2|0.763|0.990|1.6e+00|4.6e-02|9.9e+02| 2.987271e+02 -1.488760e+02| 0:0:00| chol  1  1 
+ 3|1.000|1.000|5.9e-07|1.0e-03|1.6e+02| 1.005763e+02 -6.360729e+01| 0:0:00| chol  1  1 
+ 4|1.000|1.000|9.4e-08|1.0e-04|4.9e+01| 4.828646e+01 -8.200827e-01| 0:0:00| chol  1  1 
+ 5|0.885|1.000|1.2e-08|1.0e-05|8.6e+00| 2.267532e+01  1.408310e+01| 0:0:00| chol  1  1 
+ 6|1.000|0.967|1.5e-09|1.3e-06|2.3e+00| 1.824747e+01  1.593419e+01| 0:0:00| chol  1  1 
+ 7|0.906|0.979|4.2e-10|1.3e-07|2.6e-01| 1.688821e+01  1.662966e+01| 0:0:00| chol  1  1 
+ 8|1.000|0.982|6.2e-10|1.2e-08|5.5e-02| 1.672161e+01  1.666619e+01| 0:0:00| chol  1  1 
+ 9|0.970|0.978|1.4e-10|1.4e-09|1.8e-03| 1.668444e+01  1.668266e+01| 0:0:00| chol  1  1 
+10|0.976|0.983|3.2e-12|5.1e-11|3.9e-05| 1.668315e+01  1.668311e+01| 0:0:00| chol  1  1 
+11|0.926|1.000|1.5e-11|1.0e-12|7.0e-06| 1.668312e+01  1.668312e+01| 0:0:00| chol  2  1 
+12|1.000|1.000|4.9e-11|1.5e-12|8.0e-07| 1.668312e+01  1.668312e+01| 0:0:00| chol  1  2 
+13|0.994|1.000|1.5e-12|2.3e-12|1.6e-08| 1.668312e+01  1.668312e+01| 0:0:00|
   stop: max(relative gap, infeasibilities) &lt; 1.49e-08
 -------------------------------------------------------------------
- number of iterations   = 10
- primal objective value = -1.66831188e+01
- dual   objective value = -1.66831189e+01
- gap := trace(XZ)       = 4.01e-08
- relative gap           = 1.17e-09
- actual relative gap    = 1.14e-09
- rel. primal infeas     = 1.95e-13
- rel. dual   infeas     = 9.35e-12
- norm(X), norm(y), norm(Z) = 1.9e+01, 8.1e+00, 1.1e+01
- norm(A), norm(b), norm(C) = 1.1e+01, 4.3e+00, 6.3e+00
- Total CPU time (secs)  = 0.22  
+ number of iterations   = 13
+ primal objective value =  1.66831189e+01
+ dual   objective value =  1.66831189e+01
+ gap := trace(XZ)       = 1.55e-08
+ relative gap           = 4.52e-10
+ actual relative gap    = 4.51e-10
+ rel. primal infeas (scaled problem)   = 1.54e-12
+ rel. dual     "        "       "      = 2.25e-12
+ rel. primal infeas (unscaled problem) = 0.00e+00
+ rel. dual     "        "       "      = 0.00e+00
+ norm(X), norm(y), norm(Z) = 1.1e+01, 1.3e+01, 1.9e+01
+ norm(A), norm(b), norm(C) = 1.0e+01, 9.0e+00, 4.3e+00
+ Total CPU time (secs)  = 0.25  
  CPU time per iteration = 0.02  
  termination code       =  0
- DIMACS: 4.2e-13  0.0e+00  2.0e-11  0.0e+00  1.1e-09  1.2e-09
+ DIMACS: 2.9e-12  0.0e+00  4.9e-12  0.0e+00  4.5e-10  4.5e-10
 -------------------------------------------------------------------
+ 
 ------------------------------------------------------------
 Status: Solved
 Optimal value (cvx_optval): +16.6831

@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <title>Computing a sparse solution of a set of linear inequalities</title>
-<link rel="canonical" href="http://cvxr.com/cvx/examples/sparse_heuristics/html/sparse_solution.html">
+<link rel="canonical" href="/Users/mcgrant/Projects/CVX/examples/sparse_heuristics/html/sparse_solution.html">
 <link rel="stylesheet" href="../../examples.css" type="text/css">
 </head>
 <body>
@@ -127,7 +127,7 @@ legend(<span class="string">'log heuristic'</span>,<span class="string">'l1-norm
 <a id="output"></a>
 <pre class="codeoutput">
 Finding a sparse feasible point using l1-norm heuristic ... 
-Calling SDPT3: 200 variables, 100 equality constraints
+Calling SDPT3 4.0: 200 variables, 100 equality constraints
 ------------------------------------------------------------
 
  num. of constraints = 100
@@ -150,16 +150,16 @@ it pstep dstep pinfeas dinfeas  gap      prim-obj      dual-obj    cputime
  7|0.590|0.753|1.4e-07|3.1e-04|3.3e+01| 4.833162e+01  1.570252e+01| 0:0:00| chol  1  1 
  8|0.864|0.581|2.2e-08|1.3e-04|1.9e+01| 4.206510e+01  2.318715e+01| 0:0:00| chol  1  1 
  9|1.000|0.553|1.2e-09|5.8e-05|1.1e+01| 3.937001e+01  2.867040e+01| 0:0:00| chol  1  1 
-10|1.000|0.851|4.1e-14|8.6e-06|3.9e+00| 3.750190e+01  3.356489e+01| 0:0:00| chol  1  1 
-11|0.857|0.651|2.7e-14|3.0e-06|2.2e+00| 3.675586e+01  3.455323e+01| 0:0:00| chol  1  1 
-12|0.885|1.000|2.9e-14|8.2e-11|1.1e+00| 3.647209e+01  3.541597e+01| 0:0:00| chol  1  1 
-13|1.000|0.971|5.8e-14|1.1e-11|2.2e-01| 3.604244e+01  3.581861e+01| 0:0:00| chol  1  1 
-14|1.000|0.667|2.8e-12|5.3e-12|9.5e-02| 3.597437e+01  3.587946e+01| 0:0:00| chol  1  1 
-15|0.965|0.928|6.8e-13|1.5e-12|1.7e-02| 3.594769e+01  3.593091e+01| 0:0:00| chol  1  1 
-16|0.873|1.000|7.3e-13|1.0e-12|5.3e-03| 3.594352e+01  3.593821e+01| 0:0:00| chol  1  2 
+10|1.000|0.851|9.8e-14|8.6e-06|3.9e+00| 3.750190e+01  3.356489e+01| 0:0:00| chol  1  1 
+11|0.857|0.651|2.1e-14|3.0e-06|2.2e+00| 3.675586e+01  3.455323e+01| 0:0:00| chol  1  1 
+12|0.885|1.000|5.3e-14|8.2e-11|1.1e+00| 3.647209e+01  3.541597e+01| 0:0:00| chol  1  1 
+13|1.000|0.971|2.8e-14|1.1e-11|2.2e-01| 3.604244e+01  3.581861e+01| 0:0:00| chol  1  1 
+14|1.000|0.667|1.3e-12|5.3e-12|9.5e-02| 3.597437e+01  3.587946e+01| 0:0:00| chol  1  1 
+15|0.965|0.928|1.5e-12|1.5e-12|1.7e-02| 3.594769e+01  3.593091e+01| 0:0:00| chol  1  1 
+16|0.873|1.000|1.4e-12|1.0e-12|5.3e-03| 3.594352e+01  3.593821e+01| 0:0:00| chol  1  2 
 17|0.920|0.980|1.7e-12|1.0e-12|5.9e-04| 3.594114e+01  3.594055e+01| 0:0:00| chol  2  2 
-18|1.000|0.977|8.6e-12|1.0e-12|5.9e-05| 3.594080e+01  3.594074e+01| 0:0:00| chol  2  1 
-19|0.996|0.998|3.4e-11|1.5e-12|9.1e-07| 3.594078e+01  3.594078e+01| 0:0:00|
+18|1.000|0.977|8.1e-12|1.0e-12|5.9e-05| 3.594080e+01  3.594074e+01| 0:0:00| chol  2  2 
+19|0.996|0.998|2.0e-12|1.5e-12|9.1e-07| 3.594078e+01  3.594078e+01| 0:0:00|
   stop: max(relative gap, infeasibilities) &lt; 1.49e-08
 -------------------------------------------------------------------
  number of iterations   = 19
@@ -167,16 +167,19 @@ it pstep dstep pinfeas dinfeas  gap      prim-obj      dual-obj    cputime
  dual   objective value =  3.59407765e+01
  gap := trace(XZ)       = 9.08e-07
  relative gap           = 1.25e-08
- actual relative gap    = 1.24e-08
- rel. primal infeas     = 3.40e-11
- rel. dual   infeas     = 1.50e-12
+ actual relative gap    = 1.25e-08
+ rel. primal infeas (scaled problem)   = 2.01e-12
+ rel. dual     "        "       "      = 1.50e-12
+ rel. primal infeas (unscaled problem) = 0.00e+00
+ rel. dual     "        "       "      = 0.00e+00
  norm(X), norm(y), norm(Z) = 1.7e+01, 1.6e+00, 9.9e+00
  norm(A), norm(b), norm(C) = 7.3e+01, 8.9e+01, 8.1e+00
- Total CPU time (secs)  = 0.28  
- CPU time per iteration = 0.01  
+ Total CPU time (secs)  = 0.29  
+ CPU time per iteration = 0.02  
  termination code       =  0
- DIMACS: 1.2e-10  0.0e+00  6.1e-12  0.0e+00  1.2e-08  1.2e-08
+ DIMACS: 6.9e-12  0.0e+00  6.1e-12  0.0e+00  1.2e-08  1.2e-08
 -------------------------------------------------------------------
+ 
 ------------------------------------------------------------
 Status: Solved
 Optimal value (cvx_optval): +35.9408

@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <title>Maximize stopband attenuation of a linear phase lowpass FIR filter</title>
-<link rel="canonical" href="http://cvxr.com/cvx/examples/filter_design/html/fir_lin_phase_lowpass_max_atten.html">
+<link rel="canonical" href="/Users/mcgrant/Projects/CVX/examples/filter_design/html/fir_lin_phase_lowpass_max_atten.html">
 <link rel="stylesheet" href="../../examples.css" type="text/css">
 </head>
 <body>
@@ -114,7 +114,7 @@ xlabel(<span class="string">'w'</span>), ylabel(<span class="string">'phase H(w)
 <a id="output"></a>
 <pre class="codeoutput">
  
-Calling SDPT3: 756 variables, 240 equality constraints
+Calling SDPT3 4.0: 756 variables, 240 equality constraints
    For improved efficiency, SDPT3 is solving the dual problem.
 ------------------------------------------------------------
 
@@ -139,10 +139,10 @@ it pstep dstep pinfeas dinfeas  gap      prim-obj      dual-obj    cputime
  8|0.895|0.989|3.5e-10|1.8e-07|8.8e-03|-1.164473e-02 -2.047779e-02| 0:0:00| chol  1  1 
  9|0.691|1.000|1.1e-10|3.1e-09|3.9e-03|-1.450191e-02 -1.841515e-02| 0:0:00| chol  1  1 
 10|0.996|0.938|4.0e-13|4.9e-10|7.3e-04|-1.686999e-02 -1.759775e-02| 0:0:00| chol  1  1 
-11|0.883|0.817|5.6e-14|1.2e-10|1.7e-04|-1.733179e-02 -1.749801e-02| 0:0:00| chol  1  1 
+11|0.883|0.817|5.1e-14|1.2e-10|1.7e-04|-1.733179e-02 -1.749801e-02| 0:0:00| chol  1  1 
 12|0.831|0.901|9.0e-15|1.5e-11|3.9e-05|-1.744009e-02 -1.747935e-02| 0:0:00| chol  1  1 
 13|0.948|0.879|1.6e-14|2.8e-12|3.6e-06|-1.747300e-02 -1.747660e-02| 0:0:00| chol  1  1 
-14|0.981|0.981|2.1e-14|1.1e-12|1.5e-07|-1.747606e-02 -1.747621e-02| 0:0:00| chol  1  1 
+14|0.981|0.981|2.0e-14|1.1e-12|1.5e-07|-1.747606e-02 -1.747621e-02| 0:0:00| chol  1  1 
 15|0.992|0.991|6.4e-13|1.0e-12|2.5e-09|-1.747619e-02 -1.747620e-02| 0:0:00|
   stop: max(relative gap, infeasibilities) &lt; 1.49e-08
 -------------------------------------------------------------------
@@ -152,8 +152,10 @@ it pstep dstep pinfeas dinfeas  gap      prim-obj      dual-obj    cputime
  gap := trace(XZ)       = 2.52e-09
  relative gap           = 2.43e-09
  actual relative gap    = 2.43e-09
- rel. primal infeas     = 6.40e-13
- rel. dual   infeas     = 1.01e-12
+ rel. primal infeas (scaled problem)   = 6.43e-13
+ rel. dual     "        "       "      = 1.01e-12
+ rel. primal infeas (unscaled problem) = 0.00e+00
+ rel. dual     "        "       "      = 0.00e+00
  norm(X), norm(y), norm(Z) = 7.4e-01, 3.2e-01, 1.3e+00
  norm(A), norm(b), norm(C) = 8.6e+01, 2.0e+00, 9.6e+00
  Total CPU time (secs)  = 0.25  
@@ -161,6 +163,7 @@ it pstep dstep pinfeas dinfeas  gap      prim-obj      dual-obj    cputime
  termination code       =  0
  DIMACS: 6.4e-13  0.0e+00  4.6e-12  0.0e+00  2.4e-09  2.4e-09
 -------------------------------------------------------------------
+ 
 ------------------------------------------------------------
 Status: Solved
 Optimal value (cvx_optval): +0.0174762

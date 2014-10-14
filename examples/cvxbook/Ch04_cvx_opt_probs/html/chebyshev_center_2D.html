@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <title>Section 4.3.1: Compute and display the Chebyshev center of a 2D polyhedron</title>
-<link rel="canonical" href="http://cvxr.com/cvx/examples/cvxbook/Ch04_cvx_opt_probs/html/chebyshev_center_2D.html">
+<link rel="canonical" href="/Users/mcgrant/Projects/CVX/examples/cvxbook/Ch04_cvx_opt_probs/html/chebyshev_center_2D.html">
 <link rel="stylesheet" href="../../../examples.css" type="text/css">
 </head>
 <body>
@@ -64,7 +64,7 @@ axis <span class="string">equal</span>
 <a id="output"></a>
 <pre class="codeoutput">
  
-Calling SDPT3: 4 variables, 3 equality constraints
+Calling SDPT3 4.0: 4 variables, 3 equality constraints
    For improved efficiency, SDPT3 is solving the dual problem.
 ------------------------------------------------------------
 
@@ -94,15 +94,18 @@ it pstep dstep pinfeas dinfeas  gap      prim-obj      dual-obj    cputime
  gap := trace(XZ)       = 3.48e-09
  relative gap           = 1.84e-09
  actual relative gap    = 1.24e-09
- rel. primal infeas     = 1.95e-11
- rel. dual   infeas     = 1.72e-09
+ rel. primal infeas (scaled problem)   = 1.95e-11
+ rel. dual     "        "       "      = 1.72e-09
+ rel. primal infeas (unscaled problem) = 0.00e+00
+ rel. dual     "        "       "      = 0.00e+00
  norm(X), norm(y), norm(Z) = 2.4e-01, 4.5e-01, 1.8e-08
  norm(A), norm(b), norm(C) = 7.3e+00, 2.0e+00, 3.0e+00
- Total CPU time (secs)  = 0.05  
+ Total CPU time (secs)  = 0.06  
  CPU time per iteration = 0.01  
  termination code       =  0
  DIMACS: 2.0e-11  0.0e+00  2.6e-09  0.0e+00  1.2e-09  1.8e-09
 -------------------------------------------------------------------
+ 
 ------------------------------------------------------------
 Status: Solved
 Optimal value (cvx_optval): +0.447214

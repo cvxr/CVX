@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <title>Figure 7.1: Logistic regression</title>
-<link rel="canonical" href="http://cvxr.com/cvx/examples/cvxbook/Ch07_statistical_estim/html/logistics.html">
+<link rel="canonical" href="/Users/mcgrant/Projects/CVX/examples/cvxbook/Ch07_statistical_estim/html/logistics.html">
 <link rel="stylesheet" href="../../../examples.css" type="text/css">
 </head>
 <body>
@@ -84,17 +84,19 @@ ylabel(<span class="string">'y'</span>);
 <pre class="codeoutput">
  
 Successive approximation method to be employed.
+   For improved efficiency, SDPT3 is solving the dual problem.
    SDPT3 will be called several times to refine the solution.
-   Original size: 602 variables, 400 equality constraints
+   Original size: 600 variables, 202 equality constraints
    200 exponentials add 1600 variables, 1000 equality constraints
 -----------------------------------------------------------------
  Cones  |             Errors              |
 Mov/Act | Centering  Exp cone   Poly cone | Status
 --------+---------------------------------+---------
-200/200 | 5.422e+00  2.242e+00  0.000e+00 | Solved
-200/200 | 5.049e-01  1.636e-02  0.000e+00 | Solved
-194/199 | 2.442e-02  3.880e-05  0.000e+00 | Solved
-  0/148 | 3.819e-04  7.845e-09  0.000e+00 | Solved
+200/200 | 6.970e+00  2.483e+00  0.000e+00 | Solved
+200/200 | 9.608e-01  7.319e-02  0.000e+00 | Solved
+199/200 | 1.067e-01  8.487e-04  0.000e+00 | Solved
+200/200 | 9.296e-03  6.366e-06  0.000e+00 | Solved
+  0/127 | 3.203e-04  6.392e-09  0.000e+00 | Solved
 -----------------------------------------------------------------
 Status: Solved
 Optimal value (cvx_optval): -32.9797

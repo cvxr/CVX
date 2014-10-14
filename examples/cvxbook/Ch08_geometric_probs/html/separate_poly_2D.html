@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <title>Section 8.2.2: Separating polyhedra in 2D</title>
-<link rel="canonical" href="http://cvxr.com/cvx/examples/cvxbook/Ch08_geometric_probs/html/separate_poly_2D.html">
+<link rel="canonical" href="/Users/mcgrant/Projects/CVX/examples/cvxbook/Ch08_geometric_probs/html/separate_poly_2D.html">
 <link rel="stylesheet" href="../../../examples.css" type="text/css">
 </head>
 <body>
@@ -77,7 +77,7 @@ title(<span class="string">'Separating 2 polyhedra by a hyperplane'</span>);
 <a id="output"></a>
 <pre class="codeoutput">
 Finding a separating hyperplane between the 2 polyhedra... 
-Calling SDPT3: 12 variables, 5 equality constraints
+Calling SDPT3 4.0: 12 variables, 5 equality constraints
 ------------------------------------------------------------
 
  num. of constraints =  5
@@ -99,7 +99,7 @@ it pstep dstep pinfeas dinfeas  gap      prim-obj      dual-obj    cputime
  6|0.907|1.000|2.2e-09|3.5e-07|1.5e-03|-2.119984e+00 -2.121525e+00| 0:0:00| chol  1  1 
  7|0.983|1.000|1.2e-09|3.5e-08|4.8e-05|-2.121281e+00 -2.121329e+00| 0:0:00| chol  1  1 
  8|0.979|0.987|1.4e-10|6.9e-10|9.3e-07|-2.121320e+00 -2.121320e+00| 0:0:00| chol  1  1 
- 9|1.000|1.000|1.3e-11|2.9e-11|3.2e-08|-2.121320e+00 -2.121320e+00| 0:0:00|
+ 9|1.000|1.000|3.6e-11|2.9e-11|3.2e-08|-2.121320e+00 -2.121320e+00| 0:0:00|
   stop: max(relative gap, infeasibilities) &lt; 1.49e-08
 -------------------------------------------------------------------
  number of iterations   =  9
@@ -107,16 +107,19 @@ it pstep dstep pinfeas dinfeas  gap      prim-obj      dual-obj    cputime
  dual   objective value = -2.12132035e+00
  gap := trace(XZ)       = 3.19e-08
  relative gap           = 6.09e-09
- actual relative gap    = 6.04e-09
- rel. primal infeas     = 1.28e-11
- rel. dual   infeas     = 2.90e-11
+ actual relative gap    = 6.02e-09
+ rel. primal infeas (scaled problem)   = 3.58e-11
+ rel. dual     "        "       "      = 2.90e-11
+ rel. primal infeas (unscaled problem) = 0.00e+00
+ rel. dual     "        "       "      = 0.00e+00
  norm(X), norm(y), norm(Z) = 1.9e+00, 3.9e+00, 6.9e+00
  norm(A), norm(b), norm(C) = 5.2e+00, 2.0e+00, 9.1e+00
  Total CPU time (secs)  = 0.11  
  CPU time per iteration = 0.01  
  termination code       =  0
- DIMACS: 1.3e-11  0.0e+00  4.4e-11  0.0e+00  6.0e-09  6.1e-09
+ DIMACS: 3.6e-11  0.0e+00  4.4e-11  0.0e+00  6.0e-09  6.1e-09
 -------------------------------------------------------------------
+ 
 ------------------------------------------------------------
 Status: Solved
 Optimal value (cvx_optval): +2.12132

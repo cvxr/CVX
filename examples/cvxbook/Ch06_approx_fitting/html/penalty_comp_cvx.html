@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <title>Figure 6.2: Penalty function approximation</title>
-<link rel="canonical" href="http://cvxr.com/cvx/examples/cvxbook/Ch06_approx_fitting/html/penalty_comp_cvx.html">
+<link rel="canonical" href="/Users/mcgrant/Projects/CVX/examples/cvxbook/Ch06_approx_fitting/html/penalty_comp_cvx.html">
 <link rel="stylesheet" href="../../../examples.css" type="text/css">
 </head>
 <body>
@@ -157,7 +157,7 @@ hold <span class="string">off</span>
 <pre class="codeoutput">
 ell-one approximation
  
-Calling SDPT3: 230 variables, 100 equality constraints
+Calling SDPT3 4.0: 230 variables, 100 equality constraints
 ------------------------------------------------------------
 
  num. of constraints = 100
@@ -182,13 +182,13 @@ it pstep dstep pinfeas dinfeas  gap      prim-obj      dual-obj    cputime
  9|1.000|0.474|5.0e-08|1.9e-04|1.9e+00| 5.523572e+01  5.340311e+01| 0:0:00| chol  1  1 
 10|1.000|0.617|1.8e-08|7.3e-05|7.0e-01| 5.515308e+01  5.446389e+01| 0:0:00| chol  1  1 
 11|0.712|0.265|1.9e-08|5.4e-05|5.1e-01| 5.514646e+01  5.463760e+01| 0:0:00| chol  1  1 
-12|1.000|0.216|1.3e-08|4.2e-05|4.1e-01| 5.514672e+01  5.474159e+01| 0:0:00| chol  1  1 
-13|1.000|0.448|6.1e-09|2.3e-05|2.2e-01| 5.513610e+01  5.491355e+01| 0:0:00| chol  1  1 
+12|1.000|0.216|1.2e-08|4.2e-05|4.1e-01| 5.514672e+01  5.474159e+01| 0:0:00| chol  1  1 
+13|1.000|0.448|6.2e-09|2.3e-05|2.2e-01| 5.513610e+01  5.491355e+01| 0:0:00| chol  1  1 
 14|1.000|0.780|1.3e-09|5.1e-06|4.9e-02| 5.512960e+01  5.508124e+01| 0:0:00| chol  1  1 
 15|0.986|0.975|1.5e-10|1.3e-07|1.2e-03| 5.512893e+01  5.512772e+01| 0:0:00| chol  1  1 
-16|0.989|0.989|1.3e-11|1.6e-06|2.3e-05| 5.512892e+01  5.512891e+01| 0:0:00| chol  1  1 
-17|0.973|0.945|3.7e-13|3.1e-08|1.0e-06| 5.512892e+01  5.512892e+01| 0:0:00| chol  1  1 
-18|0.569|0.944|1.6e-13|1.4e-09|1.0e-07| 5.512892e+01  5.512892e+01| 0:0:00|
+16|0.989|0.989|1.4e-11|1.6e-06|2.3e-05| 5.512892e+01  5.512891e+01| 0:0:00| chol  1  1 
+17|0.973|0.945|3.9e-13|3.1e-08|1.0e-06| 5.512892e+01  5.512892e+01| 0:0:00| chol  1  1 
+18|0.569|0.944|1.7e-13|1.4e-09|1.0e-07| 5.512892e+01  5.512892e+01| 0:0:00|
   stop: max(relative gap, infeasibilities) &lt; 1.49e-08
 -------------------------------------------------------------------
  number of iterations   = 18
@@ -197,15 +197,18 @@ it pstep dstep pinfeas dinfeas  gap      prim-obj      dual-obj    cputime
  gap := trace(XZ)       = 1.00e-07
  relative gap           = 9.00e-10
  actual relative gap    = 8.41e-10
- rel. primal infeas     = 1.60e-13
- rel. dual   infeas     = 1.39e-09
+ rel. primal infeas (scaled problem)   = 1.70e-13
+ rel. dual     "        "       "      = 1.39e-09
+ rel. primal infeas (unscaled problem) = 0.00e+00
+ rel. dual     "        "       "      = 0.00e+00
  norm(X), norm(y), norm(Z) = 1.2e+01, 8.8e+00, 1.3e+01
  norm(A), norm(b), norm(C) = 7.9e+01, 1.0e+01, 1.1e+01
  Total CPU time (secs)  = 0.26  
  CPU time per iteration = 0.01  
  termination code       =  0
- DIMACS: 5.5e-13  0.0e+00  7.6e-09  0.0e+00  8.4e-10  9.0e-10
+ DIMACS: 5.8e-13  0.0e+00  7.6e-09  0.0e+00  8.4e-10  9.0e-10
 -------------------------------------------------------------------
+ 
 ------------------------------------------------------------
 Status: Solved
 Optimal value (cvx_optval): +55.1289
@@ -213,7 +216,7 @@ Optimal value (cvx_optval): +55.1289
 ell-2
 deadzone penalty
  
-Calling SDPT3: 430 variables, 200 equality constraints
+Calling SDPT3 4.0: 430 variables, 200 equality constraints
 ------------------------------------------------------------
 
  num. of constraints = 200
@@ -242,11 +245,11 @@ it pstep dstep pinfeas dinfeas  gap      prim-obj      dual-obj    cputime
 12|1.000|0.301|1.1e-09|2.9e-04|1.6e+00| 2.164468e+01  2.004788e+01| 0:0:00| chol  1  1 
 13|1.000|0.529|9.4e-10|1.4e-04|7.5e-01| 2.152118e+01  2.077856e+01| 0:0:00| chol  1  1 
 14|1.000|0.414|4.2e-10|7.9e-05|4.4e-01| 2.149022e+01  2.105693e+01| 0:0:00| chol  1  1 
-15|1.000|0.672|8.8e-11|2.6e-05|1.4e-01| 2.147157e+01  2.133151e+01| 0:0:00| chol  1  1 
-16|1.000|0.876|1.3e-11|3.2e-06|1.7e-02| 2.146833e+01  2.145121e+01| 0:0:00| chol  1  1 
-17|0.988|0.984|2.9e-12|1.3e-05|3.5e-04| 2.146821e+01  2.146794e+01| 0:0:00| chol  1  1 
-18|1.000|0.989|3.7e-15|2.7e-07|6.9e-06| 2.146821e+01  2.146821e+01| 0:0:00| chol  1  1 
-19|1.000|0.989|2.9e-13|5.3e-09|1.2e-07| 2.146821e+01  2.146821e+01| 0:0:00|
+15|1.000|0.672|8.3e-11|2.6e-05|1.4e-01| 2.147157e+01  2.133151e+01| 0:0:00| chol  1  1 
+16|1.000|0.876|9.4e-12|3.2e-06|1.7e-02| 2.146833e+01  2.145121e+01| 0:0:00| chol  1  1 
+17|0.988|0.984|2.7e-12|1.3e-05|3.5e-04| 2.146821e+01  2.146794e+01| 0:0:00| chol  1  1 
+18|1.000|0.989|3.9e-15|2.7e-07|6.9e-06| 2.146821e+01  2.146821e+01| 0:0:00| chol  1  1 
+19|1.000|0.989|2.7e-13|5.3e-09|1.2e-07| 2.146821e+01  2.146821e+01| 0:0:00|
   stop: max(relative gap, infeasibilities) &lt; 1.49e-08
 -------------------------------------------------------------------
  number of iterations   = 19
@@ -255,22 +258,25 @@ it pstep dstep pinfeas dinfeas  gap      prim-obj      dual-obj    cputime
  gap := trace(XZ)       = 1.19e-07
  relative gap           = 2.71e-09
  actual relative gap    = 2.17e-09
- rel. primal infeas     = 2.85e-13
- rel. dual   infeas     = 5.26e-09
+ rel. primal infeas (scaled problem)   = 2.74e-13
+ rel. dual     "        "       "      = 5.26e-09
+ rel. primal infeas (unscaled problem) = 0.00e+00
+ rel. dual     "        "       "      = 0.00e+00
  norm(X), norm(y), norm(Z) = 1.2e+01, 9.5e+00, 1.3e+01
  norm(A), norm(b), norm(C) = 8.1e+01, 1.1e+01, 1.1e+01
- Total CPU time (secs)  = 0.38  
+ Total CPU time (secs)  = 0.33  
  CPU time per iteration = 0.02  
  termination code       =  0
  DIMACS: 1.1e-12  0.0e+00  2.9e-08  0.0e+00  2.2e-09  2.7e-09
 -------------------------------------------------------------------
+ 
 ------------------------------------------------------------
 Status: Solved
 Optimal value (cvx_optval): +21.4682
  
 log-barrier
  
-Calling SDPT3: 300 variables, 131 equality constraints
+Calling SDPT3 4.0: 300 variables, 131 equality constraints
    For improved efficiency, SDPT3 is solving the dual problem.
 ------------------------------------------------------------
 
@@ -295,8 +301,8 @@ it pstep dstep pinfeas dinfeas  gap      prim-obj      dual-obj    cputime
  8|0.880|0.922|5.2e-11|4.9e-08|1.9e-02|-1.187790e+00 -1.207002e+00| 0:0:00| chol  1  1 
  9|0.678|0.960|1.4e-11|2.9e-09|5.4e-03|-1.196463e+00 -1.201855e+00| 0:0:00| chol  1  1 
 10|0.872|1.000|1.8e-12|1.0e-10|1.6e-03|-1.199955e+00 -1.201547e+00| 0:0:00| chol  1  1 
-11|0.946|0.967|9.9e-14|1.4e-11|8.3e-05|-1.201197e+00 -1.201280e+00| 0:0:00| chol  1  1 
-12|0.984|0.808|7.2e-15|3.7e-12|5.9e-06|-1.201267e+00 -1.201273e+00| 0:0:00| chol  1  1 
+11|0.946|0.967|9.5e-14|1.4e-11|8.3e-05|-1.201197e+00 -1.201280e+00| 0:0:00| chol  1  1 
+12|0.984|0.808|1.1e-14|3.7e-12|5.9e-06|-1.201267e+00 -1.201273e+00| 0:0:00| chol  1  1 
 13|0.880|1.000|6.7e-12|1.0e-12|9.8e-07|-1.201270e+00 -1.201271e+00| 0:0:00| chol  1  1 
 14|0.638|1.000|9.3e-12|1.3e-12|5.0e-07|-1.201270e+00 -1.201271e+00| 0:0:00| chol  1  1 
 15|0.643|1.000|3.7e-12|1.9e-12|2.7e-07|-1.201270e+00 -1.201271e+00| 0:0:00| chol  1  1 
@@ -311,15 +317,18 @@ it pstep dstep pinfeas dinfeas  gap      prim-obj      dual-obj    cputime
  gap := trace(XZ)       = 3.94e-08
  relative gap           = 1.16e-08
  actual relative gap    = 1.16e-08
- rel. primal infeas     = 2.17e-13
- rel. dual   infeas     = 1.00e-12
+ rel. primal infeas (scaled problem)   = 2.18e-13
+ rel. dual     "        "       "      = 1.00e-12
+ rel. primal infeas (unscaled problem) = 0.00e+00
+ rel. dual     "        "       "      = 0.00e+00
  norm(X), norm(y), norm(Z) = 3.8e-01, 3.5e+00, 1.4e+01
  norm(A), norm(b), norm(C) = 5.8e+01, 2.0e+00, 1.0e+01
- Total CPU time (secs)  = 0.26  
+ Total CPU time (secs)  = 0.24  
  CPU time per iteration = 0.01  
  termination code       =  0
  DIMACS: 2.2e-13  0.0e+00  3.4e-12  0.0e+00  1.2e-08  1.2e-08
 -------------------------------------------------------------------
+ 
 ------------------------------------------------------------
 Status: Solved
 Optimal value (cvx_optval): +1.20127

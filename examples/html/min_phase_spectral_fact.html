@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <title>Minimal phase spectral factorization</title>
-<link rel="canonical" href="http://cvxr.com/cvx/examples/html/min_phase_spectral_fact.html">
+<link rel="canonical" href="/Users/mcgrant/Projects/CVX/examples/html/min_phase_spectral_fact.html">
 <link rel="stylesheet" href="../examples.css" type="text/css">
 </head>
 <body>
@@ -58,7 +58,7 @@ disp( ( n - 1 : -1 : 0 ) * diag( X ) );
 <a id="output"></a>
 <pre class="codeoutput">
  
-Calling SDPT3: 6 variables, 3 equality constraints
+Calling SDPT3 4.0: 6 variables, 3 equality constraints
    For improved efficiency, SDPT3 is solving the dual problem.
 ------------------------------------------------------------
 
@@ -87,15 +87,18 @@ it pstep dstep pinfeas dinfeas  gap      prim-obj      dual-obj    cputime
  gap := trace(XZ)       = 3.73e-08
  relative gap           = 4.26e-09
  actual relative gap    = 4.26e-09
- rel. primal infeas     = 3.26e-14
- rel. dual   infeas     = 1.21e-12
+ rel. primal infeas (scaled problem)   = 3.29e-14
+ rel. dual     "        "       "      = 1.21e-12
+ rel. primal infeas (unscaled problem) = 0.00e+00
+ rel. dual     "        "       "      = 0.00e+00
  norm(X), norm(y), norm(Z) = 2.4e+00, 1.9e+00, 2.0e+00
  norm(A), norm(b), norm(C) = 3.8e+00, 3.2e+00, 3.1e+00
- Total CPU time (secs)  = 0.08  
+ Total CPU time (secs)  = 0.10  
  CPU time per iteration = 0.01  
  termination code       =  0
  DIMACS: 3.5e-14  0.0e+00  1.2e-12  0.0e+00  4.3e-09  4.3e-09
 -------------------------------------------------------------------
+ 
 ------------------------------------------------------------
 Status: Solved
 Optimal value (cvx_optval): +0.122733

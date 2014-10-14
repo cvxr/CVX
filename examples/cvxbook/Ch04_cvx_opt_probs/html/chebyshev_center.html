@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <title>Section 4.3.1: Compute the Chebyshev center of a polyhedron</title>
-<link rel="canonical" href="http://cvxr.com/cvx/examples/cvxbook/Ch04_cvx_opt_probs/html/chebyshev_center.html">
+<link rel="canonical" href="/Users/mcgrant/Projects/CVX/examples/cvxbook/Ch04_cvx_opt_probs/html/chebyshev_center.html">
 <link rel="stylesheet" href="../../../examples.css" type="text/css">
 </head>
 <body>
@@ -53,7 +53,7 @@ disp(r);
 <a id="output"></a>
 <pre class="codeoutput">
 Computing Chebyshev center... 
-Calling SDPT3: 20 variables, 11 equality constraints
+Calling SDPT3 4.0: 20 variables, 11 equality constraints
    For improved efficiency, SDPT3 is solving the dual problem.
 ------------------------------------------------------------
 
@@ -76,9 +76,9 @@ it pstep dstep pinfeas dinfeas  gap      prim-obj      dual-obj    cputime
  7|0.988|1.000|4.5e-10|7.0e-08|1.0e-02| 3.392570e-01  3.288598e-01| 0:0:00| chol  1  1 
  8|1.000|0.844|4.5e-10|1.7e-08|1.8e-03| 3.374285e-01  3.356581e-01| 0:0:00| chol  1  1 
  9|1.000|1.000|1.4e-10|7.7e-10|3.5e-04| 3.371978e-01  3.368475e-01| 0:0:00| chol  1  1 
-10|0.987|0.985|1.8e-12|1.1e-10|5.0e-06| 3.370613e-01  3.370563e-01| 0:0:00| chol  1  1 
-11|1.000|0.996|3.6e-13|1.5e-12|7.2e-08| 3.370594e-01  3.370594e-01| 0:0:00| chol  1  1 
-12|1.000|0.997|6.9e-14|1.0e-12|8.9e-10| 3.370594e-01  3.370594e-01| 0:0:00|
+10|0.987|0.985|2.0e-12|1.1e-10|5.0e-06| 3.370613e-01  3.370563e-01| 0:0:00| chol  1  1 
+11|1.000|0.996|3.9e-13|1.5e-12|7.2e-08| 3.370594e-01  3.370594e-01| 0:0:00| chol  1  1 
+12|1.000|0.997|1.2e-13|1.0e-12|8.9e-10| 3.370594e-01  3.370594e-01| 0:0:00|
   stop: max(relative gap, infeasibilities) &lt; 1.49e-08
 -------------------------------------------------------------------
  number of iterations   = 12
@@ -87,15 +87,18 @@ it pstep dstep pinfeas dinfeas  gap      prim-obj      dual-obj    cputime
  gap := trace(XZ)       = 8.91e-10
  relative gap           = 5.32e-10
  actual relative gap    = 5.32e-10
- rel. primal infeas     = 6.87e-14
- rel. dual   infeas     = 1.00e-12
+ rel. primal infeas (scaled problem)   = 1.19e-13
+ rel. dual     "        "       "      = 1.00e-12
+ rel. primal infeas (unscaled problem) = 0.00e+00
+ rel. dual     "        "       "      = 0.00e+00
  norm(X), norm(y), norm(Z) = 1.5e-01, 7.7e+00, 2.4e+01
  norm(A), norm(b), norm(C) = 1.9e+01, 2.0e+00, 6.5e+00
- Total CPU time (secs)  = 0.09  
+ Total CPU time (secs)  = 0.10  
  CPU time per iteration = 0.01  
  termination code       =  0
- DIMACS: 6.9e-14  0.0e+00  1.7e-12  0.0e+00  5.3e-10  5.3e-10
+ DIMACS: 1.2e-13  0.0e+00  1.7e-12  0.0e+00  5.3e-10  5.3e-10
 -------------------------------------------------------------------
+ 
 ------------------------------------------------------------
 Status: Solved
 Optimal value (cvx_optval): +0.337059

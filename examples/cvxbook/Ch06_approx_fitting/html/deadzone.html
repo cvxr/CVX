@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <title>Section 6.1.2: Residual minimization with deadzone penalty</title>
-<link rel="canonical" href="http://cvxr.com/cvx/examples/cvxbook/Ch06_approx_fitting/html/deadzone.html">
+<link rel="canonical" href="/Users/mcgrant/Projects/CVX/examples/cvxbook/Ch06_approx_fitting/html/deadzone.html">
 <link rel="stylesheet" href="../../../examples.css" type="text/css">
 </head>
 <body>
@@ -56,7 +56,7 @@ disp( <span class="string">' '</span> );
 <pre class="codeoutput">
 Computing the optimal solution of the deadzone approximation problem: 
  
-Calling SDPT3: 72 variables, 32 equality constraints
+Calling SDPT3 4.0: 72 variables, 32 equality constraints
 ------------------------------------------------------------
 
  num. of constraints = 32
@@ -82,27 +82,30 @@ it pstep dstep pinfeas dinfeas  gap      prim-obj      dual-obj    cputime
  9|0.999|0.891|1.8e-08|3.4e-05|1.5e-01| 5.764868e-03 -1.408961e-01| 0:0:00| chol  1  1 
 10|0.987|0.986|1.3e-09|4.8e-07|2.1e-03| 7.881245e-05 -2.003151e-03| 0:0:00| chol  1  1 
 11|0.989|0.989|6.3e-11|1.0e-05|7.1e-05| 8.706354e-07 -2.251729e-05| 0:0:00| chol  1  1 
-12|1.000|0.988|8.2e-14|3.5e-07|2.2e-06| 1.560505e-07 -5.703411e-07| 0:0:00| chol  1  1 
-13|1.000|0.988|4.5e-15|1.1e-08|6.6e-08| 4.842106e-09 -1.628348e-08| 0:0:00| chol  1  1 
-14|1.000|0.912|2.3e-16|4.0e-10|2.0e-08| 6.148509e-09 -1.262963e-08| 0:0:00| chol  1  1 
-15|1.000|0.607|3.8e-15|1.4e-10|8.7e-09| 1.449139e-09 -6.710838e-09| 0:0:00|
+12|1.000|0.988|8.2e-14|3.5e-07|2.2e-06| 1.560505e-07 -5.703412e-07| 0:0:00| chol  1  1 
+13|1.000|0.988|4.4e-15|1.1e-08|6.6e-08| 4.842104e-09 -1.628348e-08| 0:0:00| chol  1  1 
+14|1.000|0.912|1.7e-16|4.0e-10|2.0e-08| 6.148509e-09 -1.262963e-08| 0:0:00| chol  1  1 
+15|1.000|0.607|1.5e-15|1.4e-10|8.7e-09| 1.449139e-09 -6.710838e-09| 0:0:00|
   stop: max(relative gap, infeasibilities) &lt; 1.49e-08
 -------------------------------------------------------------------
  number of iterations   = 15
- primal objective value =  1.44913897e-09
- dual   objective value = -6.71083793e-09
+ primal objective value =  1.44913896e-09
+ dual   objective value = -6.71083785e-09
  gap := trace(XZ)       = 8.69e-09
  relative gap           = 8.69e-09
  actual relative gap    = 8.16e-09
- rel. primal infeas     = 3.75e-15
- rel. dual   infeas     = 1.38e-10
+ rel. primal infeas (scaled problem)   = 1.48e-15
+ rel. dual     "        "       "      = 1.38e-10
+ rel. primal infeas (unscaled problem) = 0.00e+00
+ rel. dual     "        "       "      = 0.00e+00
  norm(X), norm(y), norm(Z) = 4.0e+00, 4.6e-09, 4.0e+00
  norm(A), norm(b), norm(C) = 1.7e+01, 6.4e+00, 5.0e+00
- Total CPU time (secs)  = 0.23  
- CPU time per iteration = 0.02  
+ Total CPU time (secs)  = 0.22  
+ CPU time per iteration = 0.01  
  termination code       =  0
- DIMACS: 9.6e-15  0.0e+00  3.4e-10  0.0e+00  8.2e-09  8.7e-09
+ DIMACS: 3.8e-15  0.0e+00  3.4e-10  0.0e+00  8.2e-09  8.7e-09
 -------------------------------------------------------------------
+ 
 ------------------------------------------------------------
 Status: Solved
 Optimal value (cvx_optval): +1.44914e-09

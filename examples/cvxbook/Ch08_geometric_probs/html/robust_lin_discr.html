@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <title>Figure 8.9: Robust linear discrimination problem</title>
-<link rel="canonical" href="http://cvxr.com/cvx/examples/cvxbook/Ch08_geometric_probs/html/robust_lin_discr.html">
+<link rel="canonical" href="/Users/mcgrant/Projects/CVX/examples/cvxbook/Ch08_geometric_probs/html/robust_lin_discr.html">
 <link rel="stylesheet" href="../../../examples.css" type="text/css">
 </head>
 <body>
@@ -72,7 +72,7 @@ title(<span class="string">'Robust linear discrimination problem'</span>);
 <a id="output"></a>
 <pre class="codeoutput">
  
-Calling SDPT3: 20 variables, 5 equality constraints
+Calling SDPT3 4.0: 20 variables, 5 equality constraints
    For improved efficiency, SDPT3 is solving the dual problem.
 ------------------------------------------------------------
 
@@ -108,15 +108,18 @@ it pstep dstep pinfeas dinfeas  gap      prim-obj      dual-obj    cputime
  gap := trace(XZ)       = 1.75e-09
  relative gap           = 8.67e-10
  actual relative gap    = 8.63e-10
- rel. primal infeas     = 2.50e-12
- rel. dual   infeas     = 5.49e-12
+ rel. primal infeas (scaled problem)   = 2.50e-12
+ rel. dual     "        "       "      = 5.49e-12
+ rel. primal infeas (unscaled problem) = 0.00e+00
+ rel. dual     "        "       "      = 0.00e+00
  norm(X), norm(y), norm(Z) = 1.1e+00, 1.2e+00, 8.5e+00
  norm(A), norm(b), norm(C) = 1.7e+01, 2.0e+00, 2.0e+00
- Total CPU time (secs)  = 0.13  
+ Total CPU time (secs)  = 0.14  
  CPU time per iteration = 0.01  
  termination code       =  0
  DIMACS: 2.5e-12  0.0e+00  5.5e-12  0.0e+00  8.6e-10  8.7e-10
 -------------------------------------------------------------------
+ 
 ------------------------------------------------------------
 Status: Solved
 Optimal value (cvx_optval): +0.51123

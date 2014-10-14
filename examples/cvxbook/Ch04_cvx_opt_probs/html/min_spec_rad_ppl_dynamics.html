@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <title>Section 4.5.4: Minimum spectral radius via Peron-Frobenius theory (GP)</title>
-<link rel="canonical" href="http://cvxr.com/cvx/examples/cvxbook/Ch04_cvx_opt_probs/html/min_spec_rad_ppl_dynamics.html">
+<link rel="canonical" href="/Users/mcgrant/Projects/CVX/examples/cvxbook/Ch04_cvx_opt_probs/html/min_spec_rad_ppl_dynamics.html">
 <link rel="stylesheet" href="../../../examples.css" type="text/css">
 </head>
 <body>
@@ -106,19 +106,17 @@ eigA = eig(A)
 <pre class="codeoutput">
  
 Successive approximation method to be employed.
-   For improved efficiency, SDPT3 is solving the dual problem.
    SDPT3 will be called several times to refine the solution.
-   Original size: 20 variables, 11 equality constraints
+   Original size: 49 variables, 11 equality constraints
    4 exponentials add 32 variables, 20 equality constraints
 -----------------------------------------------------------------
  Cones  |             Errors              |
 Mov/Act | Centering  Exp cone   Poly cone | Status
 --------+---------------------------------+---------
-  4/  4 | 5.480e+00  1.644e+00  0.000e+00 | Solved
-  4/  4 | 9.168e-01  6.708e-02  0.000e+00 | Solved
-  4/  4 | 2.790e-02  5.468e-05  0.000e+00 | Solved
-  4/  4 | 2.193e-03  3.379e-07  0.000e+00 | Solved
-  0/  2 | 1.882e-04  2.295e-09  0.000e+00 | Solved
+  4/  4 | 3.713e+00  9.922e-01  0.000e+00 | Solved
+  4/  4 | 1.366e-01  1.207e-03  0.000e+00 | Solved
+  4/  4 | 5.510e-03  2.069e-06  0.000e+00 | Solved
+  0/  2 | 2.329e-04  3.643e-09  0.000e+00 | Solved
 -----------------------------------------------------------------
 Status: Solved
 Optimal value (cvx_optval): +0.804067
@@ -133,8 +131,8 @@ Eigenvalues of matrix A are:
 
 eigA =
 
-   0.8041          
-  -0.2841          
+   0.8041 + 0.0000i
+  -0.2841 + 0.0000i
   -0.0100 + 0.2263i
   -0.0100 - 0.2263i
 

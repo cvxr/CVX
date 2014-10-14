@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <title>Detecting a small subset of infeasible linear inequalities</title>
-<link rel="canonical" href="http://cvxr.com/cvx/examples/sparse_heuristics/html/sparse_infeas_dual.html">
+<link rel="canonical" href="/Users/mcgrant/Projects/CVX/examples/sparse_heuristics/html/sparse_infeas_dual.html">
 <link rel="stylesheet" href="../../examples.css" type="text/css">
 </head>
 <body>
@@ -93,7 +93,7 @@ disp(<span class="string">'with row indices:'</span>), infeas_set'
 <pre class="codeoutput">
 Starting with an infeasible set of 150 inequalities in 10 variables.
  
-Calling SDPT3: 150 variables, 11 equality constraints
+Calling SDPT3 4.0: 150 variables, 11 equality constraints
 ------------------------------------------------------------
 
  num. of constraints = 11
@@ -115,11 +115,11 @@ it pstep dstep pinfeas dinfeas  gap      prim-obj      dual-obj    cputime
  7|1.000|1.000|2.4e-11|9.2e-08|1.8e-01| 7.659147e-01  5.879403e-01| 0:0:00| chol  1  1 
  8|0.828|0.911|1.6e-11|1.7e-08|7.5e-02| 6.698772e-01  5.952178e-01| 0:0:00| chol  1  1 
  9|0.785|1.000|8.2e-12|9.3e-10|3.4e-02| 6.327347e-01  5.982705e-01| 0:0:00| chol  1  1 
-10|0.995|0.807|4.4e-14|2.6e-10|4.2e-03| 6.047974e-01  6.005863e-01| 0:0:00| chol  1  1 
-11|0.990|0.960|3.3e-15|2.0e-11|2.9e-04| 6.015589e-01  6.012647e-01| 0:0:00| chol  1  1 
-12|0.987|0.987|3.2e-15|2.2e-12|3.8e-06| 6.013152e-01  6.013114e-01| 0:0:00| chol  1  1 
-13|0.998|0.991|7.8e-15|1.0e-12|5.5e-08| 6.013120e-01  6.013120e-01| 0:0:00| chol  1  1 
-14|1.000|0.992|4.9e-15|1.0e-12|6.6e-10| 6.013120e-01  6.013120e-01| 0:0:00|
+10|0.995|0.807|4.5e-14|2.6e-10|4.2e-03| 6.047974e-01  6.005863e-01| 0:0:00| chol  1  1 
+11|0.990|0.960|2.6e-15|2.0e-11|2.9e-04| 6.015589e-01  6.012647e-01| 0:0:00| chol  1  1 
+12|0.987|0.987|5.4e-15|2.2e-12|3.8e-06| 6.013152e-01  6.013114e-01| 0:0:00| chol  1  1 
+13|0.998|0.991|5.8e-15|1.0e-12|5.5e-08| 6.013120e-01  6.013120e-01| 0:0:00| chol  1  1 
+14|1.000|0.992|2.4e-15|1.0e-12|6.6e-10| 6.013120e-01  6.013120e-01| 0:0:00|
   stop: max(relative gap, infeasibilities) &lt; 1.49e-08
 -------------------------------------------------------------------
  number of iterations   = 14
@@ -128,15 +128,18 @@ it pstep dstep pinfeas dinfeas  gap      prim-obj      dual-obj    cputime
  gap := trace(XZ)       = 6.64e-10
  relative gap           = 3.01e-10
  actual relative gap    = 3.01e-10
- rel. primal infeas     = 4.87e-15
- rel. dual   infeas     = 1.01e-12
+ rel. primal infeas (scaled problem)   = 2.38e-15
+ rel. dual     "        "       "      = 1.01e-12
+ rel. primal infeas (unscaled problem) = 0.00e+00
+ rel. dual     "        "       "      = 0.00e+00
  norm(X), norm(y), norm(Z) = 2.8e-01, 8.1e-01, 1.7e+01
  norm(A), norm(b), norm(C) = 4.1e+01, 2.0e+00, 1.3e+01
- Total CPU time (secs)  = 0.11  
+ Total CPU time (secs)  = 0.10  
  CPU time per iteration = 0.01  
  termination code       =  0
- DIMACS: 4.9e-15  0.0e+00  6.7e-12  0.0e+00  3.0e-10  3.0e-10
+ DIMACS: 2.4e-15  0.0e+00  6.7e-12  0.0e+00  3.0e-10  3.0e-10
 -------------------------------------------------------------------
+ 
 ------------------------------------------------------------
 Status: Solved
 Optimal value (cvx_optval): +0.601312

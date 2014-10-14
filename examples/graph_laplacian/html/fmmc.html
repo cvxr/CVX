@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <title>Computes fastest mixing Markov chain (FMMC) edge weights</title>
-<link rel="canonical" href="http://cvxr.com/cvx/examples/graph_laplacian/html/fmmc.html">
+<link rel="canonical" href="/Users/mcgrant/Projects/CVX/examples/graph_laplacian/html/fmmc.html">
 <link rel="stylesheet" href="../../examples.css" type="text/css">
 </head>
 <body>
@@ -52,8 +52,7 @@ cvx_begin <span class="string">sdp</span>
     minimize( s )
     subject <span class="string">to</span>
         L == A * diag(w) * A';
-        J - L &lt;= +s * I;
-        J - L &gt;= -s * I;
+        -s * I &lt;= J - L &lt;= +s * I;
         w &gt;= 0;
         diag(L) &lt;= 1;
 cvx_end

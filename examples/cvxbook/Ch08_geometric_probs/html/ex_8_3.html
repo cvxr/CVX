@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <title>Example 8.3: Bounding correlation coefficients</title>
-<link rel="canonical" href="http://cvxr.com/cvx/examples/cvxbook/Ch08_geometric_probs/html/ex_8_3.html">
+<link rel="canonical" href="/Users/mcgrant/Projects/CVX/examples/cvxbook/Ch08_geometric_probs/html/ex_8_3.html">
 <link rel="stylesheet" href="../../../examples.css" type="text/css">
 </head>
 <body>
@@ -83,7 +83,7 @@ disp(C1)
 <a id="output"></a>
 <pre class="codeoutput">
 Solving the upper bound SDP ... 
-Calling SDPT3: 18 variables, 6 equality constraints
+Calling SDPT3 4.0: 18 variables, 6 equality constraints
    For improved efficiency, SDPT3 is solving the dual problem.
 ------------------------------------------------------------
 
@@ -117,8 +117,10 @@ it pstep dstep pinfeas dinfeas  gap      prim-obj      dual-obj    cputime
  gap := trace(XZ)       = 4.98e-10
  relative gap           = 3.41e-10
  actual relative gap    = 3.35e-10
- rel. primal infeas     = 3.95e-13
- rel. dual   infeas     = 1.68e-12
+ rel. primal infeas (scaled problem)   = 3.97e-13
+ rel. dual     "        "       "      = 1.68e-12
+ rel. primal infeas (unscaled problem) = 0.00e+00
+ rel. dual     "        "       "      = 0.00e+00
  norm(X), norm(y), norm(Z) = 2.8e+00, 5.7e-01, 2.8e+00
  norm(A), norm(b), norm(C) = 5.5e+00, 2.0e+00, 3.8e+00
  Total CPU time (secs)  = 0.17  
@@ -126,13 +128,14 @@ it pstep dstep pinfeas dinfeas  gap      prim-obj      dual-obj    cputime
  termination code       =  0
  DIMACS: 4.0e-13  0.0e+00  3.2e-12  0.0e+00  3.4e-10  3.4e-10
 -------------------------------------------------------------------
+ 
 ------------------------------------------------------------
 Status: Solved
 Optimal value (cvx_optval): +0.229909
  
 Done! 
 Solving the lower bound SDP ... 
-Calling SDPT3: 18 variables, 6 equality constraints
+Calling SDPT3 4.0: 18 variables, 6 equality constraints
    For improved efficiency, SDPT3 is solving the dual problem.
 ------------------------------------------------------------
 
@@ -165,15 +168,18 @@ it pstep dstep pinfeas dinfeas  gap      prim-obj      dual-obj    cputime
  gap := trace(XZ)       = 2.32e-08
  relative gap           = 1.30e-08
  actual relative gap    = 1.25e-08
- rel. primal infeas     = 2.14e-11
- rel. dual   infeas     = 2.08e-10
+ rel. primal infeas (scaled problem)   = 2.14e-11
+ rel. dual     "        "       "      = 2.08e-10
+ rel. primal infeas (unscaled problem) = 0.00e+00
+ rel. dual     "        "       "      = 0.00e+00
  norm(X), norm(y), norm(Z) = 2.2e+00, 5.8e-01, 2.8e+00
  norm(A), norm(b), norm(C) = 5.5e+00, 2.0e+00, 3.8e+00
- Total CPU time (secs)  = 0.15  
+ Total CPU time (secs)  = 0.13  
  CPU time per iteration = 0.01  
  termination code       =  0
  DIMACS: 2.1e-11  0.0e+00  4.0e-10  0.0e+00  1.2e-08  1.3e-08
 -------------------------------------------------------------------
+ 
 ------------------------------------------------------------
 Status: Solved
 Optimal value (cvx_optval): -0.39282

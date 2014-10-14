@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <title>Weighted analytic center of a set of linear inequalities</title>
-<link rel="canonical" href="http://cvxr.com/cvx/examples/log_exp/html/weighted_analytic_center.html">
+<link rel="canonical" href="/Users/mcgrant/Projects/CVX/examples/log_exp/html/weighted_analytic_center.html">
 <link rel="stylesheet" href="../../examples.css" type="text/css">
 </head>
 <body>
@@ -50,20 +50,24 @@ disp(x);
 <pre class="codeoutput">
  
 Successive approximation method to be employed.
-   sedumi will be called several times to refine the solution.
-   Original size: 160 variables, 100 equality constraints
+   For improved efficiency, SDPT3 is solving the dual problem.
+   SDPT3 will be called several times to refine the solution.
+   Original size: 150 variables, 60 equality constraints
    50 exponentials add 400 variables, 250 equality constraints
 -----------------------------------------------------------------
  Cones  |             Errors              |
 Mov/Act | Centering  Exp cone   Poly cone | Status
 --------+---------------------------------+---------
- 50/ 50 | 2.579e+00  4.986e-01  6.898e-07 | Inaccurate/Solved
- 50/ 50 | 1.695e-01  2.052e-03  1.506e-07 | Solved
- 36/ 46 | 2.282e-02  3.118e-05  2.120e-07 | Solved
-  0/ 38 | 6.894e-04  2.432e-07  2.130e-07 | Solved
+ 50/ 50 | 4.642e+00  1.215e+00  0.000e+00 | Solved
+ 50/ 50 | 9.246e-01  5.647e-02  0.000e+00 | Solved
+ 47/ 50 | 7.922e-02  4.134e-04  0.000e+00 | Solved
+ 35/ 44 | 8.288e-03  4.540e-06  0.000e+00 | Solved
+ 11/ 30 | 9.917e-04  6.459e-08  0.000e+00 | Solved
+  0/  5 | 1.158e-04  4.969e-10  0.000e+00 | Solved
 -----------------------------------------------------------------
 Status: Solved
 Optimal value (cvx_optval): +5.99254
+ 
 The weighted analytic center of the set of linear inequalities is: 
    -0.5100
    -1.4794

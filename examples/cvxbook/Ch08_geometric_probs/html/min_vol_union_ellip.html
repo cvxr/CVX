@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <title>Minimum volume ellipsoid covering union of ellipsoids</title>
-<link rel="canonical" href="http://cvxr.com/cvx/examples/cvxbook/Ch08_geometric_probs/html/min_vol_union_ellip.html">
+<link rel="canonical" href="/Users/mcgrant/Projects/CVX/examples/cvxbook/Ch08_geometric_probs/html/min_vol_union_ellip.html">
 <link rel="stylesheet" href="../../../examples.css" type="text/css">
 </head>
 <body>
@@ -95,7 +95,7 @@ hold <span class="string">off</span>
 <a id="output"></a>
 <pre class="codeoutput">
  
-Calling SDPT3: 94 variables, 15 equality constraints
+Calling SDPT3 4.0: 94 variables, 15 equality constraints
    For improved efficiency, SDPT3 is solving the dual problem.
 ------------------------------------------------------------
 
@@ -123,7 +123,7 @@ it pstep dstep pinfeas dinfeas  gap      prim-obj      dual-obj    cputime
 11|0.955|0.967|1.8e-12|1.6e-11|3.6e-06| 7.868475e-02  7.868112e-02| 0:0:00| chol  1  1 
 12|1.000|1.000|1.8e-09|1.0e-12|5.6e-07| 7.868191e-02  7.868136e-02| 0:0:00| chol  1  1 
 13|1.000|1.000|7.5e-11|1.5e-12|2.2e-08| 7.868148e-02  7.868146e-02| 0:0:00|# chol  1  1 
-14|1.000|1.000|5.3e-11|2.3e-12|1.0e-09| 7.868147e-02  7.868146e-02| 0:0:00|
+14|1.000|1.000|5.3e-11|2.2e-12|1.0e-09| 7.868147e-02  7.868146e-02| 0:0:00|
   stop: max(relative gap, infeasibilities) &lt; 1.49e-08
 -------------------------------------------------------------------
  number of iterations   = 14
@@ -132,15 +132,18 @@ it pstep dstep pinfeas dinfeas  gap      prim-obj      dual-obj    cputime
  gap := trace(XZ)       = 1.01e-09
  relative gap           = 8.75e-10
  actual relative gap    = 8.81e-10
- rel. primal infeas     = 5.33e-11
- rel. dual   infeas     = 2.25e-12
+ rel. primal infeas (scaled problem)   = 5.33e-11
+ rel. dual     "        "       "      = 2.25e-12
+ rel. primal infeas (unscaled problem) = 0.00e+00
+ rel. dual     "        "       "      = 0.00e+00
  norm(X), norm(y), norm(Z) = 2.4e+00, 3.0e+00, 8.1e+00
  norm(A), norm(b), norm(C) = 1.4e+01, 2.0e+00, 3.2e+00
- Total CPU time (secs)  = 0.28  
+ Total CPU time (secs)  = 0.23  
  CPU time per iteration = 0.02  
  termination code       =  0
  DIMACS: 5.3e-11  0.0e+00  3.6e-12  0.0e+00  8.8e-10  8.7e-10
 -------------------------------------------------------------------
+ 
 ------------------------------------------------------------
 Status: Solved
 Optimal value (cvx_optval): +0.0786815

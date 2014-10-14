@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <title>Finding a point that satisfies many linear inequalities</title>
-<link rel="canonical" href="http://cvxr.com/cvx/examples/sparse_heuristics/html/sparse_infeas.html">
+<link rel="canonical" href="/Users/mcgrant/Projects/CVX/examples/sparse_heuristics/html/sparse_infeas.html">
 <link rel="stylesheet" href="../../examples.css" type="text/css">
 </head>
 <body>
@@ -77,7 +77,7 @@ fprintf(1,<span class="string">'\nFound an x that violates %d out of %d inequali
 <pre class="codeoutput">
 Starting with an infeasible set of 150 inequalities in 10 variables.
  
-Calling SDPT3: 310 variables, 150 equality constraints
+Calling SDPT3 4.0: 310 variables, 150 equality constraints
 ------------------------------------------------------------
 
  num. of constraints = 150
@@ -105,14 +105,14 @@ it pstep dstep pinfeas dinfeas  gap      prim-obj      dual-obj    cputime
 12|0.918|0.617|4.4e-12|1.6e-04|3.2e-01| 3.892931e+01  3.862021e+01| 0:0:00| chol  1  1 
 13|1.000|0.270|7.9e-12|1.2e-04|2.4e-01| 3.892402e+01  3.869888e+01| 0:0:00| chol  1  1 
 14|1.000|0.240|3.0e-12|8.8e-05|1.8e-01| 3.892422e+01  3.874972e+01| 0:0:00| chol  1  1 
-15|1.000|0.315|1.3e-12|6.0e-05|1.3e-01| 3.892250e+01  3.880094e+01| 0:0:00| chol  1  1 
-16|1.000|0.386|4.3e-13|3.7e-05|7.9e-02| 3.891986e+01  3.884472e+01| 0:0:00| chol  1  1 
-17|0.878|0.582|2.0e-13|1.5e-05|3.3e-02| 3.891773e+01  3.888631e+01| 0:0:00| chol  1  1 
-18|1.000|0.418|1.6e-13|9.0e-06|1.9e-02| 3.891707e+01  3.889892e+01| 0:0:00| chol  1  1 
-19|1.000|0.552|1.5e-13|1.1e-05|8.5e-03| 3.891683e+01  3.890872e+01| 0:0:00| chol  1  1 
-20|1.000|0.979|1.6e-14|4.5e-06|2.1e-04| 3.891677e+01  3.891659e+01| 0:0:00| chol  1  1 
-21|1.000|0.989|7.9e-16|1.1e-07|5.0e-06| 3.891676e+01  3.891676e+01| 0:0:00| chol  1  1 
-22|1.000|0.989|1.4e-15|2.6e-09|9.8e-08| 3.891676e+01  3.891676e+01| 0:0:00|
+15|1.000|0.315|1.2e-12|6.0e-05|1.3e-01| 3.892250e+01  3.880094e+01| 0:0:00| chol  1  1 
+16|1.000|0.386|5.1e-13|3.7e-05|7.9e-02| 3.891986e+01  3.884472e+01| 0:0:00| chol  1  1 
+17|0.878|0.582|2.7e-13|1.5e-05|3.3e-02| 3.891773e+01  3.888631e+01| 0:0:00| chol  1  1 
+18|1.000|0.418|1.2e-13|9.0e-06|1.9e-02| 3.891707e+01  3.889892e+01| 0:0:00| chol  1  1 
+19|1.000|0.552|1.3e-13|1.1e-05|8.5e-03| 3.891683e+01  3.890872e+01| 0:0:00| chol  1  1 
+20|1.000|0.979|1.7e-14|4.5e-06|2.1e-04| 3.891677e+01  3.891659e+01| 0:0:00| chol  1  1 
+21|1.000|0.989|8.8e-16|1.1e-07|5.0e-06| 3.891676e+01  3.891676e+01| 0:0:00| chol  1  1 
+22|1.000|0.989|2.0e-15|2.6e-09|9.8e-08| 3.891676e+01  3.891676e+01| 0:0:00|
   stop: max(relative gap, infeasibilities) &lt; 1.49e-08
 -------------------------------------------------------------------
  number of iterations   = 22
@@ -121,15 +121,18 @@ it pstep dstep pinfeas dinfeas  gap      prim-obj      dual-obj    cputime
  gap := trace(XZ)       = 9.81e-08
  relative gap           = 1.24e-09
  actual relative gap    = 1.08e-09
- rel. primal infeas     = 1.36e-15
- rel. dual   infeas     = 2.61e-09
+ rel. primal infeas (scaled problem)   = 1.95e-15
+ rel. dual     "        "       "      = 2.61e-09
+ rel. primal infeas (unscaled problem) = 0.00e+00
+ rel. dual     "        "       "      = 0.00e+00
  norm(X), norm(y), norm(Z) = 1.4e+01, 7.4e+00, 1.2e+01
  norm(A), norm(b), norm(C) = 5.7e+01, 1.4e+01, 1.3e+01
  Total CPU time (secs)  = 0.28  
  CPU time per iteration = 0.01  
  termination code       =  0
- DIMACS: 4.7e-15  0.0e+00  1.7e-08  0.0e+00  1.1e-09  1.2e-09
+ DIMACS: 6.8e-15  0.0e+00  1.7e-08  0.0e+00  1.1e-09  1.2e-09
 -------------------------------------------------------------------
+ 
 ------------------------------------------------------------
 Status: Solved
 Optimal value (cvx_optval): +38.9168

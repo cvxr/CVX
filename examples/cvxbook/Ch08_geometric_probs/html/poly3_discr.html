@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <title>Polynomial discrimination</title>
-<link rel="canonical" href="http://cvxr.com/cvx/examples/cvxbook/Ch08_geometric_probs/html/poly3_discr.html">
+<link rel="canonical" href="/Users/mcgrant/Projects/CVX/examples/cvxbook/Ch08_geometric_probs/html/poly3_discr.html">
 <link rel="stylesheet" href="../../../examples.css" type="text/css">
 </head>
 <body>
@@ -102,7 +102,7 @@ disp(<span class="string">'There exists no cubic polynomial that can separate th
 <a id="output"></a>
 <pre class="codeoutput">
 Finding the optimal polynomial of order 4 that separates the 2 classes... 
-Calling SDPT3: 211 variables, 11 equality constraints
+Calling SDPT3 4.0: 211 variables, 11 equality constraints
    For improved efficiency, SDPT3 is solving the dual problem.
 ------------------------------------------------------------
 
@@ -135,12 +135,14 @@ it pstep dstep pinfeas dinfeas  gap      prim-obj      dual-obj    cputime
 -------------------------------------------------------------------
  number of iterations   = 13
  primal objective value =  0.00000000e+00
- dual   objective value = -4.09292315e-10
+ dual   objective value = -4.09292311e-10
  gap := trace(XZ)       = 4.14e-10
  relative gap           = 4.14e-10
  actual relative gap    = 4.09e-10
- rel. primal infeas     = 3.36e-11
- rel. dual   infeas     = 6.48e-11
+ rel. primal infeas (scaled problem)   = 3.36e-11
+ rel. dual     "        "       "      = 6.48e-11
+ rel. primal infeas (unscaled problem) = 0.00e+00
+ rel. dual     "        "       "      = 0.00e+00
  norm(X), norm(y), norm(Z) = 4.8e-01, 1.9e-08, 3.0e-07
  norm(A), norm(b), norm(C) = 6.2e+01, 2.0e+00, 1.0e+00
  Total CPU time (secs)  = 0.10  
@@ -148,6 +150,7 @@ it pstep dstep pinfeas dinfeas  gap      prim-obj      dual-obj    cputime
  termination code       =  0
  DIMACS: 3.4e-11  0.0e+00  6.5e-11  0.0e+00  4.1e-10  4.1e-10
 -------------------------------------------------------------------
+ 
 ------------------------------------------------------------
 Status: Solved
 Optimal value (cvx_optval): +4.09292e-10

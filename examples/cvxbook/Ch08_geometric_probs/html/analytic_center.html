@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <title>Section 8.5.3: Analytic center of a set of linear inequalities</title>
-<link rel="canonical" href="http://cvxr.com/cvx/examples/cvxbook/Ch08_geometric_probs/html/analytic_center.html">
+<link rel="canonical" href="/Users/mcgrant/Projects/CVX/examples/cvxbook/Ch08_geometric_probs/html/analytic_center.html">
 <link rel="stylesheet" href="../../../examples.css" type="text/css">
 </head>
 <body>
@@ -55,18 +55,20 @@ disp(x);
 <pre class="codeoutput">
  
 Successive approximation method to be employed.
+   For improved efficiency, SDPT3 is solving the dual problem.
    SDPT3 will be called several times to refine the solution.
-   Original size: 160 variables, 105 equality constraints
+   Original size: 155 variables, 60 equality constraints
    50 exponentials add 400 variables, 250 equality constraints
 -----------------------------------------------------------------
  Cones  |             Errors              |
 Mov/Act | Centering  Exp cone   Poly cone | Status
 --------+---------------------------------+---------
- 50/ 50 | 2.435e+00  3.573e-01  0.000e+00 | Solved
- 50/ 50 | 1.982e-01  3.069e-03  0.000e+00 | Solved
- 49/ 49 | 2.535e-02  4.842e-05  0.000e+00 | Solved
- 11/ 46 | 1.342e-03  1.284e-07  0.000e+00 | Solved
-  0/  6 | 1.582e-04  1.762e-09  0.000e+00 | Solved
+ 50/ 50 | 3.700e+00  7.922e-01  0.000e+00 | Solved
+ 50/ 50 | 6.027e-01  2.364e-02  0.000e+00 | Solved
+ 46/ 50 | 5.799e-02  2.176e-04  0.000e+00 | Solved
+ 13/ 39 | 6.785e-03  2.986e-06  0.000e+00 | Solved
+  2/ 12 | 7.432e-04  3.537e-08  0.000e+00 | Solved
+  0/  1 | 8.438e-05  6.251e-11  0.000e+00 | Solved
 -----------------------------------------------------------------
 Status: Solved
 Optimal value (cvx_optval): -64.8504

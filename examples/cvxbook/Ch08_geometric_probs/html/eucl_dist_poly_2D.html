@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <title>Euclidean distance between polyhedra in 2D</title>
-<link rel="canonical" href="http://cvxr.com/cvx/examples/cvxbook/Ch08_geometric_probs/html/eucl_dist_poly_2D.html">
+<link rel="canonical" href="/Users/mcgrant/Projects/CVX/examples/cvxbook/Ch08_geometric_probs/html/eucl_dist_poly_2D.html">
 <link rel="stylesheet" href="../../../examples.css" type="text/css">
 </head>
 <body>
@@ -74,7 +74,7 @@ ylabel(<span class="string">'x_2'</span>);
 <a id="output"></a>
 <pre class="codeoutput">
 Computing the distance between the 2 polyhedra... 
-Calling SDPT3: 15 variables, 5 equality constraints
+Calling SDPT3 4.0: 15 variables, 5 equality constraints
 ------------------------------------------------------------
 
  num. of constraints =  5
@@ -97,7 +97,7 @@ it pstep dstep pinfeas dinfeas  gap      prim-obj      dual-obj    cputime
  7|0.988|0.986|3.1e-10|1.3e-07|1.6e-04| 2.121394e+00  2.121230e+00| 0:0:00| chol  1  1 
  8|0.987|0.978|4.9e-12|2.9e-09|2.9e-06| 2.121321e+00  2.121318e+00| 0:0:00| chol  1  1 
  9|1.000|0.990|9.7e-14|2.9e-11|1.5e-07| 2.121320e+00  2.121320e+00| 0:0:00| chol  1  1 
-10|1.000|0.995|9.7e-17|1.2e-12|3.4e-09| 2.121320e+00  2.121320e+00| 0:0:00|
+10|1.000|0.995|1.6e-16|1.2e-12|3.4e-09| 2.121320e+00  2.121320e+00| 0:0:00|
   stop: max(relative gap, infeasibilities) &lt; 1.49e-08
 -------------------------------------------------------------------
  number of iterations   = 10
@@ -106,15 +106,18 @@ it pstep dstep pinfeas dinfeas  gap      prim-obj      dual-obj    cputime
  gap := trace(XZ)       = 3.40e-09
  relative gap           = 6.48e-10
  actual relative gap    = 6.47e-10
- rel. primal infeas     = 9.71e-17
- rel. dual   infeas     = 1.16e-12
+ rel. primal infeas (scaled problem)   = 1.59e-16
+ rel. dual     "        "       "      = 1.16e-12
+ rel. primal infeas (unscaled problem) = 0.00e+00
+ rel. dual     "        "       "      = 0.00e+00
  norm(X), norm(y), norm(Z) = 4.2e+00, 1.6e+00, 3.1e+00
  norm(A), norm(b), norm(C) = 4.9e+00, 6.6e+00, 2.0e+00
- Total CPU time (secs)  = 0.12  
+ Total CPU time (secs)  = 0.13  
  CPU time per iteration = 0.01  
  termination code       =  0
- DIMACS: 1.3e-16  0.0e+00  1.2e-12  0.0e+00  6.5e-10  6.5e-10
+ DIMACS: 2.1e-16  0.0e+00  1.2e-12  0.0e+00  6.5e-10  6.5e-10
 -------------------------------------------------------------------
+ 
 ------------------------------------------------------------
 Status: Solved
 Optimal value (cvx_optval): +2.12132

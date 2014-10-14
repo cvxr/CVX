@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <title>Quadratic discrimination (separating ellipsoid)</title>
-<link rel="canonical" href="http://cvxr.com/cvx/examples/cvxbook/Ch08_geometric_probs/html/quad_discr.html">
+<link rel="canonical" href="/Users/mcgrant/Projects/CVX/examples/cvxbook/Ch08_geometric_probs/html/quad_discr.html">
 <link rel="stylesheet" href="../../../examples.css" type="text/css">
 </head>
 <body>
@@ -70,7 +70,7 @@ title(<span class="string">'Quadratic discrimination'</span>);
 <a id="output"></a>
 <pre class="codeoutput">
 Find the optimal ellipsoid that seperates the 2 classes... 
-Calling SDPT3: 103 variables, 6 equality constraints
+Calling SDPT3 4.0: 103 variables, 6 equality constraints
    For improved efficiency, SDPT3 is solving the dual problem.
 ------------------------------------------------------------
 
@@ -102,8 +102,10 @@ it pstep dstep pinfeas dinfeas  gap      prim-obj      dual-obj    cputime
  gap := trace(XZ)       = 3.40e-10
  relative gap           = 3.40e-10
  actual relative gap    = 6.90e-12
- rel. primal infeas     = 1.06e-11
- rel. dual   infeas     = 1.38e-10
+ rel. primal infeas (scaled problem)   = 1.06e-11
+ rel. dual     "        "       "      = 1.38e-10
+ rel. primal infeas (unscaled problem) = 0.00e+00
+ rel. dual     "        "       "      = 0.00e+00
  norm(X), norm(y), norm(Z) = 9.9e-13, 1.2e+02, 1.1e+03
  norm(A), norm(b), norm(C) = 7.8e+01, 1.0e+00, 6.4e+01
  Total CPU time (secs)  = 0.13  
@@ -111,6 +113,7 @@ it pstep dstep pinfeas dinfeas  gap      prim-obj      dual-obj    cputime
  termination code       =  0
  DIMACS: 1.1e-11  0.0e+00  4.5e-10  0.0e+00  6.9e-12  3.4e-10
 -------------------------------------------------------------------
+ 
 ------------------------------------------------------------
 Status: Solved
 Optimal value (cvx_optval): -6.90185e-12

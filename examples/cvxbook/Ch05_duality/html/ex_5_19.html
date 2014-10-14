@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <title>Exercise 5.19c: Markovitz portfolio optimization w/ diversification constraint</title>
-<link rel="canonical" href="http://cvxr.com/cvx/examples/cvxbook/Ch05_duality/html/ex_5_19.html">
+<link rel="canonical" href="/Users/mcgrant/Projects/CVX/examples/cvxbook/Ch05_duality/html/ex_5_19.html">
 <link rel="stylesheet" href="../../../examples.css" type="text/css">
 </head>
 <body>
@@ -89,7 +89,7 @@ disp(<span class="string">'They are equal as expected!'</span>);
 <pre class="codeoutput">
 Computing the optimal Markovitz portfolio: 
 # using the original formulation ...  
-Calling SDPT3: 105 variables, 52 equality constraints
+Calling SDPT3 4.0: 105 variables, 52 equality constraints
    For improved efficiency, SDPT3 is solving the dual problem.
 ------------------------------------------------------------
 
@@ -114,17 +114,17 @@ it pstep dstep pinfeas dinfeas  gap      prim-obj      dual-obj    cputime
  7|1.000|0.073|5.0e-09|7.9e-04|9.8e+00|-1.454831e+01 -2.411304e+01| 0:0:00| chol  1  1 
  8|1.000|0.631|4.3e-09|3.0e-04|5.4e+00|-1.835253e+01 -2.369065e+01| 0:0:00| chol  1  1 
  9|0.846|0.486|1.6e-09|1.5e-04|2.2e+00|-2.133672e+01 -2.356079e+01| 0:0:00| chol  1  1 
-10|1.000|0.347|1.1e-09|9.9e-05|1.0e+00|-2.243699e+01 -2.345827e+01| 0:0:00| chol  1  1 
-11|1.000|0.466|3.6e-10|5.3e-05|4.2e-01|-2.294740e+01 -2.336188e+01| 0:0:00| chol  1  1 
-12|1.000|0.427|7.4e-10|3.0e-05|2.1e-01|-2.310092e+01 -2.330676e+01| 0:0:00| chol  1  1 
-13|0.985|0.572|3.4e-10|1.3e-05|6.7e-02|-2.319410e+01 -2.326065e+01| 0:0:00| chol  1  1 
-14|0.958|0.726|3.8e-11|3.6e-06|1.5e-02|-2.321891e+01 -2.323367e+01| 0:0:00| chol  1  1 
-15|0.882|0.752|3.7e-12|8.8e-07|3.4e-03|-2.322248e+01 -2.322583e+01| 0:0:00| chol  1  1 
-16|0.995|0.866|8.1e-13|7.1e-06|3.9e-04|-2.322323e+01 -2.322360e+01| 0:0:00| chol  1  1 
+10|1.000|0.347|9.0e-10|9.9e-05|1.0e+00|-2.243699e+01 -2.345827e+01| 0:0:00| chol  1  1 
+11|1.000|0.466|2.6e-10|5.3e-05|4.2e-01|-2.294740e+01 -2.336188e+01| 0:0:00| chol  1  1 
+12|1.000|0.427|6.2e-10|3.0e-05|2.1e-01|-2.310092e+01 -2.330676e+01| 0:0:00| chol  1  1 
+13|0.985|0.572|9.1e-11|1.3e-05|6.7e-02|-2.319410e+01 -2.326065e+01| 0:0:00| chol  1  1 
+14|0.958|0.726|1.1e-11|3.6e-06|1.5e-02|-2.321891e+01 -2.323367e+01| 0:0:00| chol  1  1 
+15|0.882|0.752|3.1e-12|8.8e-07|3.4e-03|-2.322248e+01 -2.322583e+01| 0:0:00| chol  1  1 
+16|0.995|0.866|1.1e-11|7.1e-06|3.9e-04|-2.322323e+01 -2.322360e+01| 0:0:00| chol  1  1 
 17|1.000|0.819|3.9e-13|8.2e-07|8.4e-05|-2.322325e+01 -2.322333e+01| 0:0:00| chol  1  1 
-18|0.961|0.955|8.2e-14|1.8e-07|2.0e-05|-2.322327e+01 -2.322328e+01| 0:0:00| chol  1  1 
-19|0.994|0.988|9.0e-14|4.2e-08|4.8e-07|-2.322328e+01 -2.322328e+01| 0:0:00| chol  1  1 
-20|0.997|0.989|3.1e-13|1.0e-09|8.2e-09|-2.322328e+01 -2.322328e+01| 0:0:00|
+18|0.961|0.955|5.7e-14|1.8e-07|2.0e-05|-2.322327e+01 -2.322328e+01| 0:0:00| chol  1  1 
+19|0.994|0.988|8.5e-14|4.2e-08|4.8e-07|-2.322328e+01 -2.322328e+01| 0:0:00| chol  1  1 
+20|0.997|0.989|1.5e-13|1.0e-09|8.2e-09|-2.322328e+01 -2.322328e+01| 0:0:00|
   stop: max(relative gap, infeasibilities) &lt; 1.49e-08
 -------------------------------------------------------------------
  number of iterations   = 20
@@ -133,15 +133,18 @@ it pstep dstep pinfeas dinfeas  gap      prim-obj      dual-obj    cputime
  gap := trace(XZ)       = 8.20e-09
  relative gap           = 1.73e-10
  actual relative gap    = 1.37e-10
- rel. primal infeas     = 3.08e-13
- rel. dual   infeas     = 1.01e-09
+ rel. primal infeas (scaled problem)   = 1.53e-13
+ rel. dual     "        "       "      = 1.01e-09
+ rel. primal infeas (unscaled problem) = 0.00e+00
+ rel. dual     "        "       "      = 0.00e+00
  norm(X), norm(y), norm(Z) = 3.4e+01, 6.5e-01, 1.3e+00
  norm(A), norm(b), norm(C) = 1.7e+01, 4.6e+01, 3.2e+00
- Total CPU time (secs)  = 0.30  
+ Total CPU time (secs)  = 0.31  
  CPU time per iteration = 0.02  
  termination code       =  0
- DIMACS: 3.1e-13  0.0e+00  1.6e-09  0.0e+00  1.4e-10  1.7e-10
+ DIMACS: 1.5e-13  0.0e+00  1.6e-09  0.0e+00  1.4e-10  1.7e-10
 -------------------------------------------------------------------
+ 
 ------------------------------------------------------------
 Status: Solved
 Optimal value (cvx_optval): +0.75017
@@ -149,7 +152,7 @@ Optimal value (cvx_optval): +0.75017
 Done! 
 # using an equivalent formulation by replacing the diversification
   constraint by an equivalent set of linear constraints... 
-Calling SDPT3: 105 variables, 52 equality constraints
+Calling SDPT3 4.0: 105 variables, 52 equality constraints
    For improved efficiency, SDPT3 is solving the dual problem.
 ------------------------------------------------------------
 
@@ -173,18 +176,18 @@ it pstep dstep pinfeas dinfeas  gap      prim-obj      dual-obj    cputime
  6|0.905|0.953|2.7e-08|8.3e-04|1.6e+01|-8.869882e+00 -2.415960e+01| 0:0:00| chol  1  1 
  7|1.000|0.073|4.7e-09|7.9e-04|9.8e+00|-1.454829e+01 -2.411304e+01| 0:0:00| chol  1  1 
  8|1.000|0.631|4.3e-09|3.0e-04|5.4e+00|-1.835244e+01 -2.369065e+01| 0:0:00| chol  1  1 
- 9|0.846|0.486|1.6e-09|1.5e-04|2.2e+00|-2.133670e+01 -2.356079e+01| 0:0:00| chol  1  1 
-10|1.000|0.347|1.5e-09|9.9e-05|1.0e+00|-2.243700e+01 -2.345827e+01| 0:0:00| chol  1  1 
-11|1.000|0.466|5.6e-10|5.3e-05|4.2e-01|-2.294740e+01 -2.336188e+01| 0:0:00| chol  1  1 
-12|1.000|0.427|5.6e-10|3.0e-05|2.1e-01|-2.310093e+01 -2.330676e+01| 0:0:00| chol  1  1 
-13|0.985|0.572|1.4e-10|1.3e-05|6.7e-02|-2.319410e+01 -2.326065e+01| 0:0:00| chol  1  1 
-14|0.958|0.726|9.6e-11|3.6e-06|1.5e-02|-2.321891e+01 -2.323367e+01| 0:0:00| chol  1  1 
-15|0.882|0.752|1.9e-11|8.8e-07|3.4e-03|-2.322248e+01 -2.322583e+01| 0:0:00| chol  1  1 
-16|0.995|0.866|3.1e-12|7.1e-06|3.9e-04|-2.322323e+01 -2.322360e+01| 0:0:00| chol  1  1 
+ 9|0.846|0.486|1.5e-09|1.5e-04|2.2e+00|-2.133670e+01 -2.356079e+01| 0:0:00| chol  1  1 
+10|1.000|0.347|1.4e-09|9.9e-05|1.0e+00|-2.243700e+01 -2.345827e+01| 0:0:00| chol  1  1 
+11|1.000|0.466|2.6e-10|5.3e-05|4.2e-01|-2.294740e+01 -2.336188e+01| 0:0:00| chol  1  1 
+12|1.000|0.427|9.2e-10|3.0e-05|2.1e-01|-2.310093e+01 -2.330676e+01| 0:0:00| chol  1  1 
+13|0.985|0.572|9.5e-11|1.3e-05|6.7e-02|-2.319410e+01 -2.326065e+01| 0:0:00| chol  1  1 
+14|0.958|0.726|7.5e-11|3.6e-06|1.5e-02|-2.321891e+01 -2.323367e+01| 0:0:00| chol  1  1 
+15|0.882|0.752|5.6e-12|8.8e-07|3.4e-03|-2.322248e+01 -2.322583e+01| 0:0:00| chol  1  1 
+16|0.995|0.866|3.5e-12|7.1e-06|3.9e-04|-2.322323e+01 -2.322360e+01| 0:0:00| chol  1  1 
 17|1.000|0.819|2.2e-13|8.2e-07|8.4e-05|-2.322325e+01 -2.322333e+01| 0:0:00| chol  1  1 
-18|0.961|0.955|5.9e-14|1.8e-07|2.0e-05|-2.322327e+01 -2.322328e+01| 0:0:00| chol  1  1 
-19|0.994|0.988|1.0e-13|4.2e-08|4.8e-07|-2.322328e+01 -2.322328e+01| 0:0:00| chol  1  1 
-20|0.997|0.989|1.3e-13|1.0e-09|8.2e-09|-2.322328e+01 -2.322328e+01| 0:0:00|
+18|0.961|0.955|6.6e-14|1.8e-07|2.0e-05|-2.322327e+01 -2.322328e+01| 0:0:00| chol  1  1 
+19|0.994|0.988|8.1e-14|4.2e-08|4.8e-07|-2.322328e+01 -2.322328e+01| 0:0:00| chol  1  1 
+20|0.997|0.989|9.0e-14|1.0e-09|8.2e-09|-2.322328e+01 -2.322328e+01| 0:0:00|
   stop: max(relative gap, infeasibilities) &lt; 1.49e-08
 -------------------------------------------------------------------
  number of iterations   = 20
@@ -193,15 +196,18 @@ it pstep dstep pinfeas dinfeas  gap      prim-obj      dual-obj    cputime
  gap := trace(XZ)       = 8.20e-09
  relative gap           = 1.73e-10
  actual relative gap    = 1.37e-10
- rel. primal infeas     = 1.29e-13
- rel. dual   infeas     = 1.01e-09
+ rel. primal infeas (scaled problem)   = 9.00e-14
+ rel. dual     "        "       "      = 1.01e-09
+ rel. primal infeas (unscaled problem) = 0.00e+00
+ rel. dual     "        "       "      = 0.00e+00
  norm(X), norm(y), norm(Z) = 3.4e+01, 6.5e-01, 1.3e+00
  norm(A), norm(b), norm(C) = 1.7e+01, 4.6e+01, 3.2e+00
- Total CPU time (secs)  = 0.31  
- CPU time per iteration = 0.02  
+ Total CPU time (secs)  = 0.27  
+ CPU time per iteration = 0.01  
  termination code       =  0
- DIMACS: 1.3e-13  0.0e+00  1.6e-09  0.0e+00  1.4e-10  1.7e-10
+ DIMACS: 9.0e-14  0.0e+00  1.6e-09  0.0e+00  1.4e-10  1.7e-10
 -------------------------------------------------------------------
+ 
 ------------------------------------------------------------
 Status: Solved
 Optimal value (cvx_optval): +0.75017

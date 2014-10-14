@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <title>Exercise 4.31: Design of a cantilever beam (GP)</title>
-<link rel="canonical" href="http://cvxr.com/cvx/examples/cvxbook/Ch04_cvx_opt_probs/html/cantilever_beam.html">
+<link rel="canonical" href="/Users/mcgrant/Projects/CVX/examples/cvxbook/Ch04_cvx_opt_probs/html/cantilever_beam.html">
 <link rel="stylesheet" href="../../../examples.css" type="text/css">
 </head>
 <body>
@@ -13,7 +13,7 @@ Jump to:&nbsp;&nbsp;&nbsp;&nbsp;
 <a href="#source">Source code</a>&nbsp;&nbsp;&nbsp;&nbsp;
 <a href="#output">Text output</a>
 &nbsp;&nbsp;&nbsp;&nbsp;
-Plots
+<a href="#plots">Plots</a>
 &nbsp;&nbsp;&nbsp;&nbsp;<a href="../../../index.html">Library index</a>
 </div>
 <div id="content">
@@ -93,20 +93,18 @@ cantilever_beam_plot([h; w])
 <pre class="codeoutput">
  
 Successive approximation method to be employed.
-   For improved efficiency, SeDuMi is solving the dual problem.
-   SeDuMi will be called several times to refine the solution.
-   Original size: 216 variables, 81 equality constraints
+   SDPT3 will be called several times to refine the solution.
+   Original size: 323 variables, 144 equality constraints
    48 exponentials add 384 variables, 240 equality constraints
 -----------------------------------------------------------------
  Cones  |             Errors              |
 Mov/Act | Centering  Exp cone   Poly cone | Status
 --------+---------------------------------+---------
- 46/ 46 | 8.000e+00  6.109e+01  0.000e+00 | Solved
- 46/ 46 | 8.000e+00s 1.097e+01  8.399e-07 | Solved
- 42/ 43 | 9.432e-02  7.105e-04  1.806e-07 | Solved
- 25/ 42 | 6.491e-03  3.011e-06  4.837e-07 | Solved
-  2/ 40 | 4.556e-04  1.509e-07  1.509e-07 | Solved
-  0/ 40 | 3.461e-05  1.508e-07  1.508e-07 | Solved
+ 26/ 26 | 8.000e+00  7.849e-01  0.000e+00 | Solved
+ 42/ 43 | 3.803e-01  9.215e-03  0.000e+00 | Solved
+ 34/ 40 | 1.422e-02  1.389e-05  0.000e+00 | Solved
+  6/ 10 | 1.760e-03  1.263e-07  0.000e+00 | Solved
+  0/  0 | 1.747e-04  0.000e+00  0.000e+00 | Solved
 -----------------------------------------------------------------
 Status: Solved
 Optimal value (cvx_optval): +42.3965
@@ -138,6 +136,10 @@ h =
 
 The optimal minimum volume of the beam is 42.3965.
 </pre>
+<a id="plots"></a>
+<div id="plotoutput">
+<img src="cantilever_beam__01.png" alt=""> 
+</div>
 </div>
 </body>
 </html>

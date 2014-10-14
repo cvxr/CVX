@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <title>LC oscillator design (GP)</title>
-<link rel="canonical" href="http://cvxr.com/cvx/examples/circuit_design/html/LC_osc_design.html">
+<link rel="canonical" href="/Users/mcgrant/Projects/CVX/examples/circuit_design/html/LC_osc_design.html">
 <link rel="stylesheet" href="../../examples.css" type="text/css">
 </head>
 <body>
@@ -72,7 +72,7 @@ powers = [];
     variable <span class="string">SRF</span>;      <span class="comment">% self resonance frequency</span>
     variable <span class="string">l</span>;        <span class="comment">% length of CMOS transistor</span>
     variable <span class="string">w</span>;        <span class="comment">% width of CMOS transistor</span>
-    variable <span class="string">I</span>;        <span class="comment">% maximum current through CMOS transistor</span>
+    variable <span class="string">Imax</span>;     <span class="comment">% maximum current through CMOS transistor</span>
     variable <span class="string">VOsc</span>;     <span class="comment">% differential voltage amplitude</span>
     variable <span class="string">CT</span>;       <span class="comment">% total capacitance of oscillator</span>
     variable <span class="string">Csw</span>;      <span class="comment">% maximum switching capacitance</span>
@@ -113,9 +113,9 @@ powers = [];
       <span class="comment">%****************************************%</span>
       <span class="comment">% transistor definitions and constraints %</span>
       <span class="comment">%****************************************%</span>
-      GM  = 6e-3*(w/l)^0.6*(I/2)^(0.4);
-      GD  = 4e-10*(w/l)^0.4*(I/2)^(0.6)*1/l;
-      Vgs = 0.34+1e-8/l+800*(I*l/(2*w))^0.7;
+      GM  = 6e-3*(w/l)^0.6*(Imax/2)^(0.4);
+      GD  = 4e-10*(w/l)^0.4*(Imax/2)^(0.6)*1/l;
+      Vgs = 0.34+1e-8/l+800*(Imax*l/(2*w))^0.7;
       Cgs = 1e-2*w*l;
       Cgd = 1e-9*w;
       Cdb = 1e-9*w;
@@ -154,7 +154,7 @@ powers = [];
       VOsc*invVOsc &lt;= 1;
       invLoopGain*LoopGainSpec &lt;= 1; <span class="comment">% loop gain spec</span>
       Vbias+Vgs+IBias/2*R/2 &lt;= Vdd;  <span class="comment">% bias constraint spec</span>
-      I == IBias;
+      Imax == IBias;
   cvx_end
   fprintf(<span class="string">'min_power = %3.2f mW\n'</span>, cvx_optval/1e-3);
   powers = [powers cvx_optval];

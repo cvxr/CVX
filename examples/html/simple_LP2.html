@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <title>Builds and solves a simple inequality-constrained linear program</title>
-<link rel="canonical" href="http://cvxr.com/cvx/examples/html/simple_LP2.html">
+<link rel="canonical" href="/Users/mcgrant/Projects/CVX/examples/html/simple_LP2.html">
 <link rel="stylesheet" href="../examples.css" type="text/css">
 </head>
 <body>
@@ -51,7 +51,7 @@ cvx_begin
       y : A * x &lt;= b;
 cvx_end
  
-Calling SDPT3: 20 variables, 10 equality constraints
+Calling SDPT3 4.0: 20 variables, 10 equality constraints
    For improved efficiency, SDPT3 is solving the dual problem.
 ------------------------------------------------------------
 
@@ -64,39 +64,31 @@ Calling SDPT3: 20 variables, 10 equality constraints
     NT      1      0.000   1        0    
 it pstep dstep pinfeas dinfeas  gap      prim-obj      dual-obj    cputime
 -------------------------------------------------------------------
- 0|0.000|0.000|3.2e+01|8.5e+00|2.0e+03| 3.617354e+01  0.000000e+00| 0:0:00| chol  1  1 
- 1|0.653|0.803|1.1e+01|1.7e+00|7.4e+02| 4.479851e+01 -1.562618e+01| 0:0:00| chol  1  1 
- 2|0.998|0.766|2.5e-02|4.1e-01|1.6e+02| 7.884226e+01 -1.557992e+01| 0:0:00| chol  1  1 
- 3|1.000|1.000|3.0e-05|8.6e-04|1.7e+01| 1.198552e+01 -5.409116e+00| 0:0:00| chol  1  1 
- 4|1.000|1.000|1.1e-06|9.2e-05|5.6e+00| 5.721277e+00  1.093864e-01| 0:0:00| chol  1  1 
- 5|1.000|0.694|7.5e-08|3.4e-05|3.6e+00| 5.868670e+00  2.239060e+00| 0:0:00| chol  1  1 
- 6|1.000|1.000|6.9e-09|8.8e-07|9.8e-01| 3.886363e+00  2.903232e+00| 0:0:00| chol  1  1 
- 7|0.811|0.963|2.7e-09|1.2e-07|2.4e-01| 3.448018e+00  3.207296e+00| 0:0:00| chol  1  1 
- 8|1.000|1.000|1.4e-09|9.2e-09|5.3e-02| 3.335759e+00  3.282517e+00| 0:0:00| chol  1  1 
- 9|0.975|0.985|3.4e-10|1.3e-09|1.1e-03| 3.307185e+00  3.306084e+00| 0:0:00| chol  1  1 
-10|0.989|0.989|3.9e-12|1.7e-10|1.3e-05| 3.306547e+00  3.306534e+00| 0:0:00| chol  1  1 
-11|0.996|0.996|5.2e-14|1.6e-12|1.9e-07| 3.306540e+00  3.306539e+00| 0:0:00| chol  1  1 
-12|0.998|0.998|2.6e-14|1.0e-12|2.3e-09| 3.306539e+00  3.306539e+00| 0:0:00|
-  stop: max(relative gap, infeasibilities) &lt; 1.49e-08
+ 0|0.000|0.000|6.6e+01|8.5e+00|2.0e+03| 1.224551e+01  0.000000e+00| 0:0:00| chol  1  1 
+ 1|0.716|0.990|1.9e+01|1.7e-01|6.1e+02|-7.208277e+00  2.426922e+00| 0:0:00| chol  1  1 
+ 2|0.920|1.000|1.5e+00|8.5e-03|4.6e+01|-9.397288e-01  3.491295e+00| 0:0:00| chol  1  1 
+ 3|0.413|1.000|8.7e-01|8.5e-04|3.6e+01|-3.808073e-01  5.218247e+01| 0:0:00| chol  1  1 
+ 4|0.124|0.458|7.7e-01|5.0e-04|9.8e+01| 1.190177e-01  4.439085e+02| 0:0:00| chol  1  1 
+ 5|0.052|0.190|7.3e-01|4.0e-04|5.3e+02|-1.343423e-02  5.384123e+03| 0:0:00| chol  1  1 
+ 6|0.064|1.000|6.8e-01|8.5e-07|1.7e+04| 2.845973e-02  7.408387e+05| 0:0:00| chol  1  2 
+ 7|0.020|1.000|6.7e-01|2.1e-07|4.2e+06| 2.126749e-02  1.432853e+09| 0:0:00| chol  2  2 
+ 8|0.099|1.000|6.3e-01|2.2e-02|1.6e+13| 9.235089e-02  1.631005e+14| 0:0:00| chol  2  2 
+ 9|0.083|1.000|5.8e-01|2.6e+00|2.0e+14| 8.554457e-02  1.955677e+16| 0:0:00|
+  sqlp stop: primal problem is suspected of being infeasible
 -------------------------------------------------------------------
- number of iterations   = 12
- primal objective value =  3.30653941e+00
- dual   objective value =  3.30653941e+00
- gap := trace(XZ)       = 2.30e-09
- relative gap           = 3.03e-10
- actual relative gap    = 3.01e-10
- rel. primal infeas     = 2.61e-14
- rel. dual   infeas     = 1.00e-12
- norm(X), norm(y), norm(Z) = 3.9e+00, 2.3e+00, 9.1e+00
- norm(A), norm(b), norm(C) = 1.6e+01, 4.6e+00, 5.2e+00
- Total CPU time (secs)  = 0.11  
+ number of iterations   =  9
+ residual of primal infeasibility      
+ certificate (y,Z)      = 6.89e-16
+ reldist to infeas.    &lt;= 4.72e-17
+ Total CPU time (secs)  = 0.06  
  CPU time per iteration = 0.01  
- termination code       =  0
- DIMACS: 4.0e-14  0.0e+00  1.5e-12  0.0e+00  3.0e-10  3.0e-10
+ termination code       =  1
+ DIMACS: 6.9e-01  0.0e+00  4.4e+00  0.0e+00  -1.0e+00  1.0e-02
 -------------------------------------------------------------------
+ 
 ------------------------------------------------------------
-Status: Solved
-Optimal value (cvx_optval): -5.32653
+Status: Unbounded
+Optimal value (cvx_optval): -Inf
  
 
 echo off
