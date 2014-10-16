@@ -118,11 +118,15 @@ else
         y = zeros( sy );
     end
     map = map(:);
+    if ~p.reverse,
+        map = map';
+    end
     for kk = mu
-        tt = map == mu;
+        tt = map == kk;
+        sz = [ nx, nnz( tt ) ];
         t2 = repmat( tt, rep );
         b = reshape( cvx_subsref( x, t2 ), sz );
-        sx = any( mu == p.constant );
+        sx = any( kk == p.constant );
         if sx, b = cvx_constant( b ); end
         b = p.funcs{kk}( b, args{:} );
         if sx && ox, b = cvx( b ); end
