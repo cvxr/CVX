@@ -286,15 +286,14 @@ while true,
     % should work most of the time. If we want to be very aggressive we
     % can safe off the primal formulation and bring it back in if needed.
     %
-    if dualized || ~dualize,
+    if dualized || ~dualize || pstr.dualize < 0,
         break
     end
     rsv(2:end) = 0;
     [ ncur, mcur ] = size(dbcA);
     dbcAT = dbcA';
     [ rows, cols ] = cvx_eliminate_mex( dbcAT, 1, ineqs, rsv ); %#ok
-    do_it = mcur - nrsv > ncur - nnz(rows);
-    if do_it,
+    if pstr.dualize > 0 || mcur - nrsv > ncur - nnz(rows),
         dbcA = -dbcAT;
         dir  = -dir;
         tmp  = Q; Q = P; P = tmp;
