@@ -33,6 +33,8 @@ for k = 1 : length(rndx) - 1,
     if emax > width,
         f_indent = sum( regexp( line, '[^ ]', 'once' ) - 1 );
         sndxs = find( line == ' ' );
+        qndx = find( line ~= ' ', 1, 'first' );
+        sndxs = sndxs(sndxs>qndx);
     end
     while true,
         if emax + n_indent <= width || isempty( sndxs ),
