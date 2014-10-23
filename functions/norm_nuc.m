@@ -1,4 +1,4 @@
-function y = norm_nuc( X )
+function y = norm_nuc( varargin )
 
 %NORM_NUC   Nuclear norm of a matrix.
 %   NORM_NUC(X) = SUM(SVD(X)). X must be a 2-D matrix, real or complex.
@@ -19,7 +19,7 @@ if isempty( params ),
 end
 
 try
-    y = cvx_matrix_op( params, X );
+    y = cvx_matrix_op( params, varargin );
 catch exc
     if strncmp( exc.identifier, 'CVX:', 4 ), throw(exc);
     else rethrow(exc); end
