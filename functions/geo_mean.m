@@ -64,7 +64,7 @@ function y = geo_mean_2( x, w ) %#ok
 [ nx, nv ] = size( x );
 cvx_begin
     hypograph variable y(1,nv);
-    { linearize(x), y } == geo_mean_cone( [nx,nv], 1, w, 'func' ); %#ok
+    { cvx_linearize(x), y } == geo_mean_cone( [nx,nv], 1, w, 'func' ); %#ok
     cvx_setnneg(y);
 cvx_end
 

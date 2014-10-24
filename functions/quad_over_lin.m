@@ -58,7 +58,7 @@ function z = qol_lin( x, y ) %#ok
 sz = max( size(x), size(y) );
 cvx_begin
     epigraph variable z( sz ) nonnegative_
-    { linearize(x), linearize(y), 0.5 * z } == rotated_lorentz( sz, 0 ); %#ok
+    { cvx_linearize(x), cvx_linearize(y), 0.5 * z } == rotated_lorentz( sz, 0 ); %#ok
 cvx_end
 
 function z = qol_sqa( x, y )
@@ -68,7 +68,7 @@ function z = qol_cpx( x, y ) %#ok
 sz = max( size(x), size(y) );
 cvx_begin
     epigraph variable z( sz ) nonnegative_
-    { linearize(x), linearize(y), 0.5 * z } == rotated_complex_lorentz( sz, 0 ); %#ok
+    { cvx_linearize(x), cvx_linearize(y), 0.5 * z } == rotated_complex_lorentz( sz, 0 ); %#ok
 cvx_end
 
 % Copyright 2005-2014 CVX Research, Inc.

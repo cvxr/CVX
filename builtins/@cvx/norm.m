@@ -72,7 +72,7 @@ if m == 1 || n == 1 || isequal( p, 'fro' ),
                     x  = [ cvx_subsref( x, ~tt ) ; xx ];
                 end
                 if ~all( remap2( xc ) ),
-                    x = linearize( x );
+                    x = cvx_linearize( x );
                 end
                 if p == 2,
                     z = [];

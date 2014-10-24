@@ -45,7 +45,7 @@ elseif pstr.checkpoint(4) >= pstr.checkpoint(1),
         temp = temp(1:end-1);
         evalin( 'caller', sprintf( '[%s]=cvx_values(%s);', temp, temp ) );
     end
-    do_timer = true;
+    do_timer = length(pstr.tictime)==2;
     tt = s2 == pid;
     do_erase = true;
 else
@@ -81,7 +81,7 @@ if do_timer
         for q = 1 : p - 1,
             cvx___.problems(q).tictime = cvx___.problems(q).tictime + tval;
         end
-    catch
+    catch exc
         tval = double(tfin) - double(pstr.tictime(1));
         cvx___.timers(2) = double(cvx___.timers(2)) + double(tval);
         cvx___.timers(3) = double(cvx___.timers(3)) + ( double(tfin) - double(pstr.tictime(2)) );

@@ -160,7 +160,7 @@ if ~isempty( v ),
         return
     end
     v = 1 - 2 * ( v(:) == 3 );
-    x = linearize( v .* x );
+    x = cvx_linearize( v .* x );
 else
     isint = false;
 end
@@ -211,7 +211,7 @@ if ~all( v ),
     return
 end
 nx = numel(x);
-z  = linearize( v .* x );
+z  = cvx_linearize( v .* x );
 cvx_begin
     epigraph variable y(nx)
     if p == 1,

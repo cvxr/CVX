@@ -65,14 +65,14 @@ function y = norms_2( x, p ) %#ok
 if p == 2,
     cvx_begin
         epigraph variable y( 1, nv ) nonnegative_
-        { linearize(x), y } == lorentz( [ nx, nv ], 1, ~isreal( x ) ); %#ok
+        { cvx_linearize(x), y } == lorentz( [ nx, nv ], 1, ~isreal( x ) ); %#ok
     cvx_end
 else
     cvx_begin
         variable z( nx, nv )
         epigraph variable y( 1, nv ) nonnegative_
         if isreal(x), cmode = 'abs'; else cmode = 'cabs'; end
-        { cat( 3, z, repmat(y,[nx,1]) ), linearize(x) } ...
+        { cat( 3, z, repmat(y,[nx,1]) ), cvx_linearize(x) } ...
             == geo_mean_cone( [nx,nv,2], 3, [1/p,1-1/p], cmode ); %#ok
         sum( z ) == y; %#ok
     cvx_end

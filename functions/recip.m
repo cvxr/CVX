@@ -24,7 +24,7 @@ function y = recip_posc( x ) %#ok
 sx = size( x );
 cvx_begin
     epigraph variable y( sx ) nonnegative_
-    { sqrt(2), linearize(x), y } == rotated_lorentz( sx, 0 ); %#ok
+    { sqrt(2), cvx_linearize(x), y } == rotated_lorentz( sx, 0 ); %#ok
 cvx_end
 
 function y = recip_negc( x )

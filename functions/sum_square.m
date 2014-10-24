@@ -54,7 +54,7 @@ function y = ssqa_3( x ) %#ok
 [ nx, nv ] = size(x);
 cvx_begin
     epigraph variable y( 1, nv ) nonnegative_
-    { linearize(x), 0.5, y } == rotated_lorentz( [ nx, nv ], 1 ); %#ok
+    { cvx_linearize(x), 0.5, y } == rotated_lorentz( [ nx, nv ], 1 ); %#ok
 cvx_end
 
 function y = ssqa_4( x )
