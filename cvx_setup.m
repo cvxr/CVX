@@ -164,7 +164,7 @@ try
                 fprintf( fmt, ' ', solvers(k).name, err, '' ); %#ok
             end
         end
-        t2 = cellfun( @(x)isequal(x,'A CVX Professional license is required.'), {solvers.error} );
+        t2 = cellfun( @(x)isequal(x,'No license'), {solvers.error} );
         if any(t2),
             nrej = nnz(t2);
             fprintf( '%d solver%s require%s a CVX Professional license:\n', nrej, plurals{min(nrej+1,3)}, plurals{max(4-nrej,2)} );
@@ -172,11 +172,11 @@ try
                 fprintf( fmt, ' ', solvers(k).name, solvers(k).version, solvers(k).location ); %#ok
             end
         end
-        t3 = srej & ( ~t1 & ~t2 );
-        if any(t3),
-            nrej = nnz(t3);
-            fprintf( '%d solver%s skipped due to errors:\n', nrej, plurals{min(nrej+1,3)} );
-            for k = find(t3),
+        t4 = srej & ( ~t1 & ~t2 );
+        if any(t4),
+            nrej = nnz(t4);
+            fprintf( '%d solver%s skipped due to other errors:\n', nrej, plurals{min(nrej+1,3)} );
+            for k = find(t4),
                 fprintf( fmt, ' ', solvers(k).name, solvers(k).version, solvers(k).location ); %#ok
                 cvx_error( solvers(k).error, 63, false, '        ' );
             end
