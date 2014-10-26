@@ -305,10 +305,7 @@ if isoctave,
     if ~isempty( cvx___.license ),
         fprintf( 'CVX Professional is not supported with Octave.\n' );
     end
-elseif cvx___.jver < 1.6,
-    fprintf('       WARNING: full support for CVX Professional licenses\n' );
-    fprintf('       requres Java version 1.6.0 or later. Please upgrade.\n' );
-elseif exist( 'cvx_license', 'file' ),
+elseif strcmpi(which('cvx_license'),[cvx___.where,fs,'cvx_license.p']),
     cvx_license( args{:} );
 end
 

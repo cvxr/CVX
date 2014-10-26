@@ -69,6 +69,18 @@ else
     shim.solve = @solve;
 end
 
+function y = cvx_s_symmetric_ut( n )
+% Create the unique upper triangular structure used by SDPT3
+nsq = n * n;
+ntr = 0.5 * ( nsq + n );
+c   = 0 : n - 1;
+c   = c( ones( 1, n ), : );
+r   = c';
+mn  = min( r, c );
+mx  = max( r, c );
+y   = mn + 0.5 * mx .* ( mx + 1 ) + 1;
+y   = sparse( y( : ), 1 : nsq, 1, ntr, nsq );
+
 function [ x, status, tol, iters, y ] = solve( At, b, c, nonls, quiet, prec, settings )
 [n,m] = size(At);
 
@@ -195,7 +207,7 @@ if any( tt ),
         % <str_2*a,str_1'*x> = <str_3*str_2*a,str_3*str_1'*x>
         %
         str_3 = sqrt(0.5) * ones(nt2,1); str_3(cumsum(1:n2)) = 1;
-        str_3 = spdiags( str_3, 0, nt2, nt2 ) * cvx_s_symmetric_ut( n2, n2, true );
+        str_3 = spdiags( str_3, 0, nt2, nt2 ) * cvx_s_symmetric_ut( n2 );
         Avec{end}{end+1} = reshape( ( str_3 * str_2 ) * reshape( At(ti,:), nt, nv * m ), nt2 * nv, m );
         %
         % SDPT3 expects C to be in the form of a symmetric matrix, so we
