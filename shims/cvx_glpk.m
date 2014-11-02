@@ -49,7 +49,7 @@ else
     shim.solve = @solve;
 end
     
-function [ x, status, tol, iters, y, z ] = solve( At, b, c, nonls, quiet, prec, settings )
+function [ x, status, tol, iters, y, z ] = solve( At, b, c, nonls, params )
 
 n  = length( c );
 m  = length( b );
@@ -98,10 +98,11 @@ else
   param.msglev = 2;
 end
 param.scale = 128;
+prec = params.precision;
 param.tolbnd = prec(1);
 param.toldj = prec(1);
 param.tolobj = prec(1);
-[ xx, fmin, errnum, extra ] = cvx_run_solver( @glpk, c, At', b, lb, ub, ctype, vtype, 1, param, 'xx', 'fmin', 'errnum', 'extra', settings, 9 ); %#ok
+[ xx, fmin, errnum, extra ] = cvx_run_solver( @glpk, c, At', b, lb, ub, ctype, vtype, 1, param, 'xx', 'fmin', 'errnum', 'extra', 9, params ); %#ok
 iters = [];
 x = full( xx );
 y = full( extra.lambda );

@@ -51,7 +51,7 @@ else
     shim.solve = @solve;
 end
 
-function [ x, status, tol, iters, y ] = solve( At, b, c, nonls, quiet, prec, settings )
+function [ x, status, tol, iters, y, rawsol ] = solve( At, b, c, nonls, params )
 
 n = length( c );
 m = length( b );
@@ -105,6 +105,7 @@ reord = sparse( ...
 At = reord' * At;
 c  = reord' * c;
 
+prec = params.prec;
 opts.abstol = prec(1);
 opts.reltol = prec(1);
 opts.feastol = prec(1);
@@ -125,7 +126,7 @@ ecos_b = full(c(1:K.f));
 K.q = K.q(:);
 
 varnames = {'x', 'y', 'info', 's', 'z'};
-[ yy, xf, info, zz, xK ] = cvx_run_solver( @ecos, ecos_c, ecos_G, ecos_h, K, ecos_A, ecos_b, opts, varnames{:}, settings, 7 ); %#ok
+[ yy, xf, info, zz, xK ] = cvx_run_solver( @ecos, ecos_c, ecos_G, ecos_h, K, ecos_A, ecos_b, opts, varnames{:}, 7, params ); %#ok
 
 xx = [xf;xK];
 if ~isfield( info, 'r0' ) && info.pinf,

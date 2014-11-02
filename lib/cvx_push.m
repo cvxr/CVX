@@ -84,6 +84,10 @@ for k = 1 : length(args),
         cvx_throw( 'Arguments must be strings.' );
     end
     switch lower( mode ),
+        case 'dualize',
+            temp.dualize = 1;
+        case 'dualize_off',
+            temp.dualize = -1;
         case 'quiet',
             temp.quiet = true;
         case 'set',

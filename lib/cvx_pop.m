@@ -81,7 +81,7 @@ if do_timer
         for q = 1 : p - 1,
             cvx___.problems(q).tictime = cvx___.problems(q).tictime + tval;
         end
-    catch exc
+    catch
         tval = double(tfin) - double(pstr.tictime(1));
         cvx___.timers(2) = double(cvx___.timers(2)) + double(tval);
         cvx___.timers(3) = double(cvx___.timers(3)) + ( double(tfin) - double(pstr.tictime(2)) );

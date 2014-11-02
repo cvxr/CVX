@@ -1,4 +1,4 @@
-function cvx_save_prefs( varargin )
+function cvx_save_prefs( mode )
 
 %CVX_SAVE_PREFS   Saves current CVX settings for future MATLAB sessions.
 %   CVX_SAVE_PREFS saves the the current global CVX settings to a special
@@ -7,10 +7,12 @@ function cvx_save_prefs( varargin )
 %   MATLAB sessions.
 
 global cvx___
+if nargin < 1, mode = 0; end
 if ~isfield( cvx___, 'pfile' ),
     cvx_throw( 'CVX is not currently loaded; there are no preferences to save.' );
-elseif nargin == 0,
-    fprintf( 'Saving prefs...' );
+end
+if ~mode,
+    fprintf( 'Saving CVX preferences...' );
 end
 outp.path      = cvx___.path;
 outp.license   = cvx___.license;
@@ -24,9 +26,32 @@ outp.profile   = cvx___.profile;
 outp.solvers.map.default = cvx___.solvers.selected;
 [ outp.solvers.list.solve, outp.solvers.list.eargs ] = deal( {} );
 outp.solvers.active = 0;
-save(cvx___.pfile,'-struct','outp');
-if nargin == 0,
-    fprintf( 'done.\n' );
+if mode == 2,
+    pfile = [ cvx___.where, cvx___.fs, 'cvx_prefs.mat' ];
+else
+    pfile = cvx___.pfile;
+    outg = cvx___.gprefs;
+    if ~isempty( outg ),
+        savep = outp;
+        try
+            for ff = fieldnames( outp )',
+                f = ff{1};
+                if isequal( outp.(f), outg.(f) ),
+                    outp.(f) = [];
+                end
+            end
+        catch
+            outp = savep; %#ok
+        end
+    end
+end
+try
+    save(pfile,'-struct','outp');
+catch exc
+    if ~mode,
+        fprintf( 'FAILED.\n' );
+    end
+    rethrow( exc );
 end
 
 % Copyright 2005-2014 CVX Research, Inc.

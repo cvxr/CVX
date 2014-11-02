@@ -21,6 +21,10 @@ try
     if ~isfield( cvx___, 'loaded' ) || ~cvx___.loaded, %#ok
         error( 'CVX:Expected', 'Error detected by cvx_version' );
     end
+    srv = any( strcmp( varargin, '-server' ) );
+    if srv,
+        fprintf( '*** SERVER INSTALLATION REQUESTED ***\n' );
+    end
     isoctave = cvx___.isoctave;
     mpath = cvx___.where;
     fs = cvx___.fs;
@@ -30,9 +34,13 @@ try
     % Reset the CVX paths %
     %%%%%%%%%%%%%%%%%%%%%%%
     
-    oldpath = cvx_startup( false );
+    [ oldpath, addpaths ] = cvx_startup( false );
     if ~isempty( oldpath ),
-        fprintf( 'Saving updated path...' ); 
+        if srv,
+            fprintf( 'Saving GLOBAL path...' ); 
+        else
+            fprintf( 'Saving update path...' );
+        end
         nret = true;
         s = warning('off'); %#ok
         stat = savepath;
@@ -103,12 +111,11 @@ try
                     end
                 end
             end
-        catch errmsg
-            errmsg = cvx_error( errmsg, 63, false, '  ' );
+        catch exc
             if isempty( tsolv.name ),
                 tsolv.name = [ tsolv.spath, tsolv.sname ];
             end
-            tsolv.error = sprintf( 'unexpected error:\n%s', errmsg );
+            tsolv.error = cvx_error( exc );
             tsolv.solve = [];
         end
         try
@@ -143,7 +150,7 @@ try
         for k = find(sgood),
             fprintf( fmt, stats{1+strcmpi(solvers(k).name,selected)}, solvers(k).name, solvers(k).version, solvers(k).location );
             if ~isempty(solvers(k).warning),
-                cvx_error( [ 'WARNING: ', solvers(k).warning ], 63, false, '        ' );
+                cvx_error( [ 'WARNING: ', solvers(k).warning ], '        ' );
             end
         end
     else
@@ -178,7 +185,7 @@ try
             fprintf( '%d solver%s skipped due to other errors:\n', nrej, plurals{min(nrej+1,3)} );
             for k = find(t4),
                 fprintf( fmt, ' ', solvers(k).name, solvers(k).version, solvers(k).location ); %#ok
-                cvx_error( solvers(k).error, 63, false, '        ' );
+                cvx_error( solvers(k).error, '        ' );
             end
         end
     end
@@ -215,16 +222,21 @@ try
     % Save preferences %
     %%%%%%%%%%%%%%%%%%%%
     
-    fprintf( 'Saving updated preferences...' ); nret = true;
-    try
-        cvx_save_prefs( 'save' );
-        fprintf( 'done.\n' ); nret = false;
-    catch errmsg
-        fprintf( 'unexpected error:\n' ); nret = false;
-        cvx_error( errmsg, 67, true, '    ' );
-        fprintf( 'Please attempt to correct this error and re-run cvx_setup. If you cannot,\n' );
-        fprintf( 'you will be forced to re-run cvx_setup every time you start MATLAB.\n' );
+    if srv,
+        fprintf( 'Saving GLOBAL preferences...' ); 
+    else
+        fprintf( 'Saving updated preferences...' ); 
     end
+    try
+        cvx_save_prefs( 1 + srv );
+        fprintf( 'done.\n' );
+    catch errmsg
+        fprintf( 'unexpected error:\n' );
+        cvx_error( errmsg, '    ' );
+        fprintf( 'Please attempt to correct this error and re-run CVX_SETUP. If you cannot,\n' );
+        fprintf( 'you will be not be able to save preferences between MATLAB sessions.\n' );
+    end
+    nret = false;
     
     %%%%%%%%%%%%%%%%%%%%%%%%%
     % Test the distribution %
@@ -266,38 +278,14 @@ try
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     
     if ~isempty( oldpath )
-        need_upr = false;
-        need_disclaim = true;
-        user_path = which( 'startup.m' );
-        if isempty( user_path ),
-            user_path = userpath;
-            if length(user_path) <= 1,
-                need_upr = true;
-                user_path = system_dependent('getuserworkfolder', 'default');
-                if ~isempty( user_path ),
-                    if isempty( strfind( user_path, [ fs, 'MATLAB' ] ) ),
-                        user_path = [ user_path, fs, 'MATLAB' ];
-                    end
-                end
-            elseif user_path(end) == ps,
-                user_path(end) = '';
-            end
-            if ~isempty( user_path ),
-                user_file = [ user_path, fs, 'startup.m' ];
-            else
-                user_file = '';
-            end
-        else
-            user_file = user_path;
-            user_path = user_path(1:end-10);
-        end
         fprintf( '%s\n', line );
         fprintf('NOTE: the MATLAB path has been changed to point to the CVX distribution. To\n' );
         fprintf('use CVX without having to re-run CVX_SETUP every time MATLAB starts, you\n' );
         fprintf('will need to save this path permanently. This script attempted to do this\n' );
         if fs == '/',
             fprintf('for you, but failed---likely due to UNIX permissions restrictions.\n' );
-            nextword = 'To solve the problem';
+            f1 = which( 'pathdef.m' );
+            f2 = which( 'matlabrc.m' );
         else
             fprintf('for you, but failed, due to the Windows User Access Control (UAC) settings.\n');
             fprintf('<a href="http://www.mathworks.com/support/solutions/en/data/1-9574H9/index.html?solution=1-9574H9">Click here</a> for a MATLAB document that discusses the issue.\n\n');
@@ -305,26 +293,72 @@ try
             fprintf('    1) Exit MATLAB.\n');
             fprintf('    2) Right click on the MATLAB icon, and select "Run as administrator."\n' );
             fprintf('    3) Re-run "cvx_setup".\n\n');
-            nextword = 'Alternatively, if you do not have administrator access';
         end
-        if exist( user_file, 'file' ),
-            fprintf( '%s, edit the file\n    %s\nand add the following line to the end of the file:\n', nextword, user_file ); 
-            fprintf( '    run %s%scvx_startup.m\n', mpath, fs );
-        elseif ~isempty( user_path ),
-            fprintf( '%s, create a new file\n    %s\ncontaining the following line:\n', nextword, user_file );
-            fprintf( '    run %s%scvx_startup.m\n', mpath, fs );
-        else
-            fprintf( '%s, create a startup.m file containing the line:\n', nextword );
-            fprintf( '    run %s%scvx_startup.m\n', mpath, fs );
-            fprintf( 'Consult the MATLAB documentation for the proper location for that file.\n' );
-            need_disclaim = false;
-        end
-        if need_upr,
-            fprintf( 'Then execute the following MATLAB commands:\n    userpath reset; startup\n' );
-        end
-        if need_disclaim,
-            fprintf( 'Please consult the MATLAB documentation for more information about the\n' );
-            fprintf( 'startup.m file and its proper placement and usage.\n' );
+        if srv,
+            fprintf('To solve the problem, edit one of the following files with root privileges:\n' );
+            if ~isempty(f1), 
+                fprintf( '    %s', f1 );
+                if ~isempty(f2) fprintf( '    OR' );  end
+                fprintf( '\n' );
+            end
+            if ~isempty( f2 ),
+                fprintf( '    %s\n', f2 );
+            end
+            fprintf('and add the following directories to the MATLAB path:\n' );
+            fprintf( '    %s\n', addpaths{:} );
+            fprintf( '(IMPORTANT: include ONLY these directories, and no others!)\n' );
+            fprintf( 'Please consult the MATLAB documentation for more information.\n' );
+            fprintf( 'Alternatively, you can instruct your users to run CVX_SETUP themselves.\n' );
+        elseif ~isempty( oldpath )
+            need_upr = false;
+            need_disclaim = true;
+            user_path = which( 'startup.m' );
+            if isempty( user_path ),
+                user_path = userpath;
+                if length(user_path) <= 1,
+                    need_upr = true;
+                    user_path = system_dependent('getuserworkfolder', 'default');
+                    if ~isempty( user_path ),
+                        if isempty( strfind( user_path, [ fs, 'MATLAB' ] ) ),
+                            user_path = [ user_path, fs, 'MATLAB' ];
+                        end
+                    end
+                elseif user_path(end) == ps,
+                    user_path(end) = '';
+                end
+                if ~isempty( user_path ),
+                    user_file = [ user_path, fs, 'startup.m' ];
+                else
+                    user_file = '';
+                end
+            else
+                user_file = user_path;
+                user_path = user_path(1:end-10);
+            end
+            if fs == '/',
+                nextword = 'To solve the problem';
+            else
+                nextword = 'Alternatively, if you do not have administrator access';
+            end
+            if exist( user_file, 'file' ),
+                fprintf( '%s, edit the file\n    %s\nand add the following line to the end of the file:\n', nextword, user_file ); 
+                fprintf( '    run %s%scvx_startup.m\n', mpath, fs );
+            elseif ~isempty( user_path ),
+                fprintf( '%s, create a new file\n    %s\ncontaining the following line:\n', nextword, user_file );
+                fprintf( '    run %s%scvx_startup.m\n', mpath, fs );
+            else
+                fprintf( '%s, create a startup.m file containing the line:\n', nextword );
+                fprintf( '    run %s%scvx_startup.m\n', mpath, fs );
+                fprintf( 'Consult the MATLAB documentation for the proper location for that file.\n' );
+                need_disclaim = false;
+            end
+            if need_upr,
+                fprintf( 'Then execute the following MATLAB commands:\n    userpath reset; startup\n' );
+            end
+            if need_disclaim,
+                fprintf( 'Please consult the MATLAB documentation for more information about the\n' );
+                fprintf( 'startup.m file and its proper placement and usage.\n' );
+            end
         end
     end
     
@@ -373,12 +407,12 @@ catch errmsg
         case { 'CVX:Expected', 'CVX:Licensing' },
             unexpected = false;
             if ~isempty( errmsg.message ),
-                cvx_error( errmsg, 67, 'ERROR: ', '    ' );
+                cvx_error( errmsg, '    ', 'ERROR: ' );
             end
         case 'CVX:Unexpected',
             unexpected = true;
         otherwise,
-            cvx_error( errmsg, 67, 'UNEXPECTED ERROR: ', '    ' );
+            cvx_error( errmsg, '    ', 'UNEXPECTED ERROR: ' );
             unexpected = true;
     end
     if ~isempty( oldpath ),

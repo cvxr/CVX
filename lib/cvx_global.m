@@ -48,6 +48,7 @@ cvx___.inequality  = false(1,0);
 cvx___.n_equality  = 0;
 cvx___.x           = zeros( 0, 1 );
 cvx___.y           = zeros( 0, 1 );
+cvx___.warmstart   = {false};
 cvx___.id          = 0;
 cvx___.obj         = cvx( struct( 'size_', [0,1], 'basis_', sparse(1,0), 'dual_', '', 'id_', 0 ) );
 cvx___.pobj        = cvxprob( struct( 'index_', 0, 'id_', 0 ) );
@@ -108,9 +109,9 @@ for k = 1 : nsolv,
             if ndefault == 0, ndefault = k; end
         end
     elseif ~ischar( terr )
-        temp = cvx_error( terr, 67, [ tsolv.name, ': UNEXPECTED ERROR ' ] );
+        temp = cvx_error( terr, '', [ tsolv.name, ': UNEXPECTED ERROR ' ] );
     elseif any( regexp( terr, '\n' ) )
-        temp = cvx_error( terr, 67, [ tsolv.name, ': ' ] );
+        temp = cvx_error( terr, '', [ tsolv.name, ': ' ] );
     elseif ~isempty( terr ),
         temp = { [ tsolv.name, ': ', terr ] };
     end

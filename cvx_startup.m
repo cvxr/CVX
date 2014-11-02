@@ -1,4 +1,4 @@
-function prevpath = cvx_startup( quiet )
+function [ prevpath, addpaths ] = cvx_startup( quiet )
 
 %CVX_STARTUP   Quietly add CVX to your MATLAB path (for startup).
 %    Running CVX_STARTUP upon startup ensures that CVX is properly included
@@ -40,8 +40,15 @@ mpath = cvx___.where;
 msub = cvx___.msub;
 
 prevpath = path;
+upath = userpath;
 oldpath = textscan( prevpath, '%s', 'Delimiter', ps );
 oldpath = oldpath{1}(:)';
+if ~isempty(upath),
+    if upath(end) == ps, upath(end) = []; end
+    nupath = sum(find(strcmpi(upath,oldpath),1));
+else
+    nupath = 0;
+end
 other_homes = which( 'cvx_setup.m', '-all' );
 if ~iscell( other_homes ), other_homes = { other_homes }; end
 other_homes = regexprep( other_homes, '.cvx_setup\.m$', '' );
@@ -57,10 +64,13 @@ for k = 0 : length(other_homes),
 end
 dndx = find(ndxs,1) - 1;
 if isempty(dndx),
-    dndx = +strcmp(oldpath{1},'.');
+    dndx = +strcmp(oldpath{1},'.');    
 end
+dndx = max(dndx,nupath);
 changed = false;
 if any(ndxs),
+    dndx = dndx - sum(ndxs(1:dndx));
+    if nupath && ndxs(nupath), userpath clear; end
     changed = true;
     newpath = horzcat( oldpath(~ndxs) );
     npath = sprintf( [ '%s', pathsep ], newpath{:} );

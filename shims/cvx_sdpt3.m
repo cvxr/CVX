@@ -81,7 +81,7 @@ mx  = max( r, c );
 y   = mn + 0.5 * mx .* ( mx + 1 ) + 1;
 y   = sparse( y( : ), 1 : nsq, 1, ntr, nsq );
 
-function [ x, status, tol, iters, y ] = solve( At, b, c, nonls, quiet, prec, settings )
+function [ x, status, tol, iters, y ] = solve( At, b, c, nonls, params )
 [n,m] = size(At);
 
 % SDPT3 cannot handle empty equality constraints or square systems. So
@@ -272,14 +272,24 @@ end
 %
 
 b = full(b);
+prec = params.precision;
 OPTIONS = sqlparameters;
 OPTIONS.gaptol = prec(1);
-OPTIONS.printlevel = 3 * ~quiet;
+OPTIONS.printlevel = 3 * ~params.quiet;
 warn_save = warning;
-[ obj, xx, y, zz, info ] = cvx_run_solver( @sqlp, blk, Avec, Cvec, b, OPTIONS, 'obj', 'x', 'y', 'z', 'info', settings, 5 ); %#ok
+info.termcode = -1;
+if ~isempty(params.warmstart)
+    try
+        [ obj, xx, y, zz, info ] = cvx_run_solver( @sdpt3, blk, Avec, Cvec, b, OPTIONS, params.warmstart{2:4}, 'obj', 'x', 'y', 'z', 'info', 5, params ); %#ok
+    catch
+    end
+end
+if info.termcode < 0
+    [ obj, xx, y, zz, info ] = cvx_run_solver( @sdpt3, blk, Avec, Cvec, b, OPTIONS, 'obj', 'x', 'y', 'z', 'info', 5, params ); %#ok
+end
 warning( warn_save );
 tol = max( [ info.relgap, info.pinfeas, info.dinfeas ] );
-if ~quiet, disp(' '); end
+if ~params.quiet, disp(' '); end
 
 %
 % Interpret status codes

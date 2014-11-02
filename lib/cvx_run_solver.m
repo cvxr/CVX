@@ -1,22 +1,23 @@
 function varargout = cvx_run_solver( sfunc, varargin )
 global cvx___
-settings_arg = varargin{end};
-settings     = varargin{end-1};
+params       = varargin{end};
+settings     = params.settings;
+settings_arg = varargin{end-1};
 inputs       = varargin(1:end-nargout-2);
 dumpfile = '';
 custom_on = false;
 if isstruct( settings ),
-    for f = fieldnames( settings )',
-        sval = settings.(f{1});
-        if isequal( f{1}, 'dumpfile' ),
-            dumpfile = sval;
+    for ff = fieldnames( settings )',
+        f = ff{1};
+        if isequal( f, 'dumpfile' )
+            dumpfile = settings.(f);
         else
-            custom_on = true;
-            inputs{settings_arg}.(f{1}) = sval;
+            custom_on = ~params.quiet;
+            inputs{settings_arg}.(f) = settings.(f);
         end
     end
 end
-if custom_on,
+if custom_on
     fprintf( 'NOTE: custom settings have been set for this solver.\n' );
 end
 if ~isempty( dumpfile ),
@@ -25,8 +26,10 @@ if ~isempty( dumpfile ),
     elseif length(dumpfile) < 4 || ~strcmpi(dumpfile(end-3:end),'.mat'),
         dumpfile = [ dumpfile, '.mat' ];
     end
-    fprintf( 'Saving output to: %s\n', dumpfile );
-    fprintf( '------------------------------------------------------------\n');
+    if ~params.quiet,
+        fprintf( 'Saving output to: %s\n', dumpfile );
+        fprintf( '------------------------------------------------------------\n');
+    end
     inp_names = cell(1,length(inputs));
     for k = 1 : length(inp_names),
         inp_names{1,k} = inputname(k+1);
@@ -39,7 +42,7 @@ if ~isempty( dumpfile ),
         fclose( fid );
         diary( diaryfile );
     end
-elseif custom_on,
+elseif custom_on
     fprintf( '------------------------------------------------------------\n');
 end
 errmsg = [];
@@ -50,6 +53,9 @@ try
    [ varargout{1:nargout} ] = sfunc( inputs{:} );
 catch errmsg
    [ varargout{1:nargout} ] = deal( [] );
+end
+if cvx___.warmstart{1},
+    cvx___.warmstart = [true,varargout];
 end
 if ~isempty( dumpfile ),
     if fid ~= 0,

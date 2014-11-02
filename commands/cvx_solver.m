@@ -55,6 +55,7 @@ if nargin,
     elseif cvx___.problems(end).solver ~= snumber,
         cvx___.problems(end).solver = snumber;
         cvx___.problems(end).settings = cvx___.solvers.list.settings;
+        cvx___.warmstart = {cvx___.warmstart{1}};
     end
     if cvx___.solvers.active,
         cvx_setspath;

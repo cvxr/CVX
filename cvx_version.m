@@ -12,6 +12,7 @@ global cvx___
 
 args = varargin;
 compile = false;
+server = false;
 quick = nargout > 0;
 if nargin
     if ~ischar( args{1} ),
@@ -23,6 +24,9 @@ if nargin
         tt = strcmp( args, '-compile' );
         compile = any( tt );
         if compile, quick = false; args(tt) = []; end
+        tt = strcmp( args, '-server' );
+        server = any( tt );
+        if server, quick = false; args(tt) = []; end
     end
 end
 
@@ -128,7 +132,7 @@ if quick,
     if nargout,
         varargout = { fs, cvx___.ps, mpath, cvx___.mext };
     end
-    cvx_load_prefs( false );
+    cvx_load_prefs( 0 );
     cvx___.loaded = true;
     return
 end
@@ -146,7 +150,8 @@ fprintf( '\n%s\n', line );
 fprintf( 'CVX: Software for Disciplined Convex Programming       (c)2014 CVX Research\n' );
 fprintf( 'Version %7s, Build %4s (%7s)%38s\n', cvx_ver, cvx_bld, cvx_bcomm, cvx_bdate );
 fprintf( '%s\n', line );
-fprintf( 'Installation info:\n    Path: %s\n', cvx___.where );
+fprintf( 'Installation info:\n' );
+fprintf( '    Path: %s\n', cvx___.where );
 if isoctave,
     fprintf( '    GNU Octave %s on %s\n', version, cvx___.comp );
 else
@@ -295,7 +300,7 @@ end
 % Preferences %
 %%%%%%%%%%%%%%%
 
-cvx_load_prefs( true );
+cvx_load_prefs( server + 1 );
     
 %%%%%%%%%%%%%%%%
 % License file %
@@ -331,69 +336,109 @@ function cvx_load_prefs( verbose )
 global cvx___
 fs = cvx___.fs;
 isoctave = cvx___.isoctave;
-errmsg = '';
-if isoctave,
-    pfile = [ prefdir, fs, '.cvx_prefs.mat' ];
-else
-    pfile = [ regexprep( prefdir(1), [ cvx___.fsre, 'R\d\d\d\d\w$' ], '' ), fs, 'cvx_prefs.mat' ];
-end
+errmsg = {};
 if verbose,
-	fprintf( 'Preferences:\n    Path: %s\n', pfile );
+    fprintf( 'Preferences:\n' );
 end
-outp = [];
-if exist( pfile, 'file' ),
-	try
-		outp = load( pfile );
-    catch errmsg
-        errmsg = strcat( { '    ' }, cvx_error( errmsg, 67, true ) );
-        header = 'An unexpected error occurred loading the preferences:';
-    	errmsg = [ { header }, errmsg ];
-	end
+
+pfile{1} = [ cvx___.where, fs, 'cvx_prefs.mat' ];
+if isoctave,
+    pfile{2} = [ prefdir, fs, '.cvx_prefs.mat' ];
 else
-	errmsg = 'No preference file was found.';
+    pfile{2} = [ regexprep( prefdir(1), [ cvx___.fsre, 'R\d\d\d\d\w$' ], '' ), fs, 'cvx_prefs.mat' ];
 end
-if ~isempty( outp ),
-    try
-        cvx___.path       = outp.path;
-        cvx___.license    = outp.license;
-        cvx___.solvers    = outp.solvers;
-        cvx___.broadcast  = outp.broadcast;
-        cvx___.expert     = outp.expert;
-        cvx___.precision  = outp.precision;
-        cvx___.precflag   = outp.precflag;
-        cvx___.quiet      = outp.quiet;
-        cvx___.profile    = outp.profile;
-    catch
-        outp = [];
-        errmsg = 'Preferences are outdated.';
+
+outq = [];
+first = true;
+need_default = true;
+for k = 1 : 2;
+    gfile = pfile{k};
+    if verbose,
+        fprintf( '    %s ...', gfile );
+    end
+    if exist( gfile, 'file' )
+        try
+            outg = [];
+            outg = load( gfile );
+            if first,
+                cvx___.path      = outg.path;
+                cvx___.license   = outg.license;
+                cvx___.solvers   = outg.solvers;
+                cvx___.broadcast = outg.broadcast;
+                cvx___.expert    = outg.expert;
+                cvx___.precision = outg.precision;
+                cvx___.precflag  = outg.precflag;
+                cvx___.quiet     = outg.quiet;
+                cvx___.profile   = outg.profile;
+                need_default = false;
+                if k == 1, outq = outg; end
+                first = false;
+            else
+                if ~isempty( outg.expert ),    cvx___.expert = outg.expert;    end
+                if ~isempty( outg.precision ), cvx___.precision = outg.precision; end
+                if ~isempty( outg.precflag ),  cvx___.precflag = outg.precflag;  end
+                if ~isempty( outg.broadcast ), cvx___.broadcast = outg.broadcast; end
+                if ~isempty( outg.quiet ),     cvx___.quiet = outg.quiet;     end
+                if ~isempty( outg.profile ),   cvx___.profile = outg.profile;   end
+                if ~isempty( outg.path ),      cvx___.path = outg.path;      end
+                if ~isempty( outg.solvers ),   cvx___.solvers = outg.solvers;   end
+                if ~isempty( outg.license ),   cvx___.license = outg.license;   end
+            end
+        catch exc
+            if verbose,
+                fprintf( ' ERROR\n' );
+            else
+                errmsg{end+1} = sprintf( 'Error loading %s:', gfile ); %#ok
+            end
+            if isempty( outg )
+                errmsg = cvx_error( exc, '    ' );
+            else
+                errmsg{end+1} = '    File is corrupt or out-of-date.'; %#ok
+                outg = [];
+            end
+        end
+        if isempty( outg ),
+            if k == 1 && verbose < 2,
+                errmsg{end+1} = '    Please notify your system manager.'; %#ok
+            elseif first,
+                errmsg{end+1} = '    Reverting to default preferences.'; %#ok
+                need_default = true;
+            else
+                errmsg{end+1} = '    Reverting to global preferences.'; %#ok
+            end
+            if verbose,
+                fprintf( '    %s\n', errmsg{:} );
+                errmsg = {};
+            end
+        elseif verbose
+            fprintf( ' loaded.\n' );
+        end
+    elseif k == 3 - verbose,
+        fprintf( ' to be created.\n' );
+    elseif verbose
+        fprintf( ' not found.\n' );
     end
 end
-if isempty( outp )
-    cvx___.expert     = false;
-    cvx___.precision  = [eps^0.5,eps^0.5,eps^0.25];
-    cvx___.precflag   = 'default';
-    cvx___.broadcast  = cvx___.isoctave;
-    cvx___.quiet      = false;
-    cvx___.profile    = false;
-    cvx___.path       = [];
-    cvx___.solvers    = [];
-    cvx___.license    = [];
+
+if ~isempty( errmsg )
+    temp = sprintf( '%s\n', errmsg{:} );
+    cvx_throw( temp(1:end-1) );
 end
-cvx___.pfile = pfile;
-if ~isempty( errmsg ),
-    if ischar( errmsg ),
-        errmsg = { errmsg };
-    end
-	if verbose,
-    	errmsg{end+1} = 'Default preferences will be used.';
-		fprintf( '    %s\n', errmsg{:} );
-    else
-        errmsg{end+1} = [ 'Path: ', pfile ];
-    	errmsg{end+1} = 'Please re-run CVX_SETUP.';
-        temp = sprintf( '%s\n', errmsg{:} );
-	    cvx_throw( temp(1:end-1) );
-	end
+
+if need_default,
+    cvx___.expert    = false;
+    cvx___.precision = [eps^0.5,eps^0.5,eps^0.25];
+    cvx___.precflag  = 'default';
+    cvx___.broadcast = isoctave;
+    cvx___.quiet     = false;
+    cvx___.profile   = false;
+    cvx___.path      = [];
+    cvx___.solvers   = [];
+    cvx___.license   = [];
 end
+
+cvx___.pfile = pfile{end};
+cvx___.gprefs = outq;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Recursive manifest building function %

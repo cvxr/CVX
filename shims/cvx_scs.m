@@ -58,7 +58,7 @@ else
     shim.solve = @solve;
 end
 
-function [ x, status, tol, iters, y ] = solve( At, b, c, nonls, quiet, prec, settings )
+function [ x, status, tol, iters, y ] = solve( At, b, c, nonls, params )
 
 n = length( c );
 m = length( b );
@@ -141,11 +141,13 @@ if KK.l, K.l = KK.l; end
 if ~isempty( KK.q ), K.q = KK.q(:); end
 if ~isempty( KK.s ), K.s = KK.s(:); end
 if ~isempty( KK.e ), K.ed = KK.e(:); end
-pars.verbose = +(~quiet);
+prec = params.prec;
+pars.verbose = +(~params.quiet);
 pars.max_iters = 10000;
 pars.eps = prec(1);
 
-[ yy, xx, info ] = cvx_run_solver( @scs, data, K, pars, 'xx', 'yy', 'info', settings, 3 );
+[ yy, xx, info ] = cvx_run_solver( @scs, data, K, pars, 'xx', 'yy', 'info', 3, params );
+
 xx = full( xx );
 yy = full( yy );
 x  = real( reord * xx );

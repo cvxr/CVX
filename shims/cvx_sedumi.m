@@ -70,7 +70,7 @@ else
     shim.solve = @solve;
 end
 
-function [ x, status, tol, iters, y ] = solve( At, b, c, nonls, quiet, prec, settings )
+function [ x, status, tol, iters, y ] = solve( At, b, c, nonls, params )
 
 n = length( c );
 m = length( b );
@@ -150,9 +150,10 @@ reord = sparse( ...
 At = reord' * At;
  c = reord' * c;
 pars.free = K.f > 1 && nnz( K.q );
+prec = params.precision;
 pars.eps     = prec(1);
 pars.bigeps  = prec(3);
-if quiet,
+if params.quiet,
     pars.fid = 0;
 end
 add_row = isempty( At );
@@ -162,7 +163,7 @@ if add_row,
     b = 1;
     c = [ 0 ; c ];
 end
-[ xx, yy, info ] = cvx_run_solver( @sedumi, At, b, c, K, pars, 'xx', 'yy', 'info', settings, 5 );
+[ xx, yy, info ] = cvx_run_solver( @sedumi, At, b, c, K, pars, 'xx', 'yy', 'info', 5, params );
 if add_row,
     xx = xx(2:end);
     yy = zeros(0,1);

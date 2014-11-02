@@ -12,10 +12,13 @@ obj   = pstr.objective;
 prec  = pstr.precision;
 gobj  = abs( pstr.direction ) > 1;
 solv  = pstr.solver;
-sset  = pstr.settings;
-ndual = ~isempty( pstr.duals );
 shim  = cvx___.solvers.list( solv );
-if isempty(shim.eargs), eargs = {}; else eargs = shim.eargs; end
+params = shim.eargs;
+params.quiet = quiet;
+params.precision = prec;
+params.warmstart = cvx___.warmstart(2:end);
+params.settings = pstr.settings;
+ndual = ~isempty( pstr.duals );
 nobj  = numel( obj );
 if nobj > 1,
     cvx_throw( 'Your objective function is not a scalar.' );
@@ -69,6 +72,7 @@ pval  = NaN;
 dval  = NaN;
 tprec = Inf;
 estruc = [];
+badsol = false;
 
 iters = 0;
 tt = ( b' ~= 0 ) & ~any( At, 1 );
@@ -91,6 +95,7 @@ if m > n && n > 0,
     else
         warning( [ 'CVX:', status ], estr );
     end
+    badsol = true;
 
 elseif n ~= 0 && ~infeas && ( any( b ) || any( c ) ),
         
@@ -156,6 +161,7 @@ elseif n ~= 0 && ~infeas && ( any( b ) || any( c ) ),
         ndx2  = [ ndxs ; reshape(n+1:n+7*nc,7,nc) ];
         ndx3  = 1 : n; 
         ndx3(ndxs) = [];
+        params.quiet = true;
         
         epow = 8; epow_i = 0.125; g = 0.123; h = 0.345;
         Pr = [ 2, 3, 7,10, 2, 3, 2, 3]; Qr = [ 1, 5, 6, 2, 3, 5, 6, 2, 3, 8, 9, 4, 8, 9];
@@ -205,7 +211,7 @@ elseif n ~= 0 && ~infeas && ( any( b ) || any( c ) ),
             % Solve the approximation
             [ x, status, tprec, iters2, y ] = shim.solve( ...
                 [ PP * At, bsxfun( @times, QQ, amult ) ], ...
-                b, PP*c, cones, true, prec, sset, eargs{:} );
+                b, PP*c, cones, params );
             iters = iters + iters2;
             x_valid = ~any(isnan(x));
             y_valid = ~any(isnan(y));
@@ -372,13 +378,16 @@ elseif n ~= 0 && ~infeas && ( any( b ) || any( c ) ),
         end
         if isnan( best_x(1) ), 
             status = 'Infeasible';
+            badsol = true;
         elseif isnan( best_y(1) ), 
             status = 'Unbounded';
+            badsol = true;
         else
             status = 'Solved';
         end
         if best_prec > prec(3),
             status = 'Failed';
+            badsol = true;
         elseif best_prec > prec(2),
             status = [ 'Inaccurate/', status ];
         end
@@ -387,13 +396,13 @@ elseif n ~= 0 && ~infeas && ( any( b ) || any( c ) ),
         c = c(1:n,:);
     elseif ndual || dualized,
         try
-            [ x, status, tprec, iters, y ] = shim.solve( At, b, c, cones, quiet, prec, sset, eargs{:} );
+            [ x, status, tprec, iters, y ] = shim.solve( At, b, c, cones, params );
         catch estruc
             status = 'Error';
         end
     else
         try
-            [ x, status, tprec, iters ] = shim.solve( At, b, c, cones, quiet, prec, sset, eargs{:} );
+            [ x, status, tprec, iters ] = shim.solve( At, b, c, cones, params );
         catch estruc
             status = 'Error';
         end
@@ -427,6 +436,7 @@ elseif n ~= 0 && ~infeas && ( any( b ) || any( c ) ),
                 pval = 1;
                 dval = 1;
             end
+            badsol = true;
         otherwise,
             if ~isequal( status, 'Error' ), 
                 status = Failed; 
@@ -446,14 +456,17 @@ elseif n ~= 0 && ~infeas && ( any( b ) || any( c ) ),
             pval = 1;
             dval = 1;
         case { 'Infeasible', 'Inaccurate/Infeasible' },
+            badsol = true;
             oval = sgn * Inf;
             bval = oval;
             dval = 0;
         case { 'Unbounded', 'Inaccurate/Unbounded' },
+            badsol = true;
             oval = -sgn * Inf;
             bval = oval;
             pval = 0;
         otherwise,
+            badsol = true;
             bval = NaN;
             if ~isnan( x ), pval = 1; end
             if ~isnan( y ), dval = 1; end
@@ -479,6 +492,7 @@ elseif infeas,
     oval = sgn * Inf;
     bval = oval;
     dval = 0;
+    badsol = true;
     
 else
     
@@ -497,6 +511,7 @@ else
     bval = oval;
     pval = 1;
     dval = 1;
+    badsol = true;
     
 end
 
@@ -526,6 +541,9 @@ if ~quiet,
 end
 
 tol = tprec(1);
+if badsol
+    cvx___.warmstart(2:end) = [];
+end
 
 %
 % Push the results into the master CVX workspace

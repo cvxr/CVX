@@ -1,9 +1,16 @@
-function lines = cvx_error( errmsg, widths, useline, prefix, chop )
+function lines = cvx_error( errmsg, prefix, useline )
 
 % CVX_ERROR   Formats text for inclusion in error messages.
 %    This is an internal function used by CVX. It needed to be in the CVX
 %    home directory so that it's available during a fresh installation.
 
+width = 64;
+if nargin < 2,
+    prefix = '';
+    useline = 'UNEXPECTED ERROR: ';
+elseif nargin < 3,
+    useline = false;
+end
 if ~ischar( errmsg ),
     if strncmp( errmsg.identifier, 'CVX:', 4 ),
         format = 'basic';
@@ -27,7 +34,6 @@ for k = 1 : length(rndx) - 1,
     line = errmsg( rndx(k) + 1 : rndx(k+1) - 1 );
     line = regexprep( line, '\s*$', '' );
     if isempty( line ), continue; end
-    width    = widths( min( k, length(widths) ) );
     emax     = length( line );
     n_indent = 0;
     if emax > width,
@@ -51,25 +57,22 @@ for k = 1 : length(rndx) - 1,
         n_indent = f_indent + 4;
     end
 end
-if nargin >= 3 && ( ischar(useline) || useline ),
+if ischar(useline) || useline,
     line = '-';
-    line = line(1,ones(1,max(cellfun(@length,lines))));
+    line = line(1,ones(1,max(length(useline),max(cellfun(@length,lines)))));
     sline = line;
     if ischar( useline ),
         sline(1:length(useline)) = useline;
     end
     lines = [ sline, lines, line ];
 end
-if nargout == 0 || nargin >= 4,
-    if nargin < 4, prefix = ''; end
-    lines = sprintf( [ prefix, '%s\n' ], lines{:} );
-end
-if nargin >= 5 && chop,
-    lines(end) = [];
-end
+lines = sprintf( [ prefix, '%s\n' ], lines{:} );
+lines = strrep( lines, '\', '\\' );
 if nargout == 0,
-    fprintf( '%s', lines );
+    fprintf( lines );
     clear lines
+else
+    lines(end) = [];
 end
 
 % Copyright 2005-2014 CVX Research, Inc.
