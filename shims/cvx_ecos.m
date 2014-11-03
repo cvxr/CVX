@@ -105,7 +105,7 @@ reord = sparse( ...
 At = reord' * At;
 c  = reord' * c;
 
-prec = params.prec;
+prec = params.precision;
 opts.abstol = prec(1);
 opts.reltol = prec(1);
 opts.feastol = prec(1);
@@ -114,7 +114,7 @@ opts.reltol_inacc = prec(3);
 opts.feastol_inacc = prec(3);
 opts.verbose = 1;
 opts.maxit = 100;
-if quiet,
+if params.quiet,
     opts.verbose = 0;
 end
 
