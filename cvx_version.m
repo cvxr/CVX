@@ -42,14 +42,14 @@ else
     if isoctave,
         comp = octave_config_info('canonical_host_type');
         mext = 'mex';
-        ispc = false;
-        ismac = false;
+        izpc = false;
+        izmac = false;
         if octave_config_info('mac'),
             msub = 'mac';
-            ismac = true;
+            izmac = true;
         elseif octave_config_info('windows'),
             msub = 'win';
-            ispc = true;
+            izpc = true;
         elseif octave_config_info('unix') && any(strfind(comp,'linux')),
             msub = 'lin';
         else
@@ -65,12 +65,12 @@ else
         end
     else
         comp = computer;
-        ispc = strncmp( comp, 'PC', 2  );
-        ismac = strncmp( comp, 'MAC', 3 );
+        izpc = strncmp( comp, 'PC', 2  );
+        izmac = strncmp( comp, 'MAC', 3 );
         mext = mexext;
         msub = '';
     end
-    if ispc,
+    if izpc,
         fs = '\'; 
         fsre = '\\';
         ps = ';'; 
@@ -79,7 +79,7 @@ else
         fs = '/'; 
         fsre = '/';
         ps = ':';
-        cs = ~ismac;
+        cs = ~izmac;
     end
 
     % Install location
@@ -199,7 +199,7 @@ if fid > 0,
         missing = setdiff( manifest, newman );
         additional = setdiff( newman, manifest );
         if ~isempty( missing ) || ~isempty( additional ),
-            if ispc,
+            if fs ~= '/',
                 missing = strrep( missing, '/', fs );
                 additional = strrep( additional, '/', fs );
             end
@@ -427,7 +427,7 @@ end
 [tmp,ndxs1] = sort(upper(dirs)); %#ok
 [tmp,ndxs2] = sort(upper(files)); %#ok
 newman = horzcat( dirs(ndxs1), files(ndxs2) );
-if ispc,
+if fs ~= '/',
     newman = strrep( newman, fs, '/' );
 end
 newman = newman(:);
