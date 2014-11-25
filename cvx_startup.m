@@ -1,4 +1,4 @@
-function [ prevpath, addpaths ] = cvx_startup( quiet )
+function [ prevpath, addpaths, warnings ] = cvx_startup( quiet )
 
 %CVX_STARTUP   Quietly add CVX to your MATLAB path (for startup).
 %    Running CVX_STARTUP upon startup ensures that CVX is properly included
@@ -38,6 +38,7 @@ ps = cvx___.ps;
 cs = cvx___.cs;
 mpath = cvx___.where;
 msub = cvx___.msub;
+warnings = {};
 
 prevpath = path;
 upath = userpath;
@@ -62,6 +63,12 @@ for k = 0 : length(other_homes),
     tndxs(tndxs) = cellfun(@(x)length(x)<=plen||x(plen+1)==fs,oldpath(tndxs));
     ndxs = ndxs | tndxs;
 end
+if ~isempty( other_homes ),
+    qq = sprintf( '    %s\n', other_homes{:} );
+    warnings{end+1} = sprintf( [ ...
+        'WARNING: other CVX installations were found in your MATLAB path:\n%s'...
+        'They have been removed to prevent conflicts.' ], qq );
+end
 dndx = find(ndxs,1) - 1;
 if isempty(dndx),
     dndx = +strcmp(oldpath{1},'.');    
@@ -79,13 +86,30 @@ if any(ndxs),
 end
 
 addpaths = { 'builtins', 'commands', 'functions', 'lib', 'structures' };
-if ~any(which('vec')), addpaths{end+1} = [ 'functions', fs, 'vec_' ]; end
-if ~any(which('square')), addpaths{end+1} = [ 'functions', fs, 'square_' ]; end
+qq = which('vec');
+if isempty(qq),
+    addpaths{end+1} = [ 'functions', fs, 'vec_' ]; 
+elseif ~quiet,
+    warnings{end+1} = sprintf([...
+'WARNING: An existing copy of "vec.m" was found in your MATLAB path:\n   %s\n', ...
+'CVX models will not be affected, but SDPT3 depends on this function. So if\n', ...
+'you delete it, you will need to re-run CVX_SETUP.'], qq );
+end
+qq = which('square');
+if isempty(qq),
+    addpaths{end+1} = [ 'functions', fs, 'square_' ]; 
+elseif ~quiet,
+    warnings{end+1} = sprintf([...
+'WARNING: An existing copy of "square.m" was found in your MATLAB path:\n   %s\n', ...
+'Models using SQUARE() in CVX expressions will not be affected; but outside\n', ...
+'of CVX, this version will be used, and it likely has a different meaning.\n', ...
+'To avoid any confusion, just use X.^2 instead of SQUARE(X) in CVX.'], qq );
+end
 addpaths = strcat( [ mpath, fs ], addpaths );
 if ~isempty(msub),
   mpath2 = [ mpath, fs, 'lib', fs, msub ];
   if exist( mpath2, 'dir' ),
-    addpaths{end+1} = mpath2;
+      addpaths{end+1} = mpath2;
   end
 end
 addpaths{end+1} = mpath;
@@ -103,10 +127,11 @@ if ~quiet,
     else
         fprintf( 'done.\n' );
     end
-    if ~isempty( other_homes ),
-        fprintf( 'WARNING: other CVX installations were found in your MATLAB path:\n' );
-        fprintf( '    %s\n', other_homes{:} );
-        fprintf( 'They have been removed to prevent conflicts.\n' );
+    if nargout < 3,
+        for k = 1 : length(warnings),
+            if k > 1, fprintf( '----\n' ); end
+            fprintf( '%s\n', warnings{k} );
+        end
     end
 end
 if nargout,

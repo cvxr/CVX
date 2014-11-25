@@ -34,7 +34,7 @@ try
     % Reset the CVX paths %
     %%%%%%%%%%%%%%%%%%%%%%%
     
-    [ oldpath, addpaths ] = cvx_startup( false );
+    [ oldpath, addpaths, warnings ] = cvx_startup( false );
     if ~isempty( oldpath ),
         if srv,
             fprintf( 'Saving GLOBAL path...' ); 
@@ -367,35 +367,15 @@ try
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     
     if need_cc,
-        fprintf( '%s\n', line );
-        fprintf('WARNING: CVX was unable to run the test model due to a conflict with the\n' );
-        fprintf('previous version of CVX. If no other errors occurred, then the setup was\n' );
-        fprintf('still successful; however, to use CVX, you will need to re-start MATLAB.\n' );
+        warnings{end+1} = sprintf( [...
+'WARNING: CVX was unable to run the test model due to a conflict with the\n', ...
+'previous version of CVX. If no other errors occurred, then the setup was\n', ...
+'still successful; however, to use CVX, you will need to re-start MATLAB.' ] );
+    end
+    for k = 1 : length(warnings),
+        fprintf( '%s\n%s\n', line, warnings{k} );
     end
     
-    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    % Warn about signal processing toolbox conflict %
-    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    
-    squares = which( 'square', '-all' );
-    if iscell( squares ) && length( squares ) > 1,
-        squares = squares(~cellfun(@(x)any(strfind(x,[fs,'@cvx',fs])),squares));
-        if length(squares) == 1 || ~strncmp(squares{1},[mpath,fs],length(mpath)+1),
-            squares = {};
-        end
-    else
-        squares = {};
-    end
-    if ~isempty(squares),
-        fprintf( '%s\n', line );
-        fprintf('WARNING: CVX includes a function\n    %s\n', squares{1} );
-        fprintf('that conflicts with a function of the same name found here:\n    %s\n', squares{2} );
-        fprintf('If you wish to use this second function, you will need to rename or delete\n' );
-        fprintf('the CVX version, as it will likely produce different results. This will not\n' );
-        fprintf('affect the use of SQUARE() within CVX models, because CVX relies on a\n' );
-        fprintf('different, internal version of SQUARE() when constructing CVX models.\n')
-    end
-
 catch errmsg
 
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
