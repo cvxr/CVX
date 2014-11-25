@@ -47,14 +47,14 @@ else
     if isoctave,
         comp = octave_config_info('canonical_host_type');
         mext = 'mex';
-        ispc = false;
-        ismac = false;
+        izpc = false;
+        izmac = false;
         if octave_config_info('mac'),
             msub = 'mac';
-            ismac = true;
+            izmac = true;
         elseif octave_config_info('windows'),
             msub = 'win';
-            ispc = true;
+            izpc = true;
         elseif octave_config_info('unix') && any(strfind(comp,'linux')),
             msub = 'lin';
         else
@@ -70,12 +70,12 @@ else
         end
     else
         comp = computer;
-        ispc = strncmp( comp, 'PC', 2  );
-        ismac = strncmp( comp, 'MAC', 3 );
+        izpc = strncmp( comp, 'PC', 2  );
+        izmac = strncmp( comp, 'MAC', 3 );
         mext = mexext;
         msub = '';
     end
-    if ispc,
+    if izpc,
         fs = '\'; 
         fsre = '\\';
         ps = ';'; 
@@ -84,7 +84,7 @@ else
         fs = '/'; 
         fsre = '/';
         ps = ':';
-        cs = ~ismac;
+        cs = ~izmac;
     end
 
     % Install location
@@ -205,7 +205,7 @@ if fid > 0,
         missing = setdiff( manifest, newman );
         additional = setdiff( newman, manifest );
         if ~isempty( missing ) || ~isempty( additional ),
-            if ispc,
+            if fs ~= '/',
                 missing = strrep( missing, '/', fs );
                 additional = strrep( additional, '/', fs );
             end
@@ -301,7 +301,7 @@ end
 %%%%%%%%%%%%%%%
 
 cvx_load_prefs( server + 1 );
-    
+
 %%%%%%%%%%%%%%%%
 % License file %
 %%%%%%%%%%%%%%%%
@@ -338,7 +338,7 @@ fs = cvx___.fs;
 isoctave = cvx___.isoctave;
 errmsg = {};
 if verbose,
-    fprintf( 'Preferences:\n' );
+    fprintf( 'Loading preferences:\n' );
 end
 
 pfile{1} = [ cvx___.where, fs, 'cvx_prefs.mat' ];
@@ -347,6 +347,14 @@ if isoctave,
 else
     pfile{2} = [ regexprep( prefdir(1), [ cvx___.fsre, 'R\d\d\d\d\w$' ], '' ), fs, 'cvx_prefs.mat' ];
 end
+if isfield( cvx___, 'loaded' ),
+    fprintf( 'Preferences already loaded:\n' );
+    if ~isempty( cvx___.gprefs ),
+        fprintf( '    Global: %s\n', pfile{1} );
+    end
+    fprintf( '    Local: %s\n', pfile{2} );
+    return
+end
 
 outq = [];
 first = true;
@@ -354,7 +362,8 @@ need_default = true;
 for k = 1 : 2;
     gfile = pfile{k};
     if verbose,
-        fprintf( '    %s ...', gfile );
+        if k == 1, typ = 'Global'; else typ = 'Local'; end
+        fprintf( '    %s: %s ...', typ, gfile );
     end
     if exist( gfile, 'file' )
         try
@@ -371,7 +380,10 @@ for k = 1 : 2;
                 cvx___.quiet     = outg.quiet;
                 cvx___.profile   = outg.profile;
                 need_default = false;
-                if k == 1, outq = outg; end
+                if k == 1, 
+                    outq = outg; 
+                    outq.pfile = gfile;
+                end
                 first = false;
             else
                 if ~isempty( outg.expert ),    cvx___.expert = outg.expert;    end
@@ -474,7 +486,7 @@ end
 [tmp,ndxs1] = sort(upper(dirs)); %#ok
 [tmp,ndxs2] = sort(upper(files)); %#ok
 newman = horzcat( dirs(ndxs1), files(ndxs2) );
-if ispc,
+if fs ~= '/',
     newman = strrep( newman, fs, '/' );
 end
 newman = newman(:);
