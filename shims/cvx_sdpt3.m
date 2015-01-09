@@ -219,7 +219,7 @@ if ~isempty( tt ),
             nt2 = 0.5 * n2 * ( n2 + 1 );
         end
         blk{end,2}{end+1} = n2 * ones(1,nv);
-        tvec{end}{end+1} = vec(ti);
+        tvec{end}{end+1} = ti(:);
         
         if types{k}(1) == 's',
             
@@ -402,7 +402,7 @@ end
 if x_good,
     x = zeros(1,n);
     for k = 1 : length(xx),
-        x(1,tvec{k}) = x(1,tvec{k}) + vec(xx{k})' * xvec{k};
+        x(1,tvec{k}) = x(1,tvec{k}) + xx{k}(:)' * xvec{k};
     end
 end
 if x_good && all(isfinite(x)),
@@ -436,7 +436,7 @@ if need_z,
     if y_good,
         z = zeros(1,n);
         for k = 1 : length(zz),
-            z(1,tvec{k}) = z(1,tvec{k}) + vec(zz{k})' * zvec{k};
+            z(1,tvec{k}) = z(1,tvec{k}) + zz{k}(:)' * zvec{k};
         end
     end
     if y_good && all(isfinite(z)),
