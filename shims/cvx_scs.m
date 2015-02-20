@@ -40,8 +40,15 @@ if isempty( shim.name ),
             tshim.error = sprintf( 'Unexpected error:\n%s\n', errmsg.message );
         end
         if isempty( tshim.error ),
-            otp = regexp( otp, 'scs \d+\.\d+', 'match' );
-            if ~isempty(otp), tshim.version = otp{1}(5:end); end
+            otp = regexp( otp, 'scs \d+\.\d+\.?\d+?', 'match' );
+            if ~isempty(otp), 
+                otp = otp{1}(5:end);
+                tshim.version = otp; 
+                otp = otp(1:find(otp=='.',1,'last')-1);
+                tshim.eargs.newsdp = str2double(otp) >= 1.1;
+            else
+                tshim.eargs.newsdp = false;
+            end
             tshim.solve = @solve;
             if k ~= 1,
                 tshim.path = [ new_dir, pathsep ];
@@ -93,15 +100,25 @@ for k = 1 : length( nonls ),
             reord.q.n = reord.q.n + nnv;
             K.q = [ K.q, nn * ones( 1, nv ) ];
         case 'semidefinite',
-            nn = 0.5 * ( sqrt( 8 * nn + 1 ) - 1 );
-            str = cvx_create_structure( [ nn, nn, nv ], 'symmetric' );
-            K.s = [ K.s, nn * ones( 1, nv ) ];
-            [ rr, cc, vv ] = find( cvx_invert_structure( str, true ) );
-            rr = temp( rr );
-            reord.s.r = [ reord.s.r; rr( : ) ];
-            reord.s.c = [ reord.s.c; cc( : ) + reord.s.n ];
-            reord.s.v = [ reord.s.v; vv( : ) ];
-            reord.s.n = reord.s.n + nn * nn * nv;
+            n2 = 0.5 * ( sqrt( 8 * nn + 1 ) - 1 );
+            K.s = [ K.s, n2 * ones( 1, nv ) ];
+            if params.newsdp,
+                scale = ones(nn,nv);
+                sdiag = cumsum([1,n2:-1:2]);
+                scale(sdiag,:) = sqrt(2);
+                reord.s.r = [ reord.s.r ; temp(:) ];
+                reord.s.c = [ reord.s.c ; reord.s.n + ( 1 : nnv )' ];
+                reord.s.v = [ reord.s.v ; scale(:) ];
+                reord.s.n = reord.s.n + nnv;
+            else
+                str = cvx_create_structure( [ n2, n2, nv ], 'symmetric' );
+                [ rr, cc, vv ] = find( cvx_invert_structure( str, true ) );
+                rr = temp( rr );
+                reord.s.r = [ reord.s.r; rr( : ) ];
+                reord.s.c = [ reord.s.c; cc( : ) + reord.s.n ];
+                reord.s.v = [ reord.s.v; vv( : ) ];
+                reord.s.n = reord.s.n + n2 * n2 * nv;
+            end
     end
 end
 if reord.f.n > 0,
@@ -141,10 +158,10 @@ if KK.l, K.l = KK.l; end
 if ~isempty( KK.q ), K.q = KK.q(:); end
 if ~isempty( KK.s ), K.s = KK.s(:); end
 if ~isempty( KK.e ), K.ed = KK.e(:); end
-prec = params.prec;
+prec = params.precision;
 pars.verbose = +(~params.quiet);
 pars.max_iters = 10000;
-pars.eps = prec(1);
+pars.eps = max(eps,prec(1));
 
 [ yy, xx, info ] = cvx_run_solver( @scs, data, K, pars, 'xx', 'yy', 'info', 3, params );
 
@@ -165,6 +182,7 @@ switch info.status
         status = 'Unbounded';
         tol = info.resDual;
     otherwise,
+        tol = Inf;
         status = 'Failed';
 end
 if tol > prec(2),
