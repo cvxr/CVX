@@ -83,9 +83,11 @@ elseif length( w ) ~= nx,
 elseif nx ~= 0 && ~any( w ),
     cvx_throw( 'At least one of the weights must be nonzero.' );
 end
-if any( w ~= floor( w ) ),
+if numel( w ) > 1 && any( w ~= floor( w ) ),
     [ nn, dd ] = rat( w );
-    w = nn .* ( prod(unique(nonzeros(dd))) ./ dd );
+    dmax = dd(1);
+    for k = 2 : length(dd), dmax = lcm(dmax,dd(k)); end
+    w = nn .* ( dmax ./ dd );
 end
 
 %
@@ -226,9 +228,15 @@ if ~wbasic,
         % Update the weights
         wt       = bitand( w(wi_t), w(wj_t) );
         w(end+1) = 2 * wt; %#ok
-        wt       = bitcmp( wt, nq );
-        w(wi_t)  = bitand( w(wi_t), wt );
-        w(wj_t)  = bitand( w(wj_t), wt );
+        try
+            wt       = bitcmp( wt, nq );
+            w(wi_t)  = bitand( w(wi_t), wt );
+            w(wj_t)  = bitand( w(wj_t), wt );
+        catch
+            wt       = bitcmp( uint64(wt) );
+            w(wi_t)  = bitand( uint64(w(wi_t)), wt );
+            w(wj_t)  = bitand( uint64(w(wj_t)), wt );
+        end
         % Update the count
         ndx1 = [ ndx1, length(ndxs) ]; %#ok
         [ ff, ee ] = log2( w(ndx1) ); %#ok

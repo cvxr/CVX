@@ -14,6 +14,7 @@ if isempty( shim.name ),
     shim.config = struct( 'dualize', 1, 'nonnegative', 1, 'lorentz', 1, ...
         'semidefinite', 1, 'exponential', 1 );
     shim.warning = 'The algorithm employed by SCS typically requires a large number of iterations to obtain the levels of accuracy normally sought by CVX. Consider reducing the precision using the CVX_PRECISION command to improve performance.';
+    shim.params.newsdp = false;
     fpaths = which( fname, '-all' );    
     if ~iscell(fpaths),
         fpaths = { fpaths };
@@ -32,23 +33,36 @@ if isempty( shim.name ),
         tshim.fullpath = fpath;
         tshim.version = 'unknown';
         tshim.location = new_dir;
+        otp = [];
         try
-            fid = fopen(fname);
-            otp = fread(fid,Inf,'uint8=>char')';
-            fclose(fid);
+            if exist( [ fpath(1:end-2), '_version.', mexext ], 'file' ),
+                otp = scs_version;
+            end
         catch errmsg
             tshim.error = sprintf( 'Unexpected error:\n%s\n', errmsg.message );
         end
-        if isempty( tshim.error ),
-            otp = regexp( otp, 'scs \d+\.\d+\.?\d+?', 'match' );
+        if isempty(otp) && isempty(tshim.error),
+            try
+                fid = fopen(fname);
+                otp = fread(fid,Inf,'uint8=>char')';
+                fclose(fid);
+                otp = regexp( otp, 'scs \d+\.\d+\.?\d+?', 'match' );
+                if ~isempty(otp), 
+                    otp = otp{1}(5:end);
+                end
+            catch errmsg
+                tshim.error = sprintf( 'Unexpected error:\n%s\n', errmsg.message );
+            end
+        end
+        if isempty(tshim.error),
             if ~isempty(otp), 
-                otp = otp{1}(5:end);
                 tshim.version = otp; 
                 otp = otp(1:find(otp=='.',1,'last')-1);
                 tshim.eargs.newsdp = str2double(otp) >= 1.1;
             else
                 tshim.eargs.newsdp = false;
             end
+            tshim.params.newsdp = tshim.eargs.newsdp;
             tshim.solve = @solve;
             if k ~= 1,
                 tshim.path = [ new_dir, pathsep ];
@@ -63,6 +77,11 @@ if isempty( shim.name ),
     end
 else
     shim.solve = @solve;
+    if isfield( shim.params, 'newsdp' ),
+        shim.eargs.newsdp = shim.params.newsdp;
+    else
+        shim.eargs.newsdp = false;
+    end
 end
 
 function [ x, status, tol, iters, y ] = solve( At, b, c, nonls, params )
