@@ -14,7 +14,6 @@ if isempty( shim.name ),
     shim.config = struct( 'dualize', 1, 'nonnegative', 1, 'lorentz', 1, ...
         'semidefinite', 1, 'exponential', 1 );
     shim.warning = 'The algorithm employed by SCS typically requires a large number of iterations to obtain the levels of accuracy normally sought by CVX. Consider reducing the precision using the CVX_PRECISION command to improve performance.';
-    shim.params.newsdp = false;
     fpaths = which( fname, '-all' );    
     if ~iscell(fpaths),
         fpaths = { fpaths };
@@ -31,43 +30,17 @@ if isempty( shim.name ),
         cd( new_dir );
         tshim = oshim;
         tshim.fullpath = fpath;
-        tshim.version = 'unknown';
         tshim.location = new_dir;
-        otp = [];
-        try
-            if exist( [ fpath(1:end-2), '_version.', mexext ], 'file' ),
-                otp = scs_version;
-            end
-        catch errmsg
-            tshim.error = sprintf( 'Unexpected error:\n%s\n', errmsg.message );
+        if ~exist( [ new_dir, filesep, 'scs_version.', mexext ], 'file' ),
+            tshim.version = 'unknown';
+            tshim.error = 'CVX 3.0 requires SCS version 1.1 or later.';
+        else
+            tshim.version = scs_version;
         end
-        if isempty(otp) && isempty(tshim.error),
-            try
-                fid = fopen(fname);
-                otp = fread(fid,Inf,'uint8=>char')';
-                fclose(fid);
-                otp = regexp( otp, 'scs \d+\.\d+\.?\d+?', 'match' );
-                if ~isempty(otp), 
-                    otp = otp{1}(5:end);
-                end
-            catch errmsg
-                tshim.error = sprintf( 'Unexpected error:\n%s\n', errmsg.message );
-            end
+        if k ~= 1,
+            tshim.path = [ new_dir, pathsep ];
         end
-        if isempty(tshim.error),
-            if ~isempty(otp), 
-                tshim.version = otp; 
-                otp = otp(1:find(otp=='.',1,'last')-1);
-                tshim.eargs.newsdp = str2double(otp) >= 1.1;
-            else
-                tshim.eargs.newsdp = false;
-            end
-            tshim.params.newsdp = tshim.eargs.newsdp;
-            tshim.solve = @solve;
-            if k ~= 1,
-                tshim.path = [ new_dir, pathsep ];
-            end
-        end
+        tshim.solve = @solve;
         shim = [ shim, tshim ]; %#ok
     end
     cd( old_dir );
@@ -77,11 +50,6 @@ if isempty( shim.name ),
     end
 else
     shim.solve = @solve;
-    if isfield( shim.params, 'newsdp' ),
-        shim.eargs.newsdp = shim.params.newsdp;
-    else
-        shim.eargs.newsdp = false;
-    end
 end
 
 function [ x, status, tol, iters, y ] = solve( At, b, c, nonls, params )
@@ -121,23 +89,13 @@ for k = 1 : length( nonls ),
         case 'semidefinite',
             n2 = 0.5 * ( sqrt( 8 * nn + 1 ) - 1 );
             K.s = [ K.s, n2 * ones( 1, nv ) ];
-            if params.newsdp,
-                scale = ones(nn,nv);
-                sdiag = cumsum([1,n2:-1:2]);
-                scale(sdiag,:) = sqrt(2);
-                reord.s.r = [ reord.s.r ; temp(:) ];
-                reord.s.c = [ reord.s.c ; reord.s.n + ( 1 : nnv )' ];
-                reord.s.v = [ reord.s.v ; scale(:) ];
-                reord.s.n = reord.s.n + nnv;
-            else
-                str = cvx_create_structure( [ n2, n2, nv ], 'symmetric' );
-                [ rr, cc, vv ] = find( cvx_invert_structure( str, true ) );
-                rr = temp( rr );
-                reord.s.r = [ reord.s.r; rr( : ) ];
-                reord.s.c = [ reord.s.c; cc( : ) + reord.s.n ];
-                reord.s.v = [ reord.s.v; vv( : ) ];
-                reord.s.n = reord.s.n + n2 * n2 * nv;
-            end
+            scale = ones(nn,nv);
+            sdiag = cumsum([1,n2:-1:2]);
+            scale(sdiag,:) = sqrt(2);
+            reord.s.r = [ reord.s.r ; temp(:) ];
+            reord.s.c = [ reord.s.c ; reord.s.n + ( 1 : nnv )' ];
+            reord.s.v = [ reord.s.v ; scale(:) ];
+            reord.s.n = reord.s.n + nnv;
     end
 end
 if reord.f.n > 0,
@@ -182,7 +140,7 @@ pars.verbose = +(~params.quiet);
 pars.max_iters = 10000;
 pars.eps = max(eps,prec(1));
 
-[ yy, xx, info ] = cvx_run_solver( @scs, data, K, pars, 'xx', 'yy', 'info', 3, params );
+[ yy, xx, ss, info ] = cvx_run_solver( @scs, data, K, pars, 'xx', 'yy', 'ss', 'info', 3, params ); %#ok
 
 xx = full( xx );
 yy = full( yy );

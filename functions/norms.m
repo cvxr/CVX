@@ -27,9 +27,9 @@ function y = norms( varargin )
 
 persistent P
 if isempty( P ),
-    P.map = cvx_remap( { 'constant' ; 'l_convex' ; ...
-        { 'p_convex', 'n_concave', 'affine' } } );
-    P.funcs = { @norms_1, @norms_1, @norms_2 };
+    P.map = cvx_remap( { 'constant' ; 'l_convex' ; 'r_affine' ; ...
+        'affine' ; { 'p_convex', 'n_concave', 'affine' } } );
+    P.funcs = { @norms_1, @norms_1, @norms_2, @norms_3, @norms_4 };
     P.zero = 0;
     P.reduce = true;
     P.reverse = false;
@@ -63,17 +63,82 @@ y = sum( abs( x ) .^ p, 1 ) .^ ( 1 / p );
 function y = norms_2( x, p ) %#ok
 [nx,nv] = size(x);
 if p == 2,
+    x = cvx_linearize(x,'cplx');
     cvx_begin
         epigraph variable y( 1, nv ) nonnegative_
-        { cvx_linearize(x), y } == lorentz( [ nx, nv ], 1, ~isreal( x ) ); %#ok
+        { x, y } == lorentz( [ nx, nv ], 1, ~isreal( x ) ); %#ok
+    cvx_end
+else
+    if ~cvx_isaffine( x ),
+        x = abs( x );
+        mode = 'func';
+    elseif isreal( x ),
+        mode = 'abs';
+    else
+        mode = 'cabs';
+    end
+    cvx_begin
+        variable z( nx, nv )
+        epigraph variable y( 1, nv ) nonnegative_
+        { cat( 3, z, repmat(y,[nx,1]) ), x } ...
+            == geo_mean_cone( [nx,nv,2], 3, [1/p,1-1/p], mode ); %#ok
+        sum( z ) == y; %#ok
+    cvx_end
+end
+
+% Real affine
+function y = norms_2( x, p ) %#ok
+[nx,nv] = size(x);
+if p == 2,
+    cvx_begin
+        epigraph variable y( 1, nv ) nonnegative_
+        { x, y } == lorentz( [ nx, nv ], 1, ~isreal( x ) ); %#ok
     cvx_end
 else
     cvx_begin
         variable z( nx, nv )
         epigraph variable y( 1, nv ) nonnegative_
-        if isreal(x), cmode = 'abs'; else cmode = 'cabs'; end
-        { cat( 3, z, repmat(y,[nx,1]) ), cvx_linearize(x) } ...
-            == geo_mean_cone( [nx,nv,2], 3, [1/p,1-1/p], cmode ); %#ok
+        { cat( 3, z, repmat(y,[nx,1]) ), x } ...
+            == geo_mean_cone( [nx,nv,2], 3, [1/p,1-1/p], 'abs' ); %#ok
+        sum( z ) == y; %#ok
+    cvx_end
+end
+
+% Complex affine
+function y = norms_3( x, p ) %#ok
+[nx,nv] = size(x);
+if p == 2,
+    cvx_begin
+        epigraph variable y( 1, nv ) nonnegative_
+        { x, y } == complex_lorentz( [ nx, nv ], 1 ); %#ok
+    cvx_end
+else
+    cvx_begin
+        variable z( nx, nv )
+        epigraph variable y( 1, nv ) nonnegative_
+        { cat( 3, z, repmat(y,[nx,1]) ), x } ...
+            == geo_mean_cone( [nx,nv,2], 3, [1/p,1-1/p], 'cabs' ); %#ok
+        sum( z ) == y; %#ok
+    cvx_end
+end
+
+% Positive convex, negative concave
+function y = norms_4( x, p ) %#ok
+[nx,nv] = size(x);
+if p == 2,
+    x = cvx_linearize( x, 'abs' );
+    cvx_begin
+        epigraph variable y( 1, nv ) nonnegative_
+        { x, y } == lorentz( [ nx, nv ], 1 ); %#ok
+    cvx_end
+else
+    cvx_begin
+        variable z( nx, nv )
+        variable xa( nx, nv )
+        epigraph variable y( 1, nv ) nonnegative_
+        abs( x ) <= xa; %#ok
+        { cat( 3, z, repmat(y,[nx,1]) ), xa } ...
+            == geo_mean_cone( [nx,nv,2], 3, [1/p,1-1/p], 'func' ); %#ok
         sum( z ) == y; %#ok
     cvx_end
 end

@@ -14,21 +14,32 @@ function y = cvx_linearize( x, do_abs ) %#ok
 %    For nonpositive concave X, Y is linear, and satisfies Y >= -X.
 % Under normal usage, CVX users should never have to use this function.
 
-persistent Pstd Pabs
-if nargin < 2,
-	if isempty(Pstd),
-	    Pstd.map = cvx_remap( { 'r_affine' }, { 'convex' }, ...
-            { 'concave' }, [2,3,4] );
-	    Pstd.funcs = { [], @lin_aff, @lin_cvx, @lin_ccv };
-	end
-	P = Pstd;
-else
-	if isempty(Pabs),
-	    Pabs.map = cvx_remap( { 'complex' }, { 'r_affine' }, ...
-	    	{ 'c_affine', 'p_convex', 'n_concave' } );
-	    Pabs.funcs = { @lin_abs, @lin_aff, @lin_absn };
-	end
-	P = Pabs;
+persistent Pstd Pabs Pcplx
+if nargin < 2, do_abs = 'std'; end
+switch do_abs,
+    case 'std',
+        if isempty(Pstd),
+            Pstd.map = cvx_remap( { 'r_affine' }, { 'convex' }, ...
+                { 'concave' }, [2,3,4] );
+            Pstd.funcs = { [], @lin_aff, @lin_cvx, @lin_ccv };
+        end
+        P = Pstd;
+    case 'abs',
+        if isempty(Pabs),
+            Pabs.map = cvx_remap( { 'complex' }, { 'r_affine' }, ...
+                { 'c_affine', 'p_convex', 'n_concave' } );
+            Pabs.funcs = { @lin_abs, @lin_aff, @lin_absn };
+        end
+        P = Pabs;
+    case 'cplx',
+        if isempty(Pcplx),
+            Pcplx.map = cvx_remap( { 'affine' }, { 'convex' }, ...
+                { 'concave' }, [2,3,4] );
+            Pcplx.funcs = { [], @lin_aff, @lin_cvx, @lin_ccv };
+        end
+        P = Pcplx;
+    otherwise,
+        error( 'Invalid mode: %s', do_abs );
 end
 y = cvx_unary_op( P, x );
 
