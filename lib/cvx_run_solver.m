@@ -33,6 +33,9 @@ if ~isempty( dumpfile ),
     inp_names = cell(1,length(inputs));
     for k = 1 : length(inp_names),
         inp_names{1,k} = inputname(k+1);
+        if isempty(inp_names{1,k}),
+            inp_names{1,k} = sprintf('arg%d',k);
+        end
     end
     dstruct = cell2struct( inputs, inp_names, 2 ); %#ok
     save( dumpfile, '-struct', 'dstruct' );

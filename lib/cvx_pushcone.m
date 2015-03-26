@@ -8,11 +8,11 @@ if gcone
     cones = cvx___.cones;
 end
 nn = size(indices,1);
-if nn == 1,
-    ctype = 'nonnegative';
-elseif any( strcmp( ctype, { 'nonnegative', 'integer', 'binary' } ) ),
+if any( strcmp( ctype, { 'nonnegative', 'integer', 'binary' } ) ),
     indices = indices(:)';
     nn = 1;
+elseif nn == 1,
+    ctype = 'nonnegative';
 end
 match = [];
 if ~gcone && ~isempty( cones ),
