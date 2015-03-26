@@ -38,7 +38,7 @@ end
 %
 
 if ~isa( x, 'cvx' ) && ~isa( x, 'double' ) && ~isa( x, 'sparse' ),
-    error( 'Cannot accept an objective of type ''%s''.', class( arg ) );
+    error( 'Cannot accept an objective of type ''%s''.', class( x ) );
 elseif ~isreal( x ),
     error( 'Expressions in objective functions must be real.' );
 elseif isempty( x ),
