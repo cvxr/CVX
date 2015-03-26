@@ -277,9 +277,9 @@ the table below.
 ================== ==================== =========== ================ ========== ===========================
  ``sum( x )``       :math:`\sum_i x_i`   affine      increasing       unknown    :math:`\mathbb{R}`
  ``abs( x )``       :math:`|x|`          convex      sign-dependent   positive   :math:`\mathbb{R}`
- ``log( x )``       :math:`1/x`          convex      decreasing       unknown    :math:`\{x\,|\,x>0\}`
+ ``inv_pos( x )``       :math:`1/x`          convex      decreasing       unknown    :math:`\{x\,|\,x>0\}`
  ``sqrt( x )``      :math:`\sqrt x`      concave     increasing       positive   :math:`\{x\,|\,x\geq 0\}`
- ``inv_pos( x )``   :math:`\log x`       concave     increasing       unknown    :math:`\{x\,|\,x>0\}`
+ ``log( x )``   :math:`\log x`       concave     increasing       unknown    :math:`\{x\,|\,x>0\}`
  ``entr( x )``      :math:`-x\log x`     concave     non-monotonic    unknown    :math:`\{x\,|\,x\geq 0\}`
 ================== ==================== =========== ================ ========== ===========================
 
