@@ -41,7 +41,11 @@ msub = cvx___.msub;
 warnings = {};
 
 prevpath = path;
-upath = userpath;
+try
+  upath = userpath;
+catch
+  upath = '';
+end
 oldpath = textscan( prevpath, '%s', 'Delimiter', ps );
 oldpath = oldpath{1}(:)';
 if ~isempty(upath),

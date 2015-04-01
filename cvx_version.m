@@ -47,8 +47,6 @@ else
     if isoctave,
         comp = octave_config_info('canonical_host_type');
         mext = 'mex';
-        izpc = false;
-        izmac = false;
         if octave_config_info('mac'),
             msub = 'mac';
             izmac = true;
@@ -58,15 +56,13 @@ else
         elseif octave_config_info('unix') && any(strfind(comp,'linux')),
             msub = 'lin';
         else
-            msub = 'unknown';
+            msub = '';
         end
-        if ~isempty( msub ),
-            msub = [ 'o_', msub ];
-            if strncmp( comp, 'x86_64', 6 ),
-                msub = [ msub, '64' ];
-            else
-                msub = [ msub, '32' ];
-            end
+        switch comp,
+        case 'i686-w64-mingw32',
+          msub = 'o_win32';
+        otherwise,
+          msub = '';
         end
     else
         comp = computer;
@@ -279,6 +275,7 @@ if ~compile,
     mexpath = [ mpath, fs, 'lib', fs ];
     mext = cvx___.mext;
     if ( ~exist( [ mexpath, 'cvx_eliminate_mex.', mext ], 'file' ) || ...
+         ~exist( [ mexpath, 'cvx_classify_mex.', mext ], 'file' ) || ...
          ~exist( [ mexpath, 'cvx_bcompress_mex.', mext ], 'file' ) ) && ~issue,
         issue = true;
         if ~isempty( msub ),
@@ -341,11 +338,16 @@ if verbose,
     fprintf( 'Loading preferences:\n' );
 end
 
+if isoctave,
+  pdir = tilde_expand('~');
+else
+  pdir = prefdir(1);
+end
 pfile{1} = [ cvx___.where, fs, 'cvx_prefs.mat' ];
 if isoctave,
-    pfile{2} = [ prefdir, fs, '.cvx_prefs.mat' ];
+    pfile{2} = [ pdir, fs, '.cvx_prefs.mat' ];
 else
-    pfile{2} = [ regexprep( prefdir(1), [ cvx___.fsre, 'R\d\d\d\d\w$' ], '' ), fs, 'cvx_prefs.mat' ];
+    pfile{2} = [ regexprep( pdir, [ cvx___.fsre, 'R\d\d\d\d\w$' ], '' ), fs, 'cvx_prefs.mat' ];
 end
 if isfield( cvx___, 'loaded' ),
     fprintf( 'Preferences already loaded:\n' );

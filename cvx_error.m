@@ -44,7 +44,8 @@ for k = 1 : length(rndx) - 1,
     end
     while true,
         if emax + n_indent <= width || isempty( sndxs ),
-            lines{end+1} = [ 32 * ones(1,n_indent), line ]; %#ok
+            spc = ' ';
+            lines{end+1} = [ spc(:,ones(1,n_indent)), line ]; %#ok
             break;
         end
         sndx = sndxs( sndxs <= width - n_indent + 1 );
