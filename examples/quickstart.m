@@ -60,7 +60,7 @@ cvx_begin
     variable x(n)
     minimize( norm(A*x-b) )
     subject to
-        l <= x <= u %#ok
+        l <= x <= u; %#ok
 cvx_end
 
 echo off
@@ -232,8 +232,8 @@ cvx_begin
     variable x(n);
     minimize( norm(A*x-b) )
     subject to
-        C*x == d %#ok
-        norm(x,Inf) <= 1 %#ok
+        C*x == d; %#ok
+        norm(x,Inf) <= 1; %#ok
 cvx_end
 
 echo off

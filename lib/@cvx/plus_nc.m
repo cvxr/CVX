@@ -1,6 +1,6 @@
 function z = plus_nc( x, y )
 
-% Multiplication with no consistency checking.
+% Addition with no consistency checking.
 
 x = cvx_basis( x );
 y = cvx_basis( y );

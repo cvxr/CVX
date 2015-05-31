@@ -40,7 +40,7 @@ min_sidelobe = -20;   % maximum sidelobe level in dB
 %********************************************************************
 if strcmp( ARRAY_GEOMETRY, '2D_RANDOM' )
   % set random seed to repeat experiments
-  rand('state',0);
+  % rand('state',0);
 
   % (uniformly distributed on [0,L]-by-[0,L] square)
   n = 36;

@@ -90,14 +90,16 @@ if any(ndxs),
 end
 
 addpaths = { 'builtins', 'commands', 'functions', 'lib', 'structures' };
-qq = which('vec');
-if isempty(qq),
-    addpaths{end+1} = [ 'functions', fs, 'vec_' ]; 
-elseif ~quiet,
-    warnings{end+1} = sprintf([...
-'WARNING: An existing copy of "vec.m" was found in your MATLAB path:\n   %s\n', ...
-'CVX models will not be affected, but SDPT3 depends on this function. So if\n', ...
-'you delete it, you will need to re-run CVX_SETUP.'], qq );
+if ~cvx___.isoctave
+    qq = which('vec');
+    if isempty(qq),
+        addpaths{end+1} = [ 'functions', fs, 'vec_' ]; 
+    elseif ~quiet,
+        warnings{end+1} = sprintf([...
+    'WARNING: An existing copy of "vec.m" was found in your MATLAB path:\n   %s\n', ...
+    'CVX models will not be affected, but SDPT3 depends on this function. So if\n', ...
+    'you delete it, you will need to re-run CVX_SETUP.'], qq );
+    end
 end
 qq = which('square');
 if isempty(qq),

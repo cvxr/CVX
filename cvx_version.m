@@ -47,23 +47,11 @@ else
     if isoctave,
         comp = octave_config_info('canonical_host_type');
         mext = 'mex';
-        if octave_config_info('mac'),
-            msub = 'mac';
-            izmac = true;
-        elseif octave_config_info('windows'),
-            msub = 'win';
-            izpc = true;
-        elseif octave_config_info('unix') && any(strfind(comp,'linux')),
-            msub = 'lin';
-        else
-            msub = '';
-        end
         switch comp,
-        case 'i686-w64-mingw32',
-          msub = 'o_win32';
-        otherwise,
-          msub = '';
+        case 'i686-w64-mingw32', msub = 'o_win'; izpc = true;
+        otherwise, msub = ''; izpc = false;
         end
+        izmac = false;
     else
         comp = computer;
         izpc = strncmp( comp, 'PC', 2  );
@@ -174,9 +162,11 @@ issue = false;
 isoctave = cvx___.isoctave;
 nver = cvx___.nver;
 if isoctave,
-    if nver <= 3.08,
-        fprintf( '%s\nCVX is not yet supported on Octave.\n(Please do not waste further time trying: changes to Octave are required.\nBut they are coming! Stay tuned.)\n%s\n', line, line );
+    if nver < 4,
+        fprintf( '%s\nCVX requires Octave 4.0 or later.\nOlder versions of Octave do not have the required language support.\n%s\n', line, line );
         issue = true;
+    elif isempty(msub),
+        fprintf('%s\nCVX for Octave is not supported for this platform:\n    %s\nLinux and Mac versions will be coming in the future.\n%s\n', line, line ); 
     end
 elseif nver < 7.08 && strcmp( cvx___.comp(end-1:end), '64' ),
     fprintf( '%s\nCVX requires MATLAB 7.8 or later (7.5 or later on 32-bit platforms).\n' , line, line );
@@ -402,7 +392,7 @@ for k = 1 : 2;
             if verbose,
                 fprintf( ' ERROR\n' );
             else
-                errmsg{end+1} = sprintf( 'Error loading %s:', gfile ); %#ok
+                errmsg{end+1} = sprintf( 'Error loading %s:', strrep(gfile,'\','\\') ); %#ok
             end
             if isempty( outg )
                 errmsg = cvx_error( exc, '    ' );
@@ -414,6 +404,8 @@ for k = 1 : 2;
         if isempty( outg ),
             if k == 1 && verbose < 2,
                 errmsg{end+1} = '    Please notify your system manager.'; %#ok
+            elseif ~verbose,
+                errmsg{end+1} = '    Please re-run CVX_SETUP.'; %#ok
             elseif first,
                 errmsg{end+1} = '    Reverting to default preferences.'; %#ok
                 need_default = true;
