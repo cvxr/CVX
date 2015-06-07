@@ -30,7 +30,7 @@ if nargin
     end
 end
 
-if isfield( cvx___, 'loaded' ),
+if isfield( cvx___, 'loaded' ) && cvx___.loaded,
     
     if quick, return; end
     fs = cvx___.fs;
@@ -41,7 +41,9 @@ if isfield( cvx___, 'loaded' ),
 else
     
     % Matlab / Octave flag
+    cvx___.loaded = false;
     isoctave = exist( 'OCTAVE_VERSION', 'builtin' );
+    precomp = false;
 
     % File and path separators, MEX extension
     if isoctave,
@@ -52,11 +54,13 @@ else
         otherwise, msub = ''; izpc = false;
         end
         izmac = false;
+        precomp = ~isempty(msub);
     else
         comp = computer;
         izpc = strncmp( comp, 'PC', 2  );
         izmac = strncmp( comp, 'MAC', 3 );
         mext = mexext;
+        precomp = any(strcmp(mext(4:end),{'a64','glx','maci','maci64','w32','w64'}));
         msub = '';
     end
     if izpc,
@@ -130,12 +134,15 @@ cvx_bld = '****';
 cvx_bdate = '<undated>';
 cvx_bcomm = '*******';
 line = '---------------------------------------------------------------------------';
-fprintf( '\n%s\n', line );
-fprintf( 'CVX: Software for Disciplined Convex Programming       (c)2014 CVX Research\n' );
-fprintf( 'Version %7s, Build %4s (%7s)%38s\n', cvx_ver, cvx_bld, cvx_bcomm, cvx_bdate );
-fprintf( '%s\n', line );
-fprintf( 'Installation info:\n' );
-fprintf( '    Path: %s\n', cvx___.where );
+cvx_print({
+'',
+line,
+'CVX: Software for Disciplined Convex Programming       (c)2014 CVX Research',
+'Version %7s, Build %4s (%7s)%38s',
+line,
+'Installation info:',
+'    Path: %s',
+  }, cvx_ver, cvx_bld, cvx_bcomm, cvx_bdate, cvx___.where);
 if isoctave,
     fprintf( '    GNU Octave %s on %s\n', version, cvx___.comp );
 else
@@ -165,8 +172,6 @@ if isoctave,
     if nver < 4,
         fprintf( '%s\nCVX requires Octave 4.0 or later.\nOlder versions of Octave do not have the required language support.\n%s\n', line, line );
         issue = true;
-    elif isempty(msub),
-        fprintf('%s\nCVX for Octave is not supported for this platform:\n    %s\nLinux and Mac versions will be coming in the future.\n%s\n', line, line ); 
     end
 elseif nver < 7.08 && strcmp( cvx___.comp(end-1:end), '64' ),
     fprintf( '%s\nCVX requires MATLAB 7.8 or later (7.5 or later on 32-bit platforms).\n' , line, line );
@@ -220,10 +225,8 @@ if fid > 0,
                 if isempty( missing ), fprintf( '\n' ); end
                 fprintf( '    WARNING: The following extra files/directories were found:\n' );
                 isdir = cellfun(@(x)x(end)==fs,additional);
-                issedumi = cellfun(@any,regexp( additional, [ '^sedumi.*[.]', mexext, '$' ] ));
-                additional_d = additional(isdir&~issedumi);
-                additional_f = additional(~isdir&~issedumi);
-                additional_s = additional(issedumi);
+                additional_d = additional(isdir);
+                additional_f = additional(~isdir);
                 while ~isempty( additional_d ),
                     mdir = additional_d{1};
                     ss = strncmp( additional_d, mdir, length(mdir) );
@@ -239,18 +242,6 @@ if fid > 0,
                     fprintf( '        (and %d more files)\n', length(additional_f) - 10 );
                 end
                 fprintf( '    These files may alter the behavior of CVX in unsupported ways.\n' );
-                if ~isempty( additional_s ),
-                    fprintf( '    ERROR: obsolete versions of SeDuMi MEX files were found:\n' );
-                    for k = 1 : length(additional_s),
-                        fprintf( '        %s%s%s\n', mpath, fs, additional_f{k} );
-                    end
-                    fprintf( '    These files are now obsolete, and must be removed to ensure\n' );
-                    fprintf( '    that SeDuMi operates properly and produces sound results.\n' );
-                    if ~issue,
-                        fprintf( '    Please remove these files and re-run CVX_SETUP.\n' );
-                        issue = true;
-                    end
-                end
             end
         else
             fprintf( '\n    No missing files.\n' );
@@ -261,54 +252,79 @@ if fid > 0,
 else    
     fprintf( 'Manifest missing; cannot verify file structure.\n' ) ;
 end
-if ~compile,
-    mexpath = [ mpath, fs, 'lib', fs ];
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Verify existence of MEX files %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+mexist = true;
+if compile || ~issue && ~cvx___.loaded,
+    mexnames = {'cvx_eliminate_mex','cvx_classify_mex','cvx_bcompress_mex'};
+    mexpath = strcat(mpath,fs,'lib',fs);
     mext = cvx___.mext;
-    if ( ~exist( [ mexpath, 'cvx_eliminate_mex.', mext ], 'file' ) || ...
-         ~exist( [ mexpath, 'cvx_classify_mex.', mext ], 'file' ) || ...
-         ~exist( [ mexpath, 'cvx_bcompress_mex.', mext ], 'file' ) ) && ~issue,
-        issue = true;
-        if ~isempty( msub ),
-          mexpath = [ mexpath, msub, fs ];
-          issue = ~exist( [ mexpath, 'cvx_eliminate_mex.mex' ], 'file' ) || ...
-                         ~exist( [ mexpath, 'cvx_bcompress_mex.mex' ], 'file' );
-        end
-        if issue,
-          fprintf( '    ERROR: one or more MEX files for this platform are missing.\n' );
-          fprintf( '    These files end in the suffix ".%s". CVX will not operate\n', mext );
-          fprintf( '    without these files. Please visit\n' );
-          fprintf( '        http://cvxr.com/cvx/download\n' );
-          fprintf( '    And download a distribution targeted for your platform.\n' );
-        end
+    mexfiles = strcat(mexpath,mexnames,'.',mext);
+    mexist = cellfun(@(x)exist(x,'file'),mexfiles);
+    if ~isempty(msub),
+        mexpath = strcat(mexpath,msub,fs);
+        mexfiles = strcat(mexpath,mexnames,'.',mext);
+        mexist = mexist | cellfun(@(x)exist(x,'file'),mexfiles);
+    end
+    if compile,
+        varargout{1} = all(mexist);
     end
 end
-
-%%%%%%%%%%%%%%%
-% Preferences %
-%%%%%%%%%%%%%%%
-
-cvx_load_prefs( server + 1 );
-
-%%%%%%%%%%%%%%%%
-% License file %
-%%%%%%%%%%%%%%%%
-
-if isoctave,
-    if ~isempty( cvx___.license ),
-        fprintf( 'CVX Professional is not supported with Octave.\n' );
+ 
+if ~issue && ~cvx___.loaded && ~all(mexist),
+    issue = true;
+    mexfiles = strcat({'    '},mexfiles(~mexist));
+    if fs == '\', mexfiles = strrep(mexfiles,'\','\\'); end
+    cvx_print({line,'ERROR: the following CVX MEX files are missing:',mexfiles{:}});
+    if precomp,
+        cvx_print({
+            'CVX will not operate without these files. Please visit'
+            '    http://cvxr.com/cvx/download'
+            'and download a distribution built for this platform.'
+        });
+    else
+        cvx_print({
+            'Unfortunately, this platform is not yet supported by CVX. If you wish, you'
+            'may try to compile the MEX files yourself by running the "cvx_compile"'
+            'command. If this command succeeds, you will need to re-run CVX_SETUP. If it'
+            'does not succeed, you will not be able to use CVX with this platform.'
+        });
     end
-elseif strcmpi(which('cvx_license'),[cvx___.where,fs,'cvx_license.p']),
-    cvx_license( args{:} );
 end
-
-%%%%%%%%%%%%%%%
-% Wrapping up %
-%%%%%%%%%%%%%%%
 
 if ~issue,
+    %%%%%%%%%%%%%%%
+    % Preferences %
+    %%%%%%%%%%%%%%%
+
+    cvx_load_prefs( server + 1 );
+
+    %%%%%%%%%%%%%%%%
+    % License file %
+    %%%%%%%%%%%%%%%%
+
+    if isoctave,
+        if ~isempty( cvx___.license ),
+            fprintf( 'CVX Professional is not supported with Octave.\n' );
+        end
+    elseif strcmpi(which('cvx_license'),[cvx___.where,fs,'cvx_license.p']),
+        cvx_license( args{:} );
+    end
+
+    %%%%%%%%%%%%%%%
+    % Wrapping up %
+    %%%%%%%%%%%%%%%
+
     cvx___.loaded = true;
 end
-clear fs;
+
+%%%%%%%%%%%%
+% Wrap up! %
+%%%%%%%%%%%%
+
 fprintf( '%s\n', line );
 if length(dbstack) <= 1,
     fprintf( '\n' );
@@ -339,7 +355,7 @@ if isoctave,
 else
     pfile{2} = [ regexprep( pdir, [ cvx___.fsre, 'R\d\d\d\d\w$' ], '' ), fs, 'cvx_prefs.mat' ];
 end
-if isfield( cvx___, 'loaded' ),
+if cvx___.loaded,
     fprintf( 'Preferences already loaded:\n' );
     if ~isempty( cvx___.gprefs ),
         fprintf( '    Global: %s\n', pfile{1} );
@@ -484,6 +500,10 @@ if fs ~= '/',
     newman = strrep( newman, fs, '/' );
 end
 newman = newman(:);
+
+function cvx_print(fmt,varargin)
+if iscell(fmt), fmt = sprintf('%s\\n',fmt{:}); end
+fprintf(fmt,varargin{:});
 
 % Copyright 2005-2014 CVX Research, Inc.
 % See the file LICENSE.txt for full copyright information.

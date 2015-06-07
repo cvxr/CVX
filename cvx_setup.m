@@ -1,4 +1,4 @@
-function cvx_setup( varargin )
+function cvx_setup(varargin)
 
 % CVX_SETUP   Sets up and tests the cvx distribution.
 %    This function is to be called any time CVX is installed on a new machine,
@@ -23,12 +23,17 @@ try
     end
     srv = any( strcmp( varargin, '-server' ) );
     if srv,
-        fprintf( '*** SERVER INSTALLATION REQUESTED ***\n' );
+        fprintf('*** SERVER INSTALLATION REQUESTED ***\n');
     end
     isoctave = cvx___.isoctave;
     mpath = cvx___.where;
     fs = cvx___.fs;
     ps = cvx___.ps;
+    if isoctave,
+        product = 'Octave';
+    else
+        product = 'MATLAB';
+    end
 
     %%%%%%%%%%%%%%%%%%%%%%%
     % Reset the CVX paths %
@@ -154,11 +159,11 @@ try
             end
         end
     else
-        fprintf( [ ... 
-            'No valid solvers were found. This suggests a corrupt installation. Please\n', ...
-            'try re-installing the files and re-running cvx_setup. If the same error\n', ...
-            'occurs, please contact CVX support.\n' ] );
-        error('CVX:Unexpected','No valid solvers were found.');
+        cvx_print({
+            'No valid solvers were found. This suggests a corrupt installation. Please'
+            'try re-installing the files and re-running cvx_setup. If the same error'
+            'occurs, please contact CVX support.'});
+        error('CVX:Unexpected', 'No valid solvers were found.');
     end
     if any( srej ),
         t1 = srej & ( cellfun( @(x)isempty(x)||strncmp(x,'http',4), {solvers.error} ) );
@@ -203,10 +208,11 @@ try
     if cvx___.solvers.selected == 0,
         cvx___.solvers.selected = 1;
         cvx___.solvers.map.default = 1;
-        fprintf( [ ...
-            'WARNING: The default solver %s is missing; %s has been selected as a\n', ...
-            '    new default. If this was unexpected, try re-running cvx_setup.\n' ], ...
-            selected, cvx___.solvers.list(cvx___.solvers.selected).name, lower(cvx___.solvers.list(cvx___.solvers.selected).name) );
+        cvx_print({
+            'WARNING: The default solver %s is missing; %s has been selected as a'
+            '    new default. If this was unexpected, try re-running CVX_SETUP.'
+            }, selected, cvx___.solvers.list(cvx___.solvers.selected).name, ...
+            lower(cvx___.solvers.list(cvx___.solvers.selected).name) );
     end
     
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -233,8 +239,10 @@ try
     catch errmsg
         fprintf( 'unexpected error:\n' );
         cvx_error( errmsg, '    ' );
-        fprintf( 'Please attempt to correct this error and re-run CVX_SETUP. If you cannot,\n' );
-        fprintf( 'you will be not be able to save preferences between MATLAB sessions.\n' );
+        cvx_print({
+            'Please attempt to correct this error and re-run CVX_SETUP. If you cannot,'
+            'you will be not be able to save preferences between %s sessions.'
+            }, product);
     end
     nret = false;
     
@@ -267,10 +275,10 @@ try
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     
     if length( cvx___.solvers.list ) > 1,
-        fprintf( '%s\n', line );
-        fprintf( 'To change the default solver, type "cvx_solver <solver_name>".\n')
-        fprintf( 'To save this change for future sessions, type "cvx_save_prefs".\n' );
-        fprintf( 'Please consult the users'' guide for more information.\n' );
+        cvx_print({line
+            'To change the default solver, type "cvx_solver <solver_name>".'
+            'To save this change for future sessions, type "cvx_save_prefs".'
+            'Please consult the users'' guide for more information.'});
     end
     
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -278,42 +286,48 @@ try
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     
     if ~isempty( oldpath )
-        fprintf( '%s\n', line );
-        fprintf('NOTE: the MATLAB path has been changed to point to the CVX distribution. To\n' );
-        fprintf('use CVX without having to re-run CVX_SETUP every time MATLAB starts, you\n' );
-        fprintf('will need to save this path permanently. This script attempted to do this\n' );
+        cvx_print({line
+            'NOTE: the %s path has been changed to point to the CVX distribution. To'
+            'use CVX without having to re-run CVX_SETUP every time %s starts, you'
+            'will need to save this path permanently. This script attempted to do this'
+            }, product, product);
         if fs == '/',
             fprintf('for you, but failed---likely due to UNIX permissions restrictions.\n' );
-            f1 = which( 'pathdef.m' );
-            f2 = which( 'matlabrc.m' );
         else
-            fprintf('for you, but failed, due to the Windows User Access Control (UAC) settings.\n');
-            fprintf('<a href="http://www.mathworks.com/support/solutions/en/data/1-9574H9/index.html?solution=1-9574H9">Click here</a> for a MATLAB document that discusses the issue.\n\n');
-            fprintf('To solve this problem, please take the following steps:\n');
-            fprintf('    1) Exit MATLAB.\n');
-            fprintf('    2) Right click on the MATLAB icon, and select "Run as administrator."\n' );
-            fprintf('    3) Re-run "cvx_setup".\n\n');
+            cvx_print({
+                'for you, but failed, due to the Windows User Access Control (UAC) settings.'
+                '<a href="http://www.mathworks.com/support/solutions/en/data/1-9574H9/index.html?solution=1-9574H9">Click here</a> for a MATLAB document that discusses the issue.'
+                ''
+                'To solve this problem, please take the following steps:'
+                '    1) Exit %s.'
+                '    2) Right click on the %s icon, and select "Run as administrator."'
+                '    3) Re-run "cvx_setup".'
+                ''}, product, product);
         end
-        if srv,
-            fprintf('To solve the problem, edit one of the following files with root privileges:\n' );
-            if ~isempty(f1), 
-                fprintf( '    %s', f1 );
-                if ~isempty(f2) fprintf( '    OR' );  end
-                fprintf( '\n' );
+        if srv
+            cvx_print({
+            'The following directories need to be added to the %s path on startup:%s'
+            '(IMPORTANT: include ONLY these directories, and no others!)'
+            }, product, sprintf('\n    %s',addpaths{:}) );
+            flocs = {};
+            f1 = which( 'pathdef.m' );
+            if ~isempty(f1), flocs{end+1} = f1; end
+            f2 = which( 'matlabrc.m' );
+            if ~isempty(f2), flocs{end+2} = f2; end
+            if ~isempty(flocs),
+                cvx_print({
+                    'To do so, you should edit one of the following files with root privileges:%s'
+                    }, sprintf('\n    %s',flocs{:}));
             end
-            if ~isempty( f2 ),
-                fprintf( '    %s\n', f2 );
-            end
-            fprintf('and add the following directories to the MATLAB path:\n' );
-            fprintf( '    %s\n', addpaths{:} );
-            fprintf( '(IMPORTANT: include ONLY these directories, and no others!)\n' );
-            fprintf( 'Please consult the MATLAB documentation for more information.\n' );
-            fprintf( 'Alternatively, you can instruct your users to run CVX_SETUP themselves.\n' );
+            cvx_print({
+              'Please consult the %s documentation for more information.'
+              'Alternatively, you can instruct your users to run CVX_SETUP themselves.'
+              }, product);
         elseif ~isempty( oldpath )
             need_upr = false;
             need_disclaim = true;
             user_path = which( 'startup.m' );
-            if isempty( user_path ),
+            if isempty( user_path ) && ~isoctave,
                 user_path = userpath;
                 if length(user_path) <= 1,
                     need_upr = true;
@@ -338,26 +352,41 @@ try
             if fs == '/',
                 nextword = 'To solve the problem';
             else
-                nextword = 'Alternatively, if you do not have administrator access';
+                nextword = 'If you do not have administrator access';
             end
             if exist( user_file, 'file' ),
-                fprintf( '%s, edit the file\n    %s\nand add the following line to the end of the file:\n', nextword, user_file ); 
-                fprintf( '    run %s%scvx_startup.m\n', mpath, fs );
+                cvx_print({
+                    '%s, edit the file'
+                    '    %s'
+                    'and add the following line to the end of the file:'
+                    '    run %s%scvx_startup.m'
+                    }, nextword, user_file, mpath, fs );
             elseif ~isempty( user_path ),
-                fprintf( '%s, create a new file\n    %s\ncontaining the following line:\n', nextword, user_file );
-                fprintf( '    run %s%scvx_startup.m\n', mpath, fs );
+                cvx_print({
+                    '%s, create a new file'
+                    '    %s'
+                    'containing the following line:'
+                    '    run %s%scvx_startup.m'
+                    }, nextword, user_file, mpath, fs );
             else
-                fprintf( '%s, create a startup.m file containing the line:\n', nextword );
-                fprintf( '    run %s%scvx_startup.m\n', mpath, fs );
-                fprintf( 'Consult the MATLAB documentation for the proper location for that file.\n' );
+                cvx_print({
+                    '%s, create a startup.m file containing the line:'
+                    '    run %s%scvx_startup.m'
+                    'Consult the %s documentation for the proper location for that file.'
+                    }, nextword, mpath, fs, product );
                 need_disclaim = false;
             end
-            if need_upr,
-                fprintf( 'Then execute the following MATLAB commands:\n    userpath reset; startup\n' );
+            if need_upr && isoctave,
+                cvx_print({
+                  'Then execute the following commands:'
+                  '    userpath reset;'
+                  '    startup'});
             end
             if need_disclaim,
-                fprintf( 'Please consult the MATLAB documentation for more information about the\n' );
-                fprintf( 'startup.m file and its proper placement and usage.\n' );
+                cvx_print({
+                  'Please consult the %s documentation for more information about the'
+                  'startup.m file and its proper placement and usage.'
+                }, product);
             end
         end
     end
@@ -370,7 +399,7 @@ try
         warnings{end+1} = sprintf( [...
 'WARNING: CVX was unable to run the test model due to a conflict with the\n', ...
 'previous version of CVX. If no other errors occurred, then the setup was\n', ...
-'still successful; however, to use CVX, you will need to re-start MATLAB.' ] );
+'still successful; however, to use CVX, you will need to re-start %s.' ], product );
     end
     for k = 1 : length(warnings),
         fprintf( '%s\n%s\n', line, warnings{k} );
@@ -410,6 +439,10 @@ catch errmsg
 end
 
 fprintf( '%s\n\n', line );
+
+function cvx_print(fmt,varargin)
+if ~iscell(fmt), fmt = {fmt}; end
+fprintf(sprintf('%s\\n',fmt{:}),varargin{:});
 
 % Copyright 2005-2014 CVX Research, Inc.
 % See the file LICENSE.txt for full copyright information.
