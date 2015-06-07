@@ -47,6 +47,9 @@ else
 end
 try
     save(pfile,'-struct','outp');
+    if ~mode,
+       fprintf('done.\n');
+    end
 catch exc
     if ~mode,
         fprintf( 'FAILED.\n' );
