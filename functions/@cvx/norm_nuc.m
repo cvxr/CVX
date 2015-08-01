@@ -16,8 +16,13 @@ end
 [ m, n ] = size( X ); %#ok
 W1 = []; W2 = [];
 cvx_begin sdp
-    variable W1(m,m) symmetric
-    variable W2(n,n) symmetric
+    if isreal(X)
+    	variable W1(m,m) symmetric
+    	variable W2(n,n) symmetric
+    else
+    	variable W1(m,m) hermitian
+    	variable W2(n,n) hermitian
+    end
     minimize(0.5*(trace(W1)+trace(W2)));
     [W1,X;X',W2] >= 0; %#ok
 cvx_end
