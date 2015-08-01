@@ -34,7 +34,7 @@ if isempty( P ),
     P.reverse = false;
     P.dimarg = 2;
 end
-if nargin < 3 || is_abs,
+if nargin < 3 || ~is_abs,
     if nargin < 2, dim = []; end
     P.name = rname;
     P.map  = rmap;

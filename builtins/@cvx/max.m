@@ -26,7 +26,7 @@ if nargin == 2,
     end
     z = cvx_binary_op( BP, varargin{:} );
 
-elseif nargin > 1 && ~isempty( y ),
+elseif nargin > 2 && ~isempty( varargin{2} ),
 
     cvx_throw( 'MAX with two matrices to compare and a working dimension is not supported.' );
         
