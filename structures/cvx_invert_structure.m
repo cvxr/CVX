@@ -14,7 +14,9 @@ if nargin == 2 && compact,
     
 else
     
-    xi = bsxfun( @rdivide, x, sum( x .* conj( x ), 2 ) );
+    [ ii, jj, vv ] = find( x );
+    tmp = 1.0 ./ full(sparse(ii,1,vv.*conj(vv),size(x,1),1));
+    xi = sparse( ii, jj, vv .* tmp(ii), size(x,1), size(x,2) );
     
 end
 
