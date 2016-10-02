@@ -16,7 +16,7 @@ function cvx_expert( flag )
 
 global cvx___
 cvx_global
-error( nargchk( 1, 1, nargin ) );
+narginchk(1,1);
 if nargin == 1,
     if isnumeric(flag) || islogical(flag),
         ns = double(flag) ~= 0;
@@ -35,7 +35,7 @@ if nargin == 1,
 end
 cvx___.expert = ns;
 
-% Copyright 2005-2014 CVX Research, Inc.
+% Copyright 2005-2016 CVX Research, Inc.
 % See the file LICENSE.txt for full copyright information.
 % The command 'cvx_where' will show where this file is located.
 

@@ -7,9 +7,9 @@ function z = sigma_max( x )
 %   Disciplined convex programming information:
 %       SIGMA_MAX(X) is convex and nonmontonic in X, so X must be affine.
 
-error( nargchk( 1, 1, nargin ) ); %#ok
+narginchk(1,1);
 z = norm( x, 2 );
 
-% Copyright 2005-2014 CVX Research, Inc. 
+% Copyright 2005-2016 CVX Research, Inc. 
 % See the file LICENSE.txt for full copyright information.
 % The command 'cvx_where' will show where this file is located.

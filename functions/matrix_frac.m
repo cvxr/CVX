@@ -12,7 +12,7 @@ function z = matrix_frac( x,Y )
 %         MATRIX_FRAC is convex and nonmonotonic (at least with respect to
 %         elementwise comparison), so its argument must be affine.
 
-error( nargchk( 2, 2, nargin ) ); %#ok
+narginchk(2,2);
 if ndims( Y ) > 2 || size( Y, 1 ) ~= size( Y, 2 ), %#ok
     error( 'Second argument must be a square matrix.' );
 end
@@ -37,6 +37,6 @@ else
     end
 end
 
-% Copyright 2005-2014 CVX Research, Inc.
+% Copyright 2005-2016 CVX Research, Inc.
 % See the file LICENSE.txt for full copyright information.
 % The command 'cvx_where' will show where this file is located.

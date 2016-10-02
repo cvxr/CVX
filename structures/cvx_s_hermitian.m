@@ -29,6 +29,6 @@ y  = sparse( 2 * ( mx + mn .* ( n - 0.5 * ( mn + 1 ) ) + 1 ) - ( v == 1 ), r + n
 y  = y( any( y, 2 ), : );
 symm = false;
 
-% Copyright 2005-2014 CVX Research, Inc. 
+% Copyright 2005-2016 CVX Research, Inc. 
 % See the file LICENSE.txt for full copyright information.
 % The command 'cvx_where' will show where this file is located.

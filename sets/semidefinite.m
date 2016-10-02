@@ -37,7 +37,7 @@ function cvx_optpnt = semidefinite( sz, iscplx ) %#ok
 % Check size vector
 %
 
-error( nargchk( 1, 2, nargin ) ); %#ok
+narginchk(1,2);
 if ~isnumeric( sz ) || isempty( sz ) || any( sz < 0 ) || any( sz ~= floor( sz ) ),
     error( 'First argument must be a nonnegative integer or a valid size vector.' );
 elseif length( sz ) == 1,
@@ -88,6 +88,6 @@ cvx_begin set
    end
 cvx_end
 
-% Copyright 2005-2014 CVX Research, Inc.
+% Copyright 2005-2016 CVX Research, Inc.
 % See the file LICENSE.txt for full copyright information.
 % The command 'cvx_where' will show where this file is located.

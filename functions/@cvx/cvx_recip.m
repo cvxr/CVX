@@ -6,7 +6,7 @@ function y = cvx_recip( x )
 % Determine the expression types
 %
 
-error( nargchk( 1, 1, nargin ) ); %#ok
+narginchk(1,1);
 persistent remap
 if isempty( remap ),
     remap_1 = cvx_remap( 'constant' ) & ~cvx_remap( 'zero' );
@@ -68,6 +68,6 @@ for k = 1 : nv,
 
 end
 
-% Copyright 2005-2014 CVX Research, Inc.
+% Copyright 2005-2016 CVX Research, Inc.
 % See the file LICENSE.txt for full copyright information.
 % The command 'cvx_where' will show where this file is located.

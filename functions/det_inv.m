@@ -17,7 +17,7 @@ function cvx_optval = det_inv( X, p )
 %       DET_INV(X) is convex and nonmonotonic in X; therefore, when used in
 %       CVX specifications, its argument must be affine.
 
-error( nargchk( 1, 2, nargin ) ); %#ok
+narginchk(1,2);
 n = size( X, 1 );
 if ndims( X ) > 2, %#ok
     error( 'N-D arrays are not supported.' );
@@ -50,6 +50,6 @@ else
 
 end
 
-% Copyright 2005-2014 CVX Research, Inc. 
+% Copyright 2005-2016 CVX Research, Inc. 
 % See the file LICENSE.txt for full copyright information.
 % The command 'cvx_where' will show where this file is located.

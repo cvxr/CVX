@@ -1,5 +1,5 @@
 function [ xR, x ] = cvx_bcompress( x, mode, num_sorted )
-error( nargchk( 1, 3, nargin ) ); %#ok
+narginchk(1,3);
 if nargin < 3 || isempty( num_sorted ),
     num_sorted = 0;
 end
@@ -39,6 +39,6 @@ if iscplx,
     xR = cvx_r2c( xR, 2 );
 end
 
-% Copyright 2005-2014 CVX Research, Inc.
+% Copyright 2005-2016 CVX Research, Inc.
 % See the file LICENSE.txt for full copyright information.
 % The command 'cvx_where' will show where this file is located.

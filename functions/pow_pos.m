@@ -9,7 +9,7 @@ function y = pow_pos( x, p )
 %       expressions, X must be convex. P must be constant, real, and
 %       greater than or equal to 1.
 
-error( nargchk( 2, 2, nargin ) ); %#ok
+narginchk(2,2);
 if ~isnumeric( x ) || ~isreal( x ) || ~isnumeric( p ) || ~isreal( p ),
     error( 'Arguments must be real.' );
 elseif any( p(:) <= 1 ),
@@ -17,6 +17,6 @@ elseif any( p(:) <= 1 ),
 end
 y = max(x,0).^p;
 
-% Copyright 2005-2014 CVX Research, Inc. 
+% Copyright 2005-2016 CVX Research, Inc. 
 % See the file LICENSE.txt for full copyright information.
 % The command 'cvx_where' will show where this file is located.

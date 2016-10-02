@@ -2,7 +2,7 @@ function cvx_optval = quad_over_lin( x, y, dim )
 
 %QUAD_OVER_LIN   Internal cvx version.
 
-error( nargchk( 2, 3, nargin ) ); %#ok
+narginchk(2,3);
 sx = size( x );
 sy = size( y );
 nx = length( sx );
@@ -78,6 +78,6 @@ else
     cvx_end
 end
 
-% Copyright 2005-2014 CVX Research, Inc.
+% Copyright 2005-2016 CVX Research, Inc.
 % See the file LICENSE.txt for full copyright information.
 % The command 'cvx_where' will show where this file is located.

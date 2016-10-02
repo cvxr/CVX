@@ -69,8 +69,16 @@ if any(ndxs),
 end
 
 addpaths = { 'builtins', 'commands', 'functions', 'lib', 'structures' };
-if ~any(which('vec')), addpaths{end+1} = [ 'functions', fs, 'vec_' ]; end
-if ~any(which('square')), addpaths{end+1} = [ 'functions', fs, 'square_' ]; end
+mpath2 = mpath + fs; npath2 = length(mpath2);
+if ~any(~strncmp(which('vec', '-all'), mpath2, npath2)),
+    addpaths{end+1} = [ 'functions', fs, 'vec_' ]; 
+end
+if ~any(~strncmp(which('square', '-all'), mpath2, npath2)),
+    addpaths{end+1} = [ 'functions', fs, 'square_' ]; 
+end
+if ~any(~strncmp(which('narginchk', '-all'), mpath2, npath2)),
+    addpaths{end+1} = [ 'lib', fs, 'narginchk_' ]; 
+end
 addpaths = strcat( [ mpath, fs ], addpaths );
 if ~isempty(msub),
   mpath2 = [ mpath, fs, 'lib', fs, msub ];
@@ -111,6 +119,6 @@ subs = strcat([mpath,fs],{'keywords','sets'});
 cpath.string = sprintf( ['%s',ps], subs{:} );
 cvx___.path = cpath;
 
-% Copyright 2005-2014 CVX Research, Inc.
+% Copyright 2005-2016 CVX Research, Inc.
 % See the file LICENSE.txt for full copyright information.
 % The command 'cvx_where' will show where this file is located.

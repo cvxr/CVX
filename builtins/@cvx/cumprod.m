@@ -14,7 +14,7 @@ function y = cumprod( x, dim )
 %      because the top row contains the product of log-convex and 
 %      log-concave terms, in violation of the DGP ruleset.
 
-error( nargchk( 1, 2, nargin ) ); %#ok
+narginchk(1,2);
 
 %
 % Size check
@@ -103,6 +103,6 @@ if ~isempty( perm ),
     y = ipermute( y, perm );
 end
 
-% Copyright 2005-2014 CVX Research, Inc.
+% Copyright 2005-2016 CVX Research, Inc.
 % See the file LICENSE.txt for full copyright information.
 % The command 'cvx_where' will show where this file is located.

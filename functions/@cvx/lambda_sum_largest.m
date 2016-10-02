@@ -2,7 +2,7 @@ function cvx_optval = lambda_sum_largest( x, k )
 
 %LAMBDA_SUM_LARGEST   Internal cvx version.
 
-error( nargchk( 2, 2, nargin ) ); %#ok
+narginchk(2,2);
 n = size( x, 1 );
 if ndims( x ) > 2 || n ~= size( x, 2 ), %#ok
 
@@ -39,6 +39,6 @@ else
 
 end
 
-% Copyright 2005-2014 CVX Research, Inc.
+% Copyright 2005-2016 CVX Research, Inc.
 % See the file LICENSE.txt for full copyright information.
 % The command 'cvx_where' will show where this file is located.

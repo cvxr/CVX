@@ -13,7 +13,7 @@ function cvx_optpnt = norm_ball( sz, varargin ) %#ok
 %       NORM_BALL is a cvx set specification. See the user guide for
 %       details on how to use sets.
 
-error( nargchk( 1, Inf, nargin ) ); %#ok
+narginchk(1,Inf);
 [ temp, sz ] = cvx_check_dimlist( sz, false );
 if ~temp,
     error( 'First argument must be a valid dimension list.' );
@@ -26,6 +26,6 @@ cvx_begin set
     norm( x, varargin{:} ) <= 1; %#ok
 cvx_end
 
-% Copyright 2005-2014 CVX Research, Inc. 
+% Copyright 2005-2016 CVX Research, Inc. 
 % See the file LICENSE.txt for full copyright information.
 % The command 'cvx_where' will show where this file is located.

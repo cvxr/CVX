@@ -6,7 +6,7 @@ function [ cvx_optval, success ] = quad_form( x, Q, v, w )
 % Check sizes and types
 %
 
-error( nargchk( 2, 4, nargin ) ); %#ok
+narginchk(2,4);
 tol = 16 * eps;
 tolLDL = 4 * eps;
 if nargin < 4,
@@ -232,6 +232,6 @@ else
 
 end
 
-% Copyright 2005-2014 CVX Research, Inc.
+% Copyright 2005-2016 CVX Research, Inc.
 % See the file LICENSE.txt for full copyright information.
 % The command 'cvx_where' will show where this file is located.

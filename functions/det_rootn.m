@@ -15,7 +15,7 @@ function cvx_optval = det_rootn( X )
 %       DET_ROOTN is concave and nonmonotonic; therefore, when used in
 %       CVX specifications, its argument must be affine.
 
-error( nargchk( 1, 1, nargin ) ); %#ok
+narginchk(1,1);
 if ndims( X ) > 2 || size( X, 1 ) ~= size( X, 2 ), %#ok
     error( 'Second argument must be a square matrix.' );
 end
@@ -32,6 +32,6 @@ else
     end
 end
 
-% Copyright 2005-2014 CVX Research, Inc. 
+% Copyright 2005-2016 CVX Research, Inc. 
 % See the file LICENSE.txt for full copyright information.
 % The command 'cvx_where' will show where this file is located.

@@ -1,5 +1,5 @@
 function y = cvx_isconstant( x, full )
-error( nargchk( 1, 2, nargin ) );
+narginchk(1,2);
 b = x.basis_;
 if size( b, 1 ) <= 1,
     y = true;
@@ -14,6 +14,6 @@ else
     y = nnz( b ) == nnz( b( 1, : ) );
 end
 
-% Copyright 2005-2014 CVX Research, Inc.
+% Copyright 2005-2016 CVX Research, Inc.
 % See the file LICENSE.txt for full copyright information.
 % The command 'cvx_where' will show where this file is located.

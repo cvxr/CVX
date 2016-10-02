@@ -2,7 +2,7 @@ function cvx_optval = trace_inv( X ) %#ok
 
 %TRACE_INV   Internal cvx version.
 
-error( nargchk( 1, 1, nargin ) ); %#ok
+narginchk(1,1);
 if ndims( X ) > 2, %#ok
     error( 'trace_inv is not defined for N-D arrays.' );
 elseif ~cvx_isaffine( X ),
@@ -28,6 +28,6 @@ cvx_begin sdp
     [Y,eye(n);eye(n),X] >= 0; %#ok
 cvx_end
 
-% Copyright 2005-2014 CVX Research, Inc. 
+% Copyright 2005-2016 CVX Research, Inc. 
 % See the file LICENSE.txt for full copyright information.
 % The command 'cvx_where' will show where this file is located.

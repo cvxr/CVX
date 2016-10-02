@@ -5,7 +5,7 @@ function x = subsref( x, S )
 %      variable is identical to their use with numeric arrays. All 
 %      conventions are preserved, including the colon ':' and 'end'.
 
-error( nargchk( 2, 2, nargin ) ); %#ok
+narginchk(2,2);
 
 try
     ndxs = builtin( 'subsref', reshape( 1 : prod( x.size_ ), x.size_ ), S );
@@ -15,6 +15,6 @@ end
 
 x = cvx( size( ndxs ), x.basis_( :, ndxs ) );
 
-% Copyright 2005-2014 CVX Research, Inc.
+% Copyright 2005-2016 CVX Research, Inc.
 % See the file LICENSE.txt for full copyright information.
 % The command 'cvx_where' will show where this file is located.

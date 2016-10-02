@@ -2,7 +2,7 @@ function y = log_sum_exp( x, dim )
 
 %LOG_SUM_EXP   CVX internal version.
 
-error( nargchk( 1, 2, nargin ) ); %#ok
+narginchk(1,2);
 cvx_expert_check( 'log_sum_exp', x );
 
 sx = size( x );
@@ -119,6 +119,6 @@ end
 % Reshape again, just in case
 y = reshape( y, sy );
 
-% Copyright 2005-2014 CVX Research, Inc. 
+% Copyright 2005-2016 CVX Research, Inc. 
 % See the file LICENSE.txt for full copyright information.
 % The command 'cvx_where' will show where this file is located.

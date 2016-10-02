@@ -18,7 +18,7 @@ function cvx_optval = prod_inv( x, dim, p )
 %       PROD_INV(X) is convex and nonincreasing in X; therefore, when used
 %       in CVX specifications, its argument must be concave or affine.
 
-error( nargchk( 1, 3, nargin ) ); %#ok
+narginchk(1,3);
 if ~isreal( x ), 
     error( 'First argument must be real.' ); 
 elseif nargin < 2,
@@ -35,6 +35,6 @@ tt = any( x < 0, dim );
 cvx_optval = prod( x, dim ) .^ (-p);
 cvx_optval(tt) = +Inf;
 
-% Copyright 2005-2014 CVX Research, Inc. 
+% Copyright 2005-2016 CVX Research, Inc. 
 % See the file LICENSE.txt for full copyright information.
 % The command 'cvx_where' will show where this file is located.

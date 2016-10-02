@@ -33,7 +33,7 @@ function y = berhu( x, M, t )
 % Check arguments
 %
 
-error( nargchk( 1, 3, nargin ) ); %#ok
+narginchk(1,3);
 if nargin < 2,
     M = 1;
 elseif ~isreal( M ) || any( M( : ) <= 0 ),
@@ -65,6 +65,6 @@ if nnz( q ),
     end
 end
 
-% Copyright 2005-2014 CVX Research, Inc.
+% Copyright 2005-2016 CVX Research, Inc.
 % See the file LICENSE.txt for full copyright information.
 % The command 'cvx_where' will show where this file is located.

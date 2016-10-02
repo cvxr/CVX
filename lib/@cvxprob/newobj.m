@@ -1,5 +1,5 @@
 function newobj( prob, dir, x )
-error( nargchk( 3, 3, nargin ) );
+narginchk(3,3);
 
 persistent remap_min remap_max remap
 if isempty( remap_max ),
@@ -78,6 +78,6 @@ cvx___.problems( p ).objective = x;
 cvx___.problems( p ).direction = dir;
 cvx___.problems( p ).geometric = vx;
 
-% Copyright 2005-2014 CVX Research, Inc.
+% Copyright 2005-2016 CVX Research, Inc.
 % See the file LICENSE.txt for full copyright information.
 % The command 'cvx_where' will show where this file is located.

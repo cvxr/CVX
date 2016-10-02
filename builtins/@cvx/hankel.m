@@ -11,7 +11,7 @@ function H = hankel(c,r)
 % Check arguments
 %
 
-error( nargchk( 1, 2, nargin ) ); %#ok
+narginchk(1,2);
 if nargin < 2,
     r = zeros(size(c));
 else
@@ -42,6 +42,6 @@ ridx = 0 : nr - 1;
 H    = cidx(:,ones(nr,1)) + ridx(ones(nc,1),:);
 H    = reshape( cvx_subsref( x, H( : ) ), size( H ) );
 
-% Copyright 2005-2014 CVX Research, Inc.
+% Copyright 2005-2016 CVX Research, Inc.
 % See the file LICENSE.txt for full copyright information.
 % The command 'cvx_where' will show where this file is located.

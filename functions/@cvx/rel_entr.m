@@ -4,7 +4,7 @@ function cvx_optval = rel_entr( x, y )
 
 cvx_expert_check( 'rel_entr', x, y );
 persistent remap_x remap_y remap_z
-error( nargchk( 2, 2, nargin ) ); %#ok
+narginchk(2,2);
 sx = size( x ); xs = all( sx == 1 );
 sy = size( y ); ys = all( sy == 1 );
 if xs,
@@ -95,6 +95,6 @@ for k = 1 : nv,
 
 end
 
-% Copyright 2005-2014 CVX Research, Inc.
+% Copyright 2005-2016 CVX Research, Inc.
 % See the file LICENSE.txt for full copyright information.
 % The command 'cvx_where' will show where this file is located.

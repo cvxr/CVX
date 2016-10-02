@@ -29,7 +29,7 @@ function cvx_optval = norms( x, p, dim )
 % Check second argument
 %
 
-error( nargchk( 1, 3, nargin ) ); %#ok
+narginchk(1,3);
 if nargin < 2 || isempty( p ),
     p = 2;
 elseif ~isnumeric( p ) || numel( p ) ~= 1 || ~isreal( p ),
@@ -66,6 +66,6 @@ switch p,
         cvx_optval = sum( abs( x ) .^ p, dim ) .^ ( 1 / p );
 end
 
-% Copyright 2005-2014 CVX Research, Inc.
+% Copyright 2005-2016 CVX Research, Inc.
 % See the file LICENSE.txt for full copyright information.
 % The command 'cvx_where' will show where this file is located.

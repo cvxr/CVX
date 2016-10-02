@@ -20,7 +20,7 @@ function z = rel_entr( x, y )
 %       to be nonnegative, hence there is no need to add additional
 %       constraints X >= 0 or Y >= 0 to enforce this.
 
-error(nargchk(2,2,nargin)); %#ok
+narginchk(2,2);
 if ~isreal( x ) || ~isreal( y ),
     error( 'Arguments must be real.' );
 end
@@ -32,6 +32,6 @@ z  = x .* log( x ./ y );
 z( t1 ) = +Inf;
 z( t2 ) = 0;
 
-% Copyright 2005-2014 CVX Research, Inc.
+% Copyright 2005-2016 CVX Research, Inc.
 % See the file LICENSE.txt for full copyright information.
 % The command 'cvx_where' will show where this file is located.
