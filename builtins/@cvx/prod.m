@@ -57,8 +57,8 @@ t0 = any( reshape( remap_0( vx ), sx ) );
 t1 = all( reshape( remap_1( vx ), sx ) );
 t2 = all( reshape( remap_2( vx ), sx ) ) | ...
      all( reshape( remap_3( vx ), sx ) );
-t3 = t2 & t0;
-ta = ( t1 | t3 ) + 2 * ( t2 & ~t3 );
+t3 = t0 & t1;
+ta = t3 + 2 * ( t2 & ~t3 );
 nu = sort( ta(:) );
 nu = nu([true;diff(nu)~=0]);
 nk = length( nu );
