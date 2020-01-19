@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <title>Figure 8.10: Approximate linear discrimination via linear programming</title>
-<link rel="canonical" href="/Users/mcgrant/Projects/CVX/examples/cvxbook/Ch08_geometric_probs/html/svm_1.html">
+<link rel="canonical" href="/Users/mcgrant/Repos/CVX/examples/cvxbook/Ch08_geometric_probs/html/svm_1.html">
 <link rel="stylesheet" href="../../../examples.css" type="text/css">
 </head>
 <body>
@@ -76,60 +76,103 @@ title(<span class="string">'Approximate linear discrimination via linear program
 <a id="output"></a>
 <pre class="codeoutput">
  
-Calling SDPT3 4.0: 203 variables, 100 equality constraints
+Calling Mosek 9.1.9: 203 variables, 100 equality constraints
 ------------------------------------------------------------
 
- num. of constraints = 100
- dim. of linear var  = 200
- dim. of free   var  =  3 *** convert ublk to lblk
-*******************************************************************
-   SDPT3: Infeasible path-following algorithms
-*******************************************************************
- version  predcorr  gam  expon  scale_data
-    NT      1      0.000   1        0    
-it pstep dstep pinfeas dinfeas  gap      prim-obj      dual-obj    cputime
--------------------------------------------------------------------
- 0|0.000|0.000|9.1e-01|1.9e+01|4.1e+04| 1.414214e+03  0.000000e+00| 0:0:00| chol  1  1 
- 1|1.000|0.968|1.2e-06|7.1e-01|2.6e+03| 1.241114e+03  1.166168e+01| 0:0:00| chol  1  1 
- 2|1.000|0.567|2.7e-06|3.1e-01|1.0e+03| 4.476059e+02  8.828967e+00| 0:0:00| chol  1  1 
- 3|0.910|0.846|1.6e-06|4.9e-02|1.4e+02| 6.788544e+01  6.105312e+00| 0:0:00| chol  1  1 
- 4|0.940|0.640|6.2e-06|1.8e-02|6.3e+01| 3.280721e+01  4.752207e+00| 0:0:00| chol  1  1 
- 5|0.982|0.439|6.7e-07|1.0e-02|2.8e+01| 1.368275e+01  4.223464e+00| 0:0:00| chol  1  1 
- 6|1.000|0.754|7.9e-09|2.5e-03|1.1e+01| 1.107127e+01  4.125359e+00| 0:0:00| chol  1  1 
- 7|1.000|0.241|5.0e-08|1.9e-03|8.2e+00| 9.815542e+00  4.091411e+00| 0:0:00| chol  1  1 
- 8|1.000|0.587|1.5e-07|7.7e-04|5.0e+00| 8.915113e+00  4.980641e+00| 0:0:00| chol  1  1 
- 9|0.921|0.455|8.2e-08|4.2e-04|2.4e+00| 7.197481e+00  5.289285e+00| 0:0:00| chol  1  1 
-10|1.000|0.524|2.6e-08|2.0e-04|1.4e+00| 6.805736e+00  5.594202e+00| 0:0:00| chol  1  1 
-11|1.000|0.299|1.3e-08|1.4e-04|1.0e+00| 6.562960e+00  5.719608e+00| 0:0:00| chol  1  1 
-12|1.000|0.516|6.2e-09|6.8e-05|6.2e-01| 6.439207e+00  5.882265e+00| 0:0:00| chol  1  1 
-13|0.755|0.303|2.4e-09|4.7e-05|4.0e-01| 6.292514e+00  5.919046e+00| 0:0:00| chol  1  1 
-14|1.000|0.303|3.4e-10|3.3e-05|4.1e-01| 6.372321e+00  5.996721e+00| 0:0:00| chol  1  1 
-15|0.983|0.306|2.6e-10|2.3e-05|2.4e-01| 6.245623e+00  6.016152e+00| 0:0:00| chol  1  1 
-16|1.000|0.679|1.3e-09|7.3e-06|7.8e-02| 6.169151e+00  6.095341e+00| 0:0:00| chol  1  1 
-17|0.993|0.899|5.9e-11|7.4e-07|6.7e-03| 6.149220e+00  6.142910e+00| 0:0:00| chol  1  1 
-18|0.987|0.986|2.5e-10|3.1e-06|1.4e-04| 6.148578e+00  6.148492e+00| 0:0:00| chol  1  1 
-19|0.996|0.989|1.1e-12|6.5e-08|3.5e-06| 6.148570e+00  6.148568e+00| 0:0:00| chol  1  1 
-20|1.000|0.989|7.9e-14|1.6e-09|7.9e-08| 6.148569e+00  6.148569e+00| 0:0:00|
-  stop: max(relative gap, infeasibilities) &lt; 1.49e-08
--------------------------------------------------------------------
- number of iterations   = 20
- primal objective value =  6.14856945e+00
- dual   objective value =  6.14856940e+00
- gap := trace(XZ)       = 7.91e-08
- relative gap           = 5.95e-09
- actual relative gap    = 4.14e-09
- rel. primal infeas (scaled problem)   = 7.87e-14
- rel. dual     "        "       "      = 1.60e-09
- rel. primal infeas (unscaled problem) = 0.00e+00
- rel. dual     "        "       "      = 0.00e+00
- norm(X), norm(y), norm(Z) = 8.9e+01, 2.4e+00, 1.0e+01
- norm(A), norm(b), norm(C) = 7.3e+01, 1.1e+01, 1.1e+01
- Total CPU time (secs)  = 0.21  
- CPU time per iteration = 0.01  
- termination code       =  0
- DIMACS: 4.3e-13  0.0e+00  8.8e-09  0.0e+00  4.1e-09  6.0e-09
--------------------------------------------------------------------
- 
+MOSEK Version 9.1.9 (Build date: 2019-11-21 11:32:15)
+Copyright (c) MOSEK ApS, Denmark. WWW: mosek.com
+Platform: MACOSX/64-X86
+
+Problem
+  Name                   :                 
+  Objective sense        : min             
+  Type                   : LO (linear optimization problem)
+  Constraints            : 100             
+  Cones                  : 0               
+  Scalar variables       : 203             
+  Matrix variables       : 0               
+  Integer variables      : 0               
+
+Optimizer started.
+Presolve started.
+Linear dependency checker started.
+Linear dependency checker terminated.
+Eliminator started.
+Freed constraints in eliminator : 0
+Eliminator terminated.
+Eliminator - tries                  : 1                 time                   : 0.00            
+Lin. dep.  - tries                  : 1                 time                   : 0.00            
+Lin. dep.  - number                 : 0               
+Presolve terminated. Time: 0.00    
+Problem
+  Name                   :                 
+  Objective sense        : min             
+  Type                   : LO (linear optimization problem)
+  Constraints            : 100             
+  Cones                  : 0               
+  Scalar variables       : 203             
+  Matrix variables       : 0               
+  Integer variables      : 0               
+
+Optimizer  - threads                : 8               
+Optimizer  - solved problem         : the dual        
+Optimizer  - Constraints            : 3
+Optimizer  - Cones                  : 0
+Optimizer  - Scalar variables       : 100               conic                  : 0               
+Optimizer  - Semi-definite variables: 0                 scalarized             : 0               
+Factor     - setup time             : 0.00              dense det. time        : 0.00            
+Factor     - ML order time          : 0.00              GP order time          : 0.00            
+Factor     - nonzeros before factor : 6                 after factor           : 6               
+Factor     - dense dim.             : 0                 flops                  : 1.21e+03        
+ITE PFEAS    DFEAS    GFEAS    PRSTATUS   POBJ              DOBJ              MU       TIME  
+0   4.0e+00  4.5e+01  2.0e+02  0.00e+00   0.000000000e+00   1.000000000e+02   4.0e+00  0.00  
+1   1.6e+00  1.8e+01  7.7e+01  1.00e+00   1.326796838e+01   5.217637579e+01   1.6e+00  0.01  
+2   3.4e-01  3.9e+00  1.7e+01  8.00e-01   1.276465396e+01   2.276054023e+01   3.4e-01  0.01  
+3   9.4e-02  1.1e+00  4.6e+00  7.29e-01   1.056871385e+01   1.373372432e+01   9.4e-02  0.01  
+4   5.7e-02  6.4e-01  2.8e+00  6.95e-01   9.981841488e+00   1.207699096e+01   5.7e-02  0.01  
+5   2.4e-02  2.7e-01  1.2e+00  5.28e-01   9.577353165e+00   1.084650474e+01   2.4e-02  0.01  
+6   1.5e-02  1.7e-01  7.4e-01  -2.38e-01  9.090838843e+00   1.021931758e+01   1.5e-02  0.01  
+7   7.1e-03  8.0e-02  3.5e-01  7.88e-01   7.843975801e+00   8.411374355e+00   7.1e-03  0.01  
+8   5.3e-03  6.0e-02  2.6e-01  3.60e-01   7.713726063e+00   8.230116821e+00   5.3e-03  0.01  
+9   4.2e-03  4.7e-02  2.1e-01  7.82e-01   7.375338663e+00   7.795080822e+00   4.2e-03  0.01  
+10  8.1e-04  9.2e-03  4.0e-02  9.81e-01   6.402420149e+00   6.483453549e+00   8.1e-04  0.01  
+11  6.0e-04  6.7e-03  2.9e-02  7.09e-01   6.352875466e+00   6.418381327e+00   6.0e-04  0.01  
+12  9.4e-05  1.1e-03  4.7e-03  9.89e-01   6.180539134e+00   6.190871435e+00   9.4e-05  0.01  
+13  3.8e-07  4.3e-06  1.9e-05  9.96e-01   6.148692445e+00   6.148734520e+00   3.8e-07  0.01  
+14  3.9e-11  4.4e-10  1.9e-09  1.00e+00   6.148569445e+00   6.148569449e+00   3.9e-11  0.01  
+Basis identification started.
+Primal basis identification phase started.
+Primal basis identification phase terminated. Time: 0.00
+Dual basis identification phase started.
+Dual basis identification phase terminated. Time: 0.00
+Basis identification terminated. Time: 0.00
+Optimizer terminated. Time: 0.02    
+
+
+Interior-point solution summary
+  Problem status  : PRIMAL_AND_DUAL_FEASIBLE
+  Solution status : OPTIMAL
+  Primal.  obj: 6.1485694488e+00    nrm: 2e+01    Viol.  con: 4e-11    var: 0e+00  
+  Dual.    obj: 6.1485694488e+00    nrm: 1e+00    Viol.  con: 0e+00    var: 8e-09  
+
+Basic solution summary
+  Problem status  : PRIMAL_AND_DUAL_FEASIBLE
+  Solution status : OPTIMAL
+  Primal.  obj: 6.1485694227e+00    nrm: 2e+01    Viol.  con: 2e-08    var: 0e+00  
+  Dual.    obj: 6.1485694323e+00    nrm: 1e+00    Viol.  con: 0e+00    var: 3e-15  
+Optimizer summary
+  Optimizer                 -                        time: 0.02    
+    Interior-point          - iterations : 14        time: 0.01    
+      Basis identification  -                        time: 0.00    
+        Primal              - iterations : 0         time: 0.00    
+        Dual                - iterations : 0         time: 0.00    
+        Clean primal        - iterations : 0         time: 0.00    
+        Clean dual          - iterations : 0         time: 0.00    
+    Simplex                 -                        time: 0.00    
+      Primal simplex        - iterations : 0         time: 0.00    
+      Dual simplex          - iterations : 0         time: 0.00    
+    Mixed integer           - relaxations: 0         time: 0.00    
+
 ------------------------------------------------------------
 Status: Solved
 Optimal value (cvx_optval): +6.14857

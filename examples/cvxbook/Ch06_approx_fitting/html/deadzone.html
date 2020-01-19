@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <title>Section 6.1.2: Residual minimization with deadzone penalty</title>
-<link rel="canonical" href="/Users/mcgrant/Projects/CVX/examples/cvxbook/Ch06_approx_fitting/html/deadzone.html">
+<link rel="canonical" href="/Users/mcgrant/Repos/CVX/examples/cvxbook/Ch06_approx_fitting/html/deadzone.html">
 <link rel="stylesheet" href="../../../examples.css" type="text/css">
 </head>
 <body>
@@ -56,72 +56,98 @@ disp( <span class="string">' '</span> );
 <pre class="codeoutput">
 Computing the optimal solution of the deadzone approximation problem: 
  
-Calling SDPT3 4.0: 72 variables, 32 equality constraints
+Calling Mosek 9.1.9: 72 variables, 32 equality constraints
 ------------------------------------------------------------
 
- num. of constraints = 32
- dim. of socp   var  = 32,   num. of socp blk  = 16
- dim. of linear var  = 32
- dim. of free   var  =  8 *** convert ublk to lblk
-*******************************************************************
-   SDPT3: Infeasible path-following algorithms
-*******************************************************************
- version  predcorr  gam  expon  scale_data
-    NT      1      0.000   1        0    
-it pstep dstep pinfeas dinfeas  gap      prim-obj      dual-obj    cputime
--------------------------------------------------------------------
- 0|0.000|0.000|7.4e-01|2.3e+01|1.8e+04| 2.252324e+02  0.000000e+00| 0:0:00| chol  1  1 
- 1|1.000|0.835|2.4e-06|3.9e+00|1.5e+03| 2.732368e+02 -3.160464e+01| 0:0:00| chol  1  1 
- 2|1.000|0.988|4.3e-06|5.6e-02|1.6e+02| 1.373391e+02 -1.280265e+01| 0:0:00| chol  1  1 
- 3|0.896|0.969|1.6e-06|2.6e-03|1.7e+01| 6.468687e+00 -1.056104e+01| 0:0:00| chol  1  1 
- 4|1.000|0.029|3.5e-06|3.2e-03|1.7e+01| 5.676729e+00 -1.024814e+01| 0:0:00| chol  1  1 
- 5|0.649|0.474|2.0e-06|1.7e-03|1.1e+01| 4.684397e+00 -5.922458e+00| 0:0:00| chol  1  1 
- 6|0.929|0.307|5.9e-07|1.2e-03|6.5e+00| 1.975882e+00 -4.346206e+00| 0:0:00| chol  1  1 
- 7|1.000|0.416|3.9e-07|6.9e-04|3.5e+00| 7.427569e-01 -2.708758e+00| 0:0:00| chol  1  1 
- 8|1.000|0.554|1.0e-07|3.1e-04|1.5e+00| 1.716839e-01 -1.269672e+00| 0:0:00| chol  1  1 
- 9|0.999|0.891|1.8e-08|3.4e-05|1.5e-01| 5.764868e-03 -1.408961e-01| 0:0:00| chol  1  1 
-10|0.987|0.986|1.3e-09|4.8e-07|2.1e-03| 7.881245e-05 -2.003151e-03| 0:0:00| chol  1  1 
-11|0.989|0.989|6.3e-11|1.0e-05|7.1e-05| 8.706354e-07 -2.251729e-05| 0:0:00| chol  1  1 
-12|1.000|0.988|8.2e-14|3.5e-07|2.2e-06| 1.560505e-07 -5.703412e-07| 0:0:00| chol  1  1 
-13|1.000|0.988|4.4e-15|1.1e-08|6.6e-08| 4.842104e-09 -1.628348e-08| 0:0:00| chol  1  1 
-14|1.000|0.912|1.7e-16|4.0e-10|2.0e-08| 6.148509e-09 -1.262963e-08| 0:0:00| chol  1  1 
-15|1.000|0.607|1.5e-15|1.4e-10|8.7e-09| 1.449139e-09 -6.710838e-09| 0:0:00|
-  stop: max(relative gap, infeasibilities) &lt; 1.49e-08
--------------------------------------------------------------------
- number of iterations   = 15
- primal objective value =  1.44913896e-09
- dual   objective value = -6.71083785e-09
- gap := trace(XZ)       = 8.69e-09
- relative gap           = 8.69e-09
- actual relative gap    = 8.16e-09
- rel. primal infeas (scaled problem)   = 1.48e-15
- rel. dual     "        "       "      = 1.38e-10
- rel. primal infeas (unscaled problem) = 0.00e+00
- rel. dual     "        "       "      = 0.00e+00
- norm(X), norm(y), norm(Z) = 4.0e+00, 4.6e-09, 4.0e+00
- norm(A), norm(b), norm(C) = 1.7e+01, 6.4e+00, 5.0e+00
- Total CPU time (secs)  = 0.22  
- CPU time per iteration = 0.01  
- termination code       =  0
- DIMACS: 3.8e-15  0.0e+00  3.4e-10  0.0e+00  8.2e-09  8.7e-09
--------------------------------------------------------------------
- 
+MOSEK Version 9.1.9 (Build date: 2019-11-21 11:32:15)
+Copyright (c) MOSEK ApS, Denmark. WWW: mosek.com
+Platform: MACOSX/64-X86
+
+Problem
+  Name                   :                 
+  Objective sense        : min             
+  Type                   : CONIC (conic optimization problem)
+  Constraints            : 32              
+  Cones                  : 16              
+  Scalar variables       : 72              
+  Matrix variables       : 0               
+  Integer variables      : 0               
+
+Optimizer started.
+Presolve started.
+Linear dependency checker started.
+Linear dependency checker terminated.
+Eliminator started.
+Freed constraints in eliminator : 0
+Eliminator terminated.
+Eliminator - tries                  : 1                 time                   : 0.00            
+Lin. dep.  - tries                  : 1                 time                   : 0.00            
+Lin. dep.  - number                 : 0               
+Presolve terminated. Time: 0.00    
+Problem
+  Name                   :                 
+  Objective sense        : min             
+  Type                   : CONIC (conic optimization problem)
+  Constraints            : 32              
+  Cones                  : 16              
+  Scalar variables       : 72              
+  Matrix variables       : 0               
+  Integer variables      : 0               
+
+Optimizer  - threads                : 8               
+Optimizer  - solved problem         : the dual        
+Optimizer  - Constraints            : 8
+Optimizer  - Cones                  : 16
+Optimizer  - Scalar variables       : 32                conic                  : 32              
+Optimizer  - Semi-definite variables: 0                 scalarized             : 0               
+Factor     - setup time             : 0.00              dense det. time        : 0.00            
+Factor     - ML order time          : 0.00              GP order time          : 0.00            
+Factor     - nonzeros before factor : 36                after factor           : 36              
+Factor     - dense dim.             : 0                 flops                  : 3.66e+03        
+ITE PFEAS    DFEAS    GFEAS    PRSTATUS   POBJ              DOBJ              MU       TIME  
+0   1.5e+00  1.0e+00  1.7e+01  0.00e+00   0.000000000e+00   -1.600000000e+01  1.0e+00  0.00  
+1   3.8e-01  2.5e-01  2.0e+00  1.61e+00   -9.609040001e-01  -4.039702925e+00  2.5e-01  0.01  
+2   1.3e-01  8.9e-02  3.9e-01  1.18e+00   -5.137880081e-01  -1.521386379e+00  8.9e-02  0.01  
+3   5.0e-03  3.4e-03  2.2e-03  1.10e+00   -6.193710529e-03  -4.355232598e-02  3.4e-03  0.01  
+4   1.1e-05  7.1e-06  2.1e-07  1.00e+00   -1.380757740e-05  -9.214039101e-05  7.1e-06  0.01  
+5   2.1e-10  1.4e-10  4.2e-12  1.00e+00   -8.101791968e-10  -2.345960260e-09  1.4e-10  0.01  
+Optimizer terminated. Time: 0.01    
+
+
+Interior-point solution summary
+  Problem status  : PRIMAL_AND_DUAL_FEASIBLE
+  Solution status : OPTIMAL
+  Primal.  obj: -8.1017919679e-10   nrm: 1e+00    Viol.  con: 4e-16    var: 9e-11    cones: 0e+00  
+  Dual.    obj: -2.3459602595e-09   nrm: 1e+00    Viol.  con: 0e+00    var: 4e-20    cones: 0e+00  
+Optimizer summary
+  Optimizer                 -                        time: 0.01    
+    Interior-point          - iterations : 5         time: 0.01    
+      Basis identification  -                        time: 0.00    
+        Primal              - iterations : 0         time: 0.00    
+        Dual                - iterations : 0         time: 0.00    
+        Clean primal        - iterations : 0         time: 0.00    
+        Clean dual          - iterations : 0         time: 0.00    
+    Simplex                 -                        time: 0.00    
+      Primal simplex        - iterations : 0         time: 0.00    
+      Dual simplex          - iterations : 0         time: 0.00    
+    Mixed integer           - relaxations: 0         time: 0.00    
+
 ------------------------------------------------------------
 Status: Solved
-Optimal value (cvx_optval): +1.44914e-09
+Optimal value (cvx_optval): -8.10179e-10
  
 Done! 
 
 Results:
 --------
 sum(max(abs(A*x-b)-1,0)): 0.0000
-cvx_optval: 0.0000
+cvx_optval: -0.0000
 cvx_status: Solved
 
 Optimal vector:
-   x     = [  0.3334  0.0993 -0.3344  0.0608  0.6061  0.3877 -0.6685  0.7438 ]
+   x     = [  0.2900  0.1323 -0.3552  0.0633  0.6609  0.4022 -0.6744  0.7018 ]
 Residual vector:
-   A*x-b = [  0.6199  0.3678 -0.8146 -0.2921  0.3308  0.4011 -0.6790 -0.7038 -0.4704  0.7816  0.0804 -0.0987  0.5240  0.7539  0.2686 -0.3702 ]
+   A*x-b = [  0.6175  0.4820 -0.7431 -0.3238  0.4264  0.4448 -0.6833 -0.7085 -0.4855  0.7475  0.1256 -0.1987  0.5326  0.7285  0.4074 -0.4037 ]
  
 </pre>
 </div>

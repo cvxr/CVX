@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <title>Figures 6.21-6.23: Basis pursuit using Gabor functions</title>
-<link rel="canonical" href="/Users/mcgrant/Projects/CVX/examples/cvxbook/Ch06_approx_fitting/html/basispursuit.html">
+<link rel="canonical" href="/Users/mcgrant/Repos/CVX/examples/cvxbook/Ch06_approx_fitting/html/basispursuit.html">
 <link rel="stylesheet" href="../../../examples.css" type="text/css">
 </head>
 <body>
@@ -140,77 +140,108 @@ hold <span class="string">off</span>;
 Building dictionary matrix...done.
 Solving Basis Pursuit problem...
  
-Calling SDPT3 4.0: 61625 variables, 502 equality constraints
+Calling Mosek 9.1.9: 61625 variables, 502 equality constraints
 ------------------------------------------------------------
 
- num. of constraints = 502
- dim. of socp   var  = 61625,   num. of socp blk  = 30562
-*******************************************************************
-   SDPT3: Infeasible path-following algorithms
-*******************************************************************
- version  predcorr  gam  expon  scale_data
-    NT      1      0.000   1        0    
-it pstep dstep pinfeas dinfeas  gap      prim-obj      dual-obj    cputime
--------------------------------------------------------------------
- 0|0.000|0.000|1.5e+00|1.7e+02|7.6e+06| 4.324221e+04  0.000000e+00| 0:0:02| chol  1  1 
- 1|1.000|0.995|3.6e-07|1.0e+00|8.6e+04| 4.270270e+04 -7.964108e+01| 0:0:04| chol  1  1 
- 2|1.000|0.989|4.6e-07|2.1e-02|1.1e+04| 1.102337e+04 -7.582646e-01| 0:0:07| chol  1  1 
- 3|0.970|0.989|2.1e-08|1.2e-03|3.4e+02| 3.397756e+02  3.356358e-01| 0:0:10| chol  1  1 
- 4|0.484|0.886|1.2e-08|2.3e-04|2.1e+02| 2.206064e+02  6.421842e+00| 0:0:13| chol  1  1 
- 5|0.772|0.915|2.8e-09|2.8e-05|1.0e+02| 1.106558e+02  1.003458e+01| 0:0:15| chol  1  1 
- 6|0.507|0.828|1.4e-09|5.7e-06|6.6e+01| 7.735771e+01  1.171877e+01| 0:0:18| chol  1  1 
- 7|0.514|0.678|6.7e-10|1.9e-06|4.0e+01| 5.172854e+01  1.210713e+01| 0:0:21| chol  1  1 
- 8|0.362|0.850|4.3e-10|3.0e-07|3.0e+01| 4.235935e+01  1.241274e+01| 0:0:24| chol  1  1 
- 9|0.447|0.604|2.4e-10|1.2e-07|2.0e+01| 3.222978e+01  1.253063e+01| 0:0:27| chol  1  1 
-10|0.527|0.932|1.1e-10|8.1e-09|1.2e+01| 2.482939e+01  1.268651e+01| 0:0:30| chol  1  1 
-11|0.624|0.687|4.2e-11|2.6e-09|6.6e+00| 1.932119e+01  1.274802e+01| 0:0:33| chol  1  1 
-12|0.599|0.980|1.7e-11|6.1e-11|3.7e+00| 1.649674e+01  1.281034e+01| 0:0:36| chol  1  1 
-13|0.543|0.647|7.7e-12|2.5e-11|2.2e+00| 1.507030e+01  1.282581e+01| 0:0:39| chol  1  1 
-14|0.541|0.964|3.5e-12|2.5e-12|1.3e+00| 1.413866e+01  1.283901e+01| 0:0:42| chol  1  1 
-15|0.728|0.656|9.8e-13|1.8e-12|5.3e-01| 1.337669e+01  1.284169e+01| 0:0:45| chol  1  1 
-16|0.458|0.608|7.3e-13|1.7e-12|3.4e-01| 1.318123e+01  1.284339e+01| 0:0:48| chol  1  1 
-17|0.590|0.955|5.4e-13|1.1e-12|1.9e-01| 1.303175e+01  1.284468e+01| 0:0:51| chol  1  1 
-18|0.961|0.987|1.8e-12|1.0e-12|4.6e-02| 1.289055e+01  1.284500e+01| 0:0:54| chol  1  1 
-19|0.761|0.883|4.3e-12|1.1e-12|1.6e-02| 1.286137e+01  1.284512e+01| 0:0:57| chol  1  1 
-20|0.882|0.884|1.8e-11|1.1e-12|2.8e-03| 1.284795e+01  1.284515e+01| 0:0:59| chol  1  1 
-21|0.943|0.968|5.3e-11|1.5e-12|2.8e-04| 1.284543e+01  1.284516e+01| 0:1:02| chol  2  2 
-22|0.628|0.970|3.9e-11|2.3e-12|1.5e-04| 1.284530e+01  1.284516e+01| 0:1:05| chol  2  2 
-23|0.631|1.000|2.2e-11|3.4e-12|7.8e-05| 1.284523e+01  1.284516e+01| 0:1:08| chol  1  2 
-24|0.623|1.000|1.1e-11|4.3e-12|4.2e-05| 1.284520e+01  1.284516e+01| 0:1:11| chol  2  2 
-25|0.619|1.000|6.8e-12|2.3e-12|2.3e-05| 1.284518e+01  1.284516e+01| 0:1:14| chol  1  2 
-26|0.602|1.000|5.0e-12|1.4e-12|1.3e-05| 1.284517e+01  1.284516e+01| 0:1:16| chol  2  2 
-27|0.591|1.000|3.6e-12|1.0e-12|7.0e-06| 1.284516e+01  1.284516e+01| 0:1:19| chol  2  2 
-28|0.599|1.000|2.8e-12|1.0e-12|3.9e-06| 1.284516e+01  1.284516e+01| 0:1:22| chol  2  2 
-29|0.606|1.000|2.1e-12|1.0e-12|2.2e-06| 1.284516e+01  1.284516e+01| 0:1:25| chol  2  2 
-30|0.612|1.000|1.8e-12|1.0e-12|1.2e-06| 1.284516e+01  1.284516e+01| 0:1:28| chol  2  2 
-31|0.618|1.000|1.9e-12|1.0e-12|6.4e-07| 1.284516e+01  1.284516e+01| 0:1:31| chol  2  2 
-32|0.622|1.000|2.0e-12|1.0e-12|3.4e-07| 1.284516e+01  1.284516e+01| 0:1:34|
-  stop: max(relative gap, infeasibilities) &lt; 1.49e-08
--------------------------------------------------------------------
- number of iterations   = 32
- primal objective value =  1.28451560e+01
- dual   objective value =  1.28451557e+01
- gap := trace(XZ)       = 3.44e-07
- relative gap           = 1.29e-08
- actual relative gap    = 1.29e-08
- rel. primal infeas (scaled problem)   = 1.97e-12
- rel. dual     "        "       "      = 1.00e-12
- rel. primal infeas (unscaled problem) = 0.00e+00
- rel. dual     "        "       "      = 0.00e+00
- norm(X), norm(y), norm(Z) = 3.5e+00, 9.9e-01, 1.9e+02
- norm(A), norm(b), norm(C) = 6.9e+02, 1.9e+01, 1.8e+02
- Total CPU time (secs)  = 93.60  
- CPU time per iteration = 2.92  
- termination code       =  0
- DIMACS: 1.5e-11  0.0e+00  8.8e-11  0.0e+00  1.3e-08  1.3e-08
--------------------------------------------------------------------
- 
+MOSEK Version 9.1.9 (Build date: 2019-11-21 11:32:15)
+Copyright (c) MOSEK ApS, Denmark. WWW: mosek.com
+Platform: MACOSX/64-X86
+
+MOSEK warning 710: #1 (nearly) zero elements are specified in sparse col '' (505) of matrix 'A'.
+MOSEK warning 710: #1 (nearly) zero elements are specified in sparse col '' (507) of matrix 'A'.
+MOSEK warning 710: #1 (nearly) zero elements are specified in sparse col '' (509) of matrix 'A'.
+MOSEK warning 710: #1 (nearly) zero elements are specified in sparse col '' (511) of matrix 'A'.
+MOSEK warning 710: #1 (nearly) zero elements are specified in sparse col '' (513) of matrix 'A'.
+MOSEK warning 710: #1 (nearly) zero elements are specified in sparse col '' (515) of matrix 'A'.
+MOSEK warning 710: #1 (nearly) zero elements are specified in sparse col '' (517) of matrix 'A'.
+MOSEK warning 710: #1 (nearly) zero elements are specified in sparse col '' (519) of matrix 'A'.
+MOSEK warning 710: #1 (nearly) zero elements are specified in sparse col '' (521) of matrix 'A'.
+MOSEK warning 710: #1 (nearly) zero elements are specified in sparse col '' (523) of matrix 'A'.
+Warning number 710 is disabled.
+Problem
+  Name                   :                 
+  Objective sense        : min             
+  Type                   : CONIC (conic optimization problem)
+  Constraints            : 502             
+  Cones                  : 30562           
+  Scalar variables       : 61625           
+  Matrix variables       : 0               
+  Integer variables      : 0               
+
+Optimizer started.
+Presolve started.
+Linear dependency checker started.
+Linear dependency checker terminated.
+Eliminator started.
+Freed constraints in eliminator : 0
+Eliminator terminated.
+Eliminator - tries                  : 1                 time                   : 0.00            
+Lin. dep.  - tries                  : 1                 time                   : 0.02            
+Lin. dep.  - number                 : 0               
+Presolve terminated. Time: 0.22    
+Problem
+  Name                   :                 
+  Objective sense        : min             
+  Type                   : CONIC (conic optimization problem)
+  Constraints            : 502             
+  Cones                  : 30562           
+  Scalar variables       : 61625           
+  Matrix variables       : 0               
+  Integer variables      : 0               
+
+Optimizer  - threads                : 8               
+Optimizer  - solved problem         : the primal      
+Optimizer  - Constraints            : 502
+Optimizer  - Cones                  : 30562
+Optimizer  - Scalar variables       : 61625             conic                  : 61625           
+Optimizer  - Semi-definite variables: 0                 scalarized             : 0               
+Factor     - setup time             : 0.57              dense det. time        : 0.00            
+Factor     - ML order time          : 0.00              GP order time          : 0.00            
+Factor     - nonzeros before factor : 1.26e+05          after factor           : 1.26e+05        
+Factor     - dense dim.             : 0                 flops                  : 9.84e+08        
+ITE PFEAS    DFEAS    GFEAS    PRSTATUS   POBJ              DOBJ              MU       TIME  
+0   1.5e+00  1.0e+00  3.1e+04  0.00e+00   3.056200000e+04   0.000000000e+00   1.0e+00  1.16  
+1   1.9e-01  1.3e-01  1.4e+03  1.00e+00   3.820389713e+03   8.384295397e-02   1.3e-01  1.28  
+2   9.8e-03  6.6e-03  1.6e+01  1.00e+00   2.037854629e+02   3.417125965e+00   6.6e-03  1.43  
+3   3.6e-03  2.4e-03  3.6e+00  1.00e+00   8.224218219e+01   8.938249410e+00   2.4e-03  1.53  
+4   8.8e-04  5.9e-04  4.3e-01  1.00e+00   3.018097170e+01   1.216383545e+01   5.9e-04  1.68  
+5   1.9e-04  1.3e-04  4.2e-02  1.00e+00   1.658929324e+01   1.272519117e+01   1.3e-04  1.82  
+6   1.4e-04  9.4e-05  2.7e-02  1.00e+00   1.562401457e+01   1.275808457e+01   9.4e-05  1.91  
+7   2.7e-05  1.8e-05  2.3e-03  1.00e+00   1.338149308e+01   1.283539099e+01   1.8e-05  2.06  
+8   1.5e-05  1.0e-05  1.0e-03  1.00e+00   1.315475168e+01   1.284014261e+01   1.0e-05  2.15  
+9   2.9e-06  2.0e-06  8.3e-05  1.00e+00   1.290468659e+01   1.284466544e+01   2.0e-06  2.29  
+10  5.4e-07  3.6e-07  6.6e-06  1.00e+00   1.285608729e+01   1.284513132e+01   3.6e-07  2.43  
+11  2.5e-07  1.7e-07  2.1e-06  1.00e+00   1.285033187e+01   1.284514396e+01   1.7e-07  2.52  
+12  2.7e-09  1.8e-09  2.4e-09  1.00e+00   1.284521170e+01   1.284515561e+01   1.8e-09  2.66  
+13  8.6e-11  6.5e-11  1.3e-11  1.00e+00   1.284515739e+01   1.284515569e+01   5.6e-11  2.76  
+14  1.6e-10  2.2e-10  1.1e-15  1.00e+00   1.284515569e+01   1.284515569e+01   1.1e-13  2.86  
+Optimizer terminated. Time: 2.92    
+
+
+Interior-point solution summary
+  Problem status  : PRIMAL_AND_DUAL_FEASIBLE
+  Solution status : OPTIMAL
+  Primal.  obj: 1.2845155690e+01    nrm: 1e+00    Viol.  con: 2e-10    var: 0e+00    cones: 0e+00  
+  Dual.    obj: 1.2845155686e+01    nrm: 1e+00    Viol.  con: 0e+00    var: 2e-10    cones: 0e+00  
+Optimizer summary
+  Optimizer                 -                        time: 2.92    
+    Interior-point          - iterations : 14        time: 2.91    
+      Basis identification  -                        time: 0.00    
+        Primal              - iterations : 0         time: 0.00    
+        Dual                - iterations : 0         time: 0.00    
+        Clean primal        - iterations : 0         time: 0.00    
+        Clean dual          - iterations : 0         time: 0.00    
+    Simplex                 -                        time: 0.00    
+      Primal simplex        - iterations : 0         time: 0.00    
+      Dual simplex          - iterations : 0         time: 0.00    
+    Mixed integer           - relaxations: 0         time: 0.00    
+
 ------------------------------------------------------------
 Status: Solved
 Optimal value (cvx_optval): +12.8452
  
 done
-Elapsed time is 109.096507 seconds.
+Elapsed time is 11.172103 seconds.
 </pre>
 <a id="plots"></a>
 <div id="plotoutput">

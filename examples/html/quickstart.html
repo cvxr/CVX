@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <title>Examples from the CVX Users' guide</title>
-<link rel="canonical" href="/Users/mcgrant/Projects/CVX/examples/html/quickstart.html">
+<link rel="canonical" href="/Users/mcgrant/Repos/CVX/examples/html/quickstart.html">
 <link rel="stylesheet" href="../examples.css" type="text/css">
 </head>
 <body>
@@ -315,6 +315,7 @@ cvx_pause(s_pause);
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % SECTION 2.1: LEAST SQUARES %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 % Input data
 m = 16; n = 8;
 A = randn(m,n);
@@ -348,6 +349,7 @@ Residual vector:
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % SECTION 2.2: BOUND-CONSTRAINED LEAST SQUARES %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 % More input data
 bnds = randn(n,2);
 l = min( bnds, [] ,2 );
@@ -385,6 +387,7 @@ Residual vector:
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % SECTION 2.3: OTHER NORMS AND FUNCTIONS: INFINITY NORM %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 if has_linprog,
 else
     % linprog not present on this system.
@@ -413,6 +416,7 @@ Residual vector; verify that the peaks match the objective (0.7079):
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % SECTION 2.3: OTHER NORMS AND FUNCTIONS: ONE NORM %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 if has_linprog,
 else
     % linprog not present on this system
@@ -435,12 +439,13 @@ cvx_status: Solved
 Optimal vector:
    x     = [ -0.3550  0.8934 -0.0375 -1.1827  0.1694 -0.3870 -0.2148  0.6712 ]
 Residual vector; verify the presence of several zero residuals:
-   A*x-b = [ -0.7666  0.0129 -1.4977  0.0000 -0.5074 -0.0000 -0.0000  0.0357  0.0000  0.0000  0.0299 -1.0842 -0.0000  1.4013  0.0000 -0.0000 ]
+   A*x-b = [ -0.7666  0.0129 -1.4977  0.0000 -0.5074  0.0000 -0.0000  0.0357  0.0000  0.0000  0.0299 -1.0842 -0.0000  1.4013  0.0000 -0.0000 ]
  
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % SECTION 2.3: OTHER NORMS AND FUNCTIONS: LARGEST-K NORM %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 % cvx specification
 k = 5;
 cvx_begin
@@ -465,6 +470,7 @@ Residual vector; verify a tie for 5-th place ( 0.7079):
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % SECTION 2.3: OTHER NORMS AND FUNCTIONS: HUBER PENALTY %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 % cvx specification
 cvx_begin
     variable x(n)
@@ -488,6 +494,7 @@ Residual vector:
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % SECTION 2.4: OTHER CONSTRAINTS %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 % More input data
 p = 4;
 C = randn(p,n);
@@ -513,7 +520,7 @@ cvx_status: Solved
 Optimal vector:
    x     = [  0.1173  1.0000  0.0979 -0.1256  0.5255  0.7102 -0.0127  0.8397 ]
 Residual vector:
-   A*x-b = [ -0.7438  0.0763 -2.0376 -1.3110 -2.3956  0.2175 -1.2595 -0.7583  1.6970  1.9857  0.8180  1.0527  2.5150 -1.2068  2.1631 -0.1360 ]
+   A*x-b = [ -0.7438  0.0763 -2.0376 -1.3110 -2.3956  0.2175 -1.2594 -0.7583  1.6970  1.9857  0.8180  1.0527  2.5150 -1.2068  2.1631 -0.1360 ]
 Equality constraints:
    C*x   = [  1.0035 -2.6761  0.0168 -1.4432 ]
    d     = [  1.0035 -2.6761  0.0168 -1.4432 ]
@@ -521,11 +528,13 @@ Equality constraints:
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % SECTION 2.5: AN OPTIMAL TRADEOFF CURVE %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 % The basic problem:
 % cvx_begin
 %     variable x(n)
 %     minimize( norm(A*x-b)+gamma(k)*norm(x,1) )
 % cvx_end
+
 echo off
  
 Generating tradeoff curve...
@@ -533,24 +542,24 @@ Generating tradeoff curve...
 ---------------------------------------
 1.0000e-02   3.3796e+00   2.0355e+00
 1.6238e-02   3.3658e+00   2.0357e+00
-2.6367e-02   3.3433e+00   2.0362e+00
+2.6367e-02   3.3434e+00   2.0362e+00
 4.2813e-02   3.3068e+00   2.0374e+00
 6.9519e-02   3.2473e+00   2.0408e+00
 1.1288e-01   3.1498e+00   2.0497e+00
 1.8330e-01   2.9878e+00   2.0737e+00
-2.9764e-01   2.7617e+00   2.1280e+00
-4.8329e-01   2.3445e+00   2.2924e+00
-7.8476e-01   1.4081e+00   2.8895e+00
-1.2743e+00   3.7687e-01   3.9510e+00
-2.0691e+00   1.0114e-08   4.4813e+00
-3.3598e+00   5.3229e-09   4.4813e+00
-5.4556e+00   1.9095e-09   4.4813e+00
-8.8587e+00   5.4562e-10   4.4813e+00
-1.4384e+01   2.6802e-10   4.4813e+00
-2.3357e+01   3.7102e-10   4.4813e+00
-3.7927e+01   1.0869e-10   4.4813e+00
-6.1585e+01   2.5093e-11   4.4813e+00
-1.0000e+02   2.8799e-11   4.4813e+00
+2.9764e-01   2.7616e+00   2.1280e+00
+4.8329e-01   2.3444e+00   2.2924e+00
+7.8476e-01   1.4082e+00   2.8895e+00
+1.2743e+00   3.7688e-01   3.9510e+00
+2.0691e+00   1.5073e-10   4.4813e+00
+3.3598e+00   4.7913e-11   4.4813e+00
+5.4556e+00   8.8249e-11   4.4813e+00
+8.8587e+00   1.0114e-10   4.4813e+00
+1.4384e+01   5.6578e-11   4.4813e+00
+2.3357e+01   1.1832e-10   4.4813e+00
+3.7927e+01   9.6834e-11   4.4813e+00
+6.1585e+01   1.0367e-12   4.4813e+00
+1.0000e+02   1.8251e-12   4.4813e+00
 Done. (Check out the graph!)
 </pre>
 <a id="plots"></a>

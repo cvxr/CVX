@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <title>Equality constrained norm minimization.</title>
-<link rel="canonical" href="/Users/mcgrant/Projects/CVX/examples/html/equality_constr_norm_min.html">
+<link rel="canonical" href="/Users/mcgrant/Repos/CVX/examples/html/equality_constr_norm_min.html">
 <link rel="stylesheet" href="../examples.css" type="text/css">
 </head>
 <body>
@@ -60,66 +60,99 @@ disp( [ <span class="string">'   y     = [ '</span>, sprintf( <span class="strin
 <a id="output"></a>
 <pre class="codeoutput">
  
-Calling SDPT3 4.0: 50 variables, 25 equality constraints
+Calling Mosek 9.1.9: 50 variables, 25 equality constraints
 ------------------------------------------------------------
 
- num. of constraints = 25
- dim. of socp   var  = 40,   num. of socp blk  = 20
- dim. of free   var  = 10 *** convert ublk to lblk
-*******************************************************************
-   SDPT3: Infeasible path-following algorithms
-*******************************************************************
- version  predcorr  gam  expon  scale_data
-    NT      1      0.000   1        0    
-it pstep dstep pinfeas dinfeas  gap      prim-obj      dual-obj    cputime
--------------------------------------------------------------------
- 0|0.000|0.000|8.1e-01|2.8e+01|1.4e+04| 5.143640e+01  0.000000e+00| 0:0:00| chol  1  1 
- 1|1.000|0.856|5.1e-06|4.1e+00|9.7e+02| 3.170797e+02  1.559244e+01| 0:0:00| chol  1  1 
- 2|1.000|0.987|1.1e-06|6.3e-02|5.5e+01| 6.323422e+01  1.038030e+01| 0:0:00| chol  1  1 
- 3|0.884|0.971|2.8e-06|2.7e-03|6.0e+00| 2.028692e+01  1.435501e+01| 0:0:00| chol  1  1 
- 4|0.890|0.116|9.8e-06|3.3e-03|3.1e+00| 1.757201e+01  1.464034e+01| 0:0:00| chol  1  1 
- 5|1.000|0.601|1.4e-06|1.3e-03|1.1e+00| 1.696414e+01  1.591961e+01| 0:0:00| chol  1  1 
- 6|0.960|0.782|3.5e-07|2.9e-04|2.0e-01| 1.673312e+01  1.653658e+01| 0:0:00| chol  1  1 
- 7|0.955|0.835|5.6e-08|4.8e-05|3.1e-02| 1.671466e+01  1.668403e+01| 0:0:00| chol  1  1 
- 8|0.983|0.979|1.5e-08|1.0e-06|6.6e-04| 1.671341e+01  1.671276e+01| 0:0:00| chol  1  1 
- 9|0.989|0.989|3.1e-09|4.5e-06|1.8e-05| 1.671339e+01  1.671338e+01| 0:0:00| chol  1  1 
-10|1.000|0.989|1.8e-11|1.2e-07|4.3e-07| 1.671339e+01  1.671339e+01| 0:0:00| chol  1  1 
-11|0.541|0.945|8.2e-12|2.9e-09|3.7e-08| 1.671339e+01  1.671339e+01| 0:0:00|
-  stop: max(relative gap, infeasibilities) &lt; 1.49e-08
--------------------------------------------------------------------
- number of iterations   = 11
- primal objective value =  1.67133912e+01
- dual   objective value =  1.67133911e+01
- gap := trace(XZ)       = 3.74e-08
- relative gap           = 1.09e-09
- actual relative gap    = 8.80e-10
- rel. primal infeas (scaled problem)   = 8.21e-12
- rel. dual     "        "       "      = 2.91e-09
- rel. primal infeas (unscaled problem) = 0.00e+00
- rel. dual     "        "       "      = 0.00e+00
- norm(X), norm(y), norm(Z) = 7.0e+00, 1.0e+01, 6.0e+00
- norm(A), norm(b), norm(C) = 2.3e+01, 5.2e+00, 5.5e+00
- Total CPU time (secs)  = 0.28  
- CPU time per iteration = 0.03  
- termination code       =  0
- DIMACS: 1.5e-11  0.0e+00  8.0e-09  0.0e+00  8.8e-10  1.1e-09
--------------------------------------------------------------------
- 
+MOSEK Version 9.1.9 (Build date: 2019-11-21 11:32:15)
+Copyright (c) MOSEK ApS, Denmark. WWW: mosek.com
+Platform: MACOSX/64-X86
+
+Problem
+  Name                   :                 
+  Objective sense        : min             
+  Type                   : CONIC (conic optimization problem)
+  Constraints            : 25              
+  Cones                  : 20              
+  Scalar variables       : 50              
+  Matrix variables       : 0               
+  Integer variables      : 0               
+
+Optimizer started.
+Presolve started.
+Linear dependency checker started.
+Linear dependency checker terminated.
+Eliminator started.
+Freed constraints in eliminator : 0
+Eliminator terminated.
+Eliminator - tries                  : 1                 time                   : 0.00            
+Lin. dep.  - tries                  : 1                 time                   : 0.00            
+Lin. dep.  - number                 : 0               
+Presolve terminated. Time: 0.00    
+Problem
+  Name                   :                 
+  Objective sense        : min             
+  Type                   : CONIC (conic optimization problem)
+  Constraints            : 25              
+  Cones                  : 20              
+  Scalar variables       : 50              
+  Matrix variables       : 0               
+  Integer variables      : 0               
+
+Optimizer  - threads                : 8               
+Optimizer  - solved problem         : the dual        
+Optimizer  - Constraints            : 10
+Optimizer  - Cones                  : 1
+Optimizer  - Scalar variables       : 26                conic                  : 6               
+Optimizer  - Semi-definite variables: 0                 scalarized             : 0               
+Factor     - setup time             : 0.00              dense det. time        : 0.00            
+Factor     - ML order time          : 0.00              GP order time          : 0.00            
+Factor     - nonzeros before factor : 55                after factor           : 55              
+Factor     - dense dim.             : 0                 flops                  : 3.24e+03        
+ITE PFEAS    DFEAS    GFEAS    PRSTATUS   POBJ              DOBJ              MU       TIME  
+0   4.7e+00  5.0e-01  1.0e+00  0.00e+00   0.000000000e+00   0.000000000e+00   1.0e+00  0.00  
+1   2.1e+00  2.2e-01  3.7e-01  5.23e-01   8.995908369e+00   9.101440402e+00   4.5e-01  0.01  
+2   7.3e-01  7.9e-02  8.5e-02  5.56e-01   1.513297553e+01   1.519314926e+01   1.6e-01  0.01  
+3   2.0e-01  2.2e-02  1.3e-02  8.32e-01   1.857830332e+01   1.859836215e+01   4.3e-02  0.01  
+4   5.0e-02  5.3e-03  1.6e-03  9.67e-01   1.931299152e+01   1.931828674e+01   1.1e-02  0.01  
+5   8.9e-03  9.5e-04  1.2e-04  9.90e-01   1.958240321e+01   1.958345811e+01   1.9e-03  0.01  
+6   1.2e-04  1.3e-05  2.0e-07  9.98e-01   1.963656797e+01   1.963658262e+01   2.6e-05  0.01  
+7   1.6e-10  1.8e-11  3.0e-16  1.00e+00   1.963729329e+01   1.963729329e+01   3.5e-11  0.01  
+Optimizer terminated. Time: 0.01    
+
+
+Interior-point solution summary
+  Problem status  : PRIMAL_AND_DUAL_FEASIBLE
+  Solution status : OPTIMAL
+  Primal.  obj: 1.9637293285e+01    nrm: 3e+00    Viol.  con: 8e-11    var: 0e+00    cones: 9e-11  
+  Dual.    obj: 1.9637293285e+01    nrm: 4e+00    Viol.  con: 0e+00    var: 4e-15    cones: 0e+00  
+Optimizer summary
+  Optimizer                 -                        time: 0.01    
+    Interior-point          - iterations : 7         time: 0.01    
+      Basis identification  -                        time: 0.00    
+        Primal              - iterations : 0         time: 0.00    
+        Dual                - iterations : 0         time: 0.00    
+        Clean primal        - iterations : 0         time: 0.00    
+        Clean dual          - iterations : 0         time: 0.00    
+    Simplex                 -                        time: 0.00    
+      Primal simplex        - iterations : 0         time: 0.00    
+      Dual simplex          - iterations : 0         time: 0.00    
+    Mixed integer           - relaxations: 0         time: 0.00    
+
 ------------------------------------------------------------
 Status: Solved
-Optimal value (cvx_optval): +16.7134
+Optimal value (cvx_optval): +19.6373
  
 norm(A*x-b,1):
-   ans   =   16.7134
+   ans   =   19.6373
 Optimal vector:
-   x     = [  0.0026 -0.1810 -0.4690 -0.1179 -0.0525  0.0758  0.0980  0.1892 -0.1700  0.4621 ]
+   x     = [  0.0454  0.7771 -0.4288 -0.2071 -0.6081  0.0065 -0.0013  0.0645 -0.3340 -0.6522 ]
 Residual vector:
-   A*x-b = [  0.0000 -2.0940  0.6100 -0.8864 -1.8009  0.0000 -0.9764 -0.7311  1.5586  1.1282 -1.4916 -0.0069 -0.0000 -0.0000 -1.5960  0.0629  0.5158  0.0000 -1.8174  1.4373 ]
+   A*x-b = [ -0.0000 -1.0527 -0.7833  1.6843  0.1257  2.5993  1.2661 -0.0000  0.2758 -1.6365 -0.9791  2.6851  0.8774 -0.8686  0.0000  1.6512 -0.0000  1.5824  0.0000  1.5699 ]
 Equality constraints:
-   C*x   = [  0.1555  0.8186 -0.2926 -0.5408 -0.3086 ]
-   d     = [  0.1555  0.8186 -0.2926 -0.5408 -0.3086 ]
+   C*x   = [ -1.0290  0.2431 -1.2566 -0.3472 -0.9414 ]
+   d     = [ -1.0290  0.2431 -1.2566 -0.3472 -0.9414 ]
 Lagrange multiplier for C*x==d:
-   y     = [ -6.7354  1.6456 -2.1811 -6.2263  0.4799 ]
+   y     = [ -3.6360  3.0466 -2.1301 -1.2477  0.1630 ]
 </pre>
 </div>
 </body>

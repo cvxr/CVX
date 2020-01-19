@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <title>Figure 8.8: Simplest linear discrimination</title>
-<link rel="canonical" href="/Users/mcgrant/Projects/CVX/examples/cvxbook/Ch08_geometric_probs/html/linear_discr.html">
+<link rel="canonical" href="/Users/mcgrant/Repos/CVX/examples/cvxbook/Ch08_geometric_probs/html/linear_discr.html">
 <link rel="stylesheet" href="../../../examples.css" type="text/css">
 </head>
 <body>
@@ -70,50 +70,102 @@ title(<span class="string">'Simple classification using an affine function'</spa
 <a id="output"></a>
 <pre class="codeoutput">
 Finding a separating hyperplane... 
-Calling SDPT3 4.0: 16 variables, 3 equality constraints
-   For improved efficiency, SDPT3 is solving the dual problem.
+Calling Mosek 9.1.9: 16 variables, 3 equality constraints
+   For improved efficiency, Mosek is solving the dual problem.
 ------------------------------------------------------------
 
- num. of constraints =  3
- dim. of linear var  = 16
-*******************************************************************
-   SDPT3: Infeasible path-following algorithms
-*******************************************************************
- version  predcorr  gam  expon  scale_data
-    NT      1      0.000   1        0    
-it pstep dstep pinfeas dinfeas  gap      prim-obj      dual-obj    cputime
--------------------------------------------------------------------
- 0|0.000|0.000|3.0e+02|1.1e+01|1.9e+03|-1.600000e+02  0.000000e+00| 0:0:00| chol  1  1 
- 1|0.677|1.000|9.8e+01|8.0e-02|5.8e+02|-8.715458e+01  0.000000e+00| 0:0:00| chol  1  1 
- 2|0.985|1.000|1.5e+00|8.0e-03|8.8e+00|-1.324385e+00  0.000000e+00| 0:0:00| chol  1  1 
- 3|0.989|1.000|1.7e-02|8.0e-04|9.8e-02|-1.477477e-02  0.000000e+00| 0:0:00| chol  1  1 
- 4|0.989|1.000|1.8e-04|3.4e-03|1.1e-03|-1.625866e-04  0.000000e+00| 0:0:00| chol  1  1 
- 5|0.989|1.000|2.0e-06|4.5e-05|1.2e-05|-1.796888e-06  0.000000e+00| 0:0:00| chol  1  1 
- 6|0.984|1.000|3.2e-08|4.0e-07|1.9e-07|-2.976878e-08  0.000000e+00| 0:0:00| chol  1  1 
- 7|0.987|1.000|4.3e-10|6.5e-09|2.6e-09|-3.939962e-10  0.000000e+00| 0:0:00|
-  stop: max(relative gap, infeasibilities) &lt; 1.49e-08
--------------------------------------------------------------------
- number of iterations   =  7
- primal objective value = -3.93996184e-10
- dual   objective value =  0.00000000e+00
- gap := trace(XZ)       = 2.60e-09
- relative gap           = 2.60e-09
- actual relative gap    = -3.94e-10
- rel. primal infeas (scaled problem)   = 4.33e-10
- rel. dual     "        "       "      = 6.46e-09
- rel. primal infeas (unscaled problem) = 0.00e+00
- rel. dual     "        "       "      = 0.00e+00
- norm(X), norm(y), norm(Z) = 1.2e-10, 7.0e+00, 6.2e+01
- norm(A), norm(b), norm(C) = 1.7e+01, 1.0e+00, 5.0e+00
- Total CPU time (secs)  = 0.05  
- CPU time per iteration = 0.01  
- termination code       =  0
- DIMACS: 4.3e-10  0.0e+00  1.6e-08  0.0e+00  -3.9e-10  2.6e-09
--------------------------------------------------------------------
- 
+MOSEK Version 9.1.9 (Build date: 2019-11-21 11:32:15)
+Copyright (c) MOSEK ApS, Denmark. WWW: mosek.com
+Platform: MACOSX/64-X86
+
+Problem
+  Name                   :                 
+  Objective sense        : min             
+  Type                   : LO (linear optimization problem)
+  Constraints            : 3               
+  Cones                  : 0               
+  Scalar variables       : 16              
+  Matrix variables       : 0               
+  Integer variables      : 0               
+
+Optimizer started.
+Presolve started.
+Linear dependency checker started.
+Linear dependency checker terminated.
+Eliminator started.
+Freed constraints in eliminator : 0
+Eliminator terminated.
+Eliminator started.
+Freed constraints in eliminator : 0
+Eliminator terminated.
+Eliminator - tries                  : 2                 time                   : 0.00            
+Lin. dep.  - tries                  : 1                 time                   : 0.00            
+Lin. dep.  - number                 : 0               
+Presolve terminated. Time: 0.00    
+Problem
+  Name                   :                 
+  Objective sense        : min             
+  Type                   : LO (linear optimization problem)
+  Constraints            : 3               
+  Cones                  : 0               
+  Scalar variables       : 16              
+  Matrix variables       : 0               
+  Integer variables      : 0               
+
+Optimizer  - threads                : 8               
+Optimizer  - solved problem         : the primal      
+Optimizer  - Constraints            : 3
+Optimizer  - Cones                  : 0
+Optimizer  - Scalar variables       : 16                conic                  : 0               
+Optimizer  - Semi-definite variables: 0                 scalarized             : 0               
+Factor     - setup time             : 0.00              dense det. time        : 0.00            
+Factor     - ML order time          : 0.00              GP order time          : 0.00            
+Factor     - nonzeros before factor : 6                 after factor           : 6               
+Factor     - dense dim.             : 0                 flops                  : 2.06e+02        
+ITE PFEAS    DFEAS    GFEAS    PRSTATUS   POBJ              DOBJ              MU       TIME  
+0   7.2e+00  2.8e+00  2.1e+01  0.00e+00   -1.600000000e+01  0.000000000e+00   2.0e+00  0.00  
+1   1.6e+00  6.2e-01  4.6e+00  -2.36e+00  -5.398997601e+04  0.000000000e+00   4.4e-01  0.01  
+2   2.0e-01  7.8e-02  5.9e-01  -9.52e-02  -4.191335959e+02  0.000000000e+00   5.5e-02  0.01  
+3   1.1e-03  4.2e-04  3.1e-03  8.17e-01   -2.512600010e+00  0.000000000e+00   3.0e-04  0.01  
+4   1.1e-07  4.2e-08  3.1e-07  9.99e-01   -2.516481137e-04  0.000000000e+00   3.0e-08  0.01  
+5   1.1e-11  4.2e-12  3.1e-11  1.00e+00   -2.516481278e-08  0.000000000e+00   3.0e-12  0.01  
+6   1.1e-15  1.0e-15  3.1e-15  1.00e+00   -2.516481278e-12  0.000000000e+00   3.0e-16  0.01  
+Basis identification started.
+Primal basis identification phase started.
+Primal basis identification phase terminated. Time: 0.00
+Dual basis identification phase started.
+Dual basis identification phase terminated. Time: 0.00
+Basis identification terminated. Time: 0.00
+Optimizer terminated. Time: 0.02    
+
+
+Interior-point solution summary
+  Problem status  : PRIMAL_AND_DUAL_FEASIBLE
+  Solution status : OPTIMAL
+  Primal.  obj: -2.5164812778e-12   nrm: 8e-13    Viol.  con: 2e-12    var: 0e+00  
+  Dual.    obj: 0.0000000000e+00    nrm: 2e+03    Viol.  con: 0e+00    var: 2e-13  
+
+Basic solution summary
+  Problem status  : PRIMAL_AND_DUAL_FEASIBLE
+  Solution status : OPTIMAL
+  Primal.  obj: 0.0000000000e+00    nrm: 0e+00    Viol.  con: 0e+00    var: 0e+00  
+  Dual.    obj: 0.0000000000e+00    nrm: 1e+01    Viol.  con: 0e+00    var: 2e-13  
+Optimizer summary
+  Optimizer                 -                        time: 0.02    
+    Interior-point          - iterations : 6         time: 0.01    
+      Basis identification  -                        time: 0.00    
+        Primal              - iterations : 0         time: 0.00    
+        Dual                - iterations : 3         time: 0.00    
+        Clean primal        - iterations : 0         time: 0.00    
+        Clean dual          - iterations : 0         time: 0.00    
+    Simplex                 -                        time: 0.00    
+      Primal simplex        - iterations : 0         time: 0.00    
+      Dual simplex          - iterations : 0         time: 0.00    
+    Mixed integer           - relaxations: 0         time: 0.00    
+
 ------------------------------------------------------------
 Status: Solved
-Optimal value (cvx_optval): +3.93996e-10
+Optimal value (cvx_optval): -0
  
 Done! 
 </pre>

@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <title>Weighted analytic center of a set of linear inequalities</title>
-<link rel="canonical" href="/Users/mcgrant/Projects/CVX/examples/log_exp/html/weighted_analytic_center.html">
+<link rel="canonical" href="/Users/mcgrant/Repos/CVX/examples/log_exp/html/weighted_analytic_center.html">
 <link rel="stylesheet" href="../../examples.css" type="text/css">
 </head>
 <body>
@@ -49,22 +49,93 @@ disp(x);
 <a id="output"></a>
 <pre class="codeoutput">
  
-Successive approximation method to be employed.
-   For improved efficiency, SDPT3 is solving the dual problem.
-   SDPT3 will be called several times to refine the solution.
-   Original size: 150 variables, 60 equality constraints
-   50 exponentials add 400 variables, 250 equality constraints
------------------------------------------------------------------
- Cones  |             Errors              |
-Mov/Act | Centering  Exp cone   Poly cone | Status
---------+---------------------------------+---------
- 50/ 50 | 4.642e+00  1.215e+00  0.000e+00 | Solved
- 50/ 50 | 9.246e-01  5.647e-02  0.000e+00 | Solved
- 47/ 50 | 7.922e-02  4.134e-04  0.000e+00 | Solved
- 35/ 44 | 8.288e-03  4.540e-06  0.000e+00 | Solved
- 11/ 30 | 9.917e-04  6.459e-08  0.000e+00 | Solved
-  0/  5 | 1.158e-04  4.969e-10  0.000e+00 | Solved
------------------------------------------------------------------
+Calling Mosek 9.1.9: 150 variables, 60 equality constraints
+   For improved efficiency, Mosek is solving the dual problem.
+------------------------------------------------------------
+
+MOSEK Version 9.1.9 (Build date: 2019-11-21 11:32:15)
+Copyright (c) MOSEK ApS, Denmark. WWW: mosek.com
+Platform: MACOSX/64-X86
+
+Problem
+  Name                   :                 
+  Objective sense        : min             
+  Type                   : CONIC (conic optimization problem)
+  Constraints            : 60              
+  Cones                  : 50              
+  Scalar variables       : 150             
+  Matrix variables       : 0               
+  Integer variables      : 0               
+
+Optimizer started.
+Presolve started.
+Linear dependency checker started.
+Linear dependency checker terminated.
+Eliminator started.
+Freed constraints in eliminator : 0
+Eliminator terminated.
+Eliminator - tries                  : 1                 time                   : 0.00            
+Lin. dep.  - tries                  : 1                 time                   : 0.00            
+Lin. dep.  - number                 : 0               
+Presolve terminated. Time: 0.00    
+Problem
+  Name                   :                 
+  Objective sense        : min             
+  Type                   : CONIC (conic optimization problem)
+  Constraints            : 60              
+  Cones                  : 50              
+  Scalar variables       : 150             
+  Matrix variables       : 0               
+  Integer variables      : 0               
+
+Optimizer  - threads                : 8               
+Optimizer  - solved problem         : the primal      
+Optimizer  - Constraints            : 10
+Optimizer  - Cones                  : 50
+Optimizer  - Scalar variables       : 150               conic                  : 150             
+Optimizer  - Semi-definite variables: 0                 scalarized             : 0               
+Factor     - setup time             : 0.00              dense det. time        : 0.00            
+Factor     - ML order time          : 0.00              GP order time          : 0.00            
+Factor     - nonzeros before factor : 55                after factor           : 55              
+Factor     - dense dim.             : 0                 flops                  : 1.14e+04        
+ITE PFEAS    DFEAS    GFEAS    PRSTATUS   POBJ              DOBJ              MU       TIME  
+0   5.8e+00  3.2e+00  8.3e+01  0.00e+00   6.028258137e+01   -2.204216600e+01  1.0e+00  0.00  
+1   1.9e+00  1.0e+00  1.8e+01  6.36e-01   2.402764877e+01   -7.490705411e+00  3.3e-01  0.01  
+2   6.6e-01  3.6e-01  4.1e+00  7.86e-01   7.484274349e+00   -4.700807210e+00  1.1e-01  0.01  
+3   4.0e-01  2.2e-01  2.0e+00  8.15e-01   2.978822508e+00   -4.803366948e+00  6.8e-02  0.01  
+4   1.5e-01  8.2e-02  5.3e-01  7.16e-01   -2.181211154e+00  -5.559357961e+00  2.6e-02  0.01  
+5   4.9e-02  2.7e-02  1.1e-01  8.18e-01   -4.601865218e+00  -5.810948806e+00  8.5e-03  0.01  
+6   1.1e-02  6.0e-03  1.2e-02  8.75e-01   -5.671320321e+00  -5.959202164e+00  1.9e-03  0.01  
+7   1.8e-03  9.9e-04  8.3e-04  9.69e-01   -5.937967101e+00  -5.985922606e+00  3.1e-04  0.01  
+8   3.2e-05  1.7e-05  2.0e-06  9.89e-01   -5.991594363e+00  -5.992445856e+00  5.5e-06  0.01  
+9   1.1e-06  6.0e-07  1.3e-08  9.99e-01   -5.992505691e+00  -5.992535031e+00  1.9e-07  0.01  
+10  1.2e-07  6.1e-08  4.2e-10  1.00e+00   -5.992537162e+00  -5.992540134e+00  1.9e-08  0.01  
+11  4.1e-08  9.9e-09  2.8e-11  1.01e+00   -5.992540319e+00  -5.992540801e+00  3.3e-09  0.01  
+12  2.9e-08  1.5e-09  1.6e-12  1.02e+00   -5.992540760e+00  -5.992540832e+00  5.0e-10  0.01  
+13  2.9e-08  1.5e-09  1.6e-12  1.00e+00   -5.992540760e+00  -5.992540832e+00  5.0e-10  0.02  
+14  2.9e-08  1.5e-09  1.6e-12  1.00e+00   -5.992540760e+00  -5.992540832e+00  5.0e-10  0.02  
+Optimizer terminated. Time: 0.02    
+
+
+Interior-point solution summary
+  Problem status  : PRIMAL_AND_DUAL_FEASIBLE
+  Solution status : OPTIMAL
+  Primal.  obj: -5.9925407602e+00   nrm: 2e+01    Viol.  con: 5e-08    var: 0e+00    cones: 7e-10  
+  Dual.    obj: -5.9925408321e+00   nrm: 3e+00    Viol.  con: 0e+00    var: 1e-09    cones: 0e+00  
+Optimizer summary
+  Optimizer                 -                        time: 0.02    
+    Interior-point          - iterations : 15        time: 0.02    
+      Basis identification  -                        time: 0.00    
+        Primal              - iterations : 0         time: 0.00    
+        Dual                - iterations : 0         time: 0.00    
+        Clean primal        - iterations : 0         time: 0.00    
+        Clean dual          - iterations : 0         time: 0.00    
+    Simplex                 -                        time: 0.00    
+      Primal simplex        - iterations : 0         time: 0.00    
+      Dual simplex          - iterations : 0         time: 0.00    
+    Mixed integer           - relaxations: 0         time: 0.00    
+
+------------------------------------------------------------
 Status: Solved
 Optimal value (cvx_optval): +5.99254
  
@@ -77,7 +148,7 @@ The weighted analytic center of the set of linear inequalities is:
     1.1956
     1.3927
    -0.2815
-    0.2862
+    0.2863
     0.3779
 
 </pre>

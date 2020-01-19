@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <title>Section 7.1.1: Counting problems with Poisson distribution</title>
-<link rel="canonical" href="/Users/mcgrant/Projects/CVX/examples/cvxbook/Ch07_statistical_estim/html/counting_problem_poisson.html">
+<link rel="canonical" href="/Users/mcgrant/Repos/CVX/examples/cvxbook/Ch07_statistical_estim/html/counting_problem_poisson.html">
 <link rel="stylesheet" href="../../../examples.css" type="text/css">
 </head>
 <body>
@@ -57,20 +57,103 @@ cvx_end
 <a id="output"></a>
 <pre class="codeoutput">
  
-Successive approximation method to be employed.
-   For improved efficiency, SDPT3 is solving the dual problem.
-   SDPT3 will be called several times to refine the solution.
-   Original size: 276 variables, 103 equality constraints
-   92 exponentials add 736 variables, 460 equality constraints
------------------------------------------------------------------
- Cones  |             Errors              |
-Mov/Act | Centering  Exp cone   Poly cone | Status
---------+---------------------------------+---------
- 92/ 92 | 6.764e-01  3.304e-02  0.000e+00 | Solved
- 90/ 92 | 5.602e-02  2.250e-04  0.000e+00 | Solved
- 55/ 88 | 1.386e-03  1.261e-07  0.000e+00 | Solved
-  0/ 34 | 1.389e-04  1.143e-09  0.000e+00 | Solved
------------------------------------------------------------------
+Calling Mosek 9.1.9: 276 variables, 103 equality constraints
+   For improved efficiency, Mosek is solving the dual problem.
+------------------------------------------------------------
+
+MOSEK Version 9.1.9 (Build date: 2019-11-21 11:32:15)
+Copyright (c) MOSEK ApS, Denmark. WWW: mosek.com
+Platform: MACOSX/64-X86
+
+Problem
+  Name                   :                 
+  Objective sense        : min             
+  Type                   : CONIC (conic optimization problem)
+  Constraints            : 103             
+  Cones                  : 92              
+  Scalar variables       : 276             
+  Matrix variables       : 0               
+  Integer variables      : 0               
+
+Optimizer started.
+Presolve started.
+Linear dependency checker started.
+Linear dependency checker terminated.
+Eliminator started.
+Freed constraints in eliminator : 0
+Eliminator terminated.
+Eliminator - tries                  : 1                 time                   : 0.00            
+Lin. dep.  - tries                  : 1                 time                   : 0.00            
+Lin. dep.  - number                 : 0               
+Presolve terminated. Time: 0.00    
+Problem
+  Name                   :                 
+  Objective sense        : min             
+  Type                   : CONIC (conic optimization problem)
+  Constraints            : 103             
+  Cones                  : 92              
+  Scalar variables       : 276             
+  Matrix variables       : 0               
+  Integer variables      : 0               
+
+Optimizer  - threads                : 8               
+Optimizer  - solved problem         : the primal      
+Optimizer  - Constraints            : 11
+Optimizer  - Cones                  : 92
+Optimizer  - Scalar variables       : 276               conic                  : 276             
+Optimizer  - Semi-definite variables: 0                 scalarized             : 0               
+Factor     - setup time             : 0.00              dense det. time        : 0.00            
+Factor     - ML order time          : 0.00              GP order time          : 0.00            
+Factor     - nonzeros before factor : 66                after factor           : 66              
+Factor     - dense dim.             : 0                 flops                  : 2.48e+04        
+ITE PFEAS    DFEAS    GFEAS    PRSTATUS   POBJ              DOBJ              MU       TIME  
+0   1.1e+02  1.3e+00  3.6e+02  0.00e+00   7.616113271e+01   -2.833959046e+02  1.0e+00  0.00  
+1   2.9e+01  3.3e-01  1.1e+02  -5.94e-01  1.550210526e+02   -4.189329868e+01  2.5e-01  0.01  
+2   3.5e+00  4.1e-02  7.0e+00  3.09e-01   1.198643925e+02   8.648608850e+01   3.1e-02  0.01  
+3   5.2e-01  6.0e-03  4.0e-01  9.14e-01   1.053451377e+02   1.002211740e+02   4.7e-03  0.01  
+4   6.2e-02  7.1e-04  1.6e-02  9.88e-01   1.029113145e+02   1.023014247e+02   5.5e-04  0.01  
+5   8.1e-03  9.2e-05  7.7e-04  9.99e-01   1.026144680e+02   1.025351494e+02   7.2e-05  0.01  
+6   1.0e-03  1.2e-05  3.5e-05  1.00e+00   1.025759070e+02   1.025658467e+02   9.1e-06  0.01  
+7   3.8e-04  4.4e-06  7.7e-06  1.00e+00   1.025722038e+02   1.025684382e+02   3.4e-06  0.01  
+8   1.9e-05  2.2e-07  8.5e-08  1.00e+00   1.025704546e+02   1.025702675e+02   1.7e-07  0.01  
+9   4.5e-06  5.2e-08  9.6e-09  1.00e+00   1.025703884e+02   1.025703441e+02   4.0e-08  0.01  
+10  3.1e-07  3.5e-09  1.7e-10  1.00e+00   1.025703707e+02   1.025703677e+02   2.7e-09  0.01  
+11  2.9e-07  3.4e-09  1.6e-10  1.00e+00   1.025703707e+02   1.025703678e+02   2.6e-09  0.02  
+12  2.9e-07  3.4e-09  1.6e-10  9.99e-01   1.025703707e+02   1.025703678e+02   2.6e-09  0.02  
+13  2.8e-07  3.2e-09  1.5e-10  1.00e+00   1.025703706e+02   1.025703679e+02   2.5e-09  0.02  
+14  2.8e-07  3.1e-09  1.4e-10  1.00e+00   1.025703706e+02   1.025703679e+02   2.4e-09  0.02  
+15  2.8e-07  3.1e-09  1.4e-10  1.00e+00   1.025703706e+02   1.025703679e+02   2.4e-09  0.02  
+16  7.1e-08  1.9e-09  6.8e-11  1.00e+00   1.025703701e+02   1.025703685e+02   1.5e-09  0.02  
+17  7.0e-08  1.9e-09  6.7e-11  1.00e+00   1.025703701e+02   1.025703685e+02   1.5e-09  0.02  
+18  7.0e-08  1.9e-09  6.7e-11  1.00e+00   1.025703701e+02   1.025703685e+02   1.5e-09  0.02  
+19  6.1e-08  1.9e-09  6.5e-11  1.00e+00   1.025703702e+02   1.025703685e+02   1.4e-09  0.02  
+20  6.1e-08  1.9e-09  6.4e-11  1.00e+00   1.025703702e+02   1.025703686e+02   1.4e-09  0.02  
+21  5.9e-08  1.8e-09  6.2e-11  1.00e+00   1.025703701e+02   1.025703685e+02   1.4e-09  0.02  
+22  5.9e-08  1.8e-09  6.2e-11  1.00e+00   1.025703701e+02   1.025703685e+02   1.4e-09  0.02  
+23  5.9e-08  1.8e-09  6.2e-11  1.00e+00   1.025703701e+02   1.025703685e+02   1.4e-09  0.02  
+24  2.1e-08  5.4e-10  9.9e-12  1.00e+00   1.025703696e+02   1.025703692e+02   4.1e-10  0.02  
+Optimizer terminated. Time: 0.03    
+
+
+Interior-point solution summary
+  Problem status  : PRIMAL_AND_DUAL_FEASIBLE
+  Solution status : OPTIMAL
+  Primal.  obj: 1.0257036964e+02    nrm: 1e+02    Viol.  con: 3e-08    var: 0e+00    cones: 4e-08  
+  Dual.    obj: 1.0257036918e+02    nrm: 2e+00    Viol.  con: 0e+00    var: 0e+00    cones: 0e+00  
+Optimizer summary
+  Optimizer                 -                        time: 0.03    
+    Interior-point          - iterations : 24        time: 0.02    
+      Basis identification  -                        time: 0.00    
+        Primal              - iterations : 0         time: 0.00    
+        Dual                - iterations : 0         time: 0.00    
+        Clean primal        - iterations : 0         time: 0.00    
+        Clean dual          - iterations : 0         time: 0.00    
+    Simplex                 -                        time: 0.00    
+      Primal simplex        - iterations : 0         time: 0.00    
+      Dual simplex          - iterations : 0         time: 0.00    
+    Mixed integer           - relaxations: 0         time: 0.00    
+
+------------------------------------------------------------
 Status: Solved
 Optimal value (cvx_optval): +102.57
  

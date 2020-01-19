@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <title>Exercise 4.31: Design of a cantilever beam (GP)</title>
-<link rel="canonical" href="/Users/mcgrant/Projects/CVX/examples/cvxbook/Ch04_cvx_opt_probs/html/cantilever_beam.html">
+<link rel="canonical" href="/Users/mcgrant/Repos/CVX/examples/cvxbook/Ch04_cvx_opt_probs/html/cantilever_beam.html">
 <link rel="stylesheet" href="../../../examples.css" type="text/css">
 </head>
 <body>
@@ -92,20 +92,112 @@ cantilever_beam_plot([h; w])
 <a id="output"></a>
 <pre class="codeoutput">
  
-Successive approximation method to be employed.
-   SDPT3 will be called several times to refine the solution.
-   Original size: 323 variables, 144 equality constraints
-   48 exponentials add 384 variables, 240 equality constraints
------------------------------------------------------------------
- Cones  |             Errors              |
-Mov/Act | Centering  Exp cone   Poly cone | Status
---------+---------------------------------+---------
- 26/ 26 | 8.000e+00  7.849e-01  0.000e+00 | Solved
- 42/ 43 | 3.803e-01  9.215e-03  0.000e+00 | Solved
- 34/ 40 | 1.422e-02  1.389e-05  0.000e+00 | Solved
-  6/ 10 | 1.760e-03  1.263e-07  0.000e+00 | Solved
-  0/  0 | 1.747e-04  0.000e+00  0.000e+00 | Solved
------------------------------------------------------------------
+Calling Mosek 9.1.9: 323 variables, 144 equality constraints
+------------------------------------------------------------
+
+MOSEK Version 9.1.9 (Build date: 2019-11-21 11:32:15)
+Copyright (c) MOSEK ApS, Denmark. WWW: mosek.com
+Platform: MACOSX/64-X86
+
+Problem
+  Name                   :                 
+  Objective sense        : min             
+  Type                   : CONIC (conic optimization problem)
+  Constraints            : 144             
+  Cones                  : 48              
+  Scalar variables       : 323             
+  Matrix variables       : 0               
+  Integer variables      : 0               
+
+Optimizer started.
+Presolve started.
+Linear dependency checker started.
+Linear dependency checker terminated.
+Eliminator started.
+Freed constraints in eliminator : 16
+Eliminator terminated.
+Eliminator started.
+Freed constraints in eliminator : 0
+Eliminator terminated.
+Eliminator - tries                  : 2                 time                   : 0.00            
+Lin. dep.  - tries                  : 1                 time                   : 0.00            
+Lin. dep.  - number                 : 0               
+Presolve terminated. Time: 0.00    
+Problem
+  Name                   :                 
+  Objective sense        : min             
+  Type                   : CONIC (conic optimization problem)
+  Constraints            : 144             
+  Cones                  : 48              
+  Scalar variables       : 323             
+  Matrix variables       : 0               
+  Integer variables      : 0               
+
+Optimizer  - threads                : 8               
+Optimizer  - solved problem         : the primal      
+Optimizer  - Constraints            : 56
+Optimizer  - Cones                  : 49
+Optimizer  - Scalar variables       : 185               conic                  : 146             
+Optimizer  - Semi-definite variables: 0                 scalarized             : 0               
+Factor     - setup time             : 0.00              dense det. time        : 0.00            
+Factor     - ML order time          : 0.00              GP order time          : 0.00            
+Factor     - nonzeros before factor : 276               after factor           : 306             
+Factor     - dense dim.             : 0                 flops                  : 4.18e+03        
+ITE PFEAS    DFEAS    GFEAS    PRSTATUS   POBJ              DOBJ              MU       TIME  
+0   9.3e+00  1.3e+00  4.0e+01  0.00e+00   0.000000000e+00   -3.864489608e+01  1.0e+00  0.00  
+1   5.1e+00  7.0e-01  1.7e+01  3.58e-01   1.743951235e+00   -2.266239385e+01  5.4e-01  0.01  
+2   1.1e+00  1.6e-01  1.6e+00  7.70e-01   4.249122204e+00   -1.363745584e+00  1.2e-01  0.01  
+3   5.6e-01  7.7e-02  5.5e-01  1.15e+00   4.459481801e+00   1.911303501e+00   6.0e-02  0.01  
+4   1.6e-01  2.2e-02  7.6e-02  1.15e+00   4.122703747e+00   3.463984524e+00   1.7e-02  0.01  
+5   4.4e-02  6.0e-03  1.1e-02  1.08e+00   3.828909022e+00   3.650940885e+00   4.7e-03  0.01  
+6   1.1e-02  1.5e-03  1.4e-03  1.04e+00   3.771851182e+00   3.729072170e+00   1.1e-03  0.01  
+7   2.4e-03  3.3e-04  1.5e-04  1.01e+00   3.753436111e+00   3.743849430e+00   2.6e-04  0.01  
+8   9.7e-04  1.3e-04  3.9e-05  9.85e-01   3.749690488e+00   3.745774943e+00   1.0e-04  0.01  
+9   3.5e-04  4.8e-05  8.6e-06  9.89e-01   3.748107109e+00   3.746682810e+00   3.8e-05  0.01  
+10  2.3e-04  3.2e-05  4.6e-06  9.64e-01   3.747708483e+00   3.746767716e+00   2.4e-05  0.01  
+11  4.8e-05  6.6e-06  4.5e-07  9.88e-01   3.747223797e+00   3.747025029e+00   5.1e-06  0.01  
+12  2.2e-05  3.1e-06  1.5e-07  9.68e-01   3.747136513e+00   3.747041537e+00   2.4e-06  0.02  
+13  4.4e-06  6.2e-07  1.3e-08  9.88e-01   3.747083302e+00   3.747064323e+00   4.8e-07  0.02  
+14  2.1e-06  3.0e-07  4.5e-09  9.70e-01   3.747074316e+00   3.747064994e+00   2.3e-07  0.02  
+15  4.6e-07  6.5e-08  4.7e-10  9.88e-01   3.747068818e+00   3.747066752e+00   5.1e-08  0.02  
+16  2.5e-07  3.4e-08  1.8e-10  9.74e-01   3.747067830e+00   3.747066722e+00   2.7e-08  0.02  
+17  7.0e-08  7.2e-09  1.8e-11  9.90e-01   3.747067132e+00   3.747066899e+00   5.6e-09  0.02  
+18  7.0e-08  7.2e-09  1.8e-11  9.72e-01   3.747067132e+00   3.747066899e+00   5.6e-09  0.02  
+19  7.0e-08  7.2e-09  1.8e-11  9.72e-01   3.747067132e+00   3.747066899e+00   5.6e-09  0.02  
+20  3.9e-08  3.7e-09  6.8e-12  9.72e-01   3.747067021e+00   3.747066898e+00   2.9e-09  0.02  
+21  4.8e-08  3.7e-09  6.8e-12  9.91e-01   3.747067021e+00   3.747066898e+00   2.9e-09  0.02  
+22  3.1e-08  3.4e-09  5.8e-12  1.00e+00   3.747067011e+00   3.747066900e+00   2.6e-09  0.02  
+23  4.4e-08  3.0e-09  5.0e-12  1.00e+00   3.747067001e+00   3.747066901e+00   2.4e-09  0.02  
+24  3.6e-08  2.9e-09  4.6e-12  1.00e+00   3.747066997e+00   3.747066902e+00   2.3e-09  0.02  
+25  3.3e-08  2.8e-09  4.3e-12  1.00e+00   3.747066993e+00   3.747066902e+00   2.2e-09  0.03  
+26  4.4e-08  2.5e-09  3.7e-12  1.00e+00   3.747066985e+00   3.747066903e+00   1.9e-09  0.03  
+27  4.3e-08  2.5e-09  3.6e-12  9.83e-01   3.747066984e+00   3.747066903e+00   1.9e-09  0.03  
+28  4.5e-08  2.2e-09  3.1e-12  1.00e+00   3.747066977e+00   3.747066904e+00   1.7e-09  0.03  
+29  4.7e-08  2.2e-09  3.0e-12  1.00e+00   3.747066975e+00   3.747066904e+00   1.7e-09  0.03  
+30  4.8e-08  2.2e-09  3.0e-12  9.83e-01   3.747066975e+00   3.747066904e+00   1.7e-09  0.03  
+31  4.7e-08  1.9e-09  2.5e-12  1.00e+00   3.747066969e+00   3.747066905e+00   1.5e-09  0.03  
+Optimizer terminated. Time: 0.03    
+
+
+Interior-point solution summary
+  Problem status  : PRIMAL_AND_DUAL_FEASIBLE
+  Solution status : OPTIMAL
+  Primal.  obj: 3.7470669691e+00    nrm: 2e+01    Viol.  con: 8e-08    var: 9e-09    cones: 1e-08  
+  Dual.    obj: 3.7470669053e+00    nrm: 1e+00    Viol.  con: 0e+00    var: 1e-09    cones: 0e+00  
+Optimizer summary
+  Optimizer                 -                        time: 0.03    
+    Interior-point          - iterations : 31        time: 0.03    
+      Basis identification  -                        time: 0.00    
+        Primal              - iterations : 0         time: 0.00    
+        Dual                - iterations : 0         time: 0.00    
+        Clean primal        - iterations : 0         time: 0.00    
+        Clean dual          - iterations : 0         time: 0.00    
+    Simplex                 -                        time: 0.00    
+      Primal simplex        - iterations : 0         time: 0.00    
+      Dual simplex          - iterations : 0         time: 0.00    
+    Mixed integer           - relaxations: 0         time: 0.00    
+
+------------------------------------------------------------
 Status: Solved
 Optimal value (cvx_optval): +42.3965
  
