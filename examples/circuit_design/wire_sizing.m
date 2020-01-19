@@ -119,10 +119,11 @@ for i = 1 : npts + xnpts,
         telm=max(sum(GinvC'));
         plot(tdom*[1;1], [0;1], '--', telm*[1;1], [0;1],'--', ...
              tthres*[1;1], [0;1], '--');
-        text(tdom,0,'d');
-        text(telm,0,'e');
-        text(tthres,0,'t');
+        text(tdom,0.01,'d');
+        text(telm,0.01,'e');
+        text(tthres,0.01,'t');
         title(sprintf('Step responses at the 21 nodes for solution (%d), Tmax=%g', xi, delay ));
+        axis([0,2000,-0.01,1]);
 
     end
 
@@ -159,7 +160,7 @@ x  = [ x1 ; x2 ; 0 ];
 h = fill( x, y, ones(4*m+1,1)*[0.9,0.8,0.7,0.6] );
 hold on
 h2 = plot( x, y, '-' );
-axis([ -0.1, m + 0.1, min(y(:))-0.25, max(y(:))+0.1 ]);
+axis([ -0.1, m + 0.1, min(y(:))-0.1, max(y(:))+0.1 ]);
 colormap(gray);
 caxis([-1,1]);
 title('Solutions at points on the tradeoff curve');
@@ -168,5 +169,5 @@ for k = 1 : xnpts,
     set( h(k), 'EdgeColor', get( h2(k), 'Color' ) );
     legends{k} = sprintf( 'Tmax=%g', xdelays(k) );
 end
-legend(legends{:},4);
+legend(legends{:},'Location','southeast');
 

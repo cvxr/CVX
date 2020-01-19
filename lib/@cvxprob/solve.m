@@ -95,6 +95,12 @@ elseif n ~= 0 && ~infeas && ( any( b ) || any( c ) ),
         texp = find( strcmp( { cones.type }, 'exponential' ) );
     end
     need_iter = ~isempty( texp ) && shim.dualize;
+    if need_iter && strncmpi( shim.name, 'mosek', 5 )
+        version = sscanf( shim.version, '%f' );
+        if ~isempty( version ) && version(1) >= 9
+            need_iter = 0;
+        end
+    end
     cvx_setspath;
     if ~quiet,
         disp( ' ' );

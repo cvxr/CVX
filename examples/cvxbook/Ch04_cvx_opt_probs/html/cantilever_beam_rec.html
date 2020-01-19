@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <title>Section 4.5.4: Design of a cantilever beam: recursive formulation (GP)</title>
-<link rel="canonical" href="/Users/mcgrant/Projects/CVX/examples/cvxbook/Ch04_cvx_opt_probs/html/cantilever_beam_rec.html">
+<link rel="canonical" href="/Users/mcgrant/Repos/CVX/examples/cvxbook/Ch04_cvx_opt_probs/html/cantilever_beam_rec.html">
 <link rel="stylesheet" href="../../../examples.css" type="text/css">
 </head>
 <body>
@@ -99,20 +99,92 @@ Building recursive relations for index: 3
 Building recursive relations for index: 2
 Building recursive relations for index: 1
  
-Successive approximation method to be employed.
-   SDPT3 will be called several times to refine the solution.
-   Original size: 231 variables, 88 equality constraints
-   23 exponentials add 184 variables, 115 equality constraints
------------------------------------------------------------------
- Cones  |             Errors              |
-Mov/Act | Centering  Exp cone   Poly cone | Status
---------+---------------------------------+---------
- 15/ 15 | 8.000e+00  6.560e-01  0.000e+00 | Solved
- 23/ 23 | 2.725e-01  5.153e-03  0.000e+00 | Solved
- 16/ 16 | 1.372e-02  1.293e-05  0.000e+00 | Solved
-  6/ 11 | 1.057e-03  6.085e-08  0.000e+00 | Solved
-  0/  0 | 8.196e-05  0.000e+00  0.000e+00 | Solved
------------------------------------------------------------------
+Calling Mosek 9.1.9: 231 variables, 88 equality constraints
+------------------------------------------------------------
+
+MOSEK Version 9.1.9 (Build date: 2019-11-21 11:32:15)
+Copyright (c) MOSEK ApS, Denmark. WWW: mosek.com
+Platform: MACOSX/64-X86
+
+Problem
+  Name                   :                 
+  Objective sense        : min             
+  Type                   : CONIC (conic optimization problem)
+  Constraints            : 88              
+  Cones                  : 23              
+  Scalar variables       : 231             
+  Matrix variables       : 0               
+  Integer variables      : 0               
+
+Optimizer started.
+Presolve started.
+Linear dependency checker started.
+Linear dependency checker terminated.
+Eliminator started.
+Freed constraints in eliminator : 8
+Eliminator terminated.
+Eliminator started.
+Freed constraints in eliminator : 0
+Eliminator terminated.
+Eliminator - tries                  : 2                 time                   : 0.00            
+Lin. dep.  - tries                  : 1                 time                   : 0.00            
+Lin. dep.  - number                 : 0               
+Presolve terminated. Time: 0.00    
+Problem
+  Name                   :                 
+  Objective sense        : min             
+  Type                   : CONIC (conic optimization problem)
+  Constraints            : 88              
+  Cones                  : 23              
+  Scalar variables       : 231             
+  Matrix variables       : 0               
+  Integer variables      : 0               
+
+Optimizer  - threads                : 8               
+Optimizer  - solved problem         : the primal      
+Optimizer  - Constraints            : 33
+Optimizer  - Cones                  : 24
+Optimizer  - Scalar variables       : 96                conic                  : 71              
+Optimizer  - Semi-definite variables: 0                 scalarized             : 0               
+Factor     - setup time             : 0.00              dense det. time        : 0.00            
+Factor     - ML order time          : 0.00              GP order time          : 0.00            
+Factor     - nonzeros before factor : 227               after factor           : 280             
+Factor     - dense dim.             : 0                 flops                  : 4.10e+03        
+ITE PFEAS    DFEAS    GFEAS    PRSTATUS   POBJ              DOBJ              MU       TIME  
+0   1.8e+01  1.3e+00  2.0e+01  0.00e+00   0.000000000e+00   -1.851734604e+01  1.0e+00  0.00  
+1   9.3e+00  6.5e-01  8.5e+00  3.63e-02   1.868176734e+00   -1.008757845e+01  5.0e-01  0.01  
+2   1.5e+00  1.0e-01  5.2e-01  5.88e-01   4.634902605e+00   2.475911429e+00   7.9e-02  0.01  
+3   5.7e-01  4.0e-02  1.1e-01  1.21e+00   4.536227266e+00   3.782997431e+00   3.1e-02  0.01  
+4   1.5e-01  1.0e-02  1.5e-02  1.25e+00   3.888521497e+00   3.717150604e+00   8.1e-03  0.01  
+5   4.1e-02  2.9e-03  2.1e-03  1.09e+00   3.780646559e+00   3.735536302e+00   2.2e-03  0.01  
+6   6.4e-03  4.5e-04  1.4e-04  1.02e+00   3.748436896e+00   3.741401146e+00   3.5e-04  0.01  
+7   9.6e-04  6.7e-05  8.0e-06  9.82e-01   3.747590362e+00   3.746525115e+00   5.2e-05  0.01  
+8   8.9e-05  6.2e-06  2.2e-07  9.98e-01   3.747129136e+00   3.747030645e+00   4.8e-06  0.01  
+9   8.0e-06  5.7e-07  6.1e-09  1.00e+00   3.747072559e+00   3.747063615e+00   4.4e-07  0.01  
+10  3.8e-07  2.6e-08  6.2e-11  1.00e+00   3.747067173e+00   3.747066755e+00   2.0e-08  0.01  
+11  4.1e-08  2.8e-09  2.2e-12  1.00e+00   3.747066938e+00   3.747066893e+00   2.2e-09  0.01  
+Optimizer terminated. Time: 0.02    
+
+
+Interior-point solution summary
+  Problem status  : PRIMAL_AND_DUAL_FEASIBLE
+  Solution status : OPTIMAL
+  Primal.  obj: 3.7470669382e+00    nrm: 1e+01    Viol.  con: 5e-08    var: 1e-08    cones: 0e+00  
+  Dual.    obj: 3.7470668932e+00    nrm: 1e+00    Viol.  con: 0e+00    var: 2e-09    cones: 0e+00  
+Optimizer summary
+  Optimizer                 -                        time: 0.02    
+    Interior-point          - iterations : 11        time: 0.01    
+      Basis identification  -                        time: 0.00    
+        Primal              - iterations : 0         time: 0.00    
+        Dual                - iterations : 0         time: 0.00    
+        Clean primal        - iterations : 0         time: 0.00    
+        Clean dual          - iterations : 0         time: 0.00    
+    Simplex                 -                        time: 0.00    
+      Primal simplex        - iterations : 0         time: 0.00    
+      Dual simplex          - iterations : 0         time: 0.00    
+    Mixed integer           - relaxations: 0         time: 0.00    
+
+------------------------------------------------------------
 Status: Solved
 Optimal value (cvx_optval): +42.3965
  
@@ -136,7 +208,7 @@ h =
     3.9149
     4.5299
     5.0620
-    5.5019
+    5.5018
     5.8811
     6.0000
     6.0000

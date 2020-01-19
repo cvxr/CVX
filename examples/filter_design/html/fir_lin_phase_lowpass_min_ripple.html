@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <title>Minimize stopband ripple of a linear phase lowpass FIR filter</title>
-<link rel="canonical" href="/Users/mcgrant/Projects/CVX/examples/filter_design/html/fir_lin_phase_lowpass_min_ripple.html">
+<link rel="canonical" href="/Users/mcgrant/Repos/CVX/examples/filter_design/html/fir_lin_phase_lowpass_min_ripple.html">
 <link rel="stylesheet" href="../../examples.css" type="text/css">
 </head>
 <body>
@@ -119,63 +119,105 @@ xlabel(<span class="string">'w'</span>), ylabel(<span class="string">'phase H(w)
 <a id="output"></a>
 <pre class="codeoutput">
  
-Calling SDPT3 4.0: 872 variables, 278 equality constraints
-   For improved efficiency, SDPT3 is solving the dual problem.
+Calling Mosek 9.1.9: 872 variables, 278 equality constraints
+   For improved efficiency, Mosek is solving the dual problem.
 ------------------------------------------------------------
 
- num. of constraints = 278
- dim. of sdp    var  = 74,   num. of sdp  blk  = 37
- dim. of socp   var  = 458,   num. of socp blk  = 229
- dim. of linear var  = 303
-*******************************************************************
-   SDPT3: Infeasible path-following algorithms
-*******************************************************************
- version  predcorr  gam  expon  scale_data
-   HKM      1      0.000   1        0    
-it pstep dstep pinfeas dinfeas  gap      prim-obj      dual-obj    cputime
--------------------------------------------------------------------
- 0|0.000|0.000|7.3e+02|4.9e+01|1.1e+05| 2.048238e+01  0.000000e+00| 0:0:00| chol  1  1 
- 1|0.921|0.699|5.8e+01|1.5e+01|2.5e+04| 5.008791e+01 -2.175738e+01| 0:0:00| chol  1  1 
- 2|0.732|0.870|1.6e+01|1.9e+00|4.3e+03| 6.281441e+01 -4.143755e+01| 0:0:00| chol  1  1 
- 3|0.995|0.863|7.8e-02|2.7e-01|5.4e+02| 6.205041e+01 -4.108188e+01| 0:0:00| chol  1  1 
- 4|1.000|0.942|5.0e-04|1.6e-02|7.0e+01| 4.728715e+01 -3.430874e+00| 0:0:00| chol  1  1 
- 5|0.368|1.000|3.1e-04|1.1e-04|4.3e+01| 3.624702e+01 -6.510807e+00| 0:0:00| chol  1  1 
- 6|1.000|0.921|1.5e-05|7.2e-05|6.5e+00| 3.973191e+00 -2.473693e+00| 0:0:00| chol  1  1 
- 7|0.916|0.900|1.4e-06|1.0e-05|2.8e+00| 1.071821e+00 -1.754710e+00| 0:0:00| chol  1  1 
- 8|0.820|0.946|2.6e-07|8.4e-07|1.0e+00|-1.829241e-01 -1.179210e+00| 0:0:00| chol  1  1 
- 9|1.000|1.000|1.6e-09|5.4e-08|3.8e-01|-7.085424e-01 -1.089012e+00| 0:0:00| chol  1  1 
-10|0.718|0.879|4.5e-10|6.9e-09|1.4e-01|-9.217470e-01 -1.059581e+00| 0:0:00| chol  1  1 
-11|0.958|0.914|1.9e-11|7.0e-10|1.9e-02|-1.034838e+00 -1.054108e+00| 0:0:00| chol  1  1 
-12|0.819|0.737|3.5e-12|1.9e-10|7.8e-03|-1.044891e+00 -1.052643e+00| 0:0:00| chol  1  1 
-13|0.795|0.928|6.9e-13|1.5e-11|3.0e-03|-1.048933e+00 -1.051939e+00| 0:0:00| chol  1  1 
-14|0.662|0.907|2.0e-13|2.4e-12|1.5e-03|-1.050281e+00 -1.051737e+00| 0:0:00| chol  1  1 
-15|0.711|0.932|2.7e-12|1.2e-12|6.4e-04|-1.050991e+00 -1.051632e+00| 0:0:00| chol  1  1 
-16|0.787|0.942|5.0e-12|1.1e-12|2.3e-04|-1.051364e+00 -1.051591e+00| 0:0:00| chol  1  1 
-17|0.929|0.860|1.7e-12|1.1e-12|3.9e-05|-1.051542e+00 -1.051581e+00| 0:0:00| chol  1  1 
-18|0.910|0.810|1.4e-12|1.2e-12|5.9e-06|-1.051573e+00 -1.051579e+00| 0:0:00| chol  1  1 
-19|0.897|0.865|1.6e-12|1.2e-12|8.9e-07|-1.051577e+00 -1.051578e+00| 0:0:01| chol  1  1 
-20|0.945|0.969|2.1e-12|1.0e-12|7.6e-08|-1.051578e+00 -1.051578e+00| 0:0:01| chol  1  1 
-21|0.725|1.000|7.0e-13|1.0e-12|3.9e-08|-1.051578e+00 -1.051578e+00| 0:0:01|
-  stop: max(relative gap, infeasibilities) &lt; 1.49e-08
--------------------------------------------------------------------
- number of iterations   = 21
- primal objective value = -1.05157797e+00
- dual   objective value = -1.05157801e+00
- gap := trace(XZ)       = 3.93e-08
- relative gap           = 1.27e-08
- actual relative gap    = 1.27e-08
- rel. primal infeas (scaled problem)   = 7.01e-13
- rel. dual     "        "       "      = 1.00e-12
- rel. primal infeas (unscaled problem) = 0.00e+00
- rel. dual     "        "       "      = 0.00e+00
- norm(X), norm(y), norm(Z) = 1.2e+00, 1.1e+00, 1.2e+01
- norm(A), norm(b), norm(C) = 8.6e+01, 2.0e+00, 9.6e+00
- Total CPU time (secs)  = 0.57  
- CPU time per iteration = 0.03  
- termination code       =  0
- DIMACS: 7.0e-13  0.0e+00  4.8e-12  0.0e+00  1.3e-08  1.3e-08
--------------------------------------------------------------------
- 
+MOSEK Version 9.1.9 (Build date: 2019-11-21 11:32:15)
+Copyright (c) MOSEK ApS, Denmark. WWW: mosek.com
+Platform: MACOSX/64-X86
+
+MOSEK warning 710: #1 (nearly) zero elements are specified in sparse col '' (15) of matrix 'A'.
+MOSEK warning 710: #1 (nearly) zero elements are specified in sparse col '' (25) of matrix 'A'.
+MOSEK warning 710: #1 (nearly) zero elements are specified in sparse col '' (30) of matrix 'A'.
+MOSEK warning 710: #1 (nearly) zero elements are specified in sparse col '' (348) of matrix 'A'.
+MOSEK warning 710: #1 (nearly) zero elements are specified in sparse col '' (378) of matrix 'A'.
+MOSEK warning 710: #1 (nearly) zero elements are specified in sparse col '' (393) of matrix 'A'.
+MOSEK warning 710: #3 (nearly) zero elements are specified in sparse col '' (420) of matrix 'A'.
+MOSEK warning 710: #1 (nearly) zero elements are specified in sparse col '' (450) of matrix 'A'.
+MOSEK warning 710: #1 (nearly) zero elements are specified in sparse col '' (480) of matrix 'A'.
+MOSEK warning 710: #1 (nearly) zero elements are specified in sparse col '' (520) of matrix 'A'.
+Warning number 710 is disabled.
+Problem
+  Name                   :                 
+  Objective sense        : min             
+  Type                   : CONIC (conic optimization problem)
+  Constraints            : 278             
+  Cones                  : 266             
+  Scalar variables       : 872             
+  Matrix variables       : 0               
+  Integer variables      : 0               
+
+Optimizer started.
+Presolve started.
+Linear dependency checker started.
+Linear dependency checker terminated.
+Eliminator started.
+Freed constraints in eliminator : 0
+Eliminator terminated.
+Eliminator - tries                  : 1                 time                   : 0.00            
+Lin. dep.  - tries                  : 1                 time                   : 0.00            
+Lin. dep.  - number                 : 0               
+Presolve terminated. Time: 0.00    
+Problem
+  Name                   :                 
+  Objective sense        : min             
+  Type                   : CONIC (conic optimization problem)
+  Constraints            : 278             
+  Cones                  : 266             
+  Scalar variables       : 872             
+  Matrix variables       : 0               
+  Integer variables      : 0               
+
+Optimizer  - threads                : 8               
+Optimizer  - solved problem         : the primal      
+Optimizer  - Constraints            : 12
+Optimizer  - Cones                  : 266
+Optimizer  - Scalar variables       : 606               conic                  : 569             
+Optimizer  - Semi-definite variables: 0                 scalarized             : 0               
+Factor     - setup time             : 0.00              dense det. time        : 0.00            
+Factor     - ML order time          : 0.00              GP order time          : 0.00            
+Factor     - nonzeros before factor : 78                after factor           : 78              
+Factor     - dense dim.             : 0                 flops                  : 8.21e+04        
+ITE PFEAS    DFEAS    GFEAS    PRSTATUS   POBJ              DOBJ              MU       TIME  
+0   1.8e+01  2.0e+00  8.2e+00  0.00e+00   7.241615842e+00   0.000000000e+00   1.0e+00  0.00  
+1   2.8e+00  3.1e-01  2.3e+00  -8.75e-01  -1.998945020e+00  -3.617243608e+00  1.5e-01  0.01  
+2   1.9e+00  2.1e-01  2.0e-01  3.99e+00   -8.200931048e-01  -1.846272277e+00  1.0e-01  0.01  
+3   9.3e-01  1.0e-01  6.1e-02  4.53e+00   -1.058124331e+00  -1.195202409e+00  5.0e-02  0.01  
+4   3.1e-01  3.4e-02  1.0e-02  1.61e+00   -1.052999195e+00  -1.089169990e+00  1.7e-02  0.01  
+5   1.9e-01  2.0e-02  4.3e-03  1.25e+00   -1.051899834e+00  -1.072726061e+00  1.0e-02  0.01  
+6   5.8e-02  6.2e-03  7.1e-04  1.16e+00   -1.048919009e+00  -1.055053535e+00  3.1e-03  0.02  
+7   2.1e-02  2.3e-03  1.4e-04  1.04e+00   -1.050974672e+00  -1.053297408e+00  1.2e-03  0.02  
+8   6.3e-03  6.8e-04  2.0e-05  1.02e+00   -1.051455740e+00  -1.052152763e+00  3.4e-04  0.02  
+9   3.1e-03  3.4e-04  6.6e-06  1.00e+00   -1.051520602e+00  -1.051867788e+00  1.7e-04  0.02  
+10  9.5e-04  1.0e-04  1.1e-06  1.00e+00   -1.051547782e+00  -1.051653646e+00  5.1e-05  0.02  
+11  5.0e-04  5.4e-05  3.8e-07  1.00e+00   -1.051557544e+00  -1.051612973e+00  2.7e-05  0.02  
+12  1.4e-04  1.5e-05  5.4e-08  1.00e+00   -1.051566841e+00  -1.051582143e+00  7.4e-06  0.02  
+13  3.5e-05  3.8e-06  6.4e-09  1.00e+00   -1.051575400e+00  -1.051579376e+00  1.9e-06  0.02  
+14  6.5e-06  7.0e-07  5.0e-10  1.00e+00   -1.051577416e+00  -1.051578147e+00  3.5e-07  0.02  
+15  1.0e-06  1.1e-07  3.2e-11  1.00e+00   -1.051577905e+00  -1.051578023e+00  5.6e-08  0.02  
+16  2.4e-08  2.6e-09  1.1e-13  1.00e+00   -1.051578005e+00  -1.051578007e+00  1.3e-09  0.02  
+Optimizer terminated. Time: 0.03    
+
+
+Interior-point solution summary
+  Problem status  : PRIMAL_AND_DUAL_FEASIBLE
+  Solution status : OPTIMAL
+  Primal.  obj: -1.0515780047e+00   nrm: 1e+00    Viol.  con: 2e-08    var: 0e+00    cones: 0e+00  
+  Dual.    obj: -1.0515780074e+00   nrm: 2e+00    Viol.  con: 0e+00    var: 7e-10    cones: 0e+00  
+Optimizer summary
+  Optimizer                 -                        time: 0.03    
+    Interior-point          - iterations : 16        time: 0.02    
+      Basis identification  -                        time: 0.00    
+        Primal              - iterations : 0         time: 0.00    
+        Dual                - iterations : 0         time: 0.00    
+        Clean primal        - iterations : 0         time: 0.00    
+        Clean dual          - iterations : 0         time: 0.00    
+    Simplex                 -                        time: 0.00    
+      Primal simplex        - iterations : 0         time: 0.00    
+      Dual simplex          - iterations : 0         time: 0.00    
+    Mixed integer           - relaxations: 0         time: 0.00    
+
 ------------------------------------------------------------
 Status: Solved
 Optimal value (cvx_optval): +1.05158

@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <title>Builds and solves a simple inequality-constrained linear program</title>
-<link rel="canonical" href="/Users/mcgrant/Projects/CVX/examples/html/simple_LP2.html">
+<link rel="canonical" href="/Users/mcgrant/Repos/CVX/examples/html/simple_LP2.html">
 <link rel="stylesheet" href="../examples.css" type="text/css">
 </head>
 <body>
@@ -51,47 +51,104 @@ cvx_begin
       y : A * x &lt;= b;
 cvx_end
  
-Calling SDPT3 4.0: 20 variables, 10 equality constraints
-   For improved efficiency, SDPT3 is solving the dual problem.
+Calling Mosek 9.1.9: 20 variables, 10 equality constraints
+   For improved efficiency, Mosek is solving the dual problem.
 ------------------------------------------------------------
 
- num. of constraints = 10
- dim. of linear var  = 20
-*******************************************************************
-   SDPT3: Infeasible path-following algorithms
-*******************************************************************
- version  predcorr  gam  expon  scale_data
-    NT      1      0.000   1        0    
-it pstep dstep pinfeas dinfeas  gap      prim-obj      dual-obj    cputime
--------------------------------------------------------------------
- 0|0.000|0.000|6.6e+01|8.5e+00|2.0e+03| 1.224551e+01  0.000000e+00| 0:0:00| chol  1  1 
- 1|0.716|0.990|1.9e+01|1.7e-01|6.1e+02|-7.208277e+00  2.426922e+00| 0:0:00| chol  1  1 
- 2|0.920|1.000|1.5e+00|8.5e-03|4.6e+01|-9.397288e-01  3.491295e+00| 0:0:00| chol  1  1 
- 3|0.413|1.000|8.7e-01|8.5e-04|3.6e+01|-3.808073e-01  5.218247e+01| 0:0:00| chol  1  1 
- 4|0.124|0.458|7.7e-01|5.0e-04|9.8e+01| 1.190177e-01  4.439085e+02| 0:0:00| chol  1  1 
- 5|0.052|0.190|7.3e-01|4.0e-04|5.3e+02|-1.343423e-02  5.384123e+03| 0:0:00| chol  1  1 
- 6|0.064|1.000|6.8e-01|8.5e-07|1.7e+04| 2.845973e-02  7.408387e+05| 0:0:00| chol  1  2 
- 7|0.020|1.000|6.7e-01|2.1e-07|4.2e+06| 2.126749e-02  1.432853e+09| 0:0:00| chol  2  2 
- 8|0.099|1.000|6.3e-01|2.2e-02|1.6e+13| 9.235089e-02  1.631005e+14| 0:0:00| chol  2  2 
- 9|0.083|1.000|5.8e-01|2.6e+00|2.0e+14| 8.554457e-02  1.955677e+16| 0:0:00|
-  sqlp stop: primal problem is suspected of being infeasible
--------------------------------------------------------------------
- number of iterations   =  9
- residual of primal infeasibility      
- certificate (y,Z)      = 6.89e-16
- reldist to infeas.    &lt;= 4.72e-17
- Total CPU time (secs)  = 0.06  
- CPU time per iteration = 0.01  
- termination code       =  1
- DIMACS: 6.9e-01  0.0e+00  4.4e+00  0.0e+00  -1.0e+00  1.0e-02
--------------------------------------------------------------------
- 
+MOSEK Version 9.1.9 (Build date: 2019-11-21 11:32:15)
+Copyright (c) MOSEK ApS, Denmark. WWW: mosek.com
+Platform: MACOSX/64-X86
+
+Problem
+  Name                   :                 
+  Objective sense        : min             
+  Type                   : LO (linear optimization problem)
+  Constraints            : 10              
+  Cones                  : 0               
+  Scalar variables       : 20              
+  Matrix variables       : 0               
+  Integer variables      : 0               
+
+Optimizer started.
+Presolve started.
+Linear dependency checker started.
+Linear dependency checker terminated.
+Eliminator started.
+Freed constraints in eliminator : 0
+Eliminator terminated.
+Eliminator - tries                  : 1                 time                   : 0.00            
+Lin. dep.  - tries                  : 1                 time                   : 0.00            
+Lin. dep.  - number                 : 0               
+Presolve terminated. Time: 0.00    
+Problem
+  Name                   :                 
+  Objective sense        : min             
+  Type                   : LO (linear optimization problem)
+  Constraints            : 10              
+  Cones                  : 0               
+  Scalar variables       : 20              
+  Matrix variables       : 0               
+  Integer variables      : 0               
+
+Optimizer  - threads                : 8               
+Optimizer  - solved problem         : the primal      
+Optimizer  - Constraints            : 10
+Optimizer  - Cones                  : 0
+Optimizer  - Scalar variables       : 20                conic                  : 0               
+Optimizer  - Semi-definite variables: 0                 scalarized             : 0               
+Factor     - setup time             : 0.00              dense det. time        : 0.00            
+Factor     - ML order time          : 0.00              GP order time          : 0.00            
+Factor     - nonzeros before factor : 55                after factor           : 55              
+Factor     - dense dim.             : 0                 flops                  : 2.58e+03        
+ITE PFEAS    DFEAS    GFEAS    PRSTATUS   POBJ              DOBJ              MU       TIME  
+0   1.2e+01  8.9e+00  1.2e+01  0.00e+00   3.390345787e+00   0.000000000e+00   8.0e+00  0.00  
+1   1.5e+00  1.2e+00  1.7e+00  -7.79e-01  -2.769649874e+00  -2.917904931e+00  1.1e+00  0.01  
+2   4.2e-01  3.2e-01  4.5e-01  7.81e-01   -2.784207412e+00  -3.114199656e+00  2.9e-01  0.01  
+3   9.8e-02  7.6e-02  1.1e-01  1.28e+00   -1.097543070e+00  -1.178245652e+00  6.7e-02  0.01  
+4   5.0e-03  3.9e-03  5.4e-03  1.44e+00   -7.526682482e-01  -7.557845904e-01  3.4e-03  0.01  
+5   7.3e-04  5.7e-04  7.9e-04  1.01e+00   -7.519727476e-01  -7.524329845e-01  5.1e-04  0.01  
+6   8.2e-06  6.3e-06  8.8e-06  1.02e+00   -7.523030009e-01  -7.523084849e-01  5.6e-06  0.01  
+7   1.1e-09  8.4e-10  1.2e-09  1.00e+00   -7.522718552e-01  -7.522718558e-01  7.5e-10  0.01  
+Basis identification started.
+Primal basis identification phase started.
+Primal basis identification phase terminated. Time: 0.00
+Dual basis identification phase started.
+Dual basis identification phase terminated. Time: 0.00
+Basis identification terminated. Time: 0.00
+Optimizer terminated. Time: 0.01    
+
+
+Interior-point solution summary
+  Problem status  : PRIMAL_AND_DUAL_FEASIBLE
+  Solution status : OPTIMAL
+  Primal.  obj: -7.5227185516e-01   nrm: 2e+00    Viol.  con: 2e-09    var: 0e+00  
+  Dual.    obj: -7.5227185582e-01   nrm: 1e+01    Viol.  con: 0e+00    var: 4e-10  
+
+Basic solution summary
+  Problem status  : PRIMAL_AND_DUAL_FEASIBLE
+  Solution status : OPTIMAL
+  Primal.  obj: -7.5227185171e-01   nrm: 2e+00    Viol.  con: 8e-16    var: 0e+00  
+  Dual.    obj: -7.5227185582e-01   nrm: 1e+01    Viol.  con: 0e+00    var: 2e-10  
+Optimizer summary
+  Optimizer                 -                        time: 0.01    
+    Interior-point          - iterations : 7         time: 0.01    
+      Basis identification  -                        time: 0.00    
+        Primal              - iterations : 0         time: 0.00    
+        Dual                - iterations : 0         time: 0.00    
+        Clean primal        - iterations : 0         time: 0.00    
+        Clean dual          - iterations : 0         time: 0.00    
+    Simplex                 -                        time: 0.00    
+      Primal simplex        - iterations : 0         time: 0.00    
+      Dual simplex          - iterations : 0         time: 0.00    
+    Mixed integer           - relaxations: 0         time: 0.00    
+
 ------------------------------------------------------------
-Status: Unbounded
-Optimal value (cvx_optval): -Inf
+Status: Solved
+Optimal value (cvx_optval): -0.188114
  
 
 echo off
+
 </pre>
 </div>
 </body>

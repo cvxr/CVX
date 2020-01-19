@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <title>Exercise 4.47: Maximum determinant PSD matrix completion</title>
-<link rel="canonical" href="/Users/mcgrant/Projects/CVX/examples/cvxbook/Ch04_cvx_opt_probs/html/max_det_psd_completion.html">
+<link rel="canonical" href="/Users/mcgrant/Repos/CVX/examples/cvxbook/Ch04_cvx_opt_probs/html/max_det_psd_completion.html">
 <link rel="stylesheet" href="../../../examples.css" type="text/css">
 </head>
 <body>
@@ -64,20 +64,90 @@ eigs = eig(A)
 <a id="output"></a>
 <pre class="codeoutput">
  
-Successive approximation method to be employed.
-   For improved efficiency, SDPT3 is solving the dual problem.
-   SDPT3 will be called several times to refine the solution.
-   Original size: 59 variables, 18 equality constraints
-   1 exponentials add 8 variables, 5 equality constraints
------------------------------------------------------------------
- Cones  |             Errors              |
-Mov/Act | Centering  Exp cone   Poly cone | Status
---------+---------------------------------+---------
-  1/  1 | 2.753e-01  4.915e-03  0.000e+00 | Solved
-  1/  1 | 3.497e-02  8.018e-05  0.000e+00 | Solved
-  1/  1 | 4.030e-03  1.064e-06  0.000e+00 | Solved
-  0/  1 | 4.704e-04  1.396e-08  0.000e+00 | Solved
------------------------------------------------------------------
+Calling Mosek 9.1.9: 59 variables, 18 equality constraints
+   For improved efficiency, Mosek is solving the dual problem.
+------------------------------------------------------------
+
+MOSEK Version 9.1.9 (Build date: 2019-11-21 11:32:15)
+Copyright (c) MOSEK ApS, Denmark. WWW: mosek.com
+Platform: MACOSX/64-X86
+
+Problem
+  Name                   :                 
+  Objective sense        : min             
+  Type                   : CONIC (conic optimization problem)
+  Constraints            : 18              
+  Cones                  : 4               
+  Scalar variables       : 13              
+  Matrix variables       : 2               
+  Integer variables      : 0               
+
+Optimizer started.
+Presolve started.
+Linear dependency checker started.
+Linear dependency checker terminated.
+Eliminator started.
+Freed constraints in eliminator : 1
+Eliminator terminated.
+Eliminator started.
+Freed constraints in eliminator : 0
+Eliminator terminated.
+Eliminator - tries                  : 2                 time                   : 0.00            
+Lin. dep.  - tries                  : 1                 time                   : 0.00            
+Lin. dep.  - number                 : 0               
+Presolve terminated. Time: 0.00    
+Problem
+  Name                   :                 
+  Objective sense        : min             
+  Type                   : CONIC (conic optimization problem)
+  Constraints            : 18              
+  Cones                  : 4               
+  Scalar variables       : 13              
+  Matrix variables       : 2               
+  Integer variables      : 0               
+
+Optimizer  - threads                : 8               
+Optimizer  - solved problem         : the primal      
+Optimizer  - Constraints            : 16
+Optimizer  - Cones                  : 4
+Optimizer  - Scalar variables       : 12                conic                  : 12              
+Optimizer  - Semi-definite variables: 2                 scalarized             : 46              
+Factor     - setup time             : 0.00              dense det. time        : 0.00            
+Factor     - ML order time          : 0.00              GP order time          : 0.00            
+Factor     - nonzeros before factor : 101               after factor           : 103             
+Factor     - dense dim.             : 0                 flops                  : 2.67e+03        
+ITE PFEAS    DFEAS    GFEAS    PRSTATUS   POBJ              DOBJ              MU       TIME  
+0   3.2e+00  4.0e+00  2.7e+01  0.00e+00   2.282783840e+01   -3.220408006e+00  1.0e+00  0.00  
+1   6.4e-01  8.0e-01  6.3e+00  -4.82e-01  1.131513779e+01   5.009346393e-01   2.0e-01  0.01  
+2   1.7e-01  2.2e-01  1.0e+00  5.08e-01   4.413294072e+00   8.163553142e-01   5.5e-02  0.01  
+3   4.8e-02  6.0e-02  1.6e-01  7.45e-01   3.272925849e+00   2.171307260e+00   1.5e-02  0.01  
+4   7.8e-03  9.8e-03  1.1e-02  8.47e-01   3.099056911e+00   2.905643702e+00   2.5e-03  0.01  
+5   4.8e-04  6.0e-04  1.7e-04  9.92e-01   3.028576122e+00   3.016657110e+00   1.5e-04  0.01  
+6   9.7e-06  1.2e-05  4.8e-07  1.00e+00   3.024305294e+00   3.024063282e+00   3.0e-06  0.01  
+7   4.7e-08  5.8e-08  1.6e-10  1.00e+00   3.024221238e+00   3.024220077e+00   1.5e-08  0.01  
+8   2.6e-09  2.4e-09  1.1e-12  1.00e+00   3.024220730e+00   3.024220687e+00   5.6e-10  0.01  
+Optimizer terminated. Time: 0.02    
+
+
+Interior-point solution summary
+  Problem status  : PRIMAL_AND_DUAL_FEASIBLE
+  Solution status : OPTIMAL
+  Primal.  obj: 3.0242207305e+00    nrm: 5e+00    Viol.  con: 5e-09    var: 0e+00    barvar: 0e+00    cones: 0e+00  
+  Dual.    obj: 3.0242206875e+00    nrm: 7e+00    Viol.  con: 0e+00    var: 8e-12    barvar: 8e-09    cones: 0e+00  
+Optimizer summary
+  Optimizer                 -                        time: 0.02    
+    Interior-point          - iterations : 8         time: 0.01    
+      Basis identification  -                        time: 0.00    
+        Primal              - iterations : 0         time: 0.00    
+        Dual                - iterations : 0         time: 0.00    
+        Clean primal        - iterations : 0         time: 0.00    
+        Clean dual          - iterations : 0         time: 0.00    
+    Simplex                 -                        time: 0.00    
+      Primal simplex        - iterations : 0         time: 0.00    
+      Dual simplex          - iterations : 0         time: 0.00    
+    Mixed integer           - relaxations: 0         time: 0.00    
+
+------------------------------------------------------------
 Status: Solved
 Optimal value (cvx_optval): +3.02422
  

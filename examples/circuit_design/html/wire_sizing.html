@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <title>Optimal interconnect wire sizing</title>
-<link rel="canonical" href="/Users/mcgrant/Projects/CVX/examples/circuit_design/html/wire_sizing.html">
+<link rel="canonical" href="/Users/mcgrant/Repos/CVX/examples/circuit_design/html/wire_sizing.html">
 <link rel="stylesheet" href="../../examples.css" type="text/css">
 </head>
 <body>
@@ -139,10 +139,11 @@ sizes   = zeros(m,xnpts);
         telm=max(sum(GinvC'));
         plot(tdom*[1;1], [0;1], <span class="string">'--'</span>, telm*[1;1], [0;1],<span class="string">'--'</span>, <span class="keyword">...</span>
              tthres*[1;1], [0;1], <span class="string">'--'</span>);
-        text(tdom,0,<span class="string">'d'</span>);
-        text(telm,0,<span class="string">'e'</span>);
-        text(tthres,0,<span class="string">'t'</span>);
+        text(tdom,0.01,<span class="string">'d'</span>);
+        text(telm,0.01,<span class="string">'e'</span>);
+        text(tthres,0.01,<span class="string">'t'</span>);
         title(sprintf(<span class="string">'Step responses at the 21 nodes for solution (%d), Tmax=%g'</span>, xi, delay ));
+        axis([0,2000,-0.01,1]);
 
     <span class="keyword">end</span>
 
@@ -179,7 +180,7 @@ x  = [ x1 ; x2 ; 0 ];
 h = fill( x, y, ones(4*m+1,1)*[0.9,0.8,0.7,0.6] );
 hold <span class="string">on</span>
 h2 = plot( x, y, <span class="string">'-'</span> );
-axis([ -0.1, m + 0.1, min(y(:))-0.25, max(y(:))+0.1 ]);
+axis([ -0.1, m + 0.1, min(y(:))-0.1, max(y(:))+0.1 ]);
 colormap(gray);
 caxis([-1,1]);
 title(<span class="string">'Solutions at points on the tradeoff curve'</span>);
@@ -188,7 +189,7 @@ legends = {};
     set( h(k), <span class="string">'EdgeColor'</span>, get( h2(k), <span class="string">'Color'</span> ) );
     legends{k} = sprintf( <span class="string">'Tmax=%g'</span>, xdelays(k) );
 <span class="keyword">end</span>
-legend(legends{:},4);
+legend(legends{:},<span class="string">'Location'</span>,<span class="string">'southeast'</span>);
 </pre>
 <a id="output"></a>
 <pre class="codeoutput">
