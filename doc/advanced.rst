@@ -190,12 +190,12 @@ The successive approximation method
 
 Prior to version 1.2, the functions ``exp``, ``log``, ``log_det``,
 and other functions from the exponential family could not be used within
-CVX. Unfortunately, CVX utilizes symmetric primal/dual solvers that
-simply cannot support those functions natively [4]_, and a variety of factors
-prevent us from incorporating other types of solvers into CVX.
+CVX. Until recently, CVX utilized so-called symmetric primal/dual solvers that
+simply cannot support those functions natively [4]_. More recently, solvers
+such as Mosek have added support for the exponential cone.
 
-Nevertheless, support for these functions was requested quite frequently.
-For this reason, we constructed a *successive approximation* heuristic that
+For solvers that do not natively support the exponential cone,
+we constructed a *successive approximation* heuristic that
 allows the symmetric primal/dual solvers to support the exponential
 family of functions. A precise description of the approach is beyond the
 scope of this text, but roughly speaking, the method proceeds as follows:
@@ -220,7 +220,10 @@ Even when it does converge, it is several times slower than the standard solver,
 due to its iterative approach. Therefore, it is best to use it sparingly and carefully.
 Here are some specific usage tips:
 
-- First, confirm that the log/exp/entropy terms are truly necessary for your model. In 
+- First, if you have access to Mosek, use it, as native support for the exponential
+  cone was added with version 9.
+
+- Barring this, confirm that the log/exp/entropy terms are truly necessary for your model. In 
   many cases, an exactly equivalent model can be constructed without them, and that should
   always be preferred. For instance, the constraint
   
@@ -262,8 +265,8 @@ Here are some specific usage tips:
   
         minimize( log_det(X) + trace(C*X) )
    
-- Second, try different solvers. For instance, SeDuMi and MOSEK
-  tend to be more effective with the successive approximation method
+- Third, try different solvers. SeDuMi tends
+  to be more effective with the successive approximation method
   than SDPT3. So if the default solver choice fails to give a 
   solution to your model, try switching to one of these solvers.
   

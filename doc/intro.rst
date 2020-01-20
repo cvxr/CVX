@@ -83,7 +83,7 @@ CVX supports two *commercial* solvers as well,
 more information, see :ref:`solvers`.
 
 The ability
-to use CVX with commercial solvers is a new capability that we have decided
+to use CVX with commercial solvers is a capability that we have decided
 to include under a new CVX Professional license model. Academic users will
 be able to utilize these features at no charge, but commercial users will require
 a paid CVX Professional license. For more details, see :ref:`licensing`.
@@ -91,20 +91,11 @@ a paid CVX Professional license. For more details, see :ref:`licensing`.
 What's new?
 ~~~~~~~~~~~
 
-If you browse the source code and documentation, 
-you will find indications of support for Octave with CVX. However:
-
-.. note:: 
-
-  Unfortunately, for average end users (this means you!), Octave
-  will *not* work. The *currently released* versions of Octave,
-  including versions 3.8.0 and earlier, do not
-  support CVX. Please do not waste your time by trying!
-
-We are working hard with the Octave team on final updates
-to bring CVX to Octave, and we anticipate version 3.8.1 or 3.9.0 will
-be ready. We add this here to warn you *not* to interpret the mentions
-of Octave in the code as a hidden code to try it yourself!
+Recent developments in solver technology are expanding CVX's capability
+to solve problems. In particular, the commercial solver Mosek has added
+native support for the exponential cone; and this allows CVX to solve
+problems involving logarithms, exponentials, and entropy functions
+withouth reliance on its successive approximation heuristic.
 
 .. index:: DCP
 
@@ -189,8 +180,7 @@ different problem formulations on :math:`50 \times 50` pixel images.
 
 CVX *will* solve many medium and large scale problems, provided they
 have exploitable structure (such as sparsity), and you avoid ``for``
-loops, which can be slow in Matlab, and functions like ``log`` and ``exp`` that
-require successive approximation. If you encounter difficulties in
+loops, which can be slow in Matlab. If you encounter difficulties in
 solving large problem instances, consider posting your model to the
 `CVX Forum <http://ask.cvxr.com>`_; the CVX community
 may be able to suggest an equivalent formulation that CVX 
@@ -226,9 +216,8 @@ at no charge. The licensing structure is as follows:
   `CVX Research <mailto:sales@cvxr.com>`_ for inquiries.
   for an availability schedule and pricing details.
 * *Academic users* may utilize the CVX Professional capability *at no charge*.
-  To obtain an academic license, please visit the
-  `Academic licenses <http://cvxr.com/cvx/academic>`_ page on the 
-  CVX Research web site.
+  To do so, it is necessary to obtain licenses for Mosek and/or Gurobi
+  directly from the vendors.
   
 The bulk of CVX remains open source under a slightly modified version of the GPL Version
 2 license. A small number of files that support the CVX Professional functionality remain

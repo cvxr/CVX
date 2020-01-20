@@ -5,7 +5,7 @@ License
 =======
 
 | CVX: A system for disciplined convex programming   
-| © 2012 CVX Research, Inc., Austin, TX.
+| © 2012-2019 CVX Research, Inc., Austin, TX.
 | http://cvxr.com
 | info@cvxr.com
 

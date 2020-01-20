@@ -7,65 +7,58 @@ Using MOSEK with CVX
 About MOSEK
 -----------
 
-`MOSEK ApS <http://www.mosek.com>`_ is widely considered the leader in commercial software
-for nonlinear convex optimization. The company is led by CEO 
-`Erling Andersen <http://www.linkedin.com/in/edandersen>`_, and its  board is chaired by 
+`MOSEK ApS`_ is widely considered the leader in commercial software
+for nonlinear convex optimization. The company was established in 1997, and is
+led by founding CEO `Erling Andersen <http://www.linkedin.com/in/edandersen>`_ and
+a technical advisory board chaired by
 Stanford Professor `Yinyu Ye <http://www.stanford.edu/~yyye/>`_. Both are internationally
-recognized for their contributions  to the field of convex optimization, and remain active 
-in research and publication. With its existing support for integer variables and the 
-addition of semidefinite  programming capability in version 7.0, the MOSEK solver can 
-address a wider variety of CVX models than any other solver.
+recognized for their contributions to the field of convex optimization, and remain active 
+in research and publication. With its support for integer variables, the semidefinite cone,
+and (with version 9.0) the exponential cone, the MOSEK solver has native support for a
+wider variety of CVX models than any other solver.
 
-Using CVX with MOSEK requires a CVX Professional license. Please visit 
-`Licensing`_ to learn more about licensing
-options. Academic users can obtain a free CVX Professional license by 
-submitting an `Academic License Request`_.
+Using MOSEK with CVX requires a valid license:
 
-.. note::
+* *Academic users*: request an license from the `MOSEK Academic Licensing`_ page.
+* *Commercial users* must purchase one of our CVX Professional licenses:
 
-	If you intend to use CVX with *both* MOSEK and Gurobi, please follow the 
-	directions on the page :ref:`gurobi`.
+  * A *bundled CVX + MOSEK license* allows MOSEK to be used exclusively within
+    CVX. This is the most cost-effective approach for users who do not intend
+    to use MOSEK outside of CVX and/or MATLAB.
+  * A *bring-your-own-solver (BYOS)* license allows CVX to be paired with a
+    separate MOSEK license, enabling the same installation to be used within
+    CVX and separate from it.
 
-Using the bundled version of MOSEK
-----------------------------------
+  Please contact `CVX Sales`_ for more information about either option, and
+  `MOSEK ApS Sales`_ for pricing information for standalone MOSEK licenses.
 
-.. note:: 
+Using MOSEK with CVX
+--------------------
 
-    The bundled version of MOSEK can only be used within CVX. If you wish to use MOSEK
-    outside of CVX as well, you will need a standalone MOSEK installation.
+1. Download the the appropriate CVX bundle from the `CVX download page`_
+   and following the regular installation instructions at :ref:`install`.
+   The standard bundles include a CVX-specific version of the MOSEK version 9.1.
 
-The simplest way to use MOSEK with CVX is by installing the appropriate 
-CVX Professional Solver Bundle, available `here <http://cvxr.com/cvx/download>`_, 
-along with a MOSEK-enabled CVX Professional license. Please see :ref:`install`
-and :ref:`licinstall`
-for general installation instructions. Once the CVX Professional license has been
-properly installed, MOSEK will be enabled.
+2. Obtain the licenses for MOSEK and/or CVX, as needed:
+   
+   * A MOSEK license should be installed in the location ``mosek/mosek.lic``
+     in your home directory.
+   * A CVX license should be saved in a convenient location for Step 4. You
+     will need to be able to supply its full path to the ``cvx_setup`` command.
 
-Using CVX with separate MOSEK installation
-------------------------------------------
+3. If you need a full installation of MOSEK—either because you wish to use a
+   different version than is bundled with CVX, or because you wish to use MOSEK
+   outside of CVX—obtain an appropriate installer from the `MOSEK download page`_ 
+   and follow their instructions. Confirm that it can be successfully run from
+   the MATLAB command line *before* proceeding with Step 2.
 
-If you wish to use CVX with a separate installation of MOSEK 6.0 or 7.0,
-follow these steps after you have successfully installed MOSEK:
+4. Re-run ``cvx_setup`` so that the new MOSEK and/or CVX licenses can be detected.
+   If a CVX Professional license was obtained, supply the path to this file as the
+   argument to the ``cvx_setup`` command, as discussed in :ref:`licinstall`.
 
-* Make sure that MATLAB can locate your current installation of MOSEK. 
-  If you have already been using the ``mosekopt`` command within MATLAB, there
-  is no further configuration needed. Otherwise, you will need to modify your MATLAB
-  search path so it can find your MOSEK installation. For information, please see 
-  the relevant page in your MOSEK documentation:
-  
-  - `MOSEK 7: Installation <http://docs.mosek.com/7.0/toolbox/Installation.html>`_
-  - `MOSEK 6: Insatllation <http://docs.mosek.com/6.0/toolbox/node006.html>`_
-
-* If you have not done so yet, download and install CVX and a CVX Professional license
-  according to the instructions in :ref:`install` and :ref:`licinstall`.
-  
-* If CVX and your license had already been installed, simply re-run ``cvx_setup`` so
-  that CVX can rebuild its solver list and include MOSEK.
-  
-If successful, the output of ``cvx_setup`` should show that MOSEK is among the list
-of available solvers. If it fails to find MOSEK, it will offer diagnostic information
-that you can use to correct the problem. If those remedies fail, feel free to contact
-`CVX Support`_.
+If successful, the output of step 4 should show that MOSEK is among the list
+of available solvers. If you installed both a standalone and bundled version of MOSEK,
+they should both be available after setup.
 
 Selecting MOSEK as your default solver
 --------------------------------------
@@ -78,11 +71,22 @@ on the MATLAB command line:
 
     cvx_solver mosek
     cvx_save_prefs
-    
+
 The first command changes the active solver to MOSEK, but only for the current session.
 The second line saves that change to CVX's preference file, so that MOSEK will be 
 selected as the active solver every time you start MATLAB.
 
+If multiple versions of MOSEK were found on the MATLAB path, then CVX will append a
+numeral to the end of the solver name, allowing you to switch between them; e.g.,
+
+::
+
+    cvx_solver mosek
+    cvx_solver mosek_2
+    cvx_solver mosek_3
+
+and so forth.
+    
 Obtaining support for CVX and MOSEK
 ------------------------------------
 
@@ -92,7 +96,10 @@ If we can reproduce your problem, we will determine whether or not it is an
 issue that is unique to CVX or needs to be forwarded to MOSEK ApS for further
 analysis.
 
+.. _MOSEK ApS: https://mosek.com/
 .. _CVX Support: http://support.cvxr.com/
+.. _CVX download page: http://cvxr.com/cvx/download
 .. _CVX Sales: mailto:sales@cvxr.com   
-.. _Licensing: http://cvxr.com/cvx/licensing
-.. _Academic License Request: http://cvxr.com/cvx/academic
+.. _MOSEK Academic Licensing: https://www.mosek.com/products/academic-licenses/
+.. _MOSEK download page: https://www.mosek.com/downloads/
+.. _MOSEK ApS Sales: mailto:sales@mosek.com
