@@ -8,12 +8,15 @@ In this section we describe each operator, function, set, and command that you a
 likely to encounter in CVX. In some cases, limitations of the underlying solver
 place certain restrictions or caveats on their use:
 
--  Functions marked with a dagger (†) are not supported natively by the
-   solvers that CVX uses. They are handled using a successive
+-  Functions marked with a dagger (†) are not supported natively by manu
+   solvers that CVX uses. Models incorporating these functions will be solved
+   most effectively by Mosek, the only bundled solver with support for the
+   exponential cone upon which these functions are constructed. For all
+   other solvers, these functions are handled using a successive
    approximation method which makes multiple calls to the underlying
-   solver, achieving the same final precision. If you use one of these
-   functions, you will be warned that successive approximation will be
-   used. This technique is discussed further in
+   solver, achieving the same final precision. If your problem requires the use
+   of the successive approximation method, a warning will be issued.
+   This technique is discussed further in
    :ref:`successive`. As this section discusses, this is an experimental
    approach that works well in many cases, but cannot be guaranteed.
 

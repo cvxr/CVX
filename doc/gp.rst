@@ -38,11 +38,13 @@ GP. More information about generalized geometric programs is provided in
 this
 `tutorial <http://www.stanford.edu/~boyd/papers/gp_tutorial.html>`_.
 
-The solvers used in this version of CVX do not support geometric
-programming natively. Instead, they are solved using the successive
-approximation technique described in :ref:`successive`.
-This means that solving GPs can be slow, but for small and medium sized problems, the method
-works well.
+We strongly recommend the use of Mosek 9.0 or later—including the version
+that ships with CVX 2.2 and later—for solving geometric programs. Its native
+support for the exponential cone ensures the best reliability, accuracy,
+and speed. For other solvers, CVX must
+use the successive approximation technique described in :ref:`successive`.
+This means that solving GPs can be slow, but for small and medium sized problems,
+the method works well.
 
 In the remainder of this section, we will describe specific rules that
 apply when constructing models in GP mode.

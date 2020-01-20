@@ -11,20 +11,20 @@ Supported solvers
 
 This version of CVX supports four solvers, each with different capabilities:
 
-============================================================= ==== ==== ====== ===== ====  ========= ======== ========
- Solver name                                                   LP   QP   SOCP   SDP   GP    Integer   MATLAB   Octave 
-============================================================= ==== ==== ====== ===== ====  ========= ======== ========
-`SeDuMi <http://sedumi.ie.lehigh.edu>`_                        Y    Y    Y       Y    E     N         Y        *soon*     
-`SDPT3 <http://www.math.nus.edu.sg/~mattohkc/sdpt3.html>`_     Y    Y    Y       Y    E     N         Y        *soon*     
-`Gurobi <http://gurobi.com>`_                                  Y    Y    Y       N    N     Y         P        *soon*     
-`MOSEK <http://mosek.com>`_                                    Y    Y    Y       Y*   E     Y         P        *soon*     
-`GLPK <http://www.gnu.org/software/glpk/>`_                    Y    N    N       N    N     Y         N        *soon*     
-============================================================= ==== ==== ====== ===== ====  ========= ======== ========
+============================================================= ==== ==== ====== ===== ====  =========
+ Solver name                                                   LP   QP   SOCP   SDP   GP    Integer 
+============================================================= ==== ==== ====== ===== ====  =========
+`SeDuMi <http://sedumi.ie.lehigh.edu>`_                        Y    Y    Y       Y    E     N        
+`SDPT3 <http://www.math.nus.edu.sg/~mattohkc/sdpt3.html>`_     Y    Y    Y       Y    E     N        
+`Gurobi <http://gurobi.com>`_                                  Y    Y    Y       N    N     Y        
+`MOSEK <http://mosek.com>`_                                    Y    Y    Y       Y    Y     Y       
+`GLPK <http://www.gnu.org/software/glpk/>`_                    Y    N    N       N    N     Y        
+============================================================= ==== ==== ====== ===== ====  =========
 
-(key: Y = Yes, N = No, E = Experimental, P = CVX Professional license required, * = Mosek 7 or later is required.)
+(key: Y = Yes, N = No, E = Experimental)
 
 Each solver has different capabilities and different levels of performance. For instance,
-SeDuMi [Stu99]_, SDPT3 [TTT03]_, and MOSEK 7 support all of the continuous (non-integer) models 
+SeDuMi [Stu99]_, SDPT3 [TTT03]_, and MOSEK support all of the continuous (non-integer) models 
 that CVX itself supports, while Gurobi is more limited, in that it does not support semidefinite
 constraints; and GLPK is limited even further. On the other hand, Gurobi, GLPK, and
 MOSEK support integer consraints, while SeDuMi and SDPT3 do not.
@@ -46,8 +46,7 @@ We have created special sections in this user guide for using Gurobi and MOSEK w
 * Gurobi: :ref:`gurobi`
 * Mosek:  :ref:`mosek`
 
-Support for GLPK should be considered experimental, and has been provided primarly to support
-upcoming Octave capability (that is *not* ready yet.)
+Support for GLPK should be considered experimental.
 
 .. _solver-selection:
 

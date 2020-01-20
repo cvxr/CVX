@@ -4,8 +4,11 @@
 Support
 =======
 
-The user base for CVX has grown to such an extent that full email-based
-support is no longer feasible for our free version of CVX. Therefore, we 
+Paid CVX Professional users will receive support through a trouble-ticket support system,
+so that they can have confidence that their issues are being addressed promptly.
+
+Unfortunately, the user base for CVX has grown to such an extent that its authors simply can
+no longer provide support for the free version of CVX. Therefore, we 
 have created several avenues for obtaining support.
 
 For help on how to *use* CVX, this users' guide is your first line of support.
@@ -201,9 +204,4 @@ are some practical tips if you encounter this problem:
 
 CVX Professional support
 -------------------------
-
-Paid CVX Professional users will receive support through a trouble-ticket support system,
-so that they can have confidence that their issues are being addressed promptly. This
-infrastructure is still under development; we will update this section and the Web site
-with more information once it has been completed.
 
