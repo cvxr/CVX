@@ -136,7 +136,7 @@ end
 % Verbose output (cvx_setup, cvx_version plain) %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-cvx_ver = '2.1';
+cvx_ver = '2.2';
 cvx_bld = '****';
 cvx_bdate = '<undated>';
 cvx_bcomm = '*******';
