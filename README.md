@@ -29,7 +29,7 @@ page are as follows:
   present. This functionality is exclusive to the non-redistributable
   Professional version, available for download on the web site.
 * The [documentation](http://cvxr.com/cvx/doc) is not compiled. 
-  The soruce code is provided in the `doc/` subdirectory, and
+  The source code is provided in the `doc/` subdirectory, and
   requires the [Sphinx](http://sphinx-doc.org) Python documentation
   generator and a LaTeX system such as 
   [TeXLive](http://tug.org/texlive/) to generate it.
@@ -49,7 +49,7 @@ process. We know this first-hand! This is for hardcore GitHub users.
 We intend to keep this repository complete and up to date, but
 its use is completely unsupported. That said, if you are having
 issues related specifically to the repository itself, please feel
-free to [submit an report](https://github.com/cvxr/CVX/issues) to the
+free to [submit a report](https://github.com/cvxr/CVX/issues) to the
 repository's issue tracker. Please do *not* submit other types
 of issues (CVX bug reports, usage questions, etc.) to this tracker;
 they will likely be ignored.
