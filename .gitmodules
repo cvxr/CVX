@@ -1,7 +1,8 @@
 [submodule "sedumi"]
 	path = sedumi
 	url = https://github.com/sqlp/sedumi.git
-	branch = pretransfo
+	branch = master
 [submodule "sdpt3"]
 	path = sdpt3
 	url = https://github.com/sqlp/sdpt3.git
+	branch = master
