@@ -39,32 +39,25 @@ else
     isoctave = exist( 'OCTAVE_VERSION', 'builtin' );
 
     % File and path separators, MEX extension
+    comp = computer;
     if isoctave,
-        comp = octave_config_info('canonical_host_type');
         mext = 'mex';
         izpc = false;
         izmac = false;
-        if octave_config_info('mac'),
-            msub = 'mac';
-            izmac = true;
-        elseif octave_config_info('windows'),
-            msub = 'win';
-            izpc = true;
-        elseif octave_config_info('unix') && any(strfind(comp,'linux')),
-            msub = 'lin';
-        else
-            msub = 'unknown';
-        end
-        if ~isempty( msub ),
-            msub = [ 'o_', msub ];
-            if strncmp( comp, 'x86_64', 6 ),
-                msub = [ msub, '64' ];
-            else
-                msub = [ msub, '32' ];
-            end
+        switch comp
+        case 'x86_64-pc-linux-gnu'
+            msub = 'o_lin';
+        case 'x86_64-apple-darwin21.6.0'
+            msub = 'o_maci';
+        case 'aarch64-apple-darwin23.4.0'
+            msub = 'o_maca';
+        case 'x86_64-w64-mingw32'
+            msub = 'o_win';
+        otherwise
+            warning(sprintf('Unexpected Octave computer type: %s', COMPUTER));
+            msub = '';
         end
     else
-        comp = computer;
         izpc = strncmp( comp, 'PC', 2  );
         izmac = strncmp( comp, 'MAC', 3 );
         mext = mexext;

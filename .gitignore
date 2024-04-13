@@ -1,2 +1,10 @@
 doc/_build
+sedumi/
+sdpt3/
+sedumi.tgz
+sedumi.zip
+sdpt3.tgz
+sdpt3.zip
+lib/*.mex*
+lib/*/*.mex
 

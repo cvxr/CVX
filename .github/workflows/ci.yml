@@ -71,7 +71,7 @@ jobs:
       uses: actions/upload-artifact@v4
       with:
         name: oct-${{ matrix.os }}
-        path: "*.mex"
+        path: "lib/*.mex"
   package:
     needs: [build-mex,build-oct]
     runs-on: ubuntu-latest
