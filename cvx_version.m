@@ -12,6 +12,7 @@ global cvx___
 
 args = varargin;
 compile = false;
+exit_if = false;
 quick = nargout > 0;
 if nargin
     if ~ischar( args{1} ),
@@ -23,9 +24,13 @@ if nargin
         tt = strcmp( args, '-compile' );
         compile = any( tt );
         if compile, quick = false; args(tt) = []; end
+        tt = strcmp( args, '-exit-if' );
+        exit_if = any( tt );
+        if exit_if, quick = false; args(tt) = []; end
     end
 end
 
+cvx___.exit_if = exit_if;
 if isfield( cvx___, 'loaded' ),
     
     if quick, return; end
@@ -310,6 +315,8 @@ end
 
 if ~issue,
     cvx___.loaded = true;
+elseif exit_if,
+    exit(1)
 end
 clear fs;
 fprintf( '%s\n', line );

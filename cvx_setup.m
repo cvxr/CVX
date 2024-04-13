@@ -19,6 +19,7 @@ try
     
     cvx_version( '-install', varargin{:} );
     if ~isfield( cvx___, 'loaded' ) || ~cvx___.loaded, %#ok
+        if cvx___.exit_if, exit(-1); end        
         error( 'CVX:Expected', 'Error detected by cvx_version' );
     end
     isoctave = cvx___.isoctave;
@@ -151,6 +152,7 @@ try
             'No valid solvers were found. This suggests a corrupt installation. Please\n', ...
             'try re-installing the files and re-running cvx_setup. If the same error\n', ...
             'occurs, please contact CVX support.\n' ] );
+        if cvx___.exit_if, exit(-1); end
         error('CVX:Unexpected','No valid solvers were found.');
     end
     solvers = solvers(cellfun(@isempty,{solvers.error}));
@@ -179,6 +181,7 @@ try
     
     cvx_global;
     if isempty( cvx___.solvers.list ),
+        if cvx___.exit_if, exit(-1); end
         error('CVX:Unexpected','No valid solvers were found.');
     end
     

@@ -26,7 +26,7 @@ jobs:
     - name: Build MEX files
       uses: matlab-actions/run-command@v2
       with:
-        command: "cd lib; mex cvx_eliminate_mex.c; mex cvx_bcompress_mex.c"
+        command: "cd lib; mex cvx_eliminate_mex.c; mex cvx_bcompress_mex.c; cd ..; cvx_setup -exit-if"
     - name: Upload MATLAB MEX files
       uses: actions/upload-artifact@v4
       with:
@@ -88,7 +88,7 @@ jobs:
         mkdir -p lib/o_win  && mv oct-windows-*/* lib/o_win/
         mkdir -p lib/o_maci && mv oct-macos-12/* lib/o_maci/
         mkdir -p lib/o_maca && mv oct-macos-14/* lib/o_maca/
-        mv mex-*/* .
+        mv mex-*/* lib/
         rmdir mex-* oct-*
     - name: Download solvers
       run: |
@@ -96,21 +96,24 @@ jobs:
         for url in $(grep -v ^# solvers.txt); do
           echo "Downloading: $url"
           curl -OL $url
-          echo "Unpacking: ${url##*/}
-          tar xfz ${url##*/}
-          rm ${url##*/}
+          fname=${url##*/}
+          echo "Unpacking: $fname"
+          tar xfz $fname
+          rm $fname
         done
     - name: Show files, build archives
       run: |
         cd ..
+        mv CVX cvx
         zip -r cvx.zip cvx -x 'cvx/.git/*' -x 'cvx/.github/*'
-        tar cfz cvx.tgz --exclude "cvx/.git" --exclude "cvx/.github" sedumi
+        tar cfz cvx.tgz --exclude "cvx/.git" --exclude "cvx/.github" cvx
         echo "--------"
         tar tfz cvx.tgz
         echo "--------"
         zipinfo cvx.zip
         echo "--------"
-        mv cvx.tgz cvx.zip sedumi
+        mv cvx CVX
+        mv cvx.tgz cvx.zip CVX
     - name: Upload bundles
       uses: actions/upload-artifact@v4
       with:
@@ -137,9 +140,79 @@ jobs:
     - name: Run test
       uses: matlab-actions/run-command@v2
       with:
-        command: "cvx_setup"
+        command: "cvx_setup -exit-if"
+  octave-tests:
+    needs: package
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest,windows-latest,macos-latest,macos-14]
+    steps:
+    - name: Retrieve artifact
+      uses: actions/download-artifact@v4
+      with:
+        name: bundles
+    - name: Unpack artifact
+      run: tar xfz cvx.tgz --strip-components=1
+    - name: Install Octave, Snap, Flatpak
+      shell: bash
+      run: |
+        if [ "${{ matrix.os }}" = ubuntu-latest ]; then
+          sudo apt update
+          sudo apt install --no-install-recommends octave
+        elif [ "${{ matrix.os }}" = windows-latest ]; then
+          choco install octave.portable
+        else
+          brew install octave
+        fi
+    - name: Run test (Unix)
+      shell: bash
+      run: octave --eval "cvx_setup -exit-if"
+    - name: Run test (Windows)
+      if: matrix.os == 'windows-latest'
+      shell: cmd
+      run: |
+        set PATH=C:\ProgramData\chocolatey\bin;%PATH%
+        octave-cli.exe --no-gui --eval "cvx_setup -exit-if"
+  flatpak-test:
+    needs: package
+    runs-on: ubuntu-latest
+    steps:
+    - name: Retrieve artifact
+      uses: actions/download-artifact@v4
+      with:
+        name: bundles
+    - name: Unpack artifact
+      run: tar xfz cvx.tgz --strip-components=1
+    - name: Install Flatpak octave
+      run: |
+        sudo apt update
+        sudo apt install flatpak
+        flatpak remote-add --user --if-not-exists \
+                flathub https://flathub.org/repo/flathub.flatpakrepo
+        flatpak install --user -y flathub org.octave.Octave
+    - name: Run test
+      shell: bash
+      run: flatpak run org.octave.Octave --eval "cvx_setup -exit-if"
+  snap-test:
+    needs: package
+    runs-on: ubuntu-latest
+    steps:
+    - name: Retrieve artifact
+      uses: actions/download-artifact@v4
+      with:
+        name: bundles
+    - name: Unpack artifact
+      run: tar xfz cvx.tgz --strip-components=1
+    - name: Install Flatpak octave
+      run: |
+        sudo snap install octave
+    - name: Run test
+      shell: bash
+      run: snap run octave --eval "cvx_setup -exit-if"
   publish:
-    needs: [matlab-tests]
+    needs: [matlab-tests,octave-tests,flatpak-test,snap-test]
     if: startsWith(github.ref, 'refs/tags/')
     runs-on: ubuntu-latest
     steps:
