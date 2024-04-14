@@ -141,7 +141,7 @@ cvx_bcomm = '*******';
 line = '---------------------------------------------------------------------------';
 fprintf( '\n%s\n', line );
 fprintf( 'CVX: Software for Disciplined Convex Programming       (c)2014 CVX Research\n' );
-fprintf( 'Version %3s, Build %4s (%7s)%42s\n', cvx_ver, cvx_bld, cvx_bcomm, cvx_bdate );
+fprintf( 'Version %3s, Build %3s (%7s)%42s\n', cvx_ver, cvx_bld, cvx_bcomm, cvx_bdate );
 fprintf( '%s\n', line );
 fprintf( 'Installation info:\n    Path: %s\n', cvx___.where );
 if isoctave,

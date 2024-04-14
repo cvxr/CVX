@@ -80,6 +80,21 @@ jobs:
       uses: actions/checkout@v4
       with:
         fetch-depth: 0
+    - name: Extract version info
+      run: |
+        /bin/echo -n Extracting and updating version information...
+        DESCR=$(git describe --long)
+        VERSION=$(echo "$DESCR" | cut -d '-' -f 1)
+        BUILD=$(echo "$DESCR" | cut -d '-' -f 2)
+        BCOMMIT=$(echo "$DESCR" | cut -d '-' -f 3 | sed 's@^g@@')
+        BDATE=$(git log -n1 --pretty=%ad --date=local)
+        MONTH=`date +%B`
+        MONBIB=`date +%b | tr [:upper:] [:lower:]`
+        YEAR=`date +%Y`
+        echo done.
+        echo "Version $DESCR, $MONTH $YEAR"
+        sed "s@cvx_bld *= *'[^']*'@cvx_bld = '$BUILD'@;s@cvx_bdate *= *'[^']*'@cvx_bdate = '$BDATE'@;s@cvx_bcomm *= *'[^']*'@cvx_bcomm = '$BCOMMIT'@" cvx_version.m > cvx_version.new
+        mv -f cvx_version.new cvx_version.m
     - name: Retrieve artifacts
       uses: actions/download-artifact@v4
     - name: Move artifacts into place
