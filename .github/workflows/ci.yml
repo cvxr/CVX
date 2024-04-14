@@ -101,12 +101,16 @@ jobs:
           tar xfz $fname
           rm $fname
         done
+        rm -rf solvers.txt .gitignore .git .github */.gitignore
     - name: Show files, build archives
       run: |
+        GCOM="^\.\\|^doc/\\|^examples/"
+        find . -type d | sed 's@^\./\(.*\)@\1/@' | grep -v $GCOM | sort -f >MANIFEST
+        find . \! -type d | sed 's@^\./@@' | grep -v $GCOM | sort -f >>MANIFEST
         cd ..
         mv CVX cvx
-        zip -r cvx.zip cvx -x 'cvx/.git/*' -x 'cvx/.github/*'
-        tar cfz cvx.tgz --exclude "cvx/.git" --exclude "cvx/.github" cvx
+        zip -r cvx.zip cvx
+        tar cfz cvx.tgz cvx
         echo "--------"
         tar tfz cvx.tgz
         echo "--------"
@@ -134,7 +138,10 @@ jobs:
       with:
         name: bundles
     - name: Unpack artifact
-      run: tar xfz cvx.tgz --strip-components=1
+      shell: bash
+      run: |
+        tar xfz cvx.tgz --strip-components=1
+        rm cvx.tgz cvx.zip
     - name: Install latest MATLAB
       uses: matlab-actions/setup-matlab@v2
     - name: Run test
@@ -154,7 +161,10 @@ jobs:
       with:
         name: bundles
     - name: Unpack artifact
-      run: tar xfz cvx.tgz --strip-components=1
+      shell: bash
+      run: |
+        tar xfz cvx.tgz --strip-components=1
+        rm cvx.tgz cvx.zip
     - name: Install Octave, Snap, Flatpak
       shell: bash
       run: |
@@ -184,7 +194,9 @@ jobs:
       with:
         name: bundles
     - name: Unpack artifact
-      run: tar xfz cvx.tgz --strip-components=1
+      run: |
+        tar xfz cvx.tgz --strip-components=1
+        rm cvx.tgz cvx.zip
     - name: Install Flatpak octave
       run: |
         sudo apt update
@@ -204,7 +216,9 @@ jobs:
       with:
         name: bundles
     - name: Unpack artifact
-      run: tar xfz cvx.tgz --strip-components=1
+      run: |
+        tar xfz cvx.tgz --strip-components=1
+        rm cvx.tgz cvx.zip
     - name: Install Flatpak octave
       run: |
         sudo snap install octave
