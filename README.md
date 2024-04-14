@@ -1,5 +1,7 @@
 ## CVX: A system for disciplined convex programming
 
+#### [Click here](https://github.com/cvxr/cvx/releases/latest) to download the precompiled bundle from this repository. These bundles include the SeDuMi and SDPT3 solvers, as well as pre-compiled MATLAB and Octave MEX files files for Windows, Linux, and macOS (Intel and Apple Silicon).
+
 ### IMPORTANT UPDATE
 
 We are working towards making this repository the *official* source
