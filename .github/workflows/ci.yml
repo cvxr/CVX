@@ -80,6 +80,23 @@ jobs:
       uses: actions/checkout@v4
       with:
         fetch-depth: 0
+    - name: Compile the docs
+      run: |
+        sudo apt update
+        sudo apt install latexmk texlive-latex-recommended texlive-latex-extra tex-gyre make
+        source $CONDA/bin/activate
+        conda install -c defaults -c conda-forge sphinx cloud_sptheme
+        pushd doc
+        sphinx-build -b latex -d _build/doctrees . _build/latex
+        sphinx-build -b html -d _build/doctrees . _build/html
+        pushd _build/latex
+        latexmk -pdf CVX.tex
+        popd
+        popd
+        mv doc _doc
+        mkdir doc
+        mv _doc/_build/{html,latex/CVX.pdf} doc/
+        rm -rf _doc
     - name: Extract version info
       run: |
         /bin/echo -n Extracting and updating version information...
