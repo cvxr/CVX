@@ -12,6 +12,7 @@ global cvx___
 
 args = varargin;
 compile = false;
+exit_if = false;
 quick = nargout > 0;
 if nargin
     if ~ischar( args{1} ),
@@ -23,9 +24,13 @@ if nargin
         tt = strcmp( args, '-compile' );
         compile = any( tt );
         if compile, quick = false; args(tt) = []; end
+        tt = strcmp( args, '-exit-if' );
+        exit_if = any( tt );
+        if exit_if, quick = false; args(tt) = []; end
     end
 end
 
+cvx___.exit_if = exit_if;
 if isfield( cvx___, 'loaded' ),
     
     if quick, return; end
@@ -39,32 +44,25 @@ else
     isoctave = exist( 'OCTAVE_VERSION', 'builtin' );
 
     % File and path separators, MEX extension
+    comp = computer;
     if isoctave,
-        comp = octave_config_info('canonical_host_type');
         mext = 'mex';
         izpc = false;
         izmac = false;
-        if octave_config_info('mac'),
-            msub = 'mac';
-            izmac = true;
-        elseif octave_config_info('windows'),
-            msub = 'win';
-            izpc = true;
-        elseif octave_config_info('unix') && any(strfind(comp,'linux')),
-            msub = 'lin';
-        else
-            msub = 'unknown';
-        end
-        if ~isempty( msub ),
-            msub = [ 'o_', msub ];
-            if strncmp( comp, 'x86_64', 6 ),
-                msub = [ msub, '64' ];
-            else
-                msub = [ msub, '32' ];
-            end
+        switch comp
+        case 'x86_64-pc-linux-gnu'
+            msub = 'o_lin';
+        case 'x86_64-apple-darwin21.6.0'
+            msub = 'o_maci';
+        case 'aarch64-apple-darwin23.4.0'
+            msub = 'o_maca';
+        case 'x86_64-w64-mingw32'
+            msub = 'o_win';
+        otherwise
+            warning(sprintf('Unexpected Octave computer type: %s', COMPUTER));
+            msub = '';
         end
     else
-        comp = computer;
         izpc = strncmp( comp, 'PC', 2  );
         izmac = strncmp( comp, 'MAC', 3 );
         mext = mexext;
@@ -143,7 +141,7 @@ cvx_bcomm = '*******';
 line = '---------------------------------------------------------------------------';
 fprintf( '\n%s\n', line );
 fprintf( 'CVX: Software for Disciplined Convex Programming       (c)2014 CVX Research\n' );
-fprintf( 'Version %3s, Build %4s (%7s)%42s\n', cvx_ver, cvx_bld, cvx_bcomm, cvx_bdate );
+fprintf( 'Version %3s, Build %3s (%7s)%42s\n', cvx_ver, cvx_bld, cvx_bcomm, cvx_bdate );
 fprintf( '%s\n', line );
 fprintf( 'Installation info:\n    Path: %s\n', cvx___.where );
 if isoctave,
@@ -317,6 +315,8 @@ end
 
 if ~issue,
     cvx___.loaded = true;
+elseif exit_if,
+    exit(1)
 end
 clear fs;
 fprintf( '%s\n', line );

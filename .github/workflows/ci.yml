@@ -1,0 +1,273 @@
+name: CI
+on:
+  push:
+    branches:
+      - master
+    tags:
+      - '*'
+  pull_request:
+    branches:
+      - master
+jobs:
+  build-mex:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-20.04,windows-2019,macos-12,macos-14]
+    steps:
+    - name: Retrieve the source code
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+    - name: Install MATLAB
+      uses: matlab-actions/setup-matlab@v2
+      with:
+        release: ${{ matrix.os == 'macos-14' && 'R2023b' || ( matrix.os == 'windows-2019' && 'R2021b' || 'R2021a' ) }}
+    - name: Build MEX files
+      uses: matlab-actions/run-command@v2
+      with:
+        command: "cd lib; mex cvx_eliminate_mex.c; mex cvx_bcompress_mex.c; cd ..; cvx_setup -exit-if"
+    - name: Upload MATLAB MEX files
+      uses: actions/upload-artifact@v4
+      with:
+        name: mex-${{ matrix.os }}
+        path: "lib/*.mex*"
+  build-oct:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-20.04,windows-2019,macos-12,macos-14]
+    steps:
+    - name: Retrieve the source code
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+    - name: Install Octave
+      shell: bash
+      run: |
+        if [ "${{ matrix.os }}" = ubuntu-20.04 ]; then
+          sudo apt update
+          sudo snap install octave
+          sudo apt install --no-install-recommends libopenblas-dev
+          echo "OCTAVE=snap run octave" >>$GITHUB_ENV
+        elif [ "${{ matrix.os }}" = windows-2019 ]; then
+          choco install octave.portable
+        else
+          brew install octave
+          echo "OCTAVE=octave" >>$GITHUB_ENV
+        fi
+    - name: Build MEX files (Unix)
+      if: matrix.os != 'windows-2019'
+      run: $OCTAVE --eval "cd lib; mex cvx_eliminate_mex.c; mex cvx_bcompress_mex.c"
+    - name: Build Mex files (Windows)
+      if: matrix.os == 'windows-2019'
+      shell: cmd
+      run: |
+        set PATH=C:\ProgramData\chocolatey\bin;%PATH%
+        octave-cli.exe --no-gui --eval "cd lib; mex cvx_eliminate_mex.c; mex cvx_bcompress_mex.c"
+        if %errorlevel% neq 0 exit /b %errorlevel%
+    - name: Upload Octave MEX files
+      uses: actions/upload-artifact@v4
+      with:
+        name: oct-${{ matrix.os }}
+        path: "lib/*.mex"
+  package:
+    needs: [build-mex,build-oct]
+    runs-on: ubuntu-latest
+    steps:
+    - name: Retrieve the source code
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+    - name: Compile the docs
+      run: |
+        sudo apt update
+        sudo apt install latexmk texlive-latex-recommended texlive-latex-extra tex-gyre make
+        source $CONDA/bin/activate
+        conda install -c defaults -c conda-forge sphinx cloud_sptheme
+        pushd doc
+        sphinx-build -b latex -d _build/doctrees . _build/latex
+        sphinx-build -b html -d _build/doctrees . _build/html
+        pushd _build/latex
+        latexmk -pdf CVX.tex
+        popd
+        popd
+        mv doc _doc
+        mkdir doc
+        mv _doc/_build/{html,latex/CVX.pdf} doc/
+        rm -rf _doc
+    - name: Extract version info
+      run: |
+        /bin/echo -n Extracting and updating version information...
+        DESCR=$(git describe --long)
+        VERSION=$(echo "$DESCR" | cut -d '-' -f 1)
+        BUILD=$(echo "$DESCR" | cut -d '-' -f 2)
+        BCOMMIT=$(echo "$DESCR" | cut -d '-' -f 3 | sed 's@^g@@')
+        BDATE=$(git log -n1 --pretty=%ad --date=local)
+        MONTH=`date +%B`
+        MONBIB=`date +%b | tr [:upper:] [:lower:]`
+        YEAR=`date +%Y`
+        echo done.
+        echo "Version $DESCR, $MONTH $YEAR"
+        sed "s@cvx_bld *= *'[^']*'@cvx_bld = '$BUILD'@;s@cvx_bdate *= *'[^']*'@cvx_bdate = '$BDATE'@;s@cvx_bcomm *= *'[^']*'@cvx_bcomm = '$BCOMMIT'@" cvx_version.m > cvx_version.new
+        mv -f cvx_version.new cvx_version.m
+    - name: Retrieve artifacts
+      uses: actions/download-artifact@v4
+    - name: Move artifacts into place
+      run: |
+        mkdir -p lib/o_lin  && mv oct-ubuntu-*/* lib/o_lin/
+        mkdir -p lib/o_win  && mv oct-windows-*/* lib/o_win/
+        mkdir -p lib/o_maci && mv oct-macos-12/* lib/o_maci/
+        mkdir -p lib/o_maca && mv oct-macos-14/* lib/o_maca/
+        mv mex-*/* lib/
+        rmdir mex-* oct-*
+    - name: Download solvers
+      run: |
+        rm -rf sdpt3 sedumi || :
+        for url in $(grep -v ^# solvers.txt); do
+          echo "Downloading: $url"
+          curl -OL $url
+          fname=${url##*/}
+          echo "Unpacking: $fname"
+          tar xfz $fname
+          rm $fname
+        done
+        rm -rf solvers.txt .gitignore .git .github */.gitignore
+    - name: Show files, build archives
+      run: |
+        GCOM="^\.\\|^doc/\\|^examples/"
+        find . -type d | sed 's@^\./\(.*\)@\1/@' | grep -v $GCOM | sort -f >MANIFEST
+        find . \! -type d | sed 's@^\./@@' | grep -v $GCOM | sort -f >>MANIFEST
+        cd ..
+        mv CVX cvx
+        zip -r cvx.zip cvx
+        tar cfz cvx.tgz cvx
+        echo "--------"
+        tar tfz cvx.tgz
+        echo "--------"
+        zipinfo cvx.zip
+        echo "--------"
+        mv cvx CVX
+        mv cvx.tgz cvx.zip CVX
+    - name: Upload bundles
+      uses: actions/upload-artifact@v4
+      with:
+        name: bundles
+        path: |
+          cvx.zip
+          cvx.tgz
+  matlab-tests:
+    needs: package
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest,macos-latest,windows-latest,macos-14]
+    steps:
+    - name: Retrieve artifact
+      uses: actions/download-artifact@v4
+      with:
+        name: bundles
+    - name: Unpack artifact
+      shell: bash
+      run: |
+        tar xfz cvx.tgz --strip-components=1
+        rm cvx.tgz cvx.zip
+    - name: Install latest MATLAB
+      uses: matlab-actions/setup-matlab@v2
+    - name: Run test
+      uses: matlab-actions/run-command@v2
+      with:
+        command: "cvx_setup -exit-if"
+  octave-tests:
+    needs: package
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest,windows-latest,macos-latest,macos-14]
+    steps:
+    - name: Retrieve artifact
+      uses: actions/download-artifact@v4
+      with:
+        name: bundles
+    - name: Unpack artifact
+      shell: bash
+      run: |
+        tar xfz cvx.tgz --strip-components=1
+        rm cvx.tgz cvx.zip
+    - name: Install Octave, Snap, Flatpak
+      shell: bash
+      run: |
+        if [ "${{ matrix.os }}" = ubuntu-latest ]; then
+          sudo apt update
+          sudo apt install --no-install-recommends octave
+        elif [ "${{ matrix.os }}" = windows-latest ]; then
+          choco install octave.portable
+        else
+          brew install octave
+        fi
+    - name: Run test (Unix)
+      shell: bash
+      run: octave --eval "cvx_setup -exit-if"
+    - name: Run test (Windows)
+      if: matrix.os == 'windows-latest'
+      shell: cmd
+      run: |
+        set PATH=C:\ProgramData\chocolatey\bin;%PATH%
+        octave-cli.exe --no-gui --eval "cvx_setup -exit-if"
+  flatpak-test:
+    needs: package
+    runs-on: ubuntu-latest
+    steps:
+    - name: Retrieve artifact
+      uses: actions/download-artifact@v4
+      with:
+        name: bundles
+    - name: Unpack artifact
+      run: |
+        tar xfz cvx.tgz --strip-components=1
+        rm cvx.tgz cvx.zip
+    - name: Install Flatpak octave
+      run: |
+        sudo apt update
+        sudo apt install flatpak
+        flatpak remote-add --user --if-not-exists \
+                flathub https://flathub.org/repo/flathub.flatpakrepo
+        flatpak install --user -y flathub org.octave.Octave
+    - name: Run test
+      shell: bash
+      run: flatpak run org.octave.Octave --eval "cvx_setup -exit-if"
+  snap-test:
+    needs: package
+    runs-on: ubuntu-latest
+    steps:
+    - name: Retrieve artifact
+      uses: actions/download-artifact@v4
+      with:
+        name: bundles
+    - name: Unpack artifact
+      run: |
+        tar xfz cvx.tgz --strip-components=1
+        rm cvx.tgz cvx.zip
+    - name: Install Flatpak octave
+      run: |
+        sudo snap install octave
+    - name: Run test
+      shell: bash
+      run: snap run octave --eval "cvx_setup -exit-if"
+  publish:
+    needs: [matlab-tests,octave-tests,flatpak-test,snap-test]
+    if: startsWith(github.ref, 'refs/tags/')
+    runs-on: ubuntu-latest
+    steps:
+    - name: Retrieve artifacts
+      uses: actions/download-artifact@v4
+      with:
+        name: bundles
+    - uses: softprops/action-gh-release@v2
+      with:
+        files: |
+          cvx.tgz
+          cvx.zip

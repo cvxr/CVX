@@ -1,0 +1,5 @@
+# These are the URLs of the SDPT3 and SeDuMi bundles to include.
+# We have stopped using submodules because the MEX files are no
+# longer checked into Git; instead, they are built by CI processes
+https://github.com/sqlp/sedumi/releases/download/v1.3.8/sedumi.tgz
+https://github.com/sqlp/sdpt3/releases/download/4.0-20240410/sdpt3.tgz

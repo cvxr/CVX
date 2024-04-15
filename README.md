@@ -1,5 +1,27 @@
 ## CVX: A system for disciplined convex programming
 
+#### [Click here](https://github.com/cvxr/cvx/releases/latest) to download the precompiled bundle from this repository. These bundles include the SeDuMi and SDPT3 solvers, as well as pre-compiled MATLAB and Octave MEX files files for Windows, Linux, and macOS (Intel and Apple Silicon).
+
+### IMPORTANT UPDATE
+
+We are working towards making this repository the *official* source
+for CVX, and updating the [download page](http://cvxr.com/cvx/download)
+with links back to this site. This will take a bit more time; but when
+finished, there will be significant benefits:
+
+- Fresh builds of the supporting MEX files for Linux, Windows, macOS
+  Apple Silicon, and macOS Intel will be included.
+- The solver shims for Mosek and Gurobi will be included, without
+  obfuscation, so that anyone with a valid license for these solvers
+  can use CVX, for commercial and non-commercial use.
+- We will be able to slowly enable community contributions to supply
+  bug fixes and improvements. Note that the first of these improvements
+  will need to include improvements to an automatable test suite to
+  help insure that changes do not introduce regressions.
+
+Please stay tuned, here and on the [web site](http://cvxr.com/cvx),
+for further developments.
+
 ### Introduction
 
 CVX is a Matlab package for convex optimizaton.

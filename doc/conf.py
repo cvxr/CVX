@@ -116,7 +116,7 @@ html_title = "CVX Users' Guide"
 
 # The name of an image file (relative to this directory) to place at the top
 # of the sidebar.
-html_logo = 'cvxrlogo.png'
+html_logo = '_static/cvxrlogo.png'
 
 # The name of an image file (within the static path) to use as favicon of the
 # docs.  This file should be a Windows icon file (.ico) being 16x16 or 32x32
@@ -178,7 +178,7 @@ htmlhelp_basename = 'CVXdoc'
 latex_elements = {
 	'papersize': 'letterpaper',
 	'pointsize': '11pt',
-	'preamble': '\usepackage{amsmath,amssymb}',
+	'preamble': r'\usepackage{amsmath,amssymb}',
 }
 
 # Grouping the document tree into LaTeX files. List of tuples
