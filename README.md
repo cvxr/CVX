@@ -1,92 +1,127 @@
 ## CVX: A system for disciplined convex programming
 
-#### [Click here](https://github.com/cvxr/cvx/releases/latest) to download the precompiled bundle from this repository. These bundles include the SeDuMi and SDPT3 solvers, as well as pre-compiled MATLAB and Octave MEX files files for Windows, Linux, and macOS (Intel and Apple Silicon).
+#### [Click here](https://github.com/cvxr/cvx/releases/latest) to download a bundle of this repository, including pre-compiled MEX files.
 
-### IMPORTANT UPDATE
+### Important Update
 
-We are working towards making this repository the *official* source
-for CVX, and updating the [download page](http://cvxr.com/cvx/download)
-with links back to this site. This will take a bit more time; but when
-finished, there will be significant benefits:
-
-- Fresh builds of the supporting MEX files for Linux, Windows, macOS
-  Apple Silicon, and macOS Intel will be included.
-- The solver shims for Mosek and Gurobi will be included, without
-  obfuscation, so that anyone with a valid license for these solvers
-  can use CVX, for commercial and non-commercial use.
-- We will be able to slowly enable community contributions to supply
-  bug fixes and improvements. Note that the first of these improvements
-  will need to include improvements to an automatable test suite to
-  help insure that changes do not introduce regressions.
-
-Please stay tuned, here and on the [web site](http://cvxr.com/cvx),
-for further developments.
+This repository is in the process of becoming the *official* source
+for CVX. We will be updating the [original site](https://cvxr.com/cvx)
+and its [download page](https://cvxr.com/cvx/download) with links back
+to this site. When this work is complete, the CVX bundles hosted here
+will provide pre-compiled Matlab MEX files for Windows, Linux, macOS
+Intel, and macOS Apple Silicon. Furtherore, open versions of the Mosek
+and Gurobi solver shims will be available. Please stay tuned, here and
+on the [web site](https://cvxr.com/cvx), for further developments.
 
 ### Introduction
 
 CVX is a Matlab package for convex optimizaton.
 To learn more about what CVX is and how to use it, please visit our
-[web site](http://cvxr.com/cvx), read the
-[users' guide](http://cvxr.com/cvx/doc), and browse the
-[example library](http://cvxr.com/cvx/examples). 
+[web site](https://cvxr.com/cvx), read the
+[users' guide](https://cvxr.com/cvx/doc), and browse the
+[example library](https://cvxr.com/cvx/examples). 
 
 The best way to obtain CVX is to visit the
-[download page](http://cvxr.com/cvx/download), which provides
-pre-built archives containing standard and professional versions of CVX
-tailored for specific operating systems.
-This repository provides an alternate means of obtaining CVX 
-for those who prefer to obtain their software via clone, fork, or
-subrepo, or who simply like to browse source code.
+[Releases Page](https://github.com/cvxr/CVX/releases/latest/) of
+this repository, and download _either_ `cvx.tgz` or `cvx.zip`.
+These archives contain:
+
+- The full CVX code base
+- Full copies of the [SeDuMi](https://github.com/sqlp/sedumi) and
+  SDPT3 [SDPT3](https://github.com/sqlp/sdpt3) solvers
+- Pre-compiled MEX files for Windows, macOS, and Linux
+- HTML and PDF versions of the documentation
 
 ### About this repository
 
-This is a filtered mirror of the main branch of our internal 
-development repository, with all administrative and non-redistributable
-files removed. The differences between the files found here and
-the packages offered on our [download](http://cvxr.com/cvx/download)
-page are as follows:
-
-* The functionality supporting the use of commercial solvers
-  [Gurobi](http://gurobi.com) and [MOSEK](http://mosek.com) is not
-  present. This functionality is exclusive to the non-redistributable
-  Professional version, available for download on the web site.
-* The [documentation](http://cvxr.com/cvx/doc) is not compiled. 
-  The soruce code is provided in the `doc/` subdirectory, and
-  requires the [Sphinx](http://sphinx-doc.org) Python documentation
-  generator and a LaTeX system such as 
-  [TeXLive](http://tug.org/texlive/) to generate it.
-* The solvers [SDPT3](https://github.com/sqlp/sdpt3/) and 
-  [SeDuMi](https://github.com/sqlp/sedumi/) are provided as 
-  *submodules*. In other words, they are not actually *included*
-  in the repository itself; instead, *links* to their separate
-  GitHub repositories are included. Make sure you use the
-  `--recursive` flag when cloning this repository to download
-  the solvers along with CVX.
-
-Needless to say, working from the raw source is not a straighforward
-process. We know this first-hand! This is for hardcore GitHub users.
+For now, this is a _filtered_ mirror of the main branch of our
+internal development repository. This internal repository includes
+code not ready or available for redistribution. Some of that code will
+was built strictly to support our dual-source approach, and is
+therefore no longer needed. There remains some additional code there,
+however, that would likely be valuable to users, and we intend to
+bring that here over time.
 
 ### Support
 
-We intend to keep this repository complete and up to date, but
-its use is completely unsupported. That said, if you are having
-issues related specifically to the repository itself, please feel
-free to [submit an report](https://github.com/cvxr/CVX/issues) to the
-repository's issue tracker. Please do *not* submit other types
-of issues (CVX bug reports, usage questions, etc.) to this tracker;
-they will likely be ignored.
+There are four primary mechanisms for obtaining support for CVX:
 
-We cannot provide direct email support for CVX without
-a paid contract. However, we have created and assembled a variety of
-avenues for obtaining help with CVX in particular or optimization in general.
-Please see the [Support section](http://cvxr.com/cvx/doc/support.html)
-of the documentation for more details.
+- The [user guide](https://cvxr.com/cvx/doc). PDF and HTML versions
+  of this guide are included in `cvx.zip` and `cvx.tgz` bundles.
+  The [documentation source](https://github.com/cvxr/CVX/tree/master/doc)
+  is available on the repository as well.
+
+- The [example library](https://cvxr.com/cvx/examples/). Many user
+  problems can be solved as slight modifications to one of these
+  examples. The example code is also included in the `cvx.zip`
+  and `cvx.tgz` bundles, in the `examples/` subdirectory, and
+  [in the repository](https://github.com/cvxr/CVX/tree/master/examples).
+  
+- The [CVX Forum](https://ask.cvxr.com/) is a Discourse-based
+  server that is focused completely on CVX usage.
+  
+- The [Computational Science Stack Exchange](https://scicomp.stackexchange.com/)
+  is a great community-driven Q&A site for a variety of
+  computational science topics, including convex optimization.
+  This would be a perfect choice for questions that are not
+  necessarily specific to CVX.
+
+Easily the most important page on the CVX Forum is the FAQ:
+
+> [***Why isn't CVX accepting my model? READ THIS FIRST!***](https://ask.cvxr.com/t/why-isnt-cvx-accepting-my-model-read-this-first/570)
+ 
+*Everyone* who attempts to use CVX should read that page! It should
+save much frustration.
+
+Supporting CVX users is a challenging exercise, because there are
+multiple *categories* of issues that occur when using the software;
+including, but not limited to:
+
+1. Generic challenges involving convex optimization, especially the
+   challenge of determining whether or not a given model is convex.
+   See the [FAQ](https://ask.cvxr.com/t/why-isnt-cvx-accepting-my-model-read-this-first/570).
+2. Difficulties caused by the strictness imposed by the disciplined
+   convex programming framwork. Once again, see the
+   [FAQ](https://ask.cvxr.com/t/why-isnt-cvx-accepting-my-model-read-this-first/570).
+3. Numerical issues caused by model scaling issues, or even bugs or
+   limitations in the underling solver software. The
+   [forum](https://ask.cvxr.com/) can sometimes offer assistance here.
+4. _Actual bugs_ caused by _unintended_ behavior of the software.
+
+Our experience is that the _vast_ majority of user issues fall into
+one of the first three categories; a small fraction fall into
+category 4. In other words, _most user issues are not bugs_.
+
+That does not mean CVX is bug-free! If you have truly eliminated
+issue categories 1-3 above from contention, including a thorough
+understanding of the
+[FAQ](https://ask.cvxr.com/t/why-isnt-cvx-accepting-my-model-read-this-first/570),
+you may wish to submit a bug request to this repository's 
+[issue tracker](https://github.com/cvxr/CVX/issues).
+
+Unfortunately, urgent attention to bugs cannot be promised, yet, but
+as the contributor community is cultivated, they will begin to be
+able to tackle issues and perhaps even offer new features. Furthermore,
+if we determine an issue is _not_ a bug, it will be closed, often
+without a response. For this reason we truly commend users to the
+[CVX Forum](https://ask.cvxr.com/) before considering filing an issue.
+
+_The original authors of this package are
+not available to assist directly._ Support emails sent to the authors
+will go unanswered.
+
+### Citing CVX
+
+Are you using CVX in research work to be published? If so, please include explicit
+mention of our work in your publication. We have provided example language, citation
+entries, and even BiBTeX citation code on the
+[Citing CVX](https://cvxr.com/cvx/doc/citing.html) page of the documentation.
 
 ### License
 
 Most of the files in this repository are governed by the terms of our 
-[GPLv3](http://www.gnu.org/licenses/gpl-3.0.html)-based 
-[CVX Standard License](http://cvxr.com/cvx/doc/license.html). Please
+[GPLv3](https://www.gnu.org/licenses/gpl-3.0.html)-based 
+[CVX Standard License](https://cvxr.com/cvx/doc/license.html). Please
 see the files 
 [LICENSE.txt](https://github.com/cvxr/CVX/blob/master/README.txt) and 
 [GPL.txt](https://github.com/cvxr/CVX/blob/master/GPL.txt), 
@@ -98,6 +133,4 @@ your own work, that you acknowledge the source and any specific authors
 cited therein.
 
 Thank you for your interest in CVX!    
-Michael Grant and Stephen Boyd    
-[CVX Research, Inc.](http://cvxr.com)    
-(c) 2014. All rights reserved.
+Michael Grant and Stephen Boyd
