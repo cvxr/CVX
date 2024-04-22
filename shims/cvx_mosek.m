@@ -90,12 +90,12 @@ for k = 1 : length(shim)
         shim(k).error = sprintf( 'Unexpected MEX file failure:\n%s\n', errmsg.message );
         continue
     end
-    clear('mosekopt')
+    clear('mosekopt');
     shim(k).fullpath = fpath;
     shim(k).path = [ npath, cvx___.ps ];
     shim(k).check = @check;
     shim(k).solve = @solve;
-    shim(k).eargs = { mfunc };
+    shim(k).eargs = { @mosekopt };
 end
 
 function found_bad = check( nonls, sdp, mfunc ) %#ok
