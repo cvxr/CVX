@@ -29,6 +29,8 @@ These archives contain:
 - The full CVX code base
 - Full copies of the [SeDuMi](https://github.com/sqlp/sedumi) and
   SDPT3 [SDPT3](https://github.com/sqlp/sdpt3) solvers
+- Additional shims for Gurobi, Mosek, and GLPK. The solvers (and
+  any needed licenses) must be be supplied by the user.
 - Pre-compiled MEX files for Windows, macOS, and Linux
 - HTML and PDF versions of the documentation
 
