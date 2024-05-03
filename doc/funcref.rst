@@ -115,7 +115,7 @@ Nonlinear
     two-argument version ``norm(x,p)`` is supported as follows:
 
     -  ‡ For vectors, all values :math:`p\geq 1` are accepted.
-    -  For matrices, ``p`` must be ``1``, ``2``, ``Inf``, or ``'Fro'``.
+    -  For matrices, ``p`` must be ``1``, ``2``, ``Inf``, or ``'fro'``.
 
 ``polyval``
     polynomial evaluation. ``polyval(p,x)``, where ``p`` is a vector of
