@@ -69,7 +69,7 @@ if any(ndxs),
 end
 
 addpaths = { 'builtins', 'commands', 'functions', 'lib', 'structures' };
-mpath2 = mpath + fs; npath2 = length(mpath2);
+mpath2 = [ mpath, fs ]; npath2 = length(mpath2);
 if ~any(~strncmp(which('vec', '-all'), mpath2, npath2)),
     addpaths{end+1} = [ 'functions', fs, 'vec_' ]; 
 end

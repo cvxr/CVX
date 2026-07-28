@@ -10,8 +10,11 @@ if ~isempty( shim.solve )
 end
 
 fs = cvx___.fs;
+ps = cvx___.ps;
 mext = cvx___.mext;
 mlen = length(mext);
+int_path = [cvx___.where, fs];
+int_plen = length(int_path);
 
 fbase = 'mosekopt';
 fname = [ fbase, '.', mext ];
@@ -24,7 +27,30 @@ if is_new
     shim.name = 'Mosek';
     shim.dualize = true;
     shim.version = 'unknown';
-    fpaths = which( fbase, '-all' );
+    intname = [int_path, 'mosek', fs, mext(4:end), fs, fname];
+    fpaths = which(fbase, '-all');
+    if exist(intname, 'file'), fpaths = [{intname}; fpaths]; end
+    switch mext
+        case {'mexmaca64', 'mexmaci64'}
+            d1 = '/Library/Mosek/*/toolbox/*';
+            d2 = '';
+        case 'mexa64'
+            d1 = '/opt/Mosek/*/toolbox/*';
+            d2 = '';
+        case 'mexw64'
+            d1 = 'C:\Mosek\*\toolbox\*';
+            d2 = 'C:\Program Files\Mosek\*\toolbox\*';
+        otherwise
+            d1 = ''; d2 = '';
+    end
+    temp = dir([d1, fs, fname]);
+    for k = 1:length(temp)
+        fpaths{end+1} = strcat(temp(k).folder, fs, temp(k).name); %#ok
+    end
+    temp = dir([d2, fs, fname]);
+    for k = 1:length(temp)
+        fpaths{end+1} = strcat(temp(k).folder, fs, temp(k).name); %#ok
+    end
     oshim = shim;
     shim = [];
     if cvx___.cs, scmp = @strcmp; else scmp = @strcmpi; end
@@ -53,10 +79,15 @@ for k = 1 : length(shim)
     fpath = shim(k).fullpath;
     fspos = strfind(fpath, fs);
     npath = fpath(1:fspos(end)-1);
-    shim(k).location = npath;
-    fpath = [ npath, fs, fname ];
-    if ~exist( fpath, 'file' )
-        shim(k).error = sprintf( 'The MOSEK MEX file expected at\n    %s\nseems to be missing.', fpath );
+    is_internal = strncmp(npath, int_path, int_plen);
+    if is_internal
+        shim(k).location = ['{cvx}', npath(int_plen:end)];
+    else
+        shim(k).location = npath;
+    end
+    fpath = [npath, fs, fname];
+    if ~exist(fpath, 'file')
+        shim(k).error = sprintf('The MOSEK MEX file expected at\n    %s\nseems to be missing.', fpath);
         continue
     end
     cd( npath );
@@ -74,8 +105,8 @@ for k = 1 : length(shim)
         else
             nversion = 0;
         end
-        if nversion < 7
-            shims(k).error('The CVX/MOSEK interface requires MOSEK version 7 or later.');
+        if nversion < 9
+            shims(k).error('The CVX/MOSEK interface requires MOSEK version 9 or later.');
             continue
         end
     end
@@ -92,7 +123,7 @@ for k = 1 : length(shim)
     end
     clear('mosekopt');
     shim(k).fullpath = fpath;
-    shim(k).path = [ npath, cvx___.ps ];
+    shim(k).path = [npath, ps];
     shim(k).check = @check;
     shim(k).solve = @solve;
     shim(k).eargs = { @mosekopt };

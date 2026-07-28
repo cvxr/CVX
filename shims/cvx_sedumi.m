@@ -8,17 +8,20 @@ global cvx___
 if ~isempty( shim.solve ),
     return
 end
-if isempty( shim.name ),
+
+fs = cvx___.fs;
+ps = cvx___.ps;
+
+if isempty(shim.name),
     fname = 'sedumi.m';
-    fs = cvx___.fs;
-    ps = cvx___.ps;
-    int_path = [ cvx___.where, fs ];
-    int_plen = length( int_path );
+    flen = length(fname);
+    int_path = [cvx___.where, fs];
+    int_plen = length(int_path);
     shim.name = 'SeDuMi';
     shim.dualize = true;
-    flen = length(fname);
-    fpaths = { [ int_path, 'sedumi', fs, fname ] };
-    fpaths = [ fpaths ; which( fname, '-all' ) ];
+    intname = [int_path, 'sedumi', fs, fname];
+    fpaths = which(fname, '-all');
+    if exist(intname, 'file'), fpaths = [{intname}; fpaths]; end
     old_dir = pwd;
     oshim = shim;
     shim = [];
@@ -47,17 +50,15 @@ if isempty( shim.name ),
         end
         if isempty( tshim.error ),
             otp = regexp( otp, 'SeDuMi \d\S+', 'match' );
-            if ~isempty(otp), tshim.version = otp{end}(8:end); end
-            vnum = str2double( tshim.version );
+            if ~isempty(otp), tshim.version = otp{1}(8:end); end
+            tshim.path = [new_dir, ps];
+            if ~isempty(cvx___.msub) && exist([new_dir, fs, cvx___.msub], 'dir')
+                tshim.path = [new_dir, ps, new_dir, fs, cvx___.msub, ps];
+            end
             tshim.check = @check;
             tshim.solve = @solve;
-            tshim.eargs = { vnum >= 1.3 && vnum < 1.32 };
-            if k ~= 2,
-                tshim.path = [ new_dir, ps ];
-                if ~isempty(cvx___.msub) && exist([new_dir,fs,cvx___.msub],'dir'),
-                   tshim.path = [ new_dir, fs, cvx___.msub, ps, tshim.path ];
-                end
-            end
+            vnum = str2double(tshim.version);
+            tshim.eargs = {vnum >= 1.3 && vnum < 1.32};
         end
         shim = [ shim, tshim ]; %#ok
     end

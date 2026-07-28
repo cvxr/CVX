@@ -1,3 +1,4 @@
+.vscode/
 doc/_build
 sedumi/
 sdpt3/
@@ -7,4 +8,3 @@ sdpt3.tgz
 sdpt3.zip
 lib/*.mex*
 lib/*/*.mex
-

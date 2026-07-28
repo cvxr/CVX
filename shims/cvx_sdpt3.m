@@ -8,17 +8,20 @@ global cvx___
 if ~isempty( shim.solve ),
     return
 end
-if isempty( shim.name ),
+
+fs = cvx___.fs;
+ps = cvx___.ps;
+
+if isempty(shim.name),
     fname = 'sdpt3.m';
-    ps = cvx___.ps;
-    fs = cvx___.fs;
-    int_path = [ cvx___.where, fs ];
-    int_plen = length( int_path );
+    flen = length(fname);
+    int_path = [cvx___.where, fs];
+    int_plen = length(int_path);
     shim.name = 'SDPT3';
     shim.dualize = true;
-    flen = length(fname);
-    fpaths = { [ int_path, 'sdpt3', fs, fname ] };
-    fpaths = [ fpaths ; which( fname, '-all' ) ];
+    intname = [int_path, 'sdpt3', fs, fname];
+    fpaths = which(fname, '-all');
+    if exist(intname, 'file'), fpaths = [{intname}; fpaths]; end
     old_dir = pwd;
     oshim = shim;
     shim = [];
@@ -48,14 +51,12 @@ if isempty( shim.name ),
         if isempty( tshim.error ),
             otp = regexp( otp, 'SDPT3: version \d+\.\d+', 'match' );
             if ~isempty(otp), tshim.version = otp{1}(16:end); end
-            if k ~= 2,
-                tpath = { new_dir, [ new_dir, fs, 'Solver' ], [ new_dir, fs, 'HSDSolver' ], [ new_dir, fs, 'Solver', fs, 'Mexfun' ] };
-                if ~isempty(cvx___.msub) && exist( [ tpath{end}, fs, cvx___.msub ], 'dir' ),
-                    tpath{end} = [ tpath{end}, fs, cvx___.msub ];
-                end
-                tpath = sprintf( [ '%s', ps ], tpath{:} ) ;
-                tshim.path = tpath;
+            tpath = {new_dir, [new_dir, fs, 'Solver'], [new_dir, fs, 'HSDSolver'], [new_dir, fs, 'Solver', fs, 'Mexfun']};
+            if ~isempty(cvx___.msub) && exist([tpath{end}, fs, cvx___.msub], 'dir'),
+                tpath{end} = [tpath{end}, fs, cvx___.msub];
             end
+            tpath = sprintf(['%s', ps], tpath{:});
+            tshim.path = tpath;
             tshim.check = @check;
             tshim.solve = @solve;
             tshim.eargs = {};
